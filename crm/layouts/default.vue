@@ -1,5 +1,10 @@
 <template>
   <v-app>
-    <NuxtPage />
+    <v-navigation-drawer permanent absolute>
+      <UiMenu />
+    </v-navigation-drawer>
+    <v-main>
+      <NuxtPage />
+    </v-main>
   </v-app>
 </template>
