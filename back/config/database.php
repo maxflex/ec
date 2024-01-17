@@ -63,6 +63,19 @@ return [
             ]) : [],
         ],
 
+        // for transfer
+        'egecrm' => [
+            'driver'    => 'mysql',
+            'host'      => env('DB_HOST_EGECRM'),
+            'database'  => env('DB_DATABASE_EGECRM'),
+            'username'  => env('DB_USERNAME_EGECRM'),
+            'password'  => env('DB_PASSWORD_EGECRM'),
+            'port'      => env('DB_PORT', 3306),
+            'charset'   => 'utf8',
+            'collation' => 'utf8_unicode_ci',
+            'prefix'    => '',
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),
@@ -125,7 +138,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [

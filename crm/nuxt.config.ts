@@ -2,7 +2,7 @@ import vuetify, { transformAssetUrls } from "vite-plugin-vuetify"
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  css: ["@/assets/css/index.scss"],
+  css: ["@/assets/scss/main.scss"],
   build: {
     transpile: ["vuetify"],
   },
@@ -10,7 +10,11 @@ export default defineNuxtConfig({
     (_options, nuxt) => {
       nuxt.hooks.hook("vite:extendConfig", (config) => {
         // @ts-expect-error
-        config.plugins.push(vuetify({ autoImport: true }))
+        config.plugins.push(
+          vuetify({
+            autoImport: true,
+          }),
+        )
       })
     },
   ],

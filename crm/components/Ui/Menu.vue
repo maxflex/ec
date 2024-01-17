@@ -2,14 +2,17 @@
 const menu: Array<{
   to: string
   title: string
+  icon: string
 }> = [
   {
+    icon: "mdi-inbox",
     title: "Заявки",
     to: "/requests",
   },
   {
-    title: "Менты",
-    to: "/ment",
+    icon: "mdi-account",
+    title: "Клиенты",
+    to: "/clients",
   },
 ]
 </script>
@@ -20,9 +23,9 @@ const menu: Array<{
     <h2>ЕГЭ-Центр</h2>
   </div>
   <v-list nav density="compact">
-    <v-list-item v-for="{ title, to } in menu" :key="title" :to="to">
+    <v-list-item v-for="{ title, to, icon } in menu" :key="title" :to="to">
       <template #prepend>
-        <v-icon> view_cozy </v-icon>
+        <v-icon :icon="icon"></v-icon>
       </template>
       {{ title }}
     </v-list-item>
