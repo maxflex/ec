@@ -12,7 +12,7 @@ enum TeacherStatus
     case interview;
     case closed;
 
-    public static function getById(int $id): TeacherStatus
+    public static function getById(int $id): self
     {
         return match ($id) {
             0 => self::inactive,

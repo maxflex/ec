@@ -2,21 +2,23 @@
 
 namespace App\Console\Commands\Transfer;
 
-trait TransferCommand
-{
-    protected function nullify(string $text): string | null
-    {
-        $text = trim($text);
-        return $text ? $text : null;
-    }
+use Illuminate\Console\Command;
 
-    protected function mapEnum(string $commaSeparated, string $enumClass): string | null
+class TransferCommand extends Command
+{
+    protected $signature = 'app:transfer';
+    protected $description = 'Transfer all';
+
+    public function handle()
     {
-        if ($commaSeparated === "") {
-            return null;
+        foreach ([
+            'teachers',
+            'phones',
+            'users',
+        ] as $command) {
+            $this->info(str($command)->ucfirst());
+            $this->call("app:transfer:$command");
+            $this->line(PHP_EOL);
         }
-        return collect(explode(',', $commaSeparated))
-            ->map(fn ($id) => $enumClass::getById(intval($id))->name)
-            ->join(',');
     }
 }

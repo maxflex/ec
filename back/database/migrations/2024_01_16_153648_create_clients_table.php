@@ -22,8 +22,8 @@ return new class extends Migration
                 'branches',
                 collect(Grade::cases())->map(fn ($e) => $e->name)->all()
             )->nullable();
-            $table->foreignIdFor(User::class)->nullable()->constrained();
             $table->date('birthdate')->nullable();
+            $table->foreignIdFor(User::class)->nullable()->constrained();
             $table->unsignedBigInteger('head_teacher_id')->nullable()->constrained();
             $table->foreign('head_teacher_id')->references('id')->on('teachers');
             $table->string('parent_first_name')->nullable();

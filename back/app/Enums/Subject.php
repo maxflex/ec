@@ -132,7 +132,7 @@ enum Subject
     /**
      * ID предмета (для переноса из старой БД)
      */
-    public static function getById(int $id): Subject
+    public static function getById(int $id): self
     {
         return match ($id) {
             1 => self::math,

@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 
 class TransferTeachers extends Command
 {
-    use TransferCommand;
+    use TransferTrait;
 
     protected $signature = 'app:transfer:teachers';
     protected $description = 'Transfer teachers';
