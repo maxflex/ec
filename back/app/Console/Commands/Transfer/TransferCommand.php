@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Transfer;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Schema;
 
 class TransferCommand extends Command
 {
@@ -11,14 +12,18 @@ class TransferCommand extends Command
 
     public function handle()
     {
+        Schema::disableForeignKeyConstraints();
         foreach ([
+            'users',
+            'clients',
+            'requests',
             'teachers',
             'phones',
-            'users',
         ] as $command) {
             $this->info(str($command)->ucfirst());
             $this->call("app:transfer:$command");
             $this->line(PHP_EOL);
         }
+        Schema::enableForeignKeyConstraints();
     }
 }

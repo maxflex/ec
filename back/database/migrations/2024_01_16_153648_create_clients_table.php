@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Branch;
 use App\Enums\Grade;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
@@ -20,7 +21,7 @@ return new class extends Migration
             $table->string('middle_name')->nullable();
             $table->set(
                 'branches',
-                collect(Grade::cases())->map(fn ($e) => $e->name)->all()
+                collect(Branch::cases())->map(fn ($e) => $e->name)->all()
             )->nullable();
             $table->date('birthdate')->nullable();
             $table->foreignIdFor(User::class)->nullable()->constrained();
@@ -35,7 +36,7 @@ return new class extends Migration
             $table->string('passport_code')->nullable();
             $table->date('passport_issued_date')->nullable();
             $table->string('passport_issued_by')->nullable();
-            $table->string('real_address')->nullable();
+            $table->string('fact_address')->nullable();
             $table->timestamps();
         });
     }

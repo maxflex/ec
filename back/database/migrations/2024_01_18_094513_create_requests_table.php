@@ -2,6 +2,7 @@
 
 use App\Enums\Grade;
 use App\Enums\RequestStatus;
+use App\Models\Client;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -16,6 +17,9 @@ return new class extends Migration
     {
         Schema::create('requests', function (Blueprint $table) {
             $table->id();
+            // $table->foreignIdFor(Client::class)->constrained();
+            $table->unsignedBigInteger('responsible_user_id')->nullable()->constrained();
+            $table->foreign('responsible_user_id')->references('id')->on('users');
             $table->enum(
                 'status',
                 collect(RequestStatus::cases())->map(fn ($e) => $e->name)->all()
@@ -29,8 +33,6 @@ return new class extends Migration
             $table->string('ip')->nullable();
             $table->string('comment', 1000)->nullable();
             $table->foreignIdFor(User::class)->nullable()->constrained();
-            $table->unsignedBigInteger('responsible_user_id')->nullable()->constrained();
-            $table->foreign('responsible_user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }
