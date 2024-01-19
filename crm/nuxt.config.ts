@@ -1,10 +1,16 @@
 import vuetify, { transformAssetUrls } from "vite-plugin-vuetify"
 
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  // devtools: { enabled: true },
   css: ["@/assets/scss/main.scss"],
+  // ssr: false,
   build: {
     transpile: ["vuetify"],
+  },
+  runtimeConfig: {
+    public: {
+      baseUrl: "",
+    },
   },
   modules: [
     (_options, nuxt) => {
