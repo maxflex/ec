@@ -2,9 +2,9 @@
 
 namespace App\Enums;
 
-enum RequestStatus
+enum RequestStatus: string
 {
-    case new;
-    case awaiting;
-    case finished;
+    case new = 'new';
+    case awaiting = 'awaiting';
+    case finished = 'finished';
 }

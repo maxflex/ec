@@ -15,8 +15,7 @@ class RequestsController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ClientRequest::query();
-        $response = $this->handleIndexRequest($request, $query);
-        return $response;
+        $query = ClientRequest::latest();
+        return $this->handleIndexRequest($request, $query);
     }
 }

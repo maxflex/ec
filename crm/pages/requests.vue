@@ -1,34 +1,29 @@
-<script setup>
-const response = ref()
+<script setup lang="ts">
+const items = ref<Requests>()
 
 const loadData = async function () {
-  // await new Promise((r) => setTimeout(r, 1))
-  // await nextTick()
-  // const { data } = await useHttp("requests", {
-  //   method: "GET",
-  // })
-  // console.log(data, data.value)
-  const {
-    public: { baseUrl },
-  } = useRuntimeConfig()
-  const { data, error } = await useFetch("requests", {
-    method: "GET",
-    baseURL: baseUrl,
-    // headers: { Authorization: `Bearer ${token}` },
-  })
-  console.log(data, error)
-  response.value = data.value
+  const { data } = await useHttp<ApiResponse<Requests>>("requests")
+  items.value = data.value?.data
 }
 
 onMounted(async () => {
+  // https://github.com/vuejs/core/issues/6638
+  // https://github.com/nuxt/nuxt/issues/25131
+  await nextTick()
   await loadData()
 })
 </script>
 <template>
-  <h1>requests</h1>
-  <RequestItem />
-  <v-btn @click="loadData()"> load data </v-btn>
-  <code>
-    {{ response }}
-  </code>
+  <div class="requests">
+    <RequestItem v-for="item in items" :item="item" />
+  </div>
+  <div class="text-center my-12">
+    <v-btn @click="loadData()">показать ещё</v-btn>
+  </div>
 </template>
+
+<style lang="scss">
+.requests {
+  background: #fafafa;
+}
+</style>
