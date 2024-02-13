@@ -1,3 +1,3 @@
 <template>
-  <div>ment</div>
+  <div></div>
 </template>

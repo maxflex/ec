@@ -20,7 +20,7 @@ const menu: Array<{
 <template>
   <div class="logo">
     <img src="/img/logo.svg" />
-    <h2>ЕГЭ-Центр</h2>
+    <h3>ЕГЭ-Центр</h3>
   </div>
   <v-list nav density="compact">
     <v-list-item v-for="{ title, to, icon } in menu" :key="title" :to="to">
@@ -39,5 +39,8 @@ const menu: Array<{
   justify-content: center
   padding: 20px 0
   img
-    margin-right: 16px
+    margin-right: 12px
+  span
+    font-size: 24px
+    font-weight: 500
 </style>

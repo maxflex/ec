@@ -4,6 +4,15 @@ import type { ThemeDefinition } from "vuetify"
 
 const myTheme: ThemeDefinition = {
   dark: false,
+  colors: {
+    primary: "#337ab7",
+    secondary: "#ffc423",
+    success: "#4caf50",
+    error: "#c83232",
+    accent: "#4346d5",
+    grey: "#949db1",
+    gray: "#949db1",
+  },
   // colors: {
   //   background: "#ffffff",
   //   surface: "#ffffff",

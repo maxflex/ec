@@ -1,0 +1,17 @@
+main {
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+a:not(.v-list-item) {
+  text-decoration: none;
+  color: rgb(var(--v-theme-primary));
+  &:hover {
+    color: rgba(var(--v-theme-primary), 0.9);
+    // color: rgba(var(--v-theme-accent));
+  }
+}
+
+.page-title {
+  padding: 20px;
+}

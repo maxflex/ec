@@ -1,11 +1,14 @@
 <?php
 
-function extract_fields($object, $fields, $merge = [])
+function extract_fields($object, $fields, $merge = []): array
 {
     $return = ['id' => $object->id];
     foreach ($fields as $field) {
         if ($field === '*') {
             foreach ($object->resource->toArray() as $key => $value) {
+                if ($key === 'id') {
+                    continue;
+                }
                 $return[$key] = $value;
             }
         } else {
