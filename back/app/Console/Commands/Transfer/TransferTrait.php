@@ -10,11 +10,11 @@ trait TransferTrait
 {
     protected $createdEmailId = [];
 
-    const CLIENT = 'App\\Models\\Client\\Client';
-    const PARENT = 'App\\Models\\Client\\Representative';
-    const REQUEST = 'App\\Models\\Request';
-    const ADMIN = 'App\\Models\\Admin\\Admin';
-    const TEACHER = 'App\\Models\\Teacher';
+    // const CLIENT = 'App\\Models\\Client\\Client';
+    // const PARENT = 'App\\Models\\Client\\Representative';
+    // const REQUEST = 'App\\Models\\Request';
+    // const ADMIN = 'App\\Models\\Admin\\Admin';
+    // const TEACHER = 'App\\Models\\Teacher';
 
     protected function getUserId($createdEmailId): int | null
     {

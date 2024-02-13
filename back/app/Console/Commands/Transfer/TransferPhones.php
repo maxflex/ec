@@ -24,7 +24,7 @@ class TransferPhones extends Command
                     'number' => $p->phone,
                     'comment' => $this->nullify($p->comment),
                     'is_verified' => $p->is_verified,
-                    'is_parent' => $p->entity_type === self::PARENT,
+                    'is_parent' => $p->entity_type === ET_PARENT,
                     'entity_type' => $this->mapEntity($p->entity_type),
                     'entity_id' => $p->entity_id,
                 ]);
@@ -36,11 +36,11 @@ class TransferPhones extends Command
     private function mapEntity($entityType)
     {
         return match ($entityType) {
-            self::ADMIN => User::class,
-            self::TEACHER => Teacher::class,
-            self::REQUEST => Request::class,
-            self::CLIENT => Client::class,
-            self::PARENT => Client::class,
+            ET_ADMIN => User::class,
+            ET_TEACHER => Teacher::class,
+            ET_REQUEST => Request::class,
+            ET_CLIENT => Client::class,
+            ET_PARENT => Client::class,
         };
     }
 }

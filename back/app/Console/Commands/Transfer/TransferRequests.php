@@ -25,9 +25,9 @@ class TransferRequests extends Command
         // $this->phones = DB::connection('egecrm')
         //     ->table('phones')
         //     ->whereIn('entity_type', [
-        //         self::CLIENT,
-        //         self::PARENT,
-        //         self::REQUEST
+        //         ET_CLIENT,
+        //         ET_PARENT,
+        //         ET_REQUEST
         //     ])
         //     ->get();
         // $this->phones = key_by($this->phones, 'entity_type', 'entity_id', 'phone');
@@ -58,15 +58,15 @@ class TransferRequests extends Command
     private function getClientId($r)
     {
         $requestPhones = $this->phones
-            ->where('entity_type', self::REQUEST)
+            ->where('entity_type', ET_REQUEST)
             ->where('entity_id', $r->id)
             ->pluck('phone');
         // dd($requestPhones);
-        // $requestPhones = $this->phones[self::REQUEST][$r->id];
+        // $requestPhones = $this->phones[ET_REQUEST][$r->id];
         $this->line("Request ID: " . $r->id);
         foreach ($requestPhones as $phone) {
             $candidates = $this->phones
-                ->whereIn('entity_type', [self::CLIENT, self::PARENT])
+                ->whereIn('entity_type', [ET_CLIENT, ET_PARENT])
                 ->where('phone', $phone)
                 ->all();
             dump($candidates);
