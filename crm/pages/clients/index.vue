@@ -42,34 +42,25 @@ async function onIntersect({
 
 <template>
   <UiLoader :paginator="paginator" />
-  <v-table class="clients" v-if="items">
-    <v-infinite-scroll
-      :onLoad="onIntersect"
-      :margin="100"
-      color="gray"
-      tag="tbody"
-    >
-      <tr v-for="item in items" :key="item.id">
-        <td width="50">
-          {{ item.id }}
-        </td>
-        <td>
-          <NuxtLink :to="{ name: 'clients-id', params: { id: item.id } }">
-            {{ formatName(item) }}
-          </NuxtLink>
-        </td>
-        <td class="text-right text-gray">
-          {{ formatDateTime(item.created_at) }}
-        </td>
-      </tr>
-    </v-infinite-scroll>
-  </v-table>
+  <v-infinite-scroll
+    :onLoad="onIntersect"
+    :margin="100"
+    class="table"
+    side="end"
+    v-if="items"
+  >
+    <div v-for="item in items" :key="item.id">
+      <div width="50">
+        {{ item.id }}
+      </div>
+      <div>
+        <NuxtLink :to="{ name: 'clients-id', params: { id: item.id } }">
+          {{ formatName(item) }}
+        </NuxtLink>
+      </div>
+      <div class="text-right text-gray">
+        {{ formatDateTime(item.created_at) }}
+      </div>
+    </div>
+  </v-infinite-scroll>
 </template>
-
-<style lang="scss">
-.clients {
-  .v-infinite-scroll {
-    display: table-row-group !important;
-  }
-}
-</style>

@@ -14,6 +14,11 @@ const menu: Array<{
     title: "Клиенты",
     to: "/clients",
   },
+  {
+    icon: "mdi-account-group",
+    title: "Группы",
+    to: "/groups",
+  },
 ]
 </script>
 

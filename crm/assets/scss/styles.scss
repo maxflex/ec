@@ -15,3 +15,33 @@ a:not(.v-list-item) {
 .page-title {
   padding: 20px;
 }
+
+.table {
+  & > .v-infinite-scroll__side:first-child {
+    display: none;
+  }
+  & > div:not(.v-infinite-scroll__side) {
+    border-bottom: thin solid
+      rgba(var(--v-border-color), var(--v-border-opacity));
+    padding: 16px 16px;
+  }
+  &:not(.table--two-lines) {
+    & > div {
+      display: flex;
+      gap: 20px;
+      & > div:last-child {
+        flex: 1;
+      }
+    }
+  }
+  &--two-lines {
+    & > div {
+      & > div {
+        display: flex;
+        &:not(:first-child) {
+          margin-top: 30px;
+        }
+      }
+    }
+  }
+}

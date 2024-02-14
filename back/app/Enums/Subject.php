@@ -145,7 +145,9 @@ enum Subject
             8 => self::soc,
             9 => self::his,
             10 => self::eng,
-            11 => self::soch,
+            11 => self::geo,
+            12 => self::soch,
+            default => self::math
         };
     }
 

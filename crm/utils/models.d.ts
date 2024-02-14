@@ -37,6 +37,23 @@ export interface Comment {
 }
 export type Comments = Comment[]
 
+export interface Group {
+  // columns
+  id: number
+  teacher_id: number
+  subject: string
+  grade: string
+  year: unknown
+  is_archived: boolean
+  zoom: string[]|null
+  lessons_planned: unknown|null
+  created_at: string|null
+  updated_at: string|null
+  // relations
+  teacher: Teacher
+}
+export type Groups = Group[]
+
 export interface Phone {
   // columns
   id: number
