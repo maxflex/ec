@@ -33,10 +33,14 @@ const myTheme: ThemeDefinition = {
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
     defaults: {
-      // VBtn: {
-      //   variant: "flat",
-      //   ripple: false,
-      // },
+      VTextField: {
+        variant: "outlined",
+      },
+      VBtn: {
+        variant: "flat",
+        size: "x-large",
+        // ripple: false,
+      },
       // VSelect: {
       //   variant: "solo",
       //   density: "comfortable",

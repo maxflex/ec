@@ -2,6 +2,14 @@
   width: 10px !important;
 }
 
+.v-progress-circular__underlay {
+  display: none !important;
+}
+
+.v-infinite-scroll__side {
+  opacity: 0;
+}
+
 h3 {
   font-size: 24px;
   font-weight: 500;

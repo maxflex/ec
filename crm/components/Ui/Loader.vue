@@ -7,7 +7,7 @@ const { paginator } = defineProps<{
 <template>
   <v-fade-transition>
     <div class="loader" v-if="paginator.loading && paginator.page < 2">
-      <v-progress-circular :size="50" indeterminate></v-progress-circular>
+      <v-progress-circular :size="50" indeterminate />
     </div>
   </v-fade-transition>
 </template>

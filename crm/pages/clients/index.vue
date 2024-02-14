@@ -28,41 +28,48 @@ onMounted(async () => {
 
   await loadData()
 })
+
+async function onIntersect({
+  done,
+}: {
+  done: (status: InfiniteScrollStatus) => void
+}) {
+  done("loading")
+  await loadData()
+  done("ok")
+}
 </script>
+
 <template>
-  <div class="clients">
-    <v-table v-if="items">
-      <tbody>
-        <tr v-for="item in items" :key="item.id">
-          <td width="50">
-            {{ item.id }}
-          </td>
-          <td>
-            <NuxtLink :to="{ name: 'clients-id', params: { id: item.id } }">
-              {{ formatName(item) }}
-            </NuxtLink>
-          </td>
-          <td class="text-right text-gray">
-            {{ formatDateTime(item.created_at) }}
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
-    <!-- <RequestItem v-for="item in items" :item="item" /> -->
-  </div>
-  <div class="text-center my-12">
-    <v-btn
-      @click="loadData()"
-      :loading="paginator.loading"
-      size="large"
-      elevation="0"
-      >показать ещё</v-btn
+  <UiLoader :paginator="paginator" />
+  <v-table class="clients" v-if="items">
+    <v-infinite-scroll
+      :onLoad="onIntersect"
+      :margin="100"
+      color="gray"
+      tag="tbody"
     >
-  </div>
+      <tr v-for="item in items" :key="item.id">
+        <td width="50">
+          {{ item.id }}
+        </td>
+        <td>
+          <NuxtLink :to="{ name: 'clients-id', params: { id: item.id } }">
+            {{ formatName(item) }}
+          </NuxtLink>
+        </td>
+        <td class="text-right text-gray">
+          {{ formatDateTime(item.created_at) }}
+        </td>
+      </tr>
+    </v-infinite-scroll>
+  </v-table>
 </template>
 
 <style lang="scss">
 .clients {
-  background: #fafafa;
+  .v-infinite-scroll {
+    display: table-row-group !important;
+  }
 }
 </style>
