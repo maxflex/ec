@@ -5,9 +5,13 @@ const items = ref<Requests>()
 const paginator = usePaginator()
 // const isLastPage = false
 
-const loadData = async function () {
+async function loadData() {
+  if (paginator.loading) {
+    return
+  }
   paginator.page++
   paginator.loading = true
+  console.log("page", paginator.page)
   const { data } = await useHttp<ApiResponse<Requests>>("requests", {
     params: { page: paginator.page },
   })
@@ -28,19 +32,25 @@ onMounted(async () => {
 
   await loadData()
 })
+
+// оставлю как пример
+// parameter destruction + type declaration
+async function onIntersect({
+  done,
+}: {
+  done: (status: InfiniteScrollStatus) => void
+}) {
+  done("loading")
+  await loadData()
+  done("ok")
+}
 </script>
 <template>
-  <div class="requests">
-    <RequestItem v-for="item in items" :item="item" />
-  </div>
-  <div class="text-center my-12">
-    <v-btn
-      @click="loadData()"
-      :loading="paginator.loading"
-      size="large"
-      elevation="0"
-      >показать ещё</v-btn
-    >
+  <UiLoader :paginator="paginator" />
+  <div v-if="items" class="requests">
+    <v-infinite-scroll :onLoad="onIntersect" :margin="100" color="gray">
+      <RequestItem v-for="item in items" :item="item" :key="item.id" />
+    </v-infinite-scroll>
   </div>
 </template>
 

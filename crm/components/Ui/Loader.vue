@@ -1,0 +1,26 @@
+<script setup lang="ts">
+const { paginator } = defineProps<{
+  paginator: Paginator
+}>()
+</script>
+
+<template>
+  <v-fade-transition>
+    <div class="loader" v-if="paginator.loading && paginator.page < 2">
+      <v-progress-circular :size="50" indeterminate></v-progress-circular>
+    </div>
+  </v-fade-transition>
+</template>
+
+<style lang="scss">
+.loader {
+  position: absolute;
+  background: white;
+  width: calc(100% - var(--v-layout-left));
+  height: 100%;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
