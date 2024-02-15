@@ -40,8 +40,4 @@ class TransferGroups extends Command
         }
         $bar->finish();
     }
-
-    private function mapSubjectId($subjectId)
-    {
-    }
 }
