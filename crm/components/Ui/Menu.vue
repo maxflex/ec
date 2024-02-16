@@ -19,6 +19,11 @@ const menu: Array<{
     title: "Группы",
     to: "/groups",
   },
+  {
+    icon: "mdi-file-document-outline",
+    title: "Договоры",
+    to: "/contracts",
+  },
 ]
 </script>
 

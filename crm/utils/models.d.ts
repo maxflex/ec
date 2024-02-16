@@ -37,6 +37,52 @@ export interface Comment {
 }
 export type Comments = Comment[]
 
+export interface Contract {
+  // columns
+  id: number
+  client_id: number
+  grade: string
+  year: unknown
+  is_ip: boolean
+  // relations
+  client: Client
+}
+export type Contracts = Contract[]
+
+export interface ContractPayment {
+  // columns
+  id: number
+  contract_version_id: number
+  sum: number
+  date: string
+}
+export type ContractPayments = ContractPayment[]
+
+export interface ContractSubject {
+  // columns
+  id: number
+  contract_version_id: number
+  subject: string
+  lessons: boolean
+  lessons_planned: boolean
+  price: unknown
+  is_closed: boolean
+}
+export type ContractSubjects = ContractSubject[]
+
+export interface ContractVersion {
+  // columns
+  id: number
+  user_id: number
+  contract_id: number
+  version: unknown
+  date: string
+  sum: number
+  created_at: string|null
+  updated_at: string|null
+}
+export type ContractVersions = ContractVersion[]
+
 export interface Group {
   // columns
   id: number

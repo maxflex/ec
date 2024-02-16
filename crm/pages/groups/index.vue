@@ -1,46 +1,9 @@
 <script setup lang="ts">
 import type { Groups } from "~/utils/models"
+import { Grade, Subject } from "~/utils/sment"
 
 const items = ref<Groups>()
 const paginator = usePaginator()
-// const isLastPage = false
-
-const Grade: Record<string, string> = {
-  grade1: "1 класс",
-  grade2: "2 класс",
-  grade3: "3 класс",
-  grade4: "4 класс",
-  grade5: "5 класс",
-  grade6: "6 класс",
-  grade7: "7 класс",
-  grade8: "8 класс",
-  grade9: "9 класс",
-  grade10: "10 класс",
-  grade11: "11 класс",
-  students: "студенты",
-  other: "другие",
-  external: "экстернат",
-  school8: "школа 8 класс",
-  school9: "школа 9 класс",
-  school10: "школа 10 класс",
-  online: "онлайн",
-  practicum11: "практикум",
-}
-
-const Subject: Record<string, string> = {
-  math: "математика",
-  phys: "физика",
-  chem: "химимя",
-  bio: "биология",
-  inf: "информатика",
-  rus: "русский язык",
-  lit: "литература",
-  soc: "обществознание",
-  his: "история",
-  eng: "английский язык",
-  geo: "география",
-  soch: "сочинение",
-}
 
 const loadData = async function () {
   paginator.page++

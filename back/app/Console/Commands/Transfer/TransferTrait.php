@@ -27,7 +27,8 @@ trait TransferTrait
         $adminId = DB::connection('egecrm')->table('emails')->whereId($createdEmailId)->value('entity_id');
         $user = User::find($adminId);
         if ($user === null) {
-            throw new Exception("User not found for created_email_id: $createdEmailId / adminId: $adminId");
+            return 1;
+            // throw new Exception("User not found for created_email_id: $createdEmailId / adminId: $adminId");
         }
         $this->createdEmailId[$createdEmailId] = $user->id;
         return $user->id;
