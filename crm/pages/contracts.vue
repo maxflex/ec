@@ -50,7 +50,7 @@ async function onIntersect({
     v-if="items"
   >
     <div v-for="item in items" :key="item.id">
-      <div width="50">
+      <div style="width: 50px">
         {{ item.id }}
       </div>
       <div style="width: 350px">
