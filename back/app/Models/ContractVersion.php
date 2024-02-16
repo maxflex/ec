@@ -2,10 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ContractVersion extends Model
 {
-    use HasFactory;
+    public function subjects()
+    {
+        return $this->hasMany(ContractSubject::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(ContractPayment::class);
+    }
 }

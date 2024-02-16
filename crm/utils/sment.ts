@@ -34,3 +34,18 @@ export const Subject: Record<string, string> = {
   geo: "география",
   soch: "сочинение",
 }
+
+export const SubjectShort: Record<string, string> = {
+  math: "МАТ",
+  phys: "ФИЗ",
+  chem: "ХИМ",
+  bio: "БИО",
+  inf: "ИНФ",
+  rus: "РУС",
+  lit: "ЛИТ",
+  soc: "ОБЩ",
+  his: "ИСТ",
+  eng: "АНГ",
+  geo: "ГЕО",
+  soch: "СОЧ",
+}

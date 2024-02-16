@@ -10,4 +10,9 @@ class Contract extends Model
     {
         return $this->belongsTo(Client::class);
     }
+
+    public function versions()
+    {
+        return $this->hasMany(ContractVersion::class);
+    }
 }

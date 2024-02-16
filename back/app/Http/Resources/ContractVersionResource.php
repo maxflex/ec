@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ClientResource extends JsonResource
+class ContractVersionResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,7 +15,8 @@ class ClientResource extends JsonResource
     public function toArray(Request $request): array
     {
         return array_merge(parent::toArray($request), [
-            'contracts' => ContractResource::collection($this->contracts()->orderBy('id', 'desc')->get())
+            'subjects' => $this->subjects,
+            'payments' => $this->payments,
         ]);
     }
 }

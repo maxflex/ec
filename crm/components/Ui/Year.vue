@@ -4,4 +4,4 @@ const { year } = defineProps<{
 }>()
 </script>
 
-<template>{{ year }} – {{ year + 1 }} уч. г.</template>
+<template>{{ year }}–{{ year + 1 }} уч. г.</template>

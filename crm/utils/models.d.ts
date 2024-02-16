@@ -21,6 +21,7 @@ export interface Client {
   created_at: string|null
   updated_at: string|null
   // relations
+  contracts: Contracts
   phones: Phones
 }
 export type Clients = Client[]
@@ -46,6 +47,7 @@ export interface Contract {
   is_ip: boolean
   // relations
   client: Client
+  versions: ContractVersions
 }
 export type Contracts = Contract[]
 
@@ -80,6 +82,9 @@ export interface ContractVersion {
   sum: number
   created_at: string|null
   updated_at: string|null
+  // relations
+  subjects: ContractSubjects
+  payments: ContractPayments
 }
 export type ContractVersions = ContractVersion[]
 
