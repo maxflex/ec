@@ -43,7 +43,7 @@ export interface Contract {
   id: number
   client_id: number
   year: Year
-  company: string
+  company: CompanyType
   // relations
   client: Client
   versions: ContractVersions
@@ -167,6 +167,13 @@ export interface User {
   updated_at: string|null
 }
 export type Users = User[]
+
+const CompanyType = {
+  ip: 'ip',
+  ooo: 'ooo',
+} as const;
+
+export type CompanyType = typeof CompanyType[keyof typeof CompanyType]
 
 const Program = {
   math9: 'math9',

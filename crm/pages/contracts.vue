@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Contracts } from "~/utils/models"
+import { COMPANY_TYPE } from "~/utils/sment"
 
 const items = ref<Contracts>()
 const paginator = usePaginator()
@@ -61,7 +62,7 @@ async function onIntersect({
         {{ formatYear(item.year) }}
       </div>
       <div>
-        {{ item.company === "ip" ? "ИП" : "ООО" }}
+        {{ COMPANY_TYPE[item.company] }}
       </div>
     </div>
   </v-infinite-scroll>

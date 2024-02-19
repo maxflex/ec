@@ -79,3 +79,34 @@ a:not(.v-list-item) {
     }
   }
 }
+
+.dialog-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  height: 0;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  background: red;
+  & > .v-btn {
+    margin-top: 11px;
+    margin-right: 30px;
+    background: transparent;
+  }
+  &:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 70px;
+    width: 100%;
+    // background: #f2f4f8;
+    background: white;
+    box-shadow: 0 0 10px 10px white;
+  }
+}
+
+.no-pointer-events {
+  pointer-events: none;
+}

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Contract, ContractVersion } from "~/utils/models"
-import { YEARS } from "~/utils/sment"
+import type { CompanyType, Contract, ContractVersion } from "~/utils/models"
+import { YEARS, COMPANY_TYPE } from "~/utils/sment"
 
 const dialog = ref(false)
 const contract = ref<Contract>()
@@ -42,6 +42,17 @@ defineExpose({ open })
         "
         v-model="contract.year"
       />
+      <v-select
+        label="Компания"
+        :items="
+          Object.keys(COMPANY_TYPE).map((value) => ({
+            value,
+            title: COMPANY_TYPE[value as CompanyType],
+          }))
+        "
+        v-model="contract.company"
+      />
+      <UiDateInput v-model="version.date" />
     </div>
   </v-dialog>
 </template>
