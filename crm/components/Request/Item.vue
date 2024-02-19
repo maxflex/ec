@@ -36,9 +36,12 @@ const { item } = defineProps<{
             <a :href="`tel:${phone.number}`">
               {{ formatPhone(phone) }}
             </a>
-            <v-icon :size="16" color="primary" v-if="phone.is_verified">
-              mdi-check-decagram
-            </v-icon>
+            <v-icon
+              :size="16"
+              color="primary"
+              v-if="phone.is_verified"
+              icon="$verified"
+            />
           </td>
           <td>
             {{ phone.comment }}

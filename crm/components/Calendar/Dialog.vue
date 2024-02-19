@@ -65,7 +65,7 @@ defineExpose({ open })
     <v-card class="calendar-card">
       <div class="calendar__header">
         <v-btn icon @click="dialog = false" variant="flat" :size="48">
-          <v-icon>mdi-close</v-icon>
+          <v-icon icon="$close"></v-icon>
         </v-btn>
       </div>
       <div class="calendar__year" v-for="year in YEARS.toReversed()">
