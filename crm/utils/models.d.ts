@@ -42,7 +42,7 @@ export interface Contract {
   // columns
   id: number
   client_id: number
-  year: unknown
+  year: Year
   company: string
   // relations
   client: Client

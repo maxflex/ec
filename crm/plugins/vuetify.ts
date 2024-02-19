@@ -36,6 +36,9 @@ export default defineNuxtPlugin((nuxtApp) => {
       VTextField: {
         variant: "outlined",
       },
+      VSelect: {
+        variant: "outlined",
+      },
       VBtn: {
         variant: "flat",
         size: "x-large",

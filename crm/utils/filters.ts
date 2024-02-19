@@ -22,6 +22,10 @@ export function formatPhone({ number }: Phone): string {
   ].join("")
 }
 
+export function formatYear(year: Year): string {
+  return `${year}-${year + 1} уч. г.`
+}
+
 export function formatName(person: Person) {
   return [person.last_name, person.first_name].join(" ")
 }

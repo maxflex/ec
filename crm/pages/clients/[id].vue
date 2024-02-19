@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ContractDialog } from "#build/components"
-import type { Client, ContractVersion } from "~/utils/models"
+import type { Client, Contract, ContractVersion } from "~/utils/models"
 
 const route = useRoute()
 const client = ref<Client>()
@@ -11,9 +11,9 @@ async function loadData() {
   client.value = data.value as Client
 }
 
-function onOpen(version: ContractVersion) {
-  console.log("open", version)
-  contractDialog.value?.open(version)
+function onOpen(c: Contract, v: ContractVersion) {
+  console.log("open", c, v)
+  contractDialog.value?.open(c, v)
 }
 
 onMounted(async () => {
@@ -41,12 +41,12 @@ onMounted(async () => {
       v-for="contract in client.contracts"
       :key="contract.id"
     >
-      <h3>Договор №{{ contract.id }} на <UiYear :year="contract.year" /></h3>
-      <ContractVersions :versions="contract.versions" @open="onOpen" />
+      <h3>Договор №{{ contract.id }} на {{ formatYear(contract.year) }}</h3>
+      <ContractVersions :contract="contract" @open="onOpen" />
     </div>
     <ContractDialog ref="contractDialog" />
     <div>
-      <v-btn color="secondary">Сохранить</v-btn>
+      <v-btn color="secondary">Добавить договор</v-btn>
     </div>
   </div>
 </template>
@@ -63,47 +63,7 @@ onMounted(async () => {
     }
   }
   &-contracts {
-    margin-top: 100px;
-    table {
-      table-layout: fixed;
-      border-collapse: collapse;
-      border-spacing: 0;
-      // width: 100%;
-      left: -20px;
-      position: relative;
-      width: calc(100% + 40px);
-      tr {
-        td {
-          border-bottom: thin solid
-            rgba(var(--v-border-color), var(--v-border-opacity));
-          padding: 16px 16px;
-          &:first-child {
-            padding-left: 20px;
-          }
-          &:last-child {
-            padding-right: 20px;
-            position: relative;
-            button {
-              position: absolute;
-              right: 20px;
-              top: 4px;
-            }
-          }
-        }
-      }
-    }
-    &__subjects {
-      display: flex;
-      gap: 10px;
-      max-width: 322px;
-      & > div {
-        display: flex;
-        gap: 4px;
-      }
-      // overflow: hidden;
-      // white-space: nowrap;
-      // text-overflow: ellipsis;
-    }
+    margin-top: 50px !important;
   }
 }
 </style>

@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import type { ContractVersion, ContractVersions } from "~/utils/models"
+import type { Contract, ContractVersion } from "~/utils/models"
 import { PROGRAM } from "~/utils/sment"
 
 const emit = defineEmits<{
-  (e: "open", val: ContractVersion): void
+  (e: "open", contract: Contract, version: ContractVersion): void
 }>()
 
-const { versions } = defineProps<{
-  versions: ContractVersions
+const { contract } = defineProps<{
+  contract: Contract
 }>()
 </script>
 
 <template>
-  <table>
-    <tr v-for="version in versions">
+  <table class="contract-versions">
+    <tr v-for="version in contract.versions">
       <td width="150">версия {{ version.version }}</td>
       <td width="220">от {{ formatDate(version.date) }}</td>
       <td width="220">{{ version.sum }} руб.</td>
@@ -24,7 +24,7 @@ const { versions } = defineProps<{
         <template v-else> {{ version.payments.length }} платежей </template>
       </td>
       <td>
-        <div class="client-contracts__subjects text-truncate">
+        <div class="contract-versions__programs text-truncate">
           <div v-for="p in version.programs" :key="p.id">
             <span :class="{ 'text-error': p.is_closed }">
               {{ PROGRAM[p.program] }}
@@ -36,10 +36,52 @@ const { versions } = defineProps<{
         </div>
       </td>
       <td width="50" class="text-right">
-        <v-btn icon :size="48" @click="emit('open', version)">
+        <v-btn icon :size="48" @click="emit('open', contract, version)">
           <v-icon> mdi-dots-horizontal </v-icon>
         </v-btn>
       </td>
     </tr>
   </table>
 </template>
+
+<style lang="scss">
+.contract-versions {
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 0;
+  // width: 100%;
+  left: -20px;
+  position: relative;
+  width: calc(100% + 40px);
+  tr {
+    vertical-align: top;
+    td {
+      border-bottom: thin solid
+        rgba(var(--v-border-color), var(--v-border-opacity));
+      padding: 16px 16px;
+      &:first-child {
+        padding-left: 20px;
+      }
+      &:last-child {
+        padding-right: 20px;
+        position: relative;
+        button {
+          position: absolute;
+          right: 20px;
+          top: 4px;
+        }
+      }
+    }
+  }
+  &__programs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 322px;
+    & > div {
+      display: flex;
+      gap: 4px;
+    }
+  }
+}
+</style>

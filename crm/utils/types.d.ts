@@ -1,3 +1,5 @@
+import { YEARS } from "./sment"
+
 declare global {
   interface Meta {
     current_page: number
@@ -30,6 +32,9 @@ declare global {
     side: InfiniteScrollSide
     status: InfiniteScrollStatus
   }
+
+  // https://stackoverflow.com/a/45486495/2274406
+  type Year = (typeof YEARS)[number]
 }
 
 export {}

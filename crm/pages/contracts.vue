@@ -58,7 +58,7 @@ async function onIntersect({
         </NuxtLink>
       </div>
       <div style="width: 300px">
-        <UiYear :year="item.year" />
+        {{ formatYear(item.year) }}
       </div>
       <div>
         {{ item.company === "ip" ? "ИП" : "ООО" }}
