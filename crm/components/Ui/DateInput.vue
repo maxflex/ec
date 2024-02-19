@@ -8,7 +8,11 @@ const calendarDialog = ref()
 
 <template>
   <div class="date-input" @click="() => calendarDialog.open()">
-    <v-text-field label="Дата" :model-value="formatDate(modelValue)" />
+    <v-text-field
+      label="Дата"
+      :model-value="formatDate(modelValue)"
+      hide-details
+    />
   </div>
   <CalendarDialog
     @update:model-value="(v) => emit('update:modelValue', v)"

@@ -17,6 +17,14 @@ a:not(.v-list-item) {
 }
 
 .table {
+  &-header {
+    font-size: 14px;
+    color: rgb(var(--v-theme-gray));
+    height: 57px;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    align-items: center;
+  }
   & > .v-infinite-scroll__side:first-child {
     display: none;
   }
@@ -46,64 +54,61 @@ a:not(.v-list-item) {
   }
 }
 
-.dialog-right {
+.dialog {
+  $paddingX: 26px;
   right: 0;
   left: auto !important;
   transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
   background: white;
-  padding: 36px 26px 0 !important;
   box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14),
     0 1px 5px 0 rgba(0, 0, 0, 0.12);
-  justify-content: space-between;
+  &-content {
+    height: 100vh;
+    overflow-y: scroll;
+  }
+  &-body {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding: 0 $paddingX;
+  }
+  &-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fafafa;
+    position: sticky;
+    top: 0;
+    padding: 0 9px 0 $paddingX;
+    height: 60px;
+    margin-bottom: 40px;
+    z-index: 1;
+    font-weight: bold;
+    border-bottom: thin solid
+      rgba(var(--v-border-color), var(--v-border-opacity));
+  }
+  &-section {
+    font-weight: bold;
+  }
   &-transition {
     &-enter-from,
     &-leave-to {
       transform: translateX(100%) !important;
     }
   }
-  form {
-    height: 100%;
-    justify-content: space-between;
-    .content {
-      & > div:not(:last-child) {
-        margin-bottom: 30px;
-      }
-      padding-bottom: 50px;
+  .table {
+    left: #{-$paddingX};
+    position: relative;
+    width: calc(100% + #{$paddingX * 2});
+    & > div {
+      padding-left: $paddingX !important;
+      position: relative;
     }
-    .actions {
-      position: sticky;
-      bottom: 0;
-      background: white;
-      box-shadow: 0 0 10px 10px white;
-      padding: 10px 0 26px;
+    &-actions {
+      position: absolute;
+      right: 9px;
+      top: 5px;
     }
-  }
-}
-
-.dialog-header {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  height: 0;
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-  background: red;
-  & > .v-btn {
-    margin-top: 11px;
-    margin-right: 30px;
-    background: transparent;
-  }
-  &:before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 70px;
-    width: 100%;
-    // background: #f2f4f8;
-    background: white;
-    box-shadow: 0 0 10px 10px white;
   }
 }
 

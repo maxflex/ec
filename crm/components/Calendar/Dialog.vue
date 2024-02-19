@@ -63,9 +63,9 @@ defineExpose({ open })
     fullscreen
   >
     <v-card class="calendar-card">
-      <div class="dialog-header">
+      <div class="calendar__header">
         <v-btn icon @click="dialog = false" variant="flat" :size="48">
-          <v-icon :size="30">mdi-close</v-icon>
+          <v-icon>mdi-close</v-icon>
         </v-btn>
       </div>
       <div class="calendar__year" v-for="year in YEARS.toReversed()">
@@ -165,6 +165,31 @@ defineExpose({ open })
       margin-left: 10px;
       display: inline;
       color: black;
+    }
+  }
+  &__header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    height: 0;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    & > .v-btn {
+      margin-top: 11px;
+      margin-right: 30px;
+      background: transparent;
+    }
+    &:before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 70px;
+      width: 100%;
+      // background: #f2f4f8;
+      background: white;
+      box-shadow: 0 0 10px 10px white;
     }
   }
 }
