@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Group extends Model
 {
+    public $interfaces = [
+        'zoom' => ['type' => 'Zoom']
+    ];
+
     protected $casts = [
         'program' => Program::class,
         'zoom' => 'array'

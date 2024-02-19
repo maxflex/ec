@@ -26,15 +26,19 @@ onMounted(async () => {
   <div class="client" v-if="client">
     <div>
       <h3>Ученик</h3>
-      <v-text-field v-model="client.last_name" label="Фамилия" />
-      <v-text-field v-model="client.first_name" label="Имя" />
-      <v-text-field v-model="client.middle_name" label="Отчество" />
+      <div class="inputs">
+        <v-text-field v-model="client.last_name" label="Фамилия" />
+        <v-text-field v-model="client.first_name" label="Имя" />
+        <v-text-field v-model="client.middle_name" label="Отчество" />
+      </div>
     </div>
     <div>
       <h3>Представитель</h3>
-      <v-text-field v-model="client.parent_last_name" label="Фамилия" />
-      <v-text-field v-model="client.parent_first_name" label="Имя" />
-      <v-text-field v-model="client.parent_middle_name" label="Отчество" />
+      <div class="inputs">
+        <v-text-field v-model="client.parent_last_name" label="Фамилия" />
+        <v-text-field v-model="client.parent_first_name" label="Имя" />
+        <v-text-field v-model="client.parent_middle_name" label="Отчество" />
+      </div>
     </div>
     <div
       class="client-contracts"
@@ -42,7 +46,7 @@ onMounted(async () => {
       :key="contract.id"
     >
       <h3>Договор №{{ contract.id }} на {{ formatYear(contract.year) }}</h3>
-      <ContractVersions :contract="contract" @open="onOpen" />
+      <ContractList :contract="contract" @open="onOpen" />
     </div>
     <ContractDialog ref="contractDialog" />
     <div>

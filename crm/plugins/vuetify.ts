@@ -1,5 +1,6 @@
 import { createVuetify } from "vuetify"
-import { aliases, md } from "vuetify/iconsets/md"
+import { aliases, mdi } from "vuetify/iconsets/mdi-svg"
+import { mdiDotsHorizontal, mdiCheckUnderline, mdiChevronDown } from "@mdi/js"
 import type { ThemeDefinition } from "vuetify"
 
 const myTheme: ThemeDefinition = {
@@ -32,12 +33,26 @@ const myTheme: ThemeDefinition = {
 
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
+    icons: {
+      defaultSet: "mdi",
+      aliases: {
+        ...aliases,
+        more: mdiDotsHorizontal,
+        save: mdiCheckUnderline,
+        dropdown: mdiChevronDown,
+      },
+      sets: {
+        mdi,
+      },
+    },
     defaults: {
       VTextField: {
         variant: "outlined",
+        hideDetails: true,
       },
       VSelect: {
         variant: "outlined",
+        hideDetails: true,
       },
       VBtn: {
         variant: "flat",

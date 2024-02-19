@@ -1,26 +1,33 @@
 <script setup lang="ts">
+import {
+  mdiInbox,
+  mdiAccount,
+  mdiAccountGroup,
+  mdiFileDocumentOutline,
+} from "@mdi/js"
+
 const menu: Array<{
   to: string
   title: string
   icon: string
 }> = [
   {
-    icon: "mdi-inbox",
+    icon: mdiInbox,
     title: "Заявки",
     to: "/requests",
   },
   {
-    icon: "mdi-account",
+    icon: mdiAccount,
     title: "Клиенты",
     to: "/clients",
   },
   {
-    icon: "mdi-account-group",
+    icon: mdiAccountGroup,
     title: "Группы",
     to: "/groups",
   },
   {
-    icon: "mdi-file-document-outline",
+    icon: mdiFileDocumentOutline,
     title: "Договоры",
     to: "/contracts",
   },

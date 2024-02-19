@@ -17,12 +17,11 @@ a:not(.v-list-item) {
 }
 
 .table {
+  --height: 57px;
   &-header {
     font-size: 14px;
     color: rgb(var(--v-theme-gray));
-    height: 57px;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
+    height: var(--height);
     align-items: center;
   }
   & > .v-infinite-scroll__side:first-child {
@@ -31,26 +30,45 @@ a:not(.v-list-item) {
   & > div:not(.v-infinite-scroll__side) {
     border-bottom: thin solid
       rgba(var(--v-border-color), var(--v-border-opacity));
-    padding: 16px 16px;
+    padding: 0 16px;
+    min-height: var(--height);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    & > div:last-child {
+      flex: 1;
+    }
   }
-  &:not(.table--two-lines) {
+  &--hoverable {
     & > div {
-      display: flex;
-      gap: 20px;
-      & > div:last-child {
-        flex: 1;
+      transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      &:hover {
+        background: rgba(var(--v-border-color), var(--v-hover-opacity));
       }
     }
   }
-  &--two-lines {
-    & > div {
-      & > div {
-        display: flex;
-        &:not(:first-child) {
-          margin-top: 30px;
-        }
-      }
-    }
+}
+
+.cursor {
+  &-pointer {
+    cursor: pointer;
+  }
+}
+
+.link-icon {
+  --gap: 1px;
+  display: inline-flex;
+  cursor: pointer;
+  align-items: center;
+  gap: var(--gap);
+  transition: gap linear 0.1s;
+  .v-icon {
+    top: 1px;
+    position: relative;
+  }
+  &:hover {
+    gap: calc(var(--gap) + 1px);
   }
 }
 
@@ -69,7 +87,7 @@ a:not(.v-list-item) {
   &-body {
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: 30px;
     padding: 0 $paddingX;
   }
   &-header {
@@ -80,7 +98,7 @@ a:not(.v-list-item) {
     position: sticky;
     top: 0;
     padding: 0 9px 0 $paddingX;
-    height: 60px;
+    height: 64px;
     margin-bottom: 40px;
     z-index: 1;
     font-weight: bold;
@@ -110,8 +128,29 @@ a:not(.v-list-item) {
       top: 5px;
     }
   }
+  &--second-layer {
+    .dialog {
+      right: 240px;
+      pointer-events: none;
+    }
+  }
+}
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
 .no-pointer-events {
   pointer-events: none;
+}
+
+.double-input {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  & > div {
+    flex: 1;
+  }
 }

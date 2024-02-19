@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import type { ProgramDialog } from "#build/components"
 import type { CompanyType, Contract, ContractVersion } from "~/utils/models"
-import { PROGRAM, YEARS, COMPANY_TYPE } from "~/utils/sment"
+import { PROGRAM, YEARS, COMPANY_TYPE, type Programs } from "~/utils/sment"
+import { uniqueId } from "lodash"
 
 const dialog = ref(false)
 const contract = ref<Contract>()
 const version = ref<ContractVersion>()
+const programDialog = ref<null | InstanceType<typeof ProgramDialog>>()
 
 function open(c: Contract, v: ContractVersion) {
   contract.value = { ...c }
@@ -12,8 +15,33 @@ function open(c: Contract, v: ContractVersion) {
   dialog.value = true
 }
 
-function addProgram() {
-  console.log("add")
+function onProgramsSaved(programs: Programs) {
+  // typescript угомонить
+  if (!contract.value || !version.value) {
+    return
+  }
+  for (const program of programs) {
+    const index = version.value?.programs.findIndex(
+      (e) => e.program === program,
+    )
+    if (index === -1) {
+      version.value.programs.push({
+        id: parseInt(uniqueId()) * -1,
+        program,
+        contract_version_id: contract.value?.id as number,
+        price: 0,
+        lessons: 0,
+        lessons_planned: 0,
+        is_closed: false,
+      })
+    }
+  }
+  for (const cp of version.value.programs) {
+    const index = programs.findIndex((p) => p === cp.program)
+    if (index === -1) {
+      version.value?.programs.splice(index, 1)
+    }
+  }
 }
 
 defineExpose({ open })
@@ -31,75 +59,94 @@ defineExpose({ open })
       <div class="dialog-header">
         <span> Редактирование договора </span>
         <v-btn icon :size="48" @click="dialog = false" color="#fafafa">
-          <v-icon>mdi-close</v-icon>
+          <v-icon icon="$save"></v-icon>
         </v-btn>
       </div>
       <div class="dialog-body" v-if="contract && version">
-        <v-select
-          label="Учебный год"
-          :items="
-            YEARS.map((value) => ({
-              value,
-              title: formatYear(value),
-            }))
-          "
-          v-model="contract.year"
-          hide-details
-        />
-        <v-select
-          label="Компания"
-          :items="
+        <div class="double-input">
+          <v-select
+            label="Учебный год"
+            :items="
+              YEARS.map((value) => ({
+                value,
+                title: formatYear(value),
+              }))
+            "
+            v-model="contract.year"
+            disabled
+          />
+          <v-select
+            label="Компания"
+            disabled
+            :items="
           Object.keys(COMPANY_TYPE).map((value) => ({
             value,
             title: COMPANY_TYPE[value as CompanyType],
           }))
         "
-          v-model="contract.company"
-          hide-details
-        />
-        <UiDateInput v-model="version.date" />
-        <v-text-field
-          v-model="version.sum"
-          label="Сумма"
-          type="number"
-          hide-spin-buttons
-          hide-details
-        />
+            v-model="contract.company"
+          />
+        </div>
+        <div class="double-input">
+          <v-text-field
+            v-model="version.sum"
+            label="Сумма"
+            type="number"
+            hide-spin-buttons
+          />
+          <UiDateInput v-model="version.date" />
+        </div>
         <!-- <div class="dialog-section">Программы</div> -->
-        <div class="table">
+        <div class="table contract-dialog__programs">
           <div class="table-header">
-            <div style="width: 240px"></div>
+            <div class="flex-1-1"></div>
             <div style="width: 70px">уроков</div>
             <div style="width: 70px">прогр.</div>
-            <div>цена</div>
+            <div style="width: 70px; flex: none">цена</div>
           </div>
           <div v-for="p in version.programs" :key="p.id">
-            <div style="width: 240px">
+            <div class="flex-1-1">
               {{ PROGRAM[p.program] }}
             </div>
             <div style="width: 70px">
-              {{ p.lessons }}
+              <v-text-field
+                v-model="p.lessons"
+                type="number"
+                hide-spin-buttons
+                density="compact"
+                :min="0"
+                :max="99"
+                pattern="[0-9]{2}"
+              />
             </div>
             <div style="width: 70px">
-              {{ p.lessons_planned }}
+              <v-text-field
+                v-model="p.lessons_planned"
+                type="number"
+                hide-spin-buttons
+                density="compact"
+              />
             </div>
-            <div>
-              {{ p.price }}
-            </div>
-            <div class="table-actions">
-              <v-btn icon :size="48">
-                <v-icon>mdi-dots-horizontal</v-icon>
-              </v-btn>
+            <div style="width: 70px; flex: none">
+              <v-text-field
+                v-model="p.price"
+                type="number"
+                hide-spin-buttons
+                density="compact"
+              />
             </div>
           </div>
           <div style="border-bottom: 0">
             <div>
               <a
-                class="cursor-pointer"
-                @click="addProgram()"
-                style="cursor: pointer"
+                class="link-icon"
+                @click="
+                  () =>
+                    programDialog?.open(version?.programs.map((e) => e.program))
+                "
               >
-                добавить программу
+                выбрать программы
+                <v-icon :size="16" icon="$next"></v-icon>
               </a>
             </div>
           </div>
@@ -114,4 +161,18 @@ defineExpose({ open })
       </div>
     </div>
   </v-dialog>
+  <ProgramDialog ref="programDialog" @saved="onProgramsSaved" />
 </template>
+
+<style lang="scss">
+.contract-dialog {
+  &__programs {
+    .v-input {
+      margin-left: -16px;
+    }
+    .v-field__outline {
+      --v-field-border-opacity: 0;
+    }
+  }
+}
+</style>

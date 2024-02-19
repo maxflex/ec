@@ -45,31 +45,27 @@ async function onIntersect({
   <v-infinite-scroll
     :onLoad="onIntersect"
     :margin="100"
-    class="table table--two-lines"
+    class="table table--padding"
     v-if="items"
   >
     <div class="groups__item" v-for="item in items" :key="item.id">
-      <div>
-        <div style="width: 200px">
-          <NuxtLink :to="{ name: 'groups-id', params: { id: item.id } }">
-            Группа {{ item.id }}
-          </NuxtLink>
-        </div>
-        <div style="width: 250px">
-          <a href="#">
-            {{ formatName(item.teacher) }}
-          </a>
-        </div>
-        <div style="width: 350px">
-          {{ PROGRAM[item.program] }}
-        </div>
-        <div>{{ item.lessons_planned }} уроков</div>
+      <div style="width: 200px">
+        <NuxtLink :to="{ name: 'groups-id', params: { id: item.id } }">
+          Группа {{ item.id }}
+        </NuxtLink>
       </div>
-      <div v-if="item.zoom">
-        <div class="text-gray">
-          Идентификатор ZOOM: {{ item.zoom.id }} <br />
-          Пароль ZOOM: {{ item.zoom.password }}
-        </div>
+      <div style="width: 250px">
+        <a href="#">
+          {{ formatName(item.teacher) }}
+        </a>
+      </div>
+      <div style="width: 350px">
+        {{ PROGRAM[item.program] }}
+      </div>
+      <div>{{ item.lessons_planned }} уроков</div>
+      <div class="text-gray" style="flex: none; width: 80vw" v-if="item.zoom">
+        Идентификатор ZOOM: {{ item.zoom.id }} <br />
+        Пароль ZOOM: {{ item.zoom.password }}
       </div>
     </div>
   </v-infinite-scroll>
@@ -77,5 +73,8 @@ async function onIntersect({
 
 <style lang="scss">
 .groups {
+  &__item {
+    padding: 16px !important;
+  }
 }
 </style>

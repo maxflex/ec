@@ -12,7 +12,7 @@ const { contract } = defineProps<{
 </script>
 
 <template>
-  <table class="contract-versions">
+  <table class="contract-list">
     <tr v-for="version in contract.versions">
       <td width="150">версия {{ version.version }}</td>
       <td width="220">от {{ formatDate(version.date) }}</td>
@@ -24,8 +24,14 @@ const { contract } = defineProps<{
         <template v-else> {{ version.payments.length }} платежей </template>
       </td>
       <td>
-        <div class="contract-versions__programs text-truncate">
-          <div v-for="p in version.programs" :key="p.id">
+        <div class="contract-list__programs">
+          <div
+            v-for="p in version.programs.slice(
+              0,
+              version.programs.length > 3 ? 2 : 3,
+            )"
+            :key="p.id"
+          >
             <span :class="{ 'text-error': p.is_closed }">
               {{ PROGRAM[p.program] }}
             </span>
@@ -33,11 +39,14 @@ const { contract } = defineProps<{
               {{ p.lessons }}
             </span>
           </div>
+          <div v-if="version.programs.length > 3" class="text-gray">
+            ... ещё {{ version.programs.length - 2 }}
+          </div>
         </div>
       </td>
       <td width="50" class="text-right">
         <v-btn icon :size="48" @click="emit('open', contract, version)">
-          <v-icon> mdi-dots-horizontal </v-icon>
+          <v-icon icon="$more"></v-icon>
         </v-btn>
       </td>
     </tr>
@@ -45,7 +54,7 @@ const { contract } = defineProps<{
 </template>
 
 <style lang="scss">
-.contract-versions {
+.contract-list {
   table-layout: fixed;
   border-collapse: collapse;
   border-spacing: 0;

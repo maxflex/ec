@@ -1,4 +1,4 @@
-import type { CompanyType } from "./models"
+import type { CompanyType, Program } from "./models"
 
 export const GRADE: Record<string, string> = {
   grade1: "1 класс",
@@ -52,7 +52,7 @@ export const SUBJECT_SHORT: Record<string, string> = {
   soch: "СОЧ",
 }
 
-export const PROGRAM: Record<string, string> = {
+export const PROGRAM: Record<Program, string> = {
   math9: "математика 9 класс",
   phys9: "физика 9 класс",
   chem9: "химия 9 класс",
@@ -170,3 +170,5 @@ export const COMPANY_TYPE: Record<CompanyType, string> = {
   ip: "ИП",
   ooo: "ООО",
 }
+
+export type Programs = Program[]

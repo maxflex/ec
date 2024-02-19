@@ -35,6 +35,11 @@ declare global {
 
   // https://stackoverflow.com/a/45486495/2274406
   type Year = (typeof YEARS)[number]
+
+  interface Zoom {
+    id: string
+    password: string
+  }
 }
 
 export {}
