@@ -15,7 +15,7 @@ class ClientResource extends JsonResource
     public function toArray(Request $request): array
     {
         return array_merge(parent::toArray($request), [
-            'contracts' => ContractResource::collection($this->contracts()->orderBy('id', 'desc')->get())
+            'contracts' => ContractResource::collection($this->contracts)
         ]);
     }
 }

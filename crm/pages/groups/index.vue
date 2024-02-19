@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Groups } from "~/utils/models"
-import { Grade, Subject } from "~/utils/sment"
+import { PROGRAM } from "~/utils/sment"
 
 const items = ref<Groups>()
 const paginator = usePaginator()
@@ -60,11 +60,8 @@ async function onIntersect({
             {{ formatName(item.teacher) }}
           </a>
         </div>
-        <div style="width: 200px">
-          {{ Grade[item.grade] }}
-        </div>
-        <div style="width: 200px">
-          {{ Subject[item.subject] }}
+        <div style="width: 350px">
+          {{ PROGRAM[item.program] }}
         </div>
         <div>{{ item.lessons_planned }} уроков</div>
       </div>

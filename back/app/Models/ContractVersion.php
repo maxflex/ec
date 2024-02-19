@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class ContractVersion extends Model
 {
-    public function subjects()
+    public function programs()
     {
-        return $this->hasMany(ContractSubject::class);
+        return $this->hasMany(ContractProgram::class);
     }
 
     public function payments()

@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Transfer;
 
 use App\Enums\Grade;
+use App\Enums\Program;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
 
@@ -22,16 +23,7 @@ class TransferRequests extends Command
             ->table('requests')
             ->orderBy('id', 'desc')
             ->get();
-        // $this->phones = DB::connection('egecrm')
-        //     ->table('phones')
-        //     ->whereIn('entity_type', [
-        //         ET_CLIENT,
-        //         ET_PARENT,
-        //         ET_REQUEST
-        //     ])
-        //     ->get();
-        // $this->phones = key_by($this->phones, 'entity_type', 'entity_id', 'phone');
-        // $bar = $this->output->createProgressBar($requests->count());
+        $bar = $this->output->createProgressBar($requests->count());
         foreach ($requests as $r) {
             // $this->getClientId($r);
             DB::table('requests')->insert([
@@ -39,7 +31,8 @@ class TransferRequests extends Command
                 // 'client_id' => $this->getClientId($r),
                 'responsible_user_id' => $r->responsible_admin_id,
                 'status' => $r->status,
-                'grade' => $r->grade_id ? Grade::getById($r->grade_id)->name : null,
+                // 'grade' => $r->grade_id ? Grade::getById($r->grade_id)->name : null,
+                'program' => optional($this->getProgram($r))->name,
                 'google_id' => $r->google_id,
                 'yandex_id' => $r->yandex_id,
                 'ip' => $r->ip,
@@ -50,9 +43,9 @@ class TransferRequests extends Command
                 'updated_at' => $r->updated_at === '0000-00-00 00:00:00'
                     ? '1999-01-01 00:00:00' : $r->updated_at,
             ]);
-            // $bar->advance();
+            $bar->advance();
         }
-        // $bar->finish();
+        $bar->finish();
     }
 
     private function getClientId($r)
@@ -72,5 +65,38 @@ class TransferRequests extends Command
             dump($candidates);
         }
         $this->line(PHP_EOL);
+    }
+
+    private function getProgram($r): Program | null
+    {
+        // экстернат
+        if ($r->grade_id === 14) {
+            return Program::mathExt;
+        }
+        // студенты, остальные, онлайн или классы 1-7
+        if (in_array($r->grade_id, [12, 13, 18]) || $r->grade_id < 8) {
+            return null;
+        }
+        if ($r->comment === 'Старшая школа' || in_array($r->grade_id, [8, 15, 16, 17])) {
+            return match ($r->grade_id) {
+                8, 15 => Program::mathSchool8,
+                9, 16 => Program::mathSchool9,
+                10, 17 => Program::mathSchool10,
+                default => Program::mathSchool9
+            };
+        }
+        if (!$r->grade_id) {
+            return null;
+        }
+        if (!$r->subjects) {
+            return match ($r->grade_id) {
+                9 => Program::math9,
+                10 => Program::math10,
+                11 => Program::math11, // 12 – студенты, 13 - остальные быввает и такое
+            };
+        }
+        $subjects = explode(',', $r->subjects);
+        $subjectId = intval($subjects[0]);
+        return Program::getById($r->grade_id, $subjectId);
     }
 }

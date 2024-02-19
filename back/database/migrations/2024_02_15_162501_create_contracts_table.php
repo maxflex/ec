@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\CompanyType;
 use App\Enums\Grade;
 use App\Models\Client;
 use Illuminate\Database\Migrations\Migration;
@@ -16,12 +17,11 @@ return new class extends Migration
         Schema::create('contracts', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Client::class)->constrained();
-            $table->enum(
-                'grade',
-                collect(Grade::cases())->map(fn ($e) => $e->name)->all()
-            );
             $table->unsignedSmallInteger('year');
-            $table->boolean('is_ip');
+            $table->enum(
+                'company',
+                collect(CompanyType::cases())->map(fn ($e) => $e->name)->all()
+            );
         });
     }
 

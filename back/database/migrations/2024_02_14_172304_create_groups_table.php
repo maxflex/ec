@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\Grade;
+use App\Enums\Program;
 use App\Enums\Subject;
 use App\Models\Teacher;
 use Illuminate\Database\Migrations\Migration;
@@ -18,13 +19,17 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Teacher::class)->constrained();
             $table->enum(
-                'subject',
-                collect(Subject::cases())->map(fn ($e) => $e->name)->all()
+                'program',
+                collect(Program::cases())->map(fn ($e) => $e->name)->all()
             )->index();
-            $table->enum(
-                'grade',
-                collect(Grade::cases())->map(fn ($e) => $e->name)->all()
-            )->index();
+            // $table->enum(
+            //     'subject',
+            //     collect(Subject::cases())->map(fn ($e) => $e->name)->all()
+            // )->index();
+            // $table->enum(
+            //     'grade',
+            //     collect(Grade::cases())->map(fn ($e) => $e->name)->all()
+            // )->index();
             $table->unsignedSmallInteger('year');
             $table->boolean('is_archived')->index()->default(false);
             $table->json('zoom')->nullable();

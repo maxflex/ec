@@ -11,6 +11,6 @@ class Client extends Model
 
     public function contracts()
     {
-        return $this->hasMany(Contract::class);
+        return $this->hasMany(Contract::class)->orderBy('id', 'desc');
     }
 }

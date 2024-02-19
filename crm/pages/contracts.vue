@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Contracts } from "~/utils/models"
-import { Grade } from "~/utils/sment"
 
 const items = ref<Contracts>()
 const paginator = usePaginator()
@@ -58,11 +57,11 @@ async function onIntersect({
           {{ formatName(item.client) }}
         </NuxtLink>
       </div>
-      <div style="width: 200px">
+      <div style="width: 300px">
         <UiYear :year="item.year" />
       </div>
       <div>
-        {{ Grade[item.grade] }}
+        {{ item.company === "ip" ? "ИП" : "ООО" }}
       </div>
     </div>
   </v-infinite-scroll>

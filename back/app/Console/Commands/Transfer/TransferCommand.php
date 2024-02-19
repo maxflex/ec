@@ -20,6 +20,7 @@ class TransferCommand extends Command
             'teachers',
             'phones',
             'contracts',
+            'groups',
         ] as $command) {
             $this->info(str($command)->ucfirst());
             $this->call("app:transfer:$command");

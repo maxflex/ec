@@ -1,27 +1,6 @@
 <script setup lang="ts">
 import type { Request } from "~/utils/models"
-
-const Grade: Record<string, string> = {
-  grade1: "1 класс",
-  grade2: "2 класс",
-  grade3: "3 класс",
-  grade4: "4 класс",
-  grade5: "5 класс",
-  grade6: "6 класс",
-  grade7: "7 класс",
-  grade8: "8 класс",
-  grade9: "9 класс",
-  grade10: "10 класс",
-  grade11: "11 класс",
-  students: "студенты",
-  other: "другие",
-  external: "экстернат",
-  school8: "школа 8 класс",
-  school9: "школа 9 класс",
-  school10: "школа 10 класс",
-  online: "онлайн",
-  practicum11: "практикум",
-}
+import { PROGRAM } from "~/utils/sment"
 
 const { item } = defineProps<{
   item: Request
@@ -36,8 +15,8 @@ const { item } = defineProps<{
           <RequestStatus :status="item.status" />
           Заявка {{ item.id }}
         </div>
-        <div v-if="item.grade">
-          {{ Grade[item.grade] }}
+        <div v-if="item.program">
+          {{ PROGRAM[item.program] }}
         </div>
         <div>
           ответственный

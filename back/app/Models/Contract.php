@@ -13,6 +13,6 @@ class Contract extends Model
 
     public function versions()
     {
-        return $this->hasMany(ContractVersion::class);
+        return $this->hasMany(ContractVersion::class)->orderBy('version', 'desc');
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Transfer;
 
-use App\Enums\{Subject, Grade};
+use App\Enums\Program;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
 
@@ -24,8 +24,7 @@ class TransferGroups extends Command
             DB::table('groups')->insert([
                 'id' => $g->id,
                 'teacher_id' => $g->teacher_id,
-                'subject' => Subject::getById($g->subject_id)->name,
-                'grade' => Grade::getById($g->grade_id)->name,
+                'program' => Program::getById($g->grade_id, $g->subject_id)->name,
                 'year' => $g->year,
                 'is_archived' => $g->is_archived,
                 'lessons_planned' => $g->lessons_planned,

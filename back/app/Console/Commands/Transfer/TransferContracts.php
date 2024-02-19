@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands\Transfer;
 
-use App\Enums\Grade;
-use App\Enums\Subject;
-use App\Models\ContractVersion;
+use App\Enums\CompanyType;
+use App\Enums\Program;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
 
@@ -17,7 +16,7 @@ class TransferContracts extends Command
 
     public function handle()
     {
-        DB::table('contract_subjects')->delete();
+        DB::table('contract_programs')->delete();
         DB::table('contract_payments')->delete();
         DB::table('contract_versions')->delete();
         DB::table('contracts')->delete();
@@ -25,18 +24,26 @@ class TransferContracts extends Command
         $contracts = DB::connection('egecrm')
             ->table('contracts')
             ->get();
+        $allContractVersions = DB::connection('egecrm')
+            ->table('contract_versions')
+            ->get();
         $bar = $this->output->createProgressBar($contracts->count());
         foreach ($contracts as $c) {
             DB::table('contracts')->insert([
                 'id' => $c->id,
                 'client_id' => $c->client_id,
-                'grade' => Grade::getById($c->grade_id)->name,
                 'year' => $c->year,
-                'is_ip' => $c->type === 'ip'
+                'company' => $c->type === 'ip' ? CompanyType::ip->name : CompanyType::ooo->name
             ]);
-            $contractVersions = DB::connection('egecrm')
-                ->table('contract_versions')
-                ->where('contract_id', $c->id)
+            $contractVersions = $allContractVersions->where('contract_id', $c->id);
+            $ids = $contractVersions->pluck('id');
+            $contractSubjects = DB::connection('egecrm')
+                ->table('contract_subjects')
+                ->whereIn('contract_version_id', $ids)
+                ->get();
+            $contractPayments = DB::connection('egecrm')
+                ->table('contract_payments')
+                ->whereIn('contract_version_id', $ids)
                 ->get();
             foreach ($contractVersions as $cv) {
                 $id = DB::table('contract_versions')->insertGetId([
@@ -48,25 +55,17 @@ class TransferContracts extends Command
                     'created_at' => $cv->updated_at,
                     'updated_at' => $cv->updated_at,
                 ]);
-                $contractSubjects = DB::connection('egecrm')
-                    ->table('contract_subjects')
-                    ->where('contract_version_id', $cv->id)
-                    ->get();
-                foreach ($contractSubjects as $cs) {
-                    DB::table('contract_subjects')->insert([
+                foreach ($contractSubjects->where('contract_version_id', $cv->id) as $cs) {
+                    DB::table('contract_programs')->insert([
                         'contract_version_id' => $id,
-                        'subject' => Subject::getById($cs->subject_id)->name,
+                        'program' => Program::getById($c->grade_id, $cs->subject_id)->name,
                         'lessons' => $cs->lessons ?? 0,
                         'lessons_planned' => $cs->lessons_planned ?? 0,
                         'price' => $cs->price ?? 0,
                         'is_closed' => $cs->status === 'terminated',
                     ]);
                 }
-                $contractPayments = DB::connection('egecrm')
-                    ->table('contract_payments')
-                    ->where('contract_version_id', $cv->id)
-                    ->get();
-                foreach ($contractPayments as $cp) {
+                foreach ($contractPayments->where('contract_version_id', $cv->id) as $cp) {
                     DB::table('contract_payments')->insert([
                         'contract_version_id' => $id,
                         'sum' => $cp->sum,
