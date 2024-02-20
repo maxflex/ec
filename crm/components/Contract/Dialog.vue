@@ -220,12 +220,9 @@ defineExpose({ open })
               </div>
             </div>
             <div style="border-bottom: 0">
-              <div>
-                <a class="link-icon" @click="addPayment()">
-                  добавить платеж
-                  <v-icon :size="16" icon="$next"></v-icon>
-                </a>
-              </div>
+              <a class="cursor-pointer" @click="addPayment()">
+                добавить платеж
+              </a>
             </div>
           </div>
         </div>

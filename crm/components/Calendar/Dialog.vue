@@ -56,13 +56,7 @@ defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog
-    v-model="dialog"
-    fullscreen
-    transition="dialog-right-transition"
-    content-class="dialog"
-    :width="width"
-  >
+  <v-dialog v-model="dialog" :width="width">
     <v-card class="calendar-card">
       <div class="calendar__header">
         <!-- <v-btn icon @click="dialog = false" variant="flat" :size="48">
