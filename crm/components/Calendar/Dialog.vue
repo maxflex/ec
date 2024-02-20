@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { YEARS } from "~/utils/sment"
+const { dialog, width } = useDialog(800)
 const props = defineProps<{
   modelValue: string
 }>()
 const emit = defineEmits(["update:modelValue"])
-const dialog = ref(false)
 const monthLabels = [
   "январь",
   "февраль",
@@ -57,16 +57,17 @@ defineExpose({ open })
 
 <template>
   <v-dialog
-    :scrim="false"
     v-model="dialog"
-    transition="dialog-bottom-transition"
     fullscreen
+    transition="dialog-right-transition"
+    content-class="dialog"
+    :width="width"
   >
     <v-card class="calendar-card">
       <div class="calendar__header">
-        <v-btn icon @click="dialog = false" variant="flat" :size="48">
+        <!-- <v-btn icon @click="dialog = false" variant="flat" :size="48">
           <v-icon icon="$close"></v-icon>
-        </v-btn>
+        </v-btn> -->
       </div>
       <div class="calendar__year" v-for="year in YEARS.toReversed()">
         <h2>{{ year }}</h2>
@@ -106,10 +107,10 @@ defineExpose({ open })
 .calendar {
   display: flex;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   margin-top: 40px;
   color: black;
-  gap: 30px 60px;
+  gap: 30px 50px;
   &-card {
     align-items: flex-start;
   }
@@ -157,7 +158,7 @@ defineExpose({ open })
   }
   &__year {
     margin-bottom: 40px;
-    margin-left: 30px;
+    margin-left: 20px;
     & > h2 {
       position: sticky;
       top: 18px;
@@ -186,8 +187,7 @@ defineExpose({ open })
       left: 0;
       top: 0;
       height: 70px;
-      width: 100%;
-      // background: #f2f4f8;
+      width: 106px;
       background: white;
       box-shadow: 0 0 10px 10px white;
     }

@@ -83,14 +83,14 @@ a:not(.v-list-item) {
   cursor: pointer;
   align-items: center;
   gap: var(--gap);
-  transition: gap linear 0.1s;
+  transition: gap 0.2s cubic-bezier(0.2, 0, 0.4, 0.9);
   user-select: none;
   .v-icon {
     top: 1px;
     position: relative;
   }
   &:hover {
-    gap: calc(var(--gap) + 1px);
+    gap: calc(var(--gap) + 2px);
   }
   &:active {
     gap: var(--gap);
@@ -99,6 +99,7 @@ a:not(.v-list-item) {
 
 .dialog {
   $paddingX: 26px;
+  --header-font-size: 1.125rem;
   right: 0;
   left: auto !important;
   transition: all cubic-bezier(0.25, 0.8, 0.25, 1) 0.3s !important;
@@ -129,11 +130,15 @@ a:not(.v-list-item) {
     font-weight: bold;
     border-bottom: thin solid
       rgba(var(--v-border-color), var(--v-border-opacity));
+    & > span {
+      font-size: var(--header-font-size);
+    }
   }
   &-section {
     margin-top: 30px;
     &__title {
       font-weight: bold;
+      font-size: var(--header-font-size);
     }
   }
   &-right-transition {
@@ -154,12 +159,6 @@ a:not(.v-list-item) {
       position: absolute;
       right: 9px;
       top: 5px;
-    }
-  }
-  &--second-layer {
-    .dialog {
-      right: 240px;
-      pointer-events: none;
     }
   }
 }

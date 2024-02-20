@@ -21,21 +21,6 @@ const myTheme: ThemeDefinition = {
     error: "#ef1e25",
     red: "#ef1e25",
   },
-  // colors: {
-  //   background: "#ffffff",
-  //   surface: "#ffffff",
-  //   primary: "#f1e4a5",
-  //   accent: "#f47fcc",
-  //   secondary: "#008ecb",
-  //   error: "#ff7134",
-  //   info: "#2196f3",
-  //   success: "#4caf50",
-  //   warning: "#ff4600",
-  //   orange: "#ff7134",
-  //   grey: "#9e9e9e",
-  //   "grey-light": "#b6b6b6",
-  //   "on-surface": "#414141",
-  // },
 }
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -65,29 +50,15 @@ export default defineNuxtPlugin((nuxtApp) => {
       },
       VBtn: {
         variant: "flat",
-        size: "x-large",
+        size: "large",
+        rounded: "xl",
         // ripple: false,
       },
-      // VSelect: {
-      //   variant: "solo",
-      //   density: "comfortable",
-      //   hideDetails: true,
-      // },
-      // VTextField: {
-      //   variant: "outlined",
-      //   hideDetails: true,
-      // },
-      // VTextarea: {
-      //   variant: "outlined",
-      //   hideDetails: true,
-      // },
-      // VCheckbox: {
-      //   falseIcon: "jo-basic-circle",
-      //   trueIcon: "jo-basic-circle-checked",
-      //   hideDetails: true,
-      //   ripple: false,
-      //   density: "dense",
-      // },
+      VDialog: {
+        fullscreen: true,
+        transition: "dialog-right-transition",
+        contentClass: "dialog",
+      },
     },
     theme: {
       defaultTheme: "myTheme",
@@ -98,3 +69,40 @@ export default defineNuxtPlugin((nuxtApp) => {
   })
   nuxtApp.vueApp.use(vuetify)
 })
+
+// colors: {
+//   background: "#ffffff",
+//   surface: "#ffffff",
+//   primary: "#f1e4a5",
+//   accent: "#f47fcc",
+//   secondary: "#008ecb",
+//   error: "#ff7134",
+//   info: "#2196f3",
+//   success: "#4caf50",
+//   warning: "#ff4600",
+//   orange: "#ff7134",
+//   grey: "#9e9e9e",
+//   "grey-light": "#b6b6b6",
+//   "on-surface": "#414141",
+// },
+
+// VSelect: {
+//   variant: "solo",
+//   density: "comfortable",
+//   hideDetails: true,
+// },
+// VTextField: {
+//   variant: "outlined",
+//   hideDetails: true,
+// },
+// VTextarea: {
+//   variant: "outlined",
+//   hideDetails: true,
+// },
+// VCheckbox: {
+//   falseIcon: "jo-basic-circle",
+//   trueIcon: "jo-basic-circle-checked",
+//   hideDetails: true,
+//   ripple: false,
+//   density: "dense",
+// },

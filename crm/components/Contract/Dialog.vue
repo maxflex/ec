@@ -10,7 +10,7 @@ import type {
 import { PROGRAM, YEARS, COMPANY_TYPE, type Programs } from "~/utils/sment"
 import { uniqueId, cloneDeep } from "lodash"
 
-const dialog = ref(false)
+const { dialog, width } = useDialog(600)
 const contract = ref<Contract>()
 const version = ref<ContractVersion>()
 const programDialog = ref<null | InstanceType<typeof ProgramDialog>>()
@@ -79,14 +79,7 @@ defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog
-    fullscreen
-    v-model="dialog"
-    content-class="dialog"
-    transition="dialog-right-transition"
-    :width="600"
-    opcity="0.8"
-  >
+  <v-dialog v-model="dialog" :width="width">
     <div class="dialog-content">
       <div class="dialog-header">
         <span> Редактирование договора </span>
@@ -198,12 +191,12 @@ defineExpose({ open })
           <div class="dialog-section__title">График платежей</div>
           <div class="table table--actions-on-hover contract-dialog__payments">
             <div class="table-header">
-              <div style="width: 150px">дата</div>
+              <div style="width: 170px">дата</div>
               <div style="width: 100px">сумма</div>
               <div></div>
             </div>
             <div v-for="p in version.payments" :key="p.id">
-              <div style="width: 150px">
+              <div style="width: 170px">
                 {{ formatDate(p.date) }}
               </div>
               <div style="width: 100px">

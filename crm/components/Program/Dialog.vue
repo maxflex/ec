@@ -6,7 +6,7 @@ const emit = defineEmits<{
   (e: "saved", programs: Programs): void
 }>()
 
-const dialog = ref(false)
+const { dialog, width } = useDialog(500)
 const selected = ref<Programs>([])
 
 function open(preSelect: Programs = []) {
@@ -25,27 +25,10 @@ function save() {
 }
 
 defineExpose({ open })
-
-watch(dialog, (val) => {
-  const query = ".v-dialog.v-overlay--active"
-  if (val) {
-    // secondLayer можно определить программно:
-    // if (document.documentElement.classList.classList.contains("overflow-y-hidden"))
-    document.querySelector(query)?.classList.add("dialog--second-layer")
-  } else {
-    document.querySelector(query)?.classList.remove("dialog--second-layer")
-  }
-})
 </script>
 
 <template>
-  <v-dialog
-    fullscreen
-    v-model="dialog"
-    transition="dialog-right-transition"
-    content-class="dialog"
-    :width="500"
-  >
+  <v-dialog v-model="dialog" :width="width">
     <div class="dialog-content">
       <div class="dialog-header mb-0">
         <span>
