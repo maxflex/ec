@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import type { ProgramDialog } from "#build/components"
-import type { CompanyType, Contract, ContractVersion } from "~/utils/models"
+import type {
+  CompanyType,
+  Contract,
+  ContractPayment,
+  ContractProgram,
+  ContractVersion,
+} from "~/utils/models"
 import { PROGRAM, YEARS, COMPANY_TYPE, type Programs } from "~/utils/sment"
-import { uniqueId } from "lodash"
+import { uniqueId, cloneDeep } from "lodash"
 
 const dialog = ref(false)
 const contract = ref<Contract>()
@@ -10,9 +16,13 @@ const version = ref<ContractVersion>()
 const programDialog = ref<null | InstanceType<typeof ProgramDialog>>()
 
 function open(c: Contract, v: ContractVersion) {
-  contract.value = { ...c }
-  version.value = { ...v }
+  contract.value = cloneDeep(c)
+  version.value = cloneDeep(v)
   dialog.value = true
+}
+
+function toggleCloseProgram(p: ContractProgram) {
+  p.is_closed = !p.is_closed
 }
 
 function onProgramsSaved(programs: Programs) {
@@ -44,6 +54,27 @@ function onProgramsSaved(programs: Programs) {
   }
 }
 
+function addPayment() {
+  version.value?.payments.push({
+    id: parseInt(uniqueId()) * -1,
+    date: today(),
+    sum: 0,
+    contract_version_id: version.value.id,
+  })
+  nextTick(() =>
+    document
+      .querySelector(".dialog-content")
+      ?.scrollTo({ top: 9999, behavior: "smooth" }),
+  )
+}
+
+function deletePayment(p: ContractPayment) {
+  version.value?.payments.splice(
+    version.value.payments.findIndex((e) => e.id === p.id),
+    1,
+  )
+}
+
 defineExpose({ open })
 </script>
 
@@ -51,16 +82,20 @@ defineExpose({ open })
   <v-dialog
     fullscreen
     v-model="dialog"
-    transition="dialog-transition"
     content-class="dialog"
+    transition="dialog-right-transition"
     :width="600"
+    opcity="0.8"
   >
     <div class="dialog-content">
       <div class="dialog-header">
         <span> Редактирование договора </span>
-        <v-btn icon :size="48" @click="dialog = false" color="#fafafa">
-          <v-icon icon="$save"></v-icon>
-        </v-btn>
+        <v-btn
+          icon="$save"
+          :size="48"
+          @click="dialog = false"
+          color="#fafafa"
+        />
       </div>
       <div class="dialog-body" v-if="contract && version">
         <div class="double-input">
@@ -96,68 +131,110 @@ defineExpose({ open })
           />
           <UiDateInput v-model="version.date" />
         </div>
-        <!-- <div class="dialog-section">Программы</div> -->
-        <div class="table contract-dialog__programs">
-          <div class="table-header">
-            <div class="flex-1-1"></div>
-            <div style="width: 70px">уроков</div>
-            <div style="width: 70px">прогр.</div>
-            <div style="width: 70px; flex: none">цена</div>
+
+        <div class="dialog-section">
+          <!-- <div class="dialog-section__title">Программы</div> -->
+          <div class="table contract-dialog__programs">
+            <div class="table-header">
+              <div>программа</div>
+              <div style="width: 70px">уроков</div>
+              <div style="width: 70px">прогр.</div>
+              <div style="width: 70px; flex: none">цена</div>
+            </div>
+            <div v-for="p in version.programs" :key="p.id">
+              <div>
+                <span
+                  @click="toggleCloseProgram(p)"
+                  :class="{ 'text-error': p.is_closed }"
+                >
+                  {{ PROGRAM[p.program] }}
+                </span>
+              </div>
+              <div style="width: 70px">
+                <v-text-field
+                  v-model="p.lessons"
+                  type="number"
+                  hide-spin-buttons
+                  density="compact"
+                />
+              </div>
+              <div style="width: 70px">
+                <v-text-field
+                  v-model="p.lessons_planned"
+                  type="number"
+                  hide-spin-buttons
+                  density="compact"
+                />
+              </div>
+              <div style="width: 70px; flex: none">
+                <v-text-field
+                  v-model="p.price"
+                  type="number"
+                  hide-spin-buttons
+                  density="compact"
+                />
+              </div>
+            </div>
+            <div style="border-bottom: 0">
+              <div>
+                <a
+                  class="link-icon"
+                  @click="
+                    () =>
+                      programDialog?.open(
+                        version?.programs.map((e) => e.program),
+                      )
+                  "
+                >
+                  выбрать программы
+                  <v-icon :size="16" icon="$next"></v-icon>
+                </a>
+              </div>
+            </div>
           </div>
-          <div v-for="p in version.programs" :key="p.id">
-            <div class="flex-1-1">
-              {{ PROGRAM[p.program] }}
-            </div>
-            <div style="width: 70px">
-              <v-text-field
-                v-model="p.lessons"
-                type="number"
-                hide-spin-buttons
-                density="compact"
-                :min="0"
-                :max="99"
-                pattern="[0-9]{2}"
-              />
-            </div>
-            <div style="width: 70px">
-              <v-text-field
-                v-model="p.lessons_planned"
-                type="number"
-                hide-spin-buttons
-                density="compact"
-              />
-            </div>
-            <div style="width: 70px; flex: none">
-              <v-text-field
-                v-model="p.price"
-                type="number"
-                hide-spin-buttons
-                density="compact"
-              />
-            </div>
-          </div>
-          <div style="border-bottom: 0">
-            <div>
-              <a
-                class="link-icon"
-                @click="
-                  () =>
-                    programDialog?.open(version?.programs.map((e) => e.program))
-                "
-              >
-                выбрать программы
-                <v-icon :size="16" icon="$next"></v-icon>
-              </a>
-            </div>
-          </div>
-          <!-- <div>
-            <div>
-              <v-btn variant="text"> добавить </v-btn>
-            </div>
-          </div> -->
         </div>
-        <!-- <v-btn color="secondary"> добавить программу </v-btn> -->
-        <!-- <pre>{{ version.programs }}</pre> -->
+
+        <div class="dialog-section">
+          <div class="dialog-section__title">График платежей</div>
+          <div class="table table--actions-on-hover contract-dialog__payments">
+            <div class="table-header">
+              <div style="width: 150px">дата</div>
+              <div style="width: 100px">сумма</div>
+              <div></div>
+            </div>
+            <div v-for="p in version.payments" :key="p.id">
+              <div style="width: 150px">
+                {{ formatDate(p.date) }}
+              </div>
+              <div style="width: 100px">
+                <v-text-field
+                  v-model="p.sum"
+                  type="number"
+                  hide-spin-buttons
+                  density="compact"
+                />
+              </div>
+              <div class="table-actions">
+                <v-btn
+                  icon="$close"
+                  variant="plain"
+                  color="red"
+                  :size="48"
+                  @click="deletePayment(p)"
+                >
+                </v-btn>
+              </div>
+            </div>
+            <div style="border-bottom: 0">
+              <div>
+                <a class="link-icon" @click="addPayment()">
+                  добавить платеж
+                  <v-icon :size="16" icon="$next"></v-icon>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </v-dialog>
@@ -167,11 +244,13 @@ defineExpose({ open })
 <style lang="scss">
 .contract-dialog {
   &__programs {
-    .v-input {
-      margin-left: -16px;
-    }
-    .v-field__outline {
-      --v-field-border-opacity: 0;
+    & > div > div:first-child {
+      flex: 1;
+      span {
+        transition: color ease-in-out 0.15s;
+        cursor: pointer;
+        user-select: none;
+      }
     }
   }
 }

@@ -5,6 +5,7 @@ import {
   mdiCheckUnderline,
   mdiChevronDown,
   mdiCheckDecagram,
+  mdiDelete,
 } from "@mdi/js"
 import type { ThemeDefinition } from "vuetify"
 
@@ -14,10 +15,11 @@ const myTheme: ThemeDefinition = {
     primary: "#337ab7",
     secondary: "#ffc423",
     success: "#4caf50",
-    error: "#c83232",
     accent: "#4346d5",
     grey: "#949db1",
     gray: "#949db1",
+    error: "#ef1e25",
+    red: "#ef1e25",
   },
   // colors: {
   //   background: "#ffffff",
@@ -46,6 +48,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         save: mdiCheckUnderline,
         dropdown: mdiChevronDown,
         verified: mdiCheckDecagram,
+        delete: mdiDelete,
       },
       sets: {
         mdi,

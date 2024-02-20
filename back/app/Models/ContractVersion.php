@@ -8,11 +8,11 @@ class ContractVersion extends Model
 {
     public function programs()
     {
-        return $this->hasMany(ContractProgram::class);
+        return $this->hasMany(ContractProgram::class)->orderBy('is_closed');
     }
 
     public function payments()
     {
-        return $this->hasMany(ContractPayment::class);
+        return $this->hasMany(ContractPayment::class)->orderBy('date');
     }
 }

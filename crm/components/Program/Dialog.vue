@@ -42,7 +42,7 @@ watch(dialog, (val) => {
   <v-dialog
     fullscreen
     v-model="dialog"
-    transition="dialog-transition"
+    transition="dialog-right-transition"
     content-class="dialog"
     :width="500"
   >
@@ -54,9 +54,7 @@ watch(dialog, (val) => {
             {{ selected.length }}
           </span>
         </span>
-        <v-btn icon :size="48" @click="save()" color="#fafafa">
-          <v-icon icon="$save"></v-icon>
-        </v-btn>
+        <v-btn icon="$save" :size="48" @click="save()" color="#fafafa" />
       </div>
       <div class="dialog-body">
         <div class="table table--hoverable">
@@ -64,7 +62,7 @@ watch(dialog, (val) => {
             v-for="(title, p) in PROGRAM"
             :key="p"
             @click="select(p)"
-            class="cursor-pointer"
+            class="cursor-pointer unselectable"
           >
             <v-icon
               v-if="selected.includes(p)"
