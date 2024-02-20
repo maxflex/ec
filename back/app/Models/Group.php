@@ -20,4 +20,9 @@ class Group extends Model
     {
         return $this->belongsTo(Teacher::class);
     }
+
+    public function contracts()
+    {
+        return $this->belongsToMany(Contract::class);
+    }
 }

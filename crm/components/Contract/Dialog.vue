@@ -220,6 +220,7 @@ defineExpose({ open })
                   variant="plain"
                   color="red"
                   :size="48"
+                  :ripple="false"
                   @click="deletePayment(p)"
                 >
                 </v-btn>
