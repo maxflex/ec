@@ -130,7 +130,7 @@ defineExpose({ open })
   grid-template-columns: repeat(3, 1fr);
   margin-top: 40px;
   color: black;
-  gap: 30px 50px;
+  gap: 30px 40px;
   &-card {
     align-items: flex-start;
     height: 100vh;
