@@ -9,18 +9,22 @@ import {
 } from "@mdi/js"
 import type { ThemeDefinition } from "vuetify"
 
+const colors = {
+  primary: "#337ab7",
+  secondary: "#ffd572", // оранжевый приглушённый
+  orange: "#ffc423", // оранжевый
+  deepOrange: "#fe8a1e",
+  accent: "#4346d5",
+  success: "#00A272",
+  grey: "#949db1",
+  gray: "#949db1",
+  error: "#ef1e25",
+  red: "#ef1e25",
+}
+
 const myTheme: ThemeDefinition = {
   dark: false,
-  colors: {
-    primary: "#337ab7",
-    secondary: "#ffc423",
-    success: "#00A272",
-    accent: "#4346d5",
-    grey: "#949db1",
-    gray: "#949db1",
-    error: "#ef1e25",
-    red: "#ef1e25",
-  },
+  colors,
 }
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -58,6 +62,11 @@ export default defineNuxtPlugin((nuxtApp) => {
         fullscreen: true,
         transition: "dialog-right-transition",
         contentClass: "dialog",
+      },
+      VCheckbox: {
+        density: "comfortable",
+        hideDetails: true,
+        // color: colors.deepOrange,
       },
     },
     theme: {

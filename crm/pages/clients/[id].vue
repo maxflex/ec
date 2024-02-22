@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import type { ContractDialog, GroupSelectorDialog } from "#build/components"
+import type {
+  ClientPaymentDialog,
+  ContractDialog,
+  GroupSelectorDialog,
+} from "#build/components"
 import type { Client, Contract, ContractVersion, Group } from "~/utils/models"
 
 const route = useRoute()
 const client = ref<Client>()
+const clientPaymentDialog = ref<null | InstanceType<
+  typeof ClientPaymentDialog
+>>()
 const contractDialog = ref<null | InstanceType<typeof ContractDialog>>()
 const groupSelectorDialog = ref<null | InstanceType<
   typeof GroupSelectorDialog
@@ -57,15 +64,37 @@ onMounted(async () => {
 
     <div class="client-contracts">
       <div v-for="contract in client.contracts" :key="contract.id">
-        <h3>Договор №{{ contract.id }} на {{ formatYear(contract.year) }}</h3>
+        <h3>
+          Договор №{{ contract.id }} на {{ formatYear(contract.year) }}
+          <v-btn
+            color="gray"
+            :size="48"
+            icon="$plus"
+            variant="plain"
+            @click="() => contractDialog?.create(contract)"
+          />
+        </h3>
         <ContractList :contract="contract" @open="onOpen" />
-        <h3>Платежи</h3>
-        <ClientPaymentList :items="contract.payments" />
+        <h3>
+          Платежи
+          <v-btn
+            color="gray"
+            :size="48"
+            icon="$plus"
+            variant="plain"
+            @click="() => clientPaymentDialog?.create(contract)"
+          />
+        </h3>
+        <ClientPaymentList
+          :items="contract.payments"
+          @open="(p) => clientPaymentDialog?.open(p)"
+        />
       </div>
-      <div class="mt-6">
+      <div class="mt-8">
         <v-btn color="secondary">Добавить договор</v-btn>
       </div>
       <ContractDialog ref="contractDialog" />
+      <ClientPaymentDialog ref="clientPaymentDialog" />
     </div>
 
     <div>
@@ -96,6 +125,14 @@ onMounted(async () => {
   padding: 20px;
   h3 {
     margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    .v-btn {
+      margin-left: 2px;
+    }
+    .v-icon {
+      font-size: calc(var(--v-icon-size-multiplier) * 1.5rem) !important;
+    }
   }
   & > div {
     &:not(:first-child) {

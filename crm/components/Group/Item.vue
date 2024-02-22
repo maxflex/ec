@@ -8,7 +8,7 @@ function onClick() {
 
 const { group, selectable } = defineProps<{
   group: Group
-  selectable: boolean
+  selectable?: boolean
 }>()
 
 const emit = defineEmits<{

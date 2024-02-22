@@ -1,4 +1,4 @@
-export default function (w: number) {
+export default function (w: number = 500) {
   const dialog = ref(false)
   const width = w
 

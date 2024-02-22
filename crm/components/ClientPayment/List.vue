@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import type { ClientPayments } from "~/utils/models"
+import type { ClientPayment, ClientPayments } from "~/utils/models"
 import { CLIENT_PAYMENT_METHOD } from "~/utils/sment"
 
 const { items } = defineProps<{
   items: ClientPayments
+}>()
+const emit = defineEmits<{
+  (e: "open", p: ClientPayment): void
 }>()
 </script>
 
@@ -23,7 +26,12 @@ const { items } = defineProps<{
         <span v-else class="text-gray"> не подтверждён </span>
       </div>
       <div class="table-actions">
-        <v-btn variant="text" icon="$more" :size="48" />
+        <v-btn
+          variant="text"
+          icon="$more"
+          :size="48"
+          @click="emit('open', item)"
+        />
       </div>
     </div>
   </div>

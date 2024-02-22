@@ -21,6 +21,24 @@ function open(c: Contract, v: ContractVersion) {
   dialog.value = true
 }
 
+function create(c: Contract) {
+  contract.value = cloneDeep(c)
+  const { sum, version: ver, programs, payments } = c.versions[0]
+  version.value = {
+    sum,
+    programs,
+    payments,
+    version: (ver as number) + 1,
+    id: -1,
+    user_id: 1,
+    contract_id: c.id,
+    created_at: null,
+    updated_at: null,
+    date: today(),
+  }
+  dialog.value = true
+}
+
 function toggleCloseProgram(p: ContractProgram) {
   p.is_closed = !p.is_closed
 }
@@ -75,14 +93,15 @@ function deletePayment(p: ContractPayment) {
   )
 }
 
-defineExpose({ open })
+defineExpose({ open, create })
 </script>
 
 <template>
   <v-dialog v-model="dialog" :width="width">
-    <div class="dialog-content">
+    <div class="dialog-content" v-if="contract && version">
       <div class="dialog-header">
-        <span> Редактирование договора </span>
+        <span v-if="version.id > 0"> Редактирование договора </span>
+        <span v-else>Добавить версию</span>
         <v-btn
           icon="$save"
           :size="48"
@@ -90,7 +109,7 @@ defineExpose({ open })
           color="#fafafa"
         />
       </div>
-      <div class="dialog-body" v-if="contract && version">
+      <div class="dialog-body">
         <div class="double-input">
           <v-select
             label="Учебный год"
