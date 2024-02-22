@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Http\Controllers\Crm;
+
+use App\Http\Controllers\Controller;
+use App\Models\Vacation;
+use Illuminate\Http\Request;
+
+class VacationController extends Controller
+{
+    protected $paginate = 99999;
+
+    public function index(Request $request)
+    {
+        $query = Vacation::query();
+        return $this->handleIndexRequest($request, $query);
+    }
+
+    public function store(Request $request)
+    {
+        $vacation = Vacation::where('date', $request->date)->first();
+        if ($vacation === null) {
+            return Vacation::create($request->all());
+        }
+        $vacation->delete();
+    }
+}

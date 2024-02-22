@@ -4,6 +4,7 @@ import {
   mdiAccount,
   mdiAccountGroup,
   mdiFileDocumentOutline,
+  mdiCalendar,
 } from "@mdi/js"
 
 const menu: Array<{
@@ -30,6 +31,11 @@ const menu: Array<{
     icon: mdiFileDocumentOutline,
     title: "Договоры",
     to: "/contracts",
+  },
+  {
+    icon: mdiCalendar,
+    title: "Праздники",
+    to: "/vacations",
   },
 ]
 </script>

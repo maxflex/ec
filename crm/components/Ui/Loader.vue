@@ -1,12 +1,16 @@
 <script setup lang="ts">
 const { paginator } = defineProps<{
-  paginator: Paginator
+  paginator?: Paginator
+  loading?: boolean
 }>()
 </script>
 
 <template>
   <v-fade-transition>
-    <div class="loader" v-if="paginator.loading && paginator.page < 2">
+    <div
+      class="loader"
+      v-if="paginator ? paginator.loading && paginator.page < 2 : loading"
+    >
       <v-progress-circular :size="50" indeterminate />
     </div>
   </v-fade-transition>

@@ -133,6 +133,8 @@ export interface Group {
   is_archived: boolean
   zoom: Zoom|null
   lessons_planned: unknown|null
+  duration: number|null
+  exam_date: string|null
   created_at: string|null
   updated_at: string|null
   // relations
@@ -140,6 +142,25 @@ export interface Group {
   contracts: Contracts
 }
 export type Groups = Group[]
+
+export interface Lesson {
+  // columns
+  id: number
+  group_id: number
+  teacher_id: number|null
+  price: number
+  status: string
+  cabinet: string
+  start_at: string
+  conducted_at: string|null
+  is_unplanned: boolean
+  is_topic_verified: boolean
+  topic: string|null
+  user_id: number|null
+  created_at: string|null
+  updated_at: string|null
+}
+export type Lessons = Lesson[]
 
 export interface Phone {
   // columns
@@ -234,6 +255,13 @@ export interface User {
   updated_at: string|null
 }
 export type Users = User[]
+
+export interface Vacation {
+  // columns
+  id: number
+  date: string
+}
+export type Vacations = Vacation[]
 
 const ClientPaymentMethod = {
   card: 'card',
