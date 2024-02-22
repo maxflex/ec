@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Enums;
+
+enum ClientPaymentMethod: string
+{
+    case card = 'card';
+    case online = 'online';
+    case cash = 'cash';
+    case invoice = 'invoice';
+
+    public static function getFromOld(string $method): self
+    {
+        return match ($method) {
+            'card' => self::card,
+            'cash' => self::cash,
+            'bill' => self::invoice,
+            'card_online' => self::online
+        };
+    }
+}
