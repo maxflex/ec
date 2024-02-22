@@ -6,6 +6,7 @@ use App\Enums\Subject;
 use App\Enums\TeacherStatus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Schema;
 
 class TransferTeachers extends Command
 {
@@ -16,6 +17,7 @@ class TransferTeachers extends Command
 
     public function handle()
     {
+        Schema::disableForeignKeyConstraints();
         DB::table('teachers')->delete();
         $teachers = DB::connection('egecrm')
             ->table('teachers')
@@ -59,5 +61,6 @@ class TransferTeachers extends Command
             $bar->advance();
         }
         $bar->finish();
+        Schema::enableForeignKeyConstraints();
     }
 }
