@@ -30,7 +30,7 @@ a:not(.v-list-item) {
   & > div:not(.v-infinite-scroll__side) {
     border-bottom: thin solid
       rgba(var(--v-border-color), var(--v-border-opacity));
-    padding: 0 16px;
+    padding: 0 20px;
     min-height: var(--height);
     display: flex;
     align-items: center;
@@ -41,7 +41,7 @@ a:not(.v-list-item) {
     }
   }
   .v-input {
-    margin-left: -16px;
+    margin-left: -20px;
   }
   .v-field__outline {
     --v-field-border-opacity: 0;

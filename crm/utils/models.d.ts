@@ -27,9 +27,30 @@ export interface Client {
   // relations
   contracts: Contracts
   contract_group: ContractGroups
+  payments: ClientPayments
   phones: Phones
 }
 export type Clients = Client[]
+
+export interface ClientPayment {
+  // columns
+  id: number
+  sum: number
+  date: string
+  year: number
+  method: ClientPaymentMethod
+  type: PaymentType
+  company: CompanyType
+  is_confirmed: boolean
+  entity_type: string
+  entity_id: number
+  purpose: string|null
+  extra: string|null
+  user_id: number
+  created_at: string|null
+  updated_at: string|null
+}
+export type ClientPayments = ClientPayment[]
 
 export interface Comment {
   // columns
@@ -53,6 +74,7 @@ export interface Contract {
   client: Client
   versions: ContractVersions
   groups: Groups
+  payments: ClientPayments
 }
 export type Contracts = Contract[]
 
@@ -173,6 +195,35 @@ export interface Teacher {
 }
 export type Teachers = Teacher[]
 
+export interface TeacherPayment {
+  // columns
+  id: number
+  sum: number
+  date: string
+  year: unknown
+  method: string
+  purpose: string|null
+  teacher_id: number
+  user_id: number
+  created_at: string|null
+  updated_at: string|null
+}
+export type TeacherPayments = TeacherPayment[]
+
+export interface TeacherService {
+  // columns
+  id: number
+  sum: number
+  date: string
+  year: unknown
+  purpose: string|null
+  teacher_id: number
+  user_id: number
+  created_at: string|null
+  updated_at: string|null
+}
+export type TeacherServices = TeacherService[]
+
 export interface User {
   // columns
   id: number
@@ -183,6 +234,22 @@ export interface User {
   updated_at: string|null
 }
 export type Users = User[]
+
+const ClientPaymentMethod = {
+  card: 'card',
+  online: 'online',
+  cash: 'cash',
+  invoice: 'invoice',
+} as const;
+
+export type ClientPaymentMethod = typeof ClientPaymentMethod[keyof typeof ClientPaymentMethod]
+
+const PaymentType = {
+  payment: 'payment',
+  return: 'return',
+} as const;
+
+export type PaymentType = typeof PaymentType[keyof typeof PaymentType]
 
 const CompanyType = {
   ip: 'ip',

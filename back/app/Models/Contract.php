@@ -28,4 +28,9 @@ class Contract extends Model
     {
         return $this->belongsToMany(Group::class);
     }
+
+    public function payments()
+    {
+        return $this->morphMany(ClientPayment::class, 'entity');
+    }
 }

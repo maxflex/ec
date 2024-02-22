@@ -45,7 +45,8 @@ const emit = defineEmits<{
 
 <style lang="scss">
 .group-item {
-  padding: 16px !important;
+  padding-top: 16px !important;
+  padding-bottom: 16px !important;
   & > div {
     &:nth-child(1) {
       width: 200px;

@@ -28,6 +28,11 @@ class Client extends Model
         return $this->hasManyThrough(ContractGroup::class, Contract::class);
     }
 
+    public function payments()
+    {
+        return $this->morphMany(ClientPayment::class, 'entity');
+    }
+
     /**
      * @return Group[]
      */

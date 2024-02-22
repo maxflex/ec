@@ -59,6 +59,8 @@ onMounted(async () => {
       <div v-for="contract in client.contracts" :key="contract.id">
         <h3>Договор №{{ contract.id }} на {{ formatYear(contract.year) }}</h3>
         <ContractList :contract="contract" @open="onOpen" />
+        <h3>Платежи</h3>
+        <ClientPaymentList :items="contract.payments" />
       </div>
       <div class="mt-6">
         <v-btn color="secondary">Добавить договор</v-btn>
@@ -101,22 +103,19 @@ onMounted(async () => {
     }
   }
   &-contracts {
-    & > div:not(:first-child) {
-      margin-top: 50px;
+    & > div {
+      h3:not(:first-child) {
+        margin-top: 30px;
+      }
+      &:not(:first-child) {
+        margin-top: 50px;
+      }
     }
   }
   .table {
     left: -20px;
     position: relative;
     width: calc(100% + 40px);
-    & > div {
-      &:first-child {
-        padding-left: 20px !important;
-      }
-      &:last-child {
-        padding-right: 20px !important;
-      }
-    }
   }
 }
 </style>

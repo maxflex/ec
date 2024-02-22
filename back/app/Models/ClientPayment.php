@@ -2,10 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Enums\ClientPaymentMethod;
+use App\Enums\CompanyType;
+use App\Enums\PaymentType;
 use Illuminate\Database\Eloquent\Model;
 
 class ClientPayment extends Model
 {
-    use HasFactory;
+    protected $casts = [
+        'company' => CompanyType::class,
+        'type' => PaymentType::class,
+        'method' => ClientPaymentMethod::class,
+        'year' => 'integer',
+    ];
 }
