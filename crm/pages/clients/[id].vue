@@ -70,7 +70,7 @@ onMounted(async () => {
 
     <div>
       <h3>Группы</h3>
-      <div class="table">
+      <div class="table table--padding table--hover table--actions-on-hover">
         <GroupItem
           v-for="group in client.groups"
           :group="group"

@@ -14,7 +14,7 @@ const myTheme: ThemeDefinition = {
   colors: {
     primary: "#337ab7",
     secondary: "#ffc423",
-    success: "#4caf50",
+    success: "#00A272",
     accent: "#4346d5",
     grey: "#949db1",
     gray: "#949db1",

@@ -19,7 +19,7 @@ const emit = defineEmits<{
       {{ PROGRAM[swamp.program] }}
     </div>
     <div>{{ swamp.lessons }} уроков</div>
-    <div class="text-right">
+    <div class="table-actions">
       <v-btn color="secondary" @click="emit('attach', swamp)">
         присвоить группу
       </v-btn>
@@ -29,7 +29,6 @@ const emit = defineEmits<{
 
 <style lang="scss">
 .swamp-item {
-  padding: 16px !important;
   & > div {
     &:nth-child(1) {
       width: 470px;

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ClientPayments } from "~/utils/models"
+import { CLIENT_PAYMENT_METHOD } from "~/utils/sment"
 
 const { items } = defineProps<{
   items: ClientPayments
@@ -7,22 +8,22 @@ const { items } = defineProps<{
 </script>
 
 <template>
-  <div class="table client-payments">
+  <div class="table table--hover client-payments">
     <div v-for="item in items" :key="item.id">
       <div>
-        {{ item.type === "payment" ? "платеж" : "возврат" }}
+        {{ item.is_return ? "возврат" : "платеж" }}
       </div>
       <div>от {{ formatDate(item.date) }}</div>
       <div>{{ item.sum }} руб.</div>
       <div>
-        {{ item.method }}
+        {{ CLIENT_PAYMENT_METHOD[item.method] }}
       </div>
       <div>
         <span v-if="item.is_confirmed" class="text-success"> подтверждён </span>
         <span v-else class="text-gray"> не подтверждён </span>
       </div>
-      <div class="text-right">
-        <v-btn icon="$more" :size="48" />
+      <div class="table-actions">
+        <v-btn variant="text" icon="$more" :size="48" />
       </div>
     </div>
   </div>
@@ -31,7 +32,6 @@ const { items } = defineProps<{
 <style lang="scss">
 .client-payments {
   & > div {
-    gap: 0px !important;
     & > div {
       &:nth-child(1) {
         width: 150px;

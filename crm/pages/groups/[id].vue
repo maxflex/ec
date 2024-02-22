@@ -40,7 +40,7 @@ onMounted(async () => {
             {{ formatName(contract.client) }}
           </NuxtLink>
         </div>
-        <div class="table-actions">
+        <div class="text-left table-actions">
           <v-btn
             icon="$close"
             variant="plain"
@@ -48,16 +48,9 @@ onMounted(async () => {
             :size="48"
             :ripple="false"
             @click="removeFromGroup(contract)"
-          >
-          </v-btn>
+          />
         </div>
       </div>
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.groups-id {
-  padding: 20px;
-}
-</style>

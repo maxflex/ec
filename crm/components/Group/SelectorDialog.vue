@@ -41,7 +41,7 @@ defineExpose({ open })
             <v-progress-circular :size="50" indeterminate />
           </div>
         </v-fade-transition>
-        <div class="table table--hover" v-if="groups">
+        <div class="table table--hover table--padding" v-if="groups">
           <GroupItem
             v-for="group in groups"
             :group="group"

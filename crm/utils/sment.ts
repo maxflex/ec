@@ -1,4 +1,4 @@
-import type { CompanyType, Program } from "./models"
+import type { CompanyType, Program, ClientPaymentMethod } from "./models"
 
 export const GRADE: Record<string, string> = {
   grade1: "1 класс",
@@ -169,6 +169,13 @@ export const YEARS = [
 export const COMPANY_TYPE: Record<CompanyType, string> = {
   ip: "ИП",
   ooo: "ООО",
+}
+
+export const CLIENT_PAYMENT_METHOD: Record<ClientPaymentMethod, string> = {
+  card: "карта",
+  online: "карта онлайн",
+  cash: "наличные",
+  invoice: "счёт",
 }
 
 export type Programs = Program[]

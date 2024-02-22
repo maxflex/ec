@@ -12,18 +12,18 @@ const { contract } = defineProps<{
 </script>
 
 <template>
-  <table class="contract-list">
-    <tr v-for="version in contract.versions">
-      <td width="150">версия {{ version.version }}</td>
-      <td width="220">от {{ formatDate(version.date) }}</td>
-      <td width="220">{{ version.sum }} руб.</td>
-      <td width="220">
+  <div class="table contract-list table--hover table--padding">
+    <div v-for="version in contract.versions" :key="version.id">
+      <div width="150">версия {{ version.version }}</div>
+      <div width="220">от {{ formatDate(version.date) }}</div>
+      <div width="220">{{ version.sum }} руб.</div>
+      <div width="220">
         <span v-if="version.payments.length === 0" class="text-grey">
           платежей нет
         </span>
         <template v-else> {{ version.payments.length }} платежей </template>
-      </td>
-      <td>
+      </div>
+      <div>
         <div class="contract-list__programs">
           <div
             v-for="p in version.programs.slice(
@@ -43,42 +43,31 @@ const { contract } = defineProps<{
             ... ещё {{ version.programs.length - 2 }}
           </div>
         </div>
-      </td>
-      <td width="50" class="text-right">
-        <v-btn icon :size="48" @click="emit('open', contract, version)">
-          <v-icon icon="$more"></v-icon>
-        </v-btn>
-      </td>
-    </tr>
-  </table>
+      </div>
+      <div width="50" class="table-actions">
+        <v-btn
+          variant="text"
+          icon="$more"
+          :size="48"
+          @click="emit('open', contract, version)"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
 <style lang="scss">
 .contract-list {
-  table-layout: fixed;
-  border-collapse: collapse;
-  border-spacing: 0;
-  // width: 100%;
-  left: -20px;
-  position: relative;
-  width: calc(100% + 40px);
-  tr {
-    vertical-align: top;
-    td {
-      border-bottom: thin solid
-        rgba(var(--v-border-color), var(--v-border-opacity));
-      padding: 16px 16px;
-      &:first-child {
-        padding-left: 20px;
+  & > div {
+    align-items: flex-start !important;
+    & > div {
+      &:nth-child(1) {
+        width: 150px;
       }
-      &:last-child {
-        padding-right: 20px;
-        position: relative;
-        button {
-          position: absolute;
-          right: 20px;
-          top: 4px;
-        }
+      &:nth-child(2),
+      &:nth-child(3),
+      &:nth-child(4) {
+        width: 220px;
       }
     }
   }

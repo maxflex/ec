@@ -39,9 +39,9 @@ export interface ClientPayment {
   date: string
   year: number
   method: ClientPaymentMethod
-  type: PaymentType
   company: CompanyType
   is_confirmed: boolean
+  is_return: boolean
   entity_type: string
   entity_id: number
   purpose: string|null
@@ -243,13 +243,6 @@ const ClientPaymentMethod = {
 } as const;
 
 export type ClientPaymentMethod = typeof ClientPaymentMethod[keyof typeof ClientPaymentMethod]
-
-const PaymentType = {
-  payment: 'payment',
-  return: 'return',
-} as const;
-
-export type PaymentType = typeof PaymentType[keyof typeof PaymentType]
 
 const CompanyType = {
   ip: 'ip',
