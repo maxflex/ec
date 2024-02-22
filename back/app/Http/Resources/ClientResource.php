@@ -16,6 +16,8 @@ class ClientResource extends JsonResource
     {
         return array_merge(parent::toArray($request), [
             'contracts' => ContractResource::collection($this->contracts),
+            'groups' => GroupResource::collection($this->groups),
+            'swamps' => $this->swamps,
         ]);
     }
 }

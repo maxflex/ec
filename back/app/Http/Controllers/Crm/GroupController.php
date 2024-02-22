@@ -9,11 +9,16 @@ use Illuminate\Http\Request;
 
 class GroupController extends Controller
 {
+    protected $filters = [
+        'equals' => ['program'],
+    ];
+
     public function index(Request $request)
     {
         $query = Group::query()
             ->with('teacher')
             ->orderBy('id', 'desc');
+        $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query);
     }
 

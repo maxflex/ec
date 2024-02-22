@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import type { ContractDialog } from "#build/components"
+import type { ContractDialog, GroupSelectorDialog } from "#build/components"
 import type { Client, Contract, ContractVersion } from "~/utils/models"
 
 const route = useRoute()
 const client = ref<Client>()
 const contractDialog = ref<null | InstanceType<typeof ContractDialog>>()
+const groupSelectorDialog = ref<null | InstanceType<
+  typeof GroupSelectorDialog
+>>()
 
 async function loadData() {
   const { data } = await useHttp(`clients/${route.params.id}`)
@@ -40,17 +43,34 @@ onMounted(async () => {
         <v-text-field v-model="client.parent_middle_name" label="Отчество" />
       </div>
     </div>
-    <div
-      class="client-contracts"
-      v-for="contract in client.contracts"
-      :key="contract.id"
-    >
-      <h3>Договор №{{ contract.id }} на {{ formatYear(contract.year) }}</h3>
-      <ContractList :contract="contract" @open="onOpen" />
+
+    <div class="client-contracts">
+      <div v-for="contract in client.contracts" :key="contract.id">
+        <h3>Договор №{{ contract.id }} на {{ formatYear(contract.year) }}</h3>
+        <ContractList :contract="contract" @open="onOpen" />
+      </div>
+      <div class="mt-6">
+        <v-btn color="secondary">Добавить договор</v-btn>
+      </div>
+      <ContractDialog ref="contractDialog" />
     </div>
-    <ContractDialog ref="contractDialog" />
+
     <div>
-      <v-btn color="secondary">Добавить договор</v-btn>
+      <h3>Группы</h3>
+      <div class="table">
+        <GroupItem
+          v-for="group in client.groups"
+          :group="group"
+          :key="group.id"
+        />
+        <GroupSwamp
+          v-for="swamp in client.swamps"
+          :key="swamp.id"
+          :swamp="swamp"
+          @attach="(s) => groupSelectorDialog?.open(s.program)"
+        />
+      </div>
+      <GroupSelectorDialog ref="groupSelectorDialog" />
     </div>
   </div>
 </template>
@@ -63,11 +83,26 @@ onMounted(async () => {
   }
   & > div {
     &:not(:first-child) {
-      margin-top: 30px;
+      margin-top: 60px;
     }
   }
   &-contracts {
-    margin-top: 50px !important;
+    & > div:not(:first-child) {
+      margin-top: 50px;
+    }
+  }
+  .table {
+    left: -20px;
+    position: relative;
+    width: calc(100% + 40px);
+    & > div {
+      &:first-child {
+        padding-left: 20px !important;
+      }
+      &:last-child {
+        padding-right: 20px !important;
+      }
+    }
   }
 }
 </style>

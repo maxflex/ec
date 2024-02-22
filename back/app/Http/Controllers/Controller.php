@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class Controller extends BaseController
 {
@@ -36,7 +37,6 @@ class Controller extends BaseController
         return $result;
     }
 
-
     protected function getResource(Request $request)
     {
         if (count($this->resources) === 0) {
@@ -49,5 +49,40 @@ class Controller extends BaseController
             }
         }
         return $resource;
+    }
+
+    protected function filter(Request $request, &$query, array $filters = null)
+    {
+        $filters = $filters ?? $this->filters;
+        foreach ($filters as $type => $fields) {
+            foreach ($fields as $key_field => $field) {
+                $f = is_array($field) ? $key_field : $field;
+                if ($request->has($f)) {
+                    $this->{'filter' . ucfirst($type)}($query, $request->input($f), $field);
+                }
+            }
+        }
+    }
+
+    protected function filterEquals(&$query, $value, $field)
+    {
+        $query->where(DB::raw($this->getFieldName($field)), $value);
+    }
+
+    private function getFieldName($field)
+    {
+        foreach ($this->mapFilters as $originalFieldName => $mappedFieldName) {
+            if ($field === $originalFieldName) {
+                $field = $mappedFieldName;
+            }
+        }
+
+        foreach ($this->filterTablePrefix as $table => $fields) {
+            if (in_array($field, $fields)) {
+                $field = "{$table}.{$field}";
+            }
+        }
+
+        return $field;
     }
 }

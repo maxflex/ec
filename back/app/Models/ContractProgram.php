@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class ContractProgram extends Model
 {
     protected $casts = [
-        'program' => Program::class
+        'program' => Program::class,
+        'lessons' => 'integer',
+        'lessons_planned' => 'integer',
+        'price' => 'integer'
     ];
 }
