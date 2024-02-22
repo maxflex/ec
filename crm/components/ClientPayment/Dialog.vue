@@ -5,6 +5,7 @@ import { CLIENT_PAYMENT_METHOD, COMPANY_TYPE } from "~/utils/sment"
 
 const { dialog, width } = useDialog()
 const item = ref<ClientPayment>()
+const sumInput = ref()
 
 function open(p: ClientPayment) {
   item.value = cloneDeep(p)
@@ -30,6 +31,10 @@ function create(c: Contract) {
     updated_at: null,
   }
   dialog.value = true
+  nextTick(() => {
+    sumInput.value.reset()
+    sumInput.value.focus()
+  })
 }
 
 defineExpose({ open, create })
@@ -44,15 +49,16 @@ defineExpose({ open, create })
         <v-btn icon="$save" :size="48" variant="text" @click="dialog = false" />
       </div>
       <div class="dialog-body">
-        <UiDateInput v-model="item.date" />
         <div>
           <v-text-field
             v-model="item.sum"
             label="Сумма"
             type="number"
             hide-spin-buttons
+            ref="sumInput"
           />
         </div>
+        <UiDateInput v-model="item.date" />
         <div>
           <UiYearSelector v-model="item.year" />
         </div>
