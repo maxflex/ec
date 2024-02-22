@@ -30,7 +30,7 @@ defineExpose({ open })
 <template>
   <v-dialog v-model="dialog" :width="width">
     <div class="dialog-content">
-      <div class="dialog-header mb-0">
+      <div class="dialog-header">
         <span>
           Выбор программ
           <span class="ml-1 text-gray" v-if="selected.length">
@@ -39,7 +39,7 @@ defineExpose({ open })
         </span>
         <v-btn icon="$save" :size="48" @click="save()" color="#fafafa" />
       </div>
-      <div class="dialog-body">
+      <div class="dialog-body pt-0">
         <div class="table table--hover">
           <div
             v-for="(title, p) in PROGRAM"

@@ -116,11 +116,12 @@ a:not(.v-list-item) {
     display: flex;
     flex-direction: column;
     gap: 30px;
-    padding: 0 $paddingX 30px;
+    padding: 40px $paddingX 30px;
     flex: 1;
     overflow-x: hidden;
   }
   &-header {
+    --header-height: 64px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -128,9 +129,8 @@ a:not(.v-list-item) {
     position: sticky;
     top: 0;
     padding: 0 9px 0 $paddingX;
-    height: 64px;
-    min-height: 64px;
-    margin-bottom: 40px;
+    height: var(--header-height);
+    min-height: var(--header-height);
     z-index: 1;
     font-weight: bold;
     border-bottom: thin solid

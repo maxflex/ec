@@ -34,8 +34,8 @@ defineExpose({ open })
 <template>
   <v-dialog v-model="dialog" :width="width">
     <div class="dialog-content">
-      <div class="dialog-header mb-0">Присвоить группу</div>
-      <div class="dialog-body">
+      <div class="dialog-header">Присвоить группу</div>
+      <div class="dialog-body pt-0">
         <v-fade-transition>
           <div class="dialog-loader" v-if="!groups">
             <v-progress-circular :size="50" indeterminate />
