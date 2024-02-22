@@ -46,7 +46,7 @@ a:not(.v-list-item) {
   .v-field__outline {
     --v-field-border-opacity: 0;
   }
-  &--hoverable {
+  &--hover {
     & > div {
       transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
       &:hover {

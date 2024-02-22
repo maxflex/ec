@@ -40,7 +40,7 @@ defineExpose({ open })
         <v-btn icon="$save" :size="48" @click="save()" color="#fafafa" />
       </div>
       <div class="dialog-body">
-        <div class="table table--hoverable">
+        <div class="table table--hover">
           <div
             v-for="(title, p) in PROGRAM"
             :key="p"

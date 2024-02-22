@@ -15,7 +15,8 @@ class GroupResource extends JsonResource
     public function toArray(Request $request): array
     {
         return array_merge(parent::toArray($request), [
-            'teacher' => $this->teacher
+            'teacher' => $this->teacher,
+            'contracts' => $this->contracts()->with('client')->get(),
         ]);
     }
 }

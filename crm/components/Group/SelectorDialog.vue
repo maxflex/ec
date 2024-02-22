@@ -1,12 +1,20 @@
 <script setup lang="ts">
-import type { Groups, Program } from "~/utils/models"
+import type { Group, Groups, Program } from "~/utils/models"
 
 const { dialog, width } = useDialog(1000)
 const groups = ref<Groups>()
+const emit = defineEmits<{
+  (e: "select", g: Group): void
+}>()
 
 function open(p: Program) {
   dialog.value = true
   loadGroups(p)
+}
+
+function select(g: Group) {
+  dialog.value = false
+  emit("select", g)
 }
 
 async function loadGroups(p: Program) {
@@ -33,8 +41,13 @@ defineExpose({ open })
             <v-progress-circular :size="50" indeterminate />
           </div>
         </v-fade-transition>
-        <div class="table" v-if="groups">
-          <GroupItem v-for="group in groups" :group="group" />
+        <div class="table table--hover" v-if="groups">
+          <GroupItem
+            v-for="group in groups"
+            :group="group"
+            selectable
+            @select="() => select(group)"
+          />
         </div>
       </div>
     </div>

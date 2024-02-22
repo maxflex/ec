@@ -2,11 +2,26 @@
 import type { Group } from "~/utils/models"
 import { PROGRAM } from "~/utils/sment"
 
-const { group } = defineProps<{ group: Group }>()
+function onClick() {
+  emit("select")
+}
+
+const { group, selectable } = defineProps<{
+  group: Group
+  selectable: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: "select"): void
+}>()
 </script>
 
 <template>
-  <div class="group-item">
+  <div
+    class="group-item"
+    :class="{ 'group-item--selectable': selectable }"
+    @click="onClick"
+  >
     <div>
       <NuxtLink :to="{ name: 'groups-id', params: { id: group.id } }">
         Группа {{ group.id }}
@@ -41,6 +56,9 @@ const { group } = defineProps<{ group: Group }>()
     &:nth-child(3) {
       width: 350px;
     }
+  }
+  &--selectable {
+    cursor: pointer;
   }
 }
 </style>

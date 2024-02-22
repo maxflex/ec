@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ContractDialog, GroupSelectorDialog } from "#build/components"
-import type { Client, Contract, ContractVersion } from "~/utils/models"
+import type { Client, Contract, ContractVersion, Group } from "~/utils/models"
 
 const route = useRoute()
 const client = ref<Client>()
@@ -17,6 +17,17 @@ async function loadData() {
 function onOpen(c: Contract, v: ContractVersion) {
   console.log("open", c, v)
   contractDialog.value?.open(c, v)
+}
+
+async function onGroupSelected(g: Group) {
+  await useHttp(`groups/add-client`, {
+    method: "post",
+    params: {
+      group_id: g.id,
+      client_id: client.value?.id,
+    },
+  })
+  loadData()
 }
 
 onMounted(async () => {
@@ -70,7 +81,10 @@ onMounted(async () => {
           @attach="(s) => groupSelectorDialog?.open(s.program)"
         />
       </div>
-      <GroupSelectorDialog ref="groupSelectorDialog" />
+      <GroupSelectorDialog
+        ref="groupSelectorDialog"
+        @select="onGroupSelected"
+      />
     </div>
   </div>
 </template>
