@@ -5,6 +5,7 @@ namespace App\Console\Commands\Transfer;
 use App\Enums\Program;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Schema;
 
 class TransferGroups extends Command
 {
@@ -15,9 +16,17 @@ class TransferGroups extends Command
 
     public function handle()
     {
+        Schema::disableForeignKeyConstraints();
         DB::table('groups')->delete();
         $groups = DB::connection('egecrm')
             ->table('groups')
+            ->selectRaw(<<<SQL
+                groups.*, (
+                    select duration from lessons
+                    where group_id = groups.id
+                    limit 1
+                ) as duration
+            SQL)
             ->get();
         $bar = $this->output->createProgressBar($groups->count());
         foreach ($groups as $g) {
@@ -32,11 +41,13 @@ class TransferGroups extends Command
                     'id' => $g->zoom_id,
                     'password' => $g->zoom_password
                 ]) : null,
+                'duration' => $g->duration,
                 'created_at' => $g->updated_at,
                 'updated_at' => $g->updated_at,
             ]);
             $bar->advance();
         }
         $bar->finish();
+        Schema::enableForeignKeyConstraints();
     }
 }
