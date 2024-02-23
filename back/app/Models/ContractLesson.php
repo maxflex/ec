@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Enums\ContractLessonStatus;
 use Illuminate\Database\Eloquent\Model;
 
 class ContractLesson extends Model
 {
-    use HasFactory;
+    protected $casts = [
+        'status' => ContractLessonStatus::class
+    ];
 }
