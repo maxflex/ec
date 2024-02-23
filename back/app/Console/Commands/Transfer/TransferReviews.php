@@ -23,6 +23,7 @@ class TransferReviews extends Command
             ->join('review_comments as rc', 'rc.review_id', '=', 'r.id')
             ->where('rc.type', 'final')
             ->where('rc.rating', '>', 0)
+            ->where('r.grade_id', '<>', 20) // пропускаем онлайн
             ->whereNotNull('rc.text')
             ->whereNotNull('rc.created_email_id')
             ->whereNotNull('r.score')
