@@ -14,4 +14,9 @@ class MacroController extends Controller
         $query = Macro::orderBy('title');
         return $this->handleIndexRequest($request, $query, MacroListResource::class);
     }
+
+    public function update(Macro $macro, Request $request)
+    {
+        $macro->update($request->all());
+    }
 }

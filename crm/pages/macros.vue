@@ -3,7 +3,6 @@ import Codemirror from "codemirror-editor-vue3"
 import type { EditorConfiguration } from "codemirror"
 import "codemirror/mode/htmlmixed/htmlmixed.js"
 import type { Macro, Macros } from "~/utils/models"
-import { cloneDeep } from "lodash"
 
 const cmOptions: EditorConfiguration = {
   tabSize: 4,
@@ -11,7 +10,7 @@ const cmOptions: EditorConfiguration = {
   lineNumbers: false,
   lineWrapping: true,
 }
-const code = ref("")
+const saving = ref(false)
 const dialog = ref(false)
 const macros = ref<Macros>()
 const macro = ref<Macro>()
@@ -29,8 +28,18 @@ async function loadData() {
 }
 
 function open(m: Macro) {
-  macro.value = cloneDeep(m)
+  macro.value = m
   dialog.value = true
+}
+
+async function save() {
+  saving.value = true
+  await useHttp(`macros/${macro.value?.id}`, {
+    method: "put",
+    body: macro.value,
+  })
+  saving.value = false
+  dialog.value = false
 }
 </script>
 
@@ -53,8 +62,9 @@ function open(m: Macro) {
           <v-btn
             icon="$save"
             :size="48"
-            @click="dialog = false"
+            @click="save()"
             color="#fafafa"
+            :loading="saving"
           />
         </div>
         <div class="dialog-body py-0">
