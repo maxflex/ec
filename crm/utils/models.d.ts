@@ -21,6 +21,8 @@ export interface Client {
   created_at: string|null
   updated_at: string|null
   // mutators
+  groups?: unknown
+  swamps?: unknown
   // overrides
   groups: Groups
   swamps: ContractPrograms
@@ -51,6 +53,20 @@ export interface ClientPayment {
   updated_at: string|null
 }
 export type ClientPayments = ClientPayment[]
+
+export interface ClientReview {
+  // columns
+  id: number
+  client_id: number
+  teacher_id: number
+  program: string
+  text: string
+  rating: unknown
+  user_id: number
+  created_at: string|null
+  updated_at: string|null
+}
+export type ClientReviews = ClientReview[]
 
 export interface Comment {
   // columns
@@ -86,6 +102,18 @@ export interface ContractGroup {
   group: Group
 }
 export type ContractGroups = ContractGroup[]
+
+export interface ContractLesson {
+  // columns
+  id: number
+  contract_id: number
+  lesson_id: number
+  price: number
+  status: ContractLessonStatus
+  minutes_late: number|null
+  is_remote: boolean
+}
+export type ContractLessons = ContractLesson[]
 
 export interface ContractPayment {
   // columns
@@ -133,10 +161,10 @@ export interface Group {
   is_archived: boolean
   zoom: Zoom|null
   lessons_planned: unknown|null
-  duration: number|null
-  exam_date: string|null
   created_at: string|null
   updated_at: string|null
+  duration: number|null
+  exam_date: string|null
   // relations
   teacher: Teacher
   contracts: Contracts
@@ -149,7 +177,7 @@ export interface Lesson {
   group_id: number
   teacher_id: number|null
   price: number
-  status: string
+  status: LessonStatus
   cabinet: string
   start_at: string
   conducted_at: string|null
@@ -161,6 +189,16 @@ export interface Lesson {
   updated_at: string|null
 }
 export type Lessons = Lesson[]
+
+export interface Macro {
+  // columns
+  id: number
+  title: string
+  text: string
+  created_at: string|null
+  updated_at: string|null
+}
+export type Macros = Macro[]
 
 export interface Phone {
   // columns
@@ -194,6 +232,30 @@ export interface Request {
   phones: Phones
 }
 export type Requests = Request[]
+
+export interface Review {
+  // columns
+  id: number
+  client_id: number
+  text: string
+  signature: string
+  rating: unknown
+  is_published: boolean
+  user_id: number
+  created_at: string|null
+  updated_at: string|null
+}
+export type Reviews = Review[]
+
+export interface ReviewScore {
+  // columns
+  id: number
+  review_id: number
+  program: string
+  score: unknown
+  score_max: unknown
+}
+export type ReviewScores = ReviewScore[]
 
 export interface Teacher {
   // columns
@@ -278,6 +340,14 @@ const CompanyType = {
 } as const;
 
 export type CompanyType = typeof CompanyType[keyof typeof CompanyType]
+
+const ContractLessonStatus = {
+  present: 'present',
+  late: 'late',
+  absent: 'absent',
+} as const;
+
+export type ContractLessonStatus = typeof ContractLessonStatus[keyof typeof ContractLessonStatus]
 
 const Program = {
   math9: 'math9',
@@ -381,6 +451,14 @@ const Program = {
 } as const;
 
 export type Program = typeof Program[keyof typeof Program]
+
+const LessonStatus = {
+  planned: 'planned',
+  conducted: 'conducted',
+  cancelled: 'cancelled',
+} as const;
+
+export type LessonStatus = typeof LessonStatus[keyof typeof LessonStatus]
 
 const RequestStatus = {
   new: 'new',

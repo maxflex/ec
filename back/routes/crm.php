@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Crm\{RequestsController, ClientController, ContractController, GroupController, VacationController};
+use App\Http\Controllers\Crm\{RequestsController, ClientController, ContractController, GroupController, MacroController, VacationController};
 use Illuminate\Support\Facades\Route;
 
 Route::apiResource('requests', RequestsController::class);
@@ -15,4 +15,5 @@ Route::apiResources([
     'groups' =>  GroupController::class,
     'contracts' =>  ContractController::class,
     'vacations' => VacationController::class,
+    'macros' => MacroController::class,
 ]);
