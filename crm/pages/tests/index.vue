@@ -33,12 +33,12 @@ async function loadData() {
     </UiTopPanel>
     <div class="table table--hover">
       <div v-for="t in tests" :key="t.id">
-        <div style="width: 250px">
+        <div style="width: 200px">
           <NuxtLink :to="{ name: 'tests-id', params: { id: t.id } }">
             {{ t.name }}
           </NuxtLink>
         </div>
-        <div style="width: 250px">
+        <div style="width: 300px">
           {{ PROGRAM[t.program] }}
         </div>
         <div>{{ t.minutes }} минут</div>
