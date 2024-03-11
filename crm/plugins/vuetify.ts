@@ -2,7 +2,7 @@ import { createVuetify } from "vuetify"
 import { aliases, mdi } from "vuetify/iconsets/mdi-svg"
 import {
   mdiDotsHorizontal,
-  mdiCheckUnderline,
+  mdiContentSaveOutline,
   mdiChevronDown,
   mdiCheckDecagram,
   mdiDelete,
@@ -20,6 +20,7 @@ const colors = {
   gray: "#949db1",
   error: "#ef1e25",
   red: "#ef1e25",
+  bg: "#fafafa",
 }
 
 const myTheme: ThemeDefinition = {
@@ -34,7 +35,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       aliases: {
         ...aliases,
         more: mdiDotsHorizontal,
-        save: mdiCheckUnderline,
+        save: mdiContentSaveOutline,
         dropdown: mdiChevronDown,
         verified: mdiCheckDecagram,
         delete: mdiDelete,

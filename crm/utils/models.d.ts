@@ -195,8 +195,6 @@ export interface Macro {
   id: number
   title: string
   text: string
-  created_at: string|null
-  updated_at: string|null
 }
 export type Macros = Macro[]
 
@@ -306,6 +304,19 @@ export interface TeacherService {
   updated_at: string|null
 }
 export type TeacherServices = TeacherService[]
+
+export interface Test {
+  // columns
+  id: number
+  name: string
+  file: string
+  minutes: number
+  questions: Record<string, unknown>
+  results: Record<string, unknown>
+  created_at: string|null
+  updated_at: string|null
+}
+export type Tests = Test[]
 
 export interface User {
   // columns

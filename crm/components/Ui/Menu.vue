@@ -6,6 +6,7 @@ import {
   mdiFileDocumentOutline,
   mdiCalendar,
   mdiPrinter,
+  mdiDotsTriangle,
 } from "@mdi/js"
 
 const menu: Array<{
@@ -42,6 +43,11 @@ const menu: Array<{
     icon: mdiPrinter,
     title: "Макросы",
     to: "/macros",
+  },
+  {
+    icon: mdiDotsTriangle,
+    title: "Тесты",
+    to: "/tests",
   },
 ]
 </script>
