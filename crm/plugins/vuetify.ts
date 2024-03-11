@@ -2,10 +2,11 @@ import { createVuetify } from "vuetify"
 import { aliases, mdi } from "vuetify/iconsets/mdi-svg"
 import {
   mdiDotsHorizontal,
-  mdiContentSaveOutline,
+  mdiContentSaveCheckOutline,
   mdiChevronDown,
   mdiCheckDecagram,
   mdiDelete,
+  mdiChevronRight,
 } from "@mdi/js"
 import type { ThemeDefinition } from "vuetify"
 
@@ -35,10 +36,11 @@ export default defineNuxtPlugin((nuxtApp) => {
       aliases: {
         ...aliases,
         more: mdiDotsHorizontal,
-        save: mdiContentSaveOutline,
+        save: mdiContentSaveCheckOutline,
         dropdown: mdiChevronDown,
         verified: mdiCheckDecagram,
         delete: mdiDelete,
+        right: mdiChevronRight,
       },
       sets: {
         mdi,

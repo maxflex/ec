@@ -6,9 +6,9 @@ const answers = ref([])
   <!-- <UiTopPanel>
     <v-btn> добавить тест </v-btn>
   </UiTopPanel> -->
-  <div class="tests">
+  <div class="test">
     <iframe src="https://research.google.com/pubs/archive/44678.pdf" />
-    <div class="tests__answers">
+    <div class="test__answers">
       <div v-for="i in 10">
         <h2>Вопрос {{ i }}</h2>
         <v-item-group selected-class="bg-secondary" v-model="answers[i - 1]">
@@ -39,7 +39,7 @@ const answers = ref([])
 </template>
 
 <style lang="scss">
-.tests {
+.test {
   height: 100vh;
   display: flex;
   overflow: hidden;
