@@ -33,6 +33,11 @@ declare global {
     status: InfiniteScrollStatus
   }
 
+  interface TestAnswer {
+    correct: number | null
+    score: number | null
+  }
+
   // https://stackoverflow.com/a/45486495/2274406
   type Year = (typeof YEARS)[number]
 

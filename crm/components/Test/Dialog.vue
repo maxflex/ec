@@ -3,6 +3,7 @@ import { cloneDeep } from "lodash"
 import type { Program, Test } from "~/utils/models"
 import { PROGRAM } from "~/utils/sment"
 import { humanFileSize } from "~/utils/filters"
+import type { TestAnswersDialog } from "#build/components"
 
 const { dialog, width } = useDialog()
 const item = ref<Test>()
@@ -10,6 +11,7 @@ const input = ref()
 const fileInput = ref()
 const file = ref()
 const loading = ref(false)
+const answersDialog = ref<null | InstanceType<typeof TestAnswersDialog>>()
 const programs = Object.keys(PROGRAM).map((value) => ({
   value,
   title: PROGRAM[value as Program],
@@ -79,13 +81,16 @@ defineExpose({ open, create })
       <div class="dialog-header">
         <span v-if="item.id > 0"> Редактирование теста </span>
         <span v-else> Добавить тест </span>
-        <v-btn
-          icon="$save"
-          :size="48"
-          :loading="loading"
-          variant="text"
-          @click="storeOrUpdate()"
-        />
+        <div>
+          <v-btn icon="$file" :size="48" @click="selectFile()" variant="text" />
+          <v-btn
+            icon="$save"
+            :size="48"
+            :loading="loading"
+            variant="text"
+            @click="storeOrUpdate()"
+          />
+        </div>
       </div>
       <div class="dialog-body">
         <div>
@@ -107,7 +112,13 @@ defineExpose({ open, create })
           />
         </div>
         <div>
-          <v-btn color="secondary" @click="selectFile()"> выбрать файл </v-btn>
+          <a class="link-icon" @click="() => answersDialog?.open()"
+            >редактировать ответы
+            <v-icon :size="16" icon="$next"></v-icon>
+          </a>
+        </div>
+        <div>
+          <!-- <v-btn color="secondary" @click="selectFile()"> выбрать файл </v-btn> -->
           <input
             style="display: none"
             type="file"
@@ -127,18 +138,10 @@ defineExpose({ open, create })
             </div>
           </v-slide-y-transition>
         </div>
-        <!-- <div>
-          <a class="link-icon" @click="() => console.log('sment')"
-            >редактировать ответы
-            <v-icon :size="16" icon="$next"></v-icon>
-          </a>
-        </div> -->
-        <!-- <div class="dialog-section">
-          <div class="dialog-section__title">График платежей</div>
-        </div> -->
       </div>
     </div>
   </v-dialog>
+  <TestAnswersDialog ref="answersDialog" />
 </template>
 
 <style lang="scss">
