@@ -3,6 +3,7 @@ import type {
   ClientPaymentDialog,
   ContractDialog,
   GroupSelectorDialog,
+  TestSelectorDialog,
 } from "#build/components"
 import type { Client, Contract, ContractVersion, Group } from "~/utils/models"
 
@@ -12,6 +13,7 @@ const clientPaymentDialog = ref<null | InstanceType<
   typeof ClientPaymentDialog
 >>()
 const contractDialog = ref<null | InstanceType<typeof ContractDialog>>()
+const testSelectorDialog = ref<null | InstanceType<typeof TestSelectorDialog>>()
 const groupSelectorDialog = ref<null | InstanceType<
   typeof GroupSelectorDialog
 >>()
@@ -116,6 +118,20 @@ onMounted(async () => {
         ref="groupSelectorDialog"
         @select="onGroupSelected"
       />
+    </div>
+
+    <div>
+      <h3>
+        Тесты
+        <v-btn
+          color="gray"
+          :size="48"
+          icon="$plus"
+          variant="plain"
+          @click="() => testSelectorDialog?.open()"
+        />
+      </h3>
+      <TestSelectorDialog ref="testSelectorDialog" />
     </div>
   </div>
 </template>

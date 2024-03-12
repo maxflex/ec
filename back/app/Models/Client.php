@@ -13,7 +13,8 @@ class Client extends Model
 
     public $interfaces = [
         'groups' => ['type' => 'Groups'],
-        'swamps' => ['type' => 'ContractPrograms']
+        'swamps' => ['type' => 'ContractPrograms'],
+        'tests' => ['type' => 'Tests'],
     ];
 
     protected $hidden = ['groups', 'swamps'];
@@ -42,6 +43,25 @@ class Client extends Model
         return Attribute::make(
             fn (): Collection =>
             $this->contractGroup()->with('group')->get()->map(fn ($e) => $e->group)
+        );
+    }
+
+    /**
+     * @return Test[]
+     */
+    public function tests(): Attribute
+    {
+        $clientId = $this->id;
+        return Attribute::make(
+            fn () => Test::query()
+                ->whereNotNull('results')
+                ->whereRaw(<<<SQL
+                    json_contains(
+                        results->"$[*].client_id",
+                        "{$clientId}"
+                    ) = 1
+                SQL)
+                ->get()
         );
     }
 
