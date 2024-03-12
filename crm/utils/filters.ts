@@ -22,6 +22,15 @@ export function formatPhone({ number }: Phone): string {
   ].join("")
 }
 
+export function humanFileSize(size: number) {
+  var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024))
+  return (
+    (size / Math.pow(1024, i)).toFixed(2) * 1 +
+    " " +
+    ["B", "kB", "MB", "GB", "TB"][i]
+  )
+}
+
 export function formatYear(year: Year): string {
   return `${year}-${year + 1} уч. г.`
 }

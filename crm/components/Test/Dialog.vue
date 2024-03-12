@@ -2,10 +2,13 @@
 import { cloneDeep } from "lodash"
 import type { Program, Test } from "~/utils/models"
 import { PROGRAM } from "~/utils/sment"
+import { humanFileSize } from "~/utils/filters"
 
 const { dialog, width } = useDialog()
 const item = ref<Test>()
 const input = ref()
+const fileInput = ref()
+const file = ref()
 const loading = ref(false)
 const programs = Object.keys(PROGRAM).map((value) => ({
   value,
@@ -42,13 +45,29 @@ function create() {
 async function storeOrUpdate() {
   console.log("SMENT?")
   loading.value = true
+  let formData = new FormData()
+  if (file.value) {
+    formData.append("pdf", file.value)
+  }
+  for (const key in item.value) {
+    formData.append(key, item.value[key])
+  }
   await useHttp("tests", {
     method: "POST",
-    body: item.value,
+    body: formData,
   })
   dialog.value = false
   loading.value = false
   emit("added")
+}
+
+function selectFile() {
+  fileInput.value.click()
+}
+
+function onFileSelected(e: Event) {
+  const target = e.target as HTMLInputElement
+  file.value = target.files[0]
 }
 
 defineExpose({ open, create })
@@ -88,11 +107,32 @@ defineExpose({ open, create })
           />
         </div>
         <div>
+          <v-btn color="secondary" @click="selectFile()"> выбрать файл </v-btn>
+          <input
+            style="display: none"
+            type="file"
+            accept="application/pdf"
+            ref="fileInput"
+            @change="onFileSelected"
+          />
+          <v-slide-y-transition>
+            <div class="pdf-file" v-if="file">
+              <img src="/img/pdf.svg" />
+              <div>
+                <div class="text-gray">{{ file.name }}</div>
+                <div class="text-gray">
+                  {{ humanFileSize(file.size) }}
+                </div>
+              </div>
+            </div>
+          </v-slide-y-transition>
+        </div>
+        <!-- <div>
           <a class="link-icon" @click="() => console.log('sment')"
             >редактировать ответы
             <v-icon :size="16" icon="$next"></v-icon>
           </a>
-        </div>
+        </div> -->
         <!-- <div class="dialog-section">
           <div class="dialog-section__title">График платежей</div>
         </div> -->
@@ -100,3 +140,28 @@ defineExpose({ open, create })
     </div>
   </v-dialog>
 </template>
+
+<style lang="scss">
+.pdf-file {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-top: 30px;
+  img {
+    width: 50px;
+  }
+  & > div {
+    flex: 1;
+    overflow: hidden;
+    top: 4px;
+    position: relative;
+    line-height: 20px;
+    & > div {
+      width: 100%;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      display: inline-block;
+    }
+  }
+}
+</style>

@@ -1,13 +1,26 @@
 <script setup lang="ts">
+import type { Test } from "~/utils/models"
+
+const route = useRoute()
 const answers = ref([])
+const test = ref<Test>()
+
+async function loadData() {
+  const { data } = await useHttp(`tests/${route.params.id}`)
+  test.value = data.value as Test
+}
+
+onMounted(async () => {
+  await loadData()
+})
 </script>
 
 <template>
   <!-- <UiTopPanel>
     <v-btn> добавить тест </v-btn>
   </UiTopPanel> -->
-  <div class="test">
-    <iframe src="https://research.google.com/pubs/archive/44678.pdf" />
+  <div class="test" v-if="test">
+    <iframe :src="test.file" />
     <div class="test__answers">
       <div v-for="i in 10">
         <h2>Вопрос {{ i }}</h2>

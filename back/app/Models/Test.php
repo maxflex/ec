@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Test extends Model
 {
     protected $fillable = [
-        'name', 'minutes', 'program', 'file'
+        'name', 'minutes', 'program'
     ];
 
     protected $casts = [
@@ -17,10 +17,11 @@ class Test extends Model
         'results' => 'array',
     ];
 
-    public static function booted()
+    public function getFileAttribute($value)
     {
-        static::creating(function ($model) {
-            $model->file = uniqid("test_") . ".pdf";
-        });
+        if (!$value) {
+            return null;
+        }
+        return asset("storage/tests/" . $value);
     }
 }
