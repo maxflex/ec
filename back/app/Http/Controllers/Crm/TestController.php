@@ -17,7 +17,7 @@ class TestController extends Controller
 
     public function store(Request $request)
     {
-        $test = Test::make($request->all());
+        $test = Test::make(json_decode($request->file('item')->getContent(), true));
         if ($request->has('pdf')) {
             $fileName = uniqid() . ".pdf";
             $request->file('pdf')->storeAs('public/tests', $fileName);

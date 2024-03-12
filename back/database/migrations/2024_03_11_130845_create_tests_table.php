@@ -19,7 +19,7 @@ return new class extends Migration
                 collect(Program::cases())->map(fn ($e) => $e->name)->all()
             )->nullable();
             $table->string('name');
-            $table->string('file');
+            $table->string('file')->nullable();
             $table->integer('minutes');
             $table->json('answers')->nullable();
             $table->json('results')->nullable();

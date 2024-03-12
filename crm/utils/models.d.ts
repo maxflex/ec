@@ -21,6 +21,8 @@ export interface Client {
   created_at: string|null
   updated_at: string|null
   // mutators
+  groups?: unknown
+  swamps?: unknown
   // overrides
   groups: Groups
   swamps: ContractPrograms
@@ -104,8 +106,8 @@ export type ContractGroups = ContractGroup[]
 export interface ContractLesson {
   // columns
   id: number
-  lesson_id: number
   contract_id: number
+  lesson_id: number
   price: number
   status: ContractLessonStatus
   minutes_late: number|null
@@ -159,10 +161,10 @@ export interface Group {
   is_archived: boolean
   zoom: Zoom|null
   lessons_planned: unknown|null
-  duration: number|null
-  exam_date: string|null
   created_at: string|null
   updated_at: string|null
+  duration: number|null
+  exam_date: string|null
   // relations
   teacher: Teacher
   contracts: Contracts
@@ -233,8 +235,8 @@ export interface Review {
   // columns
   id: number
   client_id: number
-  signature: string
   text: string
+  signature: string
   rating: unknown
   is_published: boolean
   user_id: number
@@ -308,9 +310,9 @@ export interface Test {
   id: number
   program: Program|null
   name: string
-  file: string
+  file: unknown
   minutes: number
-  answers: string[]|null
+  answers: TestAnswer[]|null
   results: string[]|null
   created_at: string|null
   updated_at: string|null

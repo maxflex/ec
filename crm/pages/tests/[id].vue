@@ -22,9 +22,9 @@ onMounted(async () => {
   <div class="test" v-if="test">
     <iframe :src="test.file" />
     <div class="test__answers">
-      <div v-for="i in 10">
-        <h2>Вопрос {{ i }}</h2>
-        <v-item-group selected-class="bg-secondary" v-model="answers[i - 1]">
+      <div v-for="(a, i) in test.answers">
+        <h2>Вопрос {{ i + 1 }}</h2>
+        <v-item-group selected-class="bg-secondary" v-model="answers[i]">
           <v-item v-for="n in 6" :key="n">
             <template v-slot:default="{ toggle, selectedClass }">
               <v-btn

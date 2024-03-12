@@ -8,13 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Test extends Model
 {
     protected $fillable = [
-        'name', 'minutes', 'program'
+        'name', 'minutes', 'program', 'answers'
     ];
 
     protected $casts = [
         'program' => Program::class,
         'answers' => 'array',
         'results' => 'array',
+    ];
+
+    public $interfaces = [
+        'answers' => ['type' => 'TestAnswer[]'],
     ];
 
     public function getFileAttribute($value)

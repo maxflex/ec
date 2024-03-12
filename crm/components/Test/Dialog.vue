@@ -48,11 +48,14 @@ async function storeOrUpdate() {
   console.log("SMENT?")
   loading.value = true
   let formData = new FormData()
+  formData.append(
+    "item",
+    new Blob([JSON.stringify(item.value)], {
+      type: "application/json",
+    }),
+  )
   if (file.value) {
     formData.append("pdf", file.value)
-  }
-  for (const key in item.value) {
-    formData.append(key, item.value[key])
   }
   await useHttp("tests", {
     method: "POST",
@@ -61,6 +64,13 @@ async function storeOrUpdate() {
   dialog.value = false
   loading.value = false
   emit("added")
+}
+
+function onAnswersSaved(answers: TestAnswer[]) {
+  if (!item.value) {
+    return
+  }
+  item.value.answers = answers
 }
 
 function selectFile() {
@@ -112,8 +122,11 @@ defineExpose({ open, create })
           />
         </div>
         <div>
-          <a class="link-icon" @click="() => answersDialog?.open()"
+          <a class="link-icon" @click="() => answersDialog?.open(item?.answers)"
             >редактировать ответы
+            <template v-if="item.answers?.length"
+              >({{ item.answers.length }})</template
+            >
             <v-icon :size="16" icon="$next"></v-icon>
           </a>
         </div>
@@ -141,7 +154,7 @@ defineExpose({ open, create })
       </div>
     </div>
   </v-dialog>
-  <TestAnswersDialog ref="answersDialog" />
+  <TestAnswersDialog ref="answersDialog" @saved="onAnswersSaved" />
 </template>
 
 <style lang="scss">
@@ -164,6 +177,7 @@ defineExpose({ open, create })
       text-overflow: ellipsis;
       overflow: hidden;
       display: inline-block;
+      white-space: nowrap;
     }
   }
 }

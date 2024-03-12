@@ -1,20 +1,24 @@
 <script setup lang="ts">
-// const emit = defineEmits<{
-//   (e: "saved", programs: Programs): void
-// }>()
+const emit = defineEmits<{
+  (e: "saved", answers: TestAnswer[]): void
+}>()
 
 const answers = ref<TestAnswer[]>([])
-const ans = ref([])
 
 const { dialog, width } = useDialog(500)
 
-function open() {
+function open(preSelect: TestAnswer[]) {
   dialog.value = true
+  answers.value = [...preSelect]
+}
+
+function deleteAnswer(i: number) {
+  answers.value?.splice(i, 1)
 }
 
 function save() {
   dialog.value = false
-  // emit("saved", selected.value)
+  emit("saved", answers.value)
 }
 
 function add() {
@@ -47,7 +51,18 @@ defineExpose({ open })
       <div class="dialog-body pt-0">
         <div class="test-dialog__answers">
           <div v-for="(a, i) in answers">
-            <h2>Вопрос {{ i + 1 }}</h2>
+            <h2>
+              Вопрос {{ i + 1 }}
+              <v-btn
+                icon="$close"
+                variant="plain"
+                color="red"
+                :size="32"
+                :ripple="false"
+                @click="deleteAnswer(i)"
+              >
+              </v-btn>
+            </h2>
             <v-item-group selected-class="bg-success" v-model="a.correct">
               <v-item v-for="n in 6" :key="n">
                 <template v-slot:default="{ toggle, selectedClass }">
@@ -93,6 +108,19 @@ defineExpose({ open })
     overflow: scroll;
     h2 {
       margin-bottom: 16px;
+      cursor: default;
+      .v-icon {
+        opacity: 0;
+        font-size: 24px !important;
+        top: -1px;
+        position: relative;
+        transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      &:hover {
+        .v-icon {
+          opacity: 1;
+        }
+      }
     }
     .v-item-group {
       gap: 10px;
