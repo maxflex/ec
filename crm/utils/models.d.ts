@@ -310,9 +310,9 @@ export interface Test {
   id: number
   program: Program|null
   name: string
-  file: unknown
+  file: unknown|null
   minutes: number
-  answers: TestAnswer[]|null
+  answers: TestAnswers|null
   results: string[]|null
   created_at: string|null
   updated_at: string|null

@@ -38,6 +38,8 @@ declare global {
     score: number | null
   }
 
+  type TestAnswers = TestAnswer[]
+
   // https://stackoverflow.com/a/45486495/2274406
   type Year = (typeof YEARS)[number]
 

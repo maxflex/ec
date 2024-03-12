@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Program;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 
 class Test extends Model
 {
@@ -18,7 +19,7 @@ class Test extends Model
     ];
 
     public $interfaces = [
-        'answers' => ['type' => 'TestAnswer[]'],
+        'answers' => ['type' => 'TestAnswers'],
     ];
 
     public function getFileAttribute($value)

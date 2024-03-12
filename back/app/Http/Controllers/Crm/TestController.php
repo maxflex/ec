@@ -17,13 +17,24 @@ class TestController extends Controller
 
     public function store(Request $request)
     {
-        $test = Test::make(json_decode($request->file('item')->getContent(), true));
+        $test = Test::create($request->all());
+        return new TestResource($test);
+    }
+
+    public function update(Request $request, Test $test)
+    {
+        $test->update($request->all());
+        return new TestResource($test);
+    }
+
+    public function uploadPdf(Request $request, Test $test)
+    {
         if ($request->has('pdf')) {
-            $fileName = uniqid() . ".pdf";
-            $request->file('pdf')->storeAs('public/tests', $fileName);
-            $test->file = $fileName;
+            $file = uniqid() . ".pdf";
+            $request->file('pdf')->storeAs('public/tests', $file);
+            $test->file = $file;
+            $test->save();
         }
-        $test->save();
     }
 
     public function show(Test $test)

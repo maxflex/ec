@@ -9,7 +9,7 @@ const { dialog, width } = useDialog()
 const item = ref<Test>()
 const input = ref()
 const fileInput = ref()
-const file = ref()
+const pdf = ref()
 const loading = ref(false)
 const answersDialog = ref<null | InstanceType<typeof TestAnswersDialog>>()
 const programs = Object.keys(PROGRAM).map((value) => ({
@@ -17,17 +17,18 @@ const programs = Object.keys(PROGRAM).map((value) => ({
   title: PROGRAM[value as Program],
 }))
 const emit = defineEmits<{
-  (e: "added"): void
+  (e: "updated"): void
 }>()
 
 function open(t: Test) {
+  pdf.value = null
   item.value = cloneDeep(t)
   dialog.value = true
 }
 
 function create() {
   item.value = {
-    id: -1,
+    id: 0,
     minutes: 30,
     name: "",
     file: "",
@@ -45,28 +46,36 @@ function create() {
 }
 
 async function storeOrUpdate() {
-  console.log("SMENT?")
   loading.value = true
-  let formData = new FormData()
-  formData.append(
-    "item",
-    new Blob([JSON.stringify(item.value)], {
-      type: "application/json",
-    }),
-  )
-  if (file.value) {
-    formData.append("pdf", file.value)
+  const { data } = item.value?.id
+    ? await useHttp(`tests/${item.value.id}`, {
+        method: "PUT",
+        body: item.value,
+      })
+    : await useHttp("tests", {
+        method: "POST",
+        body: item.value,
+      })
+  item.value = data.value as Test
+  await uploadPdf()
+  dialog.value = false
+  loading.value = false
+  emit("updated")
+}
+
+async function uploadPdf() {
+  if (!pdf.value || !item.value?.id) {
+    return
   }
-  await useHttp("tests", {
+  const formData = new FormData()
+  formData.append("pdf", pdf.value)
+  await useHttp(`tests/upload-pdf/${item.value.id}`, {
     method: "POST",
     body: formData,
   })
-  dialog.value = false
-  loading.value = false
-  emit("added")
 }
 
-function onAnswersSaved(answers: TestAnswer[]) {
+function onAnswersSaved(answers: TestAnswers) {
   if (!item.value) {
     return
   }
@@ -79,7 +88,9 @@ function selectFile() {
 
 function onFileSelected(e: Event) {
   const target = e.target as HTMLInputElement
-  file.value = target.files[0]
+  if (target.files?.length) {
+    pdf.value = target.files[0]
+  }
 }
 
 defineExpose({ open, create })
@@ -131,7 +142,6 @@ defineExpose({ open, create })
           </a>
         </div>
         <div>
-          <!-- <v-btn color="secondary" @click="selectFile()"> выбрать файл </v-btn> -->
           <input
             style="display: none"
             type="file"
@@ -140,13 +150,22 @@ defineExpose({ open, create })
             @change="onFileSelected"
           />
           <v-slide-y-transition>
-            <div class="pdf-file" v-if="file">
+            <div class="pdf-file" v-if="pdf">
               <img src="/img/pdf.svg" />
               <div>
-                <div class="text-gray">{{ file.name }}</div>
+                <div class="text-gray">{{ pdf.name }}</div>
                 <div class="text-gray">
-                  {{ humanFileSize(file.size) }}
+                  {{ humanFileSize(pdf.size) }}
                 </div>
+              </div>
+            </div>
+            <div class="pdf-file" v-else-if="item.file">
+              <img src="/img/pdf.svg" />
+              <div>
+                <a :href="item.file" target="_blank">{{
+                  item.file.split("/")[5]
+                }}</a>
+                <div class="text-gray">1.2 Мб</div>
               </div>
             </div>
           </v-slide-y-transition>

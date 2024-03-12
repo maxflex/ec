@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { TestDialog } from "#build/components"
-import type { Test, Tests } from "~/utils/models"
+import type { Tests } from "~/utils/models"
 import { PROGRAM } from "~/utils/sment"
+import { plural } from "~/utils/filters"
 
 const testDialog = ref<null | InstanceType<typeof TestDialog>>()
 const tests = ref<Tests>()
@@ -33,15 +34,24 @@ async function loadData() {
     </UiTopPanel>
     <div class="table table--hover">
       <div v-for="t in tests" :key="t.id">
-        <div style="width: 200px">
+        <div style="width: 220px">
           <NuxtLink :to="{ name: 'tests-id', params: { id: t.id } }">
             {{ t.name }}
           </NuxtLink>
         </div>
-        <div style="width: 300px">
-          {{ PROGRAM[t.program] }}
+        <div style="width: 250px">
+          <template v-if="t.program">
+            {{ PROGRAM[t.program] }}
+          </template>
+          <span class="text-gray" v-else> не установлено </span>
         </div>
-        <div>{{ t.minutes }} минут</div>
+        <div style="width: 150px">{{ t.minutes }} минут</div>
+        <div>
+          <template v-if="t.answers?.length">
+            {{ plural(t.answers.length, ["вопрос", "вопроса", "вопросов"]) }}
+          </template>
+          <span class="text-gray" v-else> нет вопросов </span>
+        </div>
         <div class="table-actions">
           <v-btn
             variant="text"
@@ -53,5 +63,5 @@ async function loadData() {
       </div>
     </div>
   </div>
-  <TestDialog ref="testDialog" @added="loadData()" />
+  <TestDialog ref="testDialog" @updated="loadData()" />
 </template>
