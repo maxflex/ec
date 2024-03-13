@@ -38,7 +38,7 @@ const { item } = defineProps<{
             </a>
             <v-icon
               :size="16"
-              color="primary"
+              color="secondary"
               v-if="phone.is_verified"
               icon="$verified"
             />

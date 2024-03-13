@@ -24,7 +24,7 @@ onMounted(async () => {
     <div class="test__answers">
       <div v-for="(a, i) in test.answers">
         <h2>Вопрос {{ i + 1 }}</h2>
-        <v-item-group selected-class="bg-secondary" v-model="answers[i]">
+        <v-item-group selected-class="bg-primary" v-model="answers[i]">
           <v-item v-for="n in 6" :key="n">
             <template v-slot:default="{ toggle, selectedClass }">
               <v-btn

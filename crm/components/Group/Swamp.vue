@@ -20,7 +20,7 @@ const emit = defineEmits<{
     </div>
     <div>{{ swamp.lessons }} уроков</div>
     <div class="table-actions">
-      <v-btn color="secondary" @click="emit('attach', swamp)">
+      <v-btn @click="emit('attach', swamp)" color="primary">
         присвоить группу
       </v-btn>
     </div>

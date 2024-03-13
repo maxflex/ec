@@ -109,8 +109,8 @@ defineExpose({ open })
     align-items: flex-start;
   }
   &--selected {
-    background: rgb(var(--v-theme-secondary));
-    border-color: rgb(var(--v-theme-secondary)) !important;
+    background: rgb(var(--v-theme-primary));
+    border-color: rgb(var(--v-theme-primary)) !important;
     // color: white !important;
     pointer-events: none;
   }

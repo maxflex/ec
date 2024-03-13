@@ -9,7 +9,11 @@ Route::apiResource('requests', RequestsController::class);
 Route::post('groups/add-client', [GroupController::class, 'addClient']);
 Route::post('groups/remove-contract', [GroupController::class, 'removeContract']);
 
-Route::post('tests/upload-pdf/{test}', [TestController::class, 'uploadPdf']);
+
+Route::controller(TestController::class)->prefix('tests')->group(function () {
+    Route::post('add-client/{client}', 'addClient');
+    Route::post('upload-pdf/{test}', 'uploadPdf');
+});
 
 Route::apiResources([
     'requests' =>  RequestsController::class,

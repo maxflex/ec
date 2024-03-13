@@ -3,19 +3,16 @@ import type { Test, Tests } from "~/utils/models"
 import { PROGRAM } from "~/utils/sment"
 import { plural } from "~/utils/filters"
 
-const { tests, selectable } = defineProps<{
-  tests: Tests
-  selectable: boolean
-}>()
-
-const selected = ref<Tests>([])
-
-const emit = defineEmits<{
-  (e: "open", test: Test): void
-}>()
+const { tests } = defineProps<{ tests: Tests }>()
+const selected = defineModel<Tests>("selected")
+const emit = defineEmits<{ (e: "open", test: Test): void }>()
+const selectable = selected.value !== undefined
 
 function select(t: Test) {
-  const index = selected.value.findIndex((e) => e === t)
+  if (!selected.value) {
+    return
+  }
+  const index = selected.value.findIndex(({ id }) => id === t.id)
   index !== -1 ? selected.value.splice(index, 1) : selected.value.push(t)
 }
 </script>
@@ -28,10 +25,10 @@ function select(t: Test) {
       @click="select(t)"
       :class="{ 'cursor-pointer': selectable }"
     >
-      <div v-if="selectable">
+      <div v-if="selected">
         <v-icon
-          v-if="selected.includes(t)"
-          color="primary"
+          v-if="selected.some(({ id }) => id === t.id)"
+          color="secondary"
           icon="$checkboxOn"
         />
         <v-icon v-else icon="$checkboxOff" />

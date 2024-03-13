@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Crm;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TestResource;
+use App\Models\Client;
 use App\Models\Test;
 use Illuminate\Http\Request;
 
@@ -35,6 +36,28 @@ class TestController extends Controller
             $test->file = $file;
             $test->save();
         }
+    }
+
+    public function addClient(Client $client, Request $request)
+    {
+        $request->validate([
+            'ids' => ['required', 'array'],
+            'ids.*' => ['exists:tests,id']
+        ]);
+
+        $tests = Test::all();
+        foreach ($tests as $test) {
+            $results = $test->results;
+            if (in_array($test->id, $request->ids)) {
+                $results[$client->id] = null;
+            } else {
+                unset($results[$client->id]);
+            }
+            $test->results = $results;
+            $test->save();
+        }
+
+        return $request->all();
     }
 
     public function show(Test $test)

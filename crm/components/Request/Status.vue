@@ -18,7 +18,7 @@ const { status } = defineProps<{ status: RequestStatus }>()
   &--new
     --background: rgb(var(--v-theme-error))
   &--awaiting
-    --background: rgb(var(--v-theme-secondary))
+    --background: rgb(var(--v-theme-orange))
   &--finished
     --background: rgba(var(--v-theme-success))
 </style>

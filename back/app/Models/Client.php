@@ -51,16 +51,13 @@ class Client extends Model
      */
     public function tests(): Attribute
     {
-        $clientId = $this->id;
         return Attribute::make(
             fn () => Test::query()
                 ->whereNotNull('results')
                 ->whereRaw(<<<SQL
-                    json_contains(
-                        results->"$[*].client_id",
-                        "{$clientId}"
-                    ) = 1
+                    json_extract(results, '$."{$this->id}"') is not null
                 SQL)
+                ->latest()
                 ->get()
         );
     }

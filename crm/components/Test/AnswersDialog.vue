@@ -91,7 +91,7 @@ defineExpose({ open })
             </v-item-group>
           </div>
         </div>
-        <v-btn color="secondary" @click="add()"> добавить ответ </v-btn>
+        <v-btn @click="add()" color="primary"> добавить ответ </v-btn>
       </div>
     </div>
   </v-dialog>
@@ -112,7 +112,7 @@ defineExpose({ open })
       .v-icon {
         opacity: 0;
         font-size: 24px !important;
-        top: -1px;
+        top: -2px;
         position: relative;
         transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1);
       }

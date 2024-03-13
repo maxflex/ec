@@ -137,8 +137,8 @@ defineExpose({ open })
     overflow: scroll !important;
   }
   &--selected {
-    background: rgb(var(--v-theme-secondary)) !important;
-    border-color: rgb(var(--v-theme-secondary)) !important;
+    background: rgb(var(--v-theme-primary)) !important;
+    border-color: rgb(var(--v-theme-primary)) !important;
   }
   &--today {
     color: rgb(var(--v-theme-on-surface));

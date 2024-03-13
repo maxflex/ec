@@ -49,7 +49,7 @@ defineExpose({ open })
           >
             <v-icon
               v-if="selected.includes(p)"
-              color="primary"
+              color="secondary"
               icon="$checkboxOn"
             />
             <v-icon v-else icon="$checkboxOff" />

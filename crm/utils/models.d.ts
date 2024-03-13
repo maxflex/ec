@@ -22,10 +22,12 @@ export interface Client {
   updated_at: string|null
   // mutators
   groups?: unknown
+  tests: unknown
   swamps?: unknown
   // overrides
   groups: Groups
   swamps: ContractPrograms
+  tests: Tests
   // relations
   contracts: Contracts
   contract_group: ContractGroups

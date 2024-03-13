@@ -103,12 +103,17 @@ defineExpose({ open, create })
         <span v-if="item.id > 0"> Редактирование теста </span>
         <span v-else> Добавить тест </span>
         <div>
-          <v-btn icon="$file" :size="48" @click="selectFile()" variant="text" />
+          <v-btn
+            icon="$file"
+            :size="48"
+            @click="selectFile()"
+            color="#fafafa"
+          />
           <v-btn
             icon="$save"
             :size="48"
             :loading="loading"
-            variant="text"
+            color="#fafafa"
             @click="storeOrUpdate()"
           />
         </div>

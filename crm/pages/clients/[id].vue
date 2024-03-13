@@ -5,7 +5,13 @@ import type {
   GroupSelectorDialog,
   TestSelectorDialog,
 } from "#build/components"
-import type { Client, Contract, ContractVersion, Group } from "~/utils/models"
+import type {
+  Client,
+  Contract,
+  ContractVersion,
+  Group,
+  Tests,
+} from "~/utils/models"
 
 const route = useRoute()
 const client = ref<Client>()
@@ -37,6 +43,17 @@ async function onGroupSelected(g: Group) {
     },
   })
   loadData()
+}
+
+function onTestsSaved(tests: Tests) {
+  if (!client.value) {
+    return
+  }
+  client.value.tests = [...tests]
+  useHttp(`tests/add-client/${client.value.id}`, {
+    method: "post",
+    body: { ids: tests.map((t) => t.id) },
+  })
 }
 
 onMounted(async () => {
@@ -92,9 +109,9 @@ onMounted(async () => {
           @open="(p) => clientPaymentDialog?.open(p)"
         />
       </div>
-      <div class="mt-8">
+      <!-- <div class="mt-8">
         <v-btn color="secondary">Добавить договор</v-btn>
-      </div>
+      </div> -->
       <ContractDialog ref="contractDialog" />
       <ClientPaymentDialog ref="clientPaymentDialog" />
     </div>
@@ -128,10 +145,11 @@ onMounted(async () => {
           :size="48"
           icon="$plus"
           variant="plain"
-          @click="() => testSelectorDialog?.open()"
+          @click="() => testSelectorDialog?.open(client.tests)"
         />
       </h3>
-      <TestSelectorDialog ref="testSelectorDialog" />
+      <TestList :tests="client.tests" />
+      <TestSelectorDialog ref="testSelectorDialog" @saved="onTestsSaved" />
     </div>
   </div>
 </template>

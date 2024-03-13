@@ -1,14 +1,17 @@
 <script lang="ts" setup>
 import type { Tests } from "~/utils/models"
 
+const emit = defineEmits<{
+  (e: "saved", tests: Tests): void
+}>()
 const { dialog, width } = useDialog(1000)
-const selected = ref([])
+const selected = ref<Tests>([])
 const tests = ref<Tests>()
 
-function open() {
+function open(tests: Tests) {
+  selected.value = [...tests]
   dialog.value = true
   loadData()
-  // selected.value = [...preSelect]
 }
 
 async function loadData() {
@@ -22,6 +25,11 @@ async function loadData() {
   }
 }
 
+function save() {
+  dialog.value = false
+  emit("saved", selected.value)
+}
+
 defineExpose({ open })
 </script>
 
@@ -29,15 +37,15 @@ defineExpose({ open })
   <v-dialog v-model="dialog" :width="width">
     <div class="dialog-header">
       <span>
-        Выберите тесты
+        Добавить тесты
         <span class="ml-1 text-gray" v-if="selected.length">
           {{ selected.length }}
         </span>
       </span>
-      <v-btn icon="$save" :size="48" color="#fafafa" />
+      <v-btn icon="$save" :size="48" color="#fafafa" @click="save()" />
     </div>
     <div class="dialog-body pt-0">
-      <TestList v-if="tests" :tests="tests" selectable />
+      <TestList v-if="tests" :tests="tests" v-model:selected="selected" />
     </div>
   </v-dialog>
 </template>
