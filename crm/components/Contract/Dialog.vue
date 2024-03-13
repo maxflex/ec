@@ -81,7 +81,7 @@ function addPayment() {
   })
   nextTick(() =>
     document
-      .querySelector(".dialog-content")
+      .querySelector(".dialog-body")
       ?.scrollTo({ top: 9999, behavior: "smooth" }),
   )
 }

@@ -1,4 +1,5 @@
 import { createVuetify } from "vuetify"
+import type { ThemeDefinition } from "vuetify"
 import { aliases, mdi } from "vuetify/iconsets/mdi-svg"
 import {
   mdiDotsHorizontal,
@@ -7,8 +8,25 @@ import {
   mdiCheckDecagram,
   mdiDelete,
   mdiChevronRight,
+  mdiEyeArrowRightOutline,
 } from "@mdi/js"
-import type { ThemeDefinition } from "vuetify"
+
+const icons = {
+  defaultSet: "mdi",
+  aliases: {
+    ...aliases,
+    more: mdiDotsHorizontal,
+    save: mdiContentSaveCheckOutline,
+    dropdown: mdiChevronDown,
+    verified: mdiCheckDecagram,
+    delete: mdiDelete,
+    right: mdiChevronRight,
+    preview: mdiEyeArrowRightOutline,
+  },
+  sets: {
+    mdi,
+  },
+}
 
 const colors = {
   primary: "#ffd572", // оранжевый приглушённый
@@ -31,21 +49,7 @@ const myTheme: ThemeDefinition = {
 
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
-    icons: {
-      defaultSet: "mdi",
-      aliases: {
-        ...aliases,
-        more: mdiDotsHorizontal,
-        save: mdiContentSaveCheckOutline,
-        dropdown: mdiChevronDown,
-        verified: mdiCheckDecagram,
-        delete: mdiDelete,
-        right: mdiChevronRight,
-      },
-      sets: {
-        mdi,
-      },
-    },
+    icons,
     defaults: {
       VTextField: {
         variant: "outlined",

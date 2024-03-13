@@ -65,7 +65,10 @@ onMounted(async () => {
   <!-- <h3 class="page-title">Клиент {{ route.params.id }}</h3> -->
   <div class="client" v-if="client">
     <div>
-      <h3>Ученик</h3>
+      <h3>
+        Ученик
+        <v-btn color="gray" :size="48" icon="$preview" variant="plain" />
+      </h3>
       <div class="inputs">
         <v-text-field v-model="client.last_name" label="Фамилия" />
         <v-text-field v-model="client.first_name" label="Имя" />
