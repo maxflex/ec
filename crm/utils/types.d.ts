@@ -47,6 +47,11 @@ declare global {
     id: string
     password: string
   }
+
+  interface User {
+    id: number
+    entity_type: string
+  }
 }
 
 export {}
