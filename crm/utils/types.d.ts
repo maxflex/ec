@@ -33,11 +33,6 @@ declare global {
     status: InfiniteScrollStatus
   }
 
-  interface TestAnswer {
-    correct: number | null
-    score: number | null
-  }
-
   interface MenuItem {
     to: string
     title: string
@@ -46,7 +41,14 @@ declare global {
 
   type Menu = MenuItem[]
 
+  interface TestAnswer {
+    correct: number | null
+    score: number | null
+  }
+
   type TestAnswers = TestAnswer[]
+
+  type TestAnswersFront = Array<number | undefined>
 
   // https://stackoverflow.com/a/45486495/2274406
   type Year = (typeof YEARS)[number]

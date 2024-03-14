@@ -43,7 +43,7 @@ class TestController extends Controller
     public function active()
     {
         $clientId = auth()->user()->entity_id;
-        $test = Test::started($clientId)->first();
+        $test = Test::getActive($clientId);
         return new TestResource($test);
         // $tests = Test::whereClient($clientId)->get();
         // foreach($tests as $test) {

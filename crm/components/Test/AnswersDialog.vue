@@ -91,7 +91,9 @@ defineExpose({ open })
             </v-item-group>
           </div>
         </div>
-        <v-btn @click="add()" color="primary"> добавить ответ </v-btn>
+        <v-btn @click="add()" size="x-large" color="primary">
+          добавить ответ
+        </v-btn>
       </div>
     </div>
   </v-dialog>

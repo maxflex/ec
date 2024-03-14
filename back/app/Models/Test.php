@@ -39,10 +39,13 @@ class Test extends Model
             SQL);
     }
 
-    public function scopeStarted($query, int $clientId)
+    public static function getActive(int $clientId): Test | null
     {
-        $query->whereRaw(<<<SQL
-            json_extract(results, '$."{$clientId}".started_at') is not null
-        SQL);
+        $test = Test::query()
+            ->whereRaw(<<<SQL
+                json_extract(results, '$."{$clientId}".started_at') is not null
+            SQL)
+            ->first();
+        return $test;
     }
 }
