@@ -32,6 +32,10 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('crm')
                 ->group(base_path('routes/crm.php'));
 
+            Route::middleware('crm')
+                ->prefix('crm/client')
+                ->group(base_path('routes/client.php'));
+
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });

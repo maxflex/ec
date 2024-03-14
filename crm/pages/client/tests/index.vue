@@ -1,0 +1,26 @@
+<script setup lang="ts">
+import type { TestDialog } from "#build/components"
+import type { Tests } from "~/utils/models"
+
+const testDialog = ref<null | InstanceType<typeof TestDialog>>()
+const tests = ref<Tests>()
+
+onMounted(async () => {
+  await loadData()
+})
+
+async function loadData() {
+  const { data } = await useHttp<ApiResponse<Tests>>("client/tests")
+  if (data.value) {
+    const { data: newItems } = data.value
+    tests.value = newItems
+  }
+}
+</script>
+
+<template>
+  <div class="tests">
+    <TestClientList v-if="tests" :tests="tests" @open="testDialog?.open" />
+  </div>
+  <TestDialog ref="testDialog" @updated="loadData()" />
+</template>

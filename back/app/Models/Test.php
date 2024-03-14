@@ -29,4 +29,20 @@ class Test extends Model
         }
         return asset("storage/tests/" . $value);
     }
+
+    public function scopeWhereClient($query, int $clientId)
+    {
+        $query
+            ->whereNotNull('results')
+            ->whereRaw(<<<SQL
+                json_extract(results, '$."{$clientId}"') is not null
+            SQL);
+    }
+
+    public function scopeStarted($query, int $clientId)
+    {
+        $query->whereRaw(<<<SQL
+            json_extract(results, '$."{$clientId}".started_at') is not null
+        SQL);
+    }
 }

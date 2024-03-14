@@ -21,7 +21,7 @@ function logout() {
     useCookie("token").value = null
   }
   // $store.user = null
-  setTimeout(() => (window.location.href = "/"), 200)
+  window.location.href = "/"
 }
 
 const menu: Menu =
@@ -35,7 +35,7 @@ const menu: Menu =
         {
           icon: mdiDotsTriangle,
           title: "Тесты",
-          to: "/tests",
+          to: "/client/tests",
         },
       ]
     : [
