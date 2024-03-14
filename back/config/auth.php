@@ -43,7 +43,7 @@ return [
         // custom
         'crm' => [
             'driver' => 'crm',
-            // 'provider' => 'user'
+            'provider' => 'phones'
         ],
     ],
 
@@ -69,7 +69,10 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-
+        'phones' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Phone::class,
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',

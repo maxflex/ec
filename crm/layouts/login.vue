@@ -36,6 +36,15 @@
     }
     & > .v-text-field {
       margin-bottom: 20px;
+      // .v-field__outline {
+      //   color: rgb(var(--v-theme-primary));
+      //   label {
+      //     color: rgba(
+      //       var(--v-theme-on-background),
+      //       var(--v-high-emphasis-opacity)
+      //     ) !important;
+      //   }
+      // }
     }
     button[type="submit"] {
       margin-top: 60px;

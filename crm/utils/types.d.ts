@@ -38,6 +38,14 @@ declare global {
     score: number | null
   }
 
+  interface MenuItem {
+    to: string
+    title: string
+    icon: string
+  }
+
+  type Menu = MenuItem[]
+
   type TestAnswers = TestAnswer[]
 
   // https://stackoverflow.com/a/45486495/2274406

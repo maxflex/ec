@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { ENTITY_TYPE } from "~/utils/sment"
+const { $store } = useNuxtApp()
+
 import {
   mdiInbox,
   mdiAccount,
@@ -7,49 +10,71 @@ import {
   mdiCalendar,
   mdiPrinter,
   mdiDotsTriangle,
+  mdiLogout,
 } from "@mdi/js"
 
-const menu: Array<{
-  to: string
-  title: string
-  icon: string
-}> = [
-  {
-    icon: mdiInbox,
-    title: "Заявки",
-    to: "/requests",
-  },
-  {
-    icon: mdiAccount,
-    title: "Клиенты",
-    to: "/clients",
-  },
-  {
-    icon: mdiAccountGroup,
-    title: "Группы",
-    to: "/groups",
-  },
-  {
-    icon: mdiFileDocumentOutline,
-    title: "Договоры",
-    to: "/contracts",
-  },
-  {
-    icon: mdiCalendar,
-    title: "Праздники",
-    to: "/vacations",
-  },
-  {
-    icon: mdiPrinter,
-    title: "Макросы",
-    to: "/macros",
-  },
-  {
-    icon: mdiDotsTriangle,
-    title: "Тесты",
-    to: "/tests",
-  },
-]
+function logout() {
+  const preview = useCookie("preview")
+  if (preview.value) {
+    preview.value = null
+  } else {
+    useCookie("token").value = null
+  }
+  // $store.user = null
+  setTimeout(() => (window.location.href = "/"), 200)
+}
+
+const menu: Menu =
+  $store.user?.entity_type === ENTITY_TYPE.client
+    ? [
+        {
+          icon: mdiAccountGroup,
+          title: "Группы",
+          to: "/groups",
+        },
+        {
+          icon: mdiDotsTriangle,
+          title: "Тесты",
+          to: "/tests",
+        },
+      ]
+    : [
+        {
+          icon: mdiInbox,
+          title: "Заявки",
+          to: "/requests",
+        },
+        {
+          icon: mdiAccount,
+          title: "Клиенты",
+          to: "/clients",
+        },
+        {
+          icon: mdiAccountGroup,
+          title: "Группы",
+          to: "/groups",
+        },
+        {
+          icon: mdiFileDocumentOutline,
+          title: "Договоры",
+          to: "/contracts",
+        },
+        {
+          icon: mdiCalendar,
+          title: "Праздники",
+          to: "/vacations",
+        },
+        {
+          icon: mdiPrinter,
+          title: "Макросы",
+          to: "/macros",
+        },
+        {
+          icon: mdiDotsTriangle,
+          title: "Тесты",
+          to: "/tests",
+        },
+      ]
 </script>
 
 <template>
@@ -64,7 +89,16 @@ const menu: Array<{
       </template>
       {{ title }}
     </v-list-item>
+    <v-list-item @click="logout()">
+      <template #prepend>
+        <v-icon :icon="mdiLogout"></v-icon>
+      </template>
+      Выход
+    </v-list-item>
   </v-list>
+  <!-- <div>
+    {{ $store.user }}
+  </div> -->
 </template>
 
 <style lang="sass">

@@ -25,9 +25,9 @@ class AuthController extends Controller
 
     public function user()
     {
-        if (!auth('crm')->check()) {
+        if (!auth()->check()) {
             return response('', 401);
         }
-        return new UserResource(auth('crm')->user());
+        return new UserResource(auth()->user());
     }
 }

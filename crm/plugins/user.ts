@@ -6,6 +6,6 @@ export default defineNuxtPlugin(async () => {
   // console.log({ error: error.value })
   // console.log({ data: data.value })
   if (data.value) {
-    store.user = data.value.user
+    store.user = data.value as User
   }
 })

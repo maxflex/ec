@@ -12,6 +12,7 @@ import type {
   Group,
   Tests,
 } from "~/utils/models"
+import { ENTITY_TYPE } from "~/utils/sment"
 
 const route = useRoute()
 const client = ref<Client>()
@@ -67,7 +68,12 @@ onMounted(async () => {
     <div>
       <h3>
         Ученик
-        <v-btn color="gray" :size="48" icon="$preview" variant="plain" />
+        <PreviewModeBtn
+          :user="{
+            id: client.id,
+            entity_type: ENTITY_TYPE.client,
+          }"
+        />
       </h3>
       <div class="inputs">
         <v-text-field v-model="client.last_name" label="Фамилия" />
