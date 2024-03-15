@@ -39,6 +39,32 @@ class Test extends Model
             SQL);
     }
 
+    public function start(int $clientId)
+    {
+        $results = $this->results;
+        $results[$clientId] = [
+            'started_at' => now()->format('Y-m-d H:i:s')
+        ];
+        $this->results = $results;
+        $this->save();
+    }
+
+    public function finish(int $clientId, array $answers)
+    {
+        $results = $this->results;
+        $results[$clientId] = [
+            ...$results[$clientId],
+            'finished_at' => now()->format('Y-m-d H:i:s'),
+            'answers' => $answers,
+            'test' => extract_fields($this, [
+                'program', 'name', 'file', 'minutes', 'answers'
+            ])
+        ];
+        $this->results = $results;
+        $this->save();
+    }
+
+
     public static function getActive(int $clientId): Test | null
     {
         $test = Test::query()

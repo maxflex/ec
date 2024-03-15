@@ -48,7 +48,7 @@ declare global {
 
   type TestAnswers = TestAnswer[]
 
-  type TestAnswersFront = Array<number | undefined>
+  type TestAnswersFront = Array<number | undefined | null>
 
   // https://stackoverflow.com/a/45486495/2274406
   type Year = (typeof YEARS)[number]

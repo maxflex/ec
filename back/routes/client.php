@@ -9,6 +9,8 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::controller(TestController::class)->prefix('tests')->group(function () {
         Route::post('start/{test}', 'start');
         Route::get('active', 'active');
+        Route::post('finish', 'finish');
+        Route::get('result/{test}', 'result');
     });
     Route::apiResources([
         'tests' => TestController::class,

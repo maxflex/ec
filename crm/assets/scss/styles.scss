@@ -81,6 +81,9 @@ a:not(.v-list-item) {
   &-pointer {
     cursor: pointer;
   }
+  &-default {
+    cursor: default;
+  }
 }
 
 .unselectable {

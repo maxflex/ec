@@ -6,11 +6,10 @@ const cookie = useCookie<TestAnswersFront>("answers", {
   maxAge: 60 * 60 * 3,
 }) // 3 hours
 const test = ref<Test>()
-const loading = ref(false)
-const dialog = ref(false)
+const finishing = ref(false)
 
 const answered = computed(
-  () => answers.value.filter((e) => e !== undefined).length,
+  () => answers.value.filter((e) => e !== undefined && e !== null).length,
 )
 
 function saveAnswers() {
@@ -27,7 +26,19 @@ async function loadData() {
 }
 
 async function finish() {
-  dialog.value = true
+  finishing.value = true
+  await useHttp(`client/tests/finish`, {
+    method: "post",
+    body: {
+      answers: answers.value,
+    },
+  })
+  navigateTo({
+    name: "client-tests-result-id",
+    params: {
+      id: test.value?.id,
+    },
+  })
 }
 
 watch(answers, saveAnswers)
@@ -38,9 +49,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- <UiTopPanel>
-    <v-btn> добавить тест </v-btn>
-  </UiTopPanel> -->
   <div class="test" v-if="test">
     <iframe :src="test.file" />
     <div>
@@ -64,24 +72,25 @@ onMounted(async () => {
               </template>
             </v-item>
           </v-item-group>
-          <!-- <v-radio-group>
-          <v-radio label="письменная речь" value="one"></v-radio>
-          <v-radio label="записная речь" value="two"></v-radio>
-          <v-radio label="устная речь" value="three"></v-radio>
-        </v-radio-group> -->
         </div>
       </div>
       <div class="test__controls">
-        <v-btn color="primary" size="x-large" block @click="finish()">
-          сдать ответы
-          <span class="text-gray ml-2" style="width: 50px">
+        <v-btn
+          color="primary"
+          size="x-large"
+          block
+          @click="finish()"
+          :loading="finishing"
+        >
+          отправить ответы
+          <span class="ml-2" style="width: 50px; opacity: 0.5">
             {{ answered }}/{{ test.answers?.length }}
           </span>
         </v-btn>
       </div>
     </div>
   </div>
-  <v-dialog
+  <!-- <v-dialog
     v-model="dialog"
     :fullscreen="false"
     transition="v-dialog-transition"
@@ -98,44 +107,5 @@ onMounted(async () => {
         <v-btn class="ms-auto" text="Ok" @click="dialog = false"></v-btn>
       </template>
     </v-card>
-  </v-dialog>
+  </v-dialog> -->
 </template>
-
-<style lang="scss">
-.test {
-  height: 100vh;
-  display: flex;
-  overflow: hidden;
-  iframe {
-    width: 67%;
-    border: 0;
-    border-right: 1px solid #e0e0e0;
-  }
-  & > div {
-    flex: 1;
-    padding: 0 20px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-  &__answers {
-    padding-top: 20px;
-    flex: 1;
-    overflow: scroll;
-    h2 {
-      margin-bottom: 16px;
-    }
-    .v-item-group {
-      gap: 10px;
-      display: flex;
-      // justify-content: center;
-    }
-    & > div {
-      margin-bottom: 50px;
-    }
-  }
-  &__controls {
-    padding: 10px 0 20px;
-  }
-}
-</style>

@@ -37,8 +37,8 @@ const colors = {
   success: "#00A272",
   grey: "#949db1",
   gray: "#949db1",
-  error: "#ef1e25",
-  red: "#ef1e25",
+  error: "#eb4432",
+  red: "#eb4432",
   bg: "#fafafa",
 }
 

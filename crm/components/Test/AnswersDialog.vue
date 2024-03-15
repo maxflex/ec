@@ -81,7 +81,7 @@ defineExpose({ open })
               </v-item>
               <v-spacer />
               <v-text-field
-                v-model="a.score"
+                v-model.number="a.score"
                 label="балл"
                 type="number"
                 hide-spin-buttons
