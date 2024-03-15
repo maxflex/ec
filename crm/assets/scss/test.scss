@@ -14,7 +14,7 @@
     display: flex;
     flex-direction: column;
   }
-  &__answers {
+  &__questions {
     padding: $padding 0 0 $padding;
     flex: 1;
     overflow: scroll;
@@ -49,5 +49,29 @@
     text-align: center;
     padding: $padding;
     border-top: 1px solid #e0e0e0;
+  }
+  &__timer {
+    // position: fixed;
+    // z-index: 9999;
+    // left: 56px;
+    // bottom: 20px;
+    padding-left: 110px;
+    margin-bottom: 8px;
+    background: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: 500;
+    // font-size: 24px;
+    // font-weight: bold;
+  }
+  &__timer-in-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 80px;
+    margin-left: 16px;
+    opacity: 0.5;
   }
 }

@@ -21,8 +21,8 @@ onMounted(async () => {
   </UiTopPanel> -->
   <div class="test" v-if="test">
     <iframe :src="test.file" />
-    <div class="test__answers">
-      <div v-for="(a, i) in test.answers">
+    <div class="test__questions">
+      <div v-for="(q, i) in test.questions">
         <h2>Вопрос {{ i + 1 }}</h2>
         <v-item-group selected-class="bg-primary" v-model="answers[i]">
           <v-item v-for="n in 6" :key="n">

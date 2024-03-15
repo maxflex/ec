@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('file')->nullable();
             $table->integer('minutes');
-            $table->json('answers')->nullable();
+            $table->json('questions')->nullable();
             $table->json('results')->nullable();
             $table->timestamps();
         });

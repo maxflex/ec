@@ -203,12 +203,14 @@ export type Macros = Macro[]
 export interface Phone {
   // columns
   id: number
-  number: string
+  number: unknown
   comment: string|null
   is_verified: boolean
   is_parent: boolean
   entity_type: string
   entity_id: number
+  // relations
+  entity: Phone
 }
 export type Phones = Phone[]
 
@@ -314,7 +316,7 @@ export interface Test {
   name: string
   file: unknown|null
   minutes: number
-  answers: TestAnswers|null
+  questions: TestQuestions|null
   results: string[]|null
   created_at: string|null
   updated_at: string|null

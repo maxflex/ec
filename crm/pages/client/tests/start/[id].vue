@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { Test } from "~/utils/models"
+definePageMeta({ middleware: ["check-active-test"] })
 
 const route = useRoute()
-const test = ref<Test>()
+const test = ref<ClientTest>()
 const loading = ref(false)
 
 onMounted(async () => {
@@ -11,7 +11,7 @@ onMounted(async () => {
 
 async function loadData() {
   const { data } = await useHttp(`client/tests/${route.params.id}`)
-  test.value = data.value as Test
+  test.value = data.value as ClientTest
 }
 
 async function start() {
@@ -19,6 +19,7 @@ async function start() {
   await useHttp(`client/tests/start/${route.params.id}`, {
     method: "post",
   })
+  useCookie("answers").value = null
   navigateTo({ name: "client-tests-active" })
 }
 </script>
@@ -30,9 +31,7 @@ async function start() {
     </h1>
     <div class="test-start__info">
       Длительность: {{ test.minutes }} минут.
-      <template v-if="test.answers?.length">
-        {{ plural(test.answers.length, ["вопрос", "вопроса", "вопросов"]) }}.
-      </template>
+      {{ plural(test.questions_count, ["вопрос", "вопроса", "вопросов"]) }}.
       <br />
       Во время прохождения не закрывайте браузер!
     </div>

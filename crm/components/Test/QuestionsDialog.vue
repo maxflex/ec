@@ -1,34 +1,34 @@
 <script setup lang="ts">
 const emit = defineEmits<{
-  (e: "saved", answers: TestAnswers): void
+  (e: "saved", questions: TestQuestions): void
 }>()
 
-const answers = ref<TestAnswers>([])
+const questions = ref<TestQuestions>([])
 
 const { dialog, width } = useDialog(500)
 
-function open(preSelect: TestAnswers) {
+function open(preSelect: TestQuestions) {
   dialog.value = true
-  answers.value = [...preSelect]
+  questions.value = [...preSelect]
 }
 
-function deleteAnswer(i: number) {
-  answers.value?.splice(i, 1)
+function deleteQuestion(i: number) {
+  questions.value?.splice(i, 1)
 }
 
 function save() {
   dialog.value = false
-  emit("saved", answers.value)
+  emit("saved", questions.value)
 }
 
 function add() {
-  answers.value.push({
-    correct: null,
+  questions.value.push({
+    answer: null,
     score: null,
   })
   nextTick(() =>
     document
-      .querySelector(".test-dialog__answers")
+      .querySelector(".test-dialog__questions")
       ?.scrollTo({ top: 9999, behavior: "smooth" }),
   )
 }
@@ -41,16 +41,16 @@ defineExpose({ open })
     <div class="dialog-content">
       <div class="dialog-header">
         <span>
-          Ответы
-          <span class="ml-1 text-gray" v-if="answers.length">
-            {{ answers.length }}
+          Вопросы
+          <span class="ml-1 text-gray" v-if="questions.length">
+            {{ questions.length }}
           </span>
         </span>
         <v-btn icon="$save" :size="48" @click="save()" color="#fafafa" />
       </div>
       <div class="dialog-body pt-0">
-        <div class="test-dialog__answers">
-          <div v-for="(a, i) in answers">
+        <div class="test-dialog__questions">
+          <div v-for="(q, i) in questions">
             <h2>
               Вопрос {{ i + 1 }}
               <v-btn
@@ -59,11 +59,11 @@ defineExpose({ open })
                 color="red"
                 :size="32"
                 :ripple="false"
-                @click="deleteAnswer(i)"
+                @click="deleteQuestion(i)"
               >
               </v-btn>
             </h2>
-            <v-item-group selected-class="bg-success" v-model="a.correct">
+            <v-item-group selected-class="bg-success" v-model="q.answer">
               <v-item v-for="n in 6" :key="n">
                 <template v-slot:default="{ toggle, selectedClass }">
                   <v-btn
@@ -81,7 +81,7 @@ defineExpose({ open })
               </v-item>
               <v-spacer />
               <v-text-field
-                v-model.number="a.score"
+                v-model.number="q.score"
                 label="балл"
                 type="number"
                 hide-spin-buttons
@@ -92,7 +92,7 @@ defineExpose({ open })
           </div>
         </div>
         <v-btn @click="add()" size="x-large" color="primary">
-          добавить ответ
+          добавить вопрос
         </v-btn>
       </div>
     </div>
@@ -101,7 +101,7 @@ defineExpose({ open })
 
 <style lang="scss">
 .test-dialog {
-  &__answers {
+  &__questions {
     &::-webkit-scrollbar {
       display: none;
     }

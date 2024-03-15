@@ -3,7 +3,7 @@ import { cloneDeep } from "lodash"
 import type { Program, Test } from "~/utils/models"
 import { PROGRAM } from "~/utils/sment"
 import { humanFileSize } from "~/utils/filters"
-import type { TestAnswersDialog } from "#build/components"
+import type { TestQuestionsDialog } from "#build/components"
 
 const { dialog, width } = useDialog()
 const item = ref<Test>()
@@ -11,7 +11,7 @@ const input = ref()
 const fileInput = ref()
 const pdf = ref()
 const loading = ref(false)
-const answersDialog = ref<null | InstanceType<typeof TestAnswersDialog>>()
+const questionsDialog = ref<null | InstanceType<typeof TestQuestionsDialog>>()
 const programs = Object.keys(PROGRAM).map((value) => ({
   value,
   title: PROGRAM[value as Program],
@@ -33,7 +33,7 @@ function create() {
     name: "",
     file: "",
     program: null,
-    answers: null,
+    questions: null,
     results: null,
     created_at: null,
     updated_at: null,
@@ -75,11 +75,11 @@ async function uploadPdf() {
   })
 }
 
-function onAnswersSaved(answers: TestAnswers) {
+function onQuestionsSaved(questions: TestQuestions) {
   if (!item.value) {
     return
   }
-  item.value.answers = answers
+  item.value.questions = questions
 }
 
 function selectFile() {
@@ -138,10 +138,12 @@ defineExpose({ open, create })
           />
         </div>
         <div>
-          <a class="link-icon" @click="() => answersDialog?.open(item?.answers)"
-            >редактировать ответы
-            <template v-if="item.answers?.length"
-              >({{ item.answers.length }})</template
+          <a
+            class="link-icon"
+            @click="() => questionsDialog?.open(item?.questions)"
+            >редактировать вопросы
+            <template v-if="item.questions?.length"
+              >({{ item.questions.length }})</template
             >
             <v-icon :size="16" icon="$next"></v-icon>
           </a>
@@ -178,7 +180,7 @@ defineExpose({ open, create })
       </div>
     </div>
   </v-dialog>
-  <TestAnswersDialog ref="answersDialog" @saved="onAnswersSaved" />
+  <TestQuestionsDialog ref="questionsDialog" @saved="onQuestionsSaved" />
 </template>
 
 <style lang="scss">

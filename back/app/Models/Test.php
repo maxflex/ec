@@ -9,17 +9,17 @@ use Illuminate\Http\Request;
 class Test extends Model
 {
     protected $fillable = [
-        'name', 'minutes', 'program', 'answers'
+        'name', 'minutes', 'program', 'questions'
     ];
 
     protected $casts = [
         'program' => Program::class,
-        'answers' => 'array',
+        'questions' => 'array',
         'results' => 'array',
     ];
 
     public $interfaces = [
-        'answers' => ['type' => 'TestAnswers'],
+        'questions' => ['type' => 'TestQuestions'],
     ];
 
     public function getFileAttribute($value)
@@ -65,13 +65,32 @@ class Test extends Model
     }
 
 
-    public static function getActive(int $clientId): Test | null
+    /**
+     * + 1 minute – 1 минута запас на всякий случай
+     */
+    public function scopeActive($query, int $clientId)
     {
-        $test = Test::query()
-            ->whereRaw(<<<SQL
-                json_extract(results, '$."{$clientId}".started_at') is not null
-            SQL)
-            ->first();
-        return $test;
+        $startedAt = "results->>'$.\"{$clientId}\".started_at'";
+        $finishedAt = "results->>'$.\"{$clientId}\".finished_at'";
+        $now = now()->format("Y-m-d H:i:s");
+        return $query->whereRaw(<<<SQL
+            $startedAt is not null
+            and $finishedAt is null
+            and '$now' < $startedAt + interval `minutes` + 1 minute
+        SQL);
+    }
+
+    public function scopeFinished($query, int $clientId)
+    {
+        $startedAt = "results->>'$.\"{$clientId}\".started_at'";
+        $finishedAt = "results->>'$.\"{$clientId}\".finished_at'";
+        $now = now()->format("Y-m-d H:i:s");
+        return $query->whereRaw(<<<SQL
+            $startedAt is not null
+            and (
+                $finishedAt is not null
+                or '$now' >= $startedAt + interval `minutes` + 1 minute
+            )
+        SQL);
     }
 }

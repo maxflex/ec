@@ -34,9 +34,10 @@ function select(t: Test) {
         <v-icon v-else icon="$checkboxOff" />
       </div>
       <div style="width: 220px">
-        <NuxtLink :to="{ name: 'tests-id', params: { id: t.id } }">
+        {{ t.name }}
+        <!-- <NuxtLink :to="{ name: 'tests-id', params: { id: t.id } }">
           {{ t.name }}
-        </NuxtLink>
+        </NuxtLink> -->
       </div>
       <div style="width: 250px">
         <template v-if="t.program">
@@ -46,8 +47,8 @@ function select(t: Test) {
       </div>
       <div style="width: 150px">{{ t.minutes }} минут</div>
       <div>
-        <template v-if="t.answers?.length">
-          {{ plural(t.answers.length, ["вопрос", "вопроса", "вопросов"]) }}
+        <template v-if="t.questions?.length">
+          {{ plural(t.questions.length, ["вопрос", "вопроса", "вопросов"]) }}
         </template>
         <span class="text-gray" v-else> нет вопросов </span>
       </div>

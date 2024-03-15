@@ -1,4 +1,5 @@
 import { YEARS } from "./sment"
+import type { Program, Test } from "./models"
 
 declare global {
   interface Meta {
@@ -41,14 +42,38 @@ declare global {
 
   type Menu = MenuItem[]
 
-  interface TestAnswer {
-    correct: number | null
+  interface TestQuestion {
+    answer: number | null
     score: number | null
   }
 
-  type TestAnswers = TestAnswer[]
+  type TestQuestions = TestQuestion[]
 
-  type TestAnswersFront = Array<number | undefined | null>
+  type TestAnswers = Array<number | undefined | null>
+
+  interface ClientTestResult {
+    started_at: string
+    finished_at?: string
+    answers?: TestAnswers
+    test: Test
+  }
+
+  interface ClientTest {
+    id: number
+    program: Program
+    name: string
+    file: string
+    minutes: number
+    is_finished: boolean
+    questions_count: number
+    questions?: TestQuestions
+    result?: ClientTestResult
+  }
+
+  interface ActiveTest {
+    test: ClientTest
+    seconds: number
+  }
 
   // https://stackoverflow.com/a/45486495/2274406
   type Year = (typeof YEARS)[number]

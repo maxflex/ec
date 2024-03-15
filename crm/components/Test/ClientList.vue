@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import type { Test, Tests } from "~/utils/models"
 import { PROGRAM } from "~/utils/sment"
 import { plural } from "~/utils/filters"
-
-const { tests } = defineProps<{ tests: Tests }>()
-const emit = defineEmits<{ (e: "open", test: Test): void }>()
+const { tests } = defineProps<{ tests: ClientTest[] }>()
 </script>
 
 <template>
@@ -21,13 +18,21 @@ const emit = defineEmits<{ (e: "open", test: Test): void }>()
       </div>
       <div style="width: 150px">{{ t.minutes }} минут</div>
       <div>
-        <template v-if="t.answers?.length">
-          {{ plural(t.answers.length, ["вопрос", "вопроса", "вопросов"]) }}
+        <template v-if="t.questions_count">
+          {{ plural(t.questions_count, ["вопрос", "вопроса", "вопросов"]) }}
         </template>
         <span class="text-gray" v-else> нет вопросов </span>
       </div>
       <div class="table-actions">
+        <router-link
+          v-if="t.is_finished"
+          :to="{ name: 'client-tests-result-id', params: { id: t.id } }"
+        >
+          <TestResult :test="t" />
+          баллов
+        </router-link>
         <v-btn
+          v-else
           color="primary"
           :to="{
             name: 'client-tests-start-id',

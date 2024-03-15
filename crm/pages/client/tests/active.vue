@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import type { Test } from "~/utils/models"
+import { mdiClockOutline } from "@mdi/js"
 
-const answers = ref<TestAnswersFront>([])
-const cookie = useCookie<TestAnswersFront>("answers", {
-  maxAge: 60 * 60 * 3,
-}) // 3 hours
-const test = ref<Test>()
+const { $dayjs } = useNuxtApp()
+const answers = ref<TestAnswers>([])
+const cookie = useCookie<TestAnswers>("answers", { maxAge: 60 * 60 * 3 }) // 3 hours
+const test = ref<ClientTest>()
 const finishing = ref(false)
+const seconds = ref(0)
+let interval: NodeJS.Timeout
 
 const answered = computed(
   () => answers.value.filter((e) => e !== undefined && e !== null).length,
@@ -18,10 +19,25 @@ function saveAnswers() {
 }
 
 async function loadData() {
-  const { data } = await useHttp(`client/tests/active`)
-  test.value = data.value as Test
-  if (cookie.value) {
-    answers.value = cookie.value.slice()
+  const { data, error } = await useHttp<ActiveTest>(`client/tests/active`)
+  // нет активного теста
+  if (error.value) {
+    return navigateTo({ name: "client-tests" })
+  }
+  if (data.value) {
+    test.value = data.value.test
+    seconds.value = data.value.seconds
+    if (seconds.value > 0) {
+      interval = setInterval(() => {
+        seconds.value--
+        if (seconds.value <= 0) {
+          clearInterval(interval)
+        }
+      }, 1000)
+    }
+    if (cookie.value) {
+      answers.value = cookie.value.slice()
+    }
   }
 }
 
@@ -52,10 +68,10 @@ onMounted(async () => {
   <div class="test" v-if="test">
     <iframe :src="test.file" />
     <div>
-      <div class="test__answers">
-        <div v-for="(a, i) in test.answers">
-          <h2>Вопрос {{ i + 1 }}</h2>
-          <v-item-group selected-class="bg-primary" v-model="answers[i]">
+      <div class="test__questions">
+        <div v-for="i in test.questions_count">
+          <h2>Вопрос {{ i }}</h2>
+          <v-item-group selected-class="bg-primary" v-model="answers[i - 1]">
             <v-item v-for="n in 6" :key="n">
               <template v-slot:default="{ toggle, selectedClass }">
                 <v-btn
@@ -75,7 +91,12 @@ onMounted(async () => {
         </div>
       </div>
       <div class="test__controls">
+        <!-- <div class="test__timer">
+          <v-icon :icon="mdiClockOutline" />
+          {{ $dayjs.duration(seconds, "second").format("mm:ss") }}
+        </div> -->
         <v-btn
+          v-if="seconds > 0"
           color="primary"
           size="x-large"
           block
@@ -83,29 +104,16 @@ onMounted(async () => {
           :loading="finishing"
         >
           отправить ответы
-          <span class="ml-2" style="width: 50px; opacity: 0.5">
+          <!-- <span class="ml-2" style="width: 50px; opacity: 0.5">
             {{ answered }}/{{ test.answers?.length }}
+          </span> -->
+          <span class="test__timer-in-btn">
+            <v-icon :icon="mdiClockOutline" />
+            {{ $dayjs.duration(seconds, "second").format("mm:ss") }}
           </span>
         </v-btn>
+        <v-btn v-else size="x-large" block disabled> время истекло </v-btn>
       </div>
     </div>
   </div>
-  <!-- <v-dialog
-    v-model="dialog"
-    :fullscreen="false"
-    transition="v-dialog-transition"
-    width="auto"
-    origin="center center"
-  >
-    <v-card
-      max-width="400"
-      prepend-icon="mdi-update"
-      text="Your application will relaunch automatically after the update is complete."
-      title="Update in progress"
-    >
-      <template v-slot:actions>
-        <v-btn class="ms-auto" text="Ok" @click="dialog = false"></v-btn>
-      </template>
-    </v-card>
-  </v-dialog> -->
 </template>

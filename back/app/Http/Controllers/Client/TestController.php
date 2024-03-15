@@ -3,21 +3,22 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\{TestResource, TestResultResource};
+use App\Http\Resources\{ClientTestResource, TestResource};
 use App\Models\Test;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class TestController extends Controller
 {
     public function index(Request $request)
     {
         $query = Test::whereClient(auth()->user()->entity_id);
-        return $this->handleIndexRequest($request, $query);
+        return $this->handleIndexRequest($request, $query, ClientTestResource::class);
     }
 
     public function show(Test $test)
     {
-        return new TestResource($test);
+        return new ClientTestResource($test);
     }
 
     public function start(Test $test)
@@ -27,15 +28,30 @@ class TestController extends Controller
 
     public function active()
     {
-        return new TestResource(
-            Test::getActive(auth()->user()->entity_id)
-        );
+        $clientId = auth()->user()->entity_id;
+        $test = Test::active($clientId)->first();
+        if ($test === null) {
+            return response(null, 404);
+        }
+        $startedAt = $test->results[$clientId]['started_at'];
+        return [
+            'test' => new ClientTestResource($test),
+            // сколько в секундах осталось на выполнение теста
+            'seconds' => max(
+                0,
+                $test->minutes * 60 - Carbon::parse($startedAt)->diffInSeconds(now())
+            )
+        ];
     }
 
     public function finish(Request $request)
     {
         $clientId = auth()->user()->entity_id;
-        Test::getActive($clientId)->finish($clientId, $request->answers);
+        $test = Test::active($clientId)->first();
+        if ($test === null) {
+            return response(null, 404);
+        }
+        $test->finish($clientId, $request->answers);
     }
 
     public function result(Test $test)

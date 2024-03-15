@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import type { TestDialog } from "#build/components"
-import type { Tests } from "~/utils/models"
+
+definePageMeta({ middleware: ["check-active-test"] })
 
 const testDialog = ref<null | InstanceType<typeof TestDialog>>()
-const tests = ref<Tests>()
+const tests = ref<ClientTest[]>()
 
 onMounted(async () => {
   await loadData()
 })
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<Tests>>("client/tests")
+  const { data } = await useHttp<ApiResponse<ClientTest[]>>("client/tests")
   if (data.value) {
-    const { data: newItems } = data.value
-    tests.value = newItems
+    tests.value = data.value.data
   }
 }
 </script>
