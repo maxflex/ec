@@ -1,0 +1,1 @@
+Добро пожаловать, {{ $phone->entity->first_name }}!

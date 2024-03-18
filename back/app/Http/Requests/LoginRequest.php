@@ -35,16 +35,8 @@ class LoginRequest extends FormRequest
     {
         return [
             function (Validator $validator) {
-                $count = Phone::query()
-                    ->whereIn('entity_type', [
-                        User::class,
-                        Client::class,
-                        Teacher::class,
-                    ])
-                    ->whereNumber($this->phone)
-                    ->count();
-                if ($count !== 1) {
-                    $validator->errors()->add('phone', "найдено $count телефонов");
+                if (Phone::auth($this->phone) === null) {
+                    $validator->errors()->add('phone', "не удалос");
                 }
             }
         ];

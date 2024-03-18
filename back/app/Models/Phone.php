@@ -25,6 +25,22 @@ class Phone extends Model
         return $query->where('number', UtilsPhone::clean($number));
     }
 
+    public static function auth($number): ?Phone
+    {
+        $phones = Phone::query()
+            ->whereIn('entity_type', [
+                User::class,
+                Client::class,
+                Teacher::class,
+            ])
+            ->whereNumber($number)
+            ->get();
+        if ($phones->count() !== 1) {
+            return null;
+        }
+        return $phones->first();
+    }
+
     public static function booted()
     {
         static::saving(fn ($phone) => $phone->number = UtilsPhone::clean($phone->number));

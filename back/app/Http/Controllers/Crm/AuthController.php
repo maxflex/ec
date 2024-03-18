@@ -4,22 +4,14 @@ namespace App\Http\Controllers\Crm;
 
 use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserResource;
-use App\Models\{Client, Teacher, User, Phone};
+use App\Models\Phone;
 use App\Http\Controllers\Controller;
 
 class AuthController extends Controller
 {
     public function login(LoginRequest $request)
     {
-        $phone = Phone::query()
-            ->whereIn('entity_type', [
-                User::class,
-                Client::class,
-                Teacher::class,
-            ])
-            ->whereNumber($request->phone)
-            ->first();
-
+        $phone = Phone::auth($request->phone);
         return new UserResource($phone);
     }
 
