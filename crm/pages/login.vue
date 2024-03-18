@@ -1,18 +1,14 @@
 <script setup>
 const { $store } = useNuxtApp()
-const form = reactive({
-  phone: "",
-  password: "",
-})
+
+const form = reactive({ phone: "" })
 
 const phoneMask = { mask: "+7 (###) ###-##-##" }
 
 let loading = ref(false)
 let errors = ref({})
 
-const cookieToken = useCookie("token", {
-  maxAge: 60 * 60 * 24 * 1000,
-})
+const cookieToken = useCookie("token", { maxAge: 60 * 60 * 24 * 1000 })
 console.log(cookieToken.value)
 
 const submit = async () => {
@@ -45,18 +41,10 @@ definePageMeta({
       <img src="/img/logo.svg" />
     </div>
     <v-text-field
-      variant="outlined"
       v-model="form.phone"
       label="Телефон"
       :error-messages="errors.phone"
       v-maska:[phoneMask]
-    />
-    <v-text-field
-      variant="outlined"
-      v-model="form.password"
-      label="Пароль"
-      type="password"
-      :error-messages="errors.password"
     />
     <v-btn
       color="primary"

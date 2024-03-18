@@ -8,6 +8,7 @@ use App\Http\Controllers\Crm\{
     ContractController,
     GroupController,
     MacroController,
+    TelegramController,
     TestController,
     VacationController
 };
@@ -17,6 +18,10 @@ Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::post('preview', 'preview');
 });
 
+Route::controller(TelegramController::class)->prefix('telegram')->group(function () {
+});
+
+Route::post('telegram', [TelegramController::class, 'bot']);
 
 Route::middleware(['auth:crm'])->group(function () {
     Route::get('auth/user', [AuthController::class, 'user']);

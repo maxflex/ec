@@ -12,7 +12,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->instance('Telegram', new \TelegramBot\Api\Client(config('telegram.key')));
     }
 
     /**
