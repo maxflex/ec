@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Crm;
 
+use App\Events\AuthNumberVerified;
 use App\Http\Controllers\Controller;
 use App\Models\Phone;
 use Illuminate\Http\Request;
 use TelegramBot\Api\{Client, Exception};
-use TelegramBot\Api\Types\{ReplyKeyboardMarkup, Update};
+use TelegramBot\Api\Types\{ReplyKeyboardMarkup, ReplyKeyboardRemove, Update};
 
 class TelegramController extends Controller
 {
@@ -26,7 +27,12 @@ class TelegramController extends Controller
                 $buttons = [[
                     ['text' => 'Отправить мой номер телефона', 'request_contact' => true]
                 ]];
-                $replyMarkup = new ReplyKeyboardMarkup($buttons, true, false, true);
+                $replyMarkup = new ReplyKeyboardMarkup(
+                    $buttons,
+                    oneTimeKeyboard: true,
+                    resizeKeyboard: true,
+                    isPersistent: true
+                );
                 $chatId = $message->getChat()->getId();
                 $bot->sendMessage(
                     $chatId,
@@ -39,17 +45,32 @@ class TelegramController extends Controller
             //Handle text messages
             $bot->on(function (Update $update) use ($bot) {
                 $message = $update->getMessage();
+                if ($message === null) {
+                    return;
+                }
                 $chatId = $message->getChat()->getId();
-                if ($message->getContact() != null) {
-                    $number = $message->getContact()->getPhoneNumber();
-                    $phone = Phone::auth($number);
+                $contact = $message->getContact();
+                if ($contact !== null) {
+                    $phone = Phone::auth($contact->getPhoneNumber());
                     if ($phone === null) {
                         $bot->sendMessage($chatId, view('telegram.auth-fail', compact('number')));
                     } else {
-                        $bot->sendMessage($chatId, view('telegram.auth-success', compact('phone')));
+                        $phone->telegram_id = $contact->getUserId();
+                        $phone->save();
+                        AuthNumberVerified::dispatch($phone);
+                        $bot->sendMessage(
+                            $chatId,
+                            view('telegram.auth-success', compact('phone')),
+                            'HTML',
+                            replyMarkup: new ReplyKeyboardRemove()
+                        );
                     }
                 } else {
-                    $bot->sendMessage($chatId, 'Вы написали: ' . $message->getText());
+                    $bot->sendMessage(
+                        $chatId,
+                        'Вы написали: ' . $message->getText(),
+                        replyMarkup: new ReplyKeyboardRemove()
+                    );
                 }
                 // logger("UPD", json_encode($update->getMe))
                 // $id = $message->getChat()->getId();

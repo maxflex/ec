@@ -16,6 +16,7 @@ use App\Http\Controllers\Crm\{
 Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::post('login', 'login');
     Route::post('preview', 'preview');
+    Route::post('verify-code', 'verifyCode');
 });
 
 Route::controller(TelegramController::class)->prefix('telegram')->group(function () {

@@ -16,7 +16,11 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->entity_id,
+            'telegram_id' => $this->telegram_id,
             'entity_type' => $this->entity_type,
+            'entity' => extract_fields($this->entity, [
+                'first_name', 'last_name', 'middle_name'
+            ])
         ];
     }
 }
