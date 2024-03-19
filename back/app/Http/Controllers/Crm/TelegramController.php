@@ -66,11 +66,11 @@ class TelegramController extends Controller
                         );
                     }
                 } else {
-                    $bot->sendMessage(
-                        $chatId,
-                        'Вы написали: ' . $message->getText(),
-                        replyMarkup: new ReplyKeyboardRemove()
-                    );
+                    // $bot->sendMessage(
+                    //     $chatId,
+                    //     'Вы написали: ' . $message->getText(),
+                    //     replyMarkup: new ReplyKeyboardRemove()
+                    // );
                 }
                 // logger("UPD", json_encode($update->getMe))
                 // $id = $message->getChat()->getId();
