@@ -70,12 +70,17 @@ watch(
 async function onOtpFinish() {
   otp.error = false
   otp.loading = true
-  const { data } = await useHttp("auth/verify-code", {
+  const { data, error } = await useHttp("auth/verify-code", {
     method: "post",
     body: {
       code: otp.code,
     },
   })
+  if (error.value) {
+    otp.loading = false
+    nextTick(() => otpInput.value.focus())
+    return
+  }
   if (data.value.verified) {
     logIn()
   } else {
