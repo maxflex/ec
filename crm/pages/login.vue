@@ -33,7 +33,9 @@ const onPhoneEnter = async () => {
   }
   user.value = data.value
   console.log(user.value)
-  window.value = user.value.telegram_id === null ? 1 : 2
+  nextTick(() => {
+    window.value = user.value.telegram_id === null ? 1 : 2
+  })
 }
 
 function initPusher() {
@@ -108,7 +110,11 @@ definePageMeta({
     <div class="login__logo">
       <img src="/img/logo.svg" />
     </div>
-    <v-window v-model="window" class="login__content">
+    <v-window
+      v-model="window"
+      :reverse="user && user.telegram_id"
+      class="login__content"
+    >
       <v-window-item>
         <v-text-field
           v-model="form.phone"
