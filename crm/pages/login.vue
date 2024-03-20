@@ -52,12 +52,10 @@ function initPusher() {
   channel = pusher.subscribe("auth." + user.value?.id)
 }
 
-function logIn() {
-  if (user.value) {
-    $store.user = user.value
-    cookieToken.value = [user.value.id, user.value.entity_type].join("|")
-    navigateTo({ name: "index" })
-  }
+function auth(token: string, user: User) {
+  $store.user = user
+  cookieToken.value = token
+  navigateTo({ name: "index" })
 }
 
 watch(
@@ -67,12 +65,8 @@ watch(
     if (newVal === 1) {
       initPusher()
       channel.bind(
-        "App\\Events\\AuthNumberVerified",
-        (data: { user: User }) => {
-          console.log(data.user)
-          user.value = data.user
-          logIn()
-        },
+        "App\\Events\\TelegramBotAdded",
+        ({ token, user }: TokenResponse) => auth(token, user),
       )
     }
     if (newVal === 2) {
@@ -84,7 +78,7 @@ watch(
 async function onOtpFinish() {
   errors.value = {}
   otp.loading = true
-  const { data, error } = await useHttp("auth/verify-code", {
+  const { data, error } = await useHttp<TokenResponse>("auth/verify-code", {
     method: "post",
     body: {
       phone: phone.value,
@@ -97,7 +91,10 @@ async function onOtpFinish() {
     nextTick(() => otpInput.value.focus())
     return
   }
-  logIn()
+  if (data.value) {
+    const { token, user } = data.value
+    auth(token, user)
+  }
 }
 
 onUnmounted(() => {
@@ -139,8 +136,8 @@ definePageMeta({ layout: "login" })
       </v-window-item>
       <v-window-item eager>
         <div class="login__info" v-if="user">
-          <div class="login__info__title">
-            {{ user.entity.first_name }}, здравствуйте!
+          <div class="login__info-title">
+            {{ user.first_name }}, здравствуйте!
           </div>
           <div>
             Это ваш первый вход в ЛК. Для продолжения необходимо добавить бота в
@@ -156,7 +153,7 @@ definePageMeta({ layout: "login" })
       </v-window-item>
       <v-window-item eager>
         <div class="login__info">
-          <div class="login__info__title">Проверьте Telegram</div>
+          <div class="login__info-title">Проверьте Telegram</div>
           <div>Введите код, который пришёл к вам в сообщения</div>
         </div>
         <v-otp-input
@@ -225,7 +222,7 @@ definePageMeta({ layout: "login" })
     font-size: 20px;
     text-align: center;
     text-wrap: balance;
-    &__title {
+    &-title {
       font-weight: bold;
       margin-bottom: 20px;
     }

@@ -13,7 +13,8 @@ import {
   mdiLogout,
 } from "@mdi/js"
 
-function logout() {
+async function logout() {
+  await useHttp("auth/logout")
   const preview = useCookie("preview")
   if (preview.value) {
     preview.value = null

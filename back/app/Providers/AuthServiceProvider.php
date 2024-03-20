@@ -5,6 +5,7 @@ namespace App\Providers;
 // use Illuminate\Support\Facades\Gate;
 
 use App\Models\Phone;
+use App\Utils\Session;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -25,17 +26,10 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Auth::viaRequest('crm', function (Request $request) {
-            $token = $request->bearerToken();
-            logger("Bearer token: " . $token);
-            if (!$token) {
-                return null;
-            }
-            [$entityId, $entityType] = explode("|",  $token);
-            return Phone::where([
-                ['entity_id', $entityId],
-                ['entity_type', $entityType]
-            ])->first();
-        });
+        Auth::viaRequest(
+            'crm',
+            fn (Request $request) =>
+            Session::get($request->bearerToken())
+        );
     }
 }

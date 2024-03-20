@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Crm;
 
 use App\Http\Resources\UserResource;
-use App\Models\Phone;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AuthRequest;
+use App\Http\Requests\PreviewRequest;
 use App\Utils\VerificationService;
+use App\Models\Phone;
+use App\Utils\Session;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -22,15 +24,10 @@ class AuthController extends Controller
 
     public function verifyCode(AuthRequest $request)
     {
-        $request->validate([
-            'code' => ['required', 'string']
-        ]);
         $phone = Phone::auth($request->phone);
         return [
-            'verified' => VerificationService::verifyCode(
-                $phone,
-                $request->code
-            )
+            'token' => $phone->createSessionToken(),
+            'user' => new UserResource($phone),
         ];
     }
 
@@ -40,5 +37,22 @@ class AuthController extends Controller
             return response('', 401);
         }
         return new UserResource(auth()->user());
+    }
+
+    public function preview(PreviewRequest $request)
+    {
+        $phone = Phone::query()
+            ->where('entity_id', $request->id)
+            ->where('entity_type', $request->entity_type)
+            ->first();
+        return [
+            'token' => $phone->createSessionToken(),
+            'user' => new UserResource($phone),
+        ];
+    }
+
+    public function logout(Request $request)
+    {
+        Session::logout($request->bearerToken());
     }
 }

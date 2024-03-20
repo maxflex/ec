@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use App\Utils\Phone as UtilsPhone;
+use App\Utils\Session;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redis;
 
-class Phone extends Model
+class Phone extends Model implements Authenticatable
 {
     public $timestamps = false;
     protected $fillable = ['number', 'comment'];
@@ -14,6 +18,26 @@ class Phone extends Model
     // {
     //     return $value ? UtilsPhone::format($value) : null;
     // }
+
+    public function getAuthIdentifier()
+    {
+        return $this->entity_id;
+    }
+    public function getAuthIdentifierName()
+    {
+    }
+    public function getAuthPassword()
+    {
+    }
+    public function getRememberToken()
+    {
+    }
+    public function setRememberToken($value)
+    {
+    }
+    public function getRememberTokenName()
+    {
+    }
 
     public function entity()
     {
@@ -40,6 +64,23 @@ class Phone extends Model
         }
         return $phones->first();
     }
+
+    public function createSessionToken(): string
+    {
+        return Session::createToken($this);
+    }
+
+    // public function sessionAction($credentialId)
+    // {
+    //     // 3 hours
+    //     $ttl = 60 * 60 * 3;
+    //     Redis::set(cache_key('session', $credentialId), 1, 'EX', $ttl);
+    // }
+
+    // public static function logout($credentialId)
+    // {
+    //     Redis::del(cache_key('session', $credentialId));
+    // }
 
     public static function booted()
     {

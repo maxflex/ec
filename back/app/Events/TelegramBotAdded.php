@@ -12,7 +12,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class AuthNumberVerified implements ShouldBroadcast
+class TelegramBotAdded implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -40,6 +40,9 @@ class AuthNumberVerified implements ShouldBroadcast
      */
     public function broadcastWith(): array
     {
-        return ['user' => new UserResource($this->phone)];
+        return [
+            'token' => $this->phone->createSessionToken(),
+            'user' => new UserResource($this->phone)
+        ];
     }
 }

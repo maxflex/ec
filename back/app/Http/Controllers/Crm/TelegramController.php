@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Crm;
 
-use App\Events\AuthNumberVerified;
+use App\Events\TelegramBotAdded;
 use App\Http\Controllers\Controller;
 use App\Models\Phone;
 use Illuminate\Http\Request;
@@ -57,7 +57,7 @@ class TelegramController extends Controller
                     } else {
                         $phone->telegram_id = $contact->getUserId();
                         $phone->save();
-                        AuthNumberVerified::dispatch($phone);
+                        TelegramBotAdded::dispatch($phone);
                         $bot->sendMessage(
                             $chatId,
                             view('telegram.auth-success', compact('phone')),

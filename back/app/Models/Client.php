@@ -19,7 +19,7 @@ class Client extends Model
 
     protected $hidden = ['groups', 'swamps'];
 
-    public function contracts()
+    public function contracts(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Contract::class)->orderBy('id', 'desc');
     }
@@ -39,7 +39,6 @@ class Client extends Model
      */
     public function groups(): Attribute
     {
-        // return $this->contractGroup()->with('group')->get()->map(fn ($e) => $e->group)->all();
         return Attribute::make(
             fn (): Collection =>
             $this->contractGroup()->with('group')->get()->map(fn ($e) => $e->group)

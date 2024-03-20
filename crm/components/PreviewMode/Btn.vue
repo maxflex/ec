@@ -4,12 +4,18 @@ const { $store } = useNuxtApp()
 const loading = ref(false)
 
 async function enter() {
-  const cookie = useCookie("preview")
+  const cookieToken = useCookie("preview")
   loading.value = true
-  $store.user = user
-  cookie.value = [user.id, user.entity_type].join("|")
-  setTimeout(() => (window.location.href = "/"), 500)
-  // await navigateTo({ name: "index" })
+  const { data } = await useHttp<TokenResponse>("auth/preview", {
+    method: "post",
+    body: user,
+  })
+  if (data.value) {
+    const { token, user } = data.value
+    $store.user = user
+    cookieToken.value = token
+    setTimeout(() => (window.location.href = "/"), 500)
+  }
 }
 </script>
 

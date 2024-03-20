@@ -89,9 +89,14 @@ declare global {
     id: number
     entity_type: string
     telegram_id: NullableString
-    entity: {
-      first_name: string
-    }
+    first_name: NullableString
+    last_name: NullableString
+    middle_name: NullableString
+  }
+
+  interface TokenResponse {
+    token: string
+    user: User
   }
 }
 
