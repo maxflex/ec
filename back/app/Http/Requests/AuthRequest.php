@@ -2,11 +2,12 @@
 
 namespace App\Http\Requests;
 
-use App\Models\{Client, Teacher, User, Phone};
+use App\Models\Phone;
+use App\Utils\VerificationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
-class LoginRequest extends FormRequest
+class AuthRequest extends FormRequest
 {
     protected $stopOnFirstFailure = true;
 
@@ -27,7 +28,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'phone' => ['required', 'phone'],
-            // 'password' => ['required', 'in:asd']
+            'code' => ['sometimes', 'string']
         ];
     }
 
@@ -35,8 +36,18 @@ class LoginRequest extends FormRequest
     {
         return [
             function (Validator $validator) {
-                if (Phone::auth($this->phone) === null) {
-                    $validator->errors()->add('phone', "не удалос");
+                $phone = Phone::auth($this->phone);
+                if ($phone === null) {
+                    $validator->errors()->add('phone', 'телефон не единственный');
+                }
+                if ($this->has('code')) {
+                    $verified = VerificationService::verifyCode(
+                        $phone,
+                        $this->code
+                    );
+                    if (!$verified) {
+                        $validator->errors()->add('code', 'неверный код подтверждения');
+                    }
                 }
             }
         ];

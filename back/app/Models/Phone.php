@@ -10,10 +10,10 @@ class Phone extends Model
     public $timestamps = false;
     protected $fillable = ['number', 'comment'];
 
-    public function getNumberAttribute($value)
-    {
-        return $value ? UtilsPhone::format($value) : null;
-    }
+    // public function getNumberAttribute($value)
+    // {
+    //     return $value ? UtilsPhone::format($value) : null;
+    // }
 
     public function entity()
     {

@@ -8,24 +8,22 @@ use App\Models\Phone;
 
 class VerificationService
 {
-    const CACHE_KEY = 'v3-code';
-
     public static function sendCode(Phone $phone)
     {
         // если код уже отправлен – ничо не делаем
-        // if (Redis::get(self::CACHE_KEY) !== null) {
+        // if (Redis::get(self::cacheKey($phone)) !== null) {
         //     return;
         // }
         $code = self::generateCode();
-        self::storeCode($code);
+        self::storeCode($phone, $code);
         Telegram::sendMessage($phone->telegram_id, "*{$code}* – код для авторизации в ЛК", 'MarkdownV2');
     }
 
-    public static function verifyCode($code)
+    public static function verifyCode(Phone $phone, $code)
     {
-        $verified = (string) $code === Redis::get(self::CACHE_KEY);
+        $verified = (string) $code === Redis::get(self::cacheKey($phone));
         if ($verified) {
-            Redis::del(self::CACHE_KEY);
+            Redis::del(self::cacheKey($phone));
             return true;
         }
         return false;
@@ -36,8 +34,13 @@ class VerificationService
         return mt_rand(10000, 99999);
     }
 
-    public static function storeCode($code)
+    public static function storeCode(Phone $phone, $code)
     {
-        Redis::set(self::CACHE_KEY, $code, 'EX', 60 * 5);
+        Redis::set(self::cacheKey($phone), $code, 'EX', 60 * 5);
+    }
+
+    public static function cacheKey(Phone $phone)
+    {
+        return join(':', ['code', $phone->number]);
     }
 }

@@ -1,20 +1,27 @@
-<script setup>
-import Pusher from "pusher-js"
+<script setup lang="ts">
+import Pusher, { Channel } from "pusher-js"
 
 const { $store } = useNuxtApp()
-const form = reactive({ phone: "" })
+const {
+  public: { pusherAppKey },
+} = useRuntimeConfig()
+const phone = ref("")
 const window = ref(0)
 const phoneMask = { mask: "+7 (###) ###-##-##" }
-const user = ref()
+const user = ref<User>()
 const loading = ref(false)
-const errors = ref({})
+const errors = ref<{
+  phone?: ResponseErrors
+  code?: ResponseErrors
+}>({})
 const otpInput = ref()
 const otp = reactive({
   code: "",
-  error: null,
+  error: false,
   loading: false,
 })
-let pusher, channel
+let pusher: Pusher
+let channel: Channel
 
 const cookieToken = useCookie("token", { maxAge: 60 * 60 * 24 * 1000 })
 console.log(cookieToken.value)
@@ -22,33 +29,35 @@ console.log(cookieToken.value)
 const onPhoneEnter = async () => {
   loading.value = true
   errors.value = {}
-  const { data, error } = await useHttp("auth/login", {
+  const { data, error } = await useHttp<User>("auth/login", {
     method: "post",
-    body: { ...form },
+    body: { phone: phone.value },
   })
   setTimeout(() => (loading.value = false), 300)
   if (error.value) {
     errors.value = error.value.data.errors
     return
   }
-  user.value = data.value
-  console.log(user.value)
-  nextTick(() => {
-    window.value = user.value.telegram_id === null ? 1 : 2
-  })
+  if (data.value) {
+    user.value = data.value
+    console.log(user.value)
+    nextTick(() => {
+      window.value = user.value?.telegram_id ? 2 : 1
+    })
+  }
 }
 
 function initPusher() {
-  pusher = new Pusher("30dcae8449659255e169", {
-    cluster: "eu",
-  })
-  channel = pusher.subscribe("auth." + user.value.id)
+  pusher = new Pusher(pusherAppKey, { cluster: "eu" })
+  channel = pusher.subscribe("auth." + user.value?.id)
 }
 
 function logIn() {
-  $store.user = user.value
-  cookieToken.value = [user.value.id, user.value.entity_type].join("|")
-  navigateTo({ name: "index" })
+  if (user.value) {
+    $store.user = user.value
+    cookieToken.value = [user.value.id, user.value.entity_type].join("|")
+    navigateTo({ name: "index" })
+  }
 }
 
 watch(
@@ -57,11 +66,14 @@ watch(
     console.log(`${oldVal} => ${newVal}`)
     if (newVal === 1) {
       initPusher()
-      channel.bind("App\\Events\\AuthNumberVerified", ({ user }) => {
-        console.log(user)
-        user.value = user
-        logIn()
-      })
+      channel.bind(
+        "App\\Events\\AuthNumberVerified",
+        (data: { user: User }) => {
+          console.log(data.user)
+          user.value = data.user
+          logIn()
+        },
+      )
     }
     if (newVal === 2) {
       setTimeout(() => otpInput.value.focus(), 300)
@@ -70,28 +82,22 @@ watch(
 )
 
 async function onOtpFinish() {
-  otp.error = false
+  errors.value = {}
   otp.loading = true
   const { data, error } = await useHttp("auth/verify-code", {
     method: "post",
     body: {
+      phone: phone.value,
       code: otp.code,
     },
   })
   if (error.value) {
     otp.loading = false
+    errors.value = error.value.data.errors
     nextTick(() => otpInput.value.focus())
     return
   }
-  if (data.value.verified) {
-    logIn()
-  } else {
-    otp.loading = false
-    nextTick(() => {
-      otp.error = true
-      otpInput.value.focus()
-    })
-  }
+  logIn()
 }
 
 onUnmounted(() => {
@@ -100,9 +106,7 @@ onUnmounted(() => {
   pusher?.unsubscribe("auth")
 })
 
-definePageMeta({
-  layout: "login",
-})
+definePageMeta({ layout: "login" })
 </script>
 
 <template>
@@ -112,12 +116,12 @@ definePageMeta({
     </div>
     <v-window
       v-model="window"
-      :reverse="user && user.telegram_id"
+      :reverse="user?.telegram_id ? true : false"
       class="login__content"
     >
       <v-window-item>
         <v-text-field
-          v-model="form.phone"
+          v-model="phone"
           label="Телефон"
           :error-messages="errors.phone"
           @keydown.enter="onPhoneEnter()"
@@ -157,7 +161,7 @@ definePageMeta({
         </div>
         <v-otp-input
           :disabled="otp.loading"
-          :error="otp.error"
+          :error="!!errors.code"
           ref="otpInput"
           :length="5"
           v-model="otp.code"

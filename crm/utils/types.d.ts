@@ -21,6 +21,8 @@ declare global {
     middle_name: NullableString
   }
 
+  type ResponseErrors = string[]
+
   interface Paginator {
     page: number
     loading: boolean
@@ -86,6 +88,10 @@ declare global {
   interface User {
     id: number
     entity_type: string
+    telegram_id: NullableString
+    entity: {
+      first_name: string
+    }
   }
 }
 

@@ -11,6 +11,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       baseUrl: "",
+      pusherAppKey: "",
     },
   },
   modules: [
