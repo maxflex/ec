@@ -2,9 +2,8 @@
 
 namespace App\Utils;
 
-use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\{Redis, Hash};
 use App\Models\Phone;
-use Illuminate\Support\Facades\Hash;
 
 class Session
 {

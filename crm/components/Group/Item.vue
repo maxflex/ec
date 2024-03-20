@@ -28,9 +28,9 @@ const emit = defineEmits<{
       </NuxtLink>
     </div>
     <div>
-      <a href="#">
+      <NuxtLink :to="{ name: 'teachers-id', params: { id: group.teacher.id } }">
         {{ formatName(group.teacher) }}
-      </a>
+      </NuxtLink>
     </div>
     <div>
       {{ PROGRAM[group.program] }}

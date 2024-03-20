@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { ENTITY_TYPE } from "~/utils/sment"
-const { $store } = useNuxtApp()
-
 import {
   mdiInbox,
   mdiAccount,
@@ -12,6 +10,75 @@ import {
   mdiDotsTriangle,
   mdiLogout,
 } from "@mdi/js"
+
+const { $store } = useNuxtApp()
+let menu: Menu
+
+switch ($store.user?.entity_type) {
+  case ENTITY_TYPE.client:
+    menu = [
+      {
+        icon: mdiAccountGroup,
+        title: "Группы",
+        to: "/groups",
+      },
+      {
+        icon: mdiDotsTriangle,
+        title: "Тесты",
+        to: "/client/tests",
+      },
+    ]
+    break
+
+  case ENTITY_TYPE.teacher:
+    menu = [
+      {
+        icon: mdiAccountGroup,
+        title: "Группы",
+        to: "/groups",
+      },
+    ]
+    break
+
+  default:
+    menu = [
+      {
+        icon: mdiInbox,
+        title: "Заявки",
+        to: "/requests",
+      },
+      {
+        icon: mdiAccount,
+        title: "Клиенты",
+        to: "/clients",
+      },
+      {
+        icon: mdiAccountGroup,
+        title: "Группы",
+        to: "/groups",
+      },
+      {
+        icon: mdiFileDocumentOutline,
+        title: "Договоры",
+        to: "/contracts",
+      },
+      {
+        icon: mdiCalendar,
+        title: "Праздники",
+        to: "/vacations",
+      },
+      {
+        icon: mdiPrinter,
+        title: "Макросы",
+        to: "/macros",
+      },
+      {
+        icon: mdiDotsTriangle,
+        title: "Тесты",
+        to: "/tests",
+      },
+    ]
+}
 
 async function logout() {
   await useHttp("auth/logout")
@@ -24,58 +91,6 @@ async function logout() {
   // $store.user = null
   window.location.href = "/"
 }
-
-const menu: Menu =
-  $store.user?.entity_type === ENTITY_TYPE.client
-    ? [
-        {
-          icon: mdiAccountGroup,
-          title: "Группы",
-          to: "/groups",
-        },
-        {
-          icon: mdiDotsTriangle,
-          title: "Тесты",
-          to: "/client/tests",
-        },
-      ]
-    : [
-        {
-          icon: mdiInbox,
-          title: "Заявки",
-          to: "/requests",
-        },
-        {
-          icon: mdiAccount,
-          title: "Клиенты",
-          to: "/clients",
-        },
-        {
-          icon: mdiAccountGroup,
-          title: "Группы",
-          to: "/groups",
-        },
-        {
-          icon: mdiFileDocumentOutline,
-          title: "Договоры",
-          to: "/contracts",
-        },
-        {
-          icon: mdiCalendar,
-          title: "Праздники",
-          to: "/vacations",
-        },
-        {
-          icon: mdiPrinter,
-          title: "Макросы",
-          to: "/macros",
-        },
-        {
-          icon: mdiDotsTriangle,
-          title: "Тесты",
-          to: "/tests",
-        },
-      ]
 </script>
 
 <template>

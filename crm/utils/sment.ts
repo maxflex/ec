@@ -164,6 +164,7 @@ export const PROGRAM: Record<Program, string> = {
 
 export const ENTITY_TYPE = {
   client: "App\\Models\\Client",
+  teacher: "App\\Models\\Teacher",
 }
 
 export const YEARS = [
