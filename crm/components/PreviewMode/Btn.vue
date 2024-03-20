@@ -14,7 +14,7 @@ async function enter() {
     const { token, user } = data.value
     $store.user = user
     cookieToken.value = token
-    setTimeout(() => (window.location.href = "/"), 500)
+    window.location.href = "/"
   }
 }
 </script>
