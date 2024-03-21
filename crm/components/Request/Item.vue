@@ -34,7 +34,7 @@ const { item } = defineProps<{
         <tr v-for="phone in item.phones">
           <td>
             <a :href="`tel:${phone.number}`">
-              {{ formatPhone(phone) }}
+              {{ formatPhone(phone.number as string) }}
             </a>
             <v-icon
               :size="16"

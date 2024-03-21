@@ -6,8 +6,6 @@ use App\Utils\Phone as UtilsPhone;
 use App\Utils\Session;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redis;
 
 class Phone extends Model implements Authenticatable
 {
@@ -69,18 +67,6 @@ class Phone extends Model implements Authenticatable
     {
         return Session::createToken($this);
     }
-
-    // public function sessionAction($credentialId)
-    // {
-    //     // 3 hours
-    //     $ttl = 60 * 60 * 3;
-    //     Redis::set(cache_key('session', $credentialId), 1, 'EX', $ttl);
-    // }
-
-    // public static function logout($credentialId)
-    // {
-    //     Redis::del(cache_key('session', $credentialId));
-    // }
 
     public static function booted()
     {

@@ -92,6 +92,7 @@ declare global {
     first_name: NullableString
     last_name: NullableString
     middle_name: NullableString
+    number: string
   }
 
   interface TokenResponse {

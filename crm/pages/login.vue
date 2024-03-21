@@ -4,7 +4,6 @@ import Pusher, { Channel } from "pusher-js"
 const { $store } = useNuxtApp()
 const { public: config } = useRuntimeConfig()
 const phone = ref("")
-const window = ref(0)
 const phoneMask = { mask: "+7 (###) ###-##-##" }
 const user = ref<User>()
 const loading = ref(false)
@@ -13,6 +12,7 @@ const errors = ref<{
   code?: ResponseErrors
 }>({})
 const otpInput = ref()
+const phoneInput = ref()
 const otp = reactive({
   code: "",
   error: false,
@@ -20,16 +20,20 @@ const otp = reactive({
 })
 let pusher: Pusher
 let channel: Channel
-
 const cookieToken = useCookie("token", { maxAge: 60 * 60 * 24 * 1000 })
-console.log(cookieToken.value)
+const cookieUser = useCookie<User | null>("user", {
+  maxAge: 60 * 60 * 24 * 1000,
+})
+const window = ref(cookieUser.value ? 1 : 0)
 
 const onPhoneEnter = async () => {
   loading.value = true
   errors.value = {}
   const { data, error } = await useHttp<User>("auth/login", {
     method: "post",
-    body: { phone: phone.value },
+    body: {
+      phone: phone.value,
+    },
   })
   setTimeout(() => (loading.value = false), 300)
   if (error.value) {
@@ -40,7 +44,7 @@ const onPhoneEnter = async () => {
     user.value = data.value
     console.log(user.value)
     nextTick(() => {
-      window.value = user.value?.telegram_id ? 2 : 1
+      window.value = user.value?.telegram_id ? 3 : 2
     })
   }
 }
@@ -53,25 +57,24 @@ function initPusher() {
 function auth(token: string, user: User) {
   $store.user = user
   cookieToken.value = token
-  navigateTo({ name: "index" })
+  if (user.entity_type !== ENTITY_TYPE.teacher) {
+    cookieUser.value = user
+  }
+  const name = sessionStorage.getItem("redirect") || "index"
+  navigateTo({ name })
 }
 
-watch(
-  () => window.value,
-  (newVal, oldVal) => {
-    console.log(`${oldVal} => ${newVal}`)
-    if (newVal === 1) {
-      initPusher()
-      channel.bind(
-        "App\\Events\\TelegramBotAdded",
-        ({ token, user }: TokenResponse) => auth(token, user),
-      )
-    }
-    if (newVal === 2) {
-      setTimeout(() => otpInput.value.focus(), 300)
-    }
-  },
-)
+function clearCookieUser() {
+  window.value = 0
+  // setTimeout(() => (cookieUser.value = null), 1000)
+}
+
+function continueCookieUser() {
+  if (cookieUser.value) {
+    phone.value = cookieUser.value.number
+    onPhoneEnter()
+  }
+}
 
 async function onOtpFinish() {
   errors.value = {}
@@ -95,10 +98,36 @@ async function onOtpFinish() {
   }
 }
 
+watch(
+  () => window.value,
+  (newVal, oldVal) => {
+    console.log(`${oldVal} => ${newVal}`)
+    if (newVal === 0) {
+      setTimeout(() => phoneInput.value.focus(), 300)
+    }
+    if (newVal === 2) {
+      initPusher()
+      channel.bind(
+        "App\\Events\\TelegramBotAdded",
+        ({ token, user }: TokenResponse) => auth(token, user),
+      )
+    }
+    if (newVal === 3) {
+      setTimeout(() => otpInput.value.focus(), 300)
+    }
+  },
+)
+
 onUnmounted(() => {
   console.log("deactivated")
   channel?.unbind()
   pusher?.unsubscribe("auth")
+})
+
+onMounted(() => {
+  if (window.value === 0) {
+    phoneInput.value?.focus()
+  }
 })
 
 definePageMeta({ layout: "login" })
@@ -109,17 +138,14 @@ definePageMeta({ layout: "login" })
     <div class="login__logo">
       <img src="/img/logo.svg" />
     </div>
-    <v-window
-      v-model="window"
-      :reverse="user?.telegram_id ? true : false"
-      class="login__content"
-    >
+    <v-window v-model="window" class="login__content">
       <v-window-item>
         <v-text-field
           v-model="phone"
           label="Телефон"
           :error-messages="errors.phone"
           @keydown.enter="onPhoneEnter()"
+          ref="phoneInput"
           v-maska:[phoneMask]
         />
         <v-btn
@@ -131,6 +157,36 @@ definePageMeta({ layout: "login" })
         >
           Войти
         </v-btn>
+      </v-window-item>
+      <v-window-item eager>
+        <v-card
+          title="Card title"
+          subtitle="Subtitle"
+          variant="tonal"
+          v-if="cookieUser"
+        >
+          <template #title>
+            {{ formatName(cookieUser) }}
+          </template>
+          <template #subtitle>
+            {{ formatPhone(cookieUser.number) }}
+          </template>
+          <template #prepend>
+            <UserAvatar :user="cookieUser" class="mr-3" />
+          </template>
+        </v-card>
+        <v-btn
+          color="primary"
+          :loading="loading"
+          block
+          size="x-large"
+          @click="continueCookieUser()"
+        >
+          продолжить
+        </v-btn>
+        <div class="login__other">
+          <span @click="clearCookieUser()">другой пользователь</span>
+        </div>
       </v-window-item>
       <v-window-item eager>
         <div class="login__info" v-if="user">
@@ -176,6 +232,8 @@ definePageMeta({ layout: "login" })
           Войти
         </v-btn>
       </v-window-item>
+      <!-- reverse transition fix -->
+      <v-window-item></v-window-item>
     </v-window>
   </form>
 </template>
@@ -226,6 +284,27 @@ definePageMeta({ layout: "login" })
       font-weight: bold;
       margin-bottom: 20px;
     }
+  }
+  &__other {
+    text-align: center;
+    position: relative;
+    width: 100%;
+    top: 12px;
+    span {
+      cursor: pointer;
+      color: rgb(var(--v-theme-gray));
+      transition: color cubic-bezier(0.4, 0, 0.2, 1) 0.15s;
+      &:hover {
+        color: black;
+      }
+    }
+  }
+  .v-card__underlay {
+    background: rgb(var(--v-theme-gray)) !important;
+    // opacity: 1 !important;
+  }
+  .v-card-title {
+    font-size: 18px !important;
   }
 }
 </style>

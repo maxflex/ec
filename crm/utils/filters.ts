@@ -27,7 +27,7 @@ export function formatDateTime(dateTime: NullableString): string {
   return dayjs(dateTime).format("DD.MM.YYYY в HH:mm")
 }
 
-export function formatPhone({ number }: Phone): string {
+export function formatPhone(number: string): string {
   return [
     "+7 (",
     number.slice(1, 4),
