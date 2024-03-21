@@ -2,9 +2,7 @@
 import Pusher, { Channel } from "pusher-js"
 
 const { $store } = useNuxtApp()
-const {
-  public: { pusherAppKey },
-} = useRuntimeConfig()
+const { public: config } = useRuntimeConfig()
 const phone = ref("")
 const window = ref(0)
 const phoneMask = { mask: "+7 (###) ###-##-##" }
@@ -48,7 +46,7 @@ const onPhoneEnter = async () => {
 }
 
 function initPusher() {
-  pusher = new Pusher(pusherAppKey, { cluster: "eu" })
+  pusher = new Pusher(config.pusherAppKey, { cluster: "eu" })
   channel = pusher.subscribe("auth." + user.value?.id)
 }
 
@@ -145,7 +143,9 @@ definePageMeta({ layout: "login" })
           </div>
         </div>
         <div class="login__qr">
-          <img src="/img/qr.jpg" />
+          <img
+            :src="config.env === 'local' ? '/img/qr-local.png' : '/img/qr.jpg'"
+          />
         </div>
         <!-- <a href="https://t.me/egecentr_bot" target="_blank">
             <v-btn color="primary" block size="x-large"> Открыть Telegram </v-btn>
