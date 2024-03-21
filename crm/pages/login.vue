@@ -138,7 +138,7 @@ definePageMeta({ layout: "login" })
     <div class="login__logo">
       <img src="/img/logo.svg" />
     </div>
-    <v-window v-model="window" class="login__content">
+    <v-window v-model="window">
       <v-window-item>
         <v-text-field
           v-model="phone"
@@ -266,9 +266,6 @@ definePageMeta({ layout: "login" })
       width: 80px;
     }
   }
-  &__content {
-    padding: 30px;
-  }
   &__qr {
     margin-top: 40px;
     text-align: center;
@@ -305,6 +302,11 @@ definePageMeta({ layout: "login" })
   }
   .v-card-title {
     font-size: 18px !important;
+  }
+  .v-window {
+    &-item {
+      padding: 30px;
+    }
   }
 }
 </style>
