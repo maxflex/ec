@@ -19,9 +19,6 @@ Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::post('verify-code', 'verifyCode');
 });
 
-Route::controller(TelegramController::class)->prefix('telegram')->group(function () {
-});
-
 Route::post('telegram', [TelegramController::class, 'bot']);
 
 Route::middleware(['auth:crm'])->group(function () {

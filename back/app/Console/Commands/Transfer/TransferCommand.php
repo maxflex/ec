@@ -22,7 +22,9 @@ class TransferCommand extends Command
             'phones',
             'contracts',
             'groups',
-            'contract-group'
+            'contract-group',
+            'teacher-payments',
+            'teacher-services',
         ] as $command) {
             $this->info(str($command)->ucfirst());
             $this->call("app:transfer:$command");
