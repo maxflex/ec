@@ -57,7 +57,7 @@ class Test extends Model
             'finished_at' => now()->format('Y-m-d H:i:s'),
             'answers' => $answers,
             'test' => extract_fields($this, [
-                'program', 'name', 'file', 'minutes', 'answers'
+                'program', 'name', 'file', 'minutes', 'questions'
             ])
         ];
         $this->results = $results;
