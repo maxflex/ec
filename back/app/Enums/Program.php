@@ -228,6 +228,9 @@ enum Program: string
             '19-33' => self::hisPracticum,
             '19-34' => self::engPracticum,
             '19-35' => self::geoPracticum,
+
+            // ошибка в старой системе
+            '19-6' => self::rusPracticum,
         };
     }
 }
