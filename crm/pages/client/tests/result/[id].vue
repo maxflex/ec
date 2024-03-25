@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import type { ClientTest } from "~/utils/models"
+definePageMeta({ middleware: ["check-active-test"] })
+
 const route = useRoute()
 const test = ref<ClientTest>()
 const answers = ref<TestAnswers>()
@@ -7,8 +10,8 @@ async function loadData() {
   const { data } = await useHttp<ClientTest>(`client/tests/${route.params.id}`)
   if (data.value) {
     test.value = data.value
-    if (test.value.result?.answers) {
-      answers.value = test.value.result.answers
+    if (test.value.answers) {
+      answers.value = test.value.answers
     }
   }
 }
@@ -19,7 +22,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="test" v-if="test && test.result">
+  <div class="test" v-if="test && test.is_finished">
     <iframe :src="test.file" />
     <div>
       <div class="test__questions">

@@ -60,8 +60,8 @@ function auth(token: string, user: User) {
   if (user.entity_type !== ENTITY_TYPE.teacher) {
     cookieUser.value = user
   }
-  const name = sessionStorage.getItem("redirect") || "index"
-  navigateTo({ name })
+  const path = sessionStorage.getItem("redirect") || "/"
+  navigateTo({ path })
 }
 
 function clearCookieUser() {
@@ -124,11 +124,11 @@ onUnmounted(() => {
   pusher?.unsubscribe("auth")
 })
 
-onMounted(() => {
-  if (window.value === 0) {
-    phoneInput.value?.focus()
-  }
-})
+// onMounted(() => {
+//   if (window.value === 0) {
+//     phoneInput.value?.focus()
+//   }
+// })
 
 definePageMeta({ layout: "login" })
 </script>
@@ -185,7 +185,7 @@ definePageMeta({ layout: "login" })
           продолжить
         </v-btn>
         <div class="login__other">
-          <span @click="clearCookieUser()">другой пользователь</span>
+          <span @click="clearCookieUser()"> другой пользователь </span>
         </div>
       </v-window-item>
       <v-window-item eager>
@@ -286,7 +286,7 @@ definePageMeta({ layout: "login" })
     text-align: center;
     position: relative;
     width: 100%;
-    top: 12px;
+    top: 14px;
     span {
       cursor: pointer;
       color: rgb(var(--v-theme-gray));

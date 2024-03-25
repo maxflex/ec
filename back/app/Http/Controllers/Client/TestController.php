@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\{ClientTestResource, TestResource};
-use App\Models\Test;
+use App\Http\Resources\ClientTestResource;
+use App\Models\ClientTest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -12,51 +12,45 @@ class TestController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Test::whereClient(auth()->user()->entity_id);
+        $query = ClientTest::where('client_id', auth()->id());
         return $this->handleIndexRequest($request, $query, ClientTestResource::class);
     }
 
-    public function show(Test $test)
+    public function show(ClientTest $test)
     {
         return new ClientTestResource($test);
     }
 
-    public function start(Test $test)
+    public function start(ClientTest $test)
     {
-        $test->start(auth()->user()->entity_id);
+        $test->started_at = now()->format('Y-m-d H:i:s');
+        $test->save();
     }
 
     public function active()
     {
-        $clientId = auth()->user()->entity_id;
-        $test = Test::active($clientId)->first();
-        if ($test === null) {
+        $activeTest = ClientTest::active()->where('client_id', auth()->id())->first();
+        if ($activeTest === null) {
             return response(null, 404);
         }
-        $startedAt = $test->results[$clientId]['started_at'];
         return [
-            'test' => new ClientTestResource($test),
+            'test' => new ClientTestResource($activeTest),
             // сколько в секундах осталось на выполнение теста
             'seconds' => max(
                 0,
-                $test->minutes * 60 - Carbon::parse($startedAt)->diffInSeconds(now())
+                $activeTest->minutes * 60 - Carbon::parse($activeTest->started_at)->diffInSeconds(now())
             )
         ];
     }
 
     public function finish(Request $request)
     {
-        $clientId = auth()->user()->entity_id;
-        $test = Test::active($clientId)->first();
-        if ($test === null) {
+        $activeTest = ClientTest::active(auth()->id())->first();
+        if ($activeTest === null) {
             return response(null, 404);
         }
-        $test->finish($clientId, $request->answers);
-    }
-
-    public function result(Test $test)
-    {
-        $clientId = auth()->user()->entity_id;
-        return $test->results[$clientId];
+        $activeTest->finished_at = now()->format('Y-m-d H:i:s');
+        $activeTest->answers = $request->answers;
+        $activeTest->save();
     }
 }

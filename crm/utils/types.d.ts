@@ -1,5 +1,5 @@
 import { YEARS } from "./sment"
-import type { Program, Test } from "./models"
+import type { ClientTest, Program, Test } from "./models"
 
 declare global {
   interface Meta {
@@ -52,25 +52,6 @@ declare global {
   type TestQuestions = TestQuestion[]
 
   type TestAnswers = Array<number | undefined | null>
-
-  interface ClientTestResult {
-    started_at: string
-    finished_at?: string
-    answers?: TestAnswers
-    test: Test
-  }
-
-  interface ClientTest {
-    id: number
-    program: Program
-    name: string
-    file: string
-    minutes: number
-    is_finished: boolean
-    questions_count: number
-    questions?: TestQuestions
-    result?: ClientTestResult
-  }
 
   interface ActiveTest {
     test: ClientTest

@@ -2,6 +2,7 @@
 const { user } = defineProps<{ user: User }>()
 const { $store } = useNuxtApp()
 const loading = ref(false)
+const route = useRoute()
 
 async function enter() {
   const cookieToken = useCookie("preview")
@@ -14,6 +15,7 @@ async function enter() {
     const { token, user } = data.value
     $store.user = user
     cookieToken.value = token
+    sessionStorage.setItem("redirect", route.fullPath)
     window.location.href = "/"
   }
 }

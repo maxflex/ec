@@ -22,7 +22,7 @@ export const useHttp: useFetchType = (path, options = {}) => {
         }
         $store.user = null
         if (route.name !== "login") {
-          sessionStorage.setItem("redirect", route.name as string)
+          sessionStorage.setItem("redirect", route.fullPath)
           navigateTo({ name: "login" })
         }
       }

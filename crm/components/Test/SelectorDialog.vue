@@ -8,8 +8,7 @@ const { dialog, width } = useDialog(1000)
 const selected = ref<Tests>([])
 const tests = ref<Tests>()
 
-function open(tests: Tests) {
-  selected.value = [...tests]
+function open() {
   dialog.value = true
   loadData()
 }

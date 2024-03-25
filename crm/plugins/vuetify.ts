@@ -7,7 +7,6 @@ import {
   mdiChevronDown,
   mdiCheckDecagram,
   mdiDelete,
-  mdiChevronRight,
   mdiEyeArrowRightOutline,
 } from "@mdi/js"
 
@@ -20,7 +19,6 @@ const icons = {
     dropdown: mdiChevronDown,
     verified: mdiCheckDecagram,
     delete: mdiDelete,
-    right: mdiChevronRight,
     preview: mdiEyeArrowRightOutline,
   },
   sets: {

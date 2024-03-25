@@ -22,13 +22,13 @@ export interface Client {
   updated_at: string|null
   // mutators
   groups?: unknown
-  tests: unknown
   swamps?: unknown
   // overrides
   groups: Groups
   swamps: ContractPrograms
-  tests: Tests
+  tests: ClientTests
   // relations
+  tests: ClientTests
   contracts: Contracts
   contract_group: ContractGroups
   payments: ClientPayments
@@ -69,6 +69,24 @@ export interface ClientReview {
   updated_at: string|null
 }
 export type ClientReviews = ClientReview[]
+
+export interface ClientTest {
+  // columns
+  id: number
+  client_id: number
+  program: Program
+  name: string
+  file: string
+  minutes: number
+  questions: TestQuestions
+  answers: TestAnswers|null
+  started_at: string|null
+  finished_at: string|null
+  // mutators
+  is_finished: boolean
+  questions_count: number
+}
+export type ClientTests = ClientTest[]
 
 export interface Comment {
   // columns
@@ -203,12 +221,13 @@ export type Macros = Macro[]
 export interface Phone {
   // columns
   id: number
-  number: unknown
+  number: string
   comment: string|null
   is_verified: boolean
   is_parent: boolean
   entity_type: string
   entity_id: number
+  telegram_id: number|null
   // relations
   entity: Phone
 }
@@ -314,10 +333,9 @@ export interface Test {
   id: number
   program: Program|null
   name: string
-  file: unknown|null
+  file: string|null
   minutes: number
   questions: TestQuestions|null
-  results: string[]|null
   created_at: string|null
   updated_at: string|null
 }
@@ -356,14 +374,6 @@ const CompanyType = {
 } as const;
 
 export type CompanyType = typeof CompanyType[keyof typeof CompanyType]
-
-const ContractLessonStatus = {
-  present: 'present',
-  late: 'late',
-  absent: 'absent',
-} as const;
-
-export type ContractLessonStatus = typeof ContractLessonStatus[keyof typeof ContractLessonStatus]
 
 const Program = {
   math9: 'math9',
@@ -467,6 +477,14 @@ const Program = {
 } as const;
 
 export type Program = typeof Program[keyof typeof Program]
+
+const ContractLessonStatus = {
+  present: 'present',
+  late: 'late',
+  absent: 'absent',
+} as const;
+
+export type ContractLessonStatus = typeof ContractLessonStatus[keyof typeof ContractLessonStatus]
 
 const LessonStatus = {
   planned: 'planned',

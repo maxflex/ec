@@ -22,7 +22,7 @@ async function loadData() {
   <div class="tests">
     <UiTopPanel>
       <v-spacer />
-      <v-btn append-icon="$right" @click="testDialog?.create()" color="primary">
+      <v-btn append-icon="$next" @click="testDialog?.create()" color="primary">
         добавить тест
       </v-btn>
     </UiTopPanel>

@@ -154,10 +154,10 @@ onMounted(async () => {
           :size="48"
           icon="$plus"
           variant="plain"
-          @click="() => testSelectorDialog?.open(client.tests)"
+          @click="() => testSelectorDialog?.open()"
         />
       </h3>
-      <TestList :tests="client.tests" />
+      <TestClientList :tests="client.tests" />
       <TestSelectorDialog ref="testSelectorDialog" @saved="onTestsSaved" />
     </div>
   </div>

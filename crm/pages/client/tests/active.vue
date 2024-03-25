@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { mdiClockOutline } from "@mdi/js"
+import type { ClientTest } from "~/utils/models"
 
 const { $dayjs } = useNuxtApp()
 const answers = ref<TestAnswers>([])
@@ -9,9 +10,9 @@ const finishing = ref(false)
 const seconds = ref(0)
 let interval: NodeJS.Timeout
 
-const answered = computed(
-  () => answers.value.filter((e) => e !== undefined && e !== null).length,
-)
+// const answered = computed(
+//   () => answers.value.filter((e) => e !== undefined && e !== null).length,
+// )
 
 function saveAnswers() {
   console.log("save answers", cookie.value, answers.value)
@@ -35,6 +36,7 @@ async function loadData() {
         }
       }, 1000)
     }
+    answers.value = Array.from({ length: data.value.test.questions_count })
     if (cookie.value) {
       answers.value = cookie.value.slice()
     }

@@ -45,19 +45,9 @@ class TestController extends Controller
             'ids.*' => ['exists:tests,id']
         ]);
 
-        $tests = Test::all();
-        foreach ($tests as $test) {
-            $results = $test->results;
-            if (in_array($test->id, $request->ids)) {
-                $results[$client->id] = null;
-            } else {
-                unset($results[$client->id]);
-            }
-            $test->results = $results;
-            $test->save();
-        }
-
-        return $request->all();
+        Test::whereIn('id', $request->ids)->get()->each(function ($test) use ($client) {
+            $test->addClient($client);
+        });
     }
 
     public function show(Test $test)

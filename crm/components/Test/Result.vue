@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import type { ClientTest } from "~/utils/models"
 const { test } = defineProps<{
   test: ClientTest
 }>()
 const answers = ref<TestAnswers>()
-if (test.result?.answers) {
-  answers.value = test.result.answers
+if (test.answers) {
+  answers.value = test.answers
 }
 </script>
 

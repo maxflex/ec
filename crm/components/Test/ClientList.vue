@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { PROGRAM } from "~/utils/sment"
+import type { ClientTest } from "~/utils/models"
+import { PROGRAM, ENTITY_TYPE } from "~/utils/sment"
 import { plural } from "~/utils/filters"
 const { tests } = defineProps<{ tests: ClientTest[] }>()
 </script>
@@ -11,17 +12,11 @@ const { tests } = defineProps<{ tests: ClientTest[] }>()
         {{ t.name }}
       </div>
       <div style="width: 250px">
-        <template v-if="t.program">
-          {{ PROGRAM[t.program] }}
-        </template>
-        <span class="text-gray" v-else> не установлено </span>
+        {{ PROGRAM[t.program] }}
       </div>
       <div style="width: 150px">{{ t.minutes }} минут</div>
       <div>
-        <template v-if="t.questions_count">
-          {{ plural(t.questions_count, ["вопрос", "вопроса", "вопросов"]) }}
-        </template>
-        <span class="text-gray" v-else> нет вопросов </span>
+        {{ plural(t.questions_count, ["вопрос", "вопроса", "вопросов"]) }}
       </div>
       <div class="table-actions">
         <router-link
@@ -31,18 +26,26 @@ const { tests } = defineProps<{ tests: ClientTest[] }>()
           <TestResult :test="t" />
           баллов
         </router-link>
-        <v-btn
-          v-else
-          color="primary"
-          :to="{
-            name: 'client-tests-start-id',
-            params: {
-              id: t.id,
-            },
-          }"
-        >
-          начать тест
-        </v-btn>
+        <template v-else>
+          <span
+            v-if="$store.user?.entity_type === ENTITY_TYPE.user"
+            class="text-gray"
+          >
+            не пройден
+          </span>
+          <v-btn
+            v-else
+            color="primary"
+            :to="{
+              name: 'client-tests-start-id',
+              params: {
+                id: t.id,
+              },
+            }"
+          >
+            начать тест
+          </v-btn>
+        </template>
       </div>
     </div>
   </div>

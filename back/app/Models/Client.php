@@ -14,12 +14,17 @@ class Client extends Model
     public $interfaces = [
         'groups' => ['type' => 'Groups'],
         'swamps' => ['type' => 'ContractPrograms'],
-        'tests' => ['type' => 'Tests'],
+        'tests' => ['type' => 'ClientTests'],
     ];
 
     protected $hidden = ['groups', 'swamps'];
 
-    public function contracts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function tests()
+    {
+        return $this->hasMany(ClientTest::class);
+    }
+
+    public function contracts()
     {
         return $this->hasMany(Contract::class)->orderBy('id', 'desc');
     }
@@ -42,22 +47,6 @@ class Client extends Model
         return Attribute::make(
             fn (): Collection =>
             $this->contractGroup()->with('group')->get()->map(fn ($e) => $e->group)
-        );
-    }
-
-    /**
-     * @return Test[]
-     */
-    public function tests(): Attribute
-    {
-        return Attribute::make(
-            fn () => Test::query()
-                ->whereNotNull('results')
-                ->whereRaw(<<<SQL
-                    json_extract(results, '$."{$this->id}"') is not null
-                SQL)
-                ->latest()
-                ->get()
         );
     }
 

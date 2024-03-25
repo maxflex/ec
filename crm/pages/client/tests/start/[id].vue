@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ClientTest } from "~/utils/models"
 definePageMeta({ middleware: ["check-active-test"] })
 
 const route = useRoute()

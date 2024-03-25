@@ -1,0 +1,63 @@
+<?php
+
+namespace App\Models;
+
+use App\Enums\Program;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
+
+class ClientTest extends Model
+{
+    public $timestamps = false;
+    protected $fillable = [
+        'name', 'minutes', 'program', 'questions', 'file',
+    ];
+
+    protected $casts = [
+        'program' => Program::class,
+        'questions' => 'array',
+        'answers' => 'array',
+    ];
+
+    public $interfaces = [
+        'questions' => ['type' => 'TestQuestions'],
+        'answers' => ['type' => 'TestAnswers'],
+    ];
+
+    /**
+     * + 1 minute – 1 минута запас на всякий случай
+     */
+    public function scopeActive($query)
+    {
+        $now = now()->format("Y-m-d H:i:s");
+        return $query->whereRaw(<<<SQL
+            started_at is not null
+            and finished_at is null
+            and '$now' < started_at + interval `minutes` + 1 minute
+        SQL);
+    }
+
+    public function isFinished(): Attribute
+    {
+        return Attribute::make(
+            fn (): bool => $this->started_at !== null && (
+                $this->finished_at !== null
+                || now()->modify('-1 minute')->format('Y-m-d H:i:s') >= $this->started_at
+            )
+        );
+    }
+
+    public function questionsCount(): Attribute
+    {
+        return Attribute::make(
+            fn (): int => count($this->questions)
+        );
+    }
+
+    public function file(): Attribute
+    {
+        return Attribute::make(
+            fn ($v): string => asset("storage/tests/" . $v)
+        );
+    }
+}

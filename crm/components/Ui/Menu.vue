@@ -89,7 +89,9 @@ async function logout() {
     useCookie("token").value = null
   }
   // $store.user = null
-  window.location.href = "/"
+  const path = sessionStorage.getItem("redirect") || "/"
+  await navigateTo({ path })
+  window.location.reload()
 }
 </script>
 
