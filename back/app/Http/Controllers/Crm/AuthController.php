@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Crm;
 
+use App\Enums\LogType;
 use App\Http\Resources\UserResource;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AuthRequest;
 use App\Http\Requests\PreviewRequest;
+use App\Models\Log;
 use App\Utils\VerificationService;
 use App\Models\Phone;
 use App\Utils\Session;
@@ -25,6 +27,7 @@ class AuthController extends Controller
     public function verifyCode(AuthRequest $request)
     {
         $phone = Phone::auth($request->phone);
+        $this->logSuccess($phone);
         return [
             'token' => $phone->createSessionToken(),
             'user' => new UserResource($phone),
@@ -54,5 +57,17 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Session::logout($request->bearerToken());
+    }
+
+    private function logSuccess(Phone $phone)
+    {
+        Log::create([
+            'user_id' => $phone->entity_id,
+            'type' => LogType::auth,
+            'data' => [
+                'status' => 'success',
+                'ua' => $_SERVER['HTTP_USER_AGENT'],
+            ],
+        ]);
     }
 }

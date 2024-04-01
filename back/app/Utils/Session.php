@@ -2,8 +2,9 @@
 
 namespace App\Utils;
 
+use App\Enums\LogType;
 use Illuminate\Support\Facades\{Redis, Hash};
-use App\Models\{Phone, Teacher, Client, User};
+use App\Models\{Phone, Teacher, Client, Log, User};
 
 class Session
 {

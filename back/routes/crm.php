@@ -7,6 +7,7 @@ use App\Http\Controllers\Crm\{
     ClientController,
     ContractController,
     GroupController,
+    LogController,
     MacroController,
     TeacherController,
     TelegramController,
@@ -46,5 +47,6 @@ Route::middleware(['auth:crm'])->group(function () {
         'macros' => MacroController::class,
         'tests' => TestController::class,
         'teachers' => TeacherController::class,
+        'logs' => LogController::class,
     ]);
 });
