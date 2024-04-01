@@ -11,7 +11,9 @@ class Log extends Model
 {
     const DISABLE_LOGS = true;
 
-    protected $fillable = ['table', 'row_id', 'data', 'type', 'user_id'];
+    protected $fillable = [
+        'table', 'row_id', 'data', 'type', 'entity_type', 'entity_id'
+    ];
 
     protected $casts = [
         'data' => 'array',
@@ -29,6 +31,9 @@ class Log extends Model
             case LogType::update:
                 $changed = [];
                 foreach ($model->getDirty() as $field => $new) {
+                    if ($field === 'updated_at') {
+                        continue;
+                    }
                     $old = $model->getOriginal($field);
                     if ($old instanceof Carbon) {
                         $old = $old->format('Y-m-d H:i:s');
@@ -58,7 +63,8 @@ class Log extends Model
 
         static::creating(function ($model) {
             if (auth()->user()) {
-                $model->user_id = auth()->id();
+                $model->entity_type = auth()->user()->entity_type;
+                $model->entity_id = auth()->user()->entity_id;
             }
             $model->ip = Request::ip();
         });

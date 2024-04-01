@@ -62,7 +62,8 @@ class AuthController extends Controller
     private function logSuccess(Phone $phone)
     {
         Log::create([
-            'user_id' => $phone->entity_id,
+            'entity_type' => $phone->entity_type,
+            'entity_id' => $phone->entity_id,
             'type' => LogType::auth,
             'data' => [
                 'status' => 'success',
