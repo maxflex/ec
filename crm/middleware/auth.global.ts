@@ -5,13 +5,15 @@ export default defineNuxtRouteMiddleware((to) => {
   if (!isLoggedIn && !isLoginPage) {
     return navigateTo({ name: "login" })
   }
-  if (isLoggedIn && isLoginPage) {
-    return navigateTo({ name: "index" })
+  if (isLoggedIn) {
+    if (isLoginPage) {
+      return navigateTo({ name: "index" })
+    }
+    useHttp("logs", {
+      method: "post",
+      body: {
+        url: to.path,
+      },
+    })
   }
-  useHttp("logs", {
-    method: "post",
-    body: {
-      url: to.path,
-    },
-  })
 })
