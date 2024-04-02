@@ -42,7 +42,10 @@ class ClientTest extends Model
         return Attribute::make(
             fn (): bool => $this->started_at !== null && (
                 $this->finished_at !== null
-                || now()->modify('-1 minute')->format('Y-m-d H:i:s') >= $this->started_at
+                || $this->started_at < now()
+                ->subMinutes($this->minutes)
+                ->subMinute()
+                ->format('Y-m-d H:i:s')
             )
         );
     }
