@@ -1,9 +1,10 @@
 version: "3"
+name: "ec"
 services:
   nginx:
     image: nginx:alpine
     ports:
-      - "80:80"
+      - 80:80
     networks:
       - internal
     build:
@@ -11,14 +12,11 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../back/:/var/www/html/
-      - ./logs/nginx:/var/log/nginx/
+      - nginx:/var/log/nginx/
   php:
-    # build:
-    #   context: ./php
-    #   dockerfile: Dockerfile
-    #   args:
-    #     WWWGROUP: "${WWWGROUP}"
-    image: php:fpm-alpine
+    build:
+      context: ./php
+      dockerfile: Dockerfile
     networks:
       - internal
     volumes:
@@ -26,19 +24,32 @@ services:
   mysql:
     image: mysql/mysql-server:8.0
     ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
-      MYSQL_ROOT_HOST: "%"
-      MYSQL_DATABASE: "${DB_DATABASE}"
-      MYSQL_USER: "${DB_USERNAME}"
-      MYSQL_PASSWORD: "${DB_PASSWORD}"
-      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      - 3306:3306
+    env_file: ./mysql/.env
     volumes:
-      - "sail-mysql:/var/lib/mysql"
-      - "./docker/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh"
+      - mysql:/var/lib/mysql
     networks:
       - internal
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+    networks:
+      - internal
+  crm:
+    ports:
+      - 3000:3000
+    build: ./node
+    volumes:
+      - ../crm/:/crm
+
 networks:
   internal:
     driver: bridge
+
+volumes:
+  nginx:
+  mysql:
+  redis:
