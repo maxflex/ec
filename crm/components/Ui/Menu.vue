@@ -11,10 +11,10 @@ import {
   mdiLogout,
 } from "@mdi/js"
 
-const { $store } = useNuxtApp()
+const { user } = useAuthStore()
 let menu: Menu
 
-switch ($store.user?.entity_type) {
+switch (user?.entity_type) {
   case ENTITY_TYPE.client:
     menu = [
       {
@@ -88,7 +88,6 @@ async function logout() {
   } else {
     useCookie("token").value = null
   }
-  // $store.user = null
   const path = sessionStorage.getItem("redirect") || "/"
   await navigateTo({ path })
   window.location.reload()
@@ -114,9 +113,6 @@ async function logout() {
       Выход
     </v-list-item>
   </v-list>
-  <!-- <div>
-    {{ $store.user }}
-  </div> -->
 </template>
 
 <style lang="sass">

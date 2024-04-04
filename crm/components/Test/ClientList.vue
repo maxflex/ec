@@ -3,6 +3,7 @@ import type { ClientTest } from "~/utils/models"
 import { PROGRAM, ENTITY_TYPE } from "~/utils/sment"
 import { plural } from "~/utils/filters"
 const { tests } = defineProps<{ tests: ClientTest[] }>()
+const { user } = useAuthStore()
 </script>
 
 <template>
@@ -27,10 +28,7 @@ const { tests } = defineProps<{ tests: ClientTest[] }>()
           баллов
         </router-link>
         <template v-else>
-          <span
-            v-if="$store.user?.entity_type === ENTITY_TYPE.user"
-            class="text-gray"
-          >
+          <span v-if="user?.entity_type === ENTITY_TYPE.user" class="text-gray">
             не пройден
           </span>
           <v-btn

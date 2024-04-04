@@ -1,11 +1,7 @@
-import { useMainStore } from "@/store"
-
 export default defineNuxtPlugin(async () => {
-  const store = useMainStore()
-  const { data, error } = await useHttp("auth/user")
-  // console.log({ error: error.value })
-  // console.log({ data: data.value })
+  const { data } = await useHttp<User>("auth/user")
   if (data.value) {
-    store.user = data.value as User
+    const { logIn } = useAuthStore()
+    logIn(data.value)
   }
 })

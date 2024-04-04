@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Pusher, { Channel } from "pusher-js"
 
-const { $store } = useNuxtApp()
 const { public: config } = useRuntimeConfig()
 const phone = ref("")
 const phoneMask = { mask: "+7 (###) ###-##-##" }
@@ -25,6 +24,7 @@ const cookieUser = useCookie<User | null>("user", {
   maxAge: 60 * 60 * 24 * 1000,
 })
 const window = ref(cookieUser.value ? 1 : 0)
+const { logIn } = useAuthStore()
 
 const onPhoneEnter = async () => {
   loading.value = true
@@ -55,7 +55,7 @@ function initPusher() {
 }
 
 function auth(token: string, user: User) {
-  $store.user = user
+  logIn(user)
   cookieToken.value = token
   if (user.entity_type !== ENTITY_TYPE.teacher) {
     cookieUser.value = user

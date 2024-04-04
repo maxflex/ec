@@ -5,8 +5,8 @@ type useFetchType = typeof useFetch
 export const useHttp: useFetchType = (path, options = {}) => {
   const config = useRuntimeConfig()
   const token = useCookie("preview").value || useCookie("token").value
-  const { $store } = useNuxtApp()
   const route = useRoute()
+  const { logOut } = useAuthStore()
 
   return useFetch(path, {
     ...options,
@@ -20,7 +20,7 @@ export const useHttp: useFetchType = (path, options = {}) => {
         } else {
           useCookie("token").value = null
         }
-        $store.user = null
+        logOut()
         if (route.name !== "login") {
           sessionStorage.setItem("redirect", route.fullPath)
           navigateTo({ name: "login" })

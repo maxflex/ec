@@ -1,6 +1,6 @@
 <script setup lang="ts">
+const { logIn } = useAuthStore()
 const { user } = defineProps<{ user: User }>()
-const { $store } = useNuxtApp()
 const loading = ref(false)
 const route = useRoute()
 
@@ -13,7 +13,7 @@ async function enter() {
   })
   if (data.value) {
     const { token, user } = data.value
-    $store.user = user
+    logIn(user)
     cookieToken.value = token
     sessionStorage.setItem("redirect", route.fullPath)
     window.location.href = "/"
