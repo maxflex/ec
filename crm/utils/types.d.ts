@@ -66,6 +66,8 @@ declare global {
     password: string
   }
 
+  type EntityString = "admin" | "teacher" | "client"
+
   interface User {
     id: number
     entity_type: string
