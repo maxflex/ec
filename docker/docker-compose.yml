@@ -19,6 +19,9 @@ services:
       dockerfile: Dockerfile
     networks:
       - internal
+    depends_on:
+      - mysql
+      - redis
     volumes:
       - ../back/:/var/www/html/
   mysql:
