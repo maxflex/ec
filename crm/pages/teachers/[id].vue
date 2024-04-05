@@ -12,9 +12,7 @@ async function loadData() {
   }
 }
 
-onMounted(async () => {
-  await loadData()
-})
+nextTick(loadData)
 </script>
 
 <template>

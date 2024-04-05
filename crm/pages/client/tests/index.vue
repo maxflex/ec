@@ -6,16 +6,14 @@ definePageMeta({ middleware: ["check-active-test"] })
 const testDialog = ref<null | InstanceType<typeof TestDialog>>()
 const tests = ref<ClientTest[]>()
 
-onMounted(async () => {
-  await loadData()
-})
-
 async function loadData() {
   const { data } = await useHttp<ApiResponse<ClientTest[]>>("client/tests")
   if (data.value) {
     tests.value = data.value.data
   }
 }
+
+nextTick(loadData)
 </script>
 
 <template>

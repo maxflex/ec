@@ -60,10 +60,7 @@ async function finish() {
 }
 
 watch(answers, saveAnswers)
-
-onMounted(async () => {
-  await loadData()
-})
+nextTick(loadData)
 </script>
 
 <template>

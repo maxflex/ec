@@ -6,10 +6,6 @@ const route = useRoute()
 const test = ref<ClientTest>()
 const loading = ref(false)
 
-onMounted(async () => {
-  await loadData()
-})
-
 async function loadData() {
   const { data } = await useHttp(`client/tests/${route.params.id}`)
   test.value = data.value as ClientTest
@@ -23,6 +19,8 @@ async function start() {
   useCookie("answers").value = null
   navigateTo({ name: "client-tests-active" })
 }
+
+nextTick(loadData)
 </script>
 
 <template>

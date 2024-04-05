@@ -19,15 +19,6 @@ const loadData = async function () {
   }
 }
 
-onMounted(async () => {
-  // этот баг только при ssr: true
-  // https://github.com/vuejs/core/issues/6638
-  // https://github.com/nuxt/nuxt/issues/25131
-  // await nextTick()
-
-  await loadData()
-})
-
 async function onIntersect({
   done,
 }: {
@@ -37,6 +28,8 @@ async function onIntersect({
   await loadData()
   done("ok")
 }
+
+nextTick(loadData)
 </script>
 
 <template>

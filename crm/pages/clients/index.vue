@@ -6,6 +6,7 @@ const paginator = usePaginator()
 // const isLastPage = false
 
 const loadData = async function () {
+  console.log("loading data")
   paginator.page++
   paginator.loading = true
   const { data } = await useHttp<ApiResponse<Clients>>("clients", {
@@ -20,15 +21,6 @@ const loadData = async function () {
   }
 }
 
-onMounted(async () => {
-  // этот баг только при ssr: true
-  // https://github.com/vuejs/core/issues/6638
-  // https://github.com/nuxt/nuxt/issues/25131
-  await nextTick()
-  await loadData()
-  console.log("yep")
-})
-
 async function onIntersect({
   done,
 }: {
@@ -38,6 +30,8 @@ async function onIntersect({
   await loadData()
   done("ok")
 }
+
+nextTick(loadData)
 </script>
 
 <template>

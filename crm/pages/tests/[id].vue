@@ -10,9 +10,7 @@ async function loadData() {
   test.value = data.value as Test
 }
 
-onMounted(async () => {
-  await loadData()
-})
+nextTick(loadData)
 </script>
 
 <template>

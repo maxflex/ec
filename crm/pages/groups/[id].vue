@@ -20,9 +20,7 @@ async function removeFromGroup(c: Contract) {
   loadData()
 }
 
-onMounted(async () => {
-  await loadData()
-})
+nextTick(loadData)
 </script>
 
 <template>

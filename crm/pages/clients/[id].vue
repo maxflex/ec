@@ -58,10 +58,7 @@ function onTestsSaved(tests: Tests) {
   })
 }
 
-onMounted(async () => {
-  await nextTick()
-  await loadData()
-})
+nextTick(loadData)
 </script>
 
 <template>

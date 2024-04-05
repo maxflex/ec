@@ -5,10 +5,6 @@ import type { Tests } from "~/utils/models"
 const testDialog = ref<null | InstanceType<typeof TestDialog>>()
 const tests = ref<Tests>()
 
-onMounted(async () => {
-  await loadData()
-})
-
 async function loadData() {
   const { data } = await useHttp<ApiResponse<Tests>>("tests")
   if (data.value) {
@@ -16,6 +12,8 @@ async function loadData() {
     tests.value = newItems
   }
 }
+
+nextTick(loadData)
 </script>
 
 <template>

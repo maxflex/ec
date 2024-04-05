@@ -15,10 +15,6 @@ const dialog = ref(false)
 const macros = ref<Macros>()
 const macro = ref<Macro>()
 
-onMounted(async () => {
-  await loadData()
-})
-
 async function loadData() {
   const { data } = await useHttp<ApiResponse<Macros>>("macros")
   if (data.value) {
@@ -41,6 +37,8 @@ async function save() {
   saving.value = false
   dialog.value = false
 }
+
+nextTick(loadData)
 </script>
 
 <template>

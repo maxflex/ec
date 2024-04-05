@@ -28,7 +28,6 @@ onMounted(async () => {
         ?.scrollIntoView({ block: "center" }),
     100,
   )
-  await loadData()
 })
 
 async function loadData() {
@@ -77,6 +76,7 @@ const onClick = (year: number, month: number, day: number) => {
 }
 
 defineExpose({ open })
+nextTick(loadData)
 </script>
 
 <template>
