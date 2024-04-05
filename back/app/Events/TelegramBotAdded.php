@@ -41,8 +41,8 @@ class TelegramBotAdded implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
+            'user' => new UserResource($this->phone),
             'token' => $this->phone->createSessionToken(),
-            'user' => new UserResource($this->phone)
         ];
     }
 }

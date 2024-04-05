@@ -2,12 +2,13 @@ import vuetify, { transformAssetUrls } from "vite-plugin-vuetify"
 
 export default defineNuxtConfig({
   // devtools: { enabled: true },
-  css: ["~/assets/scss/main.scss"],
   // ssr: false,
+  css: ["~/assets/scss/main.scss"],
+
   build: {
     transpile: ["vuetify"],
   },
-  ssr: false,
+
   runtimeConfig: {
     public: {
       env: "",
@@ -15,6 +16,7 @@ export default defineNuxtConfig({
       pusherAppKey: "",
     },
   },
+
   modules: [
     "@pinia/nuxt",
     (_options, nuxt) => {
@@ -28,6 +30,7 @@ export default defineNuxtConfig({
       })
     },
   ],
+
   vite: {
     vue: {
       template: {
@@ -35,6 +38,7 @@ export default defineNuxtConfig({
       },
     },
   },
+
   imports: {
     dirs: ["store"],
   },

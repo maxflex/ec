@@ -24,9 +24,9 @@ onMounted(async () => {
   // этот баг только при ssr: true
   // https://github.com/vuejs/core/issues/6638
   // https://github.com/nuxt/nuxt/issues/25131
-  // await nextTick()
-
+  await nextTick()
   await loadData()
+  console.log("yep")
 })
 
 async function onIntersect({

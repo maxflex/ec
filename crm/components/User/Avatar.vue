@@ -2,7 +2,7 @@
 const { user, size } = withDefaults(
   defineProps<{
     user: User
-    size: number
+    size?: number
   }>(),
   {
     size: 60,

@@ -5,7 +5,6 @@ const loading = ref(false)
 const route = useRoute()
 
 async function enter() {
-  const cookieToken = useCookie("preview")
   loading.value = true
   const { data } = await useHttp<TokenResponse>("auth/preview", {
     method: "post",
@@ -13,10 +12,7 @@ async function enter() {
   })
   if (data.value) {
     const { token, user } = data.value
-    logIn(user)
-    cookieToken.value = token
-    sessionStorage.setItem("redirect", route.fullPath)
-    window.location.href = "/"
+    logIn(user, token, true)
   }
 }
 </script>

@@ -79,8 +79,8 @@ declare global {
   }
 
   interface TokenResponse {
-    token: string
     user: User
+    token: string
   }
 }
 

@@ -5,6 +5,7 @@ import type {
   GroupSelectorDialog,
   TestSelectorDialog,
 } from "#build/components"
+import { nextTick } from "vue"
 import type {
   Client,
   Contract,
@@ -58,6 +59,7 @@ function onTestsSaved(tests: Tests) {
 }
 
 onMounted(async () => {
+  await nextTick()
   await loadData()
 })
 </script>

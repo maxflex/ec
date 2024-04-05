@@ -11,7 +11,7 @@ import {
   mdiLogout,
 } from "@mdi/js"
 
-const { user } = useAuthStore()
+const { user, logOut, clearCurrentToken } = useAuthStore()
 let menu: Menu
 
 switch (user?.entity_type) {
@@ -80,17 +80,11 @@ switch (user?.entity_type) {
     ]
 }
 
-async function logout() {
-  await useHttp("auth/logout")
-  const preview = useCookie("preview")
-  if (preview.value) {
-    preview.value = null
-  } else {
-    useCookie("token").value = null
-  }
+async function exit() {
+  await logOut()
+  clearCurrentToken()
   const path = sessionStorage.getItem("redirect") || "/"
-  await navigateTo({ path })
-  window.location.reload()
+  window.location.href = path
 }
 </script>
 
@@ -106,7 +100,7 @@ async function logout() {
       </template>
       {{ title }}
     </v-list-item>
-    <v-list-item @click="logout()">
+    <v-list-item @click="exit()">
       <template #prepend>
         <v-icon :icon="mdiLogout"></v-icon>
       </template>

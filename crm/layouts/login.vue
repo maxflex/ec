@@ -1,7 +1,9 @@
 <template>
   <v-app class="login-layout">
     <div>
-      <slot />
+      <ClientOnly>
+        <slot />
+      </ClientOnly>
     </div>
   </v-app>
 </template>

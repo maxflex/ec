@@ -2,6 +2,7 @@
 import Pusher, { Channel } from "pusher-js"
 
 const { public: config } = useRuntimeConfig()
+const { rememberUser, logIn } = useAuthStore()
 const phone = ref("")
 const phoneMask = { mask: "+7 (###) ###-##-##" }
 const user = ref<User>()
@@ -19,12 +20,7 @@ const otp = reactive({
 })
 let pusher: Pusher
 let channel: Channel
-const cookieToken = useCookie("token", { maxAge: 60 * 60 * 24 * 1000 })
-const cookieUser = useCookie<User | null>("user", {
-  maxAge: 60 * 60 * 24 * 1000,
-})
-const window = ref(cookieUser.value ? 1 : 0)
-const { logIn } = useAuthStore()
+const window = ref(rememberUser ? 1 : 0)
 
 const onPhoneEnter = async () => {
   loading.value = true
@@ -54,26 +50,17 @@ function initPusher() {
   channel = pusher.subscribe("auth." + user.value?.id)
 }
 
-function auth(token: string, user: User) {
-  logIn(user)
-  cookieToken.value = token
-  if (user.entity_type !== ENTITY_TYPE.teacher) {
-    cookieUser.value = user
-  }
-  const path = sessionStorage.getItem("redirect") || "/"
-  navigateTo({ path })
-}
-
-function clearCookieUser() {
+function otherUser() {
   window.value = 0
   // setTimeout(() => (cookieUser.value = null), 1000)
 }
 
-function continueCookieUser() {
-  if (cookieUser.value) {
-    phone.value = cookieUser.value.number
-    onPhoneEnter()
+function continueRememberMe() {
+  if (rememberUser === undefined) {
+    return
   }
+  phone.value = rememberUser.number
+  onPhoneEnter()
 }
 
 async function onOtpFinish() {
@@ -93,8 +80,8 @@ async function onOtpFinish() {
     return
   }
   if (data.value) {
-    const { token, user } = data.value
-    auth(token, user)
+    const { user, token } = data.value
+    logIn(user, token)
   }
 }
 
@@ -109,7 +96,7 @@ watch(
       initPusher()
       channel.bind(
         "App\\Events\\TelegramBotAdded",
-        ({ token, user }: TokenResponse) => auth(token, user),
+        ({ user, token }: TokenResponse) => logIn(user, token),
       )
     }
     if (newVal === 3) {
@@ -163,16 +150,16 @@ definePageMeta({ layout: "login" })
           title="Card title"
           subtitle="Subtitle"
           variant="tonal"
-          v-if="cookieUser"
+          v-if="rememberUser"
         >
           <template #title>
-            {{ formatName(cookieUser) }}
+            {{ formatName(rememberUser) }}
           </template>
           <template #subtitle>
-            {{ formatPhone(cookieUser.number) }}
+            {{ formatPhone(rememberUser.number) }}
           </template>
           <template #prepend>
-            <UserAvatar :user="cookieUser" class="mr-3" />
+            <UserAvatar :user="rememberUser" class="mr-3" />
           </template>
         </v-card>
         <v-btn
@@ -180,12 +167,12 @@ definePageMeta({ layout: "login" })
           :loading="loading"
           block
           size="x-large"
-          @click="continueCookieUser()"
+          @click="continueRememberMe()"
         >
           продолжить
         </v-btn>
         <div class="login__other">
-          <span @click="clearCookieUser()"> другой пользователь </span>
+          <span @click="otherUser()"> другой пользователь </span>
         </div>
       </v-window-item>
       <v-window-item eager>

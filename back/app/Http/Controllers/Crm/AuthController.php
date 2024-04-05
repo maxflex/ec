@@ -29,16 +29,13 @@ class AuthController extends Controller
         $phone = Phone::auth($request->phone);
         $this->logSuccess($phone);
         return [
-            'token' => $phone->createSessionToken(),
             'user' => new UserResource($phone),
+            'token' => $phone->createSessionToken(),
         ];
     }
 
     public function user()
     {
-        if (!auth()->check()) {
-            return response('', 401);
-        }
         return new UserResource(auth()->user());
     }
 
@@ -49,8 +46,8 @@ class AuthController extends Controller
             ->where('entity_type', $request->entity_type)
             ->first();
         return [
-            'token' => $phone->createSessionToken(),
             'user' => new UserResource($phone),
+            'token' => $phone->createSessionToken(),
         ];
     }
 
