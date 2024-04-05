@@ -42,4 +42,8 @@ export default defineNuxtConfig({
   imports: {
     dirs: ["store"],
   },
+
+  sourcemap: {
+    server: true,
+  },
 })

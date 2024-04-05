@@ -6,7 +6,6 @@ export const useHttp: useFetchType = (path, options = {}) => {
   const { getCurrentToken, clearCurrentToken } = useAuthStore()
   const config = useRuntimeConfig()
   const token = getCurrentToken().value
-  const route = useRoute()
 
   return useFetch(path, {
     ...options,
@@ -14,6 +13,7 @@ export const useHttp: useFetchType = (path, options = {}) => {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     async onResponseError({ response: { status } }) {
       if (status === 401) {
+        const route = useRoute()
         clearCurrentToken()
         if (route.name !== "login") {
           sessionStorage.setItem("redirect", route.fullPath)
