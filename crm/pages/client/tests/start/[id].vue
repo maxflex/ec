@@ -17,7 +17,7 @@ async function start() {
     method: "post",
   })
   useCookie("answers").value = null
-  navigateTo({ name: "client-tests-active" })
+  navigateTo({ name: "tests-active" })
 }
 
 nextTick(loadData)

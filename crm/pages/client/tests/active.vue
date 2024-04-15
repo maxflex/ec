@@ -23,7 +23,7 @@ async function loadData() {
   const { data, error } = await useHttp<ActiveTest>(`client/tests/active`)
   // нет активного теста
   if (error.value) {
-    return navigateTo({ name: "client-tests" })
+    return navigateTo({ name: "tests" })
   }
   if (data.value) {
     test.value = data.value.test
@@ -52,7 +52,7 @@ async function finish() {
     },
   })
   navigateTo({
-    name: "client-tests-result-id",
+    name: "tests-result-id",
     params: {
       id: test.value?.id,
     },

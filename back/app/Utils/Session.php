@@ -2,7 +2,6 @@
 
 namespace App\Utils;
 
-use App\Enums\LogType;
 use Illuminate\Support\Facades\{Redis, Hash};
 use App\Models\{Phone, Teacher, Client, Log, User};
 
@@ -10,7 +9,15 @@ class Session
 {
     public static function createToken(Phone $phone): string
     {
-        $token = Hash::make($phone->number);
+        $hash = Hash::make($phone->number);
+        // App\Models\User => admin
+        // App\Models\Client = client
+        // App\Models\Teacher = teacher
+        $entityString = match ($phone->entity_type) {
+            User::class => 'admin',
+            default => strtolower(class_basename($phone->entity_type))
+        };
+        $token = join("|", [$entityString, $hash]);
         Redis::set(
             self::cacheKey($token),
             $phone->id,

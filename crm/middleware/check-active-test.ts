@@ -3,6 +3,6 @@
 export default defineNuxtRouteMiddleware(async function () {
   const { data } = await useHttp<ActiveTest>(`client/tests/active`)
   if (data.value?.test) {
-    return navigateTo({ name: "client-tests-active" })
+    return navigateTo({ name: "tests-active" })
   }
 })

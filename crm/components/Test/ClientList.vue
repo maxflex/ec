@@ -22,7 +22,7 @@ const { user } = useAuthStore()
       <div class="table-actions">
         <router-link
           v-if="t.is_finished"
-          :to="{ name: 'client-tests-result-id', params: { id: t.id } }"
+          :to="{ name: 'tests-result-id', params: { id: t.id } }"
         >
           <TestResult :test="t" />
           баллов
@@ -35,7 +35,7 @@ const { user } = useAuthStore()
             v-else
             color="primary"
             :to="{
-              name: 'client-tests-start-id',
+              name: 'tests-start-id',
               params: {
                 id: t.id,
               },

@@ -15,10 +15,6 @@ use App\Http\Controllers\Crm\{
     VacationController
 };
 
-Route::get('sment', function () {
-    return "smentttt";
-});
-
 Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::post('login', 'login');
     Route::post('verify-code', 'verifyCode');

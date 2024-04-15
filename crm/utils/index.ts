@@ -16,13 +16,10 @@ export function getCookie(key: string): object | null {
   return null
 }
 
-/**
- *
- * App\Models\User => admin
- * App\Models\Client = client
- * App\Models\Teacher = teacher
- */
-export function getEntityString(user: User): EntityString {
-  const entity = user.entity_type.split("\\")[2].toLowerCase()
-  return entity === "user" ? "admin" : (entity as EntityString)
+export function getEntityString(): EntityString | null {
+  const token = useCookie("preview-token").value || useCookie("token").value
+  if (token) {
+    return token.split("|")[0] as EntityString
+  }
+  return null
 }
