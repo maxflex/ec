@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Crm;
+namespace App\Http\Controllers\Common;
 
 use App\Enums\LogType;
 use App\Http\Resources\UserResource;
