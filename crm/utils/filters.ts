@@ -1,5 +1,5 @@
 import dayjs from "dayjs"
-import type { Phone } from "./models"
+import type { Phone, ClientTest } from "./models"
 
 export function plural(
   number: number,
@@ -55,4 +55,17 @@ export function formatYear(year: Year): string {
 
 export function formatName(person: Person) {
   return [person.last_name, person.first_name].join(" ")
+}
+
+export function formatClientTestResults(clientTest: ClientTest) {
+  const score = clientTest.questions
+    ?.filter((e, i) => clientTest.answers && e.answer === clientTest.answers[i])
+    .reduce((c, v) => c + (v.score as number), 0)
+
+  const total = clientTest.questions?.reduce(
+    (c, v) => c + (v.score as number),
+    0,
+  )
+
+  return `${score} из ${total}`
 }

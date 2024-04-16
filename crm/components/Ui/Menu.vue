@@ -25,7 +25,7 @@ switch (user?.entity_type) {
       {
         icon: mdiDotsTriangle,
         title: "Тесты",
-        to: "tests",
+        to: "/tests",
       },
     ]
     break

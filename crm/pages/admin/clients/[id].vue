@@ -156,7 +156,7 @@ nextTick(loadData)
           @click="() => testSelectorDialog?.open()"
         />
       </h3>
-      <TestClientList :tests="client.tests" />
+      <ClientTestList :tests="client.tests" />
       <TestSelectorDialog ref="testSelectorDialog" @saved="onTestsSaved" />
     </div>
   </div>

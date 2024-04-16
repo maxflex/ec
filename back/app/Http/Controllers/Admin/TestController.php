@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Crm;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ClientTestResource;
 use App\Http\Resources\TestResource;
 use App\Models\Client;
+use App\Models\ClientTest;
 use App\Models\Test;
 use Illuminate\Http\Request;
 
@@ -53,5 +55,10 @@ class TestController extends Controller
     public function show(Test $test)
     {
         return new TestResource($test);
+    }
+
+    public function results(ClientTest $clientTest)
+    {
+        return new ClientTestResource($clientTest);
     }
 }

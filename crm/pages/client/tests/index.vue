@@ -7,7 +7,7 @@ const testDialog = ref<null | InstanceType<typeof TestDialog>>()
 const tests = ref<ClientTest[]>()
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<ClientTest[]>>("client/tests")
+  const { data } = await useHttp<ApiResponse<ClientTest[]>>("tests")
   if (data.value) {
     tests.value = data.value.data
   }
@@ -18,7 +18,7 @@ nextTick(loadData)
 
 <template>
   <div class="tests">
-    <TestClientList v-if="tests" :tests="tests" @open="testDialog?.open" />
+    <ClientTestList v-if="tests" :tests="tests" @open="testDialog?.open" />
   </div>
   <TestDialog ref="testDialog" @updated="loadData()" />
 </template>

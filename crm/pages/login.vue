@@ -25,7 +25,7 @@ const window = ref(rememberUser ? 1 : 0)
 const onPhoneEnter = async () => {
   loading.value = true
   errors.value = {}
-  const { data, error } = await useHttp<User>("auth/login", {
+  const { data, error } = await useHttp<User>("common/auth/login", {
     method: "post",
     body: {
       phone: phone.value,
@@ -66,13 +66,16 @@ function continueRememberMe() {
 async function onOtpFinish() {
   errors.value = {}
   otp.loading = true
-  const { data, error } = await useHttp<TokenResponse>("auth/verify-code", {
-    method: "post",
-    body: {
-      phone: phone.value,
-      code: otp.code,
+  const { data, error } = await useHttp<TokenResponse>(
+    "common/auth/verify-code",
+    {
+      method: "post",
+      body: {
+        phone: phone.value,
+        code: otp.code,
+      },
     },
-  })
+  )
   if (error.value) {
     otp.loading = false
     errors.value = error.value.data.errors

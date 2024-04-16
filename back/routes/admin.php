@@ -1,34 +1,20 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Crm\{
-    AuthController,
+use App\Http\Controllers\Admin\{
     RequestsController,
     ClientController,
     ContractController,
     GroupController,
-    LogController,
     MacroController,
+    PreviewController,
     TeacherController,
-    TelegramController,
     TestController,
     VacationController
 };
 
-Route::controller(AuthController::class)->prefix('auth')->group(function () {
-    Route::post('login', 'login');
-    Route::post('verify-code', 'verifyCode');
-});
-
-Route::post('telegram', [TelegramController::class, 'bot']);
 
 Route::middleware(['auth:crm'])->group(function () {
-    Route::controller(AuthController::class)->prefix('auth')->group(function () {
-        Route::get('user', 'user');
-        Route::get('logout', 'logout');
-        Route::post('preview', 'preview');
-    });
-
     // TODO: улучшить
     Route::controller(GroupController::class)->prefix('groups')->group(function () {
         Route::post('add-client', 'addClient');
@@ -38,6 +24,8 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::post('add-client/{client}', 'addClient');
         Route::post('upload-pdf/{test}', 'uploadPdf');
     });
+    Route::post('preview', [PreviewController::class, 'enter']);
+    Route::get('tests/results/{clientTest}', [TestController::class, 'results']);
     Route::apiResources([
         'requests' =>  RequestsController::class,
         'clients' =>  ClientController::class,
@@ -47,6 +35,5 @@ Route::middleware(['auth:crm'])->group(function () {
         'macros' => MacroController::class,
         'tests' => TestController::class,
         'teachers' => TeacherController::class,
-        'logs' => LogController::class,
     ]);
 });

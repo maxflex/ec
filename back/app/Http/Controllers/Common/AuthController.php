@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Common;
 
 use App\Enums\LogType;
-use App\Http\Resources\UserResource;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\Http\Requests\AuthRequest;
-use App\Http\Requests\PreviewRequest;
 use App\Models\Log;
 use App\Utils\VerificationService;
 use App\Models\Phone;
@@ -37,18 +36,6 @@ class AuthController extends Controller
     public function user()
     {
         return new UserResource(auth()->user());
-    }
-
-    public function preview(PreviewRequest $request)
-    {
-        $phone = Phone::query()
-            ->where('entity_id', $request->id)
-            ->where('entity_type', $request->entity_type)
-            ->first();
-        return [
-            'user' => new UserResource($phone),
-            'token' => $phone->createSessionToken(),
-        ];
     }
 
     public function logout(Request $request)

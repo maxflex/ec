@@ -16,15 +16,15 @@ class TestController extends Controller
         return $this->handleIndexRequest($request, $query, ClientTestResource::class);
     }
 
-    public function show(ClientTest $test)
+    public function results(ClientTest $clientTest)
     {
-        return new ClientTestResource($test);
+        return new ClientTestResource($clientTest);
     }
 
-    public function start(ClientTest $test)
+    public function start(ClientTest $clientTest)
     {
-        $test->started_at = now()->format('Y-m-d H:i:s');
-        $test->save();
+        $clientTest->started_at = now()->format('Y-m-d H:i:s');
+        $clientTest->save();
     }
 
     public function active()

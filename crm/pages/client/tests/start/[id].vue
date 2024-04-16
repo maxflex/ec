@@ -7,13 +7,13 @@ const test = ref<ClientTest>()
 const loading = ref(false)
 
 async function loadData() {
-  const { data } = await useHttp(`client/tests/${route.params.id}`)
+  const { data } = await useHttp(`tests/${route.params.id}`)
   test.value = data.value as ClientTest
 }
 
 async function start() {
   loading.value = true
-  await useHttp(`client/tests/start/${route.params.id}`, {
+  await useHttp(`tests/start/${route.params.id}`, {
     method: "post",
   })
   useCookie("answers").value = null

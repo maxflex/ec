@@ -24,7 +24,7 @@ const { user } = useAuthStore()
           v-if="t.is_finished"
           :to="{ name: 'tests-result-id', params: { id: t.id } }"
         >
-          <TestResult :test="t" />
+          {{ formatClientTestResults(t) }}
           баллов
         </router-link>
         <template v-else>

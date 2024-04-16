@@ -2,11 +2,10 @@
 const { logIn } = useAuthStore()
 const { user } = defineProps<{ user: User }>()
 const loading = ref(false)
-const route = useRoute()
 
 async function enter() {
   loading.value = true
-  const { data } = await useHttp<TokenResponse>("auth/preview", {
+  const { data } = await useHttp<TokenResponse>("preview", {
     method: "post",
     body: user,
   })

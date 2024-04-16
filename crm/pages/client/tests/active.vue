@@ -20,7 +20,7 @@ function saveAnswers() {
 }
 
 async function loadData() {
-  const { data, error } = await useHttp<ActiveTest>(`client/tests/active`)
+  const { data, error } = await useHttp<ActiveTest>(`tests/active`)
   // нет активного теста
   if (error.value) {
     return navigateTo({ name: "tests" })
@@ -45,7 +45,7 @@ async function loadData() {
 
 async function finish() {
   finishing.value = true
-  await useHttp(`client/tests/finish`, {
+  await useHttp(`tests/finish`, {
     method: "post",
     body: {
       answers: answers.value,

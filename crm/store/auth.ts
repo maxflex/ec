@@ -43,11 +43,11 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function logOut() {
-    await useHttp("auth/logout")
+    await useHttp("common/auth/logout")
   }
 
   async function getLoggedUser() {
-    const { data } = await useHttp<User>("auth/user")
+    const { data } = await useHttp<User>("common/auth/user")
     if (data.value) {
       user.value = data.value
     }
