@@ -15,6 +15,7 @@ class Client extends Model
         'groups' => ['type' => 'Groups'],
         'swamps' => ['type' => 'ContractPrograms'],
         'tests' => ['type' => 'ClientTests'],
+        'head_teacher' => ['type' => 'Teacher'],
     ];
 
     protected $hidden = ['groups', 'swamps'];
@@ -65,7 +66,11 @@ class Client extends Model
                 }
             }
         }
-
         return Attribute::make(fn () => $result);
+    }
+
+    public function headTeacher()
+    {
+        return $this->belongsTo(Teacher::class, 'head_teacher_id');
     }
 }

@@ -58,13 +58,109 @@ function onTestsSaved(tests: Tests) {
   })
 }
 
+type ClientTab = "contracts" | "groups" | "tests"
+const selectedTab = ref<ClientTab>("contracts")
+const tabs: Record<ClientTab, string> = {
+  contracts: "договоры",
+  groups: "группы",
+  tests: "тесты",
+}
+
 nextTick(loadData)
 </script>
 
 <template>
   <!-- <h3 class="page-title">Клиент {{ route.params.id }}</h3> -->
   <div class="client" v-if="client">
-    <div>
+    <div class="client__panel">
+      <div>
+        <div class="text-gray">клиент</div>
+        <div>
+          {{ client.last_name }}
+          {{ client.first_name }}
+          {{ client.middle_name }}
+        </div>
+      </div>
+    </div>
+    <div class="client__content">
+      <div class="client__tabs">
+        <div
+          class="client__tabs-item"
+          :class="{ 'client__tabs-item--active': selectedTab === key }"
+          @click="selectedTab = key"
+          v-for="(label, key) in tabs"
+          :key="key"
+        >
+          {{ label }}
+        </div>
+      </div>
+      <div class="client-contracts" v-if="selectedTab === 'contracts'">
+        <div v-for="contract in client.contracts" :key="contract.id">
+          <h3>
+            Договор №{{ contract.id }} на {{ formatYear(contract.year) }}
+            <v-btn
+              color="gray"
+              :size="48"
+              icon="$plus"
+              variant="plain"
+              @click="() => contractDialog?.create(contract)"
+            />
+          </h3>
+          <ContractList :contract="contract" @open="onOpen" />
+          <h3>
+            Платежи
+            <v-btn
+              color="gray"
+              :size="48"
+              icon="$plus"
+              variant="plain"
+              @click="() => clientPaymentDialog?.create(contract)"
+            />
+          </h3>
+          <ClientPaymentList
+            :items="contract.payments"
+            @open="(p) => clientPaymentDialog?.open(p)"
+          />
+        </div>
+        <ContractDialog ref="contractDialog" />
+        <ClientPaymentDialog ref="clientPaymentDialog" />
+        <!-- <div class="mt-6">
+          <v-btn color="primary">Добавить договор</v-btn>
+        </div> -->
+      </div>
+      <div
+        v-else-if="selectedTab === 'groups'"
+        style="top: -20px; position: relative"
+      >
+        <div class="table table--padding table--hover table--actions-on-hover">
+          <GroupItem
+            v-for="group in client.groups"
+            :group="group"
+            :key="group.id"
+          />
+          <GroupSwamp
+            v-for="swamp in client.swamps"
+            :key="swamp.id"
+            :swamp="swamp"
+            @attach="(s) => groupSelectorDialog?.open(s.program)"
+          />
+        </div>
+        <GroupSelectorDialog
+          ref="groupSelectorDialog"
+          @select="onGroupSelected"
+        />
+      </div>
+      <div v-else>
+        <ClientTestList :tests="client.tests" />
+        <TestSelectorDialog ref="testSelectorDialog" @saved="onTestsSaved" />
+        <div class="mt-6">
+          <v-btn color="primary" @click="() => testSelectorDialog?.open()">
+            добавить тест
+          </v-btn>
+        </div>
+      </div>
+    </div>
+    <!-- <div>
       <h3>
         Ученик
         <PreviewModeBtn
@@ -79,92 +175,51 @@ nextTick(loadData)
         <v-text-field v-model="client.first_name" label="Имя" />
         <v-text-field v-model="client.middle_name" label="Отчество" />
       </div>
-    </div>
-    <div>
-      <h3>Представитель</h3>
-      <div class="inputs">
-        <v-text-field v-model="client.parent_last_name" label="Фамилия" />
-        <v-text-field v-model="client.parent_first_name" label="Имя" />
-        <v-text-field v-model="client.parent_middle_name" label="Отчество" />
-      </div>
-    </div>
-
-    <div class="client-contracts">
-      <div v-for="contract in client.contracts" :key="contract.id">
-        <h3>
-          Договор №{{ contract.id }} на {{ formatYear(contract.year) }}
-          <v-btn
-            color="gray"
-            :size="48"
-            icon="$plus"
-            variant="plain"
-            @click="() => contractDialog?.create(contract)"
-          />
-        </h3>
-        <ContractList :contract="contract" @open="onOpen" />
-        <h3>
-          Платежи
-          <v-btn
-            color="gray"
-            :size="48"
-            icon="$plus"
-            variant="plain"
-            @click="() => clientPaymentDialog?.create(contract)"
-          />
-        </h3>
-        <ClientPaymentList
-          :items="contract.payments"
-          @open="(p) => clientPaymentDialog?.open(p)"
-        />
-      </div>
-      <!-- <div class="mt-8">
-        <v-btn color="secondary">Добавить договор</v-btn>
-      </div> -->
-      <ContractDialog ref="contractDialog" />
-      <ClientPaymentDialog ref="clientPaymentDialog" />
-    </div>
-
-    <div>
-      <h3>Группы</h3>
-      <div class="table table--padding table--hover table--actions-on-hover">
-        <GroupItem
-          v-for="group in client.groups"
-          :group="group"
-          :key="group.id"
-        />
-        <GroupSwamp
-          v-for="swamp in client.swamps"
-          :key="swamp.id"
-          :swamp="swamp"
-          @attach="(s) => groupSelectorDialog?.open(s.program)"
-        />
-      </div>
-      <GroupSelectorDialog
-        ref="groupSelectorDialog"
-        @select="onGroupSelected"
-      />
-    </div>
-
-    <div>
-      <h3>
-        Тесты
-        <v-btn
-          color="gray"
-          :size="48"
-          icon="$plus"
-          variant="plain"
-          @click="() => testSelectorDialog?.open()"
-        />
-      </h3>
-      <ClientTestList :tests="client.tests" />
-      <TestSelectorDialog ref="testSelectorDialog" @saved="onTestsSaved" />
-    </div>
+    </div> -->
   </div>
 </template>
 
 <style lang="scss">
 .client {
-  padding: 20px;
+  // padding: 20px;
+  display: flex;
+  height: 100vh;
+  &__panel {
+    border-right: 1px solid #e0e0e0;
+    width: 256px;
+    padding: 16px 20px;
+  }
+  &__content {
+    flex: 1;
+    height: 100vh;
+    overflow-y: scroll;
+    & > div {
+      &:last-child {
+        padding: 20px;
+      }
+    }
+  }
+  &__tabs {
+    display: flex;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1;
+    // box-shadow: 0 0 10px 20px rgba(white, 0.5);
+    &-item {
+      padding: 16px 30px;
+      cursor: pointer;
+      transition: all cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+      &:hover {
+        background: #f6f6f6;
+      }
+      &--active {
+        background: #e4e4e4 !important;
+        // pointer-events: none;
+      }
+    }
+  }
   h3 {
     margin-bottom: 20px;
     display: flex;
@@ -176,11 +231,11 @@ nextTick(loadData)
       font-size: calc(var(--v-icon-size-multiplier) * 1.5rem) !important;
     }
   }
-  & > div {
-    &:not(:first-child) {
-      margin-top: 60px;
-    }
-  }
+  // & > div {
+  //   &:not(:first-child) {
+  //     margin-top: 60px;
+  //   }
+  // }
   &-contracts {
     & > div {
       h3:not(:first-child) {

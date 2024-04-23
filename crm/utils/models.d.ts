@@ -27,11 +27,13 @@ export interface Client {
   groups: Groups
   swamps: ContractPrograms
   tests: ClientTests
+  head_teacher: Teacher
   // relations
   tests: ClientTests
   contracts: Contracts
   contract_group: ContractGroups
   payments: ClientPayments
+  head_teacher: Teacher
   phones: Phones
 }
 export type Clients = Client[]
@@ -209,6 +211,23 @@ export interface Lesson {
   updated_at: string|null
 }
 export type Lessons = Lesson[]
+
+export interface Log {
+  // columns
+  id: number
+  ip: string|null
+  type: LogType
+  table: string|null
+  row_id: number|null
+  data: string[]
+  entity_type: string|null
+  entity_id: number|null
+  created_at: string|null
+  updated_at: string|null
+  // relations
+  user: User
+}
+export type Logs = Log[]
 
 export interface Macro {
   // columns
@@ -493,6 +512,16 @@ const LessonStatus = {
 } as const;
 
 export type LessonStatus = typeof LessonStatus[keyof typeof LessonStatus]
+
+const LogType = {
+  create: 'create',
+  update: 'update',
+  delete: 'delete',
+  view: 'view',
+  auth: 'auth',
+} as const;
+
+export type LogType = typeof LogType[keyof typeof LogType]
 
 const RequestStatus = {
   new: 'new',

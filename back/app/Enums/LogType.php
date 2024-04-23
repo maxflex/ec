@@ -2,13 +2,13 @@
 
 namespace App\Enums;
 
-enum LogType
+enum LogType: string
 {
-    case create;
-    case update;
-    case delete;
-    case view;
-    case auth;
+    case create = 'create';
+    case update = 'update';
+    case delete = 'delete';
+    case view = 'view';
+    case auth = 'auth';
 
     public function text(): string
     {
