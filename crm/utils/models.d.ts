@@ -4,7 +4,7 @@ export interface Client {
   first_name: string|null
   last_name: string|null
   middle_name: string|null
-  branches: unknown|null
+  branches: string[]|null
   birthdate: string|null
   user_id: number|null
   head_teacher_id: number|null
@@ -27,7 +27,7 @@ export interface Client {
   groups: Groups
   swamps: ContractPrograms
   tests: ClientTests
-  head_teacher: Teacher
+  head_teacher: Teacher | null
   // relations
   tests: ClientTests
   contracts: Contracts

@@ -15,7 +15,8 @@ class Client extends Model
         'groups' => ['type' => 'Groups'],
         'swamps' => ['type' => 'ContractPrograms'],
         'tests' => ['type' => 'ClientTests'],
-        'head_teacher' => ['type' => 'Teacher'],
+        'head_teacher' => ['type' => 'Teacher | null'],
+        'branches' => ['type' => 'string[]'],
     ];
 
     protected $hidden = ['groups', 'swamps'];
@@ -67,6 +68,11 @@ class Client extends Model
             }
         }
         return Attribute::make(fn () => $result);
+    }
+
+    public function getBranchesAttribute($value)
+    {
+        return $value ? explode(',', $value) : [];
     }
 
     public function headTeacher()

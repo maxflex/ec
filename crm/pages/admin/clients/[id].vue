@@ -13,6 +13,7 @@ import type {
   Group,
   Tests,
 } from "~/utils/models"
+import { mdiEmailOutline, mdiHistory, mdiPencil } from "@mdi/js"
 import { ENTITY_TYPE } from "~/utils/sment"
 
 const route = useRoute()
@@ -70,16 +71,57 @@ nextTick(loadData)
 </script>
 
 <template>
-  <!-- <h3 class="page-title">Клиент {{ route.params.id }}</h3> -->
   <div class="client" v-if="client">
     <div class="client__panel">
+      <div class="client__actions">
+        <v-btn :icon="mdiPencil" :size="48" variant="plain" />
+        <PreviewModeBtn
+          :user="{
+            id: client.id,
+            entity_type: ENTITY_TYPE.client,
+          }"
+        />
+      </div>
       <div>
-        <div class="text-gray">клиент</div>
-        <div>
-          {{ client.last_name }}
-          {{ client.first_name }}
-          {{ client.middle_name }}
+        <div>клиент</div>
+        <div class="text-truncate">
+          {{ formatFullName(client) }}
         </div>
+      </div>
+      <div>
+        <div>контакты</div>
+        <div v-if="client.phones" class="client__phones">
+          <div v-for="p in client.phones" :key="p.id">
+            <div class="client__phones-number">
+              <a :href="`tel:${p.number}`">
+                {{ formatPhone(p.number as string) }}
+              </a>
+            </div>
+            <div class="client__phones-actions">
+              <v-icon :icon="mdiEmailOutline" />
+              <v-icon :icon="mdiHistory" />
+            </div>
+          </div>
+        </div>
+        <div v-else>не установлено</div>
+      </div>
+      <div>
+        <div>филиалы</div>
+        <UiBranches :branches="client.branches" />
+      </div>
+      <div>
+        <div>куратор</div>
+        <div v-if="client.head_teacher">
+          <router-link
+            :to="{
+              name: 'teachers-id',
+              params: { id: client.head_teacher_id },
+            }"
+          >
+            {{ formatName(client.head_teacher) }}
+          </router-link>
+        </div>
+        <div v-else>не установлено</div>
       </div>
     </div>
     <div class="client__content">
@@ -184,10 +226,33 @@ nextTick(loadData)
   // padding: 20px;
   display: flex;
   height: 100vh;
-  &__panel {
-    border-right: 1px solid #e0e0e0;
-    width: 256px;
-    padding: 16px 20px;
+  &__phones {
+    margin-top: 2px;
+    & > div {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      &:hover {
+        .client__phones-actions {
+          opacity: 1;
+        }
+      }
+    }
+    &-number {
+      min-width: 160px;
+    }
+    &-actions {
+      display: flex;
+      gap: 8px;
+      flex: 1;
+      opacity: 0;
+      transition: opacity cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+      .v-icon {
+        top: -2px;
+        font-size: 18px;
+        color: rgb(var(--v-theme-gray));
+      }
+    }
   }
   &__content {
     flex: 1;
@@ -198,6 +263,21 @@ nextTick(loadData)
         padding: 20px;
       }
     }
+  }
+  &__panel {
+    border-right: 1px solid #e0e0e0;
+    width: 256px;
+    & > div:not(.client__actions) {
+      padding: 0 16px 20px;
+      & > div {
+        &:first-child {
+          color: rgb(var(--v-theme-gray));
+        }
+      }
+    }
+  }
+  &__actions {
+    padding: 6px 6px 20px;
   }
   &__tabs {
     display: flex;

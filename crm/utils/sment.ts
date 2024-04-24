@@ -52,6 +52,31 @@ export const SUBJECT_SHORT: Record<string, string> = {
   soch: "СОЧ",
 }
 
+export const BRANCHES: Record<string, string> = {
+  ohr: "ОХР",
+  pvn: "ВЕР",
+  bgt: "БАГ",
+  izm: "ИЗМ",
+  opl: "ОКТ",
+  rpt: "РЯЗ",
+  skl: "СКЛ",
+  orh: "ОРЕ",
+  ann: "АНН",
+  per: "ПЕР",
+  klg: "КЛЖ",
+  brt: "БРА",
+  str: "СТР",
+  vld: "ВЛА",
+  bel: "БЕЛ",
+  bib: "БИБ",
+  svi: "СВИ",
+  nag: "НАГ",
+  sok: "СОК",
+  pla: "ПЛА",
+  vod: "ВОД",
+  trg: "ТУР",
+} as const
+
 export const PROGRAM: Record<Program, string> = {
   math9: "математика 9 класс",
   phys9: "физика 9 класс",

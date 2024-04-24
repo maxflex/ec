@@ -57,6 +57,10 @@ export function formatName(person: Person) {
   return [person.last_name, person.first_name].join(" ")
 }
 
+export function formatFullName(person: Person) {
+  return [person.last_name, person.first_name, person.middle_name].join(" ")
+}
+
 export function formatClientTestResults(clientTest: ClientTest) {
   const score = clientTest.questions
     ?.filter((e, i) => clientTest.answers && e.answer === clientTest.answers[i])

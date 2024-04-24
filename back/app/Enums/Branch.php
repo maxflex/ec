@@ -2,30 +2,30 @@
 
 namespace App\Enums;
 
-enum Branch: string
+enum Branch
 {
-    case ohr = 'ohr';
-    case trg = 'trg';
-    case pvn = 'pvn';
-    case bgt = 'bgt';
-    case izm = 'izm';
-    case opl = 'opl';
-    case rpt = 'rpt';
-    case skl = 'skl';
-    case orh = 'orh';
-    case ann = 'ann';
-    case per = 'per';
-    case klg = 'klg';
-    case brt = 'brt';
-    case str = 'str';
-    case vld = 'vld';
-    case bel = 'bel';
-    case bib = 'bib';
-    case svi = 'svi';
-    case nag = 'nag';
-    case sok = 'sok';
-    case pla = 'pla';
-    case vod = 'vod';
+    case ohr;
+    case trg;
+    case pvn;
+    case bgt;
+    case izm;
+    case opl;
+    case rpt;
+    case skl;
+    case orh;
+    case ann;
+    case per;
+    case klg;
+    case brt;
+    case str;
+    case vld;
+    case bel;
+    case bib;
+    case svi;
+    case nag;
+    case sok;
+    case pla;
+    case vod;
 
     public static function getById(int $id): self
     {

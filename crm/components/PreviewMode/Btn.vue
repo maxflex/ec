@@ -18,7 +18,6 @@ async function enter() {
 
 <template>
   <v-btn
-    color="gray"
     :size="48"
     icon="$preview"
     variant="plain"

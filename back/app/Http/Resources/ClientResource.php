@@ -20,6 +20,7 @@ class ClientResource extends JsonResource
             'swamps' => $this->swamps,
             'tests' => ClientTestResource::collection($this->tests),
             'head_teacher' => $this->headTeacher,
+            'phones' => $this->phones,
         ]);
     }
 }
