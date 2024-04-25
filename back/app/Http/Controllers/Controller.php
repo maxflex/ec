@@ -24,7 +24,7 @@ class Controller extends BaseController
             return $query->count();
         }
 
-        $result = (clone $query)->paginate($request->paginate ?: 9999);
+        $result = (clone $query)->paginate($request->paginate ?: ($request->page ? 30 : 9999));
 
         $result = ($resource ?? $this->getResource($request))::collection($result);
         if ($request->has('pluck')) {
