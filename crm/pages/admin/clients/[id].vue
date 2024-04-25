@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type {
+  ClientDialog,
   ClientPaymentDialog,
   ContractDialog,
   GroupSelectorDialog,
@@ -22,6 +23,7 @@ const clientPaymentDialog = ref<null | InstanceType<
   typeof ClientPaymentDialog
 >>()
 const contractDialog = ref<null | InstanceType<typeof ContractDialog>>()
+const clientDialog = ref<null | InstanceType<typeof ClientDialog>>()
 const testSelectorDialog = ref<null | InstanceType<typeof TestSelectorDialog>>()
 const groupSelectorDialog = ref<null | InstanceType<
   typeof GroupSelectorDialog
@@ -74,7 +76,12 @@ nextTick(loadData)
   <div class="client" v-if="client">
     <div class="client__panel">
       <div class="client__actions">
-        <v-btn :icon="mdiPencil" :size="48" variant="plain" />
+        <v-btn
+          :icon="mdiPencil"
+          :size="48"
+          variant="plain"
+          @click="clientDialog?.open(client)"
+        />
         <PreviewModeBtn
           :user="{
             id: client.id,
@@ -192,7 +199,7 @@ nextTick(loadData)
           @select="onGroupSelected"
         />
       </div>
-      <div v-else>
+      <div v-else style="top: -20px; position: relative">
         <ClientTestList :tests="client.tests" />
         <TestSelectorDialog ref="testSelectorDialog" @saved="onTestsSaved" />
         <div class="mt-6">
@@ -202,6 +209,7 @@ nextTick(loadData)
         </div>
       </div>
     </div>
+    <ClientDialog ref="clientDialog" />
     <!-- <div>
       <h3>
         Ученик

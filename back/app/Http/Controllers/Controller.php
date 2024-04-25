@@ -17,7 +17,6 @@ class Controller extends BaseController
     protected $filterTablePrefix = [];
     protected $mapFilters = []; // e.g. test_client_id => tests.client_id
     protected $resources = [];
-    protected $paginate = 30;
 
     protected function handleIndexRequest(Request $request, $query, $resource = null)
     {
@@ -25,7 +24,7 @@ class Controller extends BaseController
             return $query->count();
         }
 
-        $result = (clone $query)->paginate($this->paginate);
+        $result = (clone $query)->paginate($request->paginate ?: 9999);
 
         $result = ($resource ?? $this->getResource($request))::collection($result);
         if ($request->has('pluck')) {

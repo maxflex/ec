@@ -8,8 +8,6 @@ use Illuminate\Http\Request;
 
 class VacationController extends Controller
 {
-    protected $paginate = 99999;
-
     public function index(Request $request)
     {
         $query = Vacation::query();
