@@ -61,9 +61,10 @@ function onTestsSaved(tests: Tests) {
   })
 }
 
-type ClientTab = "contracts" | "groups" | "tests"
+type ClientTab = "requests" | "contracts" | "groups" | "tests"
 const selectedTab = ref<ClientTab>("contracts")
 const tabs: Record<ClientTab, string> = {
+  requests: "заявки",
   contracts: "договоры",
   groups: "группы",
   tests: "тесты",
@@ -75,30 +76,16 @@ nextTick(loadData)
 <template>
   <div class="client" v-if="client">
     <div class="client__panel">
-      <div class="client__actions">
-        <v-btn
-          :icon="mdiPencil"
-          :size="48"
-          variant="plain"
-          @click="clientDialog?.open(client)"
-        />
-        <PreviewModeBtn
-          :user="{
-            id: client.id,
-            entity_type: ENTITY_TYPE.client,
-          }"
-        />
-      </div>
       <div>
-        <div>клиент</div>
+        <div>ученик</div>
         <div class="text-truncate">
           {{ formatFullName(client) }}
         </div>
-      </div>
-      <div>
-        <div>контакты</div>
-        <div v-if="client.phones" class="client__phones">
-          <div v-for="p in client.phones" :key="p.id">
+        <!-- <div v-if="client.phones" class="client__phones">
+          <div
+            v-for="p in client.phones.filter((e) => !e.is_parent)"
+            :key="p.id"
+          >
             <div class="client__phones-number">
               <a :href="`tel:${p.number}`">
                 {{ formatPhone(p.number as string) }}
@@ -109,8 +96,20 @@ nextTick(loadData)
               <v-icon :icon="mdiHistory" />
             </div>
           </div>
+        </div> -->
+      </div>
+
+      <div>
+        <div>представитель</div>
+        <div class="text-truncate">
+          {{
+            formatFullName({
+              first_name: client.parent_first_name,
+              last_name: client.parent_last_name,
+              middle_name: client.parent_middle_name,
+            })
+          }}
         </div>
-        <div v-else>не установлено</div>
       </div>
       <div>
         <div>филиалы</div>
@@ -130,6 +129,33 @@ nextTick(loadData)
         </div>
         <div v-else>не установлено</div>
       </div>
+      <div v-if="client.phones" class="client__phones">
+        <div v-for="p in client.phones" :key="p.id">
+          <div class="client__phones-number">
+            <a :href="`tel:${p.number}`">
+              {{ formatPhone(p.number as string) }}
+            </a>
+          </div>
+          <div class="client__phones-actions">
+            <v-icon :icon="mdiEmailOutline" />
+            <v-icon :icon="mdiHistory" />
+          </div>
+        </div>
+      </div>
+      <div class="client__actions">
+        <v-btn
+          :icon="mdiPencil"
+          :size="48"
+          variant="plain"
+          @click="clientDialog?.open(client)"
+        />
+        <PreviewModeBtn
+          :user="{
+            id: client.id,
+            entity_type: ENTITY_TYPE.client,
+          }"
+        />
+      </div>
     </div>
     <div class="client__content">
       <div class="client__tabs">
@@ -143,7 +169,11 @@ nextTick(loadData)
           {{ label }}
         </div>
       </div>
-      <div class="client-contracts" v-if="selectedTab === 'contracts'">
+      <RequestList
+        :requests="client.requests"
+        v-if="selectedTab === 'requests'"
+      />
+      <div class="client-contracts" v-else-if="selectedTab === 'contracts'">
         <div v-for="contract in client.contracts" :key="contract.id">
           <h3>
             Договор №{{ contract.id }} на {{ formatYear(contract.year) }}
@@ -233,6 +263,7 @@ nextTick(loadData)
 .client {
   // padding: 20px;
   display: flex;
+  flex-direction: column;
   height: 100vh;
   &__phones {
     margin-top: 2px;
@@ -265,18 +296,22 @@ nextTick(loadData)
   &__content {
     flex: 1;
     height: 100vh;
-    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
     & > div {
       &:last-child {
         padding: 20px;
+        flex: 1;
       }
     }
   }
   &__panel {
-    border-right: 1px solid #e0e0e0;
-    width: 256px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    gap: 50px;
+    padding: 10px 10px 10px 20px;
     & > div:not(.client__actions) {
-      padding: 0 16px 20px;
+      // padding: 0 16px 20px;
       & > div {
         &:first-child {
           color: rgb(var(--v-theme-gray));
@@ -285,7 +320,12 @@ nextTick(loadData)
     }
   }
   &__actions {
-    padding: 6px 6px 20px;
+    // padding: 6px 6px 20px;
+    // white-space: nowrap;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    justify-content: flex-end;
   }
   &__tabs {
     display: flex;
@@ -296,7 +336,7 @@ nextTick(loadData)
     z-index: 1;
     // box-shadow: 0 0 10px 20px rgba(white, 0.5);
     &-item {
-      padding: 16px 30px;
+      padding: 16px 20px;
       cursor: pointer;
       transition: all cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
       &:hover {
@@ -334,10 +374,14 @@ nextTick(loadData)
       }
     }
   }
+  .request-list,
   .table {
     left: -20px;
     position: relative;
     width: calc(100% + 40px);
+  }
+  .request-list {
+    top: -20px;
   }
 }
 </style>

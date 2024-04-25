@@ -206,11 +206,11 @@ definePageMeta({ layout: "login" })
           :disabled="otp.loading"
           :error="!!errors.code"
           ref="otpInput"
-          :length="5"
+          :length="4"
           v-model="otp.code"
           @finish="onOtpFinish"
           class="mt-5"
-          width="300"
+          width="240"
         ></v-otp-input>
         <v-btn
           color="primary"

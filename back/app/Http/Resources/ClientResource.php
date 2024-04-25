@@ -21,6 +21,7 @@ class ClientResource extends JsonResource
             'tests' => ClientTestResource::collection($this->tests),
             'head_teacher' => $this->headTeacher,
             'phones' => $this->phones,
+            'requests' => $this->requests,
         ]);
     }
 }

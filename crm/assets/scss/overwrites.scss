@@ -6,8 +6,13 @@
   display: none !important;
 }
 
-.v-infinite-scroll__side {
-  opacity: 0;
+.v-infinite-scroll {
+  &__side {
+    opacity: 0;
+    &:first-child {
+      display: none;
+    }
+  }
 }
 
 h3 {

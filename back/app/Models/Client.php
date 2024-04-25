@@ -79,4 +79,16 @@ class Client extends Model
     {
         return $this->belongsTo(Teacher::class, 'head_teacher_id');
     }
+
+    /**
+     * @return array<Request>
+     */
+    public function requests(): Attribute
+    {
+        $numbers = $this->phones->pluck('number')->unique();
+        $requests = Request::whereHas('phones', fn ($q) => $q->whereIn('number', $numbers))->get()->all();
+        return Attribute::make(
+            fn () => $requests
+        );
+    }
 }

@@ -41,14 +41,13 @@ nextTick(loadData)
 <template>
   <UiLoader :paginator="paginator" />
   <div v-if="items" class="requests">
-    <v-infinite-scroll :onLoad="onIntersect" :margin="100" color="gray">
-      <RequestItem v-for="item in items" :item="item" :key="item.id" />
+    <v-infinite-scroll
+      :onLoad="onIntersect"
+      :margin="100"
+      color="gray"
+      :side="'end'"
+    >
+      <RequestList :requests="items" />
     </v-infinite-scroll>
   </div>
 </template>
-
-<style lang="scss">
-.requests {
-  background: #fafafa;
-}
-</style>
