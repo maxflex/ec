@@ -62,7 +62,7 @@ function onTestsSaved(tests: Tests) {
 }
 
 type ClientTab = "requests" | "contracts" | "groups" | "tests"
-const selectedTab = ref<ClientTab>("contracts")
+const selectedTab = ref<ClientTab>("requests")
 const tabs: Record<ClientTab, string> = {
   requests: "заявки",
   contracts: "договоры",
