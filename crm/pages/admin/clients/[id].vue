@@ -76,16 +76,45 @@ nextTick(loadData)
 <template>
   <div class="client" v-if="client">
     <div class="client__panel">
-      <div>
-        <div>ученик</div>
-        <div class="text-truncate">
-          {{ formatFullName(client) }}
+      <div class="client__panel-info">
+        <div>
+          <div>ученик</div>
+          <div class="text-truncate">
+            {{ formatFullName(client) }}
+          </div>
         </div>
-        <!-- <div v-if="client.phones" class="client__phones">
-          <div
-            v-for="p in client.phones.filter((e) => !e.is_parent)"
-            :key="p.id"
-          >
+        <div>
+          <div>представитель</div>
+          <div class="text-truncate">
+            {{
+              formatFullName({
+                first_name: client.parent_first_name,
+                last_name: client.parent_last_name,
+                middle_name: client.parent_middle_name,
+              })
+            }}
+          </div>
+        </div>
+        <div>
+          <div>филиалы</div>
+          <UiBranches :branches="client.branches" />
+        </div>
+        <div>
+          <div>куратор</div>
+          <div v-if="client.head_teacher">
+            <router-link
+              :to="{
+                name: 'teachers-id',
+                params: { id: client.head_teacher_id },
+              }"
+            >
+              {{ formatName(client.head_teacher) }}
+            </router-link>
+          </div>
+          <div v-else>не установлено</div>
+        </div>
+        <div v-if="client.phones" class="client__phones">
+          <div v-for="p in client.phones" :key="p.id">
             <div class="client__phones-number">
               <a :href="`tel:${p.number}`">
                 {{ formatPhone(p.number as string) }}
@@ -96,68 +125,22 @@ nextTick(loadData)
               <v-icon :icon="mdiHistory" />
             </div>
           </div>
-        </div> -->
-      </div>
-
-      <div>
-        <div>представитель</div>
-        <div class="text-truncate">
-          {{
-            formatFullName({
-              first_name: client.parent_first_name,
-              last_name: client.parent_last_name,
-              middle_name: client.parent_middle_name,
-            })
-          }}
         </div>
-      </div>
-      <div>
-        <div>филиалы</div>
-        <UiBranches :branches="client.branches" />
-      </div>
-      <div>
-        <div>куратор</div>
-        <div v-if="client.head_teacher">
-          <router-link
-            :to="{
-              name: 'teachers-id',
-              params: { id: client.head_teacher_id },
+        <div class="client__actions">
+          <v-btn
+            :icon="mdiPencil"
+            :size="48"
+            variant="plain"
+            @click="clientDialog?.open(client)"
+          />
+          <PreviewModeBtn
+            :user="{
+              id: client.id,
+              entity_type: ENTITY_TYPE.client,
             }"
-          >
-            {{ formatName(client.head_teacher) }}
-          </router-link>
-        </div>
-        <div v-else>не установлено</div>
-      </div>
-      <div v-if="client.phones" class="client__phones">
-        <div v-for="p in client.phones" :key="p.id">
-          <div class="client__phones-number">
-            <a :href="`tel:${p.number}`">
-              {{ formatPhone(p.number as string) }}
-            </a>
-          </div>
-          <div class="client__phones-actions">
-            <v-icon :icon="mdiEmailOutline" />
-            <v-icon :icon="mdiHistory" />
-          </div>
+          />
         </div>
       </div>
-      <div class="client__actions">
-        <v-btn
-          :icon="mdiPencil"
-          :size="48"
-          variant="plain"
-          @click="clientDialog?.open(client)"
-        />
-        <PreviewModeBtn
-          :user="{
-            id: client.id,
-            entity_type: ENTITY_TYPE.client,
-          }"
-        />
-      </div>
-    </div>
-    <div class="client__content">
       <div class="client__tabs">
         <div
           class="client__tabs-item"
@@ -169,6 +152,8 @@ nextTick(loadData)
           {{ label }}
         </div>
       </div>
+    </div>
+    <div class="client__content">
       <RequestList
         :requests="client.requests"
         v-if="selectedTab === 'requests'"
@@ -295,26 +280,29 @@ nextTick(loadData)
   }
   &__content {
     flex: 1;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
     & > div {
-      &:last-child {
-        padding: 20px;
-        flex: 1;
-      }
+      padding: 20px;
+      height: 100%;
     }
   }
   &__panel {
-    border-bottom: 1px solid #e0e0e0;
     display: flex;
-    gap: 50px;
-    padding: 10px 10px 10px 20px;
-    & > div:not(.client__actions) {
-      // padding: 0 16px 20px;
-      & > div {
-        &:first-child {
-          color: rgb(var(--v-theme-gray));
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1;
+    &-info {
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      gap: 50px;
+      padding: 10px 10px 10px 20px;
+      & > div:not(.client__actions) {
+        // padding: 0 16px 20px;
+        & > div {
+          &:first-child {
+            color: rgb(var(--v-theme-gray));
+          }
         }
       }
     }
@@ -330,10 +318,6 @@ nextTick(loadData)
   &__tabs {
     display: flex;
     border-bottom: 1px solid #e0e0e0;
-    position: sticky;
-    top: 0;
-    background: white;
-    z-index: 1;
     // box-shadow: 0 0 10px 20px rgba(white, 0.5);
     &-item {
       padding: 16px 20px;
