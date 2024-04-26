@@ -1,7 +1,13 @@
 <script setup lang="ts">
-const { modelValue } = defineProps<{
-  modelValue: string
-}>()
+const { modelValue } = withDefaults(
+  defineProps<{
+    label: string
+    modelValue: string
+  }>(),
+  {
+    label: "Дата",
+  },
+)
 const emit = defineEmits(["update:modelValue"])
 const calendarDialog = ref()
 </script>
@@ -9,7 +15,7 @@ const calendarDialog = ref()
 <template>
   <div class="date-input" @click="() => calendarDialog.open()">
     <v-text-field
-      label="Дата"
+      :label="label"
       :model-value="formatDate(modelValue)"
       hide-details
     />

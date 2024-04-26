@@ -206,7 +206,7 @@ a:not(.v-list-item) {
 
 .double-input {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 20px;
   & > div {
     flex: 1;

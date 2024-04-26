@@ -53,6 +53,10 @@ export default defineNuxtPlugin((nuxtApp) => {
         variant: "outlined",
         hideDetails: true,
       },
+      VTextarea: {
+        variant: "outlined",
+        hideDetails: true,
+      },
       VSelect: {
         variant: "outlined",
         hideDetails: true,

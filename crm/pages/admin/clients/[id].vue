@@ -81,6 +81,22 @@ nextTick(loadData)
           <div>ученик</div>
           <div class="text-truncate">
             {{ formatFullName(client) }}
+            <div v-if="client.phones" class="client__phones">
+              <div
+                v-for="p in client.phones.filter((e) => !e.is_parent)"
+                :key="p.id"
+              >
+                <div class="client__phones-number">
+                  <a :href="`tel:${p.number}`">
+                    {{ formatPhone(p.number as string) }}
+                  </a>
+                </div>
+                <div class="client__phones-actions">
+                  <v-icon :icon="mdiEmailOutline" />
+                  <v-icon :icon="mdiHistory" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div>
@@ -93,6 +109,22 @@ nextTick(loadData)
                 middle_name: client.parent_middle_name,
               })
             }}
+            <div v-if="client.phones" class="client__phones">
+              <div
+                v-for="p in client.phones.filter((e) => e.is_parent)"
+                :key="p.id"
+              >
+                <div class="client__phones-number">
+                  <a :href="`tel:${p.number}`">
+                    {{ formatPhone(p.number as string) }}
+                  </a>
+                </div>
+                <div class="client__phones-actions">
+                  <v-icon :icon="mdiEmailOutline" />
+                  <v-icon :icon="mdiHistory" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div>
@@ -113,7 +145,7 @@ nextTick(loadData)
           </div>
           <div v-else>не установлено</div>
         </div>
-        <div v-if="client.phones" class="client__phones">
+        <!-- <div v-if="client.phones" class="client__phones">
           <div v-for="p in client.phones" :key="p.id">
             <div class="client__phones-number">
               <a :href="`tel:${p.number}`">
@@ -125,7 +157,7 @@ nextTick(loadData)
               <v-icon :icon="mdiHistory" />
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="client__actions">
           <v-btn
             :icon="mdiPencil"
@@ -320,7 +352,7 @@ nextTick(loadData)
     border-bottom: 1px solid #e0e0e0;
     // box-shadow: 0 0 10px 20px rgba(white, 0.5);
     &-item {
-      padding: 16px 20px;
+      padding: 12px 20px;
       cursor: pointer;
       transition: all cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
       &:hover {

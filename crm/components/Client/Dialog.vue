@@ -4,7 +4,7 @@ import { cloneDeep, uniqueId } from "lodash"
 import { ENTITY_TYPE, BRANCHES } from "~/utils/sment"
 
 const phoneMask = { mask: "+7 (###) ###-##-##" }
-const { dialog, width } = useDialog()
+const { dialog, width } = useDialog(700)
 const client = ref<Client>()
 
 function open(c: Client) {
@@ -51,16 +51,12 @@ defineExpose({ open })
         <v-btn icon="$save" :size="48" variant="text" @click="dialog = false" />
       </div>
       <div class="dialog-body">
-        <div>
+        <div class="double-input">
           <v-text-field v-model="client.last_name" label="Фамилия" />
-        </div>
-        <div>
           <v-text-field v-model="client.first_name" label="Имя" />
-        </div>
-        <div>
           <v-text-field v-model="client.middle_name" label="Отчество" />
         </div>
-        <div>
+        <div class="double-input">
           <v-select
             label="Филиалы"
             v-model="client.branches"
@@ -72,94 +68,100 @@ defineExpose({ open })
               }))
             "
           />
-        </div>
-        <div>
+
           <TeacherSelector label="Куратор" v-model="client.head_teacher_id" />
         </div>
-
-        <div class="dialog-section">
-          <!-- <div class="dialog-section__title">Программы</div> -->
-          <div class="table table--actions-on-hover client-dialog__phones">
+        <div class="double-input">
+          <div style="position: relative">
+            <UiDateInput v-model="client.birthdate" label="Дата рождения" />
             <div
-              v-for="p in client.phones.filter((x) => !x.is_parent)"
-              :key="p.id"
+              style="position: absolute; right: 12px; top: 16px"
+              class="text-gray"
             >
-              <div>
-                <v-text-field
-                  v-model="p.number"
-                  density="compact"
-                  v-maska:[phoneMask]
-                />
-              </div>
-              <div>
-                <v-text-field v-model="p.comment" density="compact" />
-              </div>
-              <div class="actions">
-                <v-btn
-                  icon="$close"
-                  variant="plain"
-                  color="red"
-                  :size="48"
-                  :ripple="false"
-                  @click="removePhone(p)"
-                >
-                </v-btn>
-              </div>
-            </div>
-            <div style="border-bottom: 0">
-              <a class="cursor-pointer" @click="addPhone(false)">
-                добавить номер
-              </a>
+              {{ filterAge(client.birthdate) }}
             </div>
           </div>
+          <UiDateInput
+            v-model="client.passport_issued_date"
+            label="Дата выдачи паспорта"
+          />
+        </div>
+        <div
+          class="double-input"
+          v-for="p in client.phones.filter((x) => !x.is_parent)"
+          :key="p.id"
+        >
+          <div>
+            <v-text-field
+              v-model="p.number"
+              v-maska:[phoneMask]
+              label="Телефон"
+            />
+            <v-icon icon="$close" @click="removePhone(p)"></v-icon>
+          </div>
+          <v-text-field v-model="p.comment" label="Комментарий" />
+        </div>
+        <div style="position: relative; top: -10px">
+          <a class="cursor-pointer" @click="addPhone(false)">
+            добавить номер
+          </a>
         </div>
 
         <div class="dialog-section__title">Представитель</div>
-        <div>
+        <div class="double-input">
           <v-text-field v-model="client.parent_last_name" label="Фамилия" />
-        </div>
-        <div>
           <v-text-field v-model="client.parent_first_name" label="Имя" />
-        </div>
-        <div>
           <v-text-field v-model="client.parent_middle_name" label="Отчество" />
         </div>
-
-        <div class="dialog-section">
-          <!-- <div class="dialog-section__title">Программы</div> -->
-          <div class="table table--actions-on-hover client-dialog__phones">
-            <div
-              v-for="p in client.phones.filter((x) => x.is_parent)"
-              :key="p.id"
-            >
-              <div>
-                <v-text-field
-                  v-model="p.number"
-                  density="compact"
-                  v-maska:[phoneMask]
-                />
-              </div>
-              <div>
-                <v-text-field v-model="p.comment" density="compact" />
-              </div>
-              <div class="actions">
-                <v-btn
-                  icon="$close"
-                  variant="plain"
-                  color="red"
-                  :size="48"
-                  :ripple="false"
-                  @click="removePhone(p)"
-                >
-                </v-btn>
-              </div>
-            </div>
-            <div style="border-bottom: 0">
-              <a class="cursor-pointer" @click="addPhone(true)">
-                добавить номер
-              </a>
-            </div>
+        <div class="double-input">
+          <v-text-field
+            label="Серия паспорта"
+            v-model="client.passport_series"
+          />
+          <v-text-field
+            label="Номер паспорта"
+            v-model="client.passport_number"
+          />
+          <v-text-field
+            label="Код подразделения"
+            v-model="client.passport_code"
+          />
+        </div>
+        <v-textarea
+          v-model="client.passport_issued_by"
+          label="Паспорт выдан"
+          no-resize
+          rows="3"
+        />
+        <v-textarea
+          v-model="client.passport_address"
+          label="Адрес регистрации"
+          no-resize
+          rows="3"
+        />
+        <v-textarea
+          v-model="client.fact_address"
+          label="Фактический адрес"
+          no-resize
+          rows="3"
+        />
+        <div
+          class="double-input"
+          v-for="p in client.phones.filter((x) => x.is_parent)"
+          :key="p.id"
+        >
+          <div>
+            <v-text-field
+              v-model="p.number"
+              v-maska:[phoneMask]
+              label="Номер"
+            />
+            <v-icon icon="$close" @click="removePhone(p)"></v-icon>
           </div>
+          <v-text-field v-model="p.comment" label="Комментарий" />
+        </div>
+        <div style="position: relative; top: -10px">
+          <a class="cursor-pointer" @click="addPhone(true)"> добавить номер </a>
         </div>
       </div>
     </div>
@@ -189,6 +191,28 @@ defineExpose({ open })
           max-width: 50px;
         }
       }
+    }
+  }
+}
+
+.double-input {
+  & > div {
+    &:first-child {
+      position: relative;
+    }
+  }
+  .v-icon {
+    position: absolute;
+    right: 10px;
+    top: 19px;
+    opacity: 0.25;
+    z-index: 1;
+    // transition: all ease-in-out 0.1s;
+    cursor: pointer;
+    font-size: 20px !important;
+    &:hover {
+      opacity: 1;
+      color: rgb(var(--v-theme-error));
     }
   }
 }
