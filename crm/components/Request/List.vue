@@ -130,7 +130,8 @@ const { requests } = defineProps<{ requests: Requests }>()
   background: #fafafa;
   & > .request {
     &:first-child {
-      margin-top: 24px;
+      border-top: none;
+      // margin-top: 24px;
     }
   }
 }

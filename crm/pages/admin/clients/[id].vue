@@ -326,6 +326,7 @@ nextTick(loadData)
     z-index: 1;
     &-info {
       border-bottom: 1px solid #e0e0e0;
+      // background: #fafafa;
       display: flex;
       gap: 50px;
       padding: 10px 10px 10px 20px;

@@ -29,7 +29,7 @@ defineExpose({ open })
 
 <template>
   <v-dialog v-model="dialog" :width="width">
-    <div class="dialog-content">
+    <div class="dialog-wrapper">
       <div class="dialog-header">
         <span>
           Выбор программ

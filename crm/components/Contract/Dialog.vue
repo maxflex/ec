@@ -98,7 +98,7 @@ defineExpose({ open, create })
 
 <template>
   <v-dialog v-model="dialog" :width="width">
-    <div class="dialog-content contract-dialog" v-if="contract && version">
+    <div class="dialog-wrapper contract-dialog" v-if="contract && version">
       <div class="dialog-header">
         <span v-if="version.id > 0"> Редактирование договора </span>
         <span v-else>Добавить версию</span>

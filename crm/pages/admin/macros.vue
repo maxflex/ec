@@ -54,7 +54,7 @@ nextTick(loadData)
       </div>
     </div>
     <v-dialog fullscreen :width="1100" v-model="dialog">
-      <div class="dialog-content" v-if="macro">
+      <div class="dialog-wrapper" v-if="macro">
         <div class="dialog-header">
           {{ macro.title }}
           <v-btn

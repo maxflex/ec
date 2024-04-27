@@ -18,7 +18,6 @@ export default defineNuxtConfig({
   },
 
   modules: [
-    "@pinia/nuxt",
     (_options, nuxt) => {
       nuxt.hooks.hook("vite:extendConfig", (config) => {
         // @ts-expect-error
@@ -29,7 +28,15 @@ export default defineNuxtConfig({
         )
       })
     },
+    "@pinia/nuxt",
+    "@nuxt/eslint",
   ],
+
+  eslint: {
+    config: {
+      stylistic: true, // <---
+    },
+  },
 
   vite: {
     vue: {

@@ -7,7 +7,9 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "start": "node --inspect .output/server/index.mjs"
+    "start": "node --inspect .output/server/index.mjs",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "engines": {
     "node": "20.x"
@@ -15,8 +17,10 @@
   "devDependencies": {
     "@mdi/js": "^7.4.47",
     "@nuxt/devtools": "latest",
+    "@nuxt/eslint": "latest",
     "@types/codemirror": "^5.60.15",
     "@types/lodash": "^4.14.202",
+    "eslint": "^9.1.1",
     "material-design-icons-iconfont": "^6.7.0",
     "nuxt": "^3.8.2",
     "vite-plugin-vuetify": "^1.0.2",

@@ -1,4 +1,4 @@
-import type { CompanyType, Program, ClientPaymentMethod } from "./models"
+import type { CompanyType, Program, ClientPaymentMethod, RequestStatus } from "./models"
 
 export const GRADE: Record<string, string> = {
   grade1: "1 класс",
@@ -200,6 +200,12 @@ export const YEARS = [
 export const COMPANY_TYPE: Record<CompanyType, string> = {
   ip: "ИП",
   ooo: "ООО",
+}
+
+export const REQUEST_STATUS: Record<RequestStatus, string> = {
+  new: "новые",
+  awaiting: "в ожидании",
+  finished: "выполненные"
 }
 
 export const CLIENT_PAYMENT_METHOD: Record<ClientPaymentMethod, string> = {

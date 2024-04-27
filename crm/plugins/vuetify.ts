@@ -8,6 +8,7 @@ import {
   mdiCheckDecagram,
   mdiDelete,
   mdiEyeArrowRightOutline,
+  mdiTuneVertical,
 } from "@mdi/js"
 
 const icons = {
@@ -20,6 +21,7 @@ const icons = {
     verified: mdiCheckDecagram,
     delete: mdiDelete,
     preview: mdiEyeArrowRightOutline,
+    filters: mdiTuneVertical,
   },
   sets: {
     mdi,

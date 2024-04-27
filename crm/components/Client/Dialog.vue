@@ -44,7 +44,7 @@ defineExpose({ open })
 
 <template>
   <v-dialog v-model="dialog" :width="width">
-    <div class="dialog-content" v-if="client">
+    <div class="dialog-wrapper" v-if="client">
       <div class="dialog-header">
         <span v-if="client.id > 0"> Редактирование клиента </span>
         <span v-else> Добавить платеж </span>

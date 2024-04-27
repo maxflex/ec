@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import type { RequestFilters } from "#build/components";
 import type { Requests } from "~/utils/models"
 
 const items = ref<Requests>()
 const paginator = usePaginator()
+const filters = ref<null | InstanceType<typeof RequestFilters>>()
 // const isLastPage = false
 
 async function loadData() {
@@ -39,6 +41,17 @@ async function onIntersect({
 nextTick(loadData)
 </script>
 <template>
+  <div class="filters">
+    <!-- <v-btn icon="$filters" :size="48">
+    </v-btn> -->
+    <a class="cursor-pointer" @click="filters?.open()">
+      фильтры
+    </a>
+    <a>
+      добавить заявку
+    </a>
+  </div>
+  <RequestFilters ref="filters" />
   <UiLoader :paginator="paginator" />
   <div v-if="items" class="requests">
     <v-infinite-scroll

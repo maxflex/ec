@@ -119,7 +119,7 @@ a:not(.v-list-item) {
   background: white;
   box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14),
     0 1px 5px 0 rgba(0, 0, 0, 0.12);
-  &-content {
+  &-wrapper {
     height: 100vh;
     overflow-y: scroll;
     display: flex;
@@ -211,4 +211,14 @@ a:not(.v-list-item) {
   & > div {
     flex: 1;
   }
+}
+
+.filters {
+  background: #fafafa;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  border-bottom: 1px solid #e0e0e0;
+  gap: 40px;
 }

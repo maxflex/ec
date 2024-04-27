@@ -98,7 +98,7 @@ defineExpose({ open, create })
 
 <template>
   <v-dialog v-model="dialog" :width="width">
-    <div class="dialog-content" v-if="item">
+    <div class="dialog-wrapper" v-if="item">
       <div class="dialog-header">
         <span v-if="item.id > 0"> Редактирование теста </span>
         <span v-else> Добавить тест </span>
