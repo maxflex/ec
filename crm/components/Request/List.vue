@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import type { RequestDialog } from "#build/components"
 import type { Requests } from "~/utils/models"
 import { PROGRAM } from "~/utils/sment"
-
+const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()
 const { requests } = defineProps<{ requests: Requests }>()
 </script>
 
@@ -10,7 +11,7 @@ const { requests } = defineProps<{ requests: Requests }>()
     <div class="request" v-for="r in requests" :key="r.id">
       <div class="request__left">
         <div class="request__title">
-          <div>
+          <div @click="requestDialog?.open(r)">
             <RequestStatus :status="r.status" />
             Заявка {{ r.id }}
           </div>
@@ -51,19 +52,20 @@ const { requests } = defineProps<{ requests: Requests }>()
       <div class="request__right">
         <div>{{ formatDateTime(r.created_at) }}</div>
         <div>
-          Клиенты:
-          <div v-for="client in r.clients" :key="client.id">
-            <NuxtLink :to="{ name: 'clients-id', params: { id: client.id } }">
-              {{ formatName(client) }}
+          <div v-if="r.client">
+            Клиент:
+            <NuxtLink :to="{ name: 'clients-id', params: { id: r.client.id } }">
+              {{ formatName(r.client) }}
             </NuxtLink>
           </div>
-          <div>
-            <a href="#">добавить</a>
+          <div v-else>
+            <a href="#">добавить клиента</a>
           </div>
         </div>
       </div>
     </div>
   </div>
+  <RequestDialog ref="requestDialog" />
 </template>
 
 <style lang="scss">
@@ -75,6 +77,7 @@ const { requests } = defineProps<{ requests: Requests }>()
   margin-bottom: 24px;
   padding: 20px;
   display: flex;
+  position: relative;
   &__left,
   &__right {
     display: flex;
@@ -101,6 +104,10 @@ const { requests } = defineProps<{ requests: Requests }>()
         display: flex;
         align-items: center;
         gap: 6px;
+        cursor: pointer;
+        &:hover {
+          color: black;
+        }
       }
       &:not(:first-child) {
         color: rgb(var(--v-theme-gray));

@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\{
     PreviewController,
     TeacherController,
     TestController,
+    UserController,
     VacationController
 };
 
@@ -35,5 +36,6 @@ Route::middleware(['auth:crm'])->group(function () {
         'macros' => MacroController::class,
         'tests' => TestController::class,
         'teachers' => TeacherController::class,
+        'users' => UserController::class,
     ]);
 });

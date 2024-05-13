@@ -4,6 +4,7 @@ namespace App\Console\Commands\Transfer;
 
 use App\Models\Client;
 use App\Models\Request;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
 
@@ -20,18 +21,21 @@ class TransferSetRequestClientId extends Command
         $requestIds = DB::table('requests')->pluck('id');
         $bar = $this->output->createProgressBar(count($requestIds));
         foreach ($requestIds as $id) {
-            $requestPhones = DB::table('phones')
+            $numbers = DB::table('phones')
                 ->where('entity_type', Request::class)
                 ->where('entity_id', $id)
-                ->pluck('phone');
+                ->pluck('number');
             $clientIds = DB::table('phones')
                 ->where('entity_type', Client::class)
-                ->whereIn('phone', $requestPhones)
+                ->whereIn('number', $numbers)
                 ->pluck('entity_id');
             if ($clientIds->count()) {
-                DB::table('requests')->whereId($id)->update([
-                    'client_id' => $clientIds->first()
-                ]);
+                try {
+                    DB::table('requests')->whereId($id)->update([
+                        'client_id' => $clientIds->first()
+                    ]);
+                } catch (Exception $e) {
+                };
             }
             $bar->advance();
         }

@@ -23,6 +23,7 @@ export interface Client {
   // mutators
   groups?: unknown
   swamps?: unknown
+  requests: unknown
   // overrides
   groups: Groups
   swamps: ContractPrograms
@@ -255,6 +256,7 @@ export type Phones = Phone[]
 export interface Request {
   // columns
   id: number
+  client_id: number|null
   responsible_user_id: number|null
   status: RequestStatus
   program: Program|null
@@ -265,10 +267,9 @@ export interface Request {
   user_id: number|null
   created_at: string|null
   updated_at: string|null
-  // mutators
-  clients: unknown
   // relations
   responsible_user: User
+  client: Client
   phones: Phones
 }
 export type Requests = Request[]

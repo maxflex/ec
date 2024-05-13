@@ -14,8 +14,6 @@ class RequestResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return array_merge(parent::toArray($request), [
-            'clients' => $this->clients
-        ]);
+        return array_merge(parent::toArray($request));
     }
 }

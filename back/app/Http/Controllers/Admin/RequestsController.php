@@ -20,7 +20,7 @@ class RequestsController extends Controller
     public function index(Request $request)
     {
         $query = ClientRequest::query()
-            ->with('phones', 'responsibleUser')
+            ->with('phones', 'responsibleUser', 'client')
             ->latest();
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, RequestResource::class);

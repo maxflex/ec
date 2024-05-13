@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type { RequestFiltersDialog } from "#build/components"
+import type { RequestDialog, RequestFiltersDialog } from "#build/components"
 import type { Requests } from "~/utils/models"
 
 const items = ref<Requests>()
 const paginator = usePaginator()
+const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()
 const filtersDialog = ref<null | InstanceType<typeof RequestFiltersDialog>>()
 const filters = ref<RequestFilters>({})
 
@@ -67,7 +68,16 @@ nextTick(loadData)
     >
       фильтры
     </a>
-    <a> добавить заявку </a>
+    <a
+      class="cursor-pointer"
+      @click="
+        requestDialog?.open({
+          status: 'new',
+        })
+      "
+    >
+      добавить заявку
+    </a>
   </div>
   <RequestFiltersDialog ref="filtersDialog" @apply="onFiltersApply" />
   <UiLoader :paginator="paginator" />
@@ -81,4 +91,5 @@ nextTick(loadData)
       <RequestList :requests="items" />
     </v-infinite-scroll>
   </div>
+  <RequestDialog ref="requestDialog" />
 </template>

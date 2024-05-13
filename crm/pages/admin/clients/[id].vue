@@ -14,7 +14,7 @@ import type {
   Group,
   Tests,
 } from "~/utils/models"
-import { mdiEmailOutline, mdiHistory, mdiPencil } from "@mdi/js"
+import { mdiEmailOutline, mdiHistory } from "@mdi/js"
 import { ENTITY_TYPE } from "~/utils/sment"
 
 const route = useRoute()
@@ -160,7 +160,7 @@ nextTick(loadData)
         </div> -->
         <div class="client__actions">
           <v-btn
-            :icon="mdiPencil"
+            icon="$edit"
             :size="48"
             variant="plain"
             @click="clientDialog?.open(client)"
