@@ -6,7 +6,6 @@ const items = ref<Requests>()
 const paginator = usePaginator()
 const filtersDialog = ref<null | InstanceType<typeof RequestFiltersDialog>>()
 const filters = ref<RequestFilters>({})
-// const isLastPage = false
 
 async function loadData() {
   if (paginator.loading) {
@@ -57,7 +56,17 @@ nextTick(loadData)
   <div class="filters">
     <!-- <v-btn icon="$filters" :size="48">
     </v-btn> -->
-    <a class="cursor-pointer" @click="filtersDialog?.open()"> фильтры </a>
+    <a
+      class="cursor-pointer"
+      :class="{
+        'filters--has-items': Object.values(filters).filter(
+          (e) => e !== undefined,
+        ).length,
+      }"
+      @click="filtersDialog?.open()"
+    >
+      фильтры
+    </a>
     <a> добавить заявку </a>
   </div>
   <RequestFiltersDialog ref="filtersDialog" @apply="onFiltersApply" />

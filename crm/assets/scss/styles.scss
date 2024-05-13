@@ -221,6 +221,18 @@ a:not(.v-list-item) {
   justify-content: flex-end;
   border-bottom: 1px solid #e0e0e0;
   gap: 40px;
+  &--has-items {
+    position: relative;
+    &:after {
+      content: "";
+      $size: 6px;
+      height: $size;
+      width: $size;
+      background: rgb(var(--v-theme-red));
+      position: absolute;
+      border-radius: 50%;
+    }
+  }
 }
 
 .v-select__content {

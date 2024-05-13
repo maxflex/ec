@@ -2,6 +2,7 @@
 
 use App\Enums\Program;
 use App\Enums\RequestStatus;
+use App\Models\Client;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -16,7 +17,7 @@ return new class extends Migration
     {
         Schema::create('requests', function (Blueprint $table) {
             $table->id();
-            // $table->foreignIdFor(Client::class)->constrained();
+            $table->foreignIdFor(Client::class)->nullable()->constrained();
             $table->unsignedBigInteger('responsible_user_id')->nullable()->constrained();
             $table->foreign('responsible_user_id')->references('id')->on('users');
             $table->enum(

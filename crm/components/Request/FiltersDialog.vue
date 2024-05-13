@@ -37,7 +37,9 @@ function clearProgram() {
   nextTick(() => programInput.value.blur())
 }
 
-// const count = computed(() => Object.keys(filters.value).length)
+const count = computed(
+  () => Object.values(filters.value).filter((e) => e !== undefined).length,
+)
 
 const emit = defineEmits<{
   (e: "apply", filters: RequestFilters): void
@@ -52,9 +54,9 @@ defineExpose({ open })
       <div class="dialog-header">
         <div>
           Фильтры
-          <!-- <span class="ml-1 text-gray" v-if="count">
+          <span class="ml-1 text-gray" v-if="count">
             {{ count }}
-          </span> -->
+          </span>
         </div>
         <v-btn icon="$save" :size="48" @click="apply()" color="#fafafa" />
       </div>

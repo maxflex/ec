@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands\Transfer;
 
-use App\Enums\Grade;
 use App\Enums\Program;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
@@ -14,8 +13,6 @@ class TransferRequests extends Command
     protected $signature = 'app:transfer:requests';
     protected $description = 'Transfer requests';
 
-    protected $phones;
-
     public function handle()
     {
         DB::table('requests')->delete();
@@ -25,13 +22,10 @@ class TransferRequests extends Command
             ->get();
         $bar = $this->output->createProgressBar($requests->count());
         foreach ($requests as $r) {
-            // $this->getClientId($r);
             DB::table('requests')->insert([
                 'id' => $r->id,
-                // 'client_id' => $this->getClientId($r),
                 'responsible_user_id' => $r->responsible_admin_id,
                 'status' => $r->status,
-                // 'grade' => $r->grade_id ? Grade::getById($r->grade_id)->name : null,
                 'program' => optional($this->getProgram($r))->name,
                 'google_id' => $r->google_id,
                 'yandex_id' => $r->yandex_id,
@@ -46,25 +40,6 @@ class TransferRequests extends Command
             $bar->advance();
         }
         $bar->finish();
-    }
-
-    private function getClientId($r)
-    {
-        $requestPhones = $this->phones
-            ->where('entity_type', ET_REQUEST)
-            ->where('entity_id', $r->id)
-            ->pluck('phone');
-        // dd($requestPhones);
-        // $requestPhones = $this->phones[ET_REQUEST][$r->id];
-        $this->line("Request ID: " . $r->id);
-        foreach ($requestPhones as $phone) {
-            $candidates = $this->phones
-                ->whereIn('entity_type', [ET_CLIENT, ET_PARENT])
-                ->where('phone', $phone)
-                ->all();
-            dump($candidates);
-        }
-        $this->line(PHP_EOL);
     }
 
     private function getProgram($r): Program | null

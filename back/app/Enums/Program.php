@@ -118,7 +118,6 @@ enum Program: string
     public static function getById(int $gradeId, int $subjectId): self
     {
         $gradeSubject = join('-', [$gradeId, $subjectId]);
-        // dump($gradeSubject);
         return match ($gradeSubject) {
             '9-1' => self::math9,
             '9-2' => self::phys9,
@@ -228,6 +227,8 @@ enum Program: string
             '19-33' => self::hisPracticum,
             '19-34' => self::engPracticum,
             '19-35' => self::geoPracticum,
+
+            '9-36' => self::essay9,
 
             // ошибка в старой системе
             '19-6' => self::rusPracticum,
