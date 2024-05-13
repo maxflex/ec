@@ -13,11 +13,16 @@ use Illuminate\Http\Request;
  */
 class RequestsController extends Controller
 {
+    protected $filters = [
+        'equals' => ['status', 'program']
+    ];
+
     public function index(Request $request)
     {
         $query = ClientRequest::query()
             ->with('phones', 'responsibleUser')
             ->latest();
+        $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, RequestResource::class);
     }
 }

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { RequestFilters } from "#build/components";
+import type { RequestFiltersDialog } from "#build/components"
 import type { Requests } from "~/utils/models"
 
 const items = ref<Requests>()
 const paginator = usePaginator()
-const filters = ref<null | InstanceType<typeof RequestFilters>>()
+const filtersDialog = ref<null | InstanceType<typeof RequestFiltersDialog>>()
+const filters = ref<RequestFilters>({})
 // const isLastPage = false
 
 async function loadData() {
@@ -15,15 +16,24 @@ async function loadData() {
   paginator.loading = true
   console.log("page", paginator.page)
   const { data } = await useHttp<ApiResponse<Requests>>("requests", {
-    params: { page: paginator.page },
+    params: {
+      page: paginator.page,
+      ...filters.value,
+    },
   })
   paginator.loading = false
   if (data.value) {
     const { meta, data: newItems } = data.value
     items.value =
       paginator.page === 1 ? newItems : items.value?.concat(newItems)
-    paginator.isLastPage = meta.current_page === meta.last_page
+    paginator.isLastPage = meta.current_page >= meta.last_page
   }
+}
+
+function onFiltersApply(f: RequestFilters) {
+  filters.value = f
+  paginator.page = 0
+  loadData()
 }
 
 // оставлю как пример
@@ -33,9 +43,12 @@ async function onIntersect({
 }: {
   done: (status: InfiniteScrollStatus) => void
 }) {
+  if (paginator.isLastPage) {
+    return
+  }
   done("loading")
   await loadData()
-  done("ok")
+  done(paginator.isLastPage ? "empty" : "ok")
 }
 
 nextTick(loadData)
@@ -44,14 +57,10 @@ nextTick(loadData)
   <div class="filters">
     <!-- <v-btn icon="$filters" :size="48">
     </v-btn> -->
-    <a class="cursor-pointer" @click="filters?.open()">
-      фильтры
-    </a>
-    <a>
-      добавить заявку
-    </a>
+    <a class="cursor-pointer" @click="filtersDialog?.open()"> фильтры </a>
+    <a> добавить заявку </a>
   </div>
-  <RequestFilters ref="filters" />
+  <RequestFiltersDialog ref="filtersDialog" @apply="onFiltersApply" />
   <UiLoader :paginator="paginator" />
   <div v-if="items" class="requests">
     <v-infinite-scroll

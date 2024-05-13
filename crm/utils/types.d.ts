@@ -1,5 +1,5 @@
 import { YEARS } from "./sment"
-import type { ClientTest, Program, Test } from "./models"
+import type { ClientTest, Program, Test, RequestStatus } from "./models"
 
 declare global {
   interface Meta {
@@ -81,6 +81,11 @@ declare global {
   interface TokenResponse {
     user: User
     token: string
+  }
+
+  interface RequestFilters {
+    status?: RequestStatus
+    program?: Program
   }
 }
 
