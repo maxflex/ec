@@ -61,7 +61,6 @@ defineExpose({ open })
             label="Филиалы"
             v-model="client.branches"
             multiple
-            :menu="true"
             :items="
               Object.keys(BRANCHES).map((value) => ({
                 value,
