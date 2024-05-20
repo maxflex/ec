@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Test } from "~/utils/models"
+import type { Test } from '~/utils/models'
 
 const route = useRoute()
 const answers = ref([])
@@ -17,22 +17,34 @@ nextTick(loadData)
   <!-- <UiTopPanel>
     <v-btn> добавить тест </v-btn>
   </UiTopPanel> -->
-  <div class="test" v-if="test">
-    <iframe :src="test.file" />
+  <div
+    v-if="test"
+    class="test"
+  >
+    <iframe :src="test.file as string" />
     <div class="test__questions">
-      <div v-for="(q, i) in test.questions">
+      <div
+        v-for="(q, i) in test.questions"
+        :key="i"
+      >
         <h2>Вопрос {{ i + 1 }}</h2>
-        <v-item-group selected-class="bg-primary" v-model="answers[i]">
-          <v-item v-for="n in 6" :key="n">
-            <template v-slot:default="{ toggle, selectedClass }">
+        <v-item-group
+          v-model="answers[i]"
+          selected-class="bg-primary"
+        >
+          <v-item
+            v-for="n in 6"
+            :key="n"
+          >
+            <template #default="{ toggle, selectedClass }">
               <v-btn
                 height="48"
                 width="48"
                 variant="text"
                 icon
                 border
-                @click="toggle"
                 :class="selectedClass"
+                @click="toggle"
               >
                 {{ n }}
               </v-btn>

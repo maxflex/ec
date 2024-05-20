@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ClientTest } from "~/utils/models"
+import type { ClientTest } from '~/utils/models'
 
 const route = useRoute()
 const test = ref<ClientTest>()
@@ -19,11 +19,17 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div class="test" v-if="test && test.is_finished">
+  <div
+    v-if="test && test.is_finished"
+    class="test"
+  >
     <iframe :src="test.file" />
     <div>
       <div class="test__questions">
-        <div v-for="(q, i) in test.questions">
+        <div
+          v-for="(q, i) in test.questions"
+          :key="i"
+        >
           <h2>
             Вопрос {{ i + 1 }}
             <span
@@ -32,18 +38,22 @@ nextTick(loadData)
             >
               +{{ plural(q.score as number, ["балл", "балла", "баллов"]) }}
             </span>
-            <span class="text-error" v-else>
+            <span
+              v-else
+              class="text-error"
+            >
               -{{ plural(q.score as number, ["балл", "балла", "баллов"]) }}
             </span>
           </h2>
           <div class="v-item-group">
             <v-btn
+              v-for="n in 6"
+              :key="n"
               height="48"
               width="48"
               variant="text"
               icon
               border
-              v-for="n in 6"
               class="no-pointer-events"
               :class="{
                 'bg-success': n - 1 === q.answer,

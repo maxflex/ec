@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Teacher } from "~/utils/models"
-import { ENTITY_TYPE } from "~/utils/sment"
+import type { Teacher } from '~/utils/models'
+import { ENTITY_TYPE } from '~/utils/sment'
 
 const route = useRoute()
 const teacher = ref<Teacher>()
@@ -16,7 +16,10 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div class="teacher" v-if="teacher">
+  <div
+    v-if="teacher"
+    class="teacher"
+  >
     <div>
       <h3>
         Преподаватель
@@ -28,9 +31,18 @@ nextTick(loadData)
         />
       </h3>
       <div class="inputs">
-        <v-text-field v-model="teacher.last_name" label="Фамилия" />
-        <v-text-field v-model="teacher.first_name" label="Имя" />
-        <v-text-field v-model="teacher.middle_name" label="Отчество" />
+        <v-text-field
+          v-model="teacher.last_name"
+          label="Фамилия"
+        />
+        <v-text-field
+          v-model="teacher.first_name"
+          label="Имя"
+        />
+        <v-text-field
+          v-model="teacher.middle_name"
+          label="Отчество"
+        />
       </div>
     </div>
   </div>

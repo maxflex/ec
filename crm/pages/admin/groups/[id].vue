@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Contract, Group } from "~/utils/models"
+import type { Contract, Group } from '~/utils/models'
 
 const route = useRoute()
 const group = ref<Group>()
@@ -11,7 +11,7 @@ async function loadData() {
 
 async function removeFromGroup(c: Contract) {
   await useHttp(`groups/remove-contract`, {
-    method: "post",
+    method: 'post',
     params: {
       group_id: group.value?.id,
       contract_id: c.id,
@@ -24,10 +24,15 @@ nextTick(loadData)
 </script>
 
 <template>
-  <h3 class="page-title">Группа {{ route.params.id }}</h3>
+  <h3 class="page-title">
+    Группа {{ route.params.id }}
+  </h3>
   <div v-if="group">
     <div class="table table--actions-on-hover">
-      <div v-for="contract in group.contracts">
+      <div
+        v-for="contract in group.contracts"
+        :key="contract.id"
+      >
         <div style="width: 300px">
           <NuxtLink
             :to="{

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { cloneDeep } from "lodash"
-import type { Program, Test } from "~/utils/models"
-import { PROGRAM } from "~/utils/sment"
-import { humanFileSize } from "~/utils/filters"
-import type { TestQuestionsDialog } from "#build/components"
+import { cloneDeep } from 'lodash'
+import type { Program, Test } from '~/utils/models'
+import { PROGRAM } from '~/utils/sment'
+import { humanFileSize } from '~/utils/filters'
+import type { TestQuestionsDialog } from '#build/components'
 
 const { dialog, width } = useDialog()
 const item = ref<Test>()
@@ -12,12 +12,12 @@ const fileInput = ref()
 const pdf = ref()
 const loading = ref(false)
 const questionsDialog = ref<null | InstanceType<typeof TestQuestionsDialog>>()
-const programs = Object.keys(PROGRAM).map((value) => ({
+const programs = Object.keys(PROGRAM).map(value => ({
   value,
   title: PROGRAM[value as Program],
 }))
 const emit = defineEmits<{
-  (e: "updated"): void
+  (e: 'updated'): void
 }>()
 
 function open(t: Test) {
@@ -30,8 +30,8 @@ function create() {
   item.value = {
     id: 0,
     minutes: 30,
-    name: "",
-    file: "",
+    name: '',
+    file: '',
     program: null,
     questions: null,
     results: null,
@@ -49,18 +49,18 @@ async function storeOrUpdate() {
   loading.value = true
   const { data } = item.value?.id
     ? await useHttp(`tests/${item.value.id}`, {
-        method: "PUT",
-        body: item.value,
-      })
-    : await useHttp("tests", {
-        method: "POST",
-        body: item.value,
-      })
+      method: 'PUT',
+      body: item.value,
+    })
+    : await useHttp('tests', {
+      method: 'POST',
+      body: item.value,
+    })
   item.value = data.value as Test
   await uploadPdf()
   dialog.value = false
   loading.value = false
-  emit("updated")
+  emit('updated')
 }
 
 async function uploadPdf() {
@@ -68,9 +68,9 @@ async function uploadPdf() {
     return
   }
   const formData = new FormData()
-  formData.append("pdf", pdf.value)
+  formData.append('pdf', pdf.value)
   await useHttp(`tests/upload-pdf/${item.value.id}`, {
-    method: "POST",
+    method: 'POST',
     body: formData,
   })
 }
@@ -97,8 +97,14 @@ defineExpose({ open, create })
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :width="width">
-    <div class="dialog-wrapper" v-if="item">
+  <v-dialog
+    v-model="dialog"
+    :width="width"
+  >
+    <div
+      v-if="item"
+      class="dialog-wrapper"
+    >
       <div class="dialog-header">
         <span v-if="item.id > 0"> Редактирование теста </span>
         <span v-else> Добавить тест </span>
@@ -106,8 +112,8 @@ defineExpose({ open, create })
           <v-btn
             icon="$file"
             :size="48"
-            @click="selectFile()"
             color="#fafafa"
+            @click="selectFile()"
           />
           <v-btn
             icon="$save"
@@ -120,12 +126,16 @@ defineExpose({ open, create })
       </div>
       <div class="dialog-body">
         <div>
-          <v-text-field v-model="item.name" label="Название" ref="input" />
+          <v-text-field
+            ref="input"
+            v-model="item.name"
+            label="Название"
+          />
         </div>
         <div>
           <v-select
-            :items="programs"
             v-model="item.program"
+            :items="programs"
             label="Программа"
           />
         </div>
@@ -141,38 +151,52 @@ defineExpose({ open, create })
           <a
             class="link-icon"
             @click="() => questionsDialog?.open(item?.questions)"
-            >редактировать вопросы
-            <template v-if="item.questions?.length"
-              >({{ item.questions.length }})</template
-            >
-            <v-icon :size="16" icon="$next"></v-icon>
+          >редактировать вопросы
+            <template v-if="item.questions?.length">({{ item.questions.length }})</template>
+            <v-icon
+              :size="16"
+              icon="$next"
+            />
           </a>
         </div>
         <div>
           <input
+            ref="fileInput"
             style="display: none"
             type="file"
             accept="application/pdf"
-            ref="fileInput"
             @change="onFileSelected"
-          />
+          >
           <v-slide-y-transition>
-            <div class="pdf-file" v-if="pdf">
-              <img src="/img/pdf.svg" />
+            <div
+              v-if="pdf"
+              class="pdf-file"
+            >
+              <img src="/img/pdf.svg">
               <div>
-                <div class="text-gray">{{ pdf.name }}</div>
+                <div class="text-gray">
+                  {{ pdf.name }}
+                </div>
                 <div class="text-gray">
                   {{ humanFileSize(pdf.size) }}
                 </div>
               </div>
             </div>
-            <div class="pdf-file" v-else-if="item.file">
-              <img src="/img/pdf.svg" />
+            <div
+              v-else-if="item.file"
+              class="pdf-file"
+            >
+              <img src="/img/pdf.svg">
               <div>
-                <a :href="item.file" target="_blank">{{
+                <a
+                  :href="item.file"
+                  target="_blank"
+                >{{
                   item.file.split("/")[5]
                 }}</a>
-                <div class="text-gray">1.2 Мб</div>
+                <div class="text-gray">
+                  1.2 Мб
+                </div>
               </div>
             </div>
           </v-slide-y-transition>
@@ -180,7 +204,10 @@ defineExpose({ open, create })
       </div>
     </div>
   </v-dialog>
-  <TestQuestionsDialog ref="questionsDialog" @saved="onQuestionsSaved" />
+  <TestQuestionsDialog
+    ref="questionsDialog"
+    @saved="onQuestionsSaved"
+  />
 </template>
 
 <style lang="scss">

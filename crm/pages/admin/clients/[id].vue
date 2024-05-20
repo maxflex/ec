@@ -1,21 +1,21 @@
 <script setup lang="ts">
+import { nextTick } from 'vue'
+import { mdiEmailOutline, mdiHistory } from '@mdi/js'
 import type {
   ClientDialog,
   ClientPaymentDialog,
   ContractDialog,
   GroupSelectorDialog,
   TestSelectorDialog,
-} from "#build/components"
-import { nextTick } from "vue"
+} from '#build/components'
 import type {
   Client,
   Contract,
   ContractVersion,
   Group,
   Tests,
-} from "~/utils/models"
-import { mdiEmailOutline, mdiHistory } from "@mdi/js"
-import { ENTITY_TYPE } from "~/utils/sment"
+} from '~/utils/models'
+import { ENTITY_TYPE } from '~/utils/sment'
 
 const route = useRoute()
 const client = ref<Client>()
@@ -35,13 +35,13 @@ async function loadData() {
 }
 
 function onOpen(c: Contract, v: ContractVersion) {
-  console.log("open", c, v)
+  console.log('open', c, v)
   contractDialog.value?.open(c, v)
 }
 
 async function onGroupSelected(g: Group) {
   await useHttp(`groups/add-client`, {
-    method: "post",
+    method: 'post',
     params: {
       group_id: g.id,
       client_id: client.value?.id,
@@ -56,32 +56,38 @@ function onTestsSaved(tests: Tests) {
   }
   client.value.tests = [...tests]
   useHttp(`tests/add-client/${client.value.id}`, {
-    method: "post",
-    body: { ids: tests.map((t) => t.id) },
+    method: 'post',
+    body: { ids: tests.map(t => t.id) },
   })
 }
 
-type ClientTab = "requests" | "contracts" | "groups" | "tests"
-const selectedTab = ref<ClientTab>("requests")
+type ClientTab = 'requests' | 'contracts' | 'groups' | 'tests'
+const selectedTab = ref<ClientTab>('requests')
 const tabs: Record<ClientTab, string> = {
-  requests: "заявки",
-  contracts: "договоры",
-  groups: "группы",
-  tests: "тесты",
+  requests: 'заявки',
+  contracts: 'договоры',
+  groups: 'группы',
+  tests: 'тесты',
 }
 
 nextTick(loadData)
 </script>
 
 <template>
-  <div class="client" v-if="client">
+  <div
+    v-if="client"
+    class="client"
+  >
     <div class="client__panel">
       <div class="client__panel-info">
         <div>
           <div>ученик</div>
           <div class="text-truncate">
             {{ formatFullName(client) }}
-            <div v-if="client.phones" class="client__phones">
+            <div
+              v-if="client.phones"
+              class="client__phones"
+            >
               <div
                 v-for="p in client.phones.filter((e) => !e.is_parent)"
                 :key="p.id"
@@ -109,7 +115,10 @@ nextTick(loadData)
                 middle_name: client.parent_middle_name,
               })
             }}
-            <div v-if="client.phones" class="client__phones">
+            <div
+              v-if="client.phones"
+              class="client__phones"
+            >
               <div
                 v-for="p in client.phones.filter((e) => e.is_parent)"
                 :key="p.id"
@@ -143,7 +152,9 @@ nextTick(loadData)
               {{ formatName(client.head_teacher) }}
             </router-link>
           </div>
-          <div v-else>не установлено</div>
+          <div v-else>
+            не установлено
+          </div>
         </div>
         <!-- <div v-if="client.phones" class="client__phones">
           <div v-for="p in client.phones" :key="p.id">
@@ -175,11 +186,11 @@ nextTick(loadData)
       </div>
       <div class="client__tabs">
         <div
+          v-for="(label, key) in tabs"
+          :key="key"
           class="client__tabs-item"
           :class="{ 'client__tabs-item--active': selectedTab === key }"
           @click="selectedTab = key"
-          v-for="(label, key) in tabs"
-          :key="key"
         >
           {{ label }}
         </div>
@@ -187,11 +198,17 @@ nextTick(loadData)
     </div>
     <div class="client__content">
       <RequestList
-        :requests="client.requests"
         v-if="selectedTab === 'requests'"
+        :requests="client.requests"
       />
-      <div class="client-contracts" v-else-if="selectedTab === 'contracts'">
-        <div v-for="contract in client.contracts" :key="contract.id">
+      <div
+        v-else-if="selectedTab === 'contracts'"
+        class="client-contracts"
+      >
+        <div
+          v-for="contract in client.contracts"
+          :key="contract.id"
+        >
           <h3>
             Договор №{{ contract.id }} на {{ formatYear(contract.year) }}
             <v-btn
@@ -202,7 +219,10 @@ nextTick(loadData)
               @click="() => contractDialog?.create(contract)"
             />
           </h3>
-          <ContractList :contract="contract" @open="onOpen" />
+          <ContractList
+            :contract="contract"
+            @open="onOpen"
+          />
           <h3>
             Платежи
             <v-btn
@@ -231,8 +251,8 @@ nextTick(loadData)
         <div class="table table--padding table--hover table--actions-on-hover">
           <GroupItem
             v-for="group in client.groups"
-            :group="group"
             :key="group.id"
+            :group="group"
           />
           <GroupSwamp
             v-for="swamp in client.swamps"
@@ -246,11 +266,20 @@ nextTick(loadData)
           @select="onGroupSelected"
         />
       </div>
-      <div v-else style="top: -20px; position: relative">
+      <div
+        v-else
+        style="top: -20px; position: relative"
+      >
         <ClientTestList :tests="client.tests" />
-        <TestSelectorDialog ref="testSelectorDialog" @saved="onTestsSaved" />
+        <TestSelectorDialog
+          ref="testSelectorDialog"
+          @saved="onTestsSaved"
+        />
         <div class="mt-6">
-          <v-btn color="primary" @click="() => testSelectorDialog?.open()">
+          <v-btn
+            color="primary"
+            @click="() => testSelectorDialog?.open()"
+          >
             добавить тест
           </v-btn>
         </div>

@@ -1,17 +1,27 @@
 <script setup lang="ts">
-import { BRANCHES } from "~/utils/sment"
+import { BRANCHES } from '~/utils/sment'
+
 const { branches } = defineProps<{
   branches: string[] | null
 }>()
 </script>
 
 <template>
-  <div class="branches" v-if="branches?.length">
-    <span v-for="b in branches" :key="b" :class="`branch branch--${b}`">
+  <div
+    v-if="branches?.length"
+    class="branches"
+  >
+    <span
+      v-for="b in branches"
+      :key="b"
+      :class="`branch branch--${b}`"
+    >
       {{ BRANCHES[b] }}
     </span>
   </div>
-  <template v-else> не установлено </template>
+  <template v-else>
+    не установлено
+  </template>
 </template>
 
 <style lang="scss">

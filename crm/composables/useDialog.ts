@@ -4,7 +4,7 @@ export default function (w: number = 500) {
 
   watch(dialog, (val) => {
     const el = document.documentElement.querySelector(
-      ".v-dialog.v-overlay--active > .dialog",
+      '.v-dialog.v-overlay--active > .dialog',
     )
     if (el === null) {
       return

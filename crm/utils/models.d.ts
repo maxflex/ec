@@ -1,25 +1,25 @@
 export interface Client {
   // columns
   id: number
-  first_name: string|null
-  last_name: string|null
-  middle_name: string|null
-  branches: string[]|null
-  birthdate: string|null
-  user_id: number|null
-  head_teacher_id: number|null
-  parent_first_name: string|null
-  parent_last_name: string|null
-  parent_middle_name: string|null
-  passport_series: string|null
-  passport_number: string|null
-  passport_address: string|null
-  passport_code: string|null
-  passport_issued_date: string|null
-  passport_issued_by: string|null
-  fact_address: string|null
-  created_at: string|null
-  updated_at: string|null
+  first_name: string | null
+  last_name: string | null
+  middle_name: string | null
+  branches: string[] | null
+  birthdate: string | null
+  user_id: number | null
+  head_teacher_id: number | null
+  parent_first_name: string | null
+  parent_last_name: string | null
+  parent_middle_name: string | null
+  passport_series: string | null
+  passport_number: string | null
+  passport_address: string | null
+  passport_code: string | null
+  passport_issued_date: string | null
+  passport_issued_by: string | null
+  fact_address: string | null
+  created_at: string | null
+  updated_at: string | null
   // mutators
   groups?: unknown
   swamps?: unknown
@@ -51,11 +51,11 @@ export interface ClientPayment {
   is_return: boolean
   entity_type: string
   entity_id: number
-  purpose: string|null
-  extra: string|null
+  purpose: string | null
+  extra: string | null
   user_id: number
-  created_at: string|null
-  updated_at: string|null
+  created_at: string | null
+  updated_at: string | null
 }
 export type ClientPayments = ClientPayment[]
 
@@ -68,8 +68,8 @@ export interface ClientReview {
   text: string
   rating: unknown
   user_id: number
-  created_at: string|null
-  updated_at: string|null
+  created_at: string | null
+  updated_at: string | null
 }
 export type ClientReviews = ClientReview[]
 
@@ -82,9 +82,9 @@ export interface ClientTest {
   file: string
   minutes: number
   questions: TestQuestions
-  answers: TestAnswers|null
-  started_at: string|null
-  finished_at: string|null
+  answers: TestAnswers | null
+  started_at: string | null
+  finished_at: string | null
   // mutators
   is_finished: boolean
   questions_count: number
@@ -94,12 +94,12 @@ export type ClientTests = ClientTest[]
 export interface Comment {
   // columns
   id: number
-  user_id: number|null
+  user_id: number | null
   text: string
   entity_type: string
   entity_id: number
-  created_at: string|null
-  updated_at: string|null
+  created_at: string | null
+  updated_at: string | null
 }
 export type Comments = Comment[]
 
@@ -133,7 +133,7 @@ export interface ContractLesson {
   lesson_id: number
   price: number
   status: ContractLessonStatus
-  minutes_late: number|null
+  minutes_late: number | null
   is_remote: boolean
 }
 export type ContractLessons = ContractLesson[]
@@ -167,8 +167,8 @@ export interface ContractVersion {
   version: unknown
   date: string
   sum: number
-  created_at: string|null
-  updated_at: string|null
+  created_at: string | null
+  updated_at: string | null
   // relations
   programs: ContractPrograms
   payments: ContractPayments
@@ -182,12 +182,12 @@ export interface Group {
   program: Program
   year: unknown
   is_archived: boolean
-  zoom: Zoom|null
-  lessons_planned: unknown|null
-  created_at: string|null
-  updated_at: string|null
-  duration: number|null
-  exam_date: string|null
+  zoom: Zoom | null
+  lessons_planned: unknown | null
+  created_at: string | null
+  updated_at: string | null
+  duration: number | null
+  exam_date: string | null
   // relations
   teacher: Teacher
   contracts: Contracts
@@ -198,33 +198,33 @@ export interface Lesson {
   // columns
   id: number
   group_id: number
-  teacher_id: number|null
+  teacher_id: number | null
   price: number
   status: LessonStatus
   cabinet: string
   start_at: string
-  conducted_at: string|null
+  conducted_at: string | null
   is_unplanned: boolean
   is_topic_verified: boolean
-  topic: string|null
-  user_id: number|null
-  created_at: string|null
-  updated_at: string|null
+  topic: string | null
+  user_id: number | null
+  created_at: string | null
+  updated_at: string | null
 }
 export type Lessons = Lesson[]
 
 export interface Log {
   // columns
   id: number
-  ip: string|null
+  ip: string | null
   type: LogType
-  table: string|null
-  row_id: number|null
+  table: string | null
+  row_id: number | null
   data: string[]
-  entity_type: string|null
-  entity_id: number|null
-  created_at: string|null
-  updated_at: string|null
+  entity_type: string | null
+  entity_id: number | null
+  created_at: string | null
+  updated_at: string | null
   // relations
   user: User
 }
@@ -242,12 +242,12 @@ export interface Phone {
   // columns
   id: number
   number: string
-  comment: string|null
+  comment: string | null
   is_verified: boolean
   is_parent: boolean
   entity_type: string
   entity_id: number
-  telegram_id: number|null
+  telegram_id: number | null
   // relations
   entity: Phone
 }
@@ -256,17 +256,17 @@ export type Phones = Phone[]
 export interface Request {
   // columns
   id: number
-  client_id: number|null
-  responsible_user_id: number|null
+  client_id: number | null
+  responsible_user_id: number | null
   status: RequestStatus
-  program: Program|null
-  google_id: string|null
-  yandex_id: string|null
-  ip: string|null
-  comment: string|null
-  user_id: number|null
-  created_at: string|null
-  updated_at: string|null
+  program: Program | null
+  google_id: string | null
+  yandex_id: string | null
+  ip: string | null
+  comment: string | null
+  user_id: number | null
+  created_at: string | null
+  updated_at: string | null
   // relations
   responsible_user: User
   client: Client
@@ -283,8 +283,8 @@ export interface Review {
   rating: unknown
   is_published: boolean
   user_id: number
-  created_at: string|null
-  updated_at: string|null
+  created_at: string | null
+  updated_at: string | null
 }
 export type Reviews = Review[]
 
@@ -301,21 +301,21 @@ export type ReviewScores = ReviewScore[]
 export interface Teacher {
   // columns
   id: number
-  first_name: string|null
-  last_name: string|null
-  middle_name: string|null
-  subjects: unknown|null
+  first_name: string | null
+  last_name: string | null
+  middle_name: string | null
+  subjects: unknown | null
   status: string
-  desc: string|null
-  photo_desc: string|null
-  passport_series: string|null
-  passport_number: string|null
-  passport_address: string|null
-  passport_code: string|null
-  passport_issued_by: string|null
-  so: unknown|null
-  created_at: string|null
-  updated_at: string|null
+  desc: string | null
+  photo_desc: string | null
+  passport_series: string | null
+  passport_number: string | null
+  passport_address: string | null
+  passport_code: string | null
+  passport_issued_by: string | null
+  so: unknown | null
+  created_at: string | null
+  updated_at: string | null
 }
 export type Teachers = Teacher[]
 
@@ -326,11 +326,11 @@ export interface TeacherPayment {
   date: string
   year: unknown
   method: string
-  purpose: string|null
+  purpose: string | null
   teacher_id: number
   user_id: number
-  created_at: string|null
-  updated_at: string|null
+  created_at: string | null
+  updated_at: string | null
 }
 export type TeacherPayments = TeacherPayment[]
 
@@ -340,35 +340,35 @@ export interface TeacherService {
   sum: number
   date: string
   year: unknown
-  purpose: string|null
+  purpose: string | null
   teacher_id: number
   user_id: number
-  created_at: string|null
-  updated_at: string|null
+  created_at: string | null
+  updated_at: string | null
 }
 export type TeacherServices = TeacherService[]
 
 export interface Test {
   // columns
   id: number
-  program: Program|null
+  program: Program | null
   name: string
-  file: string|null
+  file: string | null
   minutes: number
-  questions: TestQuestions|null
-  created_at: string|null
-  updated_at: string|null
+  questions: TestQuestions | null
+  created_at: string | null
+  updated_at: string | null
 }
 export type Tests = Test[]
 
 export interface User {
   // columns
   id: number
-  first_name: string|null
-  last_name: string|null
-  middle_name: string|null
-  created_at: string|null
-  updated_at: string|null
+  first_name: string | null
+  last_name: string | null
+  middle_name: string | null
+  created_at: string | null
+  updated_at: string | null
 }
 export type Users = User[]
 
@@ -384,14 +384,14 @@ const ClientPaymentMethod = {
   online: 'online',
   cash: 'cash',
   invoice: 'invoice',
-} as const;
+} as const
 
 export type ClientPaymentMethod = typeof ClientPaymentMethod[keyof typeof ClientPaymentMethod]
 
 const CompanyType = {
   ip: 'ip',
   ooo: 'ooo',
-} as const;
+} as const
 
 export type CompanyType = typeof CompanyType[keyof typeof CompanyType]
 
@@ -494,7 +494,7 @@ const Program = {
   geoPracticum: 'geoPracticum',
   mathBase: 'mathBase',
   mathProf: 'mathProf',
-} as const;
+} as const
 
 export type Program = typeof Program[keyof typeof Program]
 
@@ -502,7 +502,7 @@ const ContractLessonStatus = {
   present: 'present',
   late: 'late',
   absent: 'absent',
-} as const;
+} as const
 
 export type ContractLessonStatus = typeof ContractLessonStatus[keyof typeof ContractLessonStatus]
 
@@ -510,7 +510,7 @@ const LessonStatus = {
   planned: 'planned',
   conducted: 'conducted',
   cancelled: 'cancelled',
-} as const;
+} as const
 
 export type LessonStatus = typeof LessonStatus[keyof typeof LessonStatus]
 
@@ -520,7 +520,7 @@ const LogType = {
   delete: 'delete',
   view: 'view',
   auth: 'auth',
-} as const;
+} as const
 
 export type LogType = typeof LogType[keyof typeof LogType]
 
@@ -528,7 +528,6 @@ const RequestStatus = {
   new: 'new',
   awaiting: 'awaiting',
   finished: 'finished',
-} as const;
+} as const
 
 export type RequestStatus = typeof RequestStatus[keyof typeof RequestStatus]
-

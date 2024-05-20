@@ -1,6 +1,6 @@
 <template>
   <div class="top-panel">
-    <slot></slot>
+    <slot />
   </div>
 </template>
 

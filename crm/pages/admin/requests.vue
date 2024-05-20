@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { RequestDialog, RequestFiltersDialog } from "#build/components"
-import type { Requests } from "~/utils/models"
+import type { RequestDialog, RequestFiltersDialog } from '#build/components'
+import type { Requests } from '~/utils/models'
 
 const items = ref<Requests>()
 const paginator = usePaginator()
@@ -14,8 +14,8 @@ async function loadData() {
   }
   paginator.page++
   paginator.loading = true
-  console.log("page", paginator.page)
-  const { data } = await useHttp<ApiResponse<Requests>>("requests", {
+  console.log('page', paginator.page)
+  const { data } = await useHttp<ApiResponse<Requests>>('requests', {
     params: {
       page: paginator.page,
       ...filters.value,
@@ -24,8 +24,8 @@ async function loadData() {
   paginator.loading = false
   if (data.value) {
     const { meta, data: newItems } = data.value
-    items.value =
-      paginator.page === 1 ? newItems : items.value?.concat(newItems)
+    items.value
+      = paginator.page === 1 ? newItems : items.value?.concat(newItems)
     paginator.isLastPage = meta.current_page >= meta.last_page
   }
 }
@@ -46,13 +46,14 @@ async function onIntersect({
   if (paginator.isLastPage) {
     return
   }
-  done("loading")
+  done('loading')
   await loadData()
-  done(paginator.isLastPage ? "empty" : "ok")
+  done(paginator.isLastPage ? 'empty' : 'ok')
 }
 
 nextTick(loadData)
 </script>
+
 <template>
   <div class="filters">
     <!-- <v-btn icon="$filters" :size="48">
@@ -79,11 +80,17 @@ nextTick(loadData)
       добавить заявку
     </a>
   </div>
-  <RequestFiltersDialog ref="filtersDialog" @apply="onFiltersApply" />
+  <RequestFiltersDialog
+    ref="filtersDialog"
+    @apply="onFiltersApply"
+  />
   <UiLoader :paginator="paginator" />
-  <div v-if="items" class="requests">
+  <div
+    v-if="items"
+    class="requests"
+  >
     <v-infinite-scroll
-      :onLoad="onIntersect"
+      :on-load="onIntersect"
       :margin="100"
       color="gray"
       :side="'end'"

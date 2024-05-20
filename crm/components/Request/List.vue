@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import type { RequestDialog } from "#build/components"
-import type { Requests } from "~/utils/models"
-import { PROGRAM } from "~/utils/sment"
+import type { RequestDialog } from '#build/components'
+import type { Requests } from '~/utils/models'
+import { PROGRAM } from '~/utils/sment'
+
 const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()
 const { requests } = defineProps<{ requests: Requests }>()
 </script>
 
 <template>
   <div class="request-list">
-    <div class="request" v-for="r in requests" :key="r.id">
+    <div
+      v-for="r in requests"
+      :key="r.id"
+      class="request"
+    >
       <div class="request__left">
         <div class="request__title">
           <div @click="requestDialog?.open(r)">
@@ -31,15 +36,18 @@ const { requests } = defineProps<{ requests: Requests }>()
           {{ r.comment }}
         </div>
         <table class="request__phones">
-          <tr v-for="phone in r.phones">
+          <tr
+            v-for="phone in r.phones"
+            :key="phone.id"
+          >
             <td>
               <a :href="`tel:${phone.number}`">
                 {{ formatPhone(phone.number as string) }}
               </a>
               <v-icon
+                v-if="phone.is_verified"
                 :size="16"
                 color="secondary"
-                v-if="phone.is_verified"
                 icon="$verified"
               />
             </td>

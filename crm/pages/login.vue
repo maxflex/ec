@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import Pusher, { Channel } from "pusher-js"
+import type { Channel } from 'pusher-js'
+import Pusher from 'pusher-js'
 
 const { public: config } = useRuntimeConfig()
 const { rememberUser, logIn } = useAuthStore()
-const phone = ref("")
-const phoneMask = { mask: "+7 (###) ###-##-##" }
+const phone = ref('')
+const phoneMask = { mask: '+7 (###) ###-##-##' }
 const user = ref<User>()
 const loading = ref(false)
 const errors = ref<{
@@ -14,7 +15,7 @@ const errors = ref<{
 const otpInput = ref()
 const phoneInput = ref()
 const otp = reactive({
-  code: "",
+  code: '',
   error: false,
   loading: false,
 })
@@ -25,8 +26,8 @@ const window = ref(rememberUser ? 1 : 0)
 const onPhoneEnter = async () => {
   loading.value = true
   errors.value = {}
-  const { data, error } = await useHttp<User>("common/auth/login", {
-    method: "post",
+  const { data, error } = await useHttp<User>('common/auth/login', {
+    method: 'post',
     body: {
       phone: phone.value,
     },
@@ -46,8 +47,8 @@ const onPhoneEnter = async () => {
 }
 
 function initPusher() {
-  pusher = new Pusher(config.pusherAppKey, { cluster: "eu" })
-  channel = pusher.subscribe("auth." + user.value?.id)
+  pusher = new Pusher(config.pusherAppKey, { cluster: 'eu' })
+  channel = pusher.subscribe('auth.' + user.value?.id)
 }
 
 function otherUser() {
@@ -67,9 +68,9 @@ async function onOtpFinish() {
   errors.value = {}
   otp.loading = true
   const { data, error } = await useHttp<TokenResponse>(
-    "common/auth/verify-code",
+    'common/auth/verify-code',
     {
-      method: "post",
+      method: 'post',
       body: {
         phone: phone.value,
         code: otp.code,
@@ -98,7 +99,7 @@ watch(
     if (newVal === 2) {
       initPusher()
       channel.bind(
-        "App\\Events\\TelegramBotAdded",
+        'App\\Events\\TelegramBotAdded',
         ({ user, token }: TokenResponse) => logIn(user, token),
       )
     }
@@ -109,9 +110,9 @@ watch(
 )
 
 onUnmounted(() => {
-  console.log("deactivated")
+  console.log('deactivated')
   channel?.unbind()
-  pusher?.unsubscribe("auth")
+  pusher?.unsubscribe('auth')
 })
 
 // onMounted(() => {
@@ -120,23 +121,23 @@ onUnmounted(() => {
 //   }
 // })
 
-definePageMeta({ layout: "login" })
+definePageMeta({ layout: 'login' })
 </script>
 
 <template>
   <form class="login">
     <div class="login__logo">
-      <img src="/img/logo.svg" />
+      <img src="/img/logo.svg">
     </div>
     <v-window v-model="window">
       <v-window-item>
         <v-text-field
+          ref="phoneInput"
           v-model="phone"
+          v-maska:[phoneMask]
           label="Телефон"
           :error-messages="errors.phone"
           @keydown.enter="onPhoneEnter()"
-          ref="phoneInput"
-          v-maska:[phoneMask]
         />
         <v-btn
           color="primary"
@@ -150,10 +151,10 @@ definePageMeta({ layout: "login" })
       </v-window-item>
       <v-window-item eager>
         <v-card
+          v-if="rememberUser"
           title="Card title"
           subtitle="Subtitle"
           variant="tonal"
-          v-if="rememberUser"
         >
           <template #title>
             {{ formatName(rememberUser) }}
@@ -162,7 +163,10 @@ definePageMeta({ layout: "login" })
             {{ formatPhone(rememberUser.number) }}
           </template>
           <template #prepend>
-            <UserAvatar :user="rememberUser" class="mr-3" />
+            <UserAvatar
+              :user="rememberUser"
+              class="mr-3"
+            />
           </template>
         </v-card>
         <v-btn
@@ -179,7 +183,10 @@ definePageMeta({ layout: "login" })
         </div>
       </v-window-item>
       <v-window-item eager>
-        <div class="login__info" v-if="user">
+        <div
+          v-if="user"
+          class="login__info"
+        >
           <div class="login__info-title">
             {{ user.first_name }}, здравствуйте!
           </div>
@@ -191,7 +198,7 @@ definePageMeta({ layout: "login" })
         <div class="login__qr">
           <img
             :src="config.env === 'local' ? '/img/qr-local.png' : '/img/qr.jpg'"
-          />
+          >
         </div>
         <!-- <a href="https://t.me/egecentr_bot" target="_blank">
             <v-btn color="primary" block size="x-large"> Открыть Telegram </v-btn>
@@ -199,19 +206,21 @@ definePageMeta({ layout: "login" })
       </v-window-item>
       <v-window-item eager>
         <div class="login__info">
-          <div class="login__info-title">Проверьте Telegram</div>
+          <div class="login__info-title">
+            Проверьте Telegram
+          </div>
           <div>Введите код, который пришёл к вам в сообщения</div>
         </div>
         <v-otp-input
+          ref="otpInput"
+          v-model="otp.code"
           :disabled="otp.loading"
           :error="!!errors.code"
-          ref="otpInput"
           :length="4"
-          v-model="otp.code"
-          @finish="onOtpFinish"
           class="mt-5"
           width="240"
-        ></v-otp-input>
+          @finish="onOtpFinish"
+        />
         <v-btn
           color="primary"
           :loading="otp.loading"
@@ -223,7 +232,7 @@ definePageMeta({ layout: "login" })
         </v-btn>
       </v-window-item>
       <!-- reverse transition fix -->
-      <v-window-item></v-window-item>
+      <v-window-item />
     </v-window>
   </form>
 </template>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { ClientTest } from "~/utils/models"
-definePageMeta({ middleware: ["check-active-test"] })
+import type { ClientTest } from '~/utils/models'
+
+definePageMeta({ middleware: ['check-active-test'] })
 
 const route = useRoute()
 const test = ref<ClientTest>()
@@ -14,24 +15,27 @@ async function loadData() {
 async function start() {
   loading.value = true
   await useHttp(`tests/start/${route.params.id}`, {
-    method: "post",
+    method: 'post',
   })
-  useCookie("answers").value = null
-  navigateTo({ name: "tests-active" })
+  useCookie('answers').value = null
+  navigateTo({ name: 'tests-active' })
 }
 
 nextTick(loadData)
 </script>
 
 <template>
-  <div class="test-start" v-if="test">
+  <div
+    v-if="test"
+    class="test-start"
+  >
     <h1>
       {{ test.name }}
     </h1>
     <div class="test-start__info">
       Длительность: {{ test.minutes }} минут.
       {{ plural(test.questions_count, ["вопрос", "вопроса", "вопросов"]) }}.
-      <br />
+      <br>
       Во время прохождения не закрывайте браузер!
     </div>
     <v-btn

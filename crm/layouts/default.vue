@@ -1,7 +1,10 @@
 <template>
   <ClientOnly>
     <v-app>
-      <v-navigation-drawer permanent absolute>
+      <v-navigation-drawer
+        permanent
+        absolute
+      >
         <UiMenu />
       </v-navigation-drawer>
       <v-main>

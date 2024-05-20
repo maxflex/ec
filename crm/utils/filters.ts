@@ -1,5 +1,5 @@
-import dayjs from "dayjs"
-import type { Phone, ClientTest } from "./models"
+import dayjs from 'dayjs'
+import type { ClientTest } from './models'
 
 export function plural(
   number: number,
@@ -7,11 +7,11 @@ export function plural(
   showNumber = true,
 ): string {
   if (number === undefined) {
-    return ""
+    return ''
   }
   return (
-    (showNumber ? number + " " : "") +
-    words[
+    (showNumber ? number + ' ' : '')
+    + words[
       number % 100 > 4 && number % 100 < 20
         ? 2
         : [2, 0, 1, 1, 1, 2][number % 10 < 5 ? Math.abs(number) % 10 : 5]
@@ -20,32 +20,33 @@ export function plural(
 }
 
 export function formatDate(dateTime: NullableString): string {
-  return dayjs(dateTime).format("DD.MM.YYYY")
+  return dayjs(dateTime).format('DD.MM.YYYY')
 }
 
 export function formatDateTime(dateTime: NullableString): string {
-  return dayjs(dateTime).format("DD.MM.YYYY в HH:mm")
+  return dayjs(dateTime).format('DD.MM.YYYY в HH:mm')
 }
 
 export function formatPhone(number: string): string {
   return [
-    "+7 (",
+    '+7 (',
     number.slice(1, 4),
-    ") ",
+    ') ',
     number.slice(4, 7),
-    "-",
+    '-',
     number.slice(7, 9),
-    "-",
+    '-',
     number.slice(9, 11),
-  ].join("")
+  ].join('')
 }
 
 export function humanFileSize(size: number) {
-  var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024))
+  const i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024))
+  const humanFileSize = parseInt((size / Math.pow(1024, i)).toFixed(2))
   return (
-    (size / Math.pow(1024, i)).toFixed(2) * 1 +
-    " " +
-    ["байт", "Кб", "Мб", "Гб", "Тб"][i]
+    humanFileSize
+    + ' '
+    + ['байт', 'Кб', 'Мб', 'Гб', 'Тб'][i]
   )
 }
 
@@ -54,18 +55,18 @@ export function formatYear(year: Year): string {
 }
 
 export function formatName(person: Person) {
-  return [person.last_name, person.first_name].join(" ")
+  return [person.last_name, person.first_name].join(' ')
 }
 
 export function formatFullName(person: Person) {
-  return [person.last_name, person.first_name, person.middle_name].join(" ")
+  return [person.last_name, person.first_name, person.middle_name].join(' ')
 }
 
 export function filterAge(date: string) {
-  const currentYear = parseInt(dayjs().format("YYYY"))
-  const year = parseInt(date.split("-")[0])
+  const currentYear = parseInt(dayjs().format('YYYY'))
+  const year = parseInt(date.split('-')[0])
   console.log({ date, currentYear, year })
-  return plural(currentYear - year, ["год", "года", "лет"])
+  return plural(currentYear - year, ['год', 'года', 'лет'])
 }
 
 export function formatClientTestResults(clientTest: ClientTest) {

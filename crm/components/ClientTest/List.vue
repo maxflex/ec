@@ -1,21 +1,27 @@
 <script setup lang="ts">
-import type { ClientTest } from "~/utils/models"
-import { PROGRAM, ENTITY_TYPE } from "~/utils/sment"
-import { plural } from "~/utils/filters"
+import type { ClientTest } from '~/utils/models'
+import { PROGRAM, ENTITY_TYPE } from '~/utils/sment'
+import { plural } from '~/utils/filters'
+
 const { tests } = defineProps<{ tests: ClientTest[] }>()
 const { user } = useAuthStore()
 </script>
 
 <template>
   <div class="table table--hover">
-    <div v-for="t in tests" :key="t.id">
+    <div
+      v-for="t in tests"
+      :key="t.id"
+    >
       <div style="width: 220px">
         {{ t.name }}
       </div>
       <div style="width: 250px">
         {{ PROGRAM[t.program] }}
       </div>
-      <div style="width: 150px">{{ t.minutes }} минут</div>
+      <div style="width: 150px">
+        {{ t.minutes }} минут
+      </div>
       <div>
         {{ plural(t.questions_count, ["вопрос", "вопроса", "вопросов"]) }}
       </div>
@@ -28,7 +34,10 @@ const { user } = useAuthStore()
           баллов
         </router-link>
         <template v-else>
-          <span v-if="user?.entity_type === ENTITY_TYPE.user" class="text-gray">
+          <span
+            v-if="user?.entity_type === ENTITY_TYPE.user"
+            class="text-gray"
+          >
             не пройден
           </span>
           <v-btn

@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { ProgramDialog } from "#build/components"
+import { uniqueId, cloneDeep } from 'lodash'
+import type { ProgramDialog } from '#build/components'
 import type {
   CompanyType,
   Contract,
   ContractPayment,
   ContractProgram,
   ContractVersion,
-} from "~/utils/models"
-import { PROGRAM, YEARS, COMPANY_TYPE, type Programs } from "~/utils/sment"
-import { uniqueId, cloneDeep } from "lodash"
+} from '~/utils/models'
+import { PROGRAM, YEARS, COMPANY_TYPE, type Programs } from '~/utils/sment'
 
 const { dialog, width } = useDialog(600)
 const contract = ref<Contract>()
@@ -50,7 +50,7 @@ function onProgramsSaved(programs: Programs) {
   }
   for (const program of programs) {
     const index = version.value?.programs.findIndex(
-      (e) => e.program === program,
+      e => e.program === program,
     )
     if (index === -1) {
       version.value.programs.push({
@@ -65,7 +65,7 @@ function onProgramsSaved(programs: Programs) {
     }
   }
   for (const cp of version.value.programs) {
-    const index = programs.findIndex((p) => p === cp.program)
+    const index = programs.findIndex(p => p === cp.program)
     if (index === -1) {
       version.value?.programs.splice(index, 1)
     }
@@ -81,14 +81,14 @@ function addPayment() {
   })
   nextTick(() =>
     document
-      .querySelector(".dialog-body")
-      ?.scrollTo({ top: 9999, behavior: "smooth" }),
+      .querySelector('.dialog-body')
+      ?.scrollTo({ top: 9999, behavior: 'smooth' }),
   )
 }
 
 function deletePayment(p: ContractPayment) {
   version.value?.payments.splice(
-    version.value.payments.findIndex((e) => e.id === p.id),
+    version.value.payments.findIndex(e => e.id === p.id),
     1,
   )
 }
@@ -97,21 +97,28 @@ defineExpose({ open, create })
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :width="width">
-    <div class="dialog-wrapper contract-dialog" v-if="contract && version">
+  <v-dialog
+    v-model="dialog"
+    :width="width"
+  >
+    <div
+      v-if="contract && version"
+      class="dialog-wrapper contract-dialog"
+    >
       <div class="dialog-header">
         <span v-if="version.id > 0"> Редактирование договора </span>
         <span v-else>Добавить версию</span>
         <v-btn
           icon="$save"
           :size="48"
-          @click="dialog = false"
           color="#fafafa"
+          @click="dialog = false"
         />
       </div>
       <div class="dialog-body">
         <div class="double-input">
           <v-select
+            v-model="contract.year"
             label="Учебный год"
             :items="
               YEARS.map((value) => ({
@@ -119,19 +126,18 @@ defineExpose({ open, create })
                 title: formatYear(value),
               }))
             "
-            v-model="contract.year"
             disabled
           />
           <v-select
+            v-model="contract.company"
             label="Компания"
             disabled
             :items="
-          Object.keys(COMPANY_TYPE).map((value) => ({
-            value,
-            title: COMPANY_TYPE[value as CompanyType],
-          }))
-        "
-            v-model="contract.company"
+              Object.keys(COMPANY_TYPE).map((value) => ({
+                value,
+                title: COMPANY_TYPE[value as CompanyType],
+              }))
+            "
           />
         </div>
         <div class="double-input">
@@ -149,15 +155,24 @@ defineExpose({ open, create })
           <div class="table contract-dialog__programs">
             <div class="table-header">
               <div>программа</div>
-              <div style="width: 70px">уроков</div>
-              <div style="width: 70px">прогр.</div>
-              <div style="width: 70px; flex: none">цена</div>
+              <div style="width: 70px">
+                уроков
+              </div>
+              <div style="width: 70px">
+                прогр.
+              </div>
+              <div style="width: 70px; flex: none">
+                цена
+              </div>
             </div>
-            <div v-for="p in version.programs" :key="p.id">
+            <div
+              v-for="p in version.programs"
+              :key="p.id"
+            >
               <div>
                 <span
-                  @click="toggleCloseProgram(p)"
                   :class="{ 'text-error': p.is_closed }"
+                  @click="toggleCloseProgram(p)"
                 >
                   {{ PROGRAM[p.program] }}
                 </span>
@@ -199,7 +214,10 @@ defineExpose({ open, create })
                   "
                 >
                   выбрать программы
-                  <v-icon :size="16" icon="$next"></v-icon>
+                  <v-icon
+                    :size="16"
+                    icon="$next"
+                  />
                 </a>
               </div>
             </div>
@@ -207,14 +225,23 @@ defineExpose({ open, create })
         </div>
 
         <div class="dialog-section">
-          <div class="dialog-section__title">График платежей</div>
+          <div class="dialog-section__title">
+            График платежей
+          </div>
           <div class="table table--actions-on-hover contract-dialog__payments">
             <div class="table-header">
-              <div style="width: 170px">дата</div>
-              <div style="width: 100px">сумма</div>
-              <div></div>
+              <div style="width: 170px">
+                дата
+              </div>
+              <div style="width: 100px">
+                сумма
+              </div>
+              <div />
             </div>
-            <div v-for="p in version.payments" :key="p.id">
+            <div
+              v-for="p in version.payments"
+              :key="p.id"
+            >
               <div style="width: 170px">
                 {{ formatDate(p.date) }}
               </div>
@@ -234,12 +261,14 @@ defineExpose({ open, create })
                   :size="48"
                   :ripple="false"
                   @click="deletePayment(p)"
-                >
-                </v-btn>
+                />
               </div>
             </div>
             <div style="border-bottom: 0">
-              <a class="cursor-pointer" @click="addPayment()">
+              <a
+                class="cursor-pointer"
+                @click="addPayment()"
+              >
                 добавить платеж
               </a>
             </div>
@@ -248,7 +277,10 @@ defineExpose({ open, create })
       </div>
     </div>
   </v-dialog>
-  <ProgramDialog ref="programDialog" @saved="onProgramsSaved" />
+  <ProgramDialog
+    ref="programDialog"
+    @saved="onProgramsSaved"
+  />
 </template>
 
 <style lang="scss">

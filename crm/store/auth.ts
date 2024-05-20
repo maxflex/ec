@@ -1,12 +1,12 @@
-import { defineStore } from "pinia"
-import { ENTITY_TYPE } from "~/utils/sment"
+import { defineStore } from 'pinia'
+import { ENTITY_TYPE } from '~/utils/sment'
 
-export const useAuthStore = defineStore("auth", () => {
+export const useAuthStore = defineStore('auth', () => {
   const forever = { maxAge: 60 * 60 * 24 * 1000 }
   const user = ref<User>()
-  const token = useCookie("token", forever)
-  const previewToken = useCookie("preview-token")
-  const rememberUser = useCookie<User | undefined>("remember-user", forever)
+  const token = useCookie('token', forever)
+  const previewToken = useCookie('preview-token')
+  const rememberUser = useCookie<User | undefined>('remember-user', forever)
 
   /**
    *
@@ -21,15 +21,16 @@ export const useAuthStore = defineStore("auth", () => {
 
       // сохранить path перед переходом в режим просмотра,
       // чтобы после выхода из режима просмотра вернуться на исходную страницу
-      sessionStorage.setItem("redirect", useRoute().fullPath)
-      window.location.href = "/"
-    } else {
+      sessionStorage.setItem('redirect', useRoute().fullPath)
+      window.location.href = '/'
+    }
+    else {
       token.value = t
       // если не учитель, сохраняем в remember me
       if (u.entity_type !== ENTITY_TYPE.teacher) {
         rememberUser.value = u
       }
-      window.location.href = sessionStorage.getItem("redirect") || "/"
+      window.location.href = sessionStorage.getItem('redirect') || '/'
       // navigateTo({ path })
     }
   }
@@ -43,11 +44,11 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function logOut() {
-    await useHttp("common/auth/logout")
+    await useHttp('common/auth/logout')
   }
 
   async function getLoggedUser() {
-    const { data } = await useHttp<User>("common/auth/user")
+    const { data } = await useHttp<User>('common/auth/user')
     if (data.value) {
       user.value = data.value
     }

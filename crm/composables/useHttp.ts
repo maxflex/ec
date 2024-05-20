@@ -1,4 +1,4 @@
-import { useFetch } from "#app"
+import { useFetch } from '#app'
 
 type useFetchType = typeof useFetch
 
@@ -9,8 +9,8 @@ export const useHttp: useFetchType = (path: string, options = {}) => {
 
   if (token) {
     options.headers = { Authorization: `Bearer ${token}` }
-    if (!path.startsWith("common/")) {
-      baseURL += token.split("|")[0] + "/"
+    if (!path.startsWith('common/')) {
+      baseURL += token.split('|')[0] + '/'
     }
   }
 
@@ -22,9 +22,9 @@ export const useHttp: useFetchType = (path: string, options = {}) => {
       if (status === 401) {
         const route = useRoute()
         clearCurrentToken()
-        if (route.name !== "login") {
-          sessionStorage.setItem("redirect", route.fullPath)
-          navigateTo({ name: "login" })
+        if (route.name !== 'login') {
+          sessionStorage.setItem('redirect', route.fullPath)
+          navigateTo({ name: 'login' })
         }
       }
     },

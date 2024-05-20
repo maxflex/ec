@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Request, RequestStatus, Program } from "~/utils/models"
-import { cloneDeep } from "lodash"
-import { REQUEST_STATUS, PROGRAM } from "~/utils/sment"
+import { cloneDeep } from 'lodash'
+import type { Request, RequestStatus, Program } from '~/utils/models'
+import { REQUEST_STATUS, PROGRAM } from '~/utils/sment'
 
 const { dialog, width } = useDialog()
 const request = ref<Request>()
@@ -13,26 +13,41 @@ function open(r: Request) {
 
 function save() {
   dialog.value = false
-  emit("saved")
+  emit('saved')
 }
 
 defineExpose({ open })
-const emit = defineEmits<{ (e: "saved"): void }>()
+const emit = defineEmits<{ (e: 'saved'): void }>()
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :width="width">
-    <div class="dialog-wrapper" v-if="request">
+  <v-dialog
+    v-model="dialog"
+    :width="width"
+  >
+    <div
+      v-if="request"
+      class="dialog-wrapper"
+    >
       <div class="dialog-header">
-        <template v-if="request.id"> Заявка {{ request.id }} </template>
-        <template v-else>Добавить заявку</template>
-        <v-btn icon="$save" :size="48" @click="save()" color="#fafafa" />
+        <template v-if="request.id">
+          Заявка {{ request.id }}
+        </template>
+        <template v-else>
+          Добавить заявку
+        </template>
+        <v-btn
+          icon="$save"
+          :size="48"
+          color="#fafafa"
+          @click="save()"
+        />
       </div>
       <div class="dialog-body">
         <div>
           <v-select
-            label="Статус"
             v-model="request.status"
+            label="Статус"
             :items="
               Object.keys(REQUEST_STATUS).map((value) => ({
                 value,
@@ -43,8 +58,8 @@ const emit = defineEmits<{ (e: "saved"): void }>()
         </div>
         <div>
           <v-select
-            label="Программа"
             v-model="request.program"
+            label="Программа"
             :items="
               Object.keys(PROGRAM).map((value) => ({
                 value,
@@ -55,12 +70,15 @@ const emit = defineEmits<{ (e: "saved"): void }>()
         </div>
         <div>
           <UserSelector
-            label="Ответственный"
             v-model="request.responsible_user_id"
+            label="Ответственный"
           />
         </div>
         <div>
-          <v-textarea label="Комментарий" v-model="request.comment" />
+          <v-textarea
+            v-model="request.comment"
+            label="Комментарий"
+          />
         </div>
       </div>
     </div>

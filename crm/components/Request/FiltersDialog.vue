@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { RequestStatus, Program } from "~/utils/models"
-import { REQUEST_STATUS, PROGRAM } from "~/utils/sment"
+import type { RequestStatus, Program } from '~/utils/models'
+import { REQUEST_STATUS, PROGRAM } from '~/utils/sment'
 
 const { dialog, width } = useDialog()
 const statusInput = ref()
@@ -8,12 +8,12 @@ const programInput = ref()
 
 const filters = ref<RequestFilters>({})
 
-const statuses = Object.keys(REQUEST_STATUS).map((value) => ({
+const statuses = Object.keys(REQUEST_STATUS).map(value => ({
   value,
   title: REQUEST_STATUS[value as RequestStatus],
 }))
 
-const programs = Object.keys(PROGRAM).map((value) => ({
+const programs = Object.keys(PROGRAM).map(value => ({
   value,
   title: PROGRAM[value as Program],
 }))
@@ -24,7 +24,7 @@ function open() {
 
 function apply() {
   dialog.value = false
-  emit("apply", filters.value)
+  emit('apply', filters.value)
 }
 
 function clearStatus() {
@@ -38,41 +38,55 @@ function clearProgram() {
 }
 
 const count = computed(
-  () => Object.values(filters.value).filter((e) => e !== undefined).length,
+  () => Object.values(filters.value).filter(e => e !== undefined).length,
 )
 
 const emit = defineEmits<{
-  (e: "apply", filters: RequestFilters): void
+  (e: 'apply', filters: RequestFilters): void
 }>()
 
 defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :width="width">
+  <v-dialog
+    v-model="dialog"
+    :width="width"
+  >
     <div class="dialog-wrapper">
       <div class="dialog-header">
         <div>
           Фильтры
-          <span class="ml-1 text-gray" v-if="count">
+          <span
+            v-if="count"
+            class="ml-1 text-gray"
+          >
             {{ count }}
           </span>
         </div>
-        <v-btn icon="$save" :size="48" @click="apply()" color="#fafafa" />
+        <v-btn
+          icon="$save"
+          :size="48"
+          color="#fafafa"
+          @click="apply()"
+        />
       </div>
       <div class="dialog-body">
         <div>
           <v-select
-            label="Статус"
+            ref="statusInput"
             v-model="filters.status"
+            label="Статус"
             :items="statuses"
             :menu-props="{
               closeOnContentClick: true,
             }"
-            ref="statusInput"
           >
             <template #prepend-item>
-              <v-list-item @click="clearStatus()" base-color="gray">
+              <v-list-item
+                base-color="gray"
+                @click="clearStatus()"
+              >
                 <v-list-item-title class="gray">
                   не установлено
                 </v-list-item-title>
@@ -86,13 +100,16 @@ defineExpose({ open })
         <div>
           <div>
             <v-select
-              :items="programs"
-              v-model="filters.program"
-              label="Программа"
               ref="programInput"
+              v-model="filters.program"
+              :items="programs"
+              label="Программа"
             >
               <template #prepend-item>
-                <v-list-item @click="clearProgram()" base-color="gray">
+                <v-list-item
+                  base-color="gray"
+                  @click="clearProgram()"
+                >
                   <v-list-item-title class="gray">
                     не установлено
                   </v-list-item-title>

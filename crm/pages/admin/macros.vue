@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import Codemirror from "codemirror-editor-vue3"
-import type { EditorConfiguration } from "codemirror"
-import "codemirror/mode/htmlmixed/htmlmixed.js"
-import type { Macro, Macros } from "~/utils/models"
+import Codemirror from 'codemirror-editor-vue3'
+import type { EditorConfiguration } from 'codemirror'
+import 'codemirror/mode/htmlmixed/htmlmixed.js'
+import type { Macro, Macros } from '~/utils/models'
 
 const cmOptions: EditorConfiguration = {
   tabSize: 4,
-  mode: "text/html",
+  mode: 'text/html',
   lineNumbers: false,
   lineWrapping: true,
 }
@@ -16,7 +16,7 @@ const macros = ref<Macros>()
 const macro = ref<Macro>()
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<Macros>>("macros")
+  const { data } = await useHttp<ApiResponse<Macros>>('macros')
   if (data.value) {
     const { data: newItems } = data.value
     macros.value = newItems
@@ -31,7 +31,7 @@ function open(m: Macro) {
 async function save() {
   saving.value = true
   await useHttp(`macros/${macro.value?.id}`, {
-    method: "put",
+    method: 'put',
     body: macro.value,
   })
   saving.value = false
@@ -44,29 +44,47 @@ nextTick(loadData)
 <template>
   <div>
     <div class="table table--hover">
-      <div v-for="m in macros" :key="m.id">
+      <div
+        v-for="m in macros"
+        :key="m.id"
+      >
         <div>
           {{ m.title }}
         </div>
         <div class="table-actions">
-          <v-btn variant="text" icon="$more" :size="48" @click="open(m)" />
+          <v-btn
+            variant="text"
+            icon="$more"
+            :size="48"
+            @click="open(m)"
+          />
         </div>
       </div>
     </div>
-    <v-dialog fullscreen :width="1100" v-model="dialog">
-      <div class="dialog-wrapper" v-if="macro">
+    <v-dialog
+      v-model="dialog"
+      fullscreen
+      :width="1100"
+    >
+      <div
+        v-if="macro"
+        class="dialog-wrapper"
+      >
         <div class="dialog-header">
           {{ macro.title }}
           <v-btn
             icon="$save"
             :size="48"
-            @click="save()"
             color="#fafafa"
             :loading="saving"
+            @click="save()"
           />
         </div>
         <div class="dialog-body py-0">
-          <Codemirror v-model:value="macro.text" :options="cmOptions" />
+          <Codemirror
+            v-model:value="macro.text"
+            :options="cmOptions"
+          />
         </div>
       </div>
     </v-dialog>

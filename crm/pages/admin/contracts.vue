@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Contracts } from "~/utils/models"
-import { COMPANY_TYPE } from "~/utils/sment"
+import type { Contracts } from '~/utils/models'
+import { COMPANY_TYPE } from '~/utils/sment'
 
 const items = ref<Contracts>()
 const paginator = usePaginator()
@@ -8,14 +8,14 @@ const paginator = usePaginator()
 const loadData = async function () {
   paginator.page++
   paginator.loading = true
-  const { data } = await useHttp<ApiResponse<Contracts>>("contracts", {
+  const { data } = await useHttp<ApiResponse<Contracts>>('contracts', {
     params: { page: paginator.page },
   })
   paginator.loading = false
   if (data.value) {
     const { meta, data: newItems } = data.value
-    items.value =
-      paginator.page === 1 ? newItems : items.value?.concat(newItems)
+    items.value
+      = paginator.page === 1 ? newItems : items.value?.concat(newItems)
     paginator.isLastPage = meta.current_page === meta.last_page
   }
 }
@@ -25,9 +25,9 @@ async function onIntersect({
 }: {
   done: (status: InfiniteScrollStatus) => void
 }) {
-  done("loading")
+  done('loading')
   await loadData()
-  done("ok")
+  done('ok')
 }
 
 nextTick(loadData)
@@ -36,13 +36,16 @@ nextTick(loadData)
 <template>
   <UiLoader :paginator="paginator" />
   <v-infinite-scroll
-    :onLoad="onIntersect"
+    v-if="items"
+    :on-load="onIntersect"
     :margin="100"
     class="table"
     side="end"
-    v-if="items"
   >
-    <div v-for="item in items" :key="item.id">
+    <div
+      v-for="item in items"
+      :key="item.id"
+    >
       <div style="width: 50px">
         {{ item.id }}
       </div>

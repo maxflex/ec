@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import type { RequestStatus } from "~/utils/models"
+import type { RequestStatus } from '~/utils/models'
 
 const { status } = defineProps<{ status: RequestStatus }>()
 </script>
 
 <template>
-  <div class="request-status" :class="`request-status--${status}`"></div>
+  <div
+    class="request-status"
+    :class="`request-status--${status}`"
+  />
 </template>
 
 <style lang="sass">

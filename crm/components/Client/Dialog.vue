@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { Client, Phone } from "~/utils/models"
-import { cloneDeep, uniqueId } from "lodash"
-import { ENTITY_TYPE, BRANCHES } from "~/utils/sment"
+import { cloneDeep, uniqueId } from 'lodash'
+import type { Client, Phone } from '~/utils/models'
+import { ENTITY_TYPE, BRANCHES } from '~/utils/sment'
 
-const phoneMask = { mask: "+7 (###) ###-##-##" }
+const phoneMask = { mask: '+7 (###) ###-##-##' }
 const { dialog, width } = useDialog(700)
 const client = ref<Client>()
 
@@ -19,8 +19,8 @@ function addPhone(isParent: boolean) {
   // @ts-expect-error
   client.value?.phones.push({
     id: parseInt(uniqueId()) * -1,
-    number: "",
-    comment: "",
+    number: '',
+    comment: '',
     is_parent: isParent,
     is_verified: false,
     telegram_id: null,
@@ -43,23 +43,43 @@ defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :width="width">
-    <div class="dialog-wrapper" v-if="client">
+  <v-dialog
+    v-model="dialog"
+    :width="width"
+  >
+    <div
+      v-if="client"
+      class="dialog-wrapper"
+    >
       <div class="dialog-header">
         <span v-if="client.id > 0"> Редактирование клиента </span>
         <span v-else> Добавить платеж </span>
-        <v-btn icon="$save" :size="48" variant="text" @click="dialog = false" />
+        <v-btn
+          icon="$save"
+          :size="48"
+          variant="text"
+          @click="dialog = false"
+        />
       </div>
       <div class="dialog-body">
         <div class="double-input">
-          <v-text-field v-model="client.last_name" label="Фамилия" />
-          <v-text-field v-model="client.first_name" label="Имя" />
-          <v-text-field v-model="client.middle_name" label="Отчество" />
+          <v-text-field
+            v-model="client.last_name"
+            label="Фамилия"
+          />
+          <v-text-field
+            v-model="client.first_name"
+            label="Имя"
+          />
+          <v-text-field
+            v-model="client.middle_name"
+            label="Отчество"
+          />
         </div>
         <div class="double-input">
           <v-select
-            label="Филиалы"
             v-model="client.branches"
+            label="Филиалы"
             multiple
             :items="
               Object.keys(BRANCHES).map((value) => ({
@@ -69,11 +89,17 @@ defineExpose({ open })
             "
           />
 
-          <TeacherSelector label="Куратор" v-model="client.head_teacher_id" />
+          <TeacherSelector
+            v-model="client.head_teacher_id"
+            label="Куратор"
+          />
         </div>
         <div class="double-input">
           <div style="position: relative">
-            <UiDateInput v-model="client.birthdate" label="Дата рождения" />
+            <UiDateInput
+              v-model="client.birthdate"
+              label="Дата рождения"
+            />
             <div
               style="position: absolute; right: 12px; top: 16px"
               class="text-gray"
@@ -87,9 +113,9 @@ defineExpose({ open })
           />
         </div>
         <div
-          class="double-input"
           v-for="p in client.phones.filter((x) => !x.is_parent)"
           :key="p.id"
+          class="double-input"
         >
           <div>
             <v-text-field
@@ -97,34 +123,54 @@ defineExpose({ open })
               v-maska:[phoneMask]
               label="Телефон"
             />
-            <v-icon icon="$close" @click="removePhone(p)"></v-icon>
+            <v-icon
+              icon="$close"
+              @click="removePhone(p)"
+            />
           </div>
-          <v-text-field v-model="p.comment" label="Комментарий" />
+          <v-text-field
+            v-model="p.comment"
+            label="Комментарий"
+          />
         </div>
         <div style="position: relative; top: -10px">
-          <a class="cursor-pointer" @click="addPhone(false)">
+          <a
+            class="cursor-pointer"
+            @click="addPhone(false)"
+          >
             добавить номер
           </a>
         </div>
 
-        <div class="dialog-section__title">Представитель</div>
-        <div class="double-input">
-          <v-text-field v-model="client.parent_last_name" label="Фамилия" />
-          <v-text-field v-model="client.parent_first_name" label="Имя" />
-          <v-text-field v-model="client.parent_middle_name" label="Отчество" />
+        <div class="dialog-section__title">
+          Представитель
         </div>
         <div class="double-input">
           <v-text-field
-            label="Серия паспорта"
+            v-model="client.parent_last_name"
+            label="Фамилия"
+          />
+          <v-text-field
+            v-model="client.parent_first_name"
+            label="Имя"
+          />
+          <v-text-field
+            v-model="client.parent_middle_name"
+            label="Отчество"
+          />
+        </div>
+        <div class="double-input">
+          <v-text-field
             v-model="client.passport_series"
+            label="Серия паспорта"
           />
           <v-text-field
-            label="Номер паспорта"
             v-model="client.passport_number"
+            label="Номер паспорта"
           />
           <v-text-field
-            label="Код подразделения"
             v-model="client.passport_code"
+            label="Код подразделения"
           />
         </div>
         <v-textarea
@@ -146,9 +192,9 @@ defineExpose({ open })
           rows="3"
         />
         <div
-          class="double-input"
           v-for="p in client.phones.filter((x) => x.is_parent)"
           :key="p.id"
+          class="double-input"
         >
           <div>
             <v-text-field
@@ -156,12 +202,21 @@ defineExpose({ open })
               v-maska:[phoneMask]
               label="Номер"
             />
-            <v-icon icon="$close" @click="removePhone(p)"></v-icon>
+            <v-icon
+              icon="$close"
+              @click="removePhone(p)"
+            />
           </div>
-          <v-text-field v-model="p.comment" label="Комментарий" />
+          <v-text-field
+            v-model="p.comment"
+            label="Комментарий"
+          />
         </div>
         <div style="position: relative; top: -10px">
-          <a class="cursor-pointer" @click="addPhone(true)"> добавить номер </a>
+          <a
+            class="cursor-pointer"
+            @click="addPhone(true)"
+          > добавить номер </a>
         </div>
       </div>
     </div>

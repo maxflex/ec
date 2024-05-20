@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ middleware: ["check-active-test"] })
+definePageMeta({ middleware: ['check-active-test'] })
 </script>
 
 <template>

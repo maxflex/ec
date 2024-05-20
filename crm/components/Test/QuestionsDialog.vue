@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const emit = defineEmits<{
-  (e: "saved", questions: TestQuestions): void
+  (e: 'saved', questions: TestQuestions): void
 }>()
 
 const questions = ref<TestQuestions>([])
@@ -18,7 +18,7 @@ function deleteQuestion(i: number) {
 
 function save() {
   dialog.value = false
-  emit("saved", questions.value)
+  emit('saved', questions.value)
 }
 
 function add() {
@@ -28,8 +28,8 @@ function add() {
   })
   nextTick(() =>
     document
-      .querySelector(".test-dialog__questions")
-      ?.scrollTo({ top: 9999, behavior: "smooth" }),
+      .querySelector('.test-dialog__questions')
+      ?.scrollTo({ top: 9999, behavior: 'smooth' }),
   )
 }
 
@@ -37,20 +37,34 @@ defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :width="width">
+  <v-dialog
+    v-model="dialog"
+    :width="width"
+  >
     <div class="dialog-wrapper">
       <div class="dialog-header">
         <span>
           Вопросы
-          <span class="ml-1 text-gray" v-if="questions.length">
+          <span
+            v-if="questions.length"
+            class="ml-1 text-gray"
+          >
             {{ questions.length }}
           </span>
         </span>
-        <v-btn icon="$save" :size="48" @click="save()" color="#fafafa" />
+        <v-btn
+          icon="$save"
+          :size="48"
+          color="#fafafa"
+          @click="save()"
+        />
       </div>
       <div class="dialog-body pt-0">
         <div class="test-dialog__questions">
-          <div v-for="(q, i) in questions">
+          <div
+            v-for="(q, i) in questions"
+            :key="i"
+          >
             <h2>
               Вопрос {{ i + 1 }}
               <v-btn
@@ -60,20 +74,25 @@ defineExpose({ open })
                 :size="32"
                 :ripple="false"
                 @click="deleteQuestion(i)"
-              >
-              </v-btn>
+              />
             </h2>
-            <v-item-group selected-class="bg-success" v-model="q.answer">
-              <v-item v-for="n in 6" :key="n">
-                <template v-slot:default="{ toggle, selectedClass }">
+            <v-item-group
+              v-model="q.answer"
+              selected-class="bg-success"
+            >
+              <v-item
+                v-for="n in 6"
+                :key="n"
+              >
+                <template #default="{ toggle, selectedClass }">
                   <v-btn
                     height="48"
                     width="48"
                     variant="text"
                     icon
                     border
-                    @click="toggle"
                     :class="selectedClass"
+                    @click="toggle"
                   >
                     {{ n }}
                   </v-btn>
@@ -91,7 +110,11 @@ defineExpose({ open })
             </v-item-group>
           </div>
         </div>
-        <v-btn @click="add()" size="x-large" color="primary">
+        <v-btn
+          size="x-large"
+          color="primary"
+          @click="add()"
+        >
           добавить вопрос
         </v-btn>
       </div>

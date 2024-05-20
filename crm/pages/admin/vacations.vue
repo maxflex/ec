@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import type { Vacations } from "~/utils/models"
-import { YEARS } from "~/utils/sment"
+import type { Vacations } from '~/utils/models'
+import { YEARS } from '~/utils/sment'
 
 const monthLabels = [
-  "январь",
-  "февраль",
-  "март",
-  "апрель",
-  "май",
-  "июнь",
-  "июль",
-  "август",
-  "сентябрь",
-  "октябрь",
-  "ноябрь",
-  "декабрь",
+  'январь',
+  'февраль',
+  'март',
+  'апрель',
+  'май',
+  'июнь',
+  'июль',
+  'август',
+  'сентябрь',
+  'октябрь',
+  'ноябрь',
+  'декабрь',
 ]
 
 const loading = ref(true)
@@ -24,14 +24,14 @@ onMounted(async () => {
   setTimeout(
     () =>
       document
-        ?.querySelector(".vcalendar--today")
-        ?.scrollIntoView({ block: "center" }),
+        ?.querySelector('.vcalendar--today')
+        ?.scrollIntoView({ block: 'center' }),
     100,
   )
 })
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<Vacations>>("vacations")
+  const { data } = await useHttp<ApiResponse<Vacations>>('vacations')
   if (data.value) {
     // vacations.value = data.value.data
     for (const { date } of data.value.data) {
@@ -41,7 +41,7 @@ async function loadData() {
   setTimeout(() => (loading.value = false), 300)
 }
 
-const zeroPad = (value: number) => ("0" + value).slice(-2)
+const zeroPad = (value: number) => ('0' + value).slice(-2)
 
 // отступ первого дня в календаре
 const firstDayOfWeek = (year: number, month: number) =>
@@ -51,7 +51,7 @@ const daysInMonth = (year: number, month: number) =>
   new Date(year, month, 0).getDate()
 
 const getDate = (year: number, month: number, day: number): string =>
-  [year, zeroPad(month), zeroPad(day)].join("-")
+  [year, zeroPad(month), zeroPad(day)].join('-')
 
 const isToday = (year: number, month: number, day: number) =>
   getDate(year, month, day) === today()
@@ -63,11 +63,12 @@ const onClick = (year: number, month: number, day: number) => {
   const date = getDate(year, month, day)
   if (date in dates.value) {
     delete dates.value[date]
-  } else {
+  }
+  else {
     dates.value[date] = true
   }
-  useHttp("vacations", {
-    method: "post",
+  useHttp('vacations', {
+    method: 'post',
     body: { date },
   })
   // if (data.value) {
@@ -88,12 +89,17 @@ nextTick(loadData)
         </v-btn> -->
     </div>
     <div
-      class="vcalendar__year"
       v-for="year in [...YEARS.toReversed(), YEARS[0] + 1]"
+      :key="year"
+      class="vcalendar__year"
     >
       <h2>{{ year }}</h2>
       <div class="vcalendar">
-        <div v-for="month in 12" :key="month" class="vcalendar__month">
+        <div
+          v-for="month in 12"
+          :key="month"
+          class="vcalendar__month"
+        >
           <div class="vcalendar__month-label">
             <span class="text-grey-light">
               {{ monthLabels[month - 1] }}
@@ -104,7 +110,7 @@ nextTick(loadData)
               v-for="x in firstDayOfWeek(year, month)"
               :key="'x' + x"
               class="no-pointer-events"
-            ></div>
+            />
             <div
               v-for="day in daysInMonth(year, month)"
               :key="day"

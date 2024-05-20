@@ -1,18 +1,21 @@
 <script setup lang="ts">
-import type { ClientPayment, ClientPayments } from "~/utils/models"
-import { CLIENT_PAYMENT_METHOD } from "~/utils/sment"
+import type { ClientPayment, ClientPayments } from '~/utils/models'
+import { CLIENT_PAYMENT_METHOD } from '~/utils/sment'
 
 const { items } = defineProps<{
   items: ClientPayments
 }>()
 const emit = defineEmits<{
-  (e: "open", p: ClientPayment): void
+  (e: 'open', p: ClientPayment): void
 }>()
 </script>
 
 <template>
   <div class="table table--hover client-payments">
-    <div v-for="item in items" :key="item.id">
+    <div
+      v-for="item in items"
+      :key="item.id"
+    >
       <div>
         {{ item.is_return ? "возврат" : "платеж" }}
       </div>
@@ -22,8 +25,14 @@ const emit = defineEmits<{
         {{ CLIENT_PAYMENT_METHOD[item.method] }}
       </div>
       <div>
-        <span v-if="item.is_confirmed" class="text-success"> подтверждён </span>
-        <span v-else class="text-gray"> не подтверждён </span>
+        <span
+          v-if="item.is_confirmed"
+          class="text-success"
+        > подтверждён </span>
+        <span
+          v-else
+          class="text-gray"
+        > не подтверждён </span>
       </div>
       <div class="table-actions">
         <v-btn

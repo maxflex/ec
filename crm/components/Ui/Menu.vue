@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ENTITY_TYPE } from "~/utils/sment"
 import {
   mdiInbox,
   mdiAccount,
@@ -9,7 +8,8 @@ import {
   mdiPrinter,
   mdiDotsTriangle,
   mdiLogout,
-} from "@mdi/js"
+} from '@mdi/js'
+import { ENTITY_TYPE } from '~/utils/sment'
 
 const { user, logOut, clearCurrentToken } = useAuthStore()
 let menu: Menu
@@ -19,13 +19,13 @@ switch (user?.entity_type) {
     menu = [
       {
         icon: mdiAccountGroup,
-        title: "Группы",
-        to: "/groups",
+        title: 'Группы',
+        to: '/groups',
       },
       {
         icon: mdiDotsTriangle,
-        title: "Тесты",
-        to: "/tests",
+        title: 'Тесты',
+        to: '/tests',
       },
     ]
     break
@@ -34,8 +34,8 @@ switch (user?.entity_type) {
     menu = [
       {
         icon: mdiAccountGroup,
-        title: "Группы",
-        to: "/groups",
+        title: 'Группы',
+        to: '/groups',
       },
     ]
     break
@@ -44,38 +44,38 @@ switch (user?.entity_type) {
     menu = [
       {
         icon: mdiInbox,
-        title: "Заявки",
-        to: "/requests",
+        title: 'Заявки',
+        to: '/requests',
       },
       {
         icon: mdiAccount,
-        title: "Клиенты",
-        to: "/clients",
+        title: 'Клиенты',
+        to: '/clients',
       },
       {
         icon: mdiAccountGroup,
-        title: "Группы",
-        to: "/groups",
+        title: 'Группы',
+        to: '/groups',
       },
       {
         icon: mdiFileDocumentOutline,
-        title: "Договоры",
-        to: "/contracts",
+        title: 'Договоры',
+        to: '/contracts',
       },
       {
         icon: mdiCalendar,
-        title: "Праздники",
-        to: "/vacations",
+        title: 'Праздники',
+        to: '/vacations',
       },
       {
         icon: mdiPrinter,
-        title: "Макросы",
-        to: "/macros",
+        title: 'Макросы',
+        to: '/macros',
       },
       {
         icon: mdiDotsTriangle,
-        title: "Тесты",
-        to: "/tests",
+        title: 'Тесты',
+        to: '/tests',
       },
     ]
 }
@@ -83,26 +83,33 @@ switch (user?.entity_type) {
 async function exit() {
   await logOut()
   clearCurrentToken()
-  const path = sessionStorage.getItem("redirect") || "/"
+  const path = sessionStorage.getItem('redirect') || '/'
   window.location.href = path
 }
 </script>
 
 <template>
   <div class="logo">
-    <img src="/img/logo.svg" />
+    <img src="/img/logo.svg">
     <h3>ЕГЭ-Центр</h3>
   </div>
-  <v-list nav density="compact">
-    <v-list-item v-for="{ title, to, icon } in menu" :key="title" :to="to">
+  <v-list
+    nav
+    density="compact"
+  >
+    <v-list-item
+      v-for="{ title, to, icon } in menu"
+      :key="title"
+      :to="to"
+    >
       <template #prepend>
-        <v-icon :icon="icon"></v-icon>
+        <v-icon :icon="icon" />
       </template>
       {{ title }}
     </v-list-item>
     <v-list-item @click="exit()">
       <template #prepend>
-        <v-icon :icon="mdiLogout"></v-icon>
+        <v-icon :icon="mdiLogout" />
       </template>
       Выход
     </v-list-item>

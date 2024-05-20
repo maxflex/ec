@@ -1,35 +1,34 @@
-import vuetify, { transformAssetUrls } from "vite-plugin-vuetify"
+import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 
 export default defineNuxtConfig({
   // devtools: { enabled: true },
   // ssr: false,
-  css: ["~/assets/scss/main.scss"],
+  css: ['~/assets/scss/main.scss'],
 
   build: {
-    transpile: ["vuetify"],
+    transpile: ['vuetify'],
   },
 
   runtimeConfig: {
     public: {
-      env: "",
-      baseUrl: "",
-      pusherAppKey: "",
+      env: '',
+      baseUrl: '',
+      pusherAppKey: '',
     },
   },
 
   modules: [
     (_options, nuxt) => {
-      nuxt.hooks.hook("vite:extendConfig", (config) => {
-        // @ts-expect-error
-        config.plugins.push(
+      nuxt.hooks.hook('vite:extendConfig', (config) => {
+        config.plugins?.push(
           vuetify({
             autoImport: true,
           }),
         )
       })
     },
-    "@pinia/nuxt",
-    "@nuxt/eslint",
+    '@pinia/nuxt',
+    '@nuxt/eslint',
   ],
 
   eslint: {
@@ -47,7 +46,7 @@ export default defineNuxtConfig({
   },
 
   imports: {
-    dirs: ["store"],
+    dirs: ['store'],
   },
 
   sourcemap: {

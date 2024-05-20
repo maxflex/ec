@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { Group } from "~/utils/models"
-import { PROGRAM } from "~/utils/sment"
+import type { Group } from '~/utils/models'
+import { PROGRAM } from '~/utils/sment'
 
 function onClick() {
-  emit("select")
+  emit('select')
 }
 
 const { group, selectable } = defineProps<{
@@ -12,7 +12,7 @@ const { group, selectable } = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: "select"): void
+  (e: 'select'): void
 }>()
 </script>
 
@@ -36,8 +36,12 @@ const emit = defineEmits<{
       {{ PROGRAM[group.program] }}
     </div>
     <div>{{ group.lessons_planned }} уроков</div>
-    <div class="text-gray" style="flex: none; width: 80vw" v-if="group.zoom">
-      Идентификатор ZOOM: {{ group.zoom.id }} <br />
+    <div
+      v-if="group.zoom"
+      class="text-gray"
+      style="flex: none; width: 80vw"
+    >
+      Идентификатор ZOOM: {{ group.zoom.id }} <br>
       Пароль ZOOM: {{ group.zoom.password }}
     </div>
   </div>

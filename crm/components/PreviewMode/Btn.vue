@@ -5,8 +5,8 @@ const loading = ref(false)
 
 async function enter() {
   loading.value = true
-  const { data } = await useHttp<TokenResponse>("preview", {
-    method: "post",
+  const { data } = await useHttp<TokenResponse>('preview', {
+    method: 'post',
     body: user,
   })
   if (data.value) {

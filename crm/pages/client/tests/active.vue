@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { mdiClockOutline } from "@mdi/js"
-import type { ClientTest } from "~/utils/models"
+import { mdiClockOutline } from '@mdi/js'
+import type { ClientTest } from '~/utils/models'
 
 const { $dayjs } = useNuxtApp()
 const answers = ref<TestAnswers>([])
-const cookie = useCookie<TestAnswers>("answers", { maxAge: 60 * 60 * 3 }) // 3 hours
+const cookie = useCookie<TestAnswers>('answers', { maxAge: 60 * 60 * 3 }) // 3 hours
 const test = ref<ClientTest>()
 const finishing = ref(false)
 const seconds = ref(0)
@@ -15,7 +15,7 @@ let interval: NodeJS.Timeout
 // )
 
 function saveAnswers() {
-  console.log("save answers", cookie.value, answers.value)
+  console.log('save answers', cookie.value, answers.value)
   cookie.value = answers.value
 }
 
@@ -23,7 +23,7 @@ async function loadData() {
   const { data, error } = await useHttp<ActiveTest>(`tests/active`)
   // нет активного теста
   if (error.value) {
-    return navigateTo({ name: "tests" })
+    return navigateTo({ name: 'tests' })
   }
   if (data.value) {
     test.value = data.value.test
@@ -46,13 +46,13 @@ async function loadData() {
 async function finish() {
   finishing.value = true
   await useHttp(`tests/finish`, {
-    method: "post",
+    method: 'post',
     body: {
       answers: answers.value,
     },
   })
   navigateTo({
-    name: "tests-result-id",
+    name: 'tests-result-id',
     params: {
       id: test.value?.id,
     },
@@ -64,23 +64,35 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div class="test" v-if="test">
+  <div
+    v-if="test"
+    class="test"
+  >
     <iframe :src="test.file" />
     <div>
       <div class="test__questions">
-        <div v-for="i in test.questions_count">
+        <div
+          v-for="i in test.questions_count"
+          :key="i"
+        >
           <h2>Вопрос {{ i }}</h2>
-          <v-item-group selected-class="bg-primary" v-model="answers[i - 1]">
-            <v-item v-for="n in 6" :key="n">
-              <template v-slot:default="{ toggle, selectedClass }">
+          <v-item-group
+            v-model="answers[i - 1]"
+            selected-class="bg-primary"
+          >
+            <v-item
+              v-for="n in 6"
+              :key="n"
+            >
+              <template #default="{ toggle, selectedClass }">
                 <v-btn
                   height="48"
                   width="48"
                   variant="text"
                   icon
                   border
-                  @click="toggle"
                   :class="selectedClass"
+                  @click="toggle"
                 >
                   {{ n }}
                 </v-btn>
@@ -99,8 +111,8 @@ nextTick(loadData)
           color="primary"
           size="x-large"
           block
-          @click="finish()"
           :loading="finishing"
+          @click="finish()"
         >
           отправить ответы
           <!-- <span class="ml-2" style="width: 50px; opacity: 0.5">
@@ -111,7 +123,14 @@ nextTick(loadData)
             {{ $dayjs.duration(seconds, "second").format("mm:ss") }}
           </span>
         </v-btn>
-        <v-btn v-else size="x-large" block disabled> время истекло </v-btn>
+        <v-btn
+          v-else
+          size="x-large"
+          block
+          disabled
+        >
+          время истекло
+        </v-btn>
       </div>
     </div>
   </div>

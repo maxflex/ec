@@ -1,35 +1,36 @@
 <script setup lang="ts">
-import { YEARS } from "~/utils/sment"
+import { YEARS } from '~/utils/sment'
+
 const { dialog, width } = useDialog(800)
 const props = defineProps<{
   modelValue: string
 }>()
-const emit = defineEmits(["update:modelValue"])
+const emit = defineEmits(['update:modelValue'])
 const monthLabels = [
-  "январь",
-  "февраль",
-  "март",
-  "апрель",
-  "май",
-  "июнь",
-  "июль",
-  "август",
-  "сентябрь",
-  "октябрь",
-  "ноябрь",
-  "декабрь",
+  'январь',
+  'февраль',
+  'март',
+  'апрель',
+  'май',
+  'июнь',
+  'июль',
+  'август',
+  'сентябрь',
+  'октябрь',
+  'ноябрь',
+  'декабрь',
 ]
 const open = () => {
   dialog.value = true
   setTimeout(
     () =>
       document
-        ?.querySelector(".calendar--selected")
-        ?.scrollIntoView({ block: "center" }),
+        ?.querySelector('.calendar--selected')
+        ?.scrollIntoView({ block: 'center' }),
     100,
   )
 }
-const zeroPad = (value: number) => ("0" + value).slice(-2)
+const zeroPad = (value: number) => ('0' + value).slice(-2)
 
 // отступ первого дня в календаре
 const firstDayOfWeek = (year: number, month: number) =>
@@ -39,7 +40,7 @@ const daysInMonth = (year: number, month: number) =>
   new Date(year, month, 0).getDate()
 
 const getDate = (year: number, month: number, day: number): string =>
-  [year, zeroPad(month), zeroPad(day)].join("-")
+  [year, zeroPad(month), zeroPad(day)].join('-')
 
 const isToday = (year: number, month: number, day: number) =>
   getDate(year, month, day) === today()
@@ -48,7 +49,7 @@ const isSelected = (year: number, month: number, day: number) =>
   getDate(year, month, day) === props.modelValue
 
 const onClick = (year: number, month: number, day: number) => {
-  emit("update:modelValue", getDate(year, month, day))
+  emit('update:modelValue', getDate(year, month, day))
   dialog.value = false
 }
 
@@ -56,17 +57,28 @@ defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :width="width">
+  <v-dialog
+    v-model="dialog"
+    :width="width"
+  >
     <v-card class="calendar-card">
       <div class="calendar__header">
         <!-- <v-btn icon @click="dialog = false" variant="flat" :size="48">
           <v-icon icon="$close"></v-icon>
         </v-btn> -->
       </div>
-      <div class="calendar__year" v-for="year in YEARS.toReversed()">
+      <div
+        v-for="year in YEARS.toReversed()"
+        :key="year"
+        class="calendar__year"
+      >
         <h2>{{ year }}</h2>
         <div class="calendar">
-          <div v-for="month in 12" :key="month" class="calendar__month">
+          <div
+            v-for="month in 12"
+            :key="month"
+            class="calendar__month"
+          >
             <div class="calendar__month-label">
               <span class="text-grey-light">
                 {{ monthLabels[month - 1] }}
@@ -77,7 +89,7 @@ defineExpose({ open })
                 v-for="x in firstDayOfWeek(year, month)"
                 :key="'x' + x"
                 class="no-pointer-events"
-              ></div>
+              />
               <div
                 v-for="day in daysInMonth(year, month)"
                 :key="day"

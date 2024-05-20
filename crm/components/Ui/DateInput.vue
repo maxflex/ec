@@ -5,15 +5,18 @@ const { modelValue } = withDefaults(
     modelValue: string
   }>(),
   {
-    label: "Дата",
+    label: 'Дата',
   },
 )
-const emit = defineEmits(["update:modelValue"])
+const emit = defineEmits(['update:modelValue'])
 const calendarDialog = ref()
 </script>
 
 <template>
-  <div class="date-input" @click="() => calendarDialog.open()">
+  <div
+    class="date-input"
+    @click="() => calendarDialog.open()"
+  >
     <v-text-field
       :label="label"
       :model-value="formatDate(modelValue)"
@@ -21,9 +24,9 @@ const calendarDialog = ref()
     />
   </div>
   <CalendarDialog
-    @update:model-value="(v) => emit('update:modelValue', v)"
-    :model-value="modelValue"
     ref="calendarDialog"
+    :model-value="modelValue"
+    @update:model-value="(v) => emit('update:modelValue', v)"
   />
 </template>
 

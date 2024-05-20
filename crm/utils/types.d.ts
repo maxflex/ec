@@ -1,5 +1,5 @@
-import { YEARS } from "./sment"
-import type { ClientTest, Program, Test, RequestStatus } from "./models"
+import type { YEARS } from './sment'
+import type { ClientTest, Program, RequestStatus } from './models'
 
 declare global {
   interface Meta {
@@ -29,8 +29,8 @@ declare global {
     isLastPage: boolean
   }
 
-  type InfiniteScrollSide = "start" | "end" | "both"
-  type InfiniteScrollStatus = "ok" | "empty" | "loading" | "error"
+  type InfiniteScrollSide = 'start' | 'end' | 'both'
+  type InfiniteScrollStatus = 'ok' | 'empty' | 'loading' | 'error'
   type InfiniteScrollCallback = {
     side: InfiniteScrollSide
     status: InfiniteScrollStatus
@@ -66,7 +66,7 @@ declare global {
     password: string
   }
 
-  type EntityString = "admin" | "teacher" | "client"
+  type EntityString = 'admin' | 'teacher' | 'client'
 
   interface User {
     id: number

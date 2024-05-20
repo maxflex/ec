@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { Contract, ContractVersion } from "~/utils/models"
-import { PROGRAM } from "~/utils/sment"
+import type { Contract, ContractVersion } from '~/utils/models'
+import { PROGRAM } from '~/utils/sment'
 
 const emit = defineEmits<{
-  (e: "open", contract: Contract, version: ContractVersion): void
+  (e: 'open', contract: Contract, version: ContractVersion): void
 }>()
 
 const { contract } = defineProps<{
@@ -13,15 +13,29 @@ const { contract } = defineProps<{
 
 <template>
   <div class="table contract-list table--hover table--padding">
-    <div v-for="version in contract.versions" :key="version.id">
-      <div width="150">версия {{ version.version }}</div>
-      <div width="220">от {{ formatDate(version.date) }}</div>
-      <div width="220">{{ version.sum }} руб.</div>
+    <div
+      v-for="version in contract.versions"
+      :key="version.id"
+    >
+      <div width="150">
+        версия {{ version.version }}
+      </div>
       <div width="220">
-        <span v-if="version.payments.length === 0" class="text-grey">
+        от {{ formatDate(version.date) }}
+      </div>
+      <div width="220">
+        {{ version.sum }} руб.
+      </div>
+      <div width="220">
+        <span
+          v-if="version.payments.length === 0"
+          class="text-grey"
+        >
           платежей нет
         </span>
-        <template v-else> {{ version.payments.length }} платежей </template>
+        <template v-else>
+          {{ version.payments.length }} платежей
+        </template>
       </div>
       <div>
         <div class="contract-list__programs">
@@ -39,12 +53,18 @@ const { contract } = defineProps<{
               {{ p.lessons }}
             </span>
           </div>
-          <div v-if="version.programs.length > 3" class="text-gray">
+          <div
+            v-if="version.programs.length > 3"
+            class="text-gray"
+          >
             ... ещё {{ version.programs.length - 2 }}
           </div>
         </div>
       </div>
-      <div width="50" class="table-actions">
+      <div
+        width="50"
+        class="table-actions"
+      >
         <v-btn
           variant="text"
           icon="$more"
