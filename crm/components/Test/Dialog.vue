@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cloneDeep } from 'lodash-es'
+import { clone } from 'rambda'
 import type { Program, Test } from '~/utils/models'
 import { PROGRAM } from '~/utils/sment'
 import { humanFileSize } from '~/utils/filters'
@@ -22,7 +22,7 @@ const emit = defineEmits<{
 
 function open(t: Test) {
   pdf.value = null
-  item.value = cloneDeep(t)
+  item.value = clone(t)
   dialog.value = true
 }
 

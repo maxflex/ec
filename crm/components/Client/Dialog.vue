@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cloneDeep, uniqueId } from 'lodash'
+import { clone } from 'rambda'
 import type { Client, Phone } from '~/utils/models'
 import { ENTITY_TYPE, BRANCHES } from '~/utils/sment'
 
@@ -8,7 +8,7 @@ const { dialog, width } = useDialog(700)
 const client = ref<Client>()
 
 function open(c: Client) {
-  client.value = cloneDeep(c)
+  client.value = clone(c)
   dialog.value = true
 }
 
@@ -18,7 +18,7 @@ function addPhone(isParent: boolean) {
   }
   // @ts-expect-error
   client.value?.phones.push({
-    id: parseInt(uniqueId()) * -1,
+    id: tmpId(),
     number: '',
     comment: '',
     is_parent: isParent,

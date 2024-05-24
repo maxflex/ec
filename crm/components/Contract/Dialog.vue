@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { uniqueId, cloneDeep } from 'lodash-es'
+import { clone } from 'rambda'
 import type { ProgramDialog } from '#build/components'
 import type {
   CompanyType,
@@ -16,13 +16,13 @@ const version = ref<ContractVersion>()
 const programDialog = ref<null | InstanceType<typeof ProgramDialog>>()
 
 function open(c: Contract, v: ContractVersion) {
-  contract.value = cloneDeep(c)
-  version.value = cloneDeep(v)
+  contract.value = clone(c)
+  version.value = clone(v)
   dialog.value = true
 }
 
 function create(c: Contract) {
-  contract.value = cloneDeep(c)
+  contract.value = clone(c)
   const { sum, version: ver, programs, payments } = c.versions[0]
   version.value = {
     sum,
@@ -54,7 +54,7 @@ function onProgramsSaved(programs: Programs) {
     )
     if (index === -1) {
       version.value.programs.push({
-        id: parseInt(uniqueId()) * -1,
+        id: tmpId(),
         program,
         contract_version_id: contract.value?.id as number,
         price: 0,
@@ -74,7 +74,7 @@ function onProgramsSaved(programs: Programs) {
 
 function addPayment() {
   version.value?.payments.push({
-    id: parseInt(uniqueId()) * -1,
+    id: tmpId(),
     date: today(),
     sum: 0,
     contract_version_id: version.value.id,

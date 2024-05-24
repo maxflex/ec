@@ -19,7 +19,7 @@
     "@nuxt/devtools": "latest",
     "@nuxt/eslint": "latest",
     "@types/codemirror": "^5.60.15",
-    "@types/lodash-es": "^4.17.12",
+    "@types/ramda": "^0.30.0",
     "eslint": "^9.1.1",
     "material-design-icons-iconfont": "^6.7.0",
     "nuxt": "^3.8.2",
@@ -35,9 +35,9 @@
     "codemirror-editor-vue3": "^2.4.1",
     "date-fns": "^3.3.1",
     "dayjs": "^1.11.10",
-    "lodash-es": "^4.17.21",
     "maska": "^2.1.11",
     "pusher-js": "^8.4.0-rc2",
+    "rambda": "^9.2.0",
     "sass": "^1.69.5"
   }
 }

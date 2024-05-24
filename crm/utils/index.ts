@@ -23,3 +23,10 @@ export function getEntityString(): EntityString | null {
   }
   return null
 }
+
+let _tmpId = 0
+
+export function tmpId(): number {
+  _tmpId--
+  return _tmpId
+}

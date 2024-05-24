@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cloneDeep } from 'lodash-es'
+import { clone } from 'rambda'
 import type { Request, RequestStatus, Program } from '~/utils/models'
 import { REQUEST_STATUS, PROGRAM } from '~/utils/sment'
 
@@ -7,7 +7,7 @@ const { dialog, width } = useDialog()
 const request = ref<Request>()
 
 function open(r: Request) {
-  request.value = cloneDeep(r)
+  request.value = clone(r)
   dialog.value = true
 }
 

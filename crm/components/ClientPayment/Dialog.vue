@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cloneDeep } from 'lodash-es'
+import { clone } from 'rambda'
 import type { ClientPayment, Contract } from '~/utils/models'
 import { CLIENT_PAYMENT_METHOD, COMPANY_TYPE } from '~/utils/sment'
 
@@ -8,7 +8,7 @@ const item = ref<ClientPayment>()
 const sumInput = ref()
 
 function open(p: ClientPayment) {
-  item.value = cloneDeep(p)
+  item.value = clone(p)
   dialog.value = true
 }
 
