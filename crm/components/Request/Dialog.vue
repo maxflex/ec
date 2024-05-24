@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 import type { Request, RequestStatus, Program } from '~/utils/models'
 import { REQUEST_STATUS, PROGRAM } from '~/utils/sment'
 

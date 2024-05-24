@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { uniqueId, cloneDeep } from 'lodash'
+import { uniqueId, cloneDeep } from 'lodash-es'
 import type { ProgramDialog } from '#build/components'
 import type {
   CompanyType,

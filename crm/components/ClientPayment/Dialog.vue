@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 import type { ClientPayment, Contract } from '~/utils/models'
 import { CLIENT_PAYMENT_METHOD, COMPANY_TYPE } from '~/utils/sment'
 

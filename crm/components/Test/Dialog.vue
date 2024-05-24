@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 import type { Program, Test } from '~/utils/models'
 import { PROGRAM } from '~/utils/sment'
 import { humanFileSize } from '~/utils/filters'
