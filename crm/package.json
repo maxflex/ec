@@ -19,7 +19,7 @@
     "@nuxt/devtools": "latest",
     "@nuxt/eslint": "latest",
     "@types/codemirror": "^5.60.15",
-    "@types/lodash": "^4.14.202",
+    "@types/lodash-es": "^4.17.12",
     "eslint": "^9.1.1",
     "material-design-icons-iconfont": "^6.7.0",
     "nuxt": "^3.8.2",

@@ -26,6 +26,7 @@ class TransferCommand extends Command
             'teacher-services',
             'client-payments',
             'set-request-client-id',
+            'reviews',
         ] as $command) {
             $this->info(str($command)->ucfirst());
             $this->call("app:transfer:$command");

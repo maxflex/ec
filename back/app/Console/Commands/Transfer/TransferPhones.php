@@ -21,13 +21,7 @@ class TransferPhones extends Command
         foreach ($phones as $p) {
             $entityType = $this->mapEntity($p->entity_type);
             $telegramId = null;
-            if ($entityType === User::class) {
-                $telegramId = match ($p->phone) {
-                    '79252727210' => 84626120,
-                    '79265056622' => 129886826,
-                    default => null,
-                };
-            }
+
             DB::table('phones')
                 ->insert([
                     'number' => $p->phone,
@@ -41,6 +35,25 @@ class TransferPhones extends Command
             $bar->advance();
         }
         $bar->finish();
+
+        // хардкод доступы
+        DB::table('phones')
+            ->where('entity_type', User::class)
+            ->where('entity_id', 1)
+            ->update([
+                'number' => '79265056622',
+                'telegram_id' => 129886826,
+            ]);
+        DB::table('phones')
+            ->where('number', '79252727210')
+            ->where('entity_type', '<>', Request::class)
+            ->delete();
+        DB::table('phones')->insert([
+            'number' => '79252727210',
+            'telegram_id' => 84626120,
+            'entity_id' => 5,
+            'entity_id' => User::class,
+        ]);
     }
 
     private function mapEntity($entityType)
