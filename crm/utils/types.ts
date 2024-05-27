@@ -1,83 +1,7 @@
-import type { CompanyType, ClientPaymentMethod } from './models'
+import type { YEARS } from './sment'
+import type { ClientTest } from './models'
 
-export const GRADE: Record<string, string> = {
-  grade1: '1 класс',
-  grade2: '2 класс',
-  grade3: '3 класс',
-  grade4: '4 класс',
-  grade5: '5 класс',
-  grade6: '6 класс',
-  grade7: '7 класс',
-  grade8: '8 класс',
-  grade9: '9 класс',
-  grade10: '10 класс',
-  grade11: '11 класс',
-  students: 'студенты',
-  other: 'другие',
-  external: 'экстернат',
-  school8: 'школа 8 класс',
-  school9: 'школа 9 класс',
-  school10: 'школа 10 класс',
-  online: 'онлайн',
-  practicum11: 'практикум',
-}
-
-export const SUBJECT: Record<string, string> = {
-  math: 'математика',
-  phys: 'физика',
-  chem: 'химимя',
-  bio: 'биология',
-  inf: 'информатика',
-  rus: 'русский язык',
-  lit: 'литература',
-  soc: 'обществознание',
-  his: 'история',
-  eng: 'английский язык',
-  geo: 'география',
-  soch: 'сочинение',
-}
-
-export const SUBJECT_SHORT: Record<string, string> = {
-  math: 'МАТ',
-  phys: 'ФИЗ',
-  chem: 'ХИМ',
-  bio: 'БИО',
-  inf: 'ИНФ',
-  rus: 'РУС',
-  lit: 'ЛИТ',
-  soc: 'ОБЩ',
-  his: 'ИСТ',
-  eng: 'АНГ',
-  geo: 'ГЕО',
-  soch: 'СОЧ',
-}
-
-export const BRANCHES: Record<string, string> = {
-  ohr: 'ОХР',
-  pvn: 'ВЕР',
-  bgt: 'БАГ',
-  izm: 'ИЗМ',
-  opl: 'ОКТ',
-  rpt: 'РЯЗ',
-  skl: 'СКЛ',
-  orh: 'ОРЕ',
-  ann: 'АНН',
-  per: 'ПЕР',
-  klg: 'КЛЖ',
-  brt: 'БРА',
-  str: 'СТР',
-  vld: 'ВЛА',
-  bel: 'БЕЛ',
-  bib: 'БИБ',
-  svi: 'СВИ',
-  nag: 'НАГ',
-  sok: 'СОК',
-  pla: 'ПЛА',
-  vod: 'ВОД',
-  trg: 'ТУР',
-} as const
-
-export const PROGRAM: Record<Program, string> = {
+export const ProgramLabel = {
   math9: 'математика 9 класс',
   phys9: 'физика 9 класс',
   chem9: 'химия 9 класс',
@@ -185,28 +109,108 @@ export const PROGRAM: Record<Program, string> = {
 
   mathBase: 'математика база',
   mathProf: 'математика профиль',
+} as const
+
+export const RequestStatusLabel = {
+  new: 'новые',
+  awaiting: 'в ожидании',
+  finished: 'выполненные',
+} as const
+
+declare global {
+  type RequestStatus = keyof typeof RequestStatusLabel
+
+  interface Meta {
+    current_page: number
+    last_page: number
+    total: number
+  }
+
+  interface ApiResponse<T> {
+    data: T
+    meta: Meta
+  }
+
+  interface Person {
+    first_name: string | null
+    last_name: string | null
+    middle_name: string | null
+  }
+
+  type ResponseErrors = string[]
+
+  interface Paginator {
+    page: number
+    loading: boolean
+    isLastPage: boolean
+  }
+
+  type InfiniteScrollSide = 'start' | 'end' | 'both'
+  type InfiniteScrollStatus = 'ok' | 'empty' | 'loading' | 'error'
+  type InfiniteScrollCallback = {
+    side: InfiniteScrollSide
+    status: InfiniteScrollStatus
+  }
+
+  export type Program = keyof typeof ProgramLabel
+  interface MenuItem {
+    to: string
+    title: string
+    icon: string
+  }
+
+  type Menu = MenuItem[]
+
+  interface TestQuestion {
+    answer: number | null
+    score: number | null
+  }
+
+  type TestQuestions = TestQuestion[]
+
+  type TestAnswers = Array<number | undefined | null>
+
+  interface ActiveTest {
+    test: ClientTest
+    seconds: number
+  }
+
+  // https://stackoverflow.com/a/45486495/2274406
+  type Year = (typeof YEARS)[number]
+
+  interface Zoom {
+    id: string
+    password: string
+  }
+
+  type EntityString = 'admin' | 'teacher' | 'client'
+
+  interface User {
+    id: number
+    entity_type: string
+    telegram_id: string | null
+    first_name: string | null
+    last_name: string | null
+    middle_name: string | null
+    number: string
+  }
+
+  interface TokenResponse {
+    user: User
+    token: string
+  }
+
+  interface RequestFilters {
+    status?: RequestStatus
+    program?: Program
+  }
+
+  interface RequestResource {
+    id?: number
+    status: RequestStatus
+    program: Program | null
+    responsible_user_id: number | null
+    comment: string | null
+  }
+
 }
-
-export const ENTITY_TYPE = {
-  client: 'App\\Models\\Client',
-  teacher: 'App\\Models\\Teacher',
-  user: 'App\\Models\\User',
-}
-
-export const YEARS = [
-  2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015,
-] as const
-
-export const COMPANY_TYPE: Record<CompanyType, string> = {
-  ip: 'ИП',
-  ooo: 'ООО',
-}
-
-export const CLIENT_PAYMENT_METHOD: Record<ClientPaymentMethod, string> = {
-  card: 'карта',
-  online: 'карта онлайн',
-  cash: 'наличные',
-  invoice: 'счёт',
-}
-
-export type Programs = Program[]

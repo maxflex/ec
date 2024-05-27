@@ -255,7 +255,7 @@ export type Phones = Phone[]
 
 export interface Request {
   // columns
-  id: number
+  id?: number
   client_id: number | null
   responsible_user_id: number | null
   status: RequestStatus
@@ -395,109 +395,6 @@ const CompanyType = {
 
 export type CompanyType = typeof CompanyType[keyof typeof CompanyType]
 
-const Program = {
-  math9: 'math9',
-  phys9: 'phys9',
-  chem9: 'chem9',
-  bio9: 'bio9',
-  inf9: 'inf9',
-  rus9: 'rus9',
-  lit9: 'lit9',
-  soc9: 'soc9',
-  his9: 'his9',
-  eng9: 'eng9',
-  geo9: 'geo9',
-  essay9: 'essay9',
-  math10: 'math10',
-  phys10: 'phys10',
-  chem10: 'chem10',
-  bio10: 'bio10',
-  inf10: 'inf10',
-  rus10: 'rus10',
-  lit10: 'lit10',
-  soc10: 'soc10',
-  his10: 'his10',
-  eng10: 'eng10',
-  math11: 'math11',
-  phys11: 'phys11',
-  chem11: 'chem11',
-  bio11: 'bio11',
-  inf11: 'inf11',
-  rus11: 'rus11',
-  lit11: 'lit11',
-  soc11: 'soc11',
-  his11: 'his11',
-  eng11: 'eng11',
-  geo11: 'geo11',
-  essay11: 'essay11',
-  mathExt: 'mathExt',
-  physExt: 'physExt',
-  chemExt: 'chemExt',
-  bioExt: 'bioExt',
-  infExt: 'infExt',
-  rusExt: 'rusExt',
-  litExt: 'litExt',
-  socExt: 'socExt',
-  hisExt: 'hisExt',
-  engExt: 'engExt',
-  geoExt: 'geoExt',
-  mathSchool8: 'mathSchool8',
-  physSchool8: 'physSchool8',
-  chemSchool8: 'chemSchool8',
-  bioSchool8: 'bioSchool8',
-  infSchool8: 'infSchool8',
-  rusSchool8: 'rusSchool8',
-  litSchool8: 'litSchool8',
-  socSchool8: 'socSchool8',
-  hisSchool8: 'hisSchool8',
-  engSchool8: 'engSchool8',
-  geoSchool8: 'geoSchool8',
-  mathSchool9: 'mathSchool9',
-  physSchool9: 'physSchool9',
-  chemSchool9: 'chemSchool9',
-  bioSchool9: 'bioSchool9',
-  infSchool9: 'infSchool9',
-  rusSchool9: 'rusSchool9',
-  litSchool9: 'litSchool9',
-  socSchool9: 'socSchool9',
-  hisSchool9: 'hisSchool9',
-  engSchool9: 'engSchool9',
-  geoSchool9: 'geoSchool9',
-  mathSchool10: 'mathSchool10',
-  physSchool10: 'physSchool10',
-  chemSchool10: 'chemSchool10',
-  bioSchool10: 'bioSchool10',
-  infSchool10: 'infSchool10',
-  rusSchool10: 'rusSchool10',
-  litSchool10: 'litSchool10',
-  socSchool10: 'socSchool10',
-  hisSchool10: 'hisSchool10',
-  engSchool10: 'engSchool10',
-  geoSchool10: 'geoSchool10',
-  physSchoolOge: 'physSchoolOge',
-  chemSchoolOge: 'chemSchoolOge',
-  bioSchoolOge: 'bioSchoolOge',
-  infSchoolOge: 'infSchoolOge',
-  litSchoolOge: 'litSchoolOge',
-  socSchoolOge: 'socSchoolOge',
-  hisSchoolOge: 'hisSchoolOge',
-  engSchoolOge: 'engSchoolOge',
-  mathPracticum: 'mathPracticum',
-  physPracticum: 'physPracticum',
-  chemPracticum: 'chemPracticum',
-  bioPracticum: 'bioPracticum',
-  infPracticum: 'infPracticum',
-  rusPracticum: 'rusPracticum',
-  socPracticum: 'socPracticum',
-  hisPracticum: 'hisPracticum',
-  engPracticum: 'engPracticum',
-  geoPracticum: 'geoPracticum',
-  mathBase: 'mathBase',
-  mathProf: 'mathProf',
-} as const
-
-export type Program = typeof Program[keyof typeof Program]
-
 const ContractLessonStatus = {
   present: 'present',
   late: 'late',
@@ -523,11 +420,3 @@ const LogType = {
 } as const
 
 export type LogType = typeof LogType[keyof typeof LogType]
-
-const RequestStatus = {
-  new: 'new',
-  awaiting: 'awaiting',
-  finished: 'finished',
-} as const
-
-export type RequestStatus = typeof RequestStatus[keyof typeof RequestStatus]

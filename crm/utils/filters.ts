@@ -19,11 +19,11 @@ export function plural(
   )
 }
 
-export function formatDate(dateTime: NullableString): string {
+export function formatDate(dateTime: string | null): string {
   return dayjs(dateTime).format('DD.MM.YYYY')
 }
 
-export function formatDateTime(dateTime: NullableString): string {
+export function formatDateTime(dateTime: string | null): string {
   return dayjs(dateTime).format('DD.MM.YYYY в HH:mm')
 }
 

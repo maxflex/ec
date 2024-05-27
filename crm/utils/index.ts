@@ -30,3 +30,10 @@ export function tmpId(): number {
   _tmpId--
   return _tmpId
 }
+
+export function selectItems(obj: object) {
+  return Object.entries(obj).map(([value, title]) => ({
+    value,
+    title,
+  }))
+}

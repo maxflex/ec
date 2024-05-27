@@ -1,0 +1,44 @@
+<script setup lang="ts">
+const { items } = defineProps<{
+  label: string
+  density?: 'comfortable'
+  items: {
+    value: string
+    title: string
+  }[]
+}>()
+const model = defineModel()
+const input = ref()
+
+function clear() {
+  model.value = undefined
+  nextTick(() => input.value.blur())
+}
+</script>
+
+<template>
+  <v-select
+    ref="input"
+    v-model="model"
+    :label="label"
+    :items="items"
+    :density="density"
+    :menu-props="{
+      closeOnContentClick: true,
+    }"
+  >
+    <template #prepend-item>
+      <v-list-item
+        base-color="gray"
+        @click="clear()"
+      >
+        <v-list-item-title class="gray">
+          не установлено
+        </v-list-item-title>
+        <template #prepend>
+          <v-spacer />
+        </template>
+      </v-list-item>
+    </template>
+  </v-select>
+</template>

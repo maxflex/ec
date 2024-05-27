@@ -1,14 +1,23 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
-import type { Request, RequestStatus, Program } from '~/utils/models'
-import { REQUEST_STATUS, PROGRAM } from '~/utils/sment'
+
+const modelDefaults: RequestResource = {
+  status: 'new',
+  program: null,
+  responsible_user_id: null,
+  comment: null,
+}
 
 const { dialog, width } = useDialog()
-const request = ref<Request>()
+const request = ref<RequestResource>(modelDefaults)
 
-function open(r: Request) {
+function open(r: RequestResource) {
   request.value = clone(r)
   dialog.value = true
+}
+
+function create() {
+  open(modelDefaults)
 }
 
 function save() {
@@ -16,7 +25,7 @@ function save() {
   emit('saved')
 }
 
-defineExpose({ open })
+defineExpose({ open, create })
 const emit = defineEmits<{ (e: 'saved'): void }>()
 </script>
 
@@ -48,24 +57,14 @@ const emit = defineEmits<{ (e: 'saved'): void }>()
           <v-select
             v-model="request.status"
             label="Статус"
-            :items="
-              Object.keys(REQUEST_STATUS).map((value) => ({
-                value,
-                title: REQUEST_STATUS[value as RequestStatus],
-              }))
-            "
+            :items="selectItems(RequestStatusLabel)"
           />
         </div>
         <div>
-          <v-select
+          <UiClearableSelect
             v-model="request.program"
             label="Программа"
-            :items="
-              Object.keys(PROGRAM).map((value) => ({
-                value,
-                title: PROGRAM[value as Program],
-              }))
-            "
+            :items="selectItems(ProgramLabel)"
           />
         </div>
         <div>

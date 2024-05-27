@@ -5,7 +5,6 @@ import type { Requests } from '~/utils/models'
 const items = ref<Requests>()
 const paginator = usePaginator()
 const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()
-const requestFilters = ref<null | InstanceType<typeof RequestFilters>>()
 const filters = ref<RequestFilters>({})
 
 async function loadData() {
@@ -59,17 +58,10 @@ nextTick(loadData)
     <!-- <v-btn icon="$filters" :size="48">
     </v-btn> -->
 
-    <RequestFilters
-      ref="requestFilters"
-      @apply="onFiltersApply"
-    />
+    <RequestFilters @apply="onFiltersApply" />
     <a
       class="cursor-pointer"
-      @click="
-        requestDialog?.open({
-          status: 'new',
-        })
-      "
+      @click="requestDialog?.create()"
     >
       добавить заявку
     </a>
