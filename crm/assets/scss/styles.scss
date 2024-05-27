@@ -218,7 +218,8 @@ a:not(.v-list-item) {
   padding: 16px 20px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
+  // justify-content: flex-end;
   border-bottom: 1px solid #e0e0e0;
   gap: 40px;
   &--has-items {
@@ -231,6 +232,13 @@ a:not(.v-list-item) {
       background: rgb(var(--v-theme-red));
       position: absolute;
       border-radius: 50%;
+    }
+  }
+  &-inputs {
+    display: flex;
+    gap: 20px;
+    & > div {
+      width: 250px;
     }
   }
 }

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { RequestDialog, RequestFiltersDialog } from '#build/components'
+import type { RequestDialog, RequestFilters } from '#build/components'
 import type { Requests } from '~/utils/models'
 
 const items = ref<Requests>()
 const paginator = usePaginator()
 const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()
-const filtersDialog = ref<null | InstanceType<typeof RequestFiltersDialog>>()
+const requestFilters = ref<null | InstanceType<typeof RequestFilters>>()
 const filters = ref<RequestFilters>({})
 
 async function loadData() {
@@ -58,17 +58,11 @@ nextTick(loadData)
   <div class="filters">
     <!-- <v-btn icon="$filters" :size="48">
     </v-btn> -->
-    <a
-      class="cursor-pointer"
-      :class="{
-        'filters--has-items': Object.values(filters).filter(
-          (e) => e !== undefined,
-        ).length,
-      }"
-      @click="filtersDialog?.open()"
-    >
-      фильтры
-    </a>
+
+    <RequestFilters
+      ref="requestFilters"
+      @apply="onFiltersApply"
+    />
     <a
       class="cursor-pointer"
       @click="
@@ -80,10 +74,6 @@ nextTick(loadData)
       добавить заявку
     </a>
   </div>
-  <RequestFiltersDialog
-    ref="filtersDialog"
-    @apply="onFiltersApply"
-  />
   <UiLoader :paginator="paginator" />
   <div
     v-if="items"
