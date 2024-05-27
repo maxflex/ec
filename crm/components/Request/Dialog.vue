@@ -9,7 +9,9 @@ const modelDefaults: RequestResource = {
 }
 
 const { dialog, width } = useDialog()
+const loading = ref(false)
 const request = ref<RequestResource>(modelDefaults)
+const itemId = ref<number>()
 
 function open(r: RequestResource) {
   request.value = clone(r)
@@ -17,16 +19,48 @@ function open(r: RequestResource) {
 }
 
 function create() {
+  itemId.value = undefined
   open(modelDefaults)
 }
 
-function save() {
-  dialog.value = false
-  emit('saved')
+async function edit(r: RequestListResource) {
+  itemId.value = r.id
+  loading.value = true
+  dialog.value = true
+  const { data } = await useHttp<RequestResource>(`requests/${r.id}`)
+  if (data.value) {
+    open(data.value)
+  }
+  loading.value = false
 }
 
-defineExpose({ open, create })
-const emit = defineEmits<{ (e: 'saved'): void }>()
+async function save() {
+  dialog.value = false
+  if (itemId.value) {
+    const { data } = await useHttp<RequestListResource>(`requests/${itemId.value}`, {
+      method: 'put',
+      body: request.value,
+    })
+    if (data.value) {
+      emit('updated', data.value)
+    }
+  }
+  else {
+    const { data } = await useHttp<RequestListResource>('requests', {
+      method: 'post',
+      body: request.value,
+    })
+    if (data.value) {
+      emit('created', data.value)
+    }
+  }
+  // emit('saved')
+}
+
+defineExpose({ create, edit })
+const emit = defineEmits<{
+  (e: 'created' | 'updated', r: RequestListResource): void
+}>()
 </script>
 
 <template>
@@ -39,8 +73,8 @@ const emit = defineEmits<{ (e: 'saved'): void }>()
       class="dialog-wrapper"
     >
       <div class="dialog-header">
-        <template v-if="request.id">
-          Заявка {{ request.id }}
+        <template v-if="itemId">
+          Заявка {{ itemId }}
         </template>
         <template v-else>
           Добавить заявку
@@ -52,7 +86,11 @@ const emit = defineEmits<{ (e: 'saved'): void }>()
           @click="save()"
         />
       </div>
-      <div class="dialog-body">
+      <UiLoaderr v-if="loading" />
+      <div
+        v-else
+        class="dialog-body"
+      >
         <div>
           <v-select
             v-model="request.status"

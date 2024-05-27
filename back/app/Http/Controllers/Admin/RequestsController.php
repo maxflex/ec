@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\RequestResource;
+use App\Http\Resources\{RequestResource, RequestListResource};
 use App\Models\Request as ClientRequest;
 use Illuminate\Http\Request;
 
@@ -23,6 +23,27 @@ class RequestsController extends Controller
             ->with('phones', 'responsibleUser', 'client')
             ->latest();
         $this->filter($request, $query);
-        return $this->handleIndexRequest($request, $query, RequestResource::class);
+        return $this->handleIndexRequest($request, $query, RequestListResource::class);
+    }
+
+    public function store(Request $request)
+    {
+        $clientRequest = auth()->user()->entity->requests()->create(
+            $request->all()
+        );
+        return new RequestListResource($clientRequest);
+    }
+
+    public function show($id)
+    {
+        $clientRequest = ClientRequest::findOrFail($id);
+        return new RequestResource($clientRequest);
+    }
+
+    public function update($id, Request $request)
+    {
+        $clientRequest = ClientRequest::findOrFail($id);
+        $clientRequest->update($request->all());
+        return new RequestListResource($clientRequest);
     }
 }

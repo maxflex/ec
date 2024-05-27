@@ -22,13 +22,14 @@
     "@types/ramda": "^0.30.0",
     "eslint": "^9.1.1",
     "material-design-icons-iconfont": "^6.7.0",
-    "nuxt": "^3.8.2",
+    "nuxt": "latest",
     "vite-plugin-vuetify": "^1.0.2",
     "vue": "^3.3.8",
     "vue-router": "^4.2.5",
     "vuetify": "^3.4.4"
   },
   "dependencies": {
+    "@nuxt/eslint-config": "^0.3.13",
     "@pinia/nuxt": "^0.5.1",
     "@types/pusher-js": "^5.1.0",
     "codemirror": "5.x",
@@ -38,6 +39,7 @@
     "maska": "^2.1.11",
     "pusher-js": "^8.4.0-rc2",
     "rambda": "^9.2.0",
-    "sass": "^1.69.5"
+    "sass": "^1.69.5",
+    "vite": "latest"
   }
 }

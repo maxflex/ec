@@ -132,6 +132,7 @@ declare global {
   }
 
   interface Person {
+    id: number
     first_name: string | null
     last_name: string | null
     middle_name: string | null
@@ -213,4 +214,21 @@ declare global {
     comment: string | null
   }
 
+  interface PhoneListResource {
+    id: number
+    number: string
+    comment: string | null
+    is_verified: boolean
+  }
+
+  interface RequestListResource {
+    id: number
+    status: RequestStatus
+    program: Program | null
+    comment: string | null
+    responsible_user: Person | null
+    client: Person | null
+    phones: PhoneListResource[]
+    created_at: string
+  }
 }

@@ -26,7 +26,7 @@ export default <RouterConfig>{
           }),
         )
     }
-    console.log(myRoutes)
+    // console.log(myRoutes)
     return myRoutes
   },
 }

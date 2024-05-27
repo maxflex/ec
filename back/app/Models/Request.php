@@ -15,6 +15,10 @@ class Request extends Model
         'program' => Program::class,
     ];
 
+    protected $fillable = [
+        'responsible_user_id', 'program', 'comment', 'status'
+    ];
+
     public function responsibleUser()
     {
         return $this->belongsTo(User::class, 'responsible_user_id');
@@ -23,5 +27,12 @@ class Request extends Model
     public function client()
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public static function booted()
+    {
+        self::creating(function ($request) {
+            $request->ip = request()->ip();
+        });
     }
 }

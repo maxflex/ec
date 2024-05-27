@@ -1,22 +1,28 @@
 <script setup lang="ts">
 import type { RequestDialog } from '#build/components'
-import type { Requests } from '~/utils/models'
 import { PROGRAM } from '~/utils/sment'
 
+const model = defineModel<RequestListResource[]>({ default: () => [] })
 const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()
-const { requests } = defineProps<{ requests: Requests }>()
+
+function onRequestUpdated(r: RequestListResource) {
+  const index = model.value.findIndex(m => m.id === r.id)
+  if (index !== -1) {
+    model.value.splice(index, 1, r)
+  }
+}
 </script>
 
 <template>
   <div class="request-list">
     <div
-      v-for="r in requests"
+      v-for="r in model"
       :key="r.id"
       class="request"
     >
       <div class="request__left">
         <div class="request__title">
-          <div @click="requestDialog?.open(r)">
+          <div @click="requestDialog?.edit(r)">
             <RequestStatus :status="r.status" />
             Заявка {{ r.id }}
           </div>
@@ -73,7 +79,10 @@ const { requests } = defineProps<{ requests: Requests }>()
       </div>
     </div>
   </div>
-  <RequestDialog ref="requestDialog" />
+  <RequestDialog
+    ref="requestDialog"
+    @updated="onRequestUpdated"
+  />
 </template>
 
 <style lang="scss">

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { RequestDialog, RequestFilters } from '#build/components'
-import type { Requests } from '~/utils/models'
 
-const items = ref<Requests>()
+const items = ref<RequestListResource[]>()
 const paginator = usePaginator()
 const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()
 const filters = ref<RequestFilters>({})
@@ -14,7 +13,7 @@ async function loadData() {
   paginator.page++
   paginator.loading = true
   console.log('page', paginator.page)
-  const { data } = await useHttp<ApiResponse<Requests>>('requests', {
+  const { data } = await useHttp<ApiResponse<RequestListResource[]>>('requests', {
     params: {
       page: paginator.page,
       ...filters.value,
@@ -33,6 +32,10 @@ function onFiltersApply(f: RequestFilters) {
   filters.value = f
   paginator.page = 0
   loadData()
+}
+
+function onRequestCreated(r: RequestListResource) {
+  items.value?.unshift(r)
 }
 
 // оставлю как пример
@@ -55,9 +58,6 @@ nextTick(loadData)
 
 <template>
   <div class="filters">
-    <!-- <v-btn icon="$filters" :size="48">
-    </v-btn> -->
-
     <RequestFilters @apply="onFiltersApply" />
     <a
       class="cursor-pointer"
@@ -75,10 +75,13 @@ nextTick(loadData)
       :on-load="onIntersect"
       :margin="100"
       color="gray"
-      :side="'end'"
+      side="end"
     >
-      <RequestList :requests="items" />
+      <RequestList v-model="items" />
     </v-infinite-scroll>
   </div>
-  <RequestDialog ref="requestDialog" />
+  <RequestDialog
+    ref="requestDialog"
+    @created="onRequestCreated"
+  />
 </template>
