@@ -15,6 +15,7 @@ class TransferClients extends Command
 
     public function handle()
     {
+        DB::table('client_parents')->delete();
         DB::table('clients')->delete();
         $clients = DB::connection('egecrm')
             ->table('clients')
