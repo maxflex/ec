@@ -87,7 +87,17 @@ enum Program: string
     case socSchool10 = 'socSchool10';
     case hisSchool10 = 'hisSchool10';
     case engSchool10 = 'engSchool10';
-    case geoSchool10 = 'geoSchool10';
+
+    case mathSchool11 = 'mathSchool11';
+    case physSchool11 = 'physSchool11';
+    case chemSchool11 = 'chemSchool11';
+    case bioSchool11 = 'bioSchool11';
+    case infSchool11 = 'infSchool11';
+    case rusSchool11 = 'rusSchool11';
+    case litSchool11 = 'litSchool11';
+    case socSchool11 = 'socSchool11';
+    case hisSchool11 = 'hisSchool11';
+    case engSchool11 = 'engSchool11';
 
     case physSchoolOge = 'physSchoolOge';
     case chemSchoolOge = 'chemSchoolOge';
@@ -196,6 +206,15 @@ enum Program: string
             '16-10' => self::engSchool9,
             '16-11' => self::geoSchool9,
 
+            '16-14' => self::physSchoolOge,
+            '16-15' => self::chemSchoolOge,
+            '16-16' => self::bioSchoolOge,
+            '16-13' => self::infSchoolOge,
+            '16-17' => self::litSchoolOge,
+            '16-19' => self::socSchoolOge,
+            '16-20' => self::hisSchoolOge,
+            '16-18' => self::engSchoolOge,
+
             '17-1' => self::mathSchool10,
             '17-2' => self::physSchool10,
             '17-3' => self::chemSchool10,
@@ -206,16 +225,17 @@ enum Program: string
             '17-8' => self::socSchool10,
             '17-9' => self::hisSchool10,
             '17-10' => self::engSchool10,
-            '17-11' => self::geoSchool10,
 
-            '16-14' => self::physSchoolOge,
-            '16-15' => self::chemSchoolOge,
-            '16-16' => self::bioSchoolOge,
-            '16-13' => self::infSchoolOge,
-            '16-17' => self::litSchoolOge,
-            '16-19' => self::socSchoolOge,
-            '16-20' => self::hisSchoolOge,
-            '16-18' => self::engSchoolOge,
+            '18-1' => self::mathSchool11,
+            '18-2' => self::physSchool11,
+            '18-3' => self::chemSchool11,
+            '18-4' => self::bioSchool11,
+            '18-5' => self::infSchool11,
+            '18-6' => self::rusSchool11,
+            '18-7' => self::litSchool11,
+            '18-8' => self::socSchool11,
+            '18-9' => self::hisSchool11,
+            '18-10' => self::engSchool11,
 
             '19-26' => self::mathPracticum,
             '19-28' => self::physPracticum,
