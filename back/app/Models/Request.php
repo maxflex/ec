@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use App\Enums\{Program, RequestStatus};
-use App\Traits\HasPhones;
+use App\Traits\{HasPhones, RelationSyncable};
 use Illuminate\Database\Eloquent\Model;
 
 class Request extends Model
 {
-    use HasPhones;
+    use HasPhones, RelationSyncable;
 
     protected $casts = [
         'status' => RequestStatus::class,

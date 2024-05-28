@@ -206,19 +206,20 @@ declare global {
     program?: Program
   }
 
+  interface PhoneListResource {
+    id: number
+    number: string
+    comment: string | null
+    is_verified: boolean
+  }
+
   interface RequestResource {
     id?: number
     status: RequestStatus
     program: Program | null
     responsible_user_id: number | null
     comment: string | null
-  }
-
-  interface PhoneListResource {
-    id: number
-    number: string
-    comment: string | null
-    is_verified: boolean
+    phones: PhoneListResource[]
   }
 
   interface RequestListResource {

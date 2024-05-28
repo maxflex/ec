@@ -6,6 +6,7 @@ const modelDefaults: RequestResource = {
   program: null,
   responsible_user_id: null,
   comment: null,
+  phones: [],
 }
 
 const { dialog, width } = useDialog()
@@ -117,6 +118,7 @@ const emit = defineEmits<{
             label="Комментарий"
           />
         </div>
+        <UiPhoneEditor v-model="request.phones" />
       </div>
     </div>
   </v-dialog>

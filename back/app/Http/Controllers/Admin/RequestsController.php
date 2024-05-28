@@ -44,6 +44,7 @@ class RequestsController extends Controller
     {
         $clientRequest = ClientRequest::findOrFail($id);
         $clientRequest->update($request->all());
+        $clientRequest->syncRelation($request->all(), 'phones');
         return new RequestListResource($clientRequest);
     }
 }
