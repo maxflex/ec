@@ -129,9 +129,16 @@ a:not(.v-list-item) {
     display: flex;
     flex-direction: column;
     gap: 30px;
-    padding: 40px $paddingX 30px;
+    padding: 30px $paddingX 30px;
     flex: 1;
     overflow-x: hidden;
+    &-2-col {
+      display: flex;
+      // gap: 30px;
+      & > div {
+        flex: 1;
+      }
+    }
   }
   &-header {
     --header-height: 64px;

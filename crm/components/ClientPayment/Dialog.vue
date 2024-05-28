@@ -3,7 +3,7 @@ import { clone } from 'rambda'
 import type { ClientPayment, Contract } from '~/utils/models'
 import { CLIENT_PAYMENT_METHOD, COMPANY_TYPE } from '~/utils/sment'
 
-const { dialog, width } = useDialog()
+const { dialog, width } = useDialog('default')
 const item = ref<ClientPayment>()
 const sumInput = ref()
 

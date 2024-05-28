@@ -5,7 +5,7 @@ const emit = defineEmits<{
 
 const questions = ref<TestQuestions>([])
 
-const { dialog, width } = useDialog(500)
+const { dialog, width } = useDialog('default')
 
 function open(preSelect: TestQuestions) {
   dialog.value = true

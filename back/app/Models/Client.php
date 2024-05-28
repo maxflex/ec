@@ -41,6 +41,11 @@ class Client extends Model
         return $this->morphMany(ClientPayment::class, 'entity');
     }
 
+    public function parent()
+    {
+        return $this->hasOne(ClientParent::class);
+    }
+
     /**
      * @return Group[]
      */
@@ -57,17 +62,18 @@ class Client extends Model
      */
     public function swamps(): Attribute
     {
-        $programs = $this->groups->pluck('program');
-        $result = [];
+        return Attribute::make(fn () => []);
+        // $programs = $this->groups->pluck('program');
+        // $result = [];
 
-        foreach ($this->contracts as $contract) {
-            foreach ($contract->versions[0]->programs as $p) {
-                if (!$programs->contains($p->program)) {
-                    $result[] = $p;
-                }
-            }
-        }
-        return Attribute::make(fn () => $result);
+        // foreach ($this->contracts as $contract) {
+        //     foreach ($contract->versions[0]->programs as $p) {
+        //         if (!$programs->contains($p->program)) {
+        //             $result[] = $p;
+        //         }
+        //     }
+        // }
+        // return Attribute::make(fn () => $result);
     }
 
     public function getBranchesAttribute($value)

@@ -4,7 +4,7 @@ import type { Tests } from '~/utils/models'
 const emit = defineEmits<{
   (e: 'saved', tests: Tests): void
 }>()
-const { dialog, width } = useDialog(1000)
+const { dialog, width } = useDialog('large')
 const selected = ref<Tests>([])
 const tests = ref<Tests>()
 

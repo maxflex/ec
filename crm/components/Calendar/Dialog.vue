@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { YEARS } from '~/utils/sment'
 
-const { dialog, width } = useDialog(800)
+const { dialog, width } = useDialog('medium')
 const props = defineProps<{
   modelValue: string
 }>()

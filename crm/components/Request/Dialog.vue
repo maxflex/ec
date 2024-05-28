@@ -9,7 +9,7 @@ const modelDefaults: RequestResource = {
   phones: [],
 }
 
-const { dialog, width } = useDialog()
+const { dialog, width } = useDialog('default')
 const loading = ref(false)
 const request = ref<RequestResource>(modelDefaults)
 const itemId = ref<number>()

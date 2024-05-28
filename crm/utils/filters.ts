@@ -54,11 +54,11 @@ export function formatYear(year: Year): string {
   return `${year}-${year + 1} уч. г.`
 }
 
-export function formatName(person: Person) {
+export function formatName(person: PersonResource) {
   return [person.last_name, person.first_name].join(' ')
 }
 
-export function formatFullName(person: Person) {
+export function formatFullName(person: PersonResource) {
   return [person.last_name, person.first_name, person.middle_name].join(' ')
 }
 

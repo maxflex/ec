@@ -35,9 +35,15 @@ class TransferClients extends Command
                 'birthdate' => $this->nullify($c->birthdate),
                 'user_id' => $this->getUserId($c->created_email_id),
                 'head_teacher_id' => $this->nullify($c->head_teacher_id),
-                'parent_first_name' => $this->nullify($p->first_name),
-                'parent_last_name' => $this->nullify($p->last_name),
-                'parent_middle_name' => $this->nullify($p->middle_name),
+                'created_at' => $c->created_at,
+                'updated_at' => $c->updated_at,
+            ]);
+            DB::table('client_parents')->insert([
+                'id' => $p->id,
+                'client_id' => $c->id,
+                'first_name' => $this->nullify($p->first_name),
+                'last_name' => $this->nullify($p->last_name),
+                'middle_name' => $this->nullify($p->middle_name),
                 'passport_series' => $this->nullify($p->series),
                 'passport_number' => $this->nullify($p->number),
                 'passport_address' => $this->nullify($p->address),
@@ -45,8 +51,6 @@ class TransferClients extends Command
                 'passport_issued_date' => $this->nullify($p->issued_date),
                 'passport_issued_by' => $this->nullify($p->issued_by),
                 'fact_address' => $this->nullify($p->fact_address),
-                'created_at' => $c->created_at,
-                'updated_at' => $c->updated_at,
             ]);
             $bar->advance();
         }

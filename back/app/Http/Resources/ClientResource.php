@@ -18,8 +18,9 @@ class ClientResource extends JsonResource
             'contracts' => ContractResource::collection($this->contracts),
             'groups' => GroupResource::collection($this->groups),
             'swamps' => $this->swamps,
+            'parent' => new ClientParentResource($this->parent),
             'tests' => ClientTestResource::collection($this->tests),
-            'head_teacher' => $this->headTeacher,
+            'head_teacher' => new PersonResource($this->headTeacher),
             'phones' => $this->phones,
             'requests' => $this->requests,
         ]);

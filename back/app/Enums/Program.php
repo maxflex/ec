@@ -118,7 +118,7 @@ enum Program: string
     public static function getById(int $gradeId, int $subjectId): self
     {
         $gradeSubject = join('-', [$gradeId, $subjectId]);
-        return match ($gradeSubject) {
+        $program = match ($gradeSubject) {
             '9-1' => self::math9,
             '9-2' => self::phys9,
             '9-3' => self::chem9,
@@ -232,6 +232,9 @@ enum Program: string
 
             // ошибка в старой системе
             '19-6' => self::rusPracticum,
+
+            default => throw new \Error("Grade-subject $gradeSubject not exists!")
         };
+        return $program;
     }
 }

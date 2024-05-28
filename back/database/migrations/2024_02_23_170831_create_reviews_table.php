@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reviews', function (Blueprint $table) {
+        Schema::create('web_reviews', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Client::class)->constrained();
             $table->text('text');

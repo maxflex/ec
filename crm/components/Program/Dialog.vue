@@ -6,7 +6,7 @@ const emit = defineEmits<{
   (e: 'saved', programs: Programs): void
 }>()
 
-const { dialog, width } = useDialog(500)
+const { dialog, width } = useDialog('default')
 const selected = ref<Programs>([])
 
 function open(preSelect: Programs = []) {

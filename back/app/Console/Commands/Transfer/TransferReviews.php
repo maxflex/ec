@@ -16,8 +16,8 @@ class TransferReviews extends Command
     public function handle()
     {
         DB::table('client_reviews')->delete();
-        DB::table('review_scores')->delete();
-        DB::table('reviews')->delete();
+        DB::table('web_review_scores')->delete();
+        DB::table('web_reviews')->delete();
         $reviews = DB::connection('egecrm')
             ->table('reviews as r')
             ->join('review_comments as rc', 'rc.review_id', '=', 'r.id')
@@ -47,7 +47,7 @@ class TransferReviews extends Command
                 'created_at' => $r->created_at,
                 'updated_at' => $r->updated_at,
             ]);
-            $reviewId = DB::table('reviews')->insertGetId([
+            $reviewId = DB::table('web_reviews')->insertGetId([
                 'client_id' => $r->client_id,
                 'text' => $r->text,
                 'signature' => $r->signature,
@@ -57,8 +57,8 @@ class TransferReviews extends Command
                 'created_at' => $r->created_at,
                 'updated_at' => $r->updated_at,
             ]);
-            DB::table('review_scores')->insert([
-                'review_id' => $reviewId,
+            DB::table('web_review_scores')->insert([
+                'web_review_id' => $reviewId,
                 'program' => $program,
                 'score' => $r->score,
                 'score_max' => $r->max_score,

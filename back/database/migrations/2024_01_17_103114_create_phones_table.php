@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('number')->index();
             $table->string('comment')->nullable();
             $table->boolean('is_verified')->default(false)->index();
-            $table->boolean('is_parent')->default(false);
             $table->morphs('entity');
         });
     }

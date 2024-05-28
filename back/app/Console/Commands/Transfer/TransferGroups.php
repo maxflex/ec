@@ -36,7 +36,6 @@ class TransferGroups extends Command
                 'program' => Program::getById($g->grade_id, $g->subject_id)->name,
                 'year' => $g->year,
                 'is_archived' => $g->is_archived,
-                'lessons_planned' => $g->lessons_planned,
                 'zoom' => $g->zoom_id ? json_encode([
                     'id' => $g->zoom_id,
                     'password' => $g->zoom_password

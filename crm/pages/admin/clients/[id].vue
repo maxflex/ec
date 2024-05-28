@@ -9,7 +9,6 @@ import type {
   TestSelectorDialog,
 } from '#build/components'
 import type {
-  Client,
   Contract,
   ContractVersion,
   Group,
@@ -18,7 +17,7 @@ import type {
 import { ENTITY_TYPE } from '~/utils/sment'
 
 const route = useRoute()
-const client = ref<Client>()
+const client = ref<ClientResource>()
 const clientPaymentDialog = ref<null | InstanceType<
   typeof ClientPaymentDialog
 >>()
@@ -31,7 +30,7 @@ const groupSelectorDialog = ref<null | InstanceType<
 
 async function loadData() {
   const { data } = await useHttp(`clients/${route.params.id}`)
-  client.value = data.value as Client
+  client.value = data.value as ClientResource
 }
 
 function onOpen(c: Contract, v: ContractVersion) {
@@ -89,7 +88,7 @@ nextTick(loadData)
               class="client__phones"
             >
               <div
-                v-for="p in client.phones.filter((e) => !e.is_parent)"
+                v-for="p in client.phones"
                 :key="p.id"
               >
                 <div class="client__phones-number">
@@ -108,19 +107,12 @@ nextTick(loadData)
         <div>
           <div>представитель</div>
           <div class="text-truncate">
-            {{
-              formatFullName({
-                first_name: client.parent_first_name,
-                last_name: client.parent_last_name,
-                middle_name: client.parent_middle_name,
-              })
-            }}
+            {{ formatFullName(client.parent) }}
             <div
-              v-if="client.phones"
               class="client__phones"
             >
               <div
-                v-for="p in client.phones.filter((e) => e.is_parent)"
+                v-for="p in client.parent.phones"
                 :key="p.id"
               >
                 <div class="client__phones-number">
@@ -156,19 +148,6 @@ nextTick(loadData)
             не установлено
           </div>
         </div>
-        <!-- <div v-if="client.phones" class="client__phones">
-          <div v-for="p in client.phones" :key="p.id">
-            <div class="client__phones-number">
-              <a :href="`tel:${p.number}`">
-                {{ formatPhone(p.number as string) }}
-              </a>
-            </div>
-            <div class="client__phones-actions">
-              <v-icon :icon="mdiEmailOutline" />
-              <v-icon :icon="mdiHistory" />
-            </div>
-          </div>
-        </div> -->
         <div class="client__actions">
           <v-btn
             icon="$edit"

@@ -33,7 +33,6 @@ return new class extends Migration
             $table->unsignedSmallInteger('year');
             $table->boolean('is_archived')->index()->default(false);
             $table->json('zoom')->nullable();
-            $table->unsignedSmallInteger('lessons_planned')->nullable();
             $table->timestamps();
         });
     }

@@ -10,7 +10,7 @@ import type {
 } from '~/utils/models'
 import { PROGRAM, YEARS, COMPANY_TYPE, type Programs } from '~/utils/sment'
 
-const { dialog, width } = useDialog(600)
+const { dialog, width } = useDialog('default')
 const contract = ref<Contract>()
 const version = ref<ContractVersion>()
 const programDialog = ref<null | InstanceType<typeof ProgramDialog>>()

@@ -131,7 +131,7 @@ declare global {
     meta: Meta
   }
 
-  interface Person {
+  interface PersonResource {
     id: number
     first_name: string | null
     last_name: string | null
@@ -227,9 +227,35 @@ declare global {
     status: RequestStatus
     program: Program | null
     comment: string | null
-    responsible_user: Person | null
-    client: Person | null
+    responsible_user: PersonResource | null
+    client: PersonResource | null
     phones: PhoneListResource[]
     created_at: string
+  }
+
+  export interface ClientParentResource extends PersonResource {
+    first_name: string | null
+    last_name: string | null
+    middle_name: string | null
+    passport_series: string | null
+    passport_number: string | null
+    passport_address: string | null
+    passport_code: string | null
+    passport_issued_date: string | null
+    passport_issued_by: string | null
+    fact_address: string | null
+    phones: PhoneListResource[]
+  }
+
+  export interface ClientResource extends PersonResource {
+    branches: string[] | null
+    birthdate: string | null
+    user_id: number | null
+    head_teacher_id: number | null
+    created_at: string | null
+    updated_at: string | null
+    parent: ClientParentResource
+    phones: PhoneListResource[]
+    head_teacher: PersonResource | null
   }
 }

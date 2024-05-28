@@ -5,7 +5,7 @@ import { PROGRAM } from '~/utils/sment'
 import { humanFileSize } from '~/utils/filters'
 import type { TestQuestionsDialog } from '#build/components'
 
-const { dialog, width } = useDialog()
+const { dialog, width } = useDialog('default')
 const item = ref<Test>()
 const input = ref()
 const fileInput = ref()
