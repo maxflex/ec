@@ -176,6 +176,11 @@ nextTick(loadData)
       </div>
     </div>
     <div class="client__content">
+      <UiDataLoader api-url="users">
+        <template #default="{ items }">
+          {{ items }}
+        </template>
+      </UiDataLoader>
       <RequestList
         v-if="selectedTab === 'requests'"
         :requests="client.requests"
