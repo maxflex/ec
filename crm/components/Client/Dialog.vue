@@ -2,15 +2,86 @@
 import { clone } from 'rambda'
 import { BRANCHES } from '~/utils/sment'
 
+const modelDefaults: ClientResource = {
+  id: -1,
+  first_name: null,
+  last_name: null,
+  middle_name: null,
+  branches: [],
+  birthdate: null,
+  user_id: null,
+  head_teacher_id: null,
+  head_teacher: null,
+  phones: [],
+  parent: {
+    id: -1,
+    first_name: null,
+    last_name: null,
+    middle_name: null,
+    passport_series: null,
+    passport_number: null,
+    passport_address: null,
+    passport_code: null,
+    passport_issued_date: null,
+    passport_issued_by: null,
+    fact_address: null,
+    phones: [],
+  },
+}
+
 const { dialog, width } = useDialog('x-large')
-const client = ref<ClientResource>()
+const client = ref<ClientResource>(modelDefaults)
+const loading = ref(false)
+const itemId = ref<number>()
 
 function open(c: ClientResource) {
   client.value = clone(c)
   dialog.value = true
 }
 
-defineExpose({ open })
+function create() {
+  itemId.value = undefined
+  open(modelDefaults)
+}
+async function edit(c: ClientResource) {
+  itemId.value = c.id
+  loading.value = true
+  dialog.value = true
+  const { data } = await useHttp<ClientResource>(`clients/${c.id}`)
+  if (data.value) {
+    open(data.value)
+  }
+  loading.value = false
+}
+
+async function save() {
+  dialog.value = false
+  if (itemId.value) {
+    const { data } = await useHttp<ClientResource>(`clients/${itemId.value}`, {
+      method: 'put',
+      body: client.value,
+    })
+    if (data.value) {
+      emit('updated', data.value)
+    }
+  }
+  else {
+    const { data } = await useHttp<ClientResource>('clients', {
+      method: 'post',
+      body: client.value,
+    })
+    if (data.value) {
+      emit('created', data.value)
+    }
+  }
+
+  // emit('saved')
+}
+
+defineExpose({ create, edit })
+const emit = defineEmits<{
+  (e: 'created' | 'updated', c: ClientResource): void
+}>()
 </script>
 
 <template>
@@ -29,7 +100,7 @@ defineExpose({ open })
           icon="$save"
           :size="48"
           variant="text"
-          @click="dialog = false"
+          @click="save()"
         />
       </div>
       <div class="dialog-body-2-col">

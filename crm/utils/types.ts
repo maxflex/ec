@@ -244,9 +244,6 @@ declare global {
   }
 
   export interface ClientParentResource extends PersonResource {
-    first_name: string | null
-    last_name: string | null
-    middle_name: string | null
     passport_series: string | null
     passport_number: string | null
     passport_address: string | null
@@ -262,8 +259,6 @@ declare global {
     birthdate: string | null
     user_id: number | null
     head_teacher_id: number | null
-    created_at: string | null
-    updated_at: string | null
     parent: ClientParentResource
     phones: PhoneListResource[]
     head_teacher: PersonResource | null

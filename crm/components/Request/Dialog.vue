@@ -11,8 +11,8 @@ const modelDefaults: RequestResource = {
 
 const { dialog, width } = useDialog('default')
 const loading = ref(false)
-const request = ref<RequestResource>(modelDefaults)
 const itemId = ref<number>()
+const request = ref<RequestResource>(modelDefaults)
 
 function open(r: RequestResource) {
   request.value = clone(r)

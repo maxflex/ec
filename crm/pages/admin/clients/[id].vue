@@ -38,6 +38,10 @@ function onOpen(c: Contract, v: ContractVersion) {
   contractDialog.value?.open(c, v)
 }
 
+function onClientUpdated(c: ClientResource) {
+  client.value = c
+}
+
 async function onGroupSelected(g: Group) {
   await useHttp(`groups/add-client`, {
     method: 'post',
@@ -153,7 +157,7 @@ nextTick(loadData)
             icon="$edit"
             :size="48"
             variant="plain"
-            @click="clientDialog?.open(client)"
+            @click="clientDialog?.edit(client)"
           />
           <PreviewModeBtn
             :user="{
@@ -176,11 +180,6 @@ nextTick(loadData)
       </div>
     </div>
     <div class="client__content">
-      <UiDataLoader api-url="users">
-        <template #default="{ items }">
-          {{ items }}
-        </template>
-      </UiDataLoader>
       <RequestList
         v-if="selectedTab === 'requests'"
         :requests="client.requests"
@@ -269,7 +268,10 @@ nextTick(loadData)
         </div>
       </div>
     </div>
-    <ClientDialog ref="clientDialog" />
+    <ClientDialog
+      ref="clientDialog"
+      @updated="onClientUpdated"
+    />
     <!-- <div>
       <h3>
         Ученик

@@ -3,21 +3,27 @@
 namespace App\Models;
 
 use App\Traits\HasPhones;
+use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 class Client extends Model
 {
-    use HasPhones;
+    use HasPhones, RelationSyncable;
 
-    public $interfaces = [
-        'groups' => ['type' => 'Groups'],
-        'swamps' => ['type' => 'ContractPrograms'],
-        'tests' => ['type' => 'ClientTests'],
-        'head_teacher' => ['type' => 'Teacher | null'],
-        'branches' => ['type' => 'string[]'],
+    protected $fillable = [
+        'first_name', 'last_name', 'middle_name', 'branches',
+        'head_teacher_id'
     ];
+
+    // public $interfaces = [
+    //     'groups' => ['type' => 'Groups'],
+    //     'swamps' => ['type' => 'ContractPrograms'],
+    //     'tests' => ['type' => 'ClientTests'],
+    //     'head_teacher' => ['type' => 'Teacher | null'],
+    //     'branches' => ['type' => 'string[]'],
+    // ];
 
     protected $hidden = ['groups', 'swamps'];
 
@@ -76,9 +82,12 @@ class Client extends Model
         // return Attribute::make(fn () => $result);
     }
 
-    public function getBranchesAttribute($value)
+    public function branches(): Attribute
     {
-        return $value ? explode(',', $value) : [];
+        return Attribute::make(
+            fn ($value) => $value ? explode(',', $value) : [],
+            fn ($value) => $value ? join(',', $value) : null
+        );
     }
 
     public function headTeacher()

@@ -19,4 +19,13 @@ class ClientController extends Controller
     {
         return new ClientResource($client);
     }
+
+    public function update(Client $client, Request $request)
+    {
+        $client->update($request->all());
+        $client->syncRelation($request->all(), 'phones');
+        $client->parent->update($request->parent);
+        $client->parent->syncRelation($request->parent, 'phones');
+        return new ClientResource($client);
+    }
 }
