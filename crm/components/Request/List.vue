@@ -62,19 +62,29 @@ function onRequestUpdated(r: RequestListResource) {
             </td>
           </tr>
         </table>
+        <div v-if="r.client">
+          Клиент:
+          <NuxtLink :to="{ name: 'clients-id', params: { id: r.client.id } }">
+            {{ formatName(r.client) }}
+          </NuxtLink>
+        </div>
+        <div v-else>
+          <a href="#">добавить клиента</a>
+        </div>
       </div>
       <div class="request__right">
         <div>{{ formatDateTime(r.created_at) }}</div>
-        <div>
-          <div v-if="r.client">
-            Клиент:
-            <NuxtLink :to="{ name: 'clients-id', params: { id: r.client.id } }">
-              {{ formatName(r.client) }}
-            </NuxtLink>
-          </div>
-          <div v-else>
-            <a href="#">добавить клиента</a>
-          </div>
+        <div class="request__actions">
+          <CommentBtn
+            :entity-id="r.id"
+            :entity-type="'request'"
+          />
+          <v-btn
+            icon="$edit"
+            :size="48"
+            variant="plain"
+            @click="requestDialog?.edit(r)"
+          />
         </div>
       </div>
     </div>
@@ -148,6 +158,15 @@ function onRequestUpdated(r: RequestListResource) {
         }
       }
     }
+  }
+  &__actions {
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+    align-items: flex-end;
+    position: relative;
+    right: -10px;
+    bottom: -10px;
   }
 }
 .request-list {

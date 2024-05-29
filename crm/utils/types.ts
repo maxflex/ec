@@ -127,6 +127,13 @@ export const RequestStatusLabel = {
   finished: 'выполненные',
 } as const
 
+export const EntityType = {
+  request: 'App\\Models\\Request',
+  client: 'App\\Models\\Client',
+  teacher: 'App\\Models\\Teacher',
+  user: 'App\\Models\\User',
+} as const
+
 declare global {
   type RequestStatus = keyof typeof RequestStatusLabel
 
@@ -194,7 +201,7 @@ declare global {
     password: string
   }
 
-  type EntityString = 'admin' | 'teacher' | 'client'
+  type EntityString = keyof typeof EntityType
 
   interface User {
     id: number
@@ -243,7 +250,7 @@ declare global {
     created_at: string
   }
 
-  export interface ClientParentResource extends PersonResource {
+  interface ClientParentResource extends PersonResource {
     passport_series: string | null
     passport_number: string | null
     passport_address: string | null
@@ -254,7 +261,7 @@ declare global {
     phones: PhoneListResource[]
   }
 
-  export interface ClientResource extends PersonResource {
+  interface ClientResource extends PersonResource {
     branches: string[] | null
     birthdate: string | null
     user_id: number | null
@@ -262,5 +269,12 @@ declare global {
     parent: ClientParentResource
     phones: PhoneListResource[]
     head_teacher: PersonResource | null
+  }
+
+  interface CommentResource {
+    id: number
+    text: string
+    user: PersonResource
+    created_at?: string
   }
 }

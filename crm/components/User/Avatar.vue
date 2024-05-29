@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { user, size } = withDefaults(
   defineProps<{
-    user: User
+    user: PersonResource
     size?: number
   }>(),
   {

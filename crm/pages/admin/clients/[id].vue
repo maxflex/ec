@@ -153,17 +153,21 @@ nextTick(loadData)
           </div>
         </div>
         <div class="client__actions">
-          <v-btn
-            icon="$edit"
-            :size="48"
-            variant="plain"
-            @click="clientDialog?.edit(client)"
+          <CommentBtn
+            :entity-id="client.id"
+            :entity-type="'client'"
           />
           <PreviewModeBtn
             :user="{
               id: client.id,
               entity_type: ENTITY_TYPE.client,
             }"
+          />
+          <v-btn
+            icon="$edit"
+            :size="48"
+            variant="plain"
+            @click="clientDialog?.edit(client)"
           />
         </div>
       </div>
@@ -362,6 +366,7 @@ nextTick(loadData)
     align-items: center;
     flex: 1;
     justify-content: flex-end;
+    color: rgb(var(--v-theme-gray));
   }
   &__tabs {
     display: flex;

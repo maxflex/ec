@@ -72,10 +72,10 @@ nextTick(loadData)
     class="requests"
   >
     <v-infinite-scroll
-      :on-load="onIntersect"
       :margin="100"
       color="gray"
       side="end"
+      @load="onIntersect"
     >
       <RequestList v-model="items" />
     </v-infinite-scroll>

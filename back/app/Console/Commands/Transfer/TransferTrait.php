@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands\Transfer;
 
-use App\Models\User;
-use Exception;
 use Illuminate\Support\Facades\DB;
+use App\Models\{Teacher, User, Request, Client, ClientParent};
 
 trait TransferTrait
 {
@@ -51,5 +50,17 @@ trait TransferTrait
         return collect(explode(',', $commaSeparated))
             ->map(fn ($id) => $enumClass::getById(intval($id))->name)
             ->join(',');
+    }
+
+
+    private function mapEntity($entityType)
+    {
+        return match ($entityType) {
+            ET_ADMIN => User::class,
+            ET_TEACHER => Teacher::class,
+            ET_REQUEST => Request::class,
+            ET_CLIENT => Client::class,
+            ET_PARENT => ClientParent::class,
+        };
     }
 }

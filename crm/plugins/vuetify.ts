@@ -71,7 +71,9 @@ export default defineNuxtPlugin((nuxtApp) => {
       },
       VDialog: {
         fullscreen: true,
-        transition: 'dialog-right-transition',
+        // transition: 'dialog-right-transition',
+        transition: 'dialog-right-2-transition',
+        // transition: 'scroll-x-reverse-transition',
         contentClass: 'dialog',
       },
       VCheckbox: {

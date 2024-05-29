@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\{
     RequestsController,
     ClientController,
+    CommentController,
     ContractController,
     GroupController,
     MacroController,
@@ -37,5 +38,6 @@ Route::middleware(['auth:crm'])->group(function () {
         'tests' => TestController::class,
         'teachers' => TeacherController::class,
         'users' => UserController::class,
+        'comments' => CommentController::class,
     ]);
 });
