@@ -76,6 +76,7 @@ function onRequestUpdated(r: RequestListResource) {
         <div>{{ formatDateTime(r.created_at) }}</div>
         <div class="request__actions">
           <CommentBtn
+            :count="r.comments_count"
             :entity-id="r.id"
             :entity-type="'request'"
           />

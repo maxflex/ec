@@ -248,6 +248,7 @@ declare global {
     client: PersonResource | null
     phones: PhoneListResource[]
     created_at: string
+    comments_count: number
   }
 
   interface ClientParentResource extends PersonResource {

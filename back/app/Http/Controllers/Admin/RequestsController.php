@@ -21,6 +21,7 @@ class RequestsController extends Controller
     {
         $query = ClientRequest::query()
             ->with('phones', 'responsibleUser', 'client')
+            ->withCount('comments')
             ->latest();
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, RequestListResource::class);

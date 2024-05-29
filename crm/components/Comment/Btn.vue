@@ -2,18 +2,23 @@
 import { mdiComment } from '@mdi/js'
 import type { CommentDialog } from '#build/components'
 
-const { entityId, entityType } = defineProps<{
+const { entityId, entityType, count } = defineProps<{
+  count?: number
   entityId: number
   entityType: EntityString
 }>()
 
 const commentDialog = ref<InstanceType<typeof CommentDialog>>()
 
-const count = ref(0)
+const localCount = ref<number>(0)
 
 onMounted(() => loadData())
 
 async function loadData() {
+  if (count !== undefined) {
+    localCount.value = count
+    return
+  }
   const { data } = await useHttp<number>('comments', {
     params: {
       count: 1,
@@ -21,7 +26,7 @@ async function loadData() {
       entity_type: EntityType[entityType],
     },
   })
-  count.value = data.value || 0
+  localCount.value = data.value || 0
 }
 </script>
 
@@ -36,16 +41,16 @@ async function loadData() {
       variant="plain"
     />
     <v-badge
-      v-if="count > 0"
+      v-if="localCount > 0"
       floating
-      :content="count"
+      :content="localCount"
     />
   </div>
   <CommentDialog
     ref="commentDialog"
     :entity-id="entityId"
     :entity-type="entityType"
-    @created="count++"
+    @created="localCount++"
   />
 </template>
 
