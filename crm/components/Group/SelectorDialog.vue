@@ -56,10 +56,8 @@ defineExpose({ open })
           v-if="groups"
           class="table table--hover table--padding"
         >
-          <GroupItem
-            v-for="group in groups"
-            :key="group.id"
-            :group="group"
+          <GroupList
+            :items="groups"
             selectable
             @select="() => select(group)"
           />

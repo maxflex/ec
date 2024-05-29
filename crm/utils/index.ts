@@ -31,9 +31,10 @@ export function tmpId(): number {
   return _tmpId
 }
 
-export function selectItems(obj: object) {
-  return Object.entries(obj).map(([value, title]) => ({
+export function selectItems(obj: object, sort: boolean = false) {
+  const items = Object.entries(obj).map(([value, title]) => ({
     value,
     title,
   }))
+  return sort ? items.sort((a, b) => parseInt(b.value) - parseInt(a.value)) : items
 }

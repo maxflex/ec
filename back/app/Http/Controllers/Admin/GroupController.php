@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\GroupRequest;
+use App\Http\Resources\GroupListResource;
 use App\Http\Resources\GroupResource;
 use App\Models\Client;
 use App\Models\ContractGroup;
@@ -12,21 +14,33 @@ use Illuminate\Http\Request;
 class GroupController extends Controller
 {
     protected $filters = [
-        'equals' => ['program'],
+        'equals' => ['program', 'year'],
     ];
 
     public function index(Request $request)
     {
         $query = Group::query()
-            ->with('teacher')
+            ->withCount('lessons')
             ->orderBy('id', 'desc');
         $this->filter($request, $query);
-        return $this->handleIndexRequest($request, $query);
+        return $this->handleIndexRequest($request, $query, GroupListResource::class);
     }
 
     public function show($id)
     {
         $group = Group::find($id);
+        return new GroupResource($group);
+    }
+
+    public function store(GroupRequest $request)
+    {
+        $group = Group::create($request->all());
+        return new GroupListResource($group);
+    }
+
+    public function update(Group $group, GroupRequest $request)
+    {
+        $group->update($request->all());
         return new GroupResource($group);
     }
 

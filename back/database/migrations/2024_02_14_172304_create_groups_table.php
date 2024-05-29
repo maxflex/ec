@@ -17,19 +17,10 @@ return new class extends Migration
     {
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Teacher::class)->constrained();
             $table->enum(
                 'program',
                 collect(Program::cases())->map(fn ($e) => $e->name)->all()
             )->index();
-            // $table->enum(
-            //     'subject',
-            //     collect(Subject::cases())->map(fn ($e) => $e->name)->all()
-            // )->index();
-            // $table->enum(
-            //     'grade',
-            //     collect(Grade::cases())->map(fn ($e) => $e->name)->all()
-            // )->index();
             $table->unsignedSmallInteger('year');
             $table->boolean('is_archived')->index()->default(false);
             $table->json('zoom')->nullable();

@@ -16,6 +16,13 @@ import type {
 } from '~/utils/models'
 import { ENTITY_TYPE } from '~/utils/sment'
 
+const tabs = {
+  requests: 'заявки',
+  contracts: 'договоры',
+  groups: 'группы',
+  tests: 'тесты',
+} as const
+const selectedTab = ref<keyof typeof tabs>('requests')
 const route = useRoute()
 const client = ref<ClientResource>()
 const clientPaymentDialog = ref<null | InstanceType<
@@ -64,15 +71,6 @@ function onTestsSaved(tests: Tests) {
   })
 }
 
-type ClientTab = 'requests' | 'contracts' | 'groups' | 'tests'
-const selectedTab = ref<ClientTab>('requests')
-const tabs: Record<ClientTab, string> = {
-  requests: 'заявки',
-  contracts: 'договоры',
-  groups: 'группы',
-  tests: 'тесты',
-}
-
 nextTick(loadData)
 </script>
 
@@ -81,8 +79,8 @@ nextTick(loadData)
     v-if="client"
     class="client"
   >
-    <div class="client__panel">
-      <div class="client__panel-info">
+    <div class="panel">
+      <div class="panel-info">
         <div>
           <div>ученик</div>
           <div class="text-truncate">
@@ -152,7 +150,7 @@ nextTick(loadData)
             не установлено
           </div>
         </div>
-        <div class="client__actions">
+        <div class="panel-actions">
           <CommentBtn
             :entity-id="client.id"
             :entity-type="'client'"
@@ -171,12 +169,12 @@ nextTick(loadData)
           />
         </div>
       </div>
-      <div class="client__tabs">
+      <div class="tabs">
         <div
           v-for="(label, key) in tabs"
           :key="key"
-          class="client__tabs-item"
-          :class="{ 'client__tabs-item--active': selectedTab === key }"
+          class="tabs-item"
+          :class="{ 'tabs-item--active': selectedTab === key }"
           @click="selectedTab = key"
         >
           {{ label }}
@@ -236,11 +234,7 @@ nextTick(loadData)
         style="top: -20px; position: relative"
       >
         <div class="table table--padding table--hover table--actions-on-hover">
-          <GroupItem
-            v-for="group in client.groups"
-            :key="group.id"
-            :group="group"
-          />
+          <GroupList :items="client.groups" />
           <GroupSwamp
             v-for="swamp in client.swamps"
             :key="swamp.id"
@@ -334,55 +328,6 @@ nextTick(loadData)
     & > div {
       padding: 20px;
       height: 100%;
-    }
-  }
-  &__panel {
-    display: flex;
-    flex-direction: column;
-    position: sticky;
-    top: 0;
-    background: white;
-    z-index: 1;
-    &-info {
-      border-bottom: 1px solid #e0e0e0;
-      // background: #fafafa;
-      display: flex;
-      gap: 50px;
-      padding: 10px 10px 10px 20px;
-      & > div:not(.client__actions) {
-        // padding: 0 16px 20px;
-        & > div {
-          &:first-child {
-            color: rgb(var(--v-theme-gray));
-          }
-        }
-      }
-    }
-  }
-  &__actions {
-    // padding: 6px 6px 20px;
-    // white-space: nowrap;
-    display: flex;
-    align-items: center;
-    flex: 1;
-    justify-content: flex-end;
-    color: rgb(var(--v-theme-gray));
-  }
-  &__tabs {
-    display: flex;
-    border-bottom: 1px solid #e0e0e0;
-    // box-shadow: 0 0 10px 20px rgba(white, 0.5);
-    &-item {
-      padding: 12px 20px;
-      cursor: pointer;
-      transition: all cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
-      &:hover {
-        background: #f6f6f6;
-      }
-      &--active {
-        background: #e4e4e4 !important;
-        // pointer-events: none;
-      }
     }
   }
   h3 {

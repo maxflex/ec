@@ -1,4 +1,3 @@
-import type { YEARS } from './sment'
 import type { ClientTest } from './models'
 
 export const ProgramLabel = {
@@ -134,6 +133,19 @@ export const EntityType = {
   user: 'App\\Models\\User',
 } as const
 
+export const YearLabel = {
+  2024: '2024–2025 уч. г.',
+  2023: '2023–2024 уч. г.',
+  2022: '2022–2023 уч. г.',
+  2021: '2021–2022 уч. г.',
+  2020: '2020–2021 уч. г.',
+  2019: '2019–2020 уч. г.',
+  2018: '2018–2019 уч. г.',
+  2017: '2017–2018 уч. г.',
+  2016: '2016–2017 уч. г.',
+  2015: '2015–2016 уч. г.',
+} as const
+
 declare global {
   type RequestStatus = keyof typeof RequestStatusLabel
 
@@ -170,7 +182,8 @@ declare global {
     status: InfiniteScrollStatus
   }
 
-  export type Program = keyof typeof ProgramLabel
+  type Program = keyof typeof ProgramLabel
+
   interface MenuItem {
     to: string
     title: string
@@ -194,7 +207,7 @@ declare global {
   }
 
   // https://stackoverflow.com/a/45486495/2274406
-  type Year = (typeof YEARS)[number]
+  type Year = keyof typeof YearLabel
 
   interface Zoom {
     id: string
@@ -277,5 +290,31 @@ declare global {
     text: string
     user: PersonResource
     created_at?: string
+  }
+
+  interface Zoom {
+    id: string
+    password: string
+  }
+
+  interface GroupListResource {
+    id: number
+    lessons_count: number
+    program: Program
+    zoom: Zoom | null
+  }
+
+  interface GroupResource {
+    id?: number
+    program?: Program
+    year?: Year
+    duration?: number
+    is_archived: boolean
+    zoom: Zoom
+  }
+
+  interface GroupFilters {
+    program?: Program
+    year?: Year
   }
 }

@@ -40,10 +40,6 @@ nextTick(loadData)
     class="table table--padding"
     @load="onIntersect"
   >
-    <GroupItem
-      v-for="item in items"
-      :key="item.id"
-      :group="item"
-    />
+    <GroupList :items="items" />
   </v-infinite-scroll>
 </template>

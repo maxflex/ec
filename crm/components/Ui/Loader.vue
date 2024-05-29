@@ -7,15 +7,10 @@ const { paginator } = defineProps<{
 
 <template>
   <v-fade-transition>
-    <div
+    <UiLoaderr
       v-if="paginator ? paginator.loading && paginator.page < 2 : loading"
       class="loader"
-    >
-      <v-progress-circular
-        :size="50"
-        indeterminate
-      />
-    </div>
+    />
   </v-fade-transition>
 </template>
 
@@ -24,7 +19,7 @@ const { paginator } = defineProps<{
   position: absolute;
   background: white;
   width: calc(100% - var(--v-layout-left));
-  height: 100%;
+  height: 90vh;
   z-index: 99;
   display: flex;
   align-items: center;

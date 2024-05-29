@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class GroupResource extends JsonResource
+class GroupListResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,8 +14,8 @@ class GroupResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return array_merge(parent::toArray($request), [
-            'contracts' => $this->contracts()->with('client')->get(),
+        return extract_fields($this, [
+            'program', 'zoom', 'lessons_count'
         ]);
     }
 }

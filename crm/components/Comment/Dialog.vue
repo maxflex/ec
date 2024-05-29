@@ -158,7 +158,7 @@ defineExpose({ open })
       line-height: 18px !important;
       top: 2px;
       position: relative;
-      padding: 20px 0 0 !important;
+      padding: 15px 8px 0 !important;
       &::-webkit-scrollbar {
         width: 0; /** webkit */
       }

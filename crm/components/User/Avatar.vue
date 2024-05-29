@@ -13,6 +13,6 @@ const id = (user.id % 25) + 1
 
 <template>
   <v-avatar :size="size">
-    <v-img :src="`/avatars/avatar-${id}.svg`" />
+    <img :src="`/avatars/avatar-${id}.svg`">
   </v-avatar>
 </template>

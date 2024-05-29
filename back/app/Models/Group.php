@@ -7,13 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Group extends Model
 {
-    public $interfaces = [
-        'zoom' => ['type' => 'Zoom']
+    protected $fillable = [
+        'duration', 'program', 'year', 'zoom', 'is_archived'
     ];
 
     protected $casts = [
         'program' => Program::class,
-        'zoom' => 'array'
+        'zoom' => 'array',
+        'is_archived' => 'boolean',
     ];
 
     public function teacher()
@@ -24,5 +25,10 @@ class Group extends Model
     public function contracts()
     {
         return $this->belongsToMany(Contract::class);
+    }
+
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class);
     }
 }

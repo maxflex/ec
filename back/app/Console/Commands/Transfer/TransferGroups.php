@@ -32,7 +32,6 @@ class TransferGroups extends Command
         foreach ($groups as $g) {
             DB::table('groups')->insert([
                 'id' => $g->id,
-                'teacher_id' => $g->teacher_id,
                 'program' => Program::getById($g->grade_id, $g->subject_id)->name,
                 'year' => $g->year,
                 'is_archived' => $g->is_archived,
