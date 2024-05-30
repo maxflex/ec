@@ -19,7 +19,7 @@ const calendarDialog = ref()
   >
     <v-text-field
       :label="label"
-      :model-value="formatDate(modelValue)"
+      :model-value="modelValue ? formatDate(modelValue) : null"
       hide-details
     />
   </div>

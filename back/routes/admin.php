@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\{
     CommentController,
     ContractController,
     GroupController,
+    LessonController,
     MacroController,
     PreviewController,
     TeacherController,
@@ -39,5 +40,6 @@ Route::middleware(['auth:crm'])->group(function () {
         'teachers' => TeacherController::class,
         'users' => UserController::class,
         'comments' => CommentController::class,
+        'lessons' => LessonController::class,
     ]);
 });

@@ -126,6 +126,12 @@ export const RequestStatusLabel = {
   finished: 'выполненные',
 } as const
 
+export const LessonStatusLabel = {
+  planned: 'запланировано',
+  conducted: 'проведено',
+  cancelled: 'отменено',
+} as const
+
 export const EntityType = {
   request: 'App\\Models\\Request',
   client: 'App\\Models\\Client',
@@ -146,8 +152,18 @@ export const YearLabel = {
   2015: '2015–2016 уч. г.',
 } as const
 
+export const Cabinets = [
+  '428', '430', '432', '433', '434', '439', '407', '409', '412', '413', '417', '422', '423', '424',
+  '10', '35', '205', '214', '221', '301', '302', '303', '304', '305', '310', '311', '314', '319',
+  '320', '321', '322', '507', '809',
+] as const
+
 declare global {
+  type Cabinet = typeof Cabinets[number]
+
   type RequestStatus = keyof typeof RequestStatusLabel
+
+  type Program = keyof typeof ProgramLabel
 
   interface Meta {
     current_page: number
@@ -182,8 +198,6 @@ declare global {
     status: InfiniteScrollStatus
   }
 
-  type Program = keyof typeof ProgramLabel
-
   interface MenuItem {
     to: string
     title: string
@@ -215,6 +229,8 @@ declare global {
   }
 
   type EntityString = keyof typeof EntityType
+
+  type LessonStatus = keyof typeof LessonStatusLabel
 
   interface User {
     id: number
@@ -316,5 +332,27 @@ declare global {
   interface GroupFilters {
     program?: Program
     year?: Year
+  }
+
+  interface LessonListResource {
+    id: number
+    teacher: PersonResource | null
+    status: LessonStatus
+    start_at: string
+    cabinet: Cabinet
+    topic: string | null
+  }
+
+  interface LessonResource {
+    id?: number
+    teacher_id?: number | null
+    price?: number
+    cabinet?: Cabinet
+    start_at?: string
+    status: LessonStatus
+    topic?: string | null
+    conducted_at: string | null
+    is_topic_verified: boolean
+    is_unplanned: boolean
   }
 }

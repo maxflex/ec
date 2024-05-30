@@ -85,7 +85,13 @@ nextTick(loadData)
         </div>
       </div>
     </div>
-    <div class="table table--actions-on-hover">
+    <div v-if="selectedTab === 'schedule'">
+      <LessonList :group="group" />
+    </div>
+    <div
+      v-else
+      class="table table--actions-on-hover"
+    >
       <div
         v-for="contract in group.contracts"
         :key="contract.id"

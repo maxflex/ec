@@ -362,14 +362,6 @@ const ContractLessonStatus = {
 
 export type ContractLessonStatus = typeof ContractLessonStatus[keyof typeof ContractLessonStatus]
 
-const LessonStatus = {
-  planned: 'planned',
-  conducted: 'conducted',
-  cancelled: 'cancelled',
-} as const
-
-export type LessonStatus = typeof LessonStatus[keyof typeof LessonStatus]
-
 const LogType = {
   create: 'create',
   update: 'update',

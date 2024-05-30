@@ -23,6 +23,10 @@ export function formatDate(dateTime: string | null): string {
   return dayjs(dateTime).format('DD.MM.YYYY')
 }
 
+export function formatTime(dateTime: string | null): string {
+  return dayjs(dateTime).format('HH:mm')
+}
+
 export function formatDateTime(dateTime: string | null): string {
   return dayjs(dateTime).format('DD.MM.YYYY в HH:mm')
 }
