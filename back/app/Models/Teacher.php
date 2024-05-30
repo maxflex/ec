@@ -17,7 +17,7 @@ class Teacher extends Model
 
     public function payments()
     {
-        return $this->hasMany(TeacherPayment::class);
+        return $this->hasMany(TeacherPayment::class)->latest();
     }
 
     public function subjects(): Attribute

@@ -15,4 +15,16 @@ class TeacherPaymentController extends Controller
             ->latest();
         return $this->handleIndexRequest($request, $query);
     }
+
+    public function show($id)
+    {
+        $teacherPayment = TeacherPayment::find($id);
+        return $teacherPayment;
+    }
+
+    public function store(Request $request)
+    {
+        $teacherPayment = TeacherPayment::create($request->all());
+        return $teacherPayment;
+    }
 }

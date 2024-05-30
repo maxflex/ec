@@ -150,6 +150,7 @@ defineExpose({ create, edit })
           <v-textarea
             v-model="lesson.topic"
             label="Тема"
+            no-resize
           />
         </div>
         <div>

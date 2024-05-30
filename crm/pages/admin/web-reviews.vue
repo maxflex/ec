@@ -78,16 +78,9 @@ nextTick(loadData)
         />
       </div>
       <div
-        class="text-right"
-        style="width: 100px; flex: initial"
+        style="width: 100px; flex: initial !important"
       >
-        <v-rating
-          class="no-pointer-events"
-          :model-value="item.rating"
-          density="compact"
-          size="small"
-          color="orange"
-        />
+        <UiRating v-model="item.rating" />
       </div>
     </div>
   </v-infinite-scroll>

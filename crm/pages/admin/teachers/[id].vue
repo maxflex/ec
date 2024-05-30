@@ -81,7 +81,10 @@ nextTick(loadData)
       v-if="selectedTab === 'payments'"
       class="table"
     >
-      <TeacherPaymentList :items="teacher.payments" />
+      <TeacherPaymentList
+        :items="teacher.payments"
+        create
+      />
     </div>
   </div>
   <TeacherDialog

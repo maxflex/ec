@@ -213,6 +213,8 @@ export const TeacherPaymentMethodLabel = {
 }
 
 declare global {
+  type TeacherPaymentMethod = keyof typeof TeacherPaymentMethodLabel
+
   type Subject = keyof typeof SubjectLabel
 
   type TeacherStatus = keyof typeof TeacherStatusLabel
@@ -417,5 +419,16 @@ declare global {
   interface TeacherResource extends PersonResource {
     phones: PhoneListResource[]
     status: TeacherStatus
+  }
+
+  interface TeacherPaymentResource {
+    id: number
+    sum?: number
+    date?: string
+    year?: number
+    method: TeacherPaymentMethod
+    purpose: string | null
+    teacher_id?: number
+    is_verified: boolean
   }
 }

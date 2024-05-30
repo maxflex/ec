@@ -68,8 +68,10 @@ function onLessonUpdated(updatedLesson: LessonListResource) {
       >
         {{ l.topic }}
       </div>
-      <div style="width: 100px">
-        {{ LessonStatusLabel[l.status] }}
+      <div style="width: 150px">
+        <span class="pl-4">
+          {{ LessonStatusLabel[l.status] }}
+        </span>
       </div>
       <div
         style="width: 70px; flex: initial !important"
@@ -84,7 +86,7 @@ function onLessonUpdated(updatedLesson: LessonListResource) {
         />
       </div>
     </div>
-    <div>
+    <div style="border: none">
       <a
         class="cursor-pointer"
         @click="() => lessonDialog?.create()"

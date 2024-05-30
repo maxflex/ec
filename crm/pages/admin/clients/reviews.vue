@@ -62,13 +62,7 @@ nextTick(loadData)
         {{ ProgramLabel[item.program] }}
       </div>
       <div>
-        <v-rating
-          class="no-pointer-events"
-          :model-value="item.rating"
-          density="compact"
-          size="small"
-          color="orange"
-        />
+        <UiRating v-model="item.rating" />
       </div>
       <!-- <div style="width: 350px">
         <NuxtLink :to="{ name: 'teachers-id', params: { id: item.id } }">
