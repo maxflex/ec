@@ -14,7 +14,6 @@ import type {
   Group,
   Tests,
 } from '~/utils/models'
-import { ENTITY_TYPE } from '~/utils/sment'
 
 const tabs = {
   requests: 'заявки',
@@ -158,7 +157,7 @@ nextTick(loadData)
           <PreviewModeBtn
             :user="{
               id: client.id,
-              entity_type: ENTITY_TYPE.client,
+              entity_type: EntityType.client,
             }"
           />
           <v-btn

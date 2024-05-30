@@ -263,8 +263,8 @@ export interface Teacher {
   first_name: string | null
   last_name: string | null
   middle_name: string | null
-  subjects: unknown | null
-  status: string
+  subjects: Subject[]
+  status: TeacherStatus
   desc: string | null
   photo_desc: string | null
   passport_series: string | null

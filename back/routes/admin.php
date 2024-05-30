@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\{
     RequestsController,
     ClientController,
+    ClientPaymentController,
+    ClientReviewController,
     CommentController,
     ContractController,
     GroupController,
@@ -11,9 +13,11 @@ use App\Http\Controllers\Admin\{
     MacroController,
     PreviewController,
     TeacherController,
+    TeacherPaymentController,
     TestController,
     UserController,
-    VacationController
+    VacationController,
+    WebReviewController
 };
 
 
@@ -37,9 +41,13 @@ Route::middleware(['auth:crm'])->group(function () {
         'vacations' => VacationController::class,
         'macros' => MacroController::class,
         'tests' => TestController::class,
+        'teacher-payments' => TeacherPaymentController::class,
         'teachers' => TeacherController::class,
         'users' => UserController::class,
         'comments' => CommentController::class,
         'lessons' => LessonController::class,
+        'client-reviews' => ClientReviewController::class,
+        'client-payments' => ClientPaymentController::class,
+        'web-reviews' => WebReviewController::class,
     ]);
 });

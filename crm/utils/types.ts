@@ -158,7 +158,65 @@ export const Cabinets = [
   '320', '321', '322', '507', '809',
 ] as const
 
+export const TeacherStatusLabel = {
+  inactive: 'неактивен',
+  active: 'ведет занятия сейчас',
+  earlyReserve: 'ранний запас',
+  lateReserve: 'поздний запас',
+  usedToWork: 'ранее работал',
+  interview: 'собеседование',
+  closed: 'закрыт',
+} as const
+
+export const SubjectLabel = {
+  math: 'математика',
+  phys: 'физика',
+  chem: 'химимя',
+  bio: 'биология',
+  inf: 'информатика',
+  rus: 'русский язык',
+  lit: 'литература',
+  soc: 'обществознание',
+  his: 'история',
+  eng: 'английский язык',
+  geo: 'география',
+  soch: 'сочинение',
+} as const
+
+export const SubjectLabelShort = {
+  math: 'МАТ',
+  phys: 'ФИЗ',
+  chem: 'ХИМ',
+  bio: 'БИО',
+  inf: 'ИНФ',
+  rus: 'РУС',
+  lit: 'ЛИТ',
+  soc: 'ОБЩ',
+  his: 'ИСТ',
+  eng: 'АНГ',
+  geo: 'ГЕО',
+  soch: 'СОЧ',
+}
+
+export const ClientPaymentMethodLabel = {
+  card: 'карта',
+  online: 'карта онлайн',
+  cash: 'наличные',
+  invoice: 'счёт',
+}
+
+export const TeacherPaymentMethodLabel = {
+  card: 'карта',
+  cash: 'наличные',
+  invoice: 'счёт',
+  mutual: 'взаимозачёт',
+}
+
 declare global {
+  type Subject = keyof typeof SubjectLabel
+
+  type TeacherStatus = keyof typeof TeacherStatusLabel
+
   type Cabinet = typeof Cabinets[number]
 
   type RequestStatus = keyof typeof RequestStatusLabel
@@ -354,5 +412,10 @@ declare global {
     conducted_at: string | null
     is_topic_verified: boolean
     is_unplanned: boolean
+  }
+
+  interface TeacherResource extends PersonResource {
+    phones: PhoneListResource[]
+    status: TeacherStatus
   }
 }

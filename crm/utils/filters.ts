@@ -66,6 +66,10 @@ export function formatFullName(person: PersonResource) {
   return [person.last_name, person.first_name, person.middle_name].join(' ')
 }
 
+export function formatPrice(price: number) {
+  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+}
+
 export function filterAge(date: string) {
   const currentYear = parseInt(dayjs().format('YYYY'))
   const year = parseInt(date.split('-')[0])

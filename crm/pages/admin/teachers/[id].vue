@@ -1,15 +1,25 @@
 <script setup lang="ts">
+import type { TeacherDialog } from '#build/components'
 import type { Teacher } from '~/utils/models'
-import { ENTITY_TYPE } from '~/utils/sment'
 
 const route = useRoute()
 const teacher = ref<Teacher>()
+const teacherDialog = ref<InstanceType<typeof TeacherDialog>>()
+
+const tabs = {
+  payments: 'платежи',
+} as const
+const selectedTab = ref<keyof typeof tabs>('payments')
 
 async function loadData() {
   const { data } = await useHttp<Teacher>(`teachers/${route.params.id}`)
   if (data.value) {
     teacher.value = data.value
   }
+}
+
+function onTeacherUpdated(t: TeacherResource) {
+  teacher.value = t
 }
 
 nextTick(loadData)
@@ -20,37 +30,68 @@ nextTick(loadData)
     v-if="teacher"
     class="teacher"
   >
-    <div>
-      <h3>
-        Преподаватель
-        <PreviewModeBtn
-          :user="{
-            id: teacher.id,
-            entity_type: ENTITY_TYPE.teacher,
-          }"
-        />
-      </h3>
-      <div class="inputs">
-        <v-text-field
-          v-model="teacher.last_name"
-          label="Фамилия"
-        />
-        <v-text-field
-          v-model="teacher.first_name"
-          label="Имя"
-        />
-        <v-text-field
-          v-model="teacher.middle_name"
-          label="Отчество"
-        />
+    <div class="panel">
+      <div class="panel-info">
+        <div>
+          <div>преподаватель {{ teacher.id }}</div>
+          <div>
+            {{ formatFullName(teacher) }}
+          </div>
+        </div>
+        <div>
+          <div>предметы</div>
+          <div>
+            {{ teacher.subjects.map(s => SubjectLabel[s]).join(', ') }}
+          </div>
+        </div>
+        <div>
+          <div>статус</div>
+          <div>
+            {{ TeacherStatusLabel[teacher.status] }}
+          </div>
+        </div>
+        <div class="panel-actions">
+          <PreviewModeBtn
+            :user="{
+              id: teacher.id,
+              entity_type: EntityType.teacher,
+            }"
+          />
+          <v-btn
+            icon="$edit"
+            :size="48"
+            variant="plain"
+            @click="teacherDialog?.edit(teacher)"
+          />
+        </div>
+      </div>
+      <div class="tabs">
+        <div
+          v-for="(label, key) in tabs"
+          :key="key"
+          class="tabs-item"
+          :class="{ 'tabs-item--active': selectedTab === key }"
+          @click="selectedTab = key"
+        >
+          {{ label }}
+        </div>
       </div>
     </div>
+    <div
+      v-if="selectedTab === 'payments'"
+      class="table"
+    >
+      <TeacherPaymentList :items="teacher.payments" />
+    </div>
   </div>
+  <TeacherDialog
+    ref="teacherDialog"
+    @updated="onTeacherUpdated"
+  />
 </template>
 
 <style lang="scss">
 .teacher {
-  padding: 20px;
   h3 {
     margin-bottom: 20px;
     display: flex;

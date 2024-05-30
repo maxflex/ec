@@ -8,6 +8,11 @@ import {
   mdiPrinter,
   mdiDotsTriangle,
   mdiLogout,
+  mdiHumanMaleBoard,
+  mdiStarBox,
+  mdiStarBoxOutline,
+  mdiAccountMultiple,
+  mdiCash,
 } from '@mdi/js'
 import { ENTITY_TYPE } from '~/utils/sment'
 
@@ -63,6 +68,31 @@ switch (user?.entity_type) {
         to: '/contracts',
       },
       {
+        icon: mdiHumanMaleBoard,
+        title: 'Преподаватели',
+        to: '/teachers',
+      },
+      {
+        icon: mdiStarBoxOutline,
+        title: 'Отзывы',
+        to: '/clients/reviews',
+      },
+      {
+        icon: mdiStarBox,
+        title: 'Отзывы на сайте',
+        to: '/web-reviews',
+      },
+      {
+        icon: mdiCash,
+        title: 'Платежи клиентов',
+        to: '/clients/payments',
+      },
+      {
+        icon: mdiCash,
+        title: 'Платежи препод',
+        to: '/teachers/payments',
+      },
+      {
         icon: mdiCalendar,
         title: 'Праздники',
         to: '/vacations',
@@ -76,6 +106,11 @@ switch (user?.entity_type) {
         icon: mdiDotsTriangle,
         title: 'Тесты',
         to: '/tests',
+      },
+      {
+        icon: mdiAccountMultiple,
+        title: 'Пользователи',
+        to: '/users',
       },
     ]
 }
