@@ -9,13 +9,15 @@ const { entityId, entityType } = defineProps<{
 const emit = defineEmits<{ (e: 'created'): void }>()
 const comments = ref<CommentResource[]>([])
 const input = ref()
-const wrapper = ref()
+const wrapper = ref<HTMLDivElement | null>(null)
 const text = ref('')
+const noScroll = ref(false)
+const loaded = ref(false)
 
 function scrollBottom() {
   nextTick(() => {
     console.log(wrapper.value)
-    wrapper.value.scrollTo({ top: 99999 })
+    wrapper.value?.scrollTo({ top: 99999, behavior: noScroll.value ? 'instant' : 'smooth' })
     input.value.focus()
   })
 }
@@ -38,10 +40,12 @@ async function send() {
     },
   })
   if (data.value) {
+    noScroll.value = true
     comments.value.push(data.value)
     text.value = ''
     scrollBottom()
     emit('created')
+    setTimeout(() => noScroll.value = false, 200)
   }
 }
 
@@ -53,8 +57,13 @@ async function loadData() {
     },
   })
   if (data.value) {
+    noScroll.value = true
     comments.value = data.value.data
     scrollBottom()
+    setTimeout(() => {
+      noScroll.value = false
+      loaded.value = true
+    }, 200)
   }
 }
 
@@ -67,11 +76,21 @@ defineExpose({ open })
     :width="width"
   >
     <div
-      id="wrapperr"
       ref="wrapper"
-      class="dialog-wrapper"
+      class="dialog-wrapper comments-wrapper"
+      :class="{
+        'comments-wrapper--no-scroll': noScroll,
+        'comments-wrapper--loaded': loaded,
+      }"
     >
-      <div class="comments__items">
+      <v-fade-transition>
+        <UiLoaderr v-if="!loaded" />
+      </v-fade-transition>
+      <transition-group
+        name="new-comment"
+        class="comments__items"
+        tag="div"
+      >
         <div
           v-for="c in comments"
           :key="c.id"
@@ -93,7 +112,7 @@ defineExpose({ open })
             {{ c.text }}
           </div>
         </div>
-      </div>
+      </transition-group>
       <div class="comments__input">
         <v-textarea
           ref="input"
@@ -107,7 +126,7 @@ defineExpose({ open })
           @keydown.enter.exact.prevent
           @keyup.enter.exact="send()"
         />
-        <v-slide-x-transition>
+        <transition name="comment-btn">
           <v-btn
             v-if="text.length > 0"
             :icon="mdiSendVariant"
@@ -117,7 +136,7 @@ defineExpose({ open })
             color="secondary"
             @click="send()"
           />
-        </v-slide-x-transition>
+        </transition>
       </div>
     </div>
   </v-dialog>
@@ -127,7 +146,7 @@ defineExpose({ open })
 .comments {
   $padding: 10px 16px;
   &__items {
-    flex: 1 1 auto;
+    flex: 1;
     // height: 0px; /*here the height is set to 0px*/
     display: flex;
     flex-direction: column;
@@ -142,8 +161,12 @@ defineExpose({ open })
     z-index: 1;
     border-top: 1px solid #e0e0e0;
     padding: $padding;
-    min-height: 65px;
-    position: relative;
+    // min-height: 65px;
+    // height: 65px;
+    // max-height: 65px;
+    position: sticky;
+    bottom: 0;
+    background: white;
     .v-btn {
       position: relative;
       top: 4px;
@@ -166,6 +189,28 @@ defineExpose({ open })
 
     .v-field__outline {
       display: none !important;
+    }
+  }
+  &-wrapper {
+    .loaderr {
+      position: absolute;
+      z-index: 10;
+    }
+    &--no-scroll {
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+    &--loaded {
+      .new-comment {
+        &-enter-active, &-leave-active {
+          transition: all 50ms linear;
+        }
+        &-enter-from, &-leave-to {
+          // opacity: 0;
+          transform: translateY(30px);
+        }
+      }
     }
   }
 }
@@ -202,6 +247,20 @@ defineExpose({ open })
         opacity: 1;
       }
     }
+  }
+}
+.comment-btn {
+  &-enter-active {
+    transition: all 0.3s linear;
+    transform-origin: center center;
+  }
+  &-leave-active {
+    transition: none !important;
+  }
+  &-enter-from {
+    opacity: 0;
+    // transform: scale(0.5);
+    transform: translateX(-10px);
   }
 }
 </style>
