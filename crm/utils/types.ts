@@ -368,6 +368,11 @@ declare global {
     created_at?: string
   }
 
+  interface ContractResource {
+    id: number
+    client: PersonResource
+  }
+
   interface Zoom {
     id: string
     password: string
@@ -387,6 +392,7 @@ declare global {
     duration?: number
     is_archived: boolean
     zoom: Zoom
+    contracts: ContractResource[]
   }
 
   interface GroupFilters {

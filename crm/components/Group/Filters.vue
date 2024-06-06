@@ -26,7 +26,7 @@ const emit = defineEmits<{
       <UiClearableSelect
         v-model="filters.year"
         label="Учебный год"
-        :items="selectItems(YearLabel, true)"
+        :items="selectItems(YearLabel)"
         density="comfortable"
       />
     </div>

@@ -31,10 +31,21 @@ export function tmpId(): number {
   return _tmpId
 }
 
-export function selectItems(obj: object, sort: boolean = false) {
+export function selectItems(obj: object) {
   const items = Object.entries(obj).map(([value, title]) => ({
     value,
     title,
   }))
-  return sort ? items.sort((a, b) => parseInt(b.value) - parseInt(a.value)) : items
+  // если ключ – это число (например, годы '2024')
+  // то приводим к числу, чтоб чётенько было
+  // и сортирум (сверху дополнительно)
+  if (isFinite(+items[0].value)) {
+    return items
+      .map(({ value, title }) => ({
+        title,
+        value: parseInt(value),
+      }))
+      .sort((a, b) => b.value - a.value)
+  }
+  return items
 }

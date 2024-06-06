@@ -3,11 +3,11 @@ const { items } = defineProps<{
   label: string
   density?: 'comfortable'
   items: {
-    value: string
+    value: string | number
     title: string
   }[]
 }>()
-const model = defineModel()
+const model = defineModel<string | number >()
 const input = ref()
 
 function clear() {

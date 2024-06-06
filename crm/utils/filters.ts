@@ -89,3 +89,7 @@ export function formatClientTestResults(clientTest: ClientTest) {
 
   return `${score} из ${total}`
 }
+
+export function isDefined<T>(value: T | undefined | null): value is T {
+  return value !== undefined && value !== null
+}

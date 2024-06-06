@@ -204,11 +204,11 @@ defineExpose({ open })
     &--loaded {
       .new-comment {
         &-enter-active, &-leave-active {
-          transition: all 50ms linear;
+          transition: all 100ms linear;
         }
         &-enter-from, &-leave-to {
-          // opacity: 0;
-          transform: translateY(30px);
+          opacity: 0;
+          transform: translateY(20px);
         }
       }
     }

@@ -24,7 +24,7 @@ function create() {
   open(modelDefaults)
 }
 
-async function edit(r: GroupListResource) {
+async function edit(r: GroupResource) {
   itemId.value = r.id
   loading.value = true
   dialog.value = true
@@ -38,7 +38,7 @@ async function edit(r: GroupListResource) {
 async function save() {
   dialog.value = false
   if (itemId.value) {
-    const { data } = await useHttp<GroupListResource>(`groups/${itemId.value}`, {
+    const { data } = await useHttp<GroupResource>(`groups/${itemId.value}`, {
       method: 'put',
       body: group.value,
     })
@@ -55,7 +55,6 @@ async function save() {
       emit('created', data.value)
     }
   }
-  // emit('saved')
 }
 
 defineExpose({ create, edit })
@@ -97,7 +96,7 @@ const emit = defineEmits<{
           <UiClearableSelect
             v-model="group.year"
             label="Учебный год"
-            :items="selectItems(YearLabel, true)"
+            :items="selectItems(YearLabel)"
           />
         </div>
         <div>

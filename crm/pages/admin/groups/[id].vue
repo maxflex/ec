@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { GroupDialog } from '#build/components'
-import type { Contract } from '~/utils/models'
 
 const tabs = {
   schedule: 'расписание',
@@ -18,7 +17,7 @@ async function loadData() {
   group.value = data.value as GroupResource
 }
 
-async function removeFromGroup(c: Contract) {
+async function removeFromGroup(c: ContractResource) {
   await useHttp(`groups/remove-contract`, {
     method: 'post',
     params: {
@@ -69,7 +68,7 @@ nextTick(loadData)
             icon="$edit"
             :size="48"
             variant="plain"
-            @click="groupDialog?.edit(group)"
+            @click="groupDialog?.edit(group!)"
           />
         </div>
       </div>
