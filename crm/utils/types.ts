@@ -212,7 +212,14 @@ export const TeacherPaymentMethodLabel = {
   mutual: 'взаимозачёт',
 }
 
+export const CompanyTypeLabel = {
+  ip: 'ip',
+  ooo: 'ooo',
+} as const
+
 declare global {
+  type CompanyType = keyof typeof CompanyTypeLabel
+
   type TeacherPaymentMethod = keyof typeof TeacherPaymentMethodLabel
 
   type Subject = keyof typeof SubjectLabel
@@ -371,6 +378,9 @@ declare global {
   interface ContractResource {
     id: number
     client: PersonResource
+    client_id: number
+    year: Year
+    company: CompanyType
   }
 
   interface Zoom {

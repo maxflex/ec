@@ -1,104 +1,59 @@
 <script setup lang="ts">
-import type { Contract, ContractVersion } from '~/utils/models'
-import { PROGRAM } from '~/utils/sment'
+import type { ClientPaymentDialog, ContractDialog } from '#build/components'
 
-const emit = defineEmits<{
-  (e: 'open', contract: Contract, version: ContractVersion): void
-}>()
-
-const { contract } = defineProps<{
-  contract: Contract
-}>()
+const { contracts } = defineProps<{ contracts: ContractResource[] }>()
+const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()
+const contractDialog = ref<InstanceType<typeof ContractDialog>>()
 </script>
 
 <template>
-  <div class="table contract-list table--hover table--padding">
+  <div class="contract-list">
     <div
-      v-for="version in contract.versions"
-      :key="version.id"
+      v-for="contract in contracts"
+      :key="contract.id"
     >
-      <div width="150">
-        версия {{ version.version }}
-      </div>
-      <div width="220">
-        от {{ formatDate(version.date) }}
-      </div>
-      <div width="220">
-        {{ version.sum }} руб.
-      </div>
-      <div width="220">
-        <span
-          v-if="version.payments.length === 0"
-          class="text-grey"
-        >
-          платежей нет
-        </span>
-        <template v-else>
-          {{ version.payments.length }} платежей
-        </template>
-      </div>
-      <div>
-        <div class="contract-list__programs">
-          <div
-            v-for="p in version.programs.slice(
-              0,
-              version.programs.length > 3 ? 2 : 3,
-            )"
-            :key="p.id"
-          >
-            <span :class="{ 'text-error': p.is_closed }">
-              {{ PROGRAM[p.program] }}
-            </span>
-            <span class="text-grey">
-              {{ p.lessons }}
-            </span>
-          </div>
-          <div
-            v-if="version.programs.length > 3"
-            class="text-gray"
-          >
-            ... ещё {{ version.programs.length - 2 }}
-          </div>
-        </div>
-      </div>
-      <div
-        width="50"
-        class="table-actions"
-      >
+      <h3>
+        Договор №{{ contract.id }} на {{ formatYear(contract.year) }}
         <v-btn
-          variant="text"
-          icon="$more"
+          color="gray"
           :size="48"
-          @click="emit('open', contract, version)"
+          icon="$plus"
+          variant="plain"
+          @click="() => contractDialog?.create(contract)"
         />
-      </div>
+      </h3>
+      <ContractVersionList
+        :contract="contract"
+        @open="onOpen"
+      />
+      <h3>
+        Платежи
+        <v-btn
+          color="gray"
+          :size="48"
+          icon="$plus"
+          variant="plain"
+          @click="() => clientPaymentDialog?.create(contract)"
+        />
+      </h3>
+      <!-- <ClientPaymentList
+        :items="contract.payments"
+        @open="(p) => clientPaymentDialog?.open(p)"
+      /> -->
     </div>
+    <ContractDialog ref="contractDialog" />
+    <!-- <ClientPaymentDialog ref="clientPaymentDialog" /> -->
   </div>
 </template>
 
 <style lang="scss">
 .contract-list {
   & > div {
-    align-items: flex-start !important;
-    & > div {
-      &:nth-child(1) {
-        width: 150px;
-      }
-      &:nth-child(2),
-      &:nth-child(3),
-      &:nth-child(4) {
-        width: 220px;
-      }
+    h3:not(:first-child) {
+      margin-top: 30px;
     }
-  }
-  &__programs {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-width: 322px;
-    & > div {
-      display: flex;
-      gap: 4px;
+    &:not(:first-child) {
+      margin-top: 50px;
     }
   }
 }

@@ -164,7 +164,7 @@ nextTick(loadData)
             icon="$edit"
             :size="48"
             variant="plain"
-            @click="clientDialog?.edit(client)"
+            @click="clientDialog?.edit(client!)"
           />
         </div>
       </div>
@@ -181,53 +181,23 @@ nextTick(loadData)
       </div>
     </div>
     <div class="client__content">
-      <RequestList
+      <UiDataLoader
         v-if="selectedTab === 'requests'"
-        :requests="client.requests"
-      />
-      <div
-        v-else-if="selectedTab === 'contracts'"
-        class="client-contracts"
+        url="requests"
+        :filters="{ client_id: client.id }"
       >
-        <div
-          v-for="contract in client.contracts"
-          :key="contract.id"
-        >
-          <h3>
-            Договор №{{ contract.id }} на {{ formatYear(contract.year) }}
-            <v-btn
-              color="gray"
-              :size="48"
-              icon="$plus"
-              variant="plain"
-              @click="() => contractDialog?.create(contract)"
-            />
-          </h3>
-          <ContractList
-            :contract="contract"
-            @open="onOpen"
-          />
-          <h3>
-            Платежи
-            <v-btn
-              color="gray"
-              :size="48"
-              icon="$plus"
-              variant="plain"
-              @click="() => clientPaymentDialog?.create(contract)"
-            />
-          </h3>
-          <ClientPaymentList
-            :items="contract.payments"
-            @open="(p) => clientPaymentDialog?.open(p)"
-          />
-        </div>
-        <ContractDialog ref="contractDialog" />
-        <ClientPaymentDialog ref="clientPaymentDialog" />
-        <!-- <div class="mt-6">
-          <v-btn color="primary">Добавить договор</v-btn>
-        </div> -->
-      </div>
+        <template #default="{ items }">
+          <RequestList :model-value="items" />
+        </template>
+      </UiDataLoader>
+      <UiDataLoader
+        v-else-if="selectedTab === 'contracts'"
+        url="contracts"
+        :filters="{ client_id: client.id }"
+      >
+        <template #default="{ items }" />
+      </UiDataLoader>
+
       <div
         v-else-if="selectedTab === 'groups'"
         style="top: -20px; position: relative"
@@ -269,22 +239,6 @@ nextTick(loadData)
       ref="clientDialog"
       @updated="onClientUpdated"
     />
-    <!-- <div>
-      <h3>
-        Ученик
-        <PreviewModeBtn
-          :user="{
-            id: client.id,
-            entity_type: ENTITY_TYPE.client,
-          }"
-        />
-      </h3>
-      <div class="inputs">
-        <v-text-field v-model="client.last_name" label="Фамилия" />
-        <v-text-field v-model="client.first_name" label="Имя" />
-        <v-text-field v-model="client.middle_name" label="Отчество" />
-      </div>
-    </div> -->
   </div>
 </template>
 
@@ -345,16 +299,7 @@ nextTick(loadData)
   //     margin-top: 60px;
   //   }
   // }
-  &-contracts {
-    & > div {
-      h3:not(:first-child) {
-        margin-top: 30px;
-      }
-      &:not(:first-child) {
-        margin-top: 50px;
-      }
-    }
-  }
+
   .request-list,
   .table {
     left: -20px;

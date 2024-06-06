@@ -1,21 +1,27 @@
 <script setup lang="ts">
-const { apiUrl, filters } = defineProps<{
-  apiUrl: string
+const { url, filters } = defineProps<{
+  url: string
   filters?: object
 }>()
+const loading = ref(true)
 const items = ref<[]>([])
 
 onMounted(async () => {
-  const { data } = await useHttp<ApiResponse<[]>>(apiUrl, {
+  const { data } = await useHttp<ApiResponse<[]>>(url, {
     params: filters,
   })
   if (data.value) {
     items.value = data.value.data
-    console.log('DATA', data.value.data)
+    // console.log('DATA', data.value.data)
   }
+  loading.value = false
 })
 </script>
 
 <template>
-  <slot :items="items" />
+  <UiLoaderr v-if="loading" />
+  <slot
+    v-else
+    :items="items"
+  />
 </template>
