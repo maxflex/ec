@@ -127,7 +127,7 @@ nextTick(loadData)
   .table {
     font-size: 14px;
     & > div {
-      padding: 16px 20px !important;
+      padding: 12px 20px !important;
       align-items: flex-end !important;
     }
   }

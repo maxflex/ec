@@ -6,10 +6,11 @@ const teacher = ref<TeacherResource>()
 const teacherDialog = ref<InstanceType<typeof TeacherDialog>>()
 
 const tabs = {
+  groups: 'группы',
   payments: 'платежи',
   balance: 'баланс',
 } as const
-const selectedTab = ref<keyof typeof tabs>('payments')
+const selectedTab = ref<keyof typeof tabs>('groups')
 
 async function loadData() {
   const { data } = await useHttp<TeacherResource>(`teachers/${route.params.id}`)
@@ -78,7 +79,20 @@ nextTick(loadData)
       </div>
     </div>
     <UiDataLoader
-      v-if="selectedTab === 'payments'"
+      v-if="selectedTab ==='groups'"
+      url="groups"
+      :filters="{ teacher_id: teacher.id }"
+    >
+      <template #default="{ items }">
+        <div class="table table--padding">
+          <GroupList
+            :items="items"
+          />
+        </div>
+      </template>
+    </UiDataLoader>
+    <UiDataLoader
+      v-else-if="selectedTab === 'payments'"
       url="teacher-payments"
       :filters="{ teacher_id: teacher.id }"
     >

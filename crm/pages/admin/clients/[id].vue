@@ -15,8 +15,10 @@ const tabs = {
   requests: 'заявки',
   contracts: 'договоры',
   groups: 'группы',
+  reviews: 'отзывы',
   tests: 'тесты',
 } as const
+
 const selectedTab = ref<keyof typeof tabs>('requests')
 const route = useRoute()
 const client = ref<ClientResource>()
@@ -184,6 +186,18 @@ nextTick(loadData)
       >
         <template #default="{ items }">
           <ContractList :items="items" />
+        </template>
+      </UiDataLoader>
+      <UiDataLoader
+        v-else-if="selectedTab === 'reviews'"
+        url="client-reviews"
+        :filters="{ client_id: client.id }"
+      >
+        <template #default="{ items }">
+          <ClientReviewList
+            style="top: -20px"
+            :items="items"
+          />
         </template>
       </UiDataLoader>
 

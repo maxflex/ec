@@ -8,7 +8,7 @@ const { user, size } = withDefaults(
     size: 60,
   },
 )
-const id = (user.id % 25) + 1
+const id = (Math.abs(user.id) % 25) + 1
 </script>
 
 <template>

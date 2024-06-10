@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { LessonDialog } from '#build/components'
 
-const { group } = defineProps<{ group: GroupResource }>()
+const { group, editable } = defineProps<{ group: GroupResource, editable?: boolean }>()
 const lessons = ref<LessonListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
 
@@ -86,6 +86,7 @@ nextTick(loadData)
         class="text-right table-actions"
       >
         <v-btn
+          v-if="editable"
           icon="$edit"
           :size="48"
           variant="plain"
@@ -94,7 +95,10 @@ nextTick(loadData)
         />
       </div>
     </div>
-    <div style="border: none">
+    <div
+      v-if="editable"
+      style="border: none"
+    >
       <a
         class="cursor-pointer"
         @click="() => lessonDialog?.create(group)"
@@ -104,6 +108,7 @@ nextTick(loadData)
     </div>
   </div>
   <LessonDialog
+    v-if="editable"
     ref="lessonDialog"
     @updated="onLessonUpdated"
     @destroyed="onLessonDestroyed"

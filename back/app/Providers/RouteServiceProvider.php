@@ -28,7 +28,7 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(1000)->by($request->user()?->id ?: $request->ip());
         });
         $this->routes(function () {
-            foreach (['common', 'admin', 'client'] as $r) {
+            foreach (['common', 'admin', 'client', 'teacher'] as $r) {
                 Route::middleware('crm')
                     ->prefix($r)
                     ->group(base_path("routes/{$r}.php"));

@@ -15,6 +15,7 @@ class GroupController extends Controller
 {
     protected $filters = [
         'equals' => ['program', 'year'],
+        'teacher' => ['teacher_id'],
     ];
 
     public function index(Request $request)
@@ -64,5 +65,10 @@ class GroupController extends Controller
     public function removeContract(Request $request)
     {
         ContractGroup::where($request->all())->delete();
+    }
+
+    protected function filterTeacher(&$query, $teacherId)
+    {
+        $query->whereTeacher($teacherId);
     }
 }

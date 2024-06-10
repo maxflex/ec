@@ -1,6 +1,9 @@
 <script setup lang="ts">
-const items = ref([])
+import type { UserDialog } from '#build/components'
+
+const items = ref<UserResource[]>([])
 const paginator = usePaginator()
+const userDialog = ref<InstanceType<typeof UserDialog>>()
 // const isLastPage = false
 
 const loadData = async function () {
@@ -24,36 +27,61 @@ async function onIntersect({
 }: {
   done: (status: InfiniteScrollStatus) => void
 }) {
+  if (paginator.isLastPage) {
+    return
+  }
   done('loading')
   await loadData()
-  done('ok')
+  done(paginator.isLastPage ? 'empty' : 'ok')
+}
+
+function onUserUpdated(u: UserResource) {
+  const index = items.value.findIndex(e => e.id === u.id)
+  if (index !== -1) {
+    items.value[index] = u
+  }
+  else {
+    items.value.unshift(u)
+    smoothScroll('main', 'top')
+  }
+}
+
+function onUserDestroyed(u: UserResource) {
+  const index = items.value.findIndex(e => e.id === u.id)
+  if (index !== -1) {
+    items.value.splice(index, 1)
+  }
 }
 
 nextTick(loadData)
 </script>
 
 <template>
+  <UiTopPanel>
+    <v-spacer />
+    <v-btn
+      append-icon="$next"
+      color="primary"
+      @click="userDialog?.create()"
+    >
+      добавить
+    </v-btn>
+  </UiTopPanel>
   <UiLoader :paginator="paginator" />
   <v-infinite-scroll
     v-if="items"
     :margin="100"
-    class="table"
     side="end"
     @load="onIntersect"
   >
-    <div
-      v-for="item in items"
-      :key="item.id"
-    >
-      <div style="width: 30px">
-        {{ item.id }}
-      </div>
-      <div>
-        {{ formatName(item) }}
-      </div>
-      <div class="text-right text-gray">
-        {{ formatDateTime(item.created_at) }}
-      </div>
-    </div>
+    <UserList
+      :items="items"
+      @edit="userDialog?.edit"
+    />
   </v-infinite-scroll>
+  <UserDialog
+    ref="userDialog"
+    @updated="onUserUpdated"
+    @destroyed="onUserDestroyed"
+  />
 </template>

@@ -24,9 +24,12 @@ async function onIntersect({
 }: {
   done: (status: InfiniteScrollStatus) => void
 }) {
+  if (paginator.isLastPage) {
+    return
+  }
   done('loading')
   await loadData()
-  done('ok')
+  done(paginator.isLastPage ? 'empty' : 'ok')
 }
 
 nextTick(loadData)

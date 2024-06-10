@@ -31,4 +31,12 @@ class Group extends Model
     {
         return $this->hasMany(Lesson::class)->orderBy('date')->orderBy('time');
     }
+
+    public function scopeWhereTeacher($query, $teacherId)
+    {
+        return $query->whereHas(
+            'lessons',
+            fn ($q) => $q->where('teacher_id', $teacherId)
+        );
+    }
 }

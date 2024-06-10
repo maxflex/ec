@@ -514,4 +514,9 @@ declare global {
     balance: number
     items: BalanceItem[]
   }
+
+  interface UserResource extends PersonResource {
+    phones: PhoneListResource[]
+    created_at?: string
+  }
 }
