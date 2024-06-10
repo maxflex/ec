@@ -25,4 +25,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(ClientPayment::class);
     }
+
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class);
+    }
 }

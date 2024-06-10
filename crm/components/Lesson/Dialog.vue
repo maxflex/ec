@@ -12,64 +12,69 @@ const { dialog, width } = useDialog('default')
 const loading = ref(false)
 const lessonId = ref<number | undefined>()
 const lesson = ref<LessonResource>(clone(modelDefaults))
+const destroying = ref(false)
 const startAt = reactive({
   date: '',
   time: '',
 })
 
-const emit = defineEmits<{
-  (e: 'created' | 'updated', r: LessonResource): void
-}>()
+const emit = defineEmits<{ (e: 'updated' | 'destroyed', r: LessonListResource): void }>()
 
-function openDialog(r: LessonResource) {
-  [startAt.date, startAt.time] = r.start_at ? r.start_at.split(' ') : ['', '']
-  lesson.value = clone(r)
+function openDialog(l: LessonResource) {
+  [startAt.date, startAt.time] = l.start_at ? l.start_at.split(' ') : ['', '']
+  lesson.value = clone(l)
   dialog.value = true
 }
 
-function create() {
+function create(g: GroupResource) {
   lessonId.value = undefined
-  openDialog(modelDefaults)
+  openDialog({
+    ...modelDefaults,
+    group_id: g.id,
+  })
 }
 
 async function edit(l: LessonListResource) {
   lessonId.value = l.id
   loading.value = true
-  try {
-    const { data } = await useHttp<LessonResource>(`lessons/${l.id}`)
-    if (data.value) {
-      openDialog(data.value)
-    }
+  const { data } = await useHttp<LessonResource>(`lessons/${l.id}`)
+  if (data.value) {
+    openDialog(data.value)
   }
-  catch (error) {
-    console.error('Failed to fetch lesson data:', error)
-  }
-  finally {
-    loading.value = false
-  }
+  loading.value = false
 }
 
 async function save() {
   dialog.value = false
   loading.value = true
   lesson.value.start_at = [startAt.date, startAt.time].join(' ')
-  try {
-    const method = lessonId.value ? 'put' : 'post'
-    const url = lessonId.value ? `lessons/${lessonId.value}` : 'lessons'
-    const { data } = await useHttp<LessonResource>(url, {
-      method,
-      body: lesson.value,
-    })
-    if (data.value) {
-      const event = lessonId.value ? 'updated' : 'created'
-      emit(event, data.value)
-    }
+  const method = lessonId.value ? 'put' : 'post'
+  const url = lessonId.value ? `lessons/${lessonId.value}` : 'lessons'
+  const { data } = await useHttp<LessonListResource>(url, {
+    method,
+    body: lesson.value,
+  })
+  if (data.value) {
+    emit('updated', data.value)
   }
-  catch (error) {
-    console.error('Failed to save lesson:', error)
+  loading.value = false
+}
+
+async function destroy() {
+  if (!confirm('Вы уверены, что хотите удалить урок?')) {
+    return
   }
-  finally {
-    loading.value = false
+  destroying.value = true
+  const { data, status } = await useHttp<LessonListResource>(`lessons/${lesson.value.id}`, {
+    method: 'delete',
+  })
+  if (status.value === 'error') {
+    destroying.value = false
+  }
+  else if (data.value) {
+    emit('destroyed', data.value)
+    dialog.value = false
+    setTimeout(() => destroying.value = false, 300)
   }
 }
 
@@ -161,6 +166,25 @@ defineExpose({ create, edit })
           <v-checkbox
             v-model="lesson.is_unplanned"
             label="Внеплановое"
+          />
+        </div>
+        <div
+          v-if="lessonId"
+          class="dialog-bottom"
+        >
+          <span v-if="lesson.user && lesson.created_at">
+            урок создан
+            {{ formatName(lesson.user) }}
+            {{ formatDateTime(lesson.created_at) }}
+          </span>
+          <v-btn
+            v-if="lesson.conducted_at === null"
+            icon="$delete"
+            :size="48"
+            color="red"
+            variant="plain"
+            :loading="destroying"
+            @click="destroy()"
           />
         </div>
       </div>

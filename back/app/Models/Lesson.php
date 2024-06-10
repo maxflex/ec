@@ -10,6 +10,7 @@ class Lesson extends Model
 {
     protected $fillable = [
         'teacher_id',
+        'group_id',
         'price',
         'cabinet',
         'start_at',
@@ -30,5 +31,10 @@ class Lesson extends Model
     public function teacher()
     {
         return $this->belongsTo(Teacher::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

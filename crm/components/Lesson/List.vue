@@ -5,8 +5,6 @@ const { group } = defineProps<{ group: GroupResource }>()
 const lessons = ref<LessonListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
 
-onMounted(() => loadData())
-
 async function loadData() {
   const { data } = await useHttp<ApiResponse<LessonListResource[]>>('lessons', {
     params: {
@@ -18,15 +16,25 @@ async function loadData() {
   }
 }
 
-function onLessonUpdated(updatedLesson: LessonListResource) {
-  const index = lessons.value.findIndex(l => l.id === updatedLesson.id)
+function onLessonUpdated(l: LessonListResource) {
+  const index = lessons.value.findIndex(e => e.id === l.id)
   if (index !== -1) {
-    lessons.value[index] = updatedLesson
+    lessons.value[index] = l
   }
   else {
-    lessons.value.push(updatedLesson)
+    lessons.value.push(l)
+    smoothScroll('.v-main', 'bottom')
   }
 }
+
+function onLessonDestroyed(l: LessonListResource) {
+  const index = lessons.value.findIndex(e => e.id === l.id)
+  if (index !== -1) {
+    lessons.value.splice(index, 1)
+  }
+}
+
+nextTick(loadData)
 </script>
 
 <template>
@@ -89,7 +97,7 @@ function onLessonUpdated(updatedLesson: LessonListResource) {
     <div style="border: none">
       <a
         class="cursor-pointer"
-        @click="() => lessonDialog?.create()"
+        @click="() => lessonDialog?.create(group)"
       >
         добавить урок
       </a>
@@ -98,5 +106,6 @@ function onLessonUpdated(updatedLesson: LessonListResource) {
   <LessonDialog
     ref="lessonDialog"
     @updated="onLessonUpdated"
+    @destroyed="onLessonDestroyed"
   />
 </template>

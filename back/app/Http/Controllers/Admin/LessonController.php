@@ -33,11 +33,15 @@ class LessonController extends Controller
         return new LessonListResource($lesson);
     }
 
-    public function destroy($id)
+    public function store(Request $request)
     {
-        $lesson = Lesson::findOrFail($id);
-        $lesson->delete();
+        $lesson = auth()->user()->entity->lessons()->create($request->all());
+        return new LessonListResource($lesson);
+    }
 
-        return response()->noContent();
+    public function destroy(Lesson $lesson)
+    {
+        $lesson->delete();
+        return new LessonListResource($lesson);
     }
 }

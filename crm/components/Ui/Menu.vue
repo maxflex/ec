@@ -53,9 +53,9 @@ switch (user?.entity_type) {
         to: '/requests',
       },
       {
-        icon: mdiAccount,
-        title: 'Клиенты',
-        to: '/clients',
+        icon: mdiFileDocumentOutline,
+        title: 'Договоры',
+        to: '/contracts',
       },
       {
         icon: mdiAccountGroup,
@@ -63,9 +63,9 @@ switch (user?.entity_type) {
         to: '/groups',
       },
       {
-        icon: mdiFileDocumentOutline,
-        title: 'Договоры',
-        to: '/contracts',
+        icon: mdiAccount,
+        title: 'Клиенты',
+        to: '/clients',
       },
       {
         icon: mdiHumanMaleBoard,

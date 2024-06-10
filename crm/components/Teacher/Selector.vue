@@ -30,7 +30,9 @@ onMounted(() => loadData())
       <v-list-item
         :base-color="item.raw.status === 'active' ? undefined : 'gray'"
         v-bind="props"
-      />
+      >
+        <template #prepend />
+      </v-list-item>
     </template>
   </v-select>
 </template>

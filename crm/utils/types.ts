@@ -473,6 +473,7 @@ declare global {
   interface LessonResource {
     id?: number
     teacher_id?: number | null
+    group_id?: number
     price?: number
     cabinet?: Cabinet
     start_at?: string
@@ -481,6 +482,8 @@ declare global {
     conducted_at: string | null
     is_topic_verified: boolean
     is_unplanned: boolean
+    user?: PersonResource
+    created_at?: string
   }
 
   interface TeacherResource extends PersonResource {

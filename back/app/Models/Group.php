@@ -29,6 +29,6 @@ class Group extends Model
 
     public function lessons()
     {
-        return $this->hasMany(Lesson::class);
+        return $this->hasMany(Lesson::class)->orderBy('date')->orderBy('time');
     }
 }
