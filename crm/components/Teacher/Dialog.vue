@@ -7,6 +7,7 @@ const modelDefaults: TeacherResource = {
   last_name: null,
   middle_name: null,
   phones: [],
+  status: 'active',
 }
 
 const { dialog, width } = useDialog('default')

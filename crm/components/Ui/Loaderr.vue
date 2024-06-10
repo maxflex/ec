@@ -1,7 +1,3 @@
-<script setup lang="ts">
-// const a = '123'
-</script>
-
 <template>
   <div class="loaderr">
     <span> загрузка... </span>

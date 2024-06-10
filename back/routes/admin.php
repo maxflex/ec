@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\{
+    BalanceController,
     RequestsController,
     ClientController,
     ClientPaymentController,
@@ -33,6 +34,7 @@ Route::middleware(['auth:crm'])->group(function () {
     });
     Route::post('preview', [PreviewController::class, 'enter']);
     Route::get('tests/results/{clientTest}', [TestController::class, 'results']);
+    Route::get('balance/teacher/{teacher}', [BalanceController::class, 'teacher']);
     Route::apiResources([
         'requests' => RequestsController::class,
         'clients' => ClientController::class,

@@ -37,4 +37,9 @@ class Lesson extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function scopeConducted($query)
+    {
+        return $query->where('status', LessonStatus::conducted);
+    }
 }

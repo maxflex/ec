@@ -23,4 +23,11 @@ class TeacherController extends Controller
     {
         return new TeacherResource($teacher);
     }
+
+    public function update(Teacher $teacher, Request $request)
+    {
+        $teacher->update($request->all());
+        $teacher->syncRelation($request->all(), 'phones');
+        return new TeacherResource($teacher);
+    }
 }

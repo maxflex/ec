@@ -18,4 +18,14 @@ enum TeacherPaymentMethod: string
             'mutual' => self::mutual,
         };
     }
+
+    public function getTitle(): string
+    {
+        return match ($this) {
+            self::card => 'карта',
+            self::cash => 'наличные',
+            self::invoice => 'счёт',
+            self::mutual => 'взаимозачёт',
+        };
+    }
 }

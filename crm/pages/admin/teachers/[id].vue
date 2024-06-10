@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import type { TeacherDialog } from '#build/components'
-import type { Teacher } from '~/utils/models'
 
 const route = useRoute()
-const teacher = ref<Teacher>()
+const teacher = ref<TeacherResource>()
 const teacherDialog = ref<InstanceType<typeof TeacherDialog>>()
 
 const tabs = {
   payments: 'платежи',
+  balance: 'баланс',
 } as const
 const selectedTab = ref<keyof typeof tabs>('payments')
 
 async function loadData() {
-  const { data } = await useHttp<Teacher>(`teachers/${route.params.id}`)
+  const { data } = await useHttp<TeacherResource>(`teachers/${route.params.id}`)
   if (data.value) {
     teacher.value = data.value
   }
@@ -61,7 +61,7 @@ nextTick(loadData)
             icon="$edit"
             :size="48"
             variant="plain"
-            @click="teacherDialog?.edit(teacher)"
+            @click="teacherDialog?.edit(teacher!)"
           />
         </div>
       </div>
@@ -89,6 +89,10 @@ nextTick(loadData)
         />
       </template>
     </UiDataLoader>
+    <TeacherBalance
+      v-else
+      :teacher="teacher"
+    />
   </div>
   <TeacherDialog
     ref="teacherDialog"
@@ -98,6 +102,9 @@ nextTick(loadData)
 
 <style lang="scss">
 .teacher {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   h3 {
     margin-bottom: 20px;
     display: flex;

@@ -503,4 +503,15 @@ declare global {
     teacher?: PersonResource
     created_at?: string
   }
+
+  interface BalanceItem {
+    comment: string
+    sum: number
+  }
+
+  interface Balance {
+    date: string
+    balance: number
+    items: BalanceItem[]
+  }
 }
