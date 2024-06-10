@@ -1,14 +1,13 @@
 <script setup lang="ts">
-const { modelValue } = withDefaults(
+const { label } = withDefaults(
   defineProps<{
-    label: string
-    modelValue: string
+    label?: string
   }>(),
   {
     label: 'Дата',
   },
 )
-const emit = defineEmits(['update:modelValue'])
+const model = defineModel<string>()
 const calendarDialog = ref()
 </script>
 
@@ -19,14 +18,13 @@ const calendarDialog = ref()
   >
     <v-text-field
       :label="label"
-      :model-value="modelValue ? formatDate(modelValue) : null"
+      :model-value="model ? formatDate(model) : null"
       hide-details
     />
   </div>
   <CalendarDialog
     ref="calendarDialog"
-    :model-value="modelValue"
-    @update:model-value="(v) => emit('update:modelValue', v)"
+    v-model="model"
   />
 </template>
 

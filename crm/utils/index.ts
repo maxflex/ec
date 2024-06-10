@@ -24,11 +24,11 @@ export function getEntityString(): EntityString | null {
   return null
 }
 
-let _tmpId = 0
+let _newId = 0
 
-export function tmpId(): number {
-  _tmpId--
-  return _tmpId
+export function newId(): number {
+  _newId--
+  return _newId
 }
 
 export function selectItems(obj: object) {
@@ -40,12 +40,21 @@ export function selectItems(obj: object) {
   // то приводим к числу, чтоб чётенько было
   // и сортирум (сверху дополнительно)
   if (isFinite(+items[0].value)) {
-    return items
+    const sorted = items
       .map(({ value, title }) => ({
         title,
         value: parseInt(value),
       }))
       .sort((a, b) => b.value - a.value)
+    return sorted
   }
   return items
+}
+
+export function smoothScroll(querySelector: string, direction: 'top' | 'bottom') {
+  nextTick(() =>
+    document
+      .querySelector(querySelector)
+      ?.scrollTo({ top: direction === 'bottom' ? 9999 : 0, behavior: 'smooth' }),
+  )
 }

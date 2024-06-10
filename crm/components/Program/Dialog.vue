@@ -1,15 +1,10 @@
 <script setup lang="ts">
-import type { Program } from '~/utils/models'
-import { PROGRAM, type Programs } from '~/utils/sment'
+const emit = defineEmits<{ (e: 'saved', programs: Program[]): void }>()
 
-const emit = defineEmits<{
-  (e: 'saved', programs: Programs): void
-}>()
+const { dialog, width, transition } = useDialog('default')
+const selected = ref<Program[]>([])
 
-const { dialog, width } = useDialog('default')
-const selected = ref<Programs>([])
-
-function open(preSelect: Programs = []) {
+function open(preSelect: Program[] = []) {
   dialog.value = true
   selected.value = [...preSelect]
 }
@@ -31,6 +26,7 @@ defineExpose({ open })
   <v-dialog
     v-model="dialog"
     :width="width"
+    :transition="transition"
   >
     <div class="dialog-wrapper">
       <div class="dialog-header">

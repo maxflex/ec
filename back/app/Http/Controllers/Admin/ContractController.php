@@ -21,4 +21,16 @@ class ContractController extends Controller
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, ContractResource::class);
     }
+
+    public function store(Request $request)
+    {
+        $contract = Contract::create($request->all());
+        $contractVersion = auth()->user()->entity->contractVersions()->create([
+            ...$request->versions[0],
+            'contract_id' => $contract->id,
+        ]);
+        $contractVersion->syncRelation($request->versions[0], 'programs');
+        $contractVersion->syncRelation($request->versions[0], 'payments');
+        return new ContractResource($contract->fresh());
+    }
 }

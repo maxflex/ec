@@ -7,9 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Contract extends Model
 {
-    public $interfaces = [
-        'year' => ['type' => 'Year'],
+    public $timestamps = false;
+
+    protected $fillable = [
+        'year', 'company', 'client_id'
     ];
+
     protected $casts = [
         'company' => CompanyType::class,
     ];

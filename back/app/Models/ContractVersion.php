@@ -2,10 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Model;
 
 class ContractVersion extends Model
 {
+    use RelationSyncable;
+
+    protected $fillable = [
+        'contract_id', 'date', 'sum'
+    ];
+
     public function programs()
     {
         return $this->hasMany(ContractProgram::class)->orderBy('is_closed');
@@ -14,5 +21,27 @@ class ContractVersion extends Model
     public function payments()
     {
         return $this->hasMany(ContractPayment::class)->orderBy('date');
+    }
+
+    public function contract()
+    {
+        return $this->belongsTo(Contract::class);
+    }
+
+    public function chain()
+    {
+        return $this->hasMany(ContractVersion::class, 'contract_id', 'contract_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public static function booted()
+    {
+        static::creating(function ($contractVersion) {
+            $contractVersion->version = $contractVersion->chain()->max('version') + 1;
+        });
     }
 }

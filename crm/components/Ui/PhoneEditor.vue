@@ -4,7 +4,7 @@ const phoneMask = { mask: '+7 (###) ###-##-##' }
 
 function addPhone() {
   model.value.push({
-    id: tmpId(),
+    id: newId(),
     number: '',
     comment: '',
     is_verified: false,

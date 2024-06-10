@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { YEARS } from '~/utils/sment'
 
-const { dialog, width } = useDialog('medium')
-const props = defineProps<{
-  modelValue: string
-}>()
-const emit = defineEmits(['update:modelValue'])
+const { dialog, width, transition } = useDialog('medium')
+const model = defineModel<string>()
 const monthLabels = [
   'январь',
   'февраль',
@@ -46,10 +43,10 @@ const isToday = (year: number, month: number, day: number) =>
   getDate(year, month, day) === today()
 
 const isSelected = (year: number, month: number, day: number) =>
-  getDate(year, month, day) === props.modelValue
+  getDate(year, month, day) === model.value
 
 const onClick = (year: number, month: number, day: number) => {
-  emit('update:modelValue', getDate(year, month, day))
+  model.value = getDate(year, month, day)
   dialog.value = false
 }
 
@@ -60,6 +57,7 @@ defineExpose({ open })
   <v-dialog
     v-model="dialog"
     :width="width"
+    :transition="transition"
   >
     <v-card class="calendar-card">
       <div class="calendar__header">

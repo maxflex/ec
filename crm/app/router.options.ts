@@ -10,7 +10,7 @@ export default <RouterConfig>{
       r => r.name.indexOf('-') === -1,
     )
     const entityString = getEntityString()
-    console.log({ entityString })
+    // console.log({ entityString })
     if (entityString) {
       routes
         // @ts-expect-error

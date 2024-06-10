@@ -1,62 +1,104 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
 import type { ProgramDialog } from '#build/components'
-import type {
-  CompanyType,
-  Contract,
-  ContractPayment,
-  ContractProgram,
-  ContractVersion,
-} from '~/utils/models'
-import { PROGRAM, YEARS, COMPANY_TYPE, type Programs } from '~/utils/sment'
 
-const { dialog, width } = useDialog('default')
-const contract = ref<Contract>()
-const version = ref<ContractVersion>()
+const emit = defineEmits<{ (e: 'updated', c: ContractResource): void }>()
+const defaultContract: ContractResource = {
+  id: newId(),
+  client_id: 0,
+  year: 2024,
+  company: 'ooo',
+  versions: [],
+}
+const defaultContractVersion: ContractVersionResource = {
+  id: newId(),
+  version: 1,
+  contract_id: -1,
+  date: today(),
+  programs: [],
+  payments: [],
+}
+const { dialog, width } = useDialog('medium')
+const contract = ref<ContractResource>(defaultContract)
+const i = ref(0) // versionIndex: selected ContractVersion index
 const programDialog = ref<null | InstanceType<typeof ProgramDialog>>()
+const saving = ref(false)
+const destroying = ref(false)
+const version = computed({
+  get: () => contract.value.versions[i.value],
+  set: v => contract.value.versions[i.value] = v,
+})
+const isEditMode = computed(() => version.value.id > 0)
+const isNewContract = computed(() => contract.value.id < 0)
 
-function open(c: Contract, v: ContractVersion) {
-  contract.value = clone(c)
-  version.value = clone(v)
-  dialog.value = true
-}
-
-function create(c: Contract) {
-  contract.value = clone(c)
-  const { sum, version: ver, programs, payments } = c.versions[0]
-  version.value = {
-    sum,
-    programs,
-    payments,
-    version: (ver as number) + 1,
-    id: -1,
-    user_id: 1,
-    contract_id: c.id,
-    created_at: null,
-    updated_at: null,
-    date: today(),
+function create() {
+  contract.value = {
+    ...defaultContract,
+    client_id: Number(useRoute().params.id), // допускаем, что client_id хранится в адресной строке
+    versions: [{ ...defaultContractVersion }],
   }
+  i.value = 0
   dialog.value = true
 }
 
-function toggleCloseProgram(p: ContractProgram) {
+function editVersion(c: ContractResource, versionIndex: number) {
+  i.value = versionIndex
+  contract.value = clone(c)
+  dialog.value = true
+}
+
+function addVersion(c: ContractResource) {
+  contract.value = clone(c)
+  const { sum, version, programs, payments } = c.versions[0]
+  i.value = contract.value.versions.push({
+    id: newId(),
+    version,
+    sum,
+    programs: programs.map(e => ({
+      ...e,
+      id: newId(),
+    })),
+    payments: payments.map(e => ({
+      ...e,
+      id: newId(),
+    })),
+    contract_id: c.id,
+    date: today(),
+  }) - 1
+  dialog.value = true
+}
+
+async function destroy() {
+  if (!confirm('Вы уверены, что хотите удалить договор?')) {
+    return
+  }
+  destroying.value = true
+  const { status } = await useHttp(`contract-versions/${version.value.id}`, {
+    method: 'delete',
+  })
+  if (status.value === 'error') {
+    destroying.value = false
+  }
+  else {
+    contract.value.versions.splice(i.value, 1)
+    emit('updated', contract.value)
+    dialog.value = false
+    setTimeout(() => destroying.value = false, 300)
+  }
+}
+
+function toggleCloseProgram(p: ContractProgramResource) {
   p.is_closed = !p.is_closed
 }
 
-function onProgramsSaved(programs: Programs) {
-  // typescript угомонить
-  if (!contract.value || !version.value) {
-    return
-  }
+function onProgramsSaved(programs: Program[]) {
   for (const program of programs) {
-    const index = version.value?.programs.findIndex(
-      e => e.program === program,
-    )
-    if (index === -1) {
-      version.value.programs.push({
-        id: tmpId(),
+    const isNewProgram = !version.value.programs.some(p => p.program === program)
+    if (isNewProgram) {
+      contract.value.versions[i.value].programs.push({
+        id: newId(),
         program,
-        contract_version_id: contract.value?.id as number,
+        contract_version_id: contract.value.id,
         price: 0,
         lessons: 0,
         lessons_planned: 0,
@@ -64,36 +106,64 @@ function onProgramsSaved(programs: Programs) {
       })
     }
   }
-  for (const cp of version.value.programs) {
-    const index = programs.findIndex(p => p === cp.program)
-    if (index === -1) {
-      version.value?.programs.splice(index, 1)
-    }
-  }
+  // Remove programs that are not in the new programs list
+  contract.value.versions[i.value].programs = version.value.programs.filter(({ program }) =>
+    programs.some(p => p === program),
+  )
 }
 
 function addPayment() {
-  version.value?.payments.push({
-    id: tmpId(),
+  contract.value.versions[i.value].payments.push({
+    id: newId(),
     date: today(),
     sum: 0,
     contract_version_id: version.value.id,
   })
-  nextTick(() =>
-    document
-      .querySelector('.dialog-body')
-      ?.scrollTo({ top: 9999, behavior: 'smooth' }),
-  )
+  smoothScroll('.dialog-body', 'bottom')
 }
 
-function deletePayment(p: ContractPayment) {
-  version.value?.payments.splice(
+function deletePayment(p: ContractPaymentResource) {
+  contract.value.versions[i.value].payments.splice(
     version.value.payments.findIndex(e => e.id === p.id),
     1,
   )
 }
 
-defineExpose({ open, create })
+async function storeOrUpdate() {
+  saving.value = true
+  if (isNewContract.value) {
+    const { data } = await useHttp<ContractResource>(`contracts`, {
+      method: 'post',
+      body: contract.value,
+    })
+    if (data.value) {
+      contract.value = data.value
+    }
+  }
+  else if (isEditMode.value) {
+    const { data } = await useHttp<ContractVersionResource>(`contract-versions/${version.value.id}`, {
+      method: 'put',
+      body: version.value,
+    })
+    if (data.value) {
+      version.value = data.value
+    }
+  }
+  else {
+    const { data } = await useHttp<ContractVersionResource>('contract-versions', {
+      method: 'post',
+      body: version.value,
+    })
+    if (data.value) {
+      contract.value?.versions.unshift(data.value)
+    }
+  }
+  nextTick(() => emit('updated', contract.value))
+  dialog.value = false
+  setTimeout(() => saving.value = false, 300)
+}
+
+defineExpose({ create, editVersion, addVersion })
 </script>
 
 <template>
@@ -106,13 +176,15 @@ defineExpose({ open, create })
       class="dialog-wrapper contract-dialog"
     >
       <div class="dialog-header">
-        <span v-if="version.id > 0"> Редактирование договора </span>
+        <span v-if="isNewContract"> Новый договор </span>
+        <span v-else-if="isEditMode"> Редактирование договора </span>
         <span v-else>Добавить версию</span>
         <v-btn
           icon="$save"
           :size="48"
           color="#fafafa"
-          @click="dialog = false"
+          :loading="saving"
+          @click="storeOrUpdate()"
         />
       </div>
       <div class="dialog-body">
@@ -120,24 +192,14 @@ defineExpose({ open, create })
           <v-select
             v-model="contract.year"
             label="Учебный год"
-            :items="
-              YEARS.map((value) => ({
-                value,
-                title: formatYear(value),
-              }))
-            "
-            disabled
+            :items="selectItems(YearLabel)"
+            :disabled="!isNewContract"
           />
           <v-select
             v-model="contract.company"
             label="Компания"
-            disabled
-            :items="
-              Object.keys(COMPANY_TYPE).map((value) => ({
-                value,
-                title: COMPANY_TYPE[value as CompanyType],
-              }))
-            "
+            :disabled="!isNewContract"
+            :items="selectItems(CompanyTypeLabel)"
           />
         </div>
         <div class="double-input">
@@ -174,7 +236,7 @@ defineExpose({ open, create })
                   :class="{ 'text-error': p.is_closed }"
                   @click="toggleCloseProgram(p)"
                 >
-                  {{ PROGRAM[p.program] }}
+                  {{ ProgramLabel[p.program] }}
                 </span>
               </div>
               <div style="width: 70px">
@@ -206,12 +268,7 @@ defineExpose({ open, create })
               <div>
                 <a
                   class="link-icon"
-                  @click="
-                    () =>
-                      programDialog?.open(
-                        version?.programs.map((e) => e.program),
-                      )
-                  "
+                  @click="programDialog?.open(version.programs.map((e) => e.program))"
                 >
                   выбрать программы
                   <v-icon
@@ -243,7 +300,10 @@ defineExpose({ open, create })
               :key="p.id"
             >
               <div style="width: 170px">
-                {{ formatDate(p.date) }}
+                <UiDateInput
+                  v-model="p.date"
+                  label=""
+                />
               </div>
               <div style="width: 100px">
                 <v-text-field
@@ -273,6 +333,24 @@ defineExpose({ open, create })
               </a>
             </div>
           </div>
+        </div>
+        <div
+          v-if="isEditMode"
+          class="dialog-bottom"
+        >
+          <span v-if="version.user && version.created_at">
+            договор создал
+            {{ formatName(version.user) }}
+            {{ formatDateTime(version.created_at) }}
+          </span>
+          <v-btn
+            icon="$delete"
+            :size="48"
+            color="red"
+            variant="plain"
+            :loading="destroying"
+            @click="destroy()"
+          />
         </div>
       </div>
     </div>

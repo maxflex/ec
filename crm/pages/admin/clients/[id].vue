@@ -3,14 +3,10 @@ import { nextTick } from 'vue'
 import { mdiEmailOutline, mdiHistory } from '@mdi/js'
 import type {
   ClientDialog,
-  ClientPaymentDialog,
-  ContractDialog,
   GroupSelectorDialog,
   TestSelectorDialog,
 } from '#build/components'
 import type {
-  Contract,
-  ContractVersion,
   Group,
   Tests,
 } from '~/utils/models'
@@ -24,10 +20,6 @@ const tabs = {
 const selectedTab = ref<keyof typeof tabs>('requests')
 const route = useRoute()
 const client = ref<ClientResource>()
-const clientPaymentDialog = ref<null | InstanceType<
-  typeof ClientPaymentDialog
->>()
-const contractDialog = ref<null | InstanceType<typeof ContractDialog>>()
 const clientDialog = ref<null | InstanceType<typeof ClientDialog>>()
 const testSelectorDialog = ref<null | InstanceType<typeof TestSelectorDialog>>()
 const groupSelectorDialog = ref<null | InstanceType<
@@ -37,11 +29,6 @@ const groupSelectorDialog = ref<null | InstanceType<
 async function loadData() {
   const { data } = await useHttp(`clients/${route.params.id}`)
   client.value = data.value as ClientResource
-}
-
-function onOpen(c: Contract, v: ContractVersion) {
-  console.log('open', c, v)
-  contractDialog.value?.open(c, v)
 }
 
 function onClientUpdated(c: ClientResource) {
@@ -195,7 +182,9 @@ nextTick(loadData)
         url="contracts"
         :filters="{ client_id: client.id }"
       >
-        <template #default="{ items }" />
+        <template #default="{ items }">
+          <ContractList :items="items" />
+        </template>
       </UiDataLoader>
 
       <div
@@ -247,7 +236,7 @@ nextTick(loadData)
   // padding: 20px;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
   &__phones {
     margin-top: 2px;
     & > div {
@@ -278,20 +267,11 @@ nextTick(loadData)
   }
   &__content {
     flex: 1;
+    display: flex;
+    flex-direction: column;
     & > div {
       padding: 20px;
       height: 100%;
-    }
-  }
-  h3 {
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    .v-btn {
-      margin-left: 2px;
-    }
-    .v-icon {
-      font-size: calc(var(--v-icon-size-multiplier) * 1.5rem) !important;
     }
   }
   // & > div {
@@ -307,7 +287,12 @@ nextTick(loadData)
     width: calc(100% + 40px);
   }
   .request-list {
-    top: -20px;
+    padding-top: 0 !important;
+    flex: 1;
+    // background: red;
+    // & > .request:first-child {
+    //   border-top: 1px solid #e0e0e0;
+    // }
   }
 }
 </style>

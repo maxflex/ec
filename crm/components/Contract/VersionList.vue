@@ -1,20 +1,12 @@
 <script setup lang="ts">
-import type { Contract, ContractVersion } from '~/utils/models'
-import { PROGRAM } from '~/utils/sment'
-
-const emit = defineEmits<{
-  (e: 'open', contract: Contract, version: ContractVersion): void
-}>()
-
-const { contract } = defineProps<{
-  contract: Contract
-}>()
+const { items } = defineProps<{ items: ContractVersionResource[] }>()
+const emit = defineEmits<{ (e: 'edit', versionIndex: number): void }>()
 </script>
 
 <template>
   <div class="table contract-versions table--hover table--padding">
     <div
-      v-for="version in contract.versions"
+      v-for="(version, i) in items"
       :key="version.id"
     >
       <div width="150">
@@ -47,7 +39,7 @@ const { contract } = defineProps<{
             :key="p.id"
           >
             <span :class="{ 'text-error': p.is_closed }">
-              {{ PROGRAM[p.program] }}
+              {{ ProgramLabel[p.program] }}
             </span>
             <span class="text-grey">
               {{ p.lessons }}
@@ -69,7 +61,7 @@ const { contract } = defineProps<{
           variant="text"
           icon="$more"
           :size="48"
-          @click="emit('open', contract, version)"
+          @click="emit('edit', i)"
         />
       </div>
     </div>

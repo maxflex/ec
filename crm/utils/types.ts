@@ -213,8 +213,8 @@ export const TeacherPaymentMethodLabel = {
 }
 
 export const CompanyTypeLabel = {
-  ip: 'ip',
-  ooo: 'ooo',
+  ip: 'ИП',
+  ooo: 'ООО',
 } as const
 
 declare global {
@@ -375,12 +375,42 @@ declare global {
     created_at?: string
   }
 
+  interface ContractProgramResource {
+    id: number
+    program: Program
+    lessons: number
+    lessons_planned: number
+    price: number
+    is_closed: boolean
+    contract_version_id: number
+  }
+
+  interface ContractPaymentResource {
+    id: number
+    sum: number
+    date: string
+    contract_version_id: number
+  }
+
+  interface ContractVersionResource {
+    id: number
+    version: number
+    sum?: number
+    date: string
+    programs: ContractProgramResource[]
+    payments: ContractPaymentResource[]
+    contract_id: number
+    created_at?: string
+    user?: PersonResource
+  }
+
   interface ContractResource {
     id: number
-    client: PersonResource
+    client?: PersonResource
     client_id: number
     year: Year
     company: CompanyType
+    versions: ContractVersionResource[]
   }
 
   interface Zoom {

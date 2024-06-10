@@ -1,15 +1,35 @@
 <script setup lang="ts">
 import type { ClientPaymentDialog, ContractDialog } from '#build/components'
 
-const { contracts } = defineProps<{ contracts: ContractResource[] }>()
+const { items } = defineProps<{ items: ContractResource[] }>()
 const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()
 const contractDialog = ref<InstanceType<typeof ContractDialog>>()
+
+function onContractUpdated(c: ContractResource) {
+  const index = items.findIndex(e => e.id === c.id)
+  if (index === -1) {
+    // eslint-disable-next-line
+    items.unshift(c)
+    smoothScroll('.v-main', 'top')
+  }
+  else {
+    // сносим весь договор
+    if (c.versions.length === 0) {
+      // eslint-disable-next-line
+      items.splice(index, 1)
+    }
+    else {
+      // eslint-disable-next-line
+      items.splice(index, 1, c)
+    }
+  }
+}
 </script>
 
 <template>
   <div class="contract-list">
     <div
-      v-for="contract in contracts"
+      v-for="contract in items"
       :key="contract.id"
     >
       <h3>
@@ -19,12 +39,12 @@ const contractDialog = ref<InstanceType<typeof ContractDialog>>()
           :size="48"
           icon="$plus"
           variant="plain"
-          @click="() => contractDialog?.create(contract)"
+          @click="() => contractDialog?.addVersion(contract)"
         />
       </h3>
       <ContractVersionList
-        :contract="contract"
-        @open="onOpen"
+        :items="contract.versions"
+        @edit="versionIndex => contractDialog?.editVersion(contract, versionIndex)"
       />
       <h3>
         Платежи
@@ -41,20 +61,47 @@ const contractDialog = ref<InstanceType<typeof ContractDialog>>()
         @open="(p) => clientPaymentDialog?.open(p)"
       /> -->
     </div>
-    <ContractDialog ref="contractDialog" />
-    <!-- <ClientPaymentDialog ref="clientPaymentDialog" /> -->
+    <div class="contract-list__add">
+      <v-btn
+        color="primary"
+        @click="contractDialog?.create()"
+      >
+        добавить новый договор
+      </v-btn>
+    </div>
   </div>
+  <ContractDialog
+    ref="contractDialog"
+    @updated="onContractUpdated"
+  />
+  <ClientPaymentDialog ref="clientPaymentDialog" />
 </template>
 
 <style lang="scss">
 .contract-list {
+  h3 {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    .v-btn {
+      margin-left: 2px;
+    }
+    .v-icon {
+      font-size: calc(var(--v-icon-size-multiplier) * 1.5rem) !important;
+    }
+  }
   & > div {
     h3:not(:first-child) {
       margin-top: 30px;
     }
-    &:not(:first-child) {
-      margin-top: 50px;
+    margin-top: 50px;
+    &:first-child {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
     }
+  }
+  &__add {
+    padding: 50px 0 20px;
   }
 }
 </style>

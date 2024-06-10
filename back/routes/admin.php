@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\{
     ClientReviewController,
     CommentController,
     ContractController,
+    ContractVersionController,
     GroupController,
     LessonController,
     MacroController,
@@ -19,7 +20,6 @@ use App\Http\Controllers\Admin\{
     VacationController,
     WebReviewController
 };
-
 
 Route::middleware(['auth:crm'])->group(function () {
     // TODO: улучшить
@@ -34,10 +34,11 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::post('preview', [PreviewController::class, 'enter']);
     Route::get('tests/results/{clientTest}', [TestController::class, 'results']);
     Route::apiResources([
-        'requests' =>  RequestsController::class,
-        'clients' =>  ClientController::class,
-        'groups' =>  GroupController::class,
-        'contracts' =>  ContractController::class,
+        'requests' => RequestsController::class,
+        'clients' => ClientController::class,
+        'groups' => GroupController::class,
+        'contracts' => ContractController::class,
+        'contract-versions' => ContractVersionController::class,
         'vacations' => VacationController::class,
         'macros' => MacroController::class,
         'tests' => TestController::class,

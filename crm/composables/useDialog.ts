@@ -10,16 +10,20 @@ const dialogWidths: { [key in DialogWidth]: number } = {
 export default function (w: DialogWidth) {
   const dialog = ref(false)
   const width = dialogWidths[w]
+  const transition = ref('dialog-fade-transition')
   watch(dialog, (val) => {
     const el = document.documentElement.querySelector(
       '.v-dialog.v-overlay--active > .dialog',
     )
     if (el === null) {
-      return
+      transition.value = 'dialog-fade-transition'
     }
-    // @ts-expect-error
-    el.style.right = val ? `${width * 0.5}px` : null
+    else {
+      transition.value = 'dialog-second-transition'
+      // @ts-expect-error
+      el.style.right = val ? `${width * 0.5}px` : null
+    }
   })
 
-  return { dialog, width }
+  return { dialog, width, transition }
 }
