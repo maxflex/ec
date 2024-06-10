@@ -77,15 +77,18 @@ nextTick(loadData)
         </div>
       </div>
     </div>
-    <div
+    <UiDataLoader
       v-if="selectedTab === 'payments'"
-      class="table"
+      url="teacher-payments"
+      :filters="{ teacher_id: teacher.id }"
     >
-      <TeacherPaymentList
-        :items="teacher.payments"
-        create
-      />
-    </div>
+      <template #default="{ items }">
+        <TeacherPaymentList
+          :items="items"
+          :teacher-id="teacher.id"
+        />
+      </template>
+    </UiDataLoader>
   </div>
   <TeacherDialog
     ref="teacherDialog"

@@ -10,7 +10,7 @@ function onContractUpdated(c: ContractResource) {
   if (index === -1) {
     // eslint-disable-next-line
     items.unshift(c)
-    smoothScroll('.v-main', 'top')
+    smoothScroll('main', 'top')
   }
   else {
     // сносим весь договор

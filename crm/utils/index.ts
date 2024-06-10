@@ -51,7 +51,11 @@ export function selectItems(obj: object) {
   return items
 }
 
-export function smoothScroll(querySelector: string, direction: 'top' | 'bottom') {
+export function smoothScroll(
+  scroll: 'dialog' | 'main',
+  direction: 'top' | 'bottom',
+) {
+  const querySelector = scroll === 'dialog' ? ' .dialog-body' : '.v-main'
   nextTick(() =>
     document
       .querySelector(querySelector)

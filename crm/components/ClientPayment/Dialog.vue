@@ -150,7 +150,7 @@ defineExpose({ open, create })
           class="dialog-bottom"
         >
           <span v-if="item.user && item.created_at">
-            платеж создал
+            платеж создан
             {{ formatName(item.user) }}
             {{ formatDateTime(item.created_at) }}
           </span>

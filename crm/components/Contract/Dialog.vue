@@ -120,7 +120,7 @@ function addPayment() {
     sum: 0,
     contract_version_id: version.value.id,
   })
-  smoothScroll('.dialog-body', 'bottom')
+  smoothScroll('dialog', 'bottom')
 }
 
 function deletePayment(p: ContractPaymentResource) {
@@ -340,7 +340,7 @@ defineExpose({ create, editVersion, addVersion })
           class="dialog-bottom"
         >
           <span v-if="version.user && version.created_at">
-            договор создал
+            договор создан
             {{ formatName(version.user) }}
             {{ formatDateTime(version.created_at) }}
           </span>

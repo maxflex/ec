@@ -23,7 +23,7 @@ function onLessonUpdated(l: LessonListResource) {
   }
   else {
     lessons.value.push(l)
-    smoothScroll('.v-main', 'bottom')
+    smoothScroll('main', 'bottom')
   }
 }
 

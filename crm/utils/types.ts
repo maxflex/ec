@@ -493,12 +493,14 @@ declare global {
 
   interface TeacherPaymentResource {
     id: number
-    sum?: number
-    date?: string
-    year?: number
+    sum: number
+    date: string
+    year: Year
     method: TeacherPaymentMethod
     purpose: string | null
     teacher_id?: number
-    is_verified: boolean
+    user?: PersonResource
+    teacher?: PersonResource
+    created_at?: string
   }
 }

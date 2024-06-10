@@ -37,7 +37,6 @@ nextTick(loadData)
   <v-infinite-scroll
     v-if="items"
     :margin="100"
-    class="table"
     side="end"
     @load="onIntersect"
   >

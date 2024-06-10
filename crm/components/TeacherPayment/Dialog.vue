@@ -2,25 +2,38 @@
 import { clone } from 'rambda'
 
 const modelDefaults: TeacherPaymentResource = {
-  id: -1,
+  id: newId(),
+  year: currentStudyYear(),
+  date: today(),
   method: 'card',
   purpose: null,
-  is_verified: false,
+  sum: 0,
 }
 
 const { dialog, width } = useDialog('default')
 const item = ref<TeacherPaymentResource>(modelDefaults)
 const loading = ref(false)
 const itemId = ref<number>()
+const sumInput = ref()
+const isEditMode = computed(() => item.value.id > 0)
+const destroying = ref(false)
+const emit = defineEmits<{ (e: 'updated' | 'destroyed', c: TeacherPaymentResource): void }>()
 
 function open(c: TeacherPaymentResource) {
   item.value = clone(c)
   dialog.value = true
 }
 
-function create() {
+function create(teacherId: number) {
   itemId.value = undefined
-  open(modelDefaults)
+  open({
+    ...modelDefaults,
+    teacher_id: teacherId,
+  })
+  nextTick(() => {
+    sumInput.value.reset()
+    sumInput.value.focus()
+  })
 }
 async function edit(c: TeacherPaymentResource) {
   itemId.value = c.id
@@ -50,17 +63,30 @@ async function save() {
       body: item.value,
     })
     if (data.value) {
-      emit('created', data.value)
+      emit('updated', data.value)
     }
   }
+}
 
-  // emit('saved')
+async function destroy() {
+  if (!confirm('Вы уверены, что хотите удалить платеж?')) {
+    return
+  }
+  destroying.value = true
+  const { status } = await useHttp(`teacher-payments/${item.value.id}`, {
+    method: 'delete',
+  })
+  if (status.value === 'error') {
+    destroying.value = false
+  }
+  else {
+    emit('destroyed', item.value)
+    dialog.value = false
+    setTimeout(() => destroying.value = false, 300)
+  }
 }
 
 defineExpose({ create, edit })
-const emit = defineEmits<{
-  (e: 'created' | 'updated', c: TeacherPaymentResource): void
-}>()
 </script>
 
 <template>
@@ -84,6 +110,16 @@ const emit = defineEmits<{
       </div>
       <div class="dialog-body">
         <div>
+          <v-text-field
+            ref="sumInput"
+            v-model="item.sum"
+            type="number"
+            hide-spin-buttons
+            label="Сумма"
+            suffix="руб."
+          />
+        </div>
+        <div>
           <v-select
             v-model="item.method"
             label="Метод"
@@ -100,15 +136,7 @@ const emit = defineEmits<{
         <div>
           <UiDateInput v-model="item.date" />
         </div>
-        <div>
-          <v-text-field
-            v-model="item.sum"
-            type="number"
-            hide-spin-buttons
-            label="Сумма"
-            suffix="руб."
-          />
-        </div>
+
         <div>
           <v-textarea
             v-model="item.purpose"
@@ -116,10 +144,23 @@ const emit = defineEmits<{
             no-resize
           />
         </div>
-        <div>
-          <v-checkbox
-            v-model="item.is_verified"
-            label="Подтверждён"
+
+        <div
+          v-if="isEditMode"
+          class="dialog-bottom"
+        >
+          <span v-if="item.user && item.created_at">
+            платеж создан
+            {{ formatName(item.user) }}
+            {{ formatDateTime(item.created_at) }}
+          </span>
+          <v-btn
+            icon="$delete"
+            :size="48"
+            color="red"
+            variant="plain"
+            :loading="destroying"
+            @click="destroy()"
           />
         </div>
       </div>
