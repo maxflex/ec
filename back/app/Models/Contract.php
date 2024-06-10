@@ -34,6 +34,6 @@ class Contract extends Model
 
     public function payments()
     {
-        return $this->morphMany(ClientPayment::class, 'entity');
+        return $this->morphMany(ClientPayment::class, 'entity')->orderBy('date', 'desc');
     }
 }

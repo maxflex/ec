@@ -338,15 +338,6 @@ export interface Vacation {
 }
 export type Vacations = Vacation[]
 
-const ClientPaymentMethod = {
-  card: 'card',
-  online: 'online',
-  cash: 'cash',
-  invoice: 'invoice',
-} as const
-
-export type ClientPaymentMethod = typeof ClientPaymentMethod[keyof typeof ClientPaymentMethod]
-
 const CompanyType = {
   ip: 'ip',
   ooo: 'ooo',

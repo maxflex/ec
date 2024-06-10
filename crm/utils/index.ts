@@ -58,3 +58,7 @@ export function smoothScroll(querySelector: string, direction: 'top' | 'bottom')
       ?.scrollTo({ top: direction === 'bottom' ? 9999 : 0, behavior: 'smooth' }),
   )
 }
+
+export function currentStudyYear(): Year {
+  return 2024
+}

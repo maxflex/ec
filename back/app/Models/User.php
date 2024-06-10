@@ -20,4 +20,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(ContractVersion::class);
     }
+
+    public function clientPayments()
+    {
+        return $this->hasMany(ClientPayment::class);
+    }
 }

@@ -24,6 +24,34 @@ function onContractUpdated(c: ContractResource) {
     }
   }
 }
+
+function onClientPaymentUpdated(cp: ClientPaymentResource) {
+  const contractIndex = items.findIndex(c => c.id === cp.entity_id)
+  if (contractIndex === -1) {
+    return
+  }
+  const index = items[contractIndex].payments.findIndex(e => e.id === cp.id)
+  if (index === -1) {
+    // eslint-disable-next-line
+    items[contractIndex].payments.unshift(cp)
+  }
+  else {
+    // eslint-disable-next-line
+    items[contractIndex].payments.splice(index, 1, cp)
+  }
+}
+
+function onClientPaymentDestroyed(cp: ClientPaymentResource) {
+  const contractIndex = items.findIndex(c => c.id === cp.entity_id)
+  if (contractIndex === -1) {
+    return
+  }
+  const index = items[contractIndex].payments.findIndex(e => e.id === cp.id)
+  if (index !== -1) {
+    // eslint-disable-next-line
+    items[contractIndex].payments.splice(index, 1)
+  }
+}
 </script>
 
 <template>
@@ -56,10 +84,10 @@ function onContractUpdated(c: ContractResource) {
           @click="() => clientPaymentDialog?.create(contract)"
         />
       </h3>
-      <!-- <ClientPaymentList
+      <ClientPaymentList
         :items="contract.payments"
         @open="(p) => clientPaymentDialog?.open(p)"
-      /> -->
+      />
     </div>
     <div class="contract-list__add">
       <v-btn
@@ -74,7 +102,11 @@ function onContractUpdated(c: ContractResource) {
     ref="contractDialog"
     @updated="onContractUpdated"
   />
-  <ClientPaymentDialog ref="clientPaymentDialog" />
+  <ClientPaymentDialog
+    ref="clientPaymentDialog"
+    @updated="onClientPaymentUpdated"
+    @destroyed="onClientPaymentDestroyed"
+  />
 </template>
 
 <style lang="scss">
@@ -94,14 +126,14 @@ function onContractUpdated(c: ContractResource) {
     h3:not(:first-child) {
       margin-top: 30px;
     }
-    margin-top: 50px;
+    margin-top: 80px;
     &:first-child {
       margin-top: 0 !important;
       padding-top: 0 !important;
     }
   }
   &__add {
-    padding: 50px 0 20px;
+    padding: 0;
   }
 }
 </style>

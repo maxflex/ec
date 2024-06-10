@@ -1,13 +1,6 @@
 <script setup lang="ts">
-import type { ClientPayment, ClientPayments } from '~/utils/models'
-import { CLIENT_PAYMENT_METHOD } from '~/utils/sment'
-
-const { items } = defineProps<{
-  items: ClientPayments
-}>()
-const emit = defineEmits<{
-  (e: 'open', p: ClientPayment): void
-}>()
+const { items } = defineProps<{ items: ClientPaymentResource[] }>()
+const emit = defineEmits<{ (e: 'open', p: ClientPaymentResource): void }>()
 </script>
 
 <template>
@@ -17,12 +10,20 @@ const emit = defineEmits<{
       :key="item.id"
     >
       <div>
-        {{ item.is_return ? "возврат" : "платеж" }}
+        <span
+          v-if="item.is_return"
+          class="text-error"
+        >
+          возврат
+        </span>
+        <span v-else>
+          платеж
+        </span>
       </div>
       <div>от {{ formatDate(item.date) }}</div>
       <div>{{ item.sum }} руб.</div>
       <div>
-        {{ CLIENT_PAYMENT_METHOD[item.method] }}
+        {{ ClientPaymentMethodLabel[item.method] }}
       </div>
       <div>
         <span

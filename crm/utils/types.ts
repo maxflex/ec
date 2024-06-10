@@ -135,6 +135,7 @@ export const LessonStatusLabel = {
 export const EntityType = {
   request: 'App\\Models\\Request',
   client: 'App\\Models\\Client',
+  contract: 'App\\Models\\Contract',
   teacher: 'App\\Models\\Teacher',
   user: 'App\\Models\\User',
 } as const
@@ -198,13 +199,6 @@ export const SubjectLabelShort = {
   soch: 'СОЧ',
 }
 
-export const ClientPaymentMethodLabel = {
-  card: 'карта',
-  online: 'карта онлайн',
-  cash: 'наличные',
-  invoice: 'счёт',
-}
-
 export const TeacherPaymentMethodLabel = {
   card: 'карта',
   cash: 'наличные',
@@ -212,12 +206,21 @@ export const TeacherPaymentMethodLabel = {
   mutual: 'взаимозачёт',
 }
 
+export const ClientPaymentMethodLabel = {
+  card: 'карта',
+  online: 'карта онлайн',
+  cash: 'наличные',
+  invoice: 'счёт',
+} as const
+
 export const CompanyTypeLabel = {
-  ip: 'ИП',
   ooo: 'ООО',
+  ip: 'ИП',
 } as const
 
 declare global {
+  type ClientPaymentMethod = keyof typeof ClientPaymentMethodLabel
+
   type CompanyType = keyof typeof CompanyTypeLabel
 
   type TeacherPaymentMethod = keyof typeof TeacherPaymentMethodLabel
@@ -375,6 +378,23 @@ declare global {
     created_at?: string
   }
 
+  interface ClientPaymentResource {
+    id: number
+    sum: number
+    date: string
+    year: Year
+    method: ClientPaymentMethod
+    company: CompanyType
+    entity_type: typeof EntityType.contract | typeof EntityType.client
+    entity_id: number
+    is_confirmed: boolean
+    is_return: boolean
+    purpose: string | null
+    extra: string | null
+    created_at?: string
+    user?: PersonResource
+  }
+
   interface ContractProgramResource {
     id: number
     program: Program
@@ -411,6 +431,7 @@ declare global {
     year: Year
     company: CompanyType
     versions: ContractVersionResource[]
+    payments: ClientPaymentResource[]
   }
 
   interface Zoom {

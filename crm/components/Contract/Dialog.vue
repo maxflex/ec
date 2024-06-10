@@ -6,9 +6,10 @@ const emit = defineEmits<{ (e: 'updated', c: ContractResource): void }>()
 const defaultContract: ContractResource = {
   id: newId(),
   client_id: 0,
-  year: 2024,
+  year: currentStudyYear(),
   company: 'ooo',
   versions: [],
+  payments: [],
 }
 const defaultContractVersion: ContractVersionResource = {
   id: newId(),

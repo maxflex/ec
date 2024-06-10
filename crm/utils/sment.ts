@@ -202,11 +202,4 @@ export const COMPANY_TYPE: Record<CompanyType, string> = {
   ooo: 'ООО',
 }
 
-export const CLIENT_PAYMENT_METHOD: Record<ClientPaymentMethod, string> = {
-  card: 'карта',
-  online: 'карта онлайн',
-  cash: 'наличные',
-  invoice: 'счёт',
-}
-
 export type Programs = Program[]

@@ -1,40 +1,88 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
-import type { ClientPayment, Contract } from '~/utils/models'
-import { CLIENT_PAYMENT_METHOD, COMPANY_TYPE } from '~/utils/sment'
 
+const emit = defineEmits<{ (e: 'updated' | 'destroyed', c: ClientPaymentResource): void }>()
 const { dialog, width } = useDialog('default')
-const item = ref<ClientPayment>()
+const modelDefaults: ClientPaymentResource = {
+  id: newId(),
+  sum: 0,
+  date: today(),
+  year: currentStudyYear(),
+  method: 'card',
+  entity_type: 'App\\Models\\Contract',
+  entity_id: 0,
+  company: 'ooo',
+  purpose: null,
+  extra: null,
+  is_confirmed: false,
+  is_return: false,
+}
 const sumInput = ref()
+const saving = ref(false)
+const destroying = ref(false)
+const item = ref<ClientPaymentResource>(modelDefaults)
+const isEditMode = computed(() => item.value.id > 0)
 
-function open(p: ClientPayment) {
+function open(p: ClientPaymentResource) {
   item.value = clone(p)
   dialog.value = true
 }
 
-function create(c: Contract) {
+function create(c: ContractResource) {
   item.value = {
-    id: -1,
-    sum: 0,
-    date: today(),
-    year: YEARS[0],
-    method: 'card',
-    entity_type: 'App\\Models\\Contract',
+    ...modelDefaults,
     entity_id: c.id,
-    company: 'ip',
-    purpose: null,
-    extra: null,
-    user_id: 1,
-    is_confirmed: false,
-    is_return: false,
-    created_at: null,
-    updated_at: null,
+    company: c.company,
+    year: c.year,
   }
   dialog.value = true
   nextTick(() => {
     sumInput.value.reset()
     sumInput.value.focus()
   })
+}
+
+async function storeOrUpdate() {
+  saving.value = true
+  if (isEditMode.value) {
+    const { data } = await useHttp<ClientPaymentResource>(`client-payments/${item.value.id}`, {
+      method: 'put',
+      body: item.value,
+    })
+    if (data.value) {
+      item.value = data.value
+    }
+  }
+  else {
+    const { data } = await useHttp<ClientPaymentResource>('client-payments', {
+      method: 'post',
+      body: item.value,
+    })
+    if (data.value) {
+      item.value = data.value
+    }
+  }
+  nextTick(() => emit('updated', item.value))
+  dialog.value = false
+  setTimeout(() => saving.value = false, 300)
+}
+
+async function destroy() {
+  if (!confirm('Вы уверены, что хотите удалить платеж?')) {
+    return
+  }
+  destroying.value = true
+  const { status } = await useHttp(`client-payments/${item.value.id}`, {
+    method: 'delete',
+  })
+  if (status.value === 'error') {
+    destroying.value = false
+  }
+  else {
+    emit('destroyed', item.value)
+    dialog.value = false
+    setTimeout(() => destroying.value = false, 300)
+  }
 }
 
 defineExpose({ open, create })
@@ -56,7 +104,7 @@ defineExpose({ open, create })
           icon="$save"
           :size="48"
           variant="text"
-          @click="dialog = false"
+          @click="storeOrUpdate()"
         />
       </div>
       <div class="dialog-body">
@@ -77,24 +125,14 @@ defineExpose({ open, create })
           <v-select
             v-model="item.method"
             label="Способ оплаты"
-            :items="
-              Object.keys(CLIENT_PAYMENT_METHOD).map((value) => ({
-                value,
-                title: CLIENT_PAYMENT_METHOD[value],
-              }))
-            "
+            :items="selectItems(ClientPaymentMethodLabel)"
           />
         </div>
         <div>
           <v-select
             v-model="item.company"
             label="Компания"
-            :items="
-              Object.keys(COMPANY_TYPE).map((value) => ({
-                value,
-                title: COMPANY_TYPE[value],
-              }))
-            "
+            :items="selectItems(CompanyTypeLabel)"
           />
         </div>
         <div>
@@ -107,9 +145,24 @@ defineExpose({ open, create })
             label="Возврат"
           />
         </div>
-        <!-- <pre>
-          {{ item }}
-        </pre> -->
+        <div
+          v-if="isEditMode"
+          class="dialog-bottom"
+        >
+          <span v-if="item.user && item.created_at">
+            платеж создал
+            {{ formatName(item.user) }}
+            {{ formatDateTime(item.created_at) }}
+          </span>
+          <v-btn
+            icon="$delete"
+            :size="48"
+            color="red"
+            variant="plain"
+            :loading="destroying"
+            @click="destroy()"
+          />
+        </div>
       </div>
     </div>
   </v-dialog>
