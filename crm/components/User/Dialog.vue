@@ -124,7 +124,7 @@ defineExpose({ create, edit })
             label="Отчество"
           />
         </div>
-        <UiPhoneEditor v-model="item.phones" />
+        <PhoneEditor v-model="item.phones" />
         <div
           v-if="itemId"
           class="dialog-bottom"

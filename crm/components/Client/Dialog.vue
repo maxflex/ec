@@ -140,7 +140,7 @@ const emit = defineEmits<{
               label="Куратор"
             />
           </div>
-          <UiPhoneEditor v-model="client.phones" />
+          <PhoneEditor v-model="client.phones" />
         </div>
         <div class="dialog-body">
           <div class="dialog-section__title">
@@ -192,7 +192,7 @@ const emit = defineEmits<{
             no-resize
             rows="3"
           />
-          <UiPhoneEditor v-model="client.parent.phones" />
+          <PhoneEditor v-model="client.parent.phones" />
         </div>
       </div>
     </div>

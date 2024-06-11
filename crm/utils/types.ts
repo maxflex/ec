@@ -489,6 +489,16 @@ declare global {
   interface TeacherResource extends PersonResource {
     phones: PhoneListResource[]
     status: TeacherStatus
+    subjects: Subject[]
+    desc?: string
+    photo_desc?: string
+    passport_series?: string
+    passport_number?: string
+    passport_address?: string
+    passport_code?: string
+    passport_issued_by?: string
+    so?: number
+    created_at?: string
   }
 
   interface TeacherPaymentResource {

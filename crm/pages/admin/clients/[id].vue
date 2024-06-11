@@ -73,49 +73,14 @@ nextTick(loadData)
           <div>ученик</div>
           <div class="text-truncate">
             {{ formatFullName(client) }}
-            <div
-              v-if="client.phones"
-              class="client__phones"
-            >
-              <div
-                v-for="p in client.phones"
-                :key="p.id"
-              >
-                <div class="client__phones-number">
-                  <a :href="`tel:${p.number}`">
-                    {{ formatPhone(p.number as string) }}
-                  </a>
-                </div>
-                <div class="client__phones-actions">
-                  <v-icon :icon="mdiEmailOutline" />
-                  <v-icon :icon="mdiHistory" />
-                </div>
-              </div>
-            </div>
+            <PhoneActions :items="client.phones" />
           </div>
         </div>
         <div>
           <div>представитель</div>
           <div class="text-truncate">
             {{ formatFullName(client.parent) }}
-            <div
-              class="client__phones"
-            >
-              <div
-                v-for="p in client.parent.phones"
-                :key="p.id"
-              >
-                <div class="client__phones-number">
-                  <a :href="`tel:${p.number}`">
-                    {{ formatPhone(p.number as string) }}
-                  </a>
-                </div>
-                <div class="client__phones-actions">
-                  <v-icon :icon="mdiEmailOutline" />
-                  <v-icon :icon="mdiHistory" />
-                </div>
-              </div>
-            </div>
+            <PhoneActions :items="client.parent.phones" />
           </div>
         </div>
         <div>
@@ -251,34 +216,6 @@ nextTick(loadData)
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  &__phones {
-    margin-top: 2px;
-    & > div {
-      display: flex;
-      flex-wrap: nowrap;
-      align-items: center;
-      &:hover {
-        .client__phones-actions {
-          opacity: 1;
-        }
-      }
-    }
-    &-number {
-      min-width: 160px;
-    }
-    &-actions {
-      display: flex;
-      gap: 8px;
-      flex: 1;
-      opacity: 0;
-      transition: opacity cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
-      .v-icon {
-        top: -2px;
-        font-size: 18px;
-        color: rgb(var(--v-theme-gray));
-      }
-    }
-  }
   &__content {
     flex: 1;
     display: flex;

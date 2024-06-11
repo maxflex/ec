@@ -14,7 +14,9 @@ class Teacher extends Model
     use HasPhones, RelationSyncable;
 
     protected $fillable = [
-        'first_name', 'last_name', 'middle_name', 'status'
+        'first_name', 'last_name', 'middle_name', 'status', 'subjects',
+        'so', 'desc', 'photo_desc', 'passport_series', 'passport_number',
+        'passport_address', 'passport_code', 'passport_issued_by'
     ];
 
     protected $casts = [

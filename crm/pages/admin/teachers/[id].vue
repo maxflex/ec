@@ -37,6 +37,7 @@ nextTick(loadData)
           <div>преподаватель {{ teacher.id }}</div>
           <div>
             {{ formatFullName(teacher) }}
+            <PhoneActions :items="teacher.phones" />
           </div>
         </div>
         <div>

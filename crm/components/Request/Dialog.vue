@@ -118,7 +118,7 @@ const emit = defineEmits<{
             label="Комментарий"
           />
         </div>
-        <UiPhoneEditor v-model="request.phones" />
+        <PhoneEditor v-model="request.phones" />
       </div>
     </div>
   </v-dialog>
