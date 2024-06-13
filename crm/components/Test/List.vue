@@ -68,8 +68,9 @@ function select(t: Test) {
         class="table-actions"
       >
         <v-btn
-          variant="text"
-          icon="$more"
+          variant="plain"
+          color="gray"
+          icon="$edit"
           :size="48"
           @click="emit('open', t)"
         />

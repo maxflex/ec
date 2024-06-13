@@ -43,7 +43,7 @@ nextTick(loadData)
 
 <template>
   <div>
-    <div class="table table--hover">
+    <div class="table table--hover table--actions-on-hover">
       <div
         v-for="m in macros"
         :key="m.id"
@@ -53,8 +53,9 @@ nextTick(loadData)
         </div>
         <div class="table-actions">
           <v-btn
-            variant="text"
-            icon="$more"
+            variant="plain"
+            color="gray"
+            icon="$edit"
             :size="48"
             @click="open(m)"
           />

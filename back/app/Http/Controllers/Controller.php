@@ -72,6 +72,24 @@ class Controller extends BaseController
         $query->where(DB::raw($this->getFieldName($field)), $value);
     }
 
+    protected function filterFindInSet(&$query, $values, $field)
+    {
+        if (is_array($values)) {
+            $query->where(function ($query) use ($values, $field) {
+                $query->where(function ($query) use ($values, $field) {
+                    foreach ($values as $value) {
+                        $query->orWhereRaw("FIND_IN_SET('{$value}', `{$field}`)");
+                    }
+                });
+                if (in_array('null', $values)) {
+                    $query->orWhereNull($field);
+                }
+            });
+        } else {
+            $query->whereRaw("FIND_IN_SET('{$values}', `{$field}`)");
+        }
+    }
+
     private function getFieldName($field)
     {
         foreach ($this->mapFilters as $originalFieldName => $mappedFieldName) {

@@ -5,7 +5,7 @@ const emit = defineEmits<{
 
 const questions = ref<TestQuestions>([])
 
-const { dialog, width } = useDialog('default')
+const { dialog, width, transition } = useDialog('default')
 
 function open(preSelect: TestQuestions) {
   dialog.value = true
@@ -40,6 +40,7 @@ defineExpose({ open })
   <v-dialog
     v-model="dialog"
     :width="width"
+    :transition="transition"
   >
     <div class="dialog-wrapper">
       <div class="dialog-header">

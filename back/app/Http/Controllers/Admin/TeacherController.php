@@ -10,6 +10,12 @@ use Illuminate\Http\Request;
 
 class TeacherController extends Controller
 {
+    protected $filters = [
+        'equals' => ['status'],
+        'findInSet' => ['subjects'],
+        'search' => ['q']
+    ];
+
     public function index(Request $request)
     {
         $query = Teacher::query()
@@ -17,6 +23,7 @@ class TeacherController extends Controller
                 if(`status` = 'active', 1, 0) desc,
                 concat(last_name, first_name, middle_name) asc
             SQL);
+        $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, TeacherListResource::class);
     }
 
@@ -30,5 +37,17 @@ class TeacherController extends Controller
         $teacher->update($request->all());
         $teacher->syncRelation($request->all(), 'phones');
         return new TeacherResource($teacher);
+    }
+
+    protected function filterSearch(&$query, $value)
+    {
+        $words = explode(' ', $value);
+        $query->where(function ($q) use ($words) {
+            foreach ($words as $word) {
+                $q->where('first_name', 'like', "%{$word}%")
+                    ->orWhere('last_name', 'like', "%{$word}%")
+                    ->orWhere('middle_name', 'like', "%{$word}%");
+            }
+        });
     }
 }

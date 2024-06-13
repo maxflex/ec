@@ -80,3 +80,15 @@ export function loadFilters<T>(): T {
   const filters = localStorage.getItem(getFiltersKey())
   return filters === null ? {} : JSON.parse(filters)
 }
+
+// status=math&status=eng ===> status[]=math&status[]=eng
+// eslint-disable-next-line
+export function filtersToQuery(filters: { [key: string]: any }) {
+  const result: typeof filters = {}
+  for (const key in filters) {
+    const value = filters[key]
+    const newKey = Array.isArray(value) ? `${key}[]` : key
+    result[newKey] = value
+  }
+  return result
+}

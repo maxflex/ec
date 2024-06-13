@@ -1,16 +1,20 @@
 <script setup lang="ts">
-import type { Teachers } from '~/utils/models'
+import type { Filters } from '~/components/Teacher/Filters.vue'
 
-const items = ref<Teachers>()
+const items = ref<TeacherListResource[]>()
 const paginator = usePaginator()
+let filters: Filters = { subjects: [] }
+
 // const isLastPage = false
 
 const loadData = async function () {
-  console.log('loading data')
   paginator.page++
   paginator.loading = true
-  const { data } = await useHttp<ApiResponse<Teachers>>('teachers', {
-    params: { page: paginator.page },
+  const { data } = await useHttp<ApiResponse<TeacherListResource[]>>('teachers', {
+    params: {
+      ...filtersToQuery(filters),
+      page: paginator.page,
+    },
   })
   paginator.loading = false
   if (data.value) {
@@ -26,15 +30,27 @@ async function onIntersect({
 }: {
   done: (status: InfiniteScrollStatus) => void
 }) {
+  if (paginator.isLastPage) {
+    return
+  }
   done('loading')
   await loadData()
   done('ok')
+}
+
+function onFiltersApply(f: Filters) {
+  filters = f
+  paginator.page = 0
+  loadData()
 }
 
 nextTick(loadData)
 </script>
 
 <template>
+  <div class="filters">
+    <TeacherFilters @apply="onFiltersApply" />
+  </div>
   <UiLoader :paginator="paginator" />
   <v-infinite-scroll
     v-if="items"
@@ -61,9 +77,9 @@ nextTick(loadData)
       <div>
         {{ item.subjects.map(s => SubjectLabelShort[s]).join('+') }}
       </div>
-      <div class="text-right text-gray">
+      <!-- <div class="text-right text-gray">
         {{ formatDateTime(item.created_at) }}
-      </div>
+      </div> -->
     </div>
   </v-infinite-scroll>
 </template>

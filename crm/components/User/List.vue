@@ -9,22 +9,7 @@ const emit = defineEmits<{ (e: 'edit', u: UserResource): void }>()
       v-for="item in items"
       :key="item.id"
     >
-      <div style="width: 30px">
-        {{ item.id }}
-      </div>
-      <div style="width: 500px">
-        {{ formatName(item) }}
-      </div>
-      <div
-        class="text-gray"
-        style="flex: 1"
-      >
-        {{ formatDateTime(item.created_at!) }}
-      </div>
-      <div
-        style="width: 70px; flex: initial !important"
-        class="text-right table-actions"
-      >
+      <div class="table-actionss">
         <v-btn
           icon="$edit"
           :size="48"
@@ -32,6 +17,24 @@ const emit = defineEmits<{ (e: 'edit', u: UserResource): void }>()
           color="gray"
           @click="emit('edit', item)"
         />
+      </div>
+      <div style="width: 30px">
+        {{ item.id }}
+      </div>
+      <div style="width: 300px">
+        {{ formatName(item) }}
+      </div>
+      <div style="flex: 1">
+        <PhoneActions
+          :items="item.phones"
+          style="width: 250px"
+        />
+      </div>
+      <div
+        class="text-gray"
+        style="width: 140px; flex: initial"
+      >
+        {{ formatDateTime(item.created_at!) }}
       </div>
     </div>
   </div>
