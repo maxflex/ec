@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import type { ClientPaymentDialog, ContractDialog } from '#build/components'
+import { mdiWalletBifoldOutline } from '@mdi/js'
+import type { ClientPaymentDialog, ContractBalanceDialog, ContractDialog } from '#build/components'
 
 const { items } = defineProps<{ items: ContractResource[] }>()
 const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()
 const contractDialog = ref<InstanceType<typeof ContractDialog>>()
+const contractBalanceDialog = ref<InstanceType<typeof ContractBalanceDialog>>()
 
 function onContractUpdated(c: ContractResource) {
   const index = items.findIndex(e => e.id === c.id)
@@ -63,13 +65,22 @@ function onClientPaymentDestroyed(cp: ClientPaymentResource) {
     >
       <h3>
         Договор №{{ contract.id }} на {{ formatYear(contract.year) }}
-        <v-btn
-          color="gray"
-          :size="48"
-          icon="$plus"
-          variant="plain"
-          @click="() => contractDialog?.addVersion(contract)"
-        />
+        <div class="contract-list__actions">
+          <v-btn
+            color="gray"
+            icon="$plus"
+            variant="plain"
+            :size="48"
+            @click="() => contractDialog?.addVersion(contract)"
+          />
+          <v-btn
+            color="gray"
+            :icon="mdiWalletBifoldOutline"
+            variant="plain"
+            :size="48"
+            @click="() => contractBalanceDialog?.open(contract.id)"
+          />
+        </div>
       </h3>
       <ContractVersionList
         :items="contract.versions"
@@ -77,13 +88,15 @@ function onClientPaymentDestroyed(cp: ClientPaymentResource) {
       />
       <h3>
         Платежи
-        <v-btn
-          color="gray"
-          :size="48"
-          icon="$plus"
-          variant="plain"
-          @click="() => clientPaymentDialog?.create(contract)"
-        />
+        <div class="contract-list__actions">
+          <v-btn
+            color="gray"
+            :size="48"
+            icon="$plus"
+            variant="plain"
+            @click="() => clientPaymentDialog?.create(contract)"
+          />
+        </div>
       </h3>
       <ClientPaymentList
         :items="contract.payments"
@@ -108,6 +121,7 @@ function onClientPaymentDestroyed(cp: ClientPaymentResource) {
     @updated="onClientPaymentUpdated"
     @destroyed="onClientPaymentDestroyed"
   />
+  <ContractBalanceDialog ref="contractBalanceDialog" />
 </template>
 
 <style lang="scss">
@@ -117,11 +131,17 @@ function onClientPaymentDestroyed(cp: ClientPaymentResource) {
     padding: 0 20px;
     display: flex;
     align-items: center;
-    .v-btn {
-      margin-left: 2px;
-    }
+  }
+  &__actions {
+    display: flex;
+    align-items: center;
+    margin-left: 6px;
     .v-icon {
       font-size: calc(var(--v-icon-size-multiplier) * 1.5rem) !important;
+    }
+    & > .v-btn:nth-child(2) {
+      position: relative;
+      left: -10px;
     }
   }
   &__item {

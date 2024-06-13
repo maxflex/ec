@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\CompanyType;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class Contract extends Model
 {
@@ -35,5 +36,65 @@ class Contract extends Model
     public function payments()
     {
         return $this->morphMany(ClientPayment::class, 'entity')->orderBy('date', 'desc');
+    }
+
+
+    public function getBalance()
+    {
+        $contractLessons = ContractLesson::query()
+            ->where('contract_id', $this->id)
+            ->get();
+
+        $balanceItems = collect();
+
+        foreach ($contractLessons as $contractLesson) {
+            $lesson = $contractLesson->lesson;
+            $balanceItems->push((object) [
+                'dateTime' => $lesson->conducted_at,
+                'sum' => $contractLesson->price * -1,
+                'comment' => sprintf(
+                    'занятие %s, группа %d, кабинет %s',
+                    Carbon::parse($lesson->start_at)->format('d.m.y в H:i'),
+                    $lesson->group_id,
+                    $lesson->cabinet->value
+                )
+            ]);
+        }
+
+        $payments = ClientPayment::query()
+            ->where('entity_type', Contract::class)
+            ->where('entity_id', $this->id)
+            ->get();
+
+        foreach ($payments as $payment) {
+            $balanceItems->push((object) [
+                'dateTime' => $payment->created_at->format('Y-m-d H:i:s'),
+                'sum' => $payment->sum * ($payment->is_return ? -1 : 1),
+                'comment' => sprintf(
+                    '%s (обучение)',
+                    $payment->method->getTitle()
+                )
+            ]);
+        }
+
+        $balanceItemsGroupped = $balanceItems
+            ->sort(fn ($a, $b) => $a->dateTime > $b->dateTime)
+            ->groupBy(fn ($item) => str($item->dateTime)->before(' '));
+
+        $data = [];
+        $balance = 0;
+        foreach ($balanceItemsGroupped as $date => $balanceItems) {
+            $balance += $balanceItems->sum(fn ($e) => $e->sum);
+            $data[] = (object) [
+                'date' => $date,
+                'balance' => $balance,
+                'items' => $balanceItems->map(fn ($e) => (object) [
+                    'sum' => $e->sum,
+                    'comment' => $e->comment,
+                ])->all()
+            ];
+        }
+
+        return array_reverse($data);
     }
 }

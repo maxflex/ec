@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { id, entity } = defineProps<{
-  entity: Extract<EntityString, 'client' | 'teacher'>
+  entity: Extract<EntityString, 'contract' | 'teacher'>
   id: number
 }>()
 // const year = ref<Year>(currentStudyYear())
@@ -10,10 +10,11 @@ const loading = ref(true)
 
 async function loadData() {
   loading.value = true
+  const params = entity === 'teacher'
+    ? { year: year.value }
+    : undefined
   const { data } = await useHttp<Balance[]>(`balance/${entity}/${id}`, {
-    params: {
-      year: year.value,
-    },
+    params,
   })
   if (data.value) {
     balance.value = data.value
@@ -28,7 +29,10 @@ nextTick(loadData)
 
 <template>
   <div class="balance">
-    <div class="filters">
+    <div
+      v-if="entity === 'teacher'"
+      class="filters"
+    >
       <div class="filters-inputs">
         <v-select
           v-model="year"

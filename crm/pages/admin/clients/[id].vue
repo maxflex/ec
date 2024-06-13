@@ -16,7 +16,6 @@ const tabs = {
   groups: 'группы',
   reviews: 'отзывы',
   tests: 'тесты',
-  balance: 'баланс',
 } as const
 
 const selectedTab = ref<keyof typeof tabs>('requests')
@@ -183,11 +182,6 @@ nextTick(loadData)
           @select="onGroupSelected"
         />
       </div>
-      <BalanceList
-        v-else-if="selectedTab === 'balance'"
-        :id="client.id"
-        :entity="'client'"
-      />
       <div
         v-else
         style="padding: 0 20px"
