@@ -34,7 +34,10 @@ Route::middleware(['auth:crm'])->group(function () {
     });
     Route::post('preview', [PreviewController::class, 'enter']);
     Route::get('tests/results/{clientTest}', [TestController::class, 'results']);
-    Route::get('balance/teacher/{teacher}', [BalanceController::class, 'teacher']);
+    Route::controller(BalanceController::class)->prefix('balance')->group(function () {
+        Route::get('teacher/{teacher}', 'teacher');
+        Route::get('client/{client}', 'client');
+    });
     Route::apiResources([
         'requests' => RequestsController::class,
         'clients' => ClientController::class,

@@ -10,4 +10,9 @@ class ContractLesson extends Model
     protected $casts = [
         'status' => ContractLessonStatus::class
     ];
+
+    public function lesson()
+    {
+        return $this->belongsTo(Lesson::class);
+    }
 }

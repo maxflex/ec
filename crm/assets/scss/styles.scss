@@ -312,6 +312,14 @@ a:not(.v-list-item) {
   }
 }
 
+// если первыми на странице идут фильтры,
+// то они sticky
+.v-main > .filters:first-child {
+  z-index: 1;
+  position: sticky;
+  top: 0;
+}
+
 .v-select__content {
   .v-list-item {
     padding-left: 6px !important;

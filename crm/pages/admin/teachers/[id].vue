@@ -121,9 +121,10 @@ nextTick(loadData)
         />
       </template>
     </UiDataLoader>
-    <TeacherBalance
+    <BalanceList
       v-else
-      :teacher="teacher"
+      :id="teacher.id"
+      :entity="'teacher'"
     />
   </div>
   <TeacherDialog

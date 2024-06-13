@@ -161,7 +161,7 @@ const emit = defineEmits<{
             v-model="teacher.desc"
             label="Описание"
             no-resize
-            rows="10"
+            rows="9"
           />
         </div>
       </div>

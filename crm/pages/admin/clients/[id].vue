@@ -16,6 +16,7 @@ const tabs = {
   groups: 'группы',
   reviews: 'отзывы',
   tests: 'тесты',
+  balance: 'баланс',
 } as const
 
 const selectedTab = ref<keyof typeof tabs>('requests')
@@ -161,16 +162,12 @@ nextTick(loadData)
         }"
       >
         <template #default="{ items }">
-          <ClientReviewList
-            style="top: -20px"
-            :items="items"
-          />
+          <ClientReviewList :items="items" />
         </template>
       </UiDataLoader>
 
       <div
         v-else-if="selectedTab === 'groups'"
-        style="top: -20px; position: relative"
       >
         <div class="table table--padding table--hover table--actions-on-hover">
           <GroupList :items="client.groups" />
@@ -186,9 +183,14 @@ nextTick(loadData)
           @select="onGroupSelected"
         />
       </div>
+      <BalanceList
+        v-else-if="selectedTab === 'balance'"
+        :id="client.id"
+        :entity="'client'"
+      />
       <div
         v-else
-        style="top: -20px; position: relative"
+        style="padding: 0 20px"
       >
         <ClientTestList :tests="client.tests" />
         <TestSelectorDialog
@@ -223,7 +225,7 @@ nextTick(loadData)
     display: flex;
     flex-direction: column;
     & > div {
-      padding: 20px;
+      // padding: 20px;
       height: 100%;
     }
   }
@@ -233,12 +235,12 @@ nextTick(loadData)
   //   }
   // }
 
-  .request-list,
-  .table {
-    left: -20px;
-    position: relative;
-    width: calc(100% + 40px);
-  }
+  // .request-list,
+  // .table {
+  //   left: -20px;
+  //   position: relative;
+  //   width: calc(100% + 40px);
+  // }
   .request-list {
     padding-top: 0 !important;
     flex: 1;

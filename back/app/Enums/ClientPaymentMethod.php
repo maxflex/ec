@@ -18,4 +18,14 @@ enum ClientPaymentMethod: string
             'card_online' => self::online
         };
     }
+
+    public function getTitle(): string
+    {
+        return match ($this) {
+            self::card => 'карта',
+            self::online => 'карта онлайн',
+            self::cash => 'наличные',
+            self::invoice => 'счёт',
+        };
+    }
 }

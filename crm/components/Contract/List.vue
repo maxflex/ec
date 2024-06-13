@@ -59,6 +59,7 @@ function onClientPaymentDestroyed(cp: ClientPaymentResource) {
     <div
       v-for="contract in items"
       :key="contract.id"
+      class="contract-list__item"
     >
       <h3>
         Договор №{{ contract.id }} на {{ formatYear(contract.year) }}
@@ -113,6 +114,7 @@ function onClientPaymentDestroyed(cp: ClientPaymentResource) {
 .contract-list {
   h3 {
     margin-bottom: 20px;
+    padding: 0 20px;
     display: flex;
     align-items: center;
     .v-btn {
@@ -122,18 +124,19 @@ function onClientPaymentDestroyed(cp: ClientPaymentResource) {
       font-size: calc(var(--v-icon-size-multiplier) * 1.5rem) !important;
     }
   }
-  & > div {
+  &__item {
+    // отступ между цепями договоров
+    margin-bottom: 80px;
+    // отступ платежи по договору
     h3:not(:first-child) {
       margin-top: 30px;
     }
-    margin-top: 80px;
     &:first-child {
-      margin-top: 0 !important;
-      padding-top: 0 !important;
+      padding-top: 20px;
     }
   }
   &__add {
-    padding: 0;
+    padding: 20px;
   }
 }
 </style>

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-const { teacher } = defineProps<{
-  teacher: TeacherResource
+const { id, entity } = defineProps<{
+  entity: Extract<EntityString, 'client' | 'teacher'>
+  id: number
 }>()
-
 // const year = ref<Year>(currentStudyYear())
 const year = ref<Year>(2023)
 const balance = ref<Balance[]>([])
@@ -10,7 +10,7 @@ const loading = ref(true)
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<Balance[]>(`balance/teacher/${teacher.id}`, {
+  const { data } = await useHttp<Balance[]>(`balance/${entity}/${id}`, {
     params: {
       year: year.value,
     },
