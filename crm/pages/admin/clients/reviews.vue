@@ -1,20 +1,26 @@
 <script setup lang="ts">
-const items = ref([])
+const items = ref<ClientReviewResource[]>([])
 const paginator = usePaginator()
-// const isLastPage = false
 
 const loadData = async function () {
-  console.log('loading data')
+  if (paginator.loading) {
+    return
+  }
   paginator.page++
   paginator.loading = true
-  const { data } = await useHttp<ApiResponse<[]>>('client-reviews', {
-    params: { page: paginator.page },
+  const { data } = await useHttp<ApiResponse<ClientReviewResource[]>>('client-reviews', {
+    params: {
+      'page': paginator.page,
+      'with[]': ['client', 'teacher'],
+    },
   })
   paginator.loading = false
   if (data.value) {
     const { meta, data: newItems } = data.value
-    items.value
-      = paginator.page === 1 ? newItems : items.value?.concat(newItems)
+    for (const item of newItems) {
+      items.value.push(item)
+    }
+    // items.value = [...items.value, ...newItems]
     paginator.isLastPage = meta.current_page === meta.last_page
   }
 }

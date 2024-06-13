@@ -24,6 +24,10 @@ class Controller extends BaseController
             return $query->count();
         }
 
+        if ($request->has('with')) {
+            $query->with($request->with);
+        }
+
         $result = (clone $query)->paginate($request->paginate ?: ($request->page ? 30 : 9999));
 
         $result = ($resource ?? $this->getResource($request))::collection($result);

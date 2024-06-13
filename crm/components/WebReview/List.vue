@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { ClientReviewDialog } from '#build/components'
+import { mdiWeb } from '@mdi/js'
+import type { WebReviewDialog } from '#build/components'
 
-const { items } = defineProps<{ items: ClientReviewResource[] }>()
-const clientReviewDialog = ref<InstanceType<typeof ClientReviewDialog>>()
+const { items } = defineProps<{ items: WebReviewResource[] }>()
+const webReviewDialog = ref<InstanceType<typeof WebReviewDialog>>()
 
-function onUpdated(i: ClientReviewResource) {
+function onUpdated(i: WebReviewResource) {
   const index = items.findIndex(e => e.id === i.id)
 
   if (index !== -1) {
@@ -25,7 +26,7 @@ function onUpdated(i: ClientReviewResource) {
           icon="$edit"
           :size="48"
           variant="plain"
-          @click="clientReviewDialog?.edit(item)"
+          @click="webReviewDialog?.edit(item)"
         />
       </div>
       <div style="width: 50px">
@@ -40,32 +41,44 @@ function onUpdated(i: ClientReviewResource) {
         </NuxtLink>
       </div>
       <div
-        v-if="item.teacher"
-        style="width: 350px"
+        style="width: 200px"
+        class="text-truncate"
       >
-        <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }">
-          {{ formatFullName(item.teacher) }}
-        </NuxtLink>
-      </div>
-      <div style="width: 250px">
-        {{ ProgramLabel[item.program] }}
+        {{ item.signature }}
       </div>
       <div
-        class="text-gray"
         style="flex: 1"
+        class="text-truncate"
       >
-        {{ formatDateTime(item.created_at!) }}
+        {{ item.text }}
       </div>
       <div
-        class="text-right"
+        style="width: 50px"
+        class="text-center"
+      >
+        <v-icon
+          :class="`web-review--${item.is_published ? 'published' : 'unpublished'}`"
+          :icon="mdiWeb"
+          :color="item.is_published ? 'secondary' : 'gray'"
+        />
+      </div>
+      <div
         style="width: 100px; flex: initial !important"
       >
         <UiRating v-model="item.rating" />
       </div>
     </div>
   </div>
-  <ClientReviewDialog
-    ref="clientReviewDialog"
+  <WebReviewDialog
+    ref="webReviewDialog"
     @updated="onUpdated"
   />
 </template>
+
+<style lang="scss">
+.web-review {
+  &--unpublished {
+    opacity: 0.2;
+  }
+}
+</style>

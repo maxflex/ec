@@ -9,6 +9,7 @@ const tabs = {
   groups: 'группы',
   payments: 'платежи',
   balance: 'баланс',
+  reviews: 'отзывы',
 } as const
 const selectedTab = ref<keyof typeof tabs>('groups')
 
@@ -101,6 +102,22 @@ nextTick(loadData)
         <TeacherPaymentList
           :items="items"
           :teacher-id="teacher.id"
+        />
+      </template>
+    </UiDataLoader>
+    <UiDataLoader
+      v-else-if="selectedTab === 'reviews'"
+      url="client-reviews"
+      :filters="{
+        teacher_id: teacher.id,
+        with: 'teacher',
+      }"
+    >
+      <template #default="{ items }">
+        <ClientReviewList
+          no-teacher
+          style="top: -20px"
+          :items="items"
         />
       </template>
     </UiDataLoader>

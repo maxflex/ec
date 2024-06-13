@@ -9,15 +9,19 @@ use Illuminate\Http\Request;
 class ClientReviewController extends Controller
 {
     protected $filters = [
-        'equals' => ['client_id']
+        'equals' => ['client_id', 'teacher_id']
     ];
 
     public function index(Request $request)
     {
-        $query = ClientReview::query()
-            ->with(['client', 'teacher'])
-            ->latest();
+        $query = ClientReview::latest();
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query);
+    }
+
+    public function update(ClientReview $clientReview, Request $request)
+    {
+        $clientReview->update($request->all());
+        return $clientReview;
     }
 }

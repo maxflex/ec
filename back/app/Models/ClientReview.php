@@ -2,10 +2,19 @@
 
 namespace App\Models;
 
+use App\Enums\Program;
 use Illuminate\Database\Eloquent\Model;
 
 class ClientReview extends Model
 {
+    protected $fillable = [
+        'program', 'text', 'rating'
+    ];
+
+    protected $casts = [
+        'program' => Program::class
+    ];
+
     public function client()
     {
         return $this->belongsTo(Client::class);
@@ -14,5 +23,10 @@ class ClientReview extends Model
     public function teacher()
     {
         return $this->belongsTo(Teacher::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

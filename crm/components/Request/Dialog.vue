@@ -101,7 +101,7 @@ const emit = defineEmits<{
         </div>
         <div>
           <UiClearableSelect
-            v-model="request.program"
+            v-model="request.program as string"
             label="Программа"
             :items="selectItems(ProgramLabel)"
           />

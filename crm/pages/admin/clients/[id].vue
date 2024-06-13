@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { nextTick } from 'vue'
-import { mdiEmailOutline, mdiHistory } from '@mdi/js'
 import type {
   ClientDialog,
   GroupSelectorDialog,
@@ -156,7 +155,10 @@ nextTick(loadData)
       <UiDataLoader
         v-else-if="selectedTab === 'reviews'"
         url="client-reviews"
-        :filters="{ client_id: client.id }"
+        :filters="{
+          client_id: client.id,
+          with: 'client',
+        }"
       >
         <template #default="{ items }">
           <ClientReviewList

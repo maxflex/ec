@@ -529,4 +529,32 @@ declare global {
     phones: PhoneListResource[]
     created_at?: string
   }
+
+  interface ClientReviewResource {
+    id: number
+    program: Program
+    text: string
+    rating: number
+    client?: PersonResource
+    teacher?: PersonResource
+    created_at?: string
+  }
+
+  interface WebReviewScore {
+    id: number
+    program?: Program
+    score?: number
+    max_score?: number
+  }
+
+  interface WebReviewResource {
+    id: number
+    is_published: boolean
+    text: string
+    signature: string
+    rating: number
+    scores: WebReviewScore[]
+    client?: PersonResource
+    created_at?: string
+  }
 }
