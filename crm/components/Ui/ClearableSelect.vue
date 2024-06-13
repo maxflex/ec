@@ -18,6 +18,7 @@ function clear() {
 
 <template>
   <v-select
+    v-bind="$attrs"
     ref="input"
     v-model="model"
     :label="label"

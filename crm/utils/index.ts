@@ -66,3 +66,17 @@ export function smoothScroll(
 export function currentStudyYear(): Year {
   return 2024
 }
+
+function getFiltersKey() {
+  const { name } = useRoute()
+  return 'filters-' + String(name)
+}
+
+export function saveFilters<T>(filters: T): void {
+  localStorage.setItem(getFiltersKey(), JSON.stringify(filters))
+}
+
+export function loadFilters<T>(): T {
+  const filters = localStorage.getItem(getFiltersKey())
+  return filters === null ? {} : JSON.parse(filters)
+}

@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import type { Teachers } from '~/utils/models'
+const { label } = withDefaults(
+  defineProps<{ label: string }>(),
+  {
+    label: 'Преподаватель',
+  },
+)
 
-const { label } = defineProps<{ label: string }>()
-const model = defineModel<number | null>()
-const teachers = ref<Teachers>([])
+const model = defineModel<number | undefined>()
+const teachers = ref<TeacherListResource[]>([])
 const loading = ref(true)
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<Teachers>>('teachers')
+  const { data } = await useHttp<ApiResponse<TeacherListResource[]>>('teachers')
   if (data.value) {
     teachers.value = data.value.data
   }
@@ -18,21 +22,14 @@ onMounted(() => loadData())
 </script>
 
 <template>
-  <v-select
+  <UiClearableSelect
+    v-bind="$attrs"
     v-model="model"
     :label="label"
-    :items="teachers"
-    :item-title="(e) => formatFullName(e)"
-    :item-value="(e) => e.id"
     :loading="loading"
-  >
-    <template #item="{ item, props }">
-      <v-list-item
-        :base-color="item.raw.status === 'active' ? undefined : 'gray'"
-        v-bind="props"
-      >
-        <template #prepend />
-      </v-list-item>
-    </template>
-  </v-select>
+    :items="teachers.map(t => ({
+      value: t.id,
+      title: formatFullName(t),
+    }))"
+  />
 </template>

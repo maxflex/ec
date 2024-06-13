@@ -486,6 +486,12 @@ declare global {
     created_at?: string
   }
 
+  interface TeacherListResource extends PersonResource {
+    status: TeacherStatus
+    subjects: Subject[]
+    created_at: string
+  }
+
   interface TeacherResource extends PersonResource {
     phones: PhoneListResource[]
     status: TeacherStatus
@@ -557,4 +563,9 @@ declare global {
     client?: PersonResource
     created_at?: string
   }
+
+  // утилита извлекает тип из emit-функции
+  // (извлекает тип второго параметра из emit-функции)
+  // eslint-disable-next-line
+  type EmitType<T> = T extends (e: any, p: infer P) => any ? P : never
 }

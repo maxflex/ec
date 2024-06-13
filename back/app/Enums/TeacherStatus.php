@@ -2,15 +2,15 @@
 
 namespace App\Enums;
 
-enum TeacherStatus
+enum TeacherStatus: string
 {
-    case inactive;
-    case active;
-    case earlyReserve;
-    case lateReserve;
-    case usedToWork;
-    case interview;
-    case closed;
+    case inactive = 'inactive';
+    case active = 'active';
+    case earlyReserve = 'earlyReserve';
+    case lateReserve = 'lateReserve';
+    case usedToWork = 'usedToWork';
+    case interview = 'interview';
+    case closed = 'closed';
 
     public static function getById(int $id): self
     {

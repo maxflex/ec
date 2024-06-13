@@ -1,7 +1,11 @@
 <script lang="ts" setup>
-const filters = ref<GroupFilters>({})
+// const filters = ref<GroupFilters>({})
+const filters = ref(loadFilters<GroupFilters>())
 
-watch(filters.value, () => emit('apply', filters.value))
+watch(filters.value, () => {
+  saveFilters(filters.value)
+  emit('apply', filters.value)
+})
 
 // const count = computed(
 //   () => Object.values(filters.value).filter(e => e !== undefined).length,

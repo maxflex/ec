@@ -4,7 +4,7 @@ import type { GroupDialog, GroupFilters } from '#build/components'
 const items = ref<GroupListResource[]>()
 const paginator = usePaginator()
 const groupDialog = ref<null | InstanceType<typeof GroupDialog>>()
-const filters = ref<GroupFilters>({})
+let filters = loadFilters<GroupFilters>()
 
 async function loadData() {
   if (paginator.loading) {
@@ -16,7 +16,7 @@ async function loadData() {
   const { data } = await useHttp<ApiResponse<GroupListResource[]>>('groups', {
     params: {
       page: paginator.page,
-      ...filters.value,
+      ...filters,
     },
   })
   paginator.loading = false
@@ -29,7 +29,7 @@ async function loadData() {
 }
 
 function onFiltersApply(f: GroupFilters) {
-  filters.value = f
+  filters = f
   paginator.page = 0
   loadData()
 }
