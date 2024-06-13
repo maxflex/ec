@@ -4,11 +4,19 @@ const emit = defineEmits<{ (e: 'edit', versionIndex: number): void }>()
 </script>
 
 <template>
-  <div class="table contract-versions table--hover table--padding">
+  <div class="table contract-versions table--padding">
     <div
       v-for="(version, i) in items"
       :key="version.id"
     >
+      <div class="table-actionss">
+        <v-btn
+          icon="$edit"
+          :size="48"
+          variant="plain"
+          @click="emit('edit', i)"
+        />
+      </div>
       <div width="150">
         версия {{ version.version }}
       </div>
@@ -53,17 +61,6 @@ const emit = defineEmits<{ (e: 'edit', versionIndex: number): void }>()
           </div>
         </div>
       </div>
-      <div
-        width="50"
-        class="table-actions"
-      >
-        <v-btn
-          variant="text"
-          icon="$more"
-          :size="48"
-          @click="emit('edit', i)"
-        />
-      </div>
     </div>
   </div>
 </template>
@@ -73,12 +70,12 @@ const emit = defineEmits<{ (e: 'edit', versionIndex: number): void }>()
   & > div {
     align-items: flex-start !important;
     & > div {
-      &:nth-child(1) {
+      &:nth-child(2) {
         width: 150px;
       }
-      &:nth-child(2),
       &:nth-child(3),
-      &:nth-child(4) {
+      &:nth-child(4),
+      &:nth-child(5) {
         width: 220px;
       }
     }

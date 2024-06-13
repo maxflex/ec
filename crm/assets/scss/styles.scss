@@ -26,11 +26,15 @@ a:not(.v-list-item) {
   }
   &-actionss {
     position: absolute;
+    padding-top: 4px;
     right: 15px;
+    top: 0;
     z-index: 1;
     width: 100px;
+    height: 100%;
     text-align: right;
     overflow: hidden;
+    // background: red;
     .v-btn {
       opacity: 0;
       box-shadow: 0 0 20px 20px rgba(white, 0.5);
@@ -38,6 +42,13 @@ a:not(.v-list-item) {
       transform: translateX(10px);
       transition: all ease-in-out 0.2s;
       color: rgb(var(--v-theme-gray));
+      // color:#bdc2ce;
+      &:after {
+        content: none !important;
+      }
+      &:hover {
+        color: rgb(var(--v-theme-gray));
+      }
     }
     &:hover {
       .v-btn {
@@ -357,7 +368,7 @@ a:not(.v-list-item) {
   position: sticky;
   top: 0;
   background: white;
-  z-index: 1;
+  z-index: 2;
   &-info {
     border-bottom: 1px solid #e0e0e0;
     // background: #fafafa;
