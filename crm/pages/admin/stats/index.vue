@@ -14,7 +14,7 @@ const loadData = async function () {
     params: {
       ...filtersToQuery(filters),
       page: paginator.page,
-      paginate: 50,
+      paginate: 30,
     },
   })
   paginator.loading = false

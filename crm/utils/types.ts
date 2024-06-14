@@ -579,8 +579,12 @@ declare global {
   interface StatsResource {
     date: string
     requests_count: number
-    contracts_count: number
-    contracts_sum: number
+    new_contracts_count: number
+    new_contracts_sum: number
+    new_programs_count: number
+    programs_added_count: number
+    programs_removed_count: number
+    contracts_sum_change: number
   }
 
   // утилита извлекает тип из emit-функции

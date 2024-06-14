@@ -10,8 +10,12 @@ const { items, mode } = defineProps<{
     <div>
       <div>дата</div>
       <div>заявок</div>
-      <div>новых договоров</div>
-      <div>сумма договоров</div>
+      <div>новых <br> договоров</div>
+      <div>новых <br> услуг</div>
+      <div>сумма <br> договоров</div>
+      <div>увеличение <br> услуг</div>
+      <div>уменьшение <br> услуг</div>
+      <div>изменение <br> суммы</div>
     </div>
   </Teleport>
   <div class="table stats-list">
@@ -19,17 +23,29 @@ const { items, mode } = defineProps<{
       v-for="item in items"
       :key="item.date"
     >
-      <div>
+      <div class="text-gray">
         {{ formatDateMode(item.date, mode) }}
       </div>
       <div>
         {{ item.requests_count || "" }}
       </div>
       <div>
-        {{ item.contracts_count || "" }}
+        {{ item.new_contracts_count || "" }}
       </div>
       <div>
-        {{ item.contracts_sum || "" }}
+        {{ item.new_programs_count || "" }}
+      </div>
+      <div>
+        {{ item.new_contracts_sum ? formatPrice(item.new_contracts_sum) : '' }}
+      </div>
+      <div>
+        {{ item.programs_added_count || '' }}
+      </div>
+      <div>
+        {{ item.programs_removed_count || '' }}
+      </div>
+      <div>
+        {{ item.contracts_sum_change ? formatPrice(item.contracts_sum_change) : '' }}
       </div>
     </div>
   </div>
@@ -43,9 +59,16 @@ const { items, mode } = defineProps<{
     //   color: rgb(var(--v-theme-gray));
     // }
     & > div {
-      width: 200px;
+      width: 100px;
       &:nth-child(1) {
         width: 200px;
+      }
+      &:nth-child(5) {
+        width: 150px;
+      }
+      &:last-child {
+        width: auto;
+        flex: 1;
       }
     }
   }

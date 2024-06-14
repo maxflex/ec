@@ -15,8 +15,11 @@ class ContractProgram extends Model
 
     protected $casts = [
         'program' => Program::class,
-        'lessons' => 'integer',
-        'lessons_planned' => 'integer',
-        'price' => 'integer'
+        'is_closed' => 'boolean',
     ];
+
+    public function scopeActive($query)
+    {
+        $query->where('is_closed', false);
+    }
 }

@@ -38,6 +38,18 @@ class ContractVersion extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Предыдущая версия договора
+     * учитываем, что версии могут идти так: 1, 3, 4 (удалена в середине)
+     */
+    public function getPreviousAttribute()
+    {
+        return $this->chain()
+            ->where('version', '<', $this->version)
+            ->orderBy('version', 'desc')
+            ->first();
+    }
+
     public static function booted()
     {
         static::creating(function ($contractVersion) {
