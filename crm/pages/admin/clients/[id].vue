@@ -69,6 +69,9 @@ nextTick(loadData)
     <div class="panel">
       <div class="panel-info">
         <div>
+          <UiAvatar :item="client" />
+        </div>
+        <div>
           <div>ученик</div>
           <div class="text-truncate">
             {{ formatFullName(client) }}

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasPhones;
+use App\Traits\HasPhoto;
 use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Client extends Model
 {
-    use HasPhones, RelationSyncable;
+    use HasPhones, HasPhoto, RelationSyncable;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'branches',

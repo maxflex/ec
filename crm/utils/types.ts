@@ -302,6 +302,10 @@ declare global {
 
   type LessonStatus = keyof typeof LessonStatusLabel
 
+  interface HasPhoto {
+    photo_url: string | null
+  }
+
   interface User {
     id: number
     entity_type: string
@@ -361,7 +365,7 @@ declare global {
     phones: PhoneListResource[]
   }
 
-  interface ClientResource extends PersonResource {
+  interface ClientResource extends PersonResource, HasPhoto {
     branches: string[] | null
     birthdate: string | null
     user_id: number | null
@@ -492,7 +496,7 @@ declare global {
     created_at: string
   }
 
-  interface TeacherResource extends PersonResource {
+  interface TeacherResource extends PersonResource, HasPhoto {
     phones: PhoneListResource[]
     status: TeacherStatus
     subjects: Subject[]

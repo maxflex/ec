@@ -35,6 +35,9 @@ nextTick(loadData)
     <div class="panel">
       <div class="panel-info">
         <div>
+          <UiAvatar :item="teacher" />
+        </div>
+        <div>
           <div>преподаватель {{ teacher.id }}</div>
           <div>
             {{ formatFullName(teacher) }}
