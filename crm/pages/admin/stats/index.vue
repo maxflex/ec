@@ -3,7 +3,7 @@ import type { Filters } from '~/components/Stats/Filters.vue'
 
 const items = ref<StatsResource[]>()
 const paginator = usePaginator()
-let filters: Filters = { mode: 'day' }
+let filters = loadFilters<Filters>({ mode: 'day' })
 
 // const isLastPage = false
 

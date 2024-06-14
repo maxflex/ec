@@ -3,7 +3,7 @@ import type { Filters } from '~/components/Teacher/Filters.vue'
 
 const items = ref<TeacherListResource[]>()
 const paginator = usePaginator()
-let filters: Filters = { subjects: [] }
+let filters = loadFilters<Filters>({ subjects: [] })
 
 // const isLastPage = false
 

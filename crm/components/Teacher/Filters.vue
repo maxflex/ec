@@ -5,7 +5,7 @@ export type Filters = {
   subjects: Subject[]
 }
 const emit = defineEmits<{ (e: 'apply', filters: Filters): void }>()
-const filters = ref(loadFilters<Filters>())
+const filters = ref(loadFilters<Filters>({ subjects: [] }))
 const q = ref('')
 const input = ref()
 

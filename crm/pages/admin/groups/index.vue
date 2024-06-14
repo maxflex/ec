@@ -4,7 +4,7 @@ import type { GroupDialog, GroupFilters } from '#build/components'
 const items = ref<GroupListResource[]>()
 const paginator = usePaginator()
 const groupDialog = ref<null | InstanceType<typeof GroupDialog>>()
-let filters = loadFilters<GroupFilters>()
+let filters = loadFilters<GroupFilters>({})
 
 async function loadData() {
   if (paginator.loading) {
