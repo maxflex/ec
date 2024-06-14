@@ -12,6 +12,7 @@ import {
   mdiStarBox,
   mdiStarBoxOutline,
   mdiAccountMultiple,
+  mdiFinance,
   mdiCash,
 } from '@mdi/js'
 import { ENTITY_TYPE } from '~/utils/sment'
@@ -91,6 +92,11 @@ switch (user?.entity_type) {
         icon: mdiCash,
         title: 'Платежи препод',
         to: '/teachers/payments',
+      },
+      {
+        icon: mdiFinance,
+        title: 'Итоги',
+        to: '/stats',
       },
       {
         icon: mdiCalendar,

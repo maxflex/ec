@@ -31,6 +31,15 @@ export function formatDateTime(dateTime: string | null): string {
   return dayjs(dateTime).format('DD.MM.YYYY в HH:mm')
 }
 
+export function formatDateMode(date: string, mode: StatsMode) {
+  const dateObj = dayjs(date)
+  switch (mode) {
+    case 'day': return dateObj.format('D MMM YYYY')
+    case 'month': return dateObj.format('MMMM YYYY')
+    case 'year': return dateObj.format('YYYY год')
+  }
+}
+
 export function formatPhone(number: string): string {
   return [
     '+7 (',

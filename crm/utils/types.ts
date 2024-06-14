@@ -218,7 +218,15 @@ export const CompanyTypeLabel = {
   ip: 'ИП',
 } as const
 
+export const StatsModeLabel = {
+  day: 'по дням',
+  month: 'по месяцам',
+  year: 'по годам',
+}
+
 declare global {
+  type StatsMode = keyof typeof StatsModeLabel
+
   type ClientPaymentMethod = keyof typeof ClientPaymentMethodLabel
 
   type CompanyType = keyof typeof CompanyTypeLabel
@@ -566,6 +574,13 @@ declare global {
     scores: WebReviewScore[]
     client?: PersonResource
     created_at?: string
+  }
+
+  interface StatsResource {
+    date: string
+    requests_count: number
+    contracts_count: number
+    contracts_sum: number
   }
 
   // утилита извлекает тип из emit-функции

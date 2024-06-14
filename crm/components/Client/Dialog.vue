@@ -109,7 +109,7 @@ const emit = defineEmits<{
           <!-- <div class="dialog-section__title">
             Ученик
           </div> -->
-          <div class="mb-10">
+          <div style="margin-bottom: 49px;">
             <AvatarLoader
               :key="client.id"
               :entity="'client'"

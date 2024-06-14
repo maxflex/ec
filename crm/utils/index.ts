@@ -76,9 +76,9 @@ export function saveFilters<T>(filters: T): void {
   localStorage.setItem(getFiltersKey(), JSON.stringify(filters))
 }
 
-export function loadFilters<T>(): T {
+export function loadFilters<T>(defaultFilters: T): T {
   const filters = localStorage.getItem(getFiltersKey())
-  return filters === null ? {} : JSON.parse(filters)
+  return filters === null ? defaultFilters : JSON.parse(filters)
 }
 
 // status=math&status=eng ===> status[]=math&status[]=eng
