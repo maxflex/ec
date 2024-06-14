@@ -15,7 +15,8 @@ class UserListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'first_name', 'last_name', 'middle_name', 'created_at'
+            'first_name', 'last_name', 'middle_name', 'created_at',
+            'photo_url',
         ], [
             'phones' => PhoneListResource::collection($this->phones)
         ]);

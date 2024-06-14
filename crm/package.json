@@ -41,6 +41,7 @@
     "pusher-js": "^8.4.0-rc2",
     "rambda": "^9.2.0",
     "sass": "^1.69.5",
-    "vite": "latest"
+    "vite": "latest",
+    "vue-picture-cropper": "^0.7.0"
   }
 }

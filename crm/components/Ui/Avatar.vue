@@ -20,7 +20,7 @@ const src = computed(() => {
     last: item.last_name,
     middle: item.middle_name,
   })
-  return `/img/avatar/${gender ?? 'male'}.png`
+  return `/img/avatar/${gender === 'female' ? 'female' : 'male'}.png`
 })
 </script>
 

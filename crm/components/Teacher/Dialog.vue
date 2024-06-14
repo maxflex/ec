@@ -6,6 +6,7 @@ const modelDefaults: TeacherResource = {
   first_name: null,
   last_name: null,
   middle_name: null,
+  photo_url: null,
   phones: [],
   subjects: [],
   status: 'active',
@@ -87,6 +88,13 @@ const emit = defineEmits<{
       </div>
       <div class="dialog-body-2-col">
         <div class="dialog-body">
+          <div class="mb-10">
+            <AvatarLoader
+              :key="teacher.id"
+              :entity="'teacher'"
+              :item="teacher"
+            />
+          </div>
           <div class="double-input">
             <v-text-field
               v-model="teacher.last_name"

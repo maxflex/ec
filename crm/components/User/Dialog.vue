@@ -6,6 +6,7 @@ const modelDefaults: UserResource = {
   first_name: null,
   last_name: null,
   middle_name: null,
+  photo_url: null,
   phones: [],
 }
 const { dialog, width } = useDialog('default')
@@ -101,9 +102,9 @@ defineExpose({ create, edit })
         class="dialog-body"
       >
         <div class="text-center">
-          <UserAvatar
-            :user="item"
-            :size="150"
+          <AvatarLoader
+            :item="item"
+            :entity="'user'"
           />
         </div>
         <div>

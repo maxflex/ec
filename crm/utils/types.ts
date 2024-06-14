@@ -535,7 +535,7 @@ declare global {
     items: BalanceItem[]
   }
 
-  interface UserResource extends PersonResource {
+  interface UserResource extends PersonResource, HasPhoto {
     phones: PhoneListResource[]
     created_at?: string
   }

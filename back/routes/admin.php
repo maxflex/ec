@@ -14,12 +14,13 @@ use App\Http\Controllers\Admin\{
     LessonController,
     MacroController,
     PreviewController,
+    PhotoController,
     TeacherController,
     TeacherPaymentController,
     TestController,
     UserController,
     VacationController,
-    WebReviewController
+    WebReviewController,
 };
 
 Route::middleware(['auth:crm'])->group(function () {
@@ -34,6 +35,7 @@ Route::middleware(['auth:crm'])->group(function () {
     });
     Route::post('preview', [PreviewController::class, 'enter']);
     Route::get('tests/results/{clientTest}', [TestController::class, 'results']);
+    Route::apiResource('photos', PhotoController::class)->only('store');
     Route::controller(BalanceController::class)->prefix('balance')->group(function () {
         Route::get('contract/{contract}', 'contract');
         Route::get('teacher/{teacher}', 'teacher');

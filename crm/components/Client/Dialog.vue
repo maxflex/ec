@@ -13,6 +13,7 @@ const modelDefaults: ClientResource = {
   head_teacher_id: null,
   head_teacher: null,
   phones: [],
+  photo_url: null,
   parent: {
     id: -1,
     first_name: null,
@@ -30,7 +31,7 @@ const modelDefaults: ClientResource = {
 }
 
 const { dialog, width } = useDialog('x-large')
-const client = ref<ClientResource>(modelDefaults)
+const client = ref<ClientResource>(clone(modelDefaults))
 const loading = ref(false)
 const itemId = ref<number>()
 
@@ -105,8 +106,15 @@ const emit = defineEmits<{
       </div>
       <div class="dialog-body-2-col">
         <div class="dialog-body">
-          <div class="dialog-section__title">
+          <!-- <div class="dialog-section__title">
             Ученик
+          </div> -->
+          <div class="mb-10">
+            <AvatarLoader
+              :key="client.id"
+              :entity="'client'"
+              :item="client"
+            />
           </div>
           <div class="double-input">
             <v-text-field

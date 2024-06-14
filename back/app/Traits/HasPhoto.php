@@ -13,10 +13,6 @@ trait HasPhoto
 
     public function getPhotoUrlAttribute()
     {
-        $photo = $this->photo;
-        if ($photo === null) {
-            return null;
-        }
-        return "https://cdn.ege-centr.ru/photos/{$photo->id}.jpg";
+        return optional($this->photo)->url;
     }
 }
