@@ -432,6 +432,12 @@ declare global {
     programs: ContractProgramResource[]
     payments: ContractPaymentResource[]
     contract_id: number
+    contract: {
+      id: number
+      year: Year
+      company: CompanyType
+      client?: PersonResource
+    }
     created_at?: string
     user?: PersonResource
   }

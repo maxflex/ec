@@ -50,6 +50,9 @@ class ContractVersion extends Model
             ->first();
     }
 
+    /**
+     * Последние версии в цепи
+     */
     public function scopeLastVersions($query)
     {
         $sub = self::selectRaw(<<<SQL
