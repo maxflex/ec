@@ -81,7 +81,7 @@ nextTick(loadData)
 </script>
 
 <template>
-  <UiLoader :loading="loading" />
+  <UiLoaderr :loading="loading" />
   <v-card class="vcalendar-card">
     <div class="vcalendar__header">
       <!-- <v-btn icon @click="dialog = false" variant="flat" :size="48">

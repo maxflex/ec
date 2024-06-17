@@ -436,6 +436,21 @@ declare global {
     user?: PersonResource
   }
 
+  interface ContractVersionListResource {
+    id: number
+    date: string
+    version: number
+    sum: number
+    payments_count: number
+    programs_active_count: number
+    programs_closed_count: number
+    contract: {
+      id: number
+      year: Year
+      client: PersonResource
+    }
+  }
+
   interface ContractResource {
     id: number
     client?: PersonResource

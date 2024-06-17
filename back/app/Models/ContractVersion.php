@@ -50,6 +50,22 @@ class ContractVersion extends Model
             ->first();
     }
 
+    public function scopeLastVersions($query)
+    {
+        $sub = self::selectRaw(<<<SQL
+            contract_id, MAX(version) as max_version
+        SQL)->groupBy('contract_id');
+
+        $query->joinSub(
+            $sub,
+            'last_versions',
+            fn ($join) =>
+            $join
+                ->on('contract_versions.contract_id', '=', 'last_versions.contract_id')
+                ->on('contract_versions.version', '=', 'last_versions.max_version')
+        );
+    }
+
     public static function booted()
     {
         static::creating(function ($contractVersion) {

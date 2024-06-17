@@ -22,4 +22,9 @@ class ContractProgram extends Model
     {
         $query->where('is_closed', false);
     }
+
+    public function scopeClosed($query)
+    {
+        $query->where('is_closed', true);
+    }
 }
