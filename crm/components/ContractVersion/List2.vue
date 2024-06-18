@@ -1,12 +1,16 @@
+<!-- Список договоров в клиенте -->
 <script setup lang="ts">
-const { items } = defineProps<{ items: ContractVersionResource[] }>()
-const emit = defineEmits<{ (e: 'edit', versionIndex: number): void }>()
+const { items } = defineProps<{ items: ContractVersionListResource[] }>()
+const emit = defineEmits<{
+  edit: [cv: ContractVersionListResource]
+}>()
 </script>
 
 <template>
-  <div class="table contract-versions table--padding">
+  <div class="table contract-version-list-2 table--padding">
     <div
-      v-for="(version, i) in items"
+      v-for="version in items"
+      :id="`contract-version-${version.id}`"
       :key="version.id"
     >
       <div class="table-actionss">
@@ -14,7 +18,7 @@ const emit = defineEmits<{ (e: 'edit', versionIndex: number): void }>()
           icon="$edit"
           :size="48"
           variant="plain"
-          @click="emit('edit', i)"
+          @click="emit('edit', version)"
         />
       </div>
       <div width="150">
@@ -28,17 +32,17 @@ const emit = defineEmits<{ (e: 'edit', versionIndex: number): void }>()
       </div>
       <div width="220">
         <span
-          v-if="version.payments.length === 0"
+          v-if="version.payments_count === 0"
           class="text-grey"
         >
           платежей нет
         </span>
         <template v-else>
-          {{ version.payments.length }} платежей
+          {{ version.payments_count }} платежей
         </template>
       </div>
       <div>
-        <div class="contract-versions__programs">
+        <div class="contract-version-list-2__programs">
           <div
             v-for="p in version.programs.slice(
               0,
@@ -66,7 +70,7 @@ const emit = defineEmits<{ (e: 'edit', versionIndex: number): void }>()
 </template>
 
 <style lang="scss">
-.contract-versions {
+.contract-version-list-2 {
   & > div {
     align-items: flex-start !important;
     & > div {

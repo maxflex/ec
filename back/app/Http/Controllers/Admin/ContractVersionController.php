@@ -40,10 +40,14 @@ class ContractVersionController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'contract.id' => ['required', 'exists:contracts,id']
+        ]);
+        $request->merge(['contract_id' => $request->contract['id']]);
         $contractVersion = auth()->user()->entity->contractVersions()->create($request->all());
         $contractVersion->syncRelation($request->all(), 'programs');
         $contractVersion->syncRelation($request->all(), 'payments');
-        return new ContractVersionResource($contractVersion);
+        return new ContractVersionListResource($contractVersion);
     }
 
     public function update(ContractVersion $contractVersion, Request $request)
@@ -63,6 +67,7 @@ class ContractVersionController extends Controller
         if (!$contractVersion->chain()->exists()) {
             $contractVersion->contract->delete();
         }
+        return new ContractVersionListResource($contractVersion);
     }
 
     protected function filterContract(&$query, $value, $field)

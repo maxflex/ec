@@ -396,6 +396,7 @@ a:not(.v-list-item) {
   }
 }
 
+.item-deleted,
 .item-updated {
   // background: red;
   &:after {
@@ -405,7 +406,7 @@ a:not(.v-list-item) {
     top: 0;
     width: 100%;
     height: 100%;
-    animation-name: updated;
+    animation-name: itemUpdated;
     animation-timing-function: linear;
     animation-duration: 2.5s;
     animation-iteration-count: 1;
@@ -413,13 +414,28 @@ a:not(.v-list-item) {
   }
 }
 
-@keyframes updated {
+.item-deleted:after {
+  animation-name: itemDeleted;
+}
+
+@keyframes itemUpdated {
   from {
     background: rgba(#fe8a1d, 0.2);
     // box-shadow: 0 0 10px 10px rgba(var(--v-theme-error), 0.2);
   }
   to {
     background: rgba(#fe8a1d, 0);
+    // box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0);
+  }
+}
+
+@keyframes itemDeleted {
+  from {
+    background: rgba(var(--v-theme-error), 0.4);
+    // box-shadow: 0 0 10px 10px rgba(var(--v-theme-error), 0.2);
+  }
+  to {
+    background: rgba(var(--v-theme-error), 0);
     // box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0);
   }
 }

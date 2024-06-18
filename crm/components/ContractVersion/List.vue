@@ -1,3 +1,4 @@
+<!-- В общем списке в меню "Договоры" -->
 <script setup lang="ts">
 const { items } = defineProps<{
   items: ContractVersionListResource[]
@@ -11,7 +12,7 @@ const emit = defineEmits<{
   <div class="table">
     <div
       v-for="item in items"
-      :id="`item-${item.id}`"
+      :id="`contract-version-${item.id}`"
       :key="item.id"
     >
       <div class="table-actionss">
@@ -41,15 +42,17 @@ const emit = defineEmits<{
       <div style="width: 150px">
         программы:
         <span class="contract-version-list__programs">
-          <span v-if="item.programs_active_count">
-            {{ item.programs_active_count }}
+          <span v-if="item.programs.some(e => !e.is_closed)">
+            {{ item.programs.filter(e => !e.is_closed).length }}
           </span>
+
           <span
-            v-if="item.programs_closed_count"
+            v-if="item.programs.some(e => e.is_closed)"
             class="text-error"
           >
-            {{ item.programs_closed_count }}
+            {{ item.programs.filter(e => e.is_closed).length }}
           </span>
+
         </span>
       </div>
       <div style="width: 150px">

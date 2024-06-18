@@ -1,29 +1,62 @@
 <script setup lang="ts">
 import { mdiWalletBifoldOutline } from '@mdi/js'
-import type { ClientPaymentDialog, ContractBalanceDialog, ContractDialog } from '#build/components'
+import type { ClientPaymentDialog, ContractBalanceDialog, ContractVersionDialog } from '#build/components'
 
 const { items } = defineProps<{ items: ContractResource[] }>()
 const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()
-const contractDialog = ref<InstanceType<typeof ContractDialog>>()
+const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
 const contractBalanceDialog = ref<InstanceType<typeof ContractBalanceDialog>>()
 
-function onContractUpdated(c: ContractResource) {
-  const index = items.findIndex(e => e.id === c.id)
-  if (index === -1) {
+function onContractVersionUpdated(cv: ContractVersionListResource) {
+  const contractIndex = items.findIndex(c => c.id === cv.contract.id)
+  if (contractIndex === -1) {
+    return
+  }
+  const index = items[contractIndex].versions.findIndex(e => e.id === cv.id)
+  if (index !== -1) {
     // eslint-disable-next-line
-    items.unshift(c)
-    smoothScroll('main', 'top')
+    items[contractIndex].versions[index] = cv
   }
   else {
-    // сносим весь договор
-    if (c.versions.length === 0) {
-      // eslint-disable-next-line
-      items.splice(index, 1)
-    }
-    else {
-      // eslint-disable-next-line
-      items.splice(index, 1, c)
-    }
+    // eslint-disable-next-line
+    items[contractIndex].versions.unshift(cv)
+  }
+  itemUpdated('contract-version', cv.id)
+  // const index = items.findIndex(e => e.id === c.id)
+  // if (index === -1) {
+  //   // eslint-disable-next-line
+  //   items.unshift(c)
+  //   smoothScroll('main', 'top')
+  // }
+  // else {
+  //   // сносим весь договор
+  //   if (c.versions.length === 0) {
+  //     // eslint-disable-next-line
+  //     items.splice(index, 1)
+  //   }
+  //   else {
+  //     // eslint-disable-next-line
+  //     items.splice(index, 1, c)
+  //   }
+  // }
+}
+
+function onContractVersionDeleted(cv: ContractVersionResource) {
+  const contractIndex = items.findIndex(c => c.id === cv.contract.id)
+  if (contractIndex === -1) {
+    return
+  }
+  const index = items[contractIndex].versions.findIndex(e => e.id === cv.id)
+  if (index === -1) {
+    return
+  }
+  // await itemDeleted('contract-version', cv.id)
+  // eslint-disable-next-line
+  items[contractIndex].versions.splice(index, 1)
+  // сносим весь договор
+  if (items[contractIndex].versions.length === 0) {
+    // eslint-disable-next-line
+      items.splice(contractIndex, 1)
   }
 }
 
@@ -71,7 +104,7 @@ function onClientPaymentDestroyed(cp: ClientPaymentResource) {
             icon="$plus"
             variant="plain"
             :size="48"
-            @click="() => contractDialog?.addVersion(contract)"
+            @click="() => contractVersionDialog?.addVersion(contract)"
           />
           <v-btn
             color="gray"
@@ -82,9 +115,9 @@ function onClientPaymentDestroyed(cp: ClientPaymentResource) {
           />
         </div>
       </h3>
-      <ContractVersionList
+      <ContractVersionList2
         :items="contract.versions"
-        @edit="versionIndex => contractDialog?.editVersion(contract, versionIndex)"
+        @edit="contractVersionDialog?.edit"
       />
       <h3>
         Платежи
@@ -106,15 +139,16 @@ function onClientPaymentDestroyed(cp: ClientPaymentResource) {
     <div class="contract-list__add">
       <v-btn
         color="primary"
-        @click="contractDialog?.create()"
+        @click="contractVersionDialog?.createContract()"
       >
         добавить новый договор
       </v-btn>
     </div>
   </div>
-  <ContractDialog
-    ref="contractDialog"
-    @updated="onContractUpdated"
+  <ContractVersionDialog
+    ref="contractVersionDialog"
+    @updated="onContractVersionUpdated"
+    @deleted="onContractVersionDeleted"
   />
   <ClientPaymentDialog
     ref="clientPaymentDialog"

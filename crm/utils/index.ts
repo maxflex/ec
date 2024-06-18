@@ -93,9 +93,22 @@ export function filtersToQuery(filters: { [key: string]: any }) {
   return result
 }
 
-export function highlight(id: number) {
-  const el = document?.querySelector(`#item-${id}`)
-  el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
-  el?.classList.remove('item-updated')
-  setTimeout(() => el?.classList.add('item-updated'), 0)
+export function highlight(entity: string, id: number, className: 'item-updated' | 'item-deleted') {
+  nextTick(() => {
+    const el = document?.querySelector(`#${entity}-${id}`)
+    el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    el?.classList.remove(className)
+    setTimeout(() => el?.classList.add(className), 0)
+  })
+}
+
+export function itemUpdated(entity: string, id: number) {
+  highlight(entity, id, 'item-updated')
+}
+
+export async function itemDeleted(entity: string, id: number) {
+  highlight(entity, id, 'item-deleted')
+  await new Promise((resolve) => {
+    setTimeout(resolve, 2000)
+  })
 }

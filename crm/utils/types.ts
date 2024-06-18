@@ -431,7 +431,6 @@ declare global {
     date: string
     programs: ContractProgramResource[]
     payments: ContractPaymentResource[]
-    contract_id: number
     contract: {
       id: number
       year: Year
@@ -448,8 +447,7 @@ declare global {
     version: number
     sum: number
     payments_count: number
-    programs_active_count: number
-    programs_closed_count: number
+    programs: ContractProgramResource[]
     contract: {
       id: number
       year: Year
@@ -463,7 +461,7 @@ declare global {
     client_id: number
     year: Year
     company: CompanyType
-    versions: ContractVersionResource[]
+    versions: ContractVersionListResource[]
     payments: ClientPaymentResource[]
   }
 

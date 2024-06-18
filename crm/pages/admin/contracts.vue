@@ -41,7 +41,7 @@ function onUpdated(cv: ContractVersionListResource) {
   const index = items.value.findIndex(e => e.id === cv.id)
   if (index !== -1) {
     items.value[index] = cv
-    highlight(cv.id)
+    itemUpdated('contract-version', cv.id)
   }
 }
 
@@ -76,7 +76,7 @@ nextTick(loadData)
     :margin="100"
     @load="onIntersect"
   >
-    <ContractVersionListt
+    <ContractVersionList
       :items="items"
       @edit="contractVersionDialog?.edit"
     />

@@ -1,11 +1,9 @@
 <script setup lang="ts">
-// import { clone } from 'rambda'
 import type { ProgramDialog } from '#build/components'
 
 const modelDefaults: ContractVersionResource = {
   id: newId(),
   version: 1,
-  contract_id: -1,
   date: today(),
   programs: [],
   payments: [],
@@ -21,12 +19,13 @@ const contractId = ref<number>()
 const { dialog, width } = useDialog('medium')
 const programDialog = ref<null | InstanceType<typeof ProgramDialog>>()
 const saving = ref(false)
-const destroying = ref(false)
+const deleting = ref(false)
 const loading = ref(false)
 const isEditMode = computed(() => itemId.value !== undefined)
 const isNewContract = computed(() => contractId.value === undefined)
 const emit = defineEmits<{
   updated: [i: ContractVersionListResource]
+  deleted: [i: ContractVersionResource]
 }>()
 
 // function create() {
@@ -66,6 +65,42 @@ const emit = defineEmits<{
 //   dialog.value = true
 // }
 
+function createContract() {
+  itemId.value = undefined
+  contractId.value = undefined
+  console.log('WIP')
+}
+
+async function addVersion(c: ContractResource) {
+  itemId.value = undefined
+  contractId.value = c.id
+  loading.value = true
+  dialog.value = true
+  const { id: lastVersionId } = c.versions[0]
+  const { data } = await useHttp<ContractVersionResource>(
+    `contract-versions/${lastVersionId}`,
+  )
+  if (data.value) {
+    const { sum, version, programs, payments, contract } = data.value
+    item.value = {
+      contract,
+      sum,
+      id: newId(),
+      date: today(),
+      version: version + 1,
+      programs: programs.map(e => ({
+        ...e,
+        id: newId(),
+      })),
+      payments: payments.map(e => ({
+        ...e,
+        id: newId(),
+      })),
+    }
+  }
+  loading.value = false
+}
+
 async function edit(cv: ContractVersionListResource) {
   itemId.value = cv.id
   contractId.value = cv.contract.id
@@ -82,17 +117,17 @@ async function destroy() {
   if (!confirm('Вы уверены, что хотите удалить договор?')) {
     return
   }
-  destroying.value = true
+  deleting.value = true
   const { status } = await useHttp(`contract-versions/${item.value.id}`, {
     method: 'delete',
   })
   if (status.value === 'error') {
-    destroying.value = false
+    deleting.value = false
   }
   else {
-    // emit('updated', contract.value)
+    emit('deleted', item.value)
     dialog.value = false
-    setTimeout(() => destroying.value = false, 300)
+    setTimeout(() => deleting.value = false, 300)
   }
 }
 
@@ -107,7 +142,7 @@ function onProgramsSaved(programs: Program[]) {
       item.value.programs.push({
         id: newId(),
         program,
-        contract_version_id: item.value.contract_id,
+        contract_version_id: item.value.contract.id,
         price: 0,
         lessons: 0,
         lessons_planned: 0,
@@ -164,23 +199,20 @@ async function storeOrUpdate() {
     // }
   }
   else {
-    const { data } = await useHttp<ContractVersionResource>('contract-versions', {
+    const { data } = await useHttp<ContractVersionListResource>('contract-versions', {
       method: 'post',
       body: item.value,
     })
     if (data.value) {
-      console.log('created')
+      emit('updated', data.value)
     }
-    // if (data.value) {
-    //   item.value?.versions.unshift(data.value)
-    // }
   }
   dialog.value = false
   setTimeout(() => saving.value = false, 300)
 }
 
 // defineExpose({ create, editVersion, addVersion })
-defineExpose({ edit })
+defineExpose({ edit, createContract, addVersion })
 </script>
 
 <template>
@@ -192,7 +224,7 @@ defineExpose({ edit })
       <div class="dialog-header">
         <span v-if="isNewContract"> Новый договор </span>
         <span v-else-if="isEditMode"> Редактирование договора №{{ contractId }} </span>
-        <span v-else>Добавить версию</span>
+        <span v-else>Добавить версию к договору №{{ contractId }}</span>
         <v-btn
           icon="$save"
           :size="48"
@@ -366,7 +398,7 @@ defineExpose({ edit })
             :size="48"
             color="red"
             variant="plain"
-            :loading="destroying"
+            :loading="deleting"
             @click="destroy()"
           />
         </div>

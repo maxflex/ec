@@ -15,8 +15,11 @@ class ContractVersionListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'version', 'date', 'programs', 'payments_count', 'sum'
+            'version', 'date', 'programs', 'sum'
         ], [
+            'payments_count' => isset($this->payments_count)
+                ? $this->payments_count
+                : $this->payments()->count(),
             'contract' => extract_fields($this->contract, [
                 'year', 'company'
             ], [
