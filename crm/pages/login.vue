@@ -239,10 +239,12 @@ definePageMeta({ layout: 'login' })
 
 <style lang="scss">
 .login {
-  background: white;
+  background: rgba(white, 0.95);
   border-radius: 20px;
   width: 400px;
-  border: 2px solid rgba(255, 196, 35, 0.5);
+  // border: 2px solid rgba(255, 196, 35, 0.5);
+  z-index: 2;
+  scale: 1.05;
   & > .v-text-field {
     margin-bottom: 20px;
     // .v-field__outline {
