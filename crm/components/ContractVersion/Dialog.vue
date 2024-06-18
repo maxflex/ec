@@ -16,12 +16,18 @@ const modelDefaults: ContractVersionResource = {
   },
 }
 const item = ref<ContractVersionResource>(modelDefaults)
+const itemId = ref<number>()
+const contractId = ref<number>()
 const { dialog, width } = useDialog('medium')
 const programDialog = ref<null | InstanceType<typeof ProgramDialog>>()
 const saving = ref(false)
 const destroying = ref(false)
-const isEditMode = computed(() => item.value.id > 0)
-const isNewContract = computed(() => item.value.contract_id < 0)
+const loading = ref(false)
+const isEditMode = computed(() => itemId.value !== undefined)
+const isNewContract = computed(() => contractId.value === undefined)
+const emit = defineEmits<{
+  updated: [i: ContractVersionListResource]
+}>()
 
 // function create() {
 //   contract.value = {
@@ -59,6 +65,18 @@ const isNewContract = computed(() => item.value.contract_id < 0)
 //   }) - 1
 //   dialog.value = true
 // }
+
+async function edit(cv: ContractVersionListResource) {
+  itemId.value = cv.id
+  contractId.value = cv.contract.id
+  dialog.value = true
+  loading.value = true
+  const { data } = await useHttp<ContractVersionResource>(`contract-versions/${cv.id}`)
+  if (data.value) {
+    item.value = data.value
+  }
+  loading.value = false
+}
 
 async function destroy() {
   if (!confirm('Вы уверены, что хотите удалить договор?')) {
@@ -132,14 +150,18 @@ async function storeOrUpdate() {
   //   }
   // }
   if (isEditMode.value) {
-    const { data } = await useHttp<ContractVersionResource>(
+    const { data } = await useHttp<ContractVersionListResource>(
       `contract-versions/${item.value.id}`, {
         method: 'put',
         body: item.value,
       })
+
     if (data.value) {
-      item.value = data.value
+      emit('updated', data.value)
     }
+    // if (data.value) {
+    //   item.value = data.value
+    // }
   }
   else {
     const { data } = await useHttp<ContractVersionResource>('contract-versions', {
@@ -153,12 +175,12 @@ async function storeOrUpdate() {
     //   item.value?.versions.unshift(data.value)
     // }
   }
-  // nextTick(() => emit('updated', contract.value))
   dialog.value = false
   setTimeout(() => saving.value = false, 300)
 }
 
 // defineExpose({ create, editVersion, addVersion })
+defineExpose({ edit })
 </script>
 
 <template>
@@ -166,13 +188,10 @@ async function storeOrUpdate() {
     v-model="dialog"
     :width="width"
   >
-    <div
-      v-if="item"
-      class="dialog-wrapper contract-version-dialog"
-    >
+    <div class="dialog-wrapper contract-version-dialog">
       <div class="dialog-header">
         <span v-if="isNewContract"> Новый договор </span>
-        <span v-else-if="isEditMode"> Редактирование договора </span>
+        <span v-else-if="isEditMode"> Редактирование договора №{{ contractId }} </span>
         <span v-else>Добавить версию</span>
         <v-btn
           icon="$save"
@@ -182,7 +201,11 @@ async function storeOrUpdate() {
           @click="storeOrUpdate()"
         />
       </div>
-      <div class="dialog-body">
+      <UiLoaderr v-if="loading" />
+      <div
+        v-else
+        class="dialog-body"
+      >
         <div class="double-input">
           <v-select
             v-model="item.contract.year"

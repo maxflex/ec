@@ -3,7 +3,7 @@ const { items } = defineProps<{
   items: ContractVersionListResource[]
 }>()
 const emit = defineEmits<{
-  open: [i: ContractVersionListResource]
+  edit: [i: ContractVersionListResource]
 }>()
 </script>
 
@@ -11,6 +11,7 @@ const emit = defineEmits<{
   <div class="table">
     <div
       v-for="item in items"
+      :id="`item-${item.id}`"
       :key="item.id"
     >
       <div class="table-actionss">
@@ -18,7 +19,7 @@ const emit = defineEmits<{
           variant="plain"
           icon="$edit"
           :size="48"
-          @click="emit('open', item)"
+          @click="emit('edit', item)"
         />
       </div>
       <div style="width: 250px">

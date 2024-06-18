@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import type { ContractVersionDialog } from '#build/components'
 import type { Filters } from '~/components/ContractVersion/Filters.vue'
 
 const items = ref<ContractVersionListResource[]>([])
 const paginator = usePaginator()
 const key = ref(0)
+const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
 let filters: Filters = loadFilters({})
 
 const loadData = async function () {
@@ -32,6 +34,14 @@ const loadData = async function () {
     }
     // items.value = [...items.value, ...newItems]
     paginator.isLastPage = meta.current_page === meta.last_page
+  }
+}
+
+function onUpdated(cv: ContractVersionListResource) {
+  const index = items.value.findIndex(e => e.id === cv.id)
+  if (index !== -1) {
+    items.value[index] = cv
+    highlight(cv.id)
   }
 }
 
@@ -66,6 +76,13 @@ nextTick(loadData)
     :margin="100"
     @load="onIntersect"
   >
-    <ContractVersionListt :items="items" />
+    <ContractVersionListt
+      :items="items"
+      @edit="contractVersionDialog?.edit"
+    />
   </v-infinite-scroll>
+  <ContractVersionDialog
+    ref="contractVersionDialog"
+    @updated="onUpdated"
+  />
 </template>

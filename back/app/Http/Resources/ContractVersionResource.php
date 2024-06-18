@@ -18,6 +18,9 @@ class ContractVersionResource extends JsonResource
             'programs' => $this->programs,
             'payments' => $this->payments,
             'user' => new PersonResource($this->user),
+            'contract' => extract_fields($this->contract, [
+                'year', 'company'
+            ])
         ]);
     }
 }

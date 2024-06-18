@@ -14,6 +14,14 @@ class ContractVersionListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return extract_fields($this, [
+            'version', 'date', 'programs', 'payments_count', 'sum'
+        ], [
+            'contract' => extract_fields($this->contract, [
+                'year', 'company'
+            ], [
+                'client' => new PersonResource($this->contract->client)
+            ])
+        ]);
     }
 }

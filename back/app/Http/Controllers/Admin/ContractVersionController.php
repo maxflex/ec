@@ -33,6 +33,11 @@ class ContractVersionController extends Controller
         );
     }
 
+    public function show(ContractVersion $contractVersion)
+    {
+        return new ContractVersionResource($contractVersion);
+    }
+
     public function store(Request $request)
     {
         $contractVersion = auth()->user()->entity->contractVersions()->create($request->all());
@@ -46,7 +51,7 @@ class ContractVersionController extends Controller
         $contractVersion->update($request->all());
         $contractVersion->syncRelation($request->all(), 'programs');
         $contractVersion->syncRelation($request->all(), 'payments');
-        return new ContractVersionResource($contractVersion);
+        return new ContractVersionListResource($contractVersion);
     }
 
     public function destroy(ContractVersion $contractVersion)

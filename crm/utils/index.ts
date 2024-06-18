@@ -92,3 +92,10 @@ export function filtersToQuery(filters: { [key: string]: any }) {
   }
   return result
 }
+
+export function highlight(id: number) {
+  const el = document?.querySelector(`#item-${id}`)
+  el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+  el?.classList.remove('item-updated')
+  setTimeout(() => el?.classList.add('item-updated'), 0)
+}
