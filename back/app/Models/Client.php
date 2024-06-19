@@ -107,4 +107,8 @@ class Client extends Model
             fn () => $requests
         );
     }
+
+    public function getSchedule(int $year)
+    {
+    }
 }

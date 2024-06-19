@@ -8,6 +8,7 @@ import type {
 const tabs = {
   requests: 'заявки',
   contracts: 'договоры',
+  schedule: 'расписание',
   groups: 'группы',
   reviews: 'отзывы',
   tests: 'тесты',
@@ -164,6 +165,7 @@ nextTick(loadData)
           <ClientReviewList :items="items" />
         </template>
       </UiDataLoader>
+      <ScheduleList v-else-if="selectedTab === 'schedule'" />
       <!-- <ClientGroupsTab
         v-else-if="selectedTab === 'groups'"
       /> -->
