@@ -55,6 +55,6 @@
   object-fit: cover; /* Ensures the video covers the entire viewport */
   transform: translate(-50%, -50%);
   z-index: -1;
-  filter: blur(3px); /* Apply blur effect */
+  // filter: blur(3px); /* Apply blur effect */
 }
 </style>
