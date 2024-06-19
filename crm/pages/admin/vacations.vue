@@ -13,8 +13,8 @@ const monthLabels = [
   'ноябрь',
   'декабрь',
 ]
-const years = Object.keys(YearLabel).toReversed().map(y => Number(y))
-years.push(years[years.length] + 1) // добавляем слеюующий год
+const years = Object.keys(YearLabel).map(y => Number(y))
+years.push(years[years.length - 1] + 1) // добавляем слеюующий год
 const loading = ref(true)
 const dates = ref<Record<string, boolean>>({})
 

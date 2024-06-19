@@ -6,6 +6,7 @@
         autoplay
         loop
         muted
+        poster="https://cdn.ege-centr.ru/videos/first-frame.webp"
       >
         <source
           src="https://cdn.ege-centr.ru/videos/loop.mp4"
@@ -27,7 +28,7 @@
   // background: linear-gradient(to bottom, #f1e4a5 0%, rgba(255, 196, 35, 0.15));
   // background-image: url("/img/sky-blurred.jpg");
   // background-size: cover;
-  background: #783c2c;
+  background: linear-gradient(45deg, #5a2d22, #c7784f);
   height: 100vh;
   width: 100vw;
   overflow: hidden;
@@ -36,24 +37,24 @@
   justify-content: center;
 }
 .video-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    z-index: 0; /* Ensure the video stays behind other content */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 0; /* Ensure the video stays behind other content */
 }
 
 #background-video {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 103vw;
-    height: 103vh;
-    object-fit: cover; /* Ensures the video covers the entire viewport */
-    transform: translate(-50%, -50%);
-    z-index: -1;
-    filter: blur(3px); /* Apply blur effect */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 103vw;
+  height: 103vh;
+  object-fit: cover; /* Ensures the video covers the entire viewport */
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  filter: blur(3px); /* Apply blur effect */
 }
 </style>
