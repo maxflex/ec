@@ -14,15 +14,11 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $entity = $this->entity;
-        return [
-            'id' => $this->entity_id,
-            'telegram_id' => $this->telegram_id,
-            'entity_type' => $this->entity_type,
-            'first_name' => $entity->first_name,
-            'last_name' => $entity->last_name,
-            'middle_name' => $entity->middle_name,
-            'number' => $this->number,
-        ];
+        return extract_fields($this, [
+            'first_name', 'last_name', 'middle_name', 'created_at',
+            'photo_url',
+        ], [
+            'phones' => PhoneListResource::collection($this->phones)
+        ]);
     }
 }

@@ -3,7 +3,7 @@ import type { RequestDialog, RequestFilters } from '#build/components'
 
 const items = ref<RequestListResource[]>()
 const paginator = usePaginator()
-const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()
+const requestDialog = ref<InstanceType<typeof RequestDialog>>()
 const filters = ref<RequestFilters>({})
 
 async function loadData() {

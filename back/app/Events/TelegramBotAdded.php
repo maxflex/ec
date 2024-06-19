@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Http\Resources\UserResource;
+use App\Http\Resources\AuthResource;
 use App\Models\Phone;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -41,7 +41,7 @@ class TelegramBotAdded implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'user' => new UserResource($this->phone),
+            'user' => new AuthResource($this->phone),
             'token' => $this->phone->createSessionToken(),
         ];
     }
