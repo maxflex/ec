@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ClientTest } from '~/utils/models'
-import { ENTITY_TYPE, PROGRAM } from '~/utils/sment'
 import { plural } from '~/utils/filters'
 
 const { tests } = defineProps<{ tests: ClientTest[] }>()
@@ -17,7 +16,7 @@ const { user } = useAuthStore()
         {{ t.name }}
       </div>
       <div style="width: 250px">
-        {{ PROGRAM[t.program] }}
+        {{ ProgramLabel[t.program] }}
       </div>
       <div style="width: 150px">
         {{ t.minutes }} минут
@@ -35,7 +34,7 @@ const { user } = useAuthStore()
         </router-link>
         <template v-else>
           <span
-            v-if="user?.entity_type === ENTITY_TYPE.user"
+            v-if="user?.entity_type === EntityType.user"
             class="text-gray"
           >
             не пройден

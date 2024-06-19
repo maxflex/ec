@@ -119,7 +119,7 @@ defineExpose({ open, create })
         </div>
         <UiDateInput v-model="item.date" />
         <div>
-          <UiYearSelector v-model="item.year" />
+          <v-select v-model="item.year" label="Учебный год" :items="selectItems(YearLabel)" />
         </div>
         <div>
           <v-select

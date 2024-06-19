@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Vacations } from '~/utils/models'
-import { YEARS } from '~/utils/sment'
 
 const monthLabels = [
   'январь',
@@ -16,7 +15,8 @@ const monthLabels = [
   'ноябрь',
   'декабрь',
 ]
-
+const years = Object.keys(YearLabel).toReversed().map(y => Number(y))
+years.push(years[years.length] + 1) // добавляем слеюующий год
 const loading = ref(true)
 const dates = ref<Record<string, boolean>>({})
 
@@ -94,7 +94,7 @@ nextTick(loadData)
         </v-btn> -->
     </div>
     <div
-      v-for="year in [...YEARS.toReversed(), YEARS[0] + 1]"
+      v-for="year in years"
       :key="year"
       class="vcalendar__year"
     >

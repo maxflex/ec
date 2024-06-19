@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { BRANCHES } from '~/utils/sment'
-
 const { branches } = defineProps<{
-  branches: string[] | null
+  branches: Branch[] | null
 }>()
 </script>
 
@@ -16,7 +14,7 @@ const { branches } = defineProps<{
       :key="b"
       :class="`branch branch--${b}`"
     >
-      {{ BRANCHES[b] }}
+      {{ BranchLabel[b] }}
     </span>
   </div>
   <template v-else>

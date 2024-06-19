@@ -15,13 +15,12 @@ import {
   mdiStarBox,
   mdiStarBoxOutline,
 } from '@mdi/js'
-import { ENTITY_TYPE } from '~/utils/sment'
 
 const { user, logOut, clearCurrentToken } = useAuthStore()
 let menu: Menu
 
 switch (user?.entity_type) {
-  case ENTITY_TYPE.client:
+  case EntityType.client:
     menu = [
       {
         icon: mdiAccountGroup,
@@ -36,7 +35,7 @@ switch (user?.entity_type) {
     ]
     break
 
-  case ENTITY_TYPE.teacher:
+  case EntityType.teacher:
     menu = [
       {
         icon: mdiAccountGroup,

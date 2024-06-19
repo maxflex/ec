@@ -120,6 +120,31 @@ export const ProgramLabel = {
   mathProf: 'математика профиль',
 } as const
 
+export const BranchLabel = {
+  ohr: 'ОХР',
+  pvn: 'ВЕР',
+  bgt: 'БАГ',
+  izm: 'ИЗМ',
+  opl: 'ОКТ',
+  rpt: 'РЯЗ',
+  skl: 'СКЛ',
+  orh: 'ОРЕ',
+  ann: 'АНН',
+  per: 'ПЕР',
+  klg: 'КЛЖ',
+  brt: 'БРА',
+  str: 'СТР',
+  vld: 'ВЛА',
+  bel: 'БЕЛ',
+  bib: 'БИБ',
+  svi: 'СВИ',
+  nag: 'НАГ',
+  sok: 'СОК',
+  pla: 'ПЛА',
+  vod: 'ВОД',
+  trg: 'ТУР',
+} as const
+
 export const RequestStatusLabel = {
   new: 'новые',
   awaiting: 'в ожидании',
@@ -264,6 +289,8 @@ declare global {
   type TeacherPaymentMethod = keyof typeof TeacherPaymentMethodLabel
 
   type Subject = keyof typeof SubjectLabel
+
+  type Branch = keyof typeof BranchLabel
 
   type TeacherStatus = keyof typeof TeacherStatusLabel
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { RequestDialog } from '#build/components'
-import { PROGRAM } from '~/utils/sment'
 
 const model = defineModel<RequestListResource[]>({ default: () => [] })
 const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()
@@ -27,7 +26,7 @@ function onRequestUpdated(r: RequestListResource) {
             Заявка {{ r.id }}
           </div>
           <div v-if="r.program">
-            {{ PROGRAM[r.program] }}
+            {{ ProgramLabel[r.program] }}
           </div>
           <div>
             ответственный

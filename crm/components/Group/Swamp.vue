@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ContractProgram } from '~/utils/models'
-import { PROGRAM } from '~/utils/sment'
 
 const { swamp } = defineProps<{ swamp: ContractProgram }>()
 
@@ -22,7 +21,7 @@ const emit = defineEmits<{
       >к исполнению</span>
     </div>
     <div>
-      {{ PROGRAM[swamp.program] }}
+      {{ ProgramLabel[swamp.program] }}
     </div>
     <div>{{ swamp.lessons }} уроков</div>
     <div class="table-actions">

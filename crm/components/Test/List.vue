@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Test, Tests } from '~/utils/models'
-import { PROGRAM } from '~/utils/sment'
 import { plural } from '~/utils/filters'
 
 const { tests } = defineProps<{ tests: Tests }>()
@@ -44,7 +43,7 @@ function select(t: Test) {
       </div>
       <div style="width: 250px">
         <template v-if="t.program">
-          {{ PROGRAM[t.program] }}
+          {{ ProgramLabel[t.program] }}
         </template>
         <span
           v-else

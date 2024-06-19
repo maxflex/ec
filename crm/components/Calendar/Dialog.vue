@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { YEARS } from '~/utils/sment'
-
 const { dialog, width, transition } = useDialog('medium')
 const model = defineModel<string>()
 const monthLabels = [
@@ -17,6 +15,7 @@ const monthLabels = [
   'ноябрь',
   'декабрь',
 ]
+const years = Object.keys(YearLabel).toReversed().map(y => Number(y))
 function open() {
   dialog.value = true
   setTimeout(
@@ -71,7 +70,7 @@ defineExpose({ open })
         </v-btn> -->
       </div>
       <div
-        v-for="year in YEARS.toReversed()"
+        v-for="year in years"
         :key="year"
         class="calendar__year"
       >

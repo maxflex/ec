@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
-import { BRANCHES } from '~/utils/sment'
 
 const emit = defineEmits<{
   (e: 'created' | 'updated', c: ClientResource): void
@@ -136,12 +135,7 @@ defineExpose({ create, edit })
               v-model="client.branches"
               label="Филиалы"
               multiple
-              :items="
-                Object.keys(BRANCHES).map((value) => ({
-                  value,
-                  title: BRANCHES[value],
-                }))
-              "
+              :items="selectItems(BranchLabel)"
             />
 
             <TeacherSelector

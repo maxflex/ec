@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
-import type { Program, Test } from '~/utils/models'
-import { PROGRAM } from '~/utils/sment'
+import type { Test } from '~/utils/models'
 import { humanFileSize } from '~/utils/filters'
 import type { TestQuestionsDialog } from '#build/components'
 
@@ -15,10 +14,6 @@ const fileInput = ref()
 const pdf = ref()
 const loading = ref(false)
 const questionsDialog = ref<null | InstanceType<typeof TestQuestionsDialog>>()
-const programs = Object.keys(PROGRAM).map(value => ({
-  value,
-  title: PROGRAM[value as Program],
-}))
 function open(t: Test) {
   pdf.value = null
   item.value = clone(t)
@@ -134,7 +129,7 @@ defineExpose({ open, create })
         <div>
           <v-select
             v-model="item.program"
-            :items="programs"
+            :items="selectItems(ProgramLabel)"
             label="Программа"
           />
         </div>

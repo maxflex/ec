@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { ENTITY_TYPE } from '~/utils/sment'
 
 export const useAuthStore = defineStore('auth', () => {
   const forever = { maxAge: 60 * 60 * 24 * 1000 }
@@ -27,7 +26,7 @@ export const useAuthStore = defineStore('auth', () => {
     else {
       token.value = t
       // если не учитель, сохраняем в remember me
-      if (u.entity_type !== ENTITY_TYPE.teacher) {
+      if (u.entity_type !== EntityType.teacher) {
         rememberUser.value = u
       }
       window.location.href = sessionStorage.getItem('redirect') || '/'
