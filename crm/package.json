@@ -12,7 +12,8 @@
     "postinstall": "nuxt prepare",
     "start": "node --inspect .output/server/index.mjs",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@nuxt/eslint-config": "^0.3.13",

@@ -37,6 +37,8 @@ declare global {
     middle_name: string | null
   }
 
+  type PersonWithPhonesResource = PersonResource & HasPhones
+
   type ResponseErrors = string[]
 
   interface Paginator {
@@ -74,6 +76,10 @@ declare global {
 
   interface HasPhoto {
     photo_url: string | null
+  }
+
+  interface HasPhones {
+    phones: PhoneListResource[]
   }
 
   interface User {
@@ -124,7 +130,7 @@ declare global {
     comments_count: number
   }
 
-  interface ClientParentResource extends PersonResource {
+  interface ParentResource extends PersonResource, HasPhones {
     passport_series: string | null
     passport_number: string | null
     passport_address: string | null
@@ -132,21 +138,18 @@ declare global {
     passport_issued_date: string | null
     passport_issued_by: string | null
     fact_address: string | null
-    phones: PhoneListResource[]
   }
 
   interface ClientListResource extends PersonResource {
     created_at: string
   }
 
-  interface ClientResource extends PersonResource, HasPhoto {
+  interface ClientResource extends PersonResource, HasPhoto, HasPhones {
     branches: Branch[]
     birthdate: string | null
-    user_id: number | null
     head_teacher_id: number | null
-    parent: ClientParentResource
-    phones: PhoneListResource[]
-    head_teacher: PersonResource | null
+    parent: ParentResource
+    user?: PersonResource
   }
 
   interface CommentResource {

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { nextTick } from 'vue'
 import type {
   ClientDialog,
   GroupSelectorDialog,
@@ -87,7 +86,8 @@ nextTick(loadData)
         </div>
         <div>
           <div>куратор</div>
-          <div v-if="client.head_teacher">
+          <!-- TODO: подумать, че делать с учителями -->
+          <!-- <div v-if="client.head_teacher">
             <router-link
               :to="{
                 name: 'teachers-id',
@@ -96,8 +96,9 @@ nextTick(loadData)
             >
               {{ formatName(client.head_teacher) }}
             </router-link>
-          </div>
-          <div v-else>
+          </div> -->
+          <!-- <div v-else> -->
+          <div>
             не установлено
           </div>
         </div>
@@ -163,7 +164,9 @@ nextTick(loadData)
           <ClientReviewList :items="items" />
         </template>
       </UiDataLoader>
-
+      <!-- <ClientGroupsTab
+        v-else-if="selectedTab === 'groups'"
+      /> -->
       <div
         v-else-if="selectedTab === 'groups'"
       >

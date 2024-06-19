@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ClientParentResource extends JsonResource
+class PersonWithPhonesResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,8 +14,10 @@ class ClientParentResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return extract_fields($this, ['*'], [
-            'phones' => PhoneListResource::collection($this->phones)
+        return extract_fields($this, [
+            'first_name', 'last_name', 'middle_name'
+        ], [
+            'phones' => PhoneListResource::collection($this->phones),
         ]);
     }
 }

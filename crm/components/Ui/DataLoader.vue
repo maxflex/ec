@@ -21,7 +21,8 @@ onMounted(async () => {
 <template>
   <UiLoaderr v-if="loading" />
   <slot
-    v-else
+    v-else-if="items.length > 0"
     :items="items"
   />
+  <UiNoData v-else />
 </template>

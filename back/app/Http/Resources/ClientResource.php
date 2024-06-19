@@ -14,16 +14,24 @@ class ClientResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return array_merge(parent::toArray($request), [
-            'photo_url' => $this->photoUrl,
-            'contracts' => ContractResource::collection($this->contracts),
-            'groups' => GroupResource::collection($this->groups),
-            'swamps' => $this->swamps,
-            'parent' => new ClientParentResource($this->parent),
-            'tests' => ClientTestResource::collection($this->tests),
-            'head_teacher' => new PersonResource($this->headTeacher),
-            'phones' => $this->phones,
-            'requests' => $this->requests,
+        return extract_fields($this, [
+            'first_name', 'last_name', 'middle_name', 'branches',
+            'birthdate', 'head_teacher_id', 'photo_url'
+        ], [
+            'user' => new PersonResource($this->user),
+            'parent' => new ParentResource($this->parent),
+            'phones' => PhoneListResource::collection($this->phones),
         ]);
+        // return array_merge(parent::toArray($request), [
+        //     'photo_url' => $this->photoUrl,
+        //     'contracts' => ContractResource::collection($this->contracts),
+        //     'groups' => GroupResource::collection($this->groups),
+        //     'swamps' => $this->swamps,
+        //     'parent' => new ParentResource($this->parent),
+        //     'tests' => ClientTestResource::collection($this->tests),
+        //     'head_teacher' => new PersonResource($this->headTeacher),
+        //     'phones' => $this->phones,
+        //     'requests' => $this->requests,
+        // ]);
     }
 }
