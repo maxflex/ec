@@ -50,8 +50,8 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 103vw;
-  height: 103vh;
+  width: 100vw;
+  height: 100vh;
   object-fit: cover; /* Ensures the video covers the entire viewport */
   transform: translate(-50%, -50%);
   z-index: -1;
