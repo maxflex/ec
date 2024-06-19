@@ -1,12 +1,12 @@
 <script setup lang="ts">
 const { branches } = defineProps<{
-  branches: Branch[] | null
+  branches: Branch[]
 }>()
 </script>
 
 <template>
   <div
-    v-if="branches?.length"
+    v-if="branches.length"
     class="branches"
   >
     <span

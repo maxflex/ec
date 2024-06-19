@@ -140,7 +140,7 @@ declare global {
   }
 
   interface ClientResource extends PersonResource, HasPhoto {
-    branches: string[] | null
+    branches: Branch[]
     birthdate: string | null
     user_id: number | null
     head_teacher_id: number | null
