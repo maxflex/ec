@@ -23,7 +23,7 @@ return new class extends Migration
                 collect(Program::cases())->map(fn ($e) => $e->name)->all()
             );
             $table->string('name');
-            $table->string('file');
+            $table->string('file')->nullable();
             $table->integer('minutes');
             $table->json('questions');
             $table->json('answers')->nullable();

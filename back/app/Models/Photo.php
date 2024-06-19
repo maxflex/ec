@@ -22,7 +22,7 @@ class Photo extends Model
 
     public function getUrlAttribute()
     {
-        return "https://cdn.ege-centr.ru/photos/{$this->id}.jpg";
+        return cdn('photos', $this->id . '.jpg');
     }
 
     public function upload(UploadedFile $file)

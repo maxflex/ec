@@ -34,7 +34,7 @@ class TestController extends Controller
     {
         if ($request->has('pdf')) {
             $file = uniqid() . ".pdf";
-            $request->file('pdf')->storeAs('public/tests', $file);
+            $request->file('pdf')->storeAs('tests', $file);
             $test->file = $file;
             $test->save();
         }

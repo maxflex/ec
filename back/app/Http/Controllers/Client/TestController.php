@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ClientTestResource;
+use App\Http\Resources\TestResource;
 use App\Models\ClientTest;
+use App\Models\Test;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -14,6 +16,11 @@ class TestController extends Controller
     {
         $query = ClientTest::where('client_id', auth()->id());
         return $this->handleIndexRequest($request, $query, ClientTestResource::class);
+    }
+
+    public function show(Test $test)
+    {
+        return new TestResource($test);
     }
 
     public function results(ClientTest $clientTest)

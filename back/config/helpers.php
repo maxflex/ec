@@ -46,3 +46,8 @@ function key_by($data, string $field, string $field2 = null, $value = null): arr
     }
     return $result;
 }
+
+function cdn(string $folder, string $file)
+{
+    return "https://cdn.ege-centr.ru/{$folder}/{$file}";
+}

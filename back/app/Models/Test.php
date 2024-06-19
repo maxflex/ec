@@ -17,15 +17,9 @@ class Test extends Model
         'questions' => 'array',
     ];
 
-    public $interfaces = [
-        'questions' => ['type' => 'TestQuestions'],
-    ];
-
-    public function file(): Attribute
+    public function getFileAttribute($file): string
     {
-        return Attribute::make(
-            fn ($v): string => asset("storage/tests/" . $v)
-        );
+        return cdn('tests', $file);
     }
 
     public function addClient(Client $client)

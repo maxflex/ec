@@ -85,6 +85,11 @@ function onFileSelected(e: Event) {
   }
 }
 
+function getFileName(f: string) {
+  const parts = f.split('/')
+  return parts[parts.length - 1]
+}
+
 defineExpose({ open, create })
 </script>
 
@@ -184,7 +189,7 @@ defineExpose({ open, create })
                   :href="item.file"
                   target="_blank"
                 >{{
-                  item.file.split("/")[5]
+                  getFileName(item.file)
                 }}</a>
                 <div class="text-gray">
                   1.2 Мб

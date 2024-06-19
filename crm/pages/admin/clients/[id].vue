@@ -183,14 +183,13 @@ nextTick(loadData)
       </div>
       <div
         v-else
-        style="padding: 0 20px"
       >
         <ClientTestList :tests="client.tests" />
         <TestSelectorDialog
           ref="testSelectorDialog"
           @saved="onTestsSaved"
         />
-        <div class="mt-6">
+        <div style="margin: 20px">
           <v-btn
             color="primary"
             @click="() => testSelectorDialog?.open()"

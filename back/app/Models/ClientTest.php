@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class ClientTest extends Model
 {
     public $timestamps = false;
+
     protected $fillable = [
         'name', 'minutes', 'program', 'questions', 'file',
     ];
@@ -19,21 +20,15 @@ class ClientTest extends Model
         'answers' => 'array',
     ];
 
-    public $interfaces = [
-        'questions' => ['type' => 'TestQuestions'],
-        'answers' => ['type' => 'TestAnswers'],
-    ];
-
     /**
      * + 1 minute – 1 минута запас на всякий случай
      */
     public function scopeActive($query)
     {
-        $now = now()->format("Y-m-d H:i:s");
         return $query->whereRaw(<<<SQL
             started_at is not null
             and finished_at is null
-            and '$now' < started_at + interval `minutes` + 1 minute
+            and now() < started_at + interval `minutes` + 1 minute
         SQL);
     }
 
@@ -57,10 +52,8 @@ class ClientTest extends Model
         );
     }
 
-    public function file(): Attribute
+    public function getFileAttribute($file): string
     {
-        return Attribute::make(
-            fn ($v): string => asset("storage/tests/" . $v)
-        );
+        return cdn('tests', $file);
     }
 }
