@@ -7,6 +7,7 @@ const emit = defineEmits<{ (e: 'open', p: ClientPaymentResource): void }>()
   <div class="table client-payments">
     <div
       v-for="item in items"
+      :id="`client-payment-${item.id}`"
       :key="item.id"
     >
       <div class="table-actionss">

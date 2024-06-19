@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
 
-const emit = defineEmits<{ (e: 'updated' | 'destroyed', c: ClientPaymentResource): void }>()
+const emit = defineEmits<{
+  updated: [cp: ClientPaymentResource]
+  deleted: [cp: ClientPaymentResource]
+}>()
 const { dialog, width } = useDialog('default')
 const modelDefaults: ClientPaymentResource = {
   id: newId(),
@@ -9,7 +12,7 @@ const modelDefaults: ClientPaymentResource = {
   date: today(),
   year: currentStudyYear(),
   method: 'card',
-  entity_type: 'App\\Models\\Contract',
+  entity_type: EntityType.contract,
   entity_id: 0,
   company: 'ooo',
   purpose: null,
@@ -19,12 +22,12 @@ const modelDefaults: ClientPaymentResource = {
 }
 const sumInput = ref()
 const saving = ref(false)
-const destroying = ref(false)
+const deleting = ref(false)
 const item = ref<ClientPaymentResource>(modelDefaults)
 const isEditMode = computed(() => item.value.id > 0)
 
-function open(p: ClientPaymentResource) {
-  item.value = clone(p)
+function open(cp: ClientPaymentResource) {
+  item.value = clone(cp)
   dialog.value = true
 }
 
@@ -42,7 +45,7 @@ function create(c: ContractResource) {
   })
 }
 
-async function storeOrUpdate() {
+async function save() {
   saving.value = true
   if (isEditMode.value) {
     const { data } = await useHttp<ClientPaymentResource>(`client-payments/${item.value.id}`, {
@@ -71,17 +74,17 @@ async function destroy() {
   if (!confirm('Вы уверены, что хотите удалить платеж?')) {
     return
   }
-  destroying.value = true
+  deleting.value = true
   const { status } = await useHttp(`client-payments/${item.value.id}`, {
     method: 'delete',
   })
   if (status.value === 'error') {
-    destroying.value = false
+    deleting.value = false
   }
   else {
-    emit('destroyed', item.value)
+    emit('deleted', item.value)
     dialog.value = false
-    setTimeout(() => destroying.value = false, 300)
+    setTimeout(() => deleting.value = false, 300)
   }
 }
 
@@ -98,13 +101,13 @@ defineExpose({ open, create })
       class="dialog-wrapper"
     >
       <div class="dialog-header">
-        <span v-if="item.id > 0"> Редактирование платежа </span>
+        <span v-if="isEditMode"> Редактирование платежа </span>
         <span v-else> Добавить платеж </span>
         <v-btn
           icon="$save"
           :size="48"
           variant="text"
-          @click="storeOrUpdate()"
+          @click="save()"
         />
       </div>
       <div class="dialog-body">
@@ -159,7 +162,7 @@ defineExpose({ open, create })
             :size="48"
             color="red"
             variant="plain"
-            :loading="destroying"
+            :loading="deleting"
             @click="destroy()"
           />
         </div>

@@ -61,11 +61,12 @@ function onClientPaymentUpdated(cp: ClientPaymentResource) {
   }
   else {
     // eslint-disable-next-line
-    items[contractIndex].payments.splice(index, 1, cp)
+    items[contractIndex].payments[index] = cp
   }
+  itemUpdated('client-payment', cp.id)
 }
 
-function onClientPaymentDestroyed(cp: ClientPaymentResource) {
+function onClientPaymentDeleted(cp: ClientPaymentResource) {
   const contractIndex = items.findIndex(c => c.id === cp.entity_id)
   if (contractIndex === -1) {
     return
@@ -143,7 +144,7 @@ function onClientPaymentDestroyed(cp: ClientPaymentResource) {
   <ClientPaymentDialog
     ref="clientPaymentDialog"
     @updated="onClientPaymentUpdated"
-    @destroyed="onClientPaymentDestroyed"
+    @deleted="onClientPaymentDeleted"
   />
   <ContractBalanceDialog ref="contractBalanceDialog" />
 </template>
