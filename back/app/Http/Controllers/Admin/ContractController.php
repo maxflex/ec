@@ -24,13 +24,19 @@ class ContractController extends Controller
 
     public function store(Request $request)
     {
-        $contract = Contract::create($request->all());
+        $request->validate([
+            'client_id' => ['required', 'exists:clients,id']
+        ]);
+        $contract = Contract::create([
+            ...$request->contract,
+            'client_id' => $request->client_id,
+        ]);
         $contractVersion = auth()->user()->entity->contractVersions()->create([
-            ...$request->versions[0],
+            ...$request->all(),
             'contract_id' => $contract->id,
         ]);
-        $contractVersion->syncRelation($request->versions[0], 'programs');
-        $contractVersion->syncRelation($request->versions[0], 'payments');
+        $contractVersion->syncRelation($request->all(), 'programs');
+        $contractVersion->syncRelation($request->all(), 'payments');
         return new ContractResource($contract->fresh());
     }
 }

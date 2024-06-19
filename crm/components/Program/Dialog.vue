@@ -2,11 +2,14 @@
 const emit = defineEmits<{ (e: 'saved', programs: Program[]): void }>()
 
 const { dialog, width, transition } = useDialog('default')
+const programs = ref<Program[]>([])
 const selected = ref<Program[]>([])
 
 function open(preSelect: Program[] = []) {
-  dialog.value = true
   selected.value = [...preSelect]
+  programs.value = Object.keys(ProgramLabel) as Program[]
+  programs.value = programs.value.sort((a, b) => Number(preSelect.includes(b)) - Number(preSelect.includes(a)))
+  dialog.value = true
 }
 
 function select(p: Program) {
@@ -49,7 +52,7 @@ defineExpose({ open })
       <div class="dialog-body pt-0">
         <div class="table table--hover">
           <div
-            v-for="(title, p) in PROGRAM"
+            v-for="p in programs"
             :key="p"
             class="cursor-pointer unselectable"
             @click="select(p)"
@@ -63,7 +66,7 @@ defineExpose({ open })
               v-else
               icon="$checkboxOff"
             />
-            {{ title }}
+            {{ ProgramLabel[p] }}
           </div>
         </div>
       </div>

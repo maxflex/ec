@@ -22,23 +22,12 @@ function onContractVersionUpdated(cv: ContractVersionListResource) {
     items[contractIndex].versions.unshift(cv)
   }
   itemUpdated('contract-version', cv.id)
-  // const index = items.findIndex(e => e.id === c.id)
-  // if (index === -1) {
-  //   // eslint-disable-next-line
-  //   items.unshift(c)
-  //   smoothScroll('main', 'top')
-  // }
-  // else {
-  //   // сносим весь договор
-  //   if (c.versions.length === 0) {
-  //     // eslint-disable-next-line
-  //     items.splice(index, 1)
-  //   }
-  //   else {
-  //     // eslint-disable-next-line
-  //     items.splice(index, 1, c)
-  //   }
-  // }
+}
+
+function onContractCreated(c: ContractResource) {
+  // eslint-disable-next-line
+  items.unshift(c)
+  itemUpdated('contract-version', c.versions[0].id)
 }
 
 function onContractVersionDeleted(cv: ContractVersionResource) {
@@ -53,10 +42,10 @@ function onContractVersionDeleted(cv: ContractVersionResource) {
   // await itemDeleted('contract-version', cv.id)
   // eslint-disable-next-line
   items[contractIndex].versions.splice(index, 1)
-  // сносим весь договор
+  // сносим весь договор?
   if (items[contractIndex].versions.length === 0) {
     // eslint-disable-next-line
-      items.splice(contractIndex, 1)
+    items.splice(contractIndex, 1)
   }
 }
 
@@ -149,6 +138,7 @@ function onClientPaymentDestroyed(cp: ClientPaymentResource) {
     ref="contractVersionDialog"
     @updated="onContractVersionUpdated"
     @deleted="onContractVersionDeleted"
+    @created="onContractCreated"
   />
   <ClientPaymentDialog
     ref="clientPaymentDialog"

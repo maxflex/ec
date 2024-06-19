@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { clone } from 'rambda'
 import type { ProgramDialog } from '#build/components'
 
 const modelDefaults: ContractVersionResource = {
@@ -16,6 +17,7 @@ const modelDefaults: ContractVersionResource = {
 const item = ref<ContractVersionResource>(modelDefaults)
 const itemId = ref<number>()
 const contractId = ref<number>()
+const version = ref<number>() // для отображения в заголовке
 const { dialog, width } = useDialog('medium')
 const programDialog = ref<null | InstanceType<typeof ProgramDialog>>()
 const saving = ref(false)
@@ -24,6 +26,7 @@ const loading = ref(false)
 const isEditMode = computed(() => itemId.value !== undefined)
 const isNewContract = computed(() => contractId.value === undefined)
 const emit = defineEmits<{
+  created: [i: ContractResource]
   updated: [i: ContractVersionListResource]
   deleted: [i: ContractVersionResource]
 }>()
@@ -68,12 +71,15 @@ const emit = defineEmits<{
 function createContract() {
   itemId.value = undefined
   contractId.value = undefined
-  console.log('WIP')
+  version.value = undefined
+  item.value = clone(modelDefaults)
+  dialog.value = true
 }
 
 async function addVersion(c: ContractResource) {
   itemId.value = undefined
   contractId.value = c.id
+  version.value = c.versions[0].version + 1
   loading.value = true
   dialog.value = true
   const { id: lastVersionId } = c.versions[0]
@@ -81,13 +87,13 @@ async function addVersion(c: ContractResource) {
     `contract-versions/${lastVersionId}`,
   )
   if (data.value) {
-    const { sum, version, programs, payments, contract } = data.value
+    const { sum, programs, payments, contract } = data.value
     item.value = {
       contract,
       sum,
       id: newId(),
       date: today(),
-      version: version + 1,
+      version: version.value,
       programs: programs.map(e => ({
         ...e,
         id: newId(),
@@ -104,6 +110,7 @@ async function addVersion(c: ContractResource) {
 async function edit(cv: ContractVersionListResource) {
   itemId.value = cv.id
   contractId.value = cv.contract.id
+  version.value = cv.version
   dialog.value = true
   loading.value = true
   const { data } = await useHttp<ContractVersionResource>(`contract-versions/${cv.id}`)
@@ -173,18 +180,21 @@ function deletePayment(p: ContractPaymentResource) {
   )
 }
 
-async function storeOrUpdate() {
+async function save() {
   saving.value = true
-  // if (isNewContract.value) {
-  //   const { data } = await useHttp<ContractResource>(`contracts`, {
-  //     method: 'post',
-  //     body: contract.value,
-  //   })
-  //   if (data.value) {
-  //     contract.value = data.value
-  //   }
-  // }
-  if (isEditMode.value) {
+  if (isNewContract.value) {
+    const { data } = await useHttp<ContractResource>(`contracts`, {
+      method: 'post',
+      body: {
+        ...item.value,
+        client_id: Number(useRoute().params.id), // допускаем, что client_id хранится в адресной строке
+      },
+    })
+    if (data.value) {
+      emit('created', data.value)
+    }
+  }
+  else if (isEditMode.value) {
     const { data } = await useHttp<ContractVersionListResource>(
       `contract-versions/${item.value.id}`, {
         method: 'put',
@@ -223,14 +233,20 @@ defineExpose({ edit, createContract, addVersion })
     <div class="dialog-wrapper contract-version-dialog">
       <div class="dialog-header">
         <span v-if="isNewContract"> Новый договор </span>
-        <span v-else-if="isEditMode"> Редактирование договора №{{ contractId }} </span>
-        <span v-else>Добавить версию к договору №{{ contractId }}</span>
+        <span v-else-if="isEditMode">
+          Редактирование договора
+          <span class="text-gray">№{{ contractId }}–{{ version }}</span>
+        </span>
+        <span v-else>
+          Новая версия договора
+          <span class="text-gray">№{{ contractId }}–{{ version }}</span>
+        </span>
         <v-btn
           icon="$save"
           :size="48"
           color="#fafafa"
           :loading="saving"
-          @click="storeOrUpdate()"
+          @click="save()"
         />
       </div>
       <UiLoaderr v-if="loading" />
