@@ -4,8 +4,8 @@ import { PROGRAM } from '~/utils/sment'
 import { plural } from '~/utils/filters'
 
 const { tests } = defineProps<{ tests: Tests }>()
-const selected = defineModel<Tests>('selected')
 const emit = defineEmits<{ (e: 'open', test: Test): void }>()
+const selected = defineModel<Tests>('selected')
 const selectable = selected.value !== undefined
 
 function select(t: Test) {

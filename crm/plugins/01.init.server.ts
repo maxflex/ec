@@ -1,4 +1,4 @@
-export default defineNuxtPlugin(async function () {
+export default defineNuxtPlugin(async () => {
   const { getLoggedUser } = useAuthStore()
   await getLoggedUser()
 })

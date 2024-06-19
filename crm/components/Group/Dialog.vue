@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
 
+const emit = defineEmits<{
+  (e: 'created', r: GroupListResource): void
+  (e: 'updated', r: GroupResource): void
+}>()
+
 const modelDefaults: GroupResource = {
   is_archived: false,
   zoom: {
@@ -58,10 +63,6 @@ async function save() {
 }
 
 defineExpose({ create, edit })
-const emit = defineEmits<{
-  (e: 'created', r: GroupListResource): void
-  (e: 'updated', r: GroupResource): void
-}>()
 </script>
 
 <template>

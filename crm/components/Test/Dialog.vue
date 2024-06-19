@@ -5,6 +5,9 @@ import { PROGRAM } from '~/utils/sment'
 import { humanFileSize } from '~/utils/filters'
 import type { TestQuestionsDialog } from '#build/components'
 
+const emit = defineEmits<{
+  (e: 'updated'): void
+}>()
 const { dialog, width } = useDialog('default')
 const item = ref<Test>()
 const input = ref()
@@ -16,10 +19,6 @@ const programs = Object.keys(PROGRAM).map(value => ({
   value,
   title: PROGRAM[value as Program],
 }))
-const emit = defineEmits<{
-  (e: 'updated'): void
-}>()
-
 function open(t: Test) {
   pdf.value = null
   item.value = clone(t)

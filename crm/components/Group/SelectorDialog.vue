@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import type { Group, Groups, Program } from '~/utils/models'
 
-const { dialog, width } = useDialog('large')
-const groups = ref<Groups>()
 const emit = defineEmits<{
   (e: 'select', g: Group): void
 }>()
-
+const { dialog, width } = useDialog('large')
+const groups = ref<Groups>()
 function open(p: Program) {
   dialog.value = true
   loadGroups(p)

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { mdiSendVariant } from '@mdi/js'
 
-const { dialog, width } = useDialog('default')
 const { entityId, entityType } = defineProps<{
   entityId: number
   entityType: EntityString
 }>()
 const emit = defineEmits<{ (e: 'created'): void }>()
+const { dialog, width } = useDialog('default')
 const comments = ref<CommentResource[]>([])
 const input = ref()
 const wrapper = ref<HTMLDivElement | null>(null)
@@ -203,10 +203,12 @@ defineExpose({ open })
     }
     &--loaded {
       .new-comment {
-        &-enter-active, &-leave-active {
+        &-enter-active,
+        &-leave-active {
           transition: all 100ms linear;
         }
-        &-enter-from, &-leave-to {
+        &-enter-from,
+        &-leave-to {
           opacity: 0;
           transform: translateY(20px);
         }

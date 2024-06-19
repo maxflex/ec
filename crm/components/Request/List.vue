@@ -78,7 +78,7 @@ function onRequestUpdated(r: RequestListResource) {
           <CommentBtn
             :count="r.comments_count"
             :entity-id="r.id"
-            :entity-type="'request'"
+            entity-type="request"
           />
           <v-btn
             icon="$edit"

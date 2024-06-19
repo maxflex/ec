@@ -41,25 +41,30 @@ async function loadData() {
   setTimeout(() => (loading.value = false), 300)
 }
 
-const zeroPad = (value: number) => ('0' + value).slice(-2)
+const zeroPad = (value: number) => (`0${value}`).slice(-2)
 
 // отступ первого дня в календаре
-const firstDayOfWeek = (year: number, month: number) =>
-  new Date(year, month - 1, 0).getDay()
+function firstDayOfWeek(year: number, month: number) {
+  return new Date(year, month - 1, 0).getDay()
+}
 
-const daysInMonth = (year: number, month: number) =>
-  new Date(year, month, 0).getDate()
+function daysInMonth(year: number, month: number) {
+  return new Date(year, month, 0).getDate()
+}
 
-const getDate = (year: number, month: number, day: number): string =>
-  [year, zeroPad(month), zeroPad(day)].join('-')
+function getDate(year: number, month: number, day: number): string {
+  return [year, zeroPad(month), zeroPad(day)].join('-')
+}
 
-const isToday = (year: number, month: number, day: number) =>
-  getDate(year, month, day) === today()
+function isToday(year: number, month: number, day: number) {
+  return getDate(year, month, day) === today()
+}
 
-const isSelected = (year: number, month: number, day: number) =>
-  getDate(year, month, day) in dates.value
+function isSelected(year: number, month: number, day: number) {
+  return getDate(year, month, day) in dates.value
+}
 
-const onClick = (year: number, month: number, day: number) => {
+function onClick(year: number, month: number, day: number) {
   const date = getDate(year, month, day)
   if (date in dates.value) {
     delete dates.value[date]
@@ -108,7 +113,7 @@ nextTick(loadData)
           <div class="vcalendar__month-days">
             <div
               v-for="x in firstDayOfWeek(year, month)"
-              :key="'x' + x"
+              :key="`x${x}`"
               class="no-pointer-events"
             />
             <div
@@ -208,7 +213,7 @@ nextTick(loadData)
       background: transparent;
     }
     &:before {
-      content: "";
+      content: '';
       position: absolute;
       left: 0;
       top: 0;

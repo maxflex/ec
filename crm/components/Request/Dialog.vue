@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
 
+const emit = defineEmits<{
+  (e: 'created' | 'updated', r: RequestListResource): void
+}>()
+
 const modelDefaults: RequestResource = {
   status: 'new',
   program: null,
@@ -59,9 +63,6 @@ async function save() {
 }
 
 defineExpose({ create, edit })
-const emit = defineEmits<{
-  (e: 'created' | 'updated', r: RequestListResource): void
-}>()
 </script>
 
 <template>

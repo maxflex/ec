@@ -1,6 +1,6 @@
 <script setup lang="ts">
-const { logIn } = useAuthStore()
 const { user } = defineProps<{ user: User }>()
+const { logIn } = useAuthStore()
 const loading = ref(false)
 
 async function enter() {

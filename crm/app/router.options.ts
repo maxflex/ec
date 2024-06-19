@@ -7,7 +7,7 @@ export default <RouterConfig>{
     // routes in root /pages (index.vue, login.vue)
     const myRoutes = routes.filter(
       // @ts-expect-error
-      r => r.name.indexOf('-') === -1,
+      r => !r.name.includes('-'),
     )
     const entityString = getEntityString()
     // console.log({ entityString })
@@ -20,9 +20,9 @@ export default <RouterConfig>{
             ...r,
             // admin-clients-id => clients-id
             // @ts-expect-error
-            name: r.name.replace(entityString + '-', ''),
+            name: r.name.replace(`${entityString}-`, ''),
             // /admin/clients/:id() => /clients/:id()
-            path: r.path.replace(entityString + '/', ''),
+            path: r.path.replace(`${entityString}/`, ''),
           }),
         )
     }

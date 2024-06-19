@@ -30,7 +30,8 @@ function selectFile(e: Event) {
 
   // Get selected files
   const { files } = e.target as HTMLInputElement
-  if (!files || !files.length) return
+  if (!files || !files.length)
+    return
 
   // Convert to dataURL and pass to the cropper component
   const file = files[0]
@@ -44,17 +45,20 @@ function selectFile(e: Event) {
     dialog.value = true
 
     // Clear selected files of input element
-    if (!uploadInput.value) return
+    if (!uploadInput.value)
+      return
     uploadInput.value.value = ''
   }
 }
 
 async function save() {
   saving.value = true
-  if (!cropper) return
+  if (!cropper)
+    return
   // const base64 = cropper.getDataURL()
   const blob: Blob | null = await cropper.getBlob()
-  if (!blob) return
+  if (!blob)
+    return
   console.log({ blob })
   const formData = new FormData()
   formData.append('photo', blob)

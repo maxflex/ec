@@ -23,7 +23,7 @@ let pusher: Pusher
 let channel: Channel
 const window = ref(rememberUser ? 1 : 0)
 
-const onPhoneEnter = async () => {
+async function onPhoneEnter() {
   loading.value = true
   errors.value = {}
   const { data, error } = await useHttp<User>('common/auth/login', {
@@ -48,7 +48,7 @@ const onPhoneEnter = async () => {
 
 function initPusher() {
   pusher = new Pusher(config.pusherAppKey, { cluster: 'eu' })
-  channel = pusher.subscribe('auth.' + user.value?.id)
+  channel = pusher.subscribe(`auth.${user.value?.id}`)
 }
 
 function otherUser() {

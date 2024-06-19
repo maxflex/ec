@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import {
-  mdiInbox,
   mdiAccount,
   mdiAccountGroup,
-  mdiFileDocumentOutline,
+  mdiAccountMultiple,
   mdiCalendar,
-  mdiPrinter,
+  mdiCash,
   mdiDotsTriangle,
-  mdiLogout,
+  mdiFileDocumentOutline,
+  mdiFinance,
   mdiHumanMaleBoard,
+  mdiInbox,
+  mdiLogout,
+  mdiPrinter,
   mdiStarBox,
   mdiStarBoxOutline,
-  mdiAccountMultiple,
-  mdiFinance,
-  mdiCash,
 } from '@mdi/js'
 import { ENTITY_TYPE } from '~/utils/sment'
 

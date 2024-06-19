@@ -1,4 +1,4 @@
-import type { CompanyType, ClientPaymentMethod } from './models'
+import type { CompanyType } from './models'
 
 export const GRADE: Record<string, string> = {
   grade1: '1 класс',
@@ -194,7 +194,16 @@ export const ENTITY_TYPE = {
 }
 
 export const YEARS = [
-  2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015,
+  2024,
+  2023,
+  2022,
+  2021,
+  2020,
+  2019,
+  2018,
+  2017,
+  2016,
+  2015,
 ] as const
 
 export const COMPANY_TYPE: Record<CompanyType, string> = {

@@ -1,14 +1,14 @@
 <script setup lang="ts">
-function onClick() {
-  emit('select')
-}
-
 const { items, selectable } = defineProps<{
   items: GroupListResource[]
   selectable?: boolean
 }>()
 
 const emit = defineEmits<{ (e: 'select'): void }>()
+
+function onClick() {
+  emit('select')
+}
 </script>
 
 <template>

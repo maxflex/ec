@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-export type Filters = {
+export interface Filters {
   mode: StatsMode
   year?: Year
 }
@@ -21,7 +21,7 @@ watch(filters.value, () => {
         v-model="filters.mode"
         label="Отображать"
         :items="selectItems(StatsModeLabel)"
-        :density="'comfortable'"
+        density="comfortable"
       />
     </div>
     <div>
@@ -29,7 +29,7 @@ watch(filters.value, () => {
         v-model="filters.year"
         :items="selectItems(YearLabel)"
         label="Учебный год"
-        :density="'comfortable'"
+        density="comfortable"
       />
     </div>
   </div>

@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
 
+const emit = defineEmits<{
+  (e: 'created' | 'updated', c: TeacherResource): void
+}>()
+
 const modelDefaults: TeacherResource = {
   id: newId(),
   first_name: null,
@@ -62,9 +66,6 @@ async function save() {
 }
 
 defineExpose({ create, edit })
-const emit = defineEmits<{
-  (e: 'created' | 'updated', c: TeacherResource): void
-}>()
 </script>
 
 <template>
@@ -91,7 +92,7 @@ const emit = defineEmits<{
           <div style="margin-bottom: 40px;">
             <AvatarLoader
               :key="teacher.id"
-              :entity="'teacher'"
+              entity="teacher"
               :item="teacher"
             />
           </div>

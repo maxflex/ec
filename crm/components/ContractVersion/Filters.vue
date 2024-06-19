@@ -1,10 +1,14 @@
 <script lang="ts" setup>
+const emit = defineEmits<{
+  (e: 'apply', filters: Filters): void
+}>()
+
 const VersionFilterLabel = {
   first: 'первая',
   last: 'последняя',
 }
 
-export type Filters = {
+export interface Filters {
   year?: Year
   company?: CompanyType
   version?: keyof typeof VersionFilterLabel
@@ -12,10 +16,6 @@ export type Filters = {
 const filters = ref<Filters>({})
 
 watch(filters.value, () => emit('apply', filters.value))
-
-const emit = defineEmits<{
-  (e: 'apply', filters: Filters): void
-}>()
 </script>
 
 <template>

@@ -154,9 +154,39 @@ export const YearLabel = {
 } as const
 
 export const Cabinets = [
-  '428', '430', '432', '433', '434', '439', '407', '409', '412', '413', '417', '422', '423', '424',
-  '10', '35', '205', '214', '221', '301', '302', '303', '304', '305', '310', '311', '314', '319',
-  '320', '321', '322', '507', '809',
+  '428',
+  '430',
+  '432',
+  '433',
+  '434',
+  '439',
+  '407',
+  '409',
+  '412',
+  '413',
+  '417',
+  '422',
+  '423',
+  '424',
+  '10',
+  '35',
+  '205',
+  '214',
+  '221',
+  '301',
+  '302',
+  '303',
+  '304',
+  '305',
+  '310',
+  '311',
+  '314',
+  '319',
+  '320',
+  '321',
+  '322',
+  '507',
+  '809',
 ] as const
 
 export const TeacherStatusLabel = {
@@ -271,7 +301,7 @@ declare global {
 
   type InfiniteScrollSide = 'start' | 'end' | 'both'
   type InfiniteScrollStatus = 'ok' | 'empty' | 'loading' | 'error'
-  type InfiniteScrollCallback = {
+  interface InfiniteScrollCallback {
     side: InfiniteScrollSide
     status: InfiniteScrollStatus
   }
@@ -608,6 +638,6 @@ declare global {
 
   // утилита извлекает тип из emit-функции
   // (извлекает тип второго параметра из emit-функции)
-  // eslint-disable-next-line
+
   type EmitType<T> = T extends (e: any, p: infer P) => any ? P : never
 }

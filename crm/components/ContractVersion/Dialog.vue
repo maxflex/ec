@@ -2,6 +2,11 @@
 import { clone } from 'rambda'
 import type { ProgramDialog } from '#build/components'
 
+const emit = defineEmits<{
+  created: [i: ContractResource]
+  updated: [i: ContractVersionListResource]
+  deleted: [i: ContractVersionResource]
+}>()
 const modelDefaults: ContractVersionResource = {
   id: newId(),
   version: 1,
@@ -25,12 +30,6 @@ const deleting = ref(false)
 const loading = ref(false)
 const isEditMode = computed(() => itemId.value !== undefined)
 const isNewContract = computed(() => contractId.value === undefined)
-const emit = defineEmits<{
-  created: [i: ContractResource]
-  updated: [i: ContractVersionListResource]
-  deleted: [i: ContractVersionResource]
-}>()
-
 // function create() {
 //   contract.value = {
 //     ...defaultContract,
@@ -113,7 +112,9 @@ async function edit(cv: ContractVersionListResource) {
   version.value = cv.version
   dialog.value = true
   loading.value = true
-  const { data } = await useHttp<ContractVersionResource>(`contract-versions/${cv.id}`)
+  const { data } = await useHttp<ContractVersionResource>(
+    `contract-versions/${cv.id}`,
+  )
   if (data.value) {
     item.value = data.value
   }
@@ -134,7 +135,7 @@ async function destroy() {
   else {
     emit('deleted', item.value)
     dialog.value = false
-    setTimeout(() => deleting.value = false, 300)
+    setTimeout(() => (deleting.value = false), 300)
   }
 }
 
@@ -144,7 +145,9 @@ function toggleCloseProgram(p: ContractProgramResource) {
 
 function onProgramsSaved(programs: Program[]) {
   for (const program of programs) {
-    const isNewProgram = !item.value.programs.some(p => p.program === program)
+    const isNewProgram = !item.value.programs.some(
+      p => p.program === program,
+    )
     if (isNewProgram) {
       item.value.programs.push({
         id: newId(),
@@ -159,7 +162,7 @@ function onProgramsSaved(programs: Program[]) {
   }
   // Remove programs that are not in the new programs list
   item.value.programs = item.value.programs.filter(({ program }) =>
-    programs.some(p => p === program),
+    programs.includes(program),
   )
 }
 
@@ -196,10 +199,12 @@ async function save() {
   }
   else if (isEditMode.value) {
     const { data } = await useHttp<ContractVersionListResource>(
-      `contract-versions/${item.value.id}`, {
+      `contract-versions/${item.value.id}`,
+      {
         method: 'put',
         body: item.value,
-      })
+      },
+    )
 
     if (data.value) {
       emit('updated', data.value)
@@ -209,16 +214,19 @@ async function save() {
     // }
   }
   else {
-    const { data } = await useHttp<ContractVersionListResource>('contract-versions', {
-      method: 'post',
-      body: item.value,
-    })
+    const { data } = await useHttp<ContractVersionListResource>(
+      'contract-versions',
+      {
+        method: 'post',
+        body: item.value,
+      },
+    )
     if (data.value) {
       emit('updated', data.value)
     }
   }
   dialog.value = false
-  setTimeout(() => saving.value = false, 300)
+  setTimeout(() => (saving.value = false), 300)
 }
 
 // defineExpose({ create, editVersion, addVersion })
@@ -283,15 +291,9 @@ defineExpose({ edit, createContract, addVersion })
           <div class="table contract-version-dialog__programs">
             <div class="table-header">
               <div>программа</div>
-              <div style="width: 70px">
-                уроков
-              </div>
-              <div style="width: 70px">
-                прогр.
-              </div>
-              <div style="width: 70px; flex: none">
-                цена
-              </div>
+              <div>уроков</div>
+              <div>прогр.</div>
+              <div>цена</div>
             </div>
             <div
               v-for="p in item.programs"
@@ -305,7 +307,7 @@ defineExpose({ edit, createContract, addVersion })
                   {{ ProgramLabel[p.program] }}
                 </span>
               </div>
-              <div style="width: 70px">
+              <div>
                 <v-text-field
                   v-model="p.lessons"
                   type="number"
@@ -313,7 +315,7 @@ defineExpose({ edit, createContract, addVersion })
                   density="compact"
                 />
               </div>
-              <div style="width: 70px">
+              <div>
                 <v-text-field
                   v-model="p.lessons_planned"
                   type="number"
@@ -321,7 +323,7 @@ defineExpose({ edit, createContract, addVersion })
                   density="compact"
                 />
               </div>
-              <div style="width: 70px; flex: none">
+              <div>
                 <v-text-field
                   v-model="p.price"
                   type="number"
@@ -334,7 +336,9 @@ defineExpose({ edit, createContract, addVersion })
               <div>
                 <a
                   class="link-icon"
-                  @click="programDialog?.open(item.programs.map((e) => e.program))"
+                  @click="
+                    programDialog?.open(item.programs.map((e) => e.program))
+                  "
                 >
                   выбрать программы
                   <v-icon
@@ -351,7 +355,9 @@ defineExpose({ edit, createContract, addVersion })
           <div class="dialog-section__title">
             График платежей
           </div>
-          <div class="table table--actions-on-hover contract-version-dialog__payments">
+          <div
+            class="table table--actions-on-hover contract-version-dialog__payments"
+          >
             <div class="table-header">
               <div style="width: 170px">
                 дата
@@ -430,12 +436,20 @@ defineExpose({ edit, createContract, addVersion })
 <style lang="scss">
 .contract-version-dialog {
   &__programs {
-    & > div > div:first-child {
-      flex: 1;
-      span {
-        transition: color ease-in-out 0.15s;
-        cursor: pointer;
-        user-select: none;
+    & > div {
+      & > div {
+        &:first-child {
+          flex: 1;
+          span {
+            transition: color ease-in-out 0.15s;
+            cursor: pointer;
+            user-select: none;
+          }
+        }
+        &:not(:first-child) {
+          width: 80px;
+          flex: none !important;
+        }
       }
     }
   }

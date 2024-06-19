@@ -27,7 +27,7 @@ defineExpose({ open })
       >
         <BalanceList
           :id="contractId"
-          :entity="'contract'"
+          entity="contract"
         />
       </div>
     </div>

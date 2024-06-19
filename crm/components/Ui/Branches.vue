@@ -30,7 +30,7 @@ const { branches } = defineProps<{
   gap: 4px;
   .branch:not(:last-child):after {
     color: rgba(0, 0, 0, 0.87);
-    content: ", ";
+    content: ', ';
   }
 }
 .branch {

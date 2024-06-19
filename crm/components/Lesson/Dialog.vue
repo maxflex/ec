@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
 
+const emit = defineEmits<{ (e: 'updated' | 'destroyed', r: LessonListResource): void }>()
 const modelDefaults: LessonResource = {
   status: 'planned',
   conducted_at: null,
@@ -17,8 +18,6 @@ const startAt = reactive({
   date: '',
   time: '',
 })
-
-const emit = defineEmits<{ (e: 'updated' | 'destroyed', r: LessonListResource): void }>()
 
 function openDialog(l: LessonResource) {
   [startAt.date, startAt.time] = l.start_at ? l.start_at.split(' ') : ['', '']

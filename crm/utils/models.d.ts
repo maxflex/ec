@@ -337,28 +337,3 @@ export interface Vacation {
   date: string
 }
 export type Vacations = Vacation[]
-
-const CompanyType = {
-  ip: 'ip',
-  ooo: 'ooo',
-} as const
-
-export type CompanyType = typeof CompanyType[keyof typeof CompanyType]
-
-const ContractLessonStatus = {
-  present: 'present',
-  late: 'late',
-  absent: 'absent',
-} as const
-
-export type ContractLessonStatus = typeof ContractLessonStatus[keyof typeof ContractLessonStatus]
-
-const LogType = {
-  create: 'create',
-  update: 'update',
-  delete: 'delete',
-  view: 'view',
-  auth: 'auth',
-} as const
-
-export type LogType = typeof LogType[keyof typeof LogType]

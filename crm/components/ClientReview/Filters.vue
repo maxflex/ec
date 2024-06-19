@@ -1,13 +1,9 @@
 <script lang="ts" setup>
-export type Filters = {
+export interface Filters {
   program?: Program
   teacher_id?: number
   rating?: number
 }
-const filters = ref<Filters>({})
-
-watch(filters.value, () => emit('apply', filters.value))
-
 // const count = computed(
 //   () => Object.values(filters.value).filter(e => e !== undefined).length,
 // )
@@ -15,6 +11,10 @@ watch(filters.value, () => emit('apply', filters.value))
 const emit = defineEmits<{
   (e: 'apply', filters: Filters): void
 }>()
+
+const filters = ref<Filters>({})
+
+watch(filters.value, () => emit('apply', filters.value))
 </script>
 
 <template>

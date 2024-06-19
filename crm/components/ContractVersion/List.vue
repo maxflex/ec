@@ -80,7 +80,7 @@ const emit = defineEmits<{
     & > span {
       position: relative;
       &:not(:last-child)::after {
-        content: "/";
+        content: '/';
         padding: 0 3px;
       }
     }

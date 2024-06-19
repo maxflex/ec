@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
 
+const emit = defineEmits<{ (e: 'updated' | 'destroyed', c: TeacherPaymentResource): void }>()
+
 const modelDefaults: TeacherPaymentResource = {
   id: newId(),
   year: currentStudyYear(),
@@ -17,8 +19,6 @@ const itemId = ref<number>()
 const sumInput = ref()
 const isEditMode = computed(() => item.value.id > 0)
 const destroying = ref(false)
-const emit = defineEmits<{ (e: 'updated' | 'destroyed', c: TeacherPaymentResource): void }>()
-
 function open(c: TeacherPaymentResource) {
   item.value = clone(c)
   dialog.value = true

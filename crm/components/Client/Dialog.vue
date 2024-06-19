@@ -2,6 +2,10 @@
 import { clone } from 'rambda'
 import { BRANCHES } from '~/utils/sment'
 
+const emit = defineEmits<{
+  (e: 'created' | 'updated', c: ClientResource): void
+}>()
+
 const modelDefaults: ClientResource = {
   id: -1,
   first_name: null,
@@ -80,9 +84,6 @@ async function save() {
 }
 
 defineExpose({ create, edit })
-const emit = defineEmits<{
-  (e: 'created' | 'updated', c: ClientResource): void
-}>()
 </script>
 
 <template>
@@ -112,7 +113,7 @@ const emit = defineEmits<{
           <div style="margin-bottom: 49px;">
             <AvatarLoader
               :key="client.id"
-              :entity="'client'"
+              entity="client"
               :item="client"
             />
           </div>

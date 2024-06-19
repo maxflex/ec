@@ -38,10 +38,10 @@ nextTick(loadData)
   <UiLoader :paginator="paginator" />
   <v-infinite-scroll
     v-if="items"
-    @load="onIntersect"
     :margin="100"
     class="table"
     side="end"
+    @load="onIntersect"
   >
     <div
       v-for="item in items"

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-export type Filters = {
+export interface Filters {
   q?: string
   status?: TeacherStatus
   subjects: Subject[]
@@ -28,7 +28,7 @@ function onSearch() {
         ref="input"
         v-model="q"
         label="Имя"
-        :density="'comfortable'"
+        density="comfortable"
         @keydown.enter="onSearch"
       />
     </div>
@@ -45,7 +45,7 @@ function onSearch() {
         v-model="filters.subjects"
         label="Предметы"
         :items="selectItems(SubjectLabel)"
-        :density="'comfortable'"
+        density="comfortable"
         multiple
         :menu-props="{
           maxHeight: 999,

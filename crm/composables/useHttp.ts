@@ -10,7 +10,7 @@ export const useHttp: useFetchType = (path: string, options = {}) => {
   if (token) {
     options.headers = { Authorization: `Bearer ${token}` }
     if (!path.startsWith('common/')) {
-      baseURL += token.split('|')[0] + '/'
+      baseURL += `${token.split('|')[0]}/`
     }
   }
 

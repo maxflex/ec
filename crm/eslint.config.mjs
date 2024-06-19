@@ -1,11 +1,13 @@
-// @ts-check
-// import stylistic from '@stylistic/eslint-plugin'
-import withNuxt from './.nuxt/eslint.config.mjs'
+import antfu from '@antfu/eslint-config'
 
-export default withNuxt(
-  // Your custom configs here
-).overrideRules({
-  '@typescript-eslint/ban-ts-comment': 'off',
-  '@typescript-eslint/no-dynamic-delete': 'off',
-  'vue/no-multiple-template-root': 'off',
+export default antfu({
+  formatters: true,
+}).overrideRules({
+  'no-console': 'off',
+  'no-alert': 'off',
+  'ts/ban-ts-comment': 'off',
+  'eslint-comments/no-unlimited-disable': 'off',
+  // '@typescript-eslint/ban-ts-comment': 'off',
+  // '@typescript-eslint/no-dynamic-delete': 'off',
+  // 'vue/no-multiple-template-root': 'off',
 })

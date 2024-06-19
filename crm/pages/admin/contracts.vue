@@ -15,7 +15,8 @@ const loadData = async function () {
   paginator.page++
   paginator.loading = true
   const { data } = await useHttp<ApiResponse<ContractVersionListResource[]>>(
-    'contract-versions', {
+    'contract-versions',
+    {
       params: {
         ...filters,
         page: paginator.page,

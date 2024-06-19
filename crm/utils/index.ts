@@ -39,11 +39,11 @@ export function selectItems(obj: object) {
   // если ключ – это число (например, годы '2024')
   // то приводим к числу, чтоб чётенько было
   // и сортирум (сверху дополнительно)
-  if (isFinite(+items[0].value)) {
+  if (Number.isFinite(+items[0].value)) {
     const sorted = items
       .map(({ value, title }) => ({
         title,
-        value: parseInt(value),
+        value: Number.parseInt(value),
       }))
       .sort((a, b) => b.value - a.value)
     return sorted
@@ -69,7 +69,7 @@ export function currentStudyYear(): Year {
 
 function getFiltersKey() {
   const { name } = useRoute()
-  return 'filters-' + String(name)
+  return `filters-${String(name)}`
 }
 
 export function saveFilters<T>(filters: T): void {
@@ -82,7 +82,7 @@ export function loadFilters<T>(defaultFilters: T): T {
 }
 
 // status=math&status=eng ===> status[]=math&status[]=eng
-// eslint-disable-next-line
+
 export function filtersToQuery(filters: { [key: string]: any }) {
   const result: typeof filters = {}
   for (const key in filters) {

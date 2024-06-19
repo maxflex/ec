@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
 
+const emit = defineEmits<{ (e: 'updated' | 'destroyed', u: UserResource): void }>()
 const modelDefaults: UserResource = {
   id: newId(),
   first_name: null,
@@ -14,8 +15,6 @@ const loading = ref(false)
 const itemId = ref<number | undefined>()
 const item = ref<UserResource>(clone(modelDefaults))
 const destroying = ref(false)
-
-const emit = defineEmits<{ (e: 'updated' | 'destroyed', u: UserResource): void }>()
 
 function openDialog(u: UserResource) {
   item.value = clone(u)
@@ -104,7 +103,7 @@ defineExpose({ create, edit })
         <div class="text-center">
           <AvatarLoader
             :item="item"
-            :entity="'user'"
+            entity="user"
           />
         </div>
         <div>

@@ -1,8 +1,4 @@
 <script lang="ts" setup>
-const filters = ref<RequestFilters>({})
-
-watch(filters.value, () => emit('apply', filters.value))
-
 // const count = computed(
 //   () => Object.values(filters.value).filter(e => e !== undefined).length,
 // )
@@ -10,6 +6,10 @@ watch(filters.value, () => emit('apply', filters.value))
 const emit = defineEmits<{
   (e: 'apply', filters: RequestFilters): void
 }>()
+
+const filters = ref<RequestFilters>({})
+
+watch(filters.value, () => emit('apply', filters.value))
 </script>
 
 <template>

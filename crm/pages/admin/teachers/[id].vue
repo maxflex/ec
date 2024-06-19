@@ -84,7 +84,7 @@ nextTick(loadData)
       </div>
     </div>
     <UiDataLoader
-      v-if="selectedTab ==='groups'"
+      v-if="selectedTab === 'groups'"
       url="groups"
       :filters="{ teacher_id: teacher.id }"
     >
@@ -127,7 +127,7 @@ nextTick(loadData)
     <BalanceList
       v-else
       :id="teacher.id"
-      :entity="'teacher'"
+      entity="teacher"
     />
   </div>
   <TeacherDialog

@@ -2,11 +2,11 @@ import { createVuetify } from 'vuetify'
 import type { ThemeDefinition } from 'vuetify'
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
 import {
-  mdiDotsHorizontal,
-  mdiContentSaveCheckOutline,
-  mdiChevronDown,
   mdiCheckDecagram,
+  mdiChevronDown,
+  mdiContentSaveCheckOutline,
   mdiDelete,
+  mdiDotsHorizontal,
   mdiEyeArrowRightOutline,
   mdiTuneVertical,
 } from '@mdi/js'

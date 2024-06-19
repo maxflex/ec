@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ClientTest } from '~/utils/models'
-import { PROGRAM, ENTITY_TYPE } from '~/utils/sment'
+import { ENTITY_TYPE, PROGRAM } from '~/utils/sment'
 import { plural } from '~/utils/filters'
 
 const { tests } = defineProps<{ tests: ClientTest[] }>()

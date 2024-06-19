@@ -10,7 +10,7 @@ export function plural(
     return ''
   }
   return (
-    (showNumber ? number + ' ' : '')
+    (showNumber ? `${number} ` : '')
     + words[
       number % 100 > 4 && number % 100 < 20
         ? 2
@@ -54,12 +54,12 @@ export function formatPhone(number: string): string {
 }
 
 export function humanFileSize(size: number) {
-  const i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024))
-  const humanFileSize = parseInt((size / Math.pow(1024, i)).toFixed(2))
+  const i = size === 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024))
+  const humanFileSize = Number.parseInt((size / 1024 ** i).toFixed(2))
   return (
-    humanFileSize
-    + ' '
-    + ['байт', 'Кб', 'Мб', 'Гб', 'Тб'][i]
+    `${humanFileSize
+     } ${
+     ['байт', 'Кб', 'Мб', 'Гб', 'Тб'][i]}`
   )
 }
 
@@ -80,8 +80,8 @@ export function formatPrice(price: number) {
 }
 
 export function filterAge(date: string) {
-  const currentYear = parseInt(dayjs().format('YYYY'))
-  const year = parseInt(date.split('-')[0])
+  const currentYear = Number.parseInt(dayjs().format('YYYY'))
+  const year = Number.parseInt(date.split('-')[0])
   console.log({ date, currentYear, year })
   return plural(currentYear - year, ['год', 'года', 'лет'])
 }
