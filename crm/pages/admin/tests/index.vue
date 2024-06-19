@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import type { TestDialog } from '#build/components'
-import type { Tests } from '~/utils/models'
 
-const testDialog = ref<null | InstanceType<typeof TestDialog>>()
-const tests = ref<Tests>()
+const testDialog = ref<InstanceType<typeof TestDialog>>()
+const tests = ref<TestResource[]>()
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<Tests>>('tests')
+  const { data } = await useHttp<ApiResponse<TestResource[]>>('tests')
   if (data.value) {
     const { data: newItems } = data.value
     tests.value = newItems

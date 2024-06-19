@@ -2,7 +2,6 @@
 import Codemirror from 'codemirror-editor-vue3'
 import type { EditorConfiguration } from 'codemirror'
 import 'codemirror/mode/htmlmixed/htmlmixed.js'
-import type { Macro, Macros } from '~/utils/models'
 
 const cmOptions: EditorConfiguration = {
   tabSize: 4,
@@ -12,18 +11,18 @@ const cmOptions: EditorConfiguration = {
 }
 const saving = ref(false)
 const dialog = ref(false)
-const macros = ref<Macros>()
-const macro = ref<Macro>()
+const macros = ref<MacroResource[]>()
+const macro = ref<MacroResource>()
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<Macros>>('macros')
+  const { data } = await useHttp<ApiResponse<MacroResource[]>>('macros')
   if (data.value) {
     const { data: newItems } = data.value
     macros.value = newItems
   }
 }
 
-function open(m: Macro) {
+function open(m: MacroResource) {
   macro.value = m
   dialog.value = true
 }

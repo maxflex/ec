@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import type { ClientTest } from '~/utils/models'
-
 definePageMeta({ middleware: ['check-active-test'] })
 
 const route = useRoute()
-const test = ref<ClientTest>()
+const test = ref<ClientTestResource>()
 const loading = ref(false)
 
 async function loadData() {
   const { data } = await useHttp(`tests/${route.params.id}`)
-  test.value = data.value as ClientTest
+  test.value = data.value as ClientTestResource
 }
 
 async function start() {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ClientListResource;
 use App\Http\Resources\ClientResource;
 use App\Models\Client;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ class ClientController extends Controller
     public function index(Request $request)
     {
         $query = Client::orderBy('id', 'desc');
-        return $this->handleIndexRequest($request, $query);
+        return $this->handleIndexRequest($request, $query, ClientListResource::class);
     }
 
     public function show(Client $client)

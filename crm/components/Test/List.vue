@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import type { Test, Tests } from '~/utils/models'
 import { plural } from '~/utils/filters'
 
-const { tests } = defineProps<{ tests: Tests }>()
-const emit = defineEmits<{ (e: 'open', test: Test): void }>()
-const selected = defineModel<Tests>('selected')
+const { tests } = defineProps<{ tests: TestResource[] }>()
+const emit = defineEmits<{
+  open: [t: TestResource]
+}>()
+const selected = defineModel<TestResource[]>('selected')
 const selectable = selected.value !== undefined
 
-function select(t: Test) {
+function select(t: TestResource) {
   if (!selected.value) {
     return
   }

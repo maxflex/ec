@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import type { ClientTest } from '~/utils/models'
-
 const route = useRoute()
-const test = ref<ClientTest>()
+const test = ref<ClientTestResource>()
 const answers = ref<TestAnswers>()
 
 async function loadData() {
-  const { data } = await useHttp<ClientTest>(`tests/results/${route.params.id}`)
+  const { data } = await useHttp<ClientTestResource>(`tests/results/${route.params.id}`)
   if (data.value) {
     test.value = data.value
     if (test.value.answers) {

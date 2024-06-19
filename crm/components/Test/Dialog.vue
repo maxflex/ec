@@ -1,20 +1,18 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
-import type { Test } from '~/utils/models'
-import { humanFileSize } from '~/utils/filters'
 import type { TestQuestionsDialog } from '#build/components'
 
 const emit = defineEmits<{
   (e: 'updated'): void
 }>()
 const { dialog, width } = useDialog('default')
-const item = ref<Test>()
+const item = ref<TestResource>()
 const input = ref()
 const fileInput = ref()
 const pdf = ref()
 const loading = ref(false)
-const questionsDialog = ref<null | InstanceType<typeof TestQuestionsDialog>>()
-function open(t: Test) {
+const questionsDialog = ref<InstanceType<typeof TestQuestionsDialog>>()
+function open(t: TestResource) {
   pdf.value = null
   item.value = clone(t)
   dialog.value = true
@@ -50,7 +48,7 @@ async function storeOrUpdate() {
       method: 'POST',
       body: item.value,
     })
-  item.value = data.value as Test
+  item.value = data.value as TestResource
   await uploadPdf()
   dialog.value = false
   loading.value = false

@@ -5,10 +5,6 @@ import type {
   GroupSelectorDialog,
   TestSelectorDialog,
 } from '#build/components'
-import type {
-  Group,
-  Tests,
-} from '~/utils/models'
 
 const tabs = {
   requests: 'заявки',
@@ -36,7 +32,7 @@ function onClientUpdated(c: ClientResource) {
   client.value = c
 }
 
-async function onGroupSelected(g: Group) {
+async function onGroupSelected(g: GroupListResource) {
   await useHttp(`groups/add-client`, {
     method: 'post',
     params: {
@@ -47,7 +43,7 @@ async function onGroupSelected(g: Group) {
   loadData()
 }
 
-function onTestsSaved(tests: Tests) {
+function onTestsSaved(tests: TestResource[]) {
   if (!client.value) {
     return
   }

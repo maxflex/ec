@@ -1,12 +1,10 @@
 <script lang="ts" setup>
-import type { Tests } from '~/utils/models'
-
 const emit = defineEmits<{
-  (e: 'saved', tests: Tests): void
+  (e: 'saved', tests: TestResource[]): void
 }>()
 const { dialog, width } = useDialog('large')
-const selected = ref<Tests>([])
-const tests = ref<Tests>()
+const selected = ref<TestResource[]>([])
+const tests = ref<TestResource[]>()
 
 function open() {
   dialog.value = true
@@ -17,7 +15,7 @@ async function loadData() {
   if (tests.value !== undefined) {
     return
   }
-  const { data } = await useHttp<ApiResponse<Tests>>('tests')
+  const { data } = await useHttp<ApiResponse<TestResource[]>>('tests')
   if (data.value) {
     const { data: newItems } = data.value
     tests.value = newItems

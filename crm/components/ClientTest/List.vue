@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { ClientTest } from '~/utils/models'
 import { plural } from '~/utils/filters'
 
-const { tests } = defineProps<{ tests: ClientTest[] }>()
+const { tests } = defineProps<{ tests: ClientTestResource[] }>()
 const { user } = useAuthStore()
 </script>
 

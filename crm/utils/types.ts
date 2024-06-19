@@ -1,5 +1,3 @@
-import type { ClientTest } from './models'
-
 export const ProgramLabel = {
   math9: 'математика 9 класс',
   phys9: 'физика 9 класс',
@@ -341,20 +339,6 @@ declare global {
 
   type Menu = MenuItem[]
 
-  interface TestQuestion {
-    answer: number | null
-    score: number | null
-  }
-
-  type TestQuestions = TestQuestion[]
-
-  type TestAnswers = Array<number | undefined | null>
-
-  interface ActiveTest {
-    test: ClientTest
-    seconds: number
-  }
-
   // https://stackoverflow.com/a/45486495/2274406
   type Year = keyof typeof YearLabel
 
@@ -428,6 +412,10 @@ declare global {
     passport_issued_by: string | null
     fact_address: string | null
     phones: PhoneListResource[]
+  }
+
+  interface ClientListResource extends PersonResource {
+    created_at: string
   }
 
   interface ClientResource extends PersonResource, HasPhoto {
@@ -665,6 +653,57 @@ declare global {
 
   // утилита извлекает тип из emit-функции
   // (извлекает тип второго параметра из emit-функции)
-
+  // TODO: delete?
   type EmitType<T> = T extends (e: any, p: infer P) => any ? P : never
+
+  interface ClientTestResource {
+    id: number
+    client_id: number
+    program: Program
+    name: string
+    file: string
+    minutes: number
+    questions: TestQuestions
+    answers: TestAnswers | null
+    started_at: string | null
+    finished_at: string | null
+    is_finished: boolean
+    questions_count: number
+  }
+
+  interface TestResource {
+    id: number
+    program: Program | null
+    name: string
+    file: string | null
+    minutes: number
+    questions: TestQuestions | null
+    created_at: string | null
+    updated_at: string | null
+  }
+
+  interface TestQuestion {
+    answer: number | null
+    score: number | null
+  }
+
+  type TestQuestions = TestQuestion[]
+
+  type TestAnswers = Array<number | undefined | null>
+
+  interface ActiveTest {
+    test: ClientTestResource
+    seconds: number
+  }
+
+  interface MacroResource {
+    id: number
+    title: string
+    text: string
+  }
+
+  interface VacationResource {
+    id: number
+    date: string
+  }
 }

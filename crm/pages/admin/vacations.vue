@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { Vacations } from '~/utils/models'
-
 const monthLabels = [
   'январь',
   'февраль',
@@ -31,7 +29,7 @@ onMounted(async () => {
 })
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<Vacations>>('vacations')
+  const { data } = await useHttp<ApiResponse<VacationResource[]>>('vacations')
   if (data.value) {
     // vacations.value = data.value.data
     for (const { date } of data.value.data) {
@@ -77,7 +75,7 @@ function onClick(year: number, month: number, day: number) {
     body: { date },
   })
   // if (data.value) {
-  //   vacations.value?.push(data.value as Vacation)
+  //   vacations.value?.push(data.value as VacationResource)
   // }
 }
 

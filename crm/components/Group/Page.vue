@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import type { Groups } from '~/utils/models'
-
-const items = ref<Groups>()
+const items = ref<GroupListResource[]>()
 const paginator = usePaginator()
 
 const loadData = async function () {
   paginator.page++
   paginator.loading = true
-  const { data } = await useHttp<ApiResponse<Groups>>('groups', {
+  const { data } = await useHttp<ApiResponse<GroupListResource[]>>('groups', {
     params: { page: paginator.page },
   })
   paginator.loading = false

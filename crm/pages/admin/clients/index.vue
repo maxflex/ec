@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import type { Clients } from '~/utils/models'
-
-const items = ref<Clients>()
+const items = ref<ClientListResource[]>()
 const paginator = usePaginator()
 // const isLastPage = false
 
@@ -9,7 +7,7 @@ const loadData = async function () {
   console.log('loading data')
   paginator.page++
   paginator.loading = true
-  const { data } = await useHttp<ApiResponse<Clients>>('clients', {
+  const { data } = await useHttp<ApiResponse<ClientListResource[]>>('clients', {
     params: { page: paginator.page },
   })
   paginator.loading = false

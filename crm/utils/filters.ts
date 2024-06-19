@@ -1,5 +1,4 @@
 import dayjs from 'dayjs'
-import type { ClientTest } from './models'
 
 export function plural(
   number: number,
@@ -86,7 +85,7 @@ export function filterAge(date: string) {
   return plural(currentYear - year, ['год', 'года', 'лет'])
 }
 
-export function formatClientTestResults(clientTest: ClientTest) {
+export function formatClientTestResults(clientTest: ClientTestResource) {
   const score = clientTest.questions
     ?.filter((e, i) => clientTest.answers && e.answer === clientTest.answers[i])
     .reduce((c, v) => c + (v.score as number), 0)

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import type { Test } from '~/utils/models'
-
 const route = useRoute()
 const answers = ref([])
-const test = ref<Test>()
+const test = ref<TestResource>()
 
 async function loadData() {
-  const { data } = await useHttp(`tests/${route.params.id}`)
-  test.value = data.value as Test
+  const { data } = await useHttp<TestResource>(`tests/${route.params.id}`)
+  if (data.value) {
+    test.value = data.value
+  }
 }
 
 nextTick(loadData)

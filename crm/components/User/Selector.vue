@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import type { Users } from '~/utils/models'
-
 const { label } = defineProps<{ label: string }>()
 const model = defineModel<number | null>()
-const users = ref<Users>([])
+const users = ref<UserResource[]>([])
 const loading = ref(true)
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<Users>>('users')
+  const { data } = await useHttp<ApiResponse<UserResource[]>>('users')
   if (data.value) {
     users.value = data.value.data
   }

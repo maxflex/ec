@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { RequestStatus } from '~/utils/models'
-
 const { status } = defineProps<{ status: RequestStatus }>()
 </script>
 

@@ -1,23 +1,22 @@
 <script setup lang="ts">
-import type { Group, Groups, Program } from '~/utils/models'
-
 const emit = defineEmits<{
-  (e: 'select', g: Group): void
+  select: [g: GroupListResource]
 }>()
 const { dialog, width } = useDialog('large')
-const groups = ref<Groups>()
+const groups = ref<GroupListResource[]>()
+
 function open(p: Program) {
   dialog.value = true
   loadGroups(p)
 }
 
-function select(g: Group) {
+function onSelect(g: GroupListResource) {
   dialog.value = false
   emit('select', g)
 }
 
 async function loadGroups(p: Program) {
-  const { data } = await useHttp<ApiResponse<Groups>>('groups', {
+  const { data } = await useHttp<ApiResponse<GroupListResource[]>>('groups', {
     params: {
       program: p,
     },
@@ -58,7 +57,7 @@ defineExpose({ open })
           <GroupList
             :items="groups"
             selectable
-            @select="() => select(group)"
+            @select="onSelect"
           />
         </div>
       </div>

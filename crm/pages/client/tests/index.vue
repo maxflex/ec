@@ -4,10 +4,10 @@ import type { TestDialog } from '#build/components'
 definePageMeta({ middleware: ['check-active-test'] })
 
 const testDialog = ref<null | InstanceType<typeof TestDialog>>()
-const tests = ref<ClientTest[]>()
+const tests = ref<ClientTestResource[]>()
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<ClientTest[]>>('tests')
+  const { data } = await useHttp<ApiResponse<ClientTestResource[]>>('tests')
   if (data.value) {
     tests.value = data.value.data
   }

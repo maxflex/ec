@@ -4,10 +4,12 @@ const { items, selectable } = defineProps<{
   selectable?: boolean
 }>()
 
-const emit = defineEmits<{ (e: 'select'): void }>()
+const emit = defineEmits<{
+  select: [g: GroupListResource]
+}>()
 
-function onClick() {
-  emit('select')
+function onClick(g: GroupListResource) {
+  selectable && emit('select', g)
 }
 </script>
 
@@ -17,7 +19,7 @@ function onClick() {
     :key="item.id"
     class="group-item"
     :class="{ 'group-item--selectable': selectable }"
-    @click="onClick"
+    @click="onClick(item)"
   >
     <div>
       <NuxtLink :to="{ name: 'groups-id', params: { id: item.id } }">

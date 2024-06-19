@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { mdiClockOutline } from '@mdi/js'
-import type { ClientTest } from '~/utils/models'
 
 const { $dayjs } = useNuxtApp()
 const answers = ref<TestAnswers>([])
 const cookie = useCookie<TestAnswers>('answers', { maxAge: 60 * 60 * 3 }) // 3 hours
-const test = ref<ClientTest>()
+const test = ref<ClientTestResource>()
 const finishing = ref(false)
 const seconds = ref(0)
 let interval: NodeJS.Timeout

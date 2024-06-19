@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import type { ContractProgram } from '~/utils/models'
-
-const { swamp } = defineProps<{ swamp: ContractProgram }>()
+const { swamp } = defineProps<{ swamp: ContractProgramResource }>()
 
 const emit = defineEmits<{
-  (e: 'attach', swamp: ContractProgram): void
+  (e: 'attach', swamp: ContractProgramResource): void
 }>()
 </script>
 
