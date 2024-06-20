@@ -42,7 +42,7 @@ class Group extends Model
         return $schedule
             ->unique(fn ($e) => $e->id)
             ->transform(fn ($e) => extract_fields($e, [
-                'date', 'time', 'status'
+                'date', 'time', 'status', 'cabinet'
             ], [
                 'group' => extract_fields($e->group, [
                     'program'

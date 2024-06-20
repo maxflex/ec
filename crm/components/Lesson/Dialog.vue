@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
 
-const emit = defineEmits<{ (e: 'updated' | 'destroyed', r: LessonListResource): void }>()
+const emit = defineEmits<{
+  updated: [l: LessonListResource]
+  destroyed: [l: LessonListResource]
+}>()
+
 const modelDefaults: LessonResource = {
   status: 'planned',
   conducted_at: null,
@@ -11,7 +15,7 @@ const modelDefaults: LessonResource = {
 const timeMask = { mask: '##:##' }
 const { dialog, width } = useDialog('default')
 const loading = ref(false)
-const lessonId = ref<number | undefined>()
+const itemId = ref<number | undefined>()
 const lesson = ref<LessonResource>(clone(modelDefaults))
 const destroying = ref(false)
 const startAt = reactive({
@@ -19,42 +23,43 @@ const startAt = reactive({
   time: '',
 })
 
-function openDialog(l: LessonResource) {
-  [startAt.date, startAt.time] = l.start_at ? l.start_at.split(' ') : ['', '']
-  lesson.value = clone(l)
+function create(groupId: number) {
+  itemId.value = undefined
+  lesson.value = clone(modelDefaults)
+  lesson.value.group_id = groupId
   dialog.value = true
 }
 
-function create(groupId: number) {
-  lessonId.value = undefined
-  openDialog({
-    ...modelDefaults,
-    group_id: groupId,
-  })
-}
-
-async function edit(l: LessonListResource) {
-  lessonId.value = l.id
+async function edit(lessonId: number) {
+  itemId.value = lessonId
   loading.value = true
-  const { data } = await useHttp<LessonResource>(`lessons/${l.id}`)
+  dialog.value = true
+  const { data } = await useHttp<LessonResource>(`lessons/${lessonId}`)
   if (data.value) {
-    openDialog(data.value)
+    lesson.value = data.value
   }
   loading.value = false
 }
+
+watch(lesson, () => {
+  [startAt.date, startAt.time] = lesson.value.start_at
+    ? lesson.value.start_at.split(' ')
+    : ['', '']
+})
 
 async function save() {
   dialog.value = false
   loading.value = true
   lesson.value.start_at = [startAt.date, startAt.time].join(' ')
-  const method = lessonId.value ? 'put' : 'post'
-  const url = lessonId.value ? `lessons/${lessonId.value}` : 'lessons'
+  const method = itemId.value ? 'put' : 'post'
+  const url = itemId.value ? `lessons/${itemId.value}` : 'lessons'
   const { data } = await useHttp<LessonListResource>(url, {
     method,
     body: lesson.value,
   })
   if (data.value) {
     emit('updated', data.value)
+    itemUpdated('lesson', data.value.id)
   }
   loading.value = false
 }
@@ -85,12 +90,9 @@ defineExpose({ create, edit })
     v-model="dialog"
     :width="width"
   >
-    <div
-      v-if="lesson"
-      class="dialog-wrapper"
-    >
+    <div class="dialog-wrapper">
       <div class="dialog-header">
-        <template v-if="lessonId">
+        <template v-if="itemId">
           Редактирование урока
         </template>
         <template v-else>
@@ -133,10 +135,7 @@ defineExpose({ create, edit })
         <div>
           <UiClearableSelect
             v-model="lesson.cabinet"
-            :items="Cabinets.map(e => ({
-              value: e,
-              title: e,
-            }))"
+            :items="selectItems(CabinetLabel)"
             label="Кабинет"
           />
         </div>
@@ -168,7 +167,7 @@ defineExpose({ create, edit })
           />
         </div>
         <div
-          v-if="lessonId"
+          v-if="itemId"
           class="dialog-bottom"
         >
           <span v-if="lesson.user && lesson.created_at">

@@ -13,7 +13,7 @@ declare global {
 
   type TeacherStatus = keyof typeof TeacherStatusLabel
 
-  type Cabinet = typeof Cabinets[number]
+  type Cabinet = keyof typeof CabinetLabel
 
   type RequestStatus = keyof typeof RequestStatusLabel
 
@@ -437,6 +437,7 @@ declare global {
     date: string
     time: string
     status: LessonStatus
+    cabinet?: Cabinet
     group: {
       id: number
       program: Program

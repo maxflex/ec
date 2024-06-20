@@ -10,6 +10,7 @@ const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
 const dayLabels = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']
 const year = ref<Year>(2023)
 const schedule = ref<Schedule>({})
+const loading = ref(true)
 
 const dates = computed(() => {
   // Define the start and end months for the academic year
@@ -40,6 +41,7 @@ const editable = computed(() => entity === 'group')
 watch(year, loadData)
 
 async function loadData() {
+  loading.value = true
   const { data } = await useHttp<Schedule>(`schedule/${entity}/${id}`, {
     params: {
       year: year.value,
@@ -48,6 +50,7 @@ async function loadData() {
   if (data.value) {
     schedule.value = data.value
   }
+  loading.value = false
 }
 
 function formatCalendarDate(d: string) {
@@ -79,45 +82,61 @@ nextTick(loadData)
         </v-btn>
       </div>
     </div>
-    <div class="schedule-calendar">
-      <div
-        v-for="dayLabel in dayLabels" :key="dayLabel"
-        class="schedule-calendar__header"
-      >
-        {{ dayLabel }}
-      </div>
-      <div v-for="i in offset.start" :key="i" />
-      <div v-for="d in dates" :key="d">
-        <div class="schedule-calendar__date">
-          {{ formatCalendarDate(d) }}
+    <div class="schedule-calendar__wrapper">
+      <!-- <UiWhiteLoader :loading="loading" /> -->
+      <div class="schedule-calendar">
+        <div
+          v-for="dayLabel in dayLabels" :key="dayLabel"
+          class="schedule-calendar__header"
+        >
+          {{ dayLabel }}
         </div>
-        <div class="schedule-calendar__lessons">
-          <div
-            v-for="l in schedule[d]" :key="l.id"
-            class="schedule-calendar__lesson"
-          >
-            <div class="schedule-calendar__lesson-info">
-              <LessonStatus :status="l.status" />
-              <span> {{ l.time }} </span>
-              <span>
-                <NuxtLink :to="{ name: 'groups-id', params: { id: l.group.id } }">
-                  ГР-{{ l.group.id }}
-                </NuxtLink>
-              </span>
-            </div>
-            <!-- <div>
+        <div v-for="i in offset.start" :key="i" />
+        <div v-for="d in dates" :key="d">
+          <div class="schedule-calendar__date">
+            {{ formatCalendarDate(d) }}
+          </div>
+          <div class="schedule-calendar__lessons">
+            <div
+              v-for="l in schedule[d]"
+              :id="`lesson-${l.id}`"
+              :key="l.id"
+              class="schedule-calendar__lesson"
+            >
+              <div class="schedule-calendar__lesson-info">
+                <LessonStatus :status="l.status" />
+                <span> {{ l.time }} </span>
+                <span>
+                  <NuxtLink :to="{ name: 'groups-id', params: { id: l.group.id } }">
+                    ГР-{{ l.group.id }}
+                  </NuxtLink>
+                </span>
+              </div>
+              <div v-if="l.cabinet">
+                {{ CabinetLabel[l.cabinet] }}
+              </div>
+              <!-- <div>
               {{ ProgramLabel[l.group.program] }}
             </div> -->
-            <div v-if="l.contractLesson" class="schedule-calendar__lesson-contract">
-              {{ ContractLessonStatusLabel[l.contractLesson.status] }}
-              <span v-if="l.contractLesson.minutes_late">
-                на {{ l.contractLesson.minutes_late }} мин
-              </span>
+              <div v-if="l.contractLesson" class="schedule-calendar__lesson-contract">
+                {{ ContractLessonStatusLabel[l.contractLesson.status] }}
+                <span v-if="l.contractLesson.minutes_late">
+                  на {{ l.contractLesson.minutes_late }} мин
+                </span>
+              </div>
+              <div v-if="editable" class="table-actionss">
+                <v-btn
+                  variant="plain"
+                  icon="$edit"
+                  :size="36"
+                  @click="lessonDialog?.edit(l.id)"
+                />
+              </div>
             </div>
           </div>
         </div>
+        <div v-for="i in offset.end" :key="i" />
       </div>
-      <div v-for="i in offset.end" :key="i" />
     </div>
   </div>
   <LessonDialog
@@ -154,6 +173,7 @@ nextTick(loadData)
     &__lesson {
       font-size: 14px;
       line-height: 18px;
+      position: relative;
       &-info {
         display: flex;
         align-items: center;
@@ -164,11 +184,20 @@ nextTick(loadData)
           }
         }
       }
+      .table-actionss {
+        width: 50px;
+        right: -10px !important;
+        top: -6px !important;
+        padding-top: 0 !important;
+      }
     }
     &__lessons {
       display: flex;
       flex-direction: column;
       gap: 8px;
+    }
+    &__wrapper {
+      position: relative;
     }
   }
 }

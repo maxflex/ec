@@ -30,42 +30,6 @@ const deleting = ref(false)
 const loading = ref(false)
 const isEditMode = computed(() => itemId.value !== undefined)
 const isNewContract = computed(() => contractId.value === undefined)
-// function create() {
-//   contract.value = {
-//     ...defaultContract,
-//     client_id: Number(useRoute().params.id), // допускаем, что client_id хранится в адресной строке
-//     versions: [{ ...defaultContractVersion }],
-//   }
-//   i.value = 0
-//   dialog.value = true
-// }
-
-// function editVersion(c: ContractResource, versionIndex: number) {
-//   i.value = versionIndex
-//   contract.value = clone(c)
-//   dialog.value = true
-// }
-
-// function addVersion(c: ContractResource) {
-//   contract.value = clone(c)
-//   const { sum, version, programs, payments } = c.versions[0]
-//   i.value = contract.value.versions.push({
-//     id: newId(),
-//     version,
-//     sum,
-//     programs: programs.map(e => ({
-//       ...e,
-//       id: newId(),
-//     })),
-//     payments: payments.map(e => ({
-//       ...e,
-//       id: newId(),
-//     })),
-//     contract_id: c.id,
-//     date: today(),
-//   }) - 1
-//   dialog.value = true
-// }
 
 function createContract() {
   itemId.value = undefined
