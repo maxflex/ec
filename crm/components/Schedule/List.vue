@@ -68,6 +68,7 @@ nextTick(loadData)
         <div>
           <v-select
             v-model="year"
+            :disabled="editable"
             label="Учебный год"
             :items="selectItems(YearLabel)"
             density="comfortable"

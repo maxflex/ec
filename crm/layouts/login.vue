@@ -35,15 +35,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  &:after {
-    content: '';
-    background: rgba(black, 0.5);
-    left: 0;
-    top: 0;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-  }
+  // &:after {
+  //   content: '';
+  //   background: rgba(black, 0.5);
+  //   left: 0;
+  //   top: 0;
+  //   position: absolute;
+  //   width: 100%;
+  //   height: 100%;
+  // }
 }
 .video-background {
   position: fixed;

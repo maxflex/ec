@@ -93,10 +93,10 @@ defineExpose({ create, edit })
     <div class="dialog-wrapper">
       <div class="dialog-header">
         <template v-if="itemId">
-          Редактирование урока
+          Редактирование занятия
         </template>
         <template v-else>
-          Добавить урок
+          Добавить занятие
         </template>
         <v-btn
           icon="$save"
