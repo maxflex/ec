@@ -155,6 +155,27 @@ export const LessonStatusLabel = {
   cancelled: 'отменено',
 } as const
 
+export const ContractLessonStatusLabel = {
+  present: 'был',
+  late: 'опоздал',
+  absent: 'не был',
+} as const
+
+export const MonthLabel = [
+  'янв', // январь
+  'фев', // февраль
+  'мар', // март
+  'апр', // апрель
+  'мая', // май
+  'июн', // июнь
+  'июл', // июль
+  'авг', // август
+  'сен', // сентябрь
+  'окт', // октябрь
+  'ноя', // ноябрь
+  'дек', // декабрь
+] as const
+
 export const EntityType = {
   request: 'App\\Models\\Request',
   client: 'App\\Models\\Client',

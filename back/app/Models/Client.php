@@ -6,8 +6,8 @@ use App\Traits\HasPhones;
 use App\Traits\HasPhoto;
 use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class Client extends Model
 {
@@ -17,16 +17,6 @@ class Client extends Model
         'first_name', 'last_name', 'middle_name', 'branches',
         'head_teacher_id'
     ];
-
-    // public $interfaces = [
-    //     'groups' => ['type' => 'Groups'],
-    //     'swamps' => ['type' => 'ContractPrograms'],
-    //     'tests' => ['type' => 'ClientTests'],
-    //     'head_teacher' => ['type' => 'Teacher | null'],
-    //     'branches' => ['type' => 'string[]'],
-    // ];
-
-    protected $hidden = ['groups', 'swamps'];
 
     public function tests()
     {
@@ -108,7 +98,43 @@ class Client extends Model
         );
     }
 
-    public function getSchedule(int $year)
+    /**
+     * фактически проведенные занятия
+     * занятия прошедшие без ученика в группе, в которой ученик сейчас присутствует
+     * отмененные занятия в группе, в которой ученик сейчас присутствует
+     * планируемые занятия в группе, в которой ученик сейчас присутствует
+     */
+    public function getSchedule(int $year): Collection
     {
+        $schedule = collect();
+        $contracts = $this->contracts()->where('year', $year)->get();
+
+        // фактически проведённые
+        ContractLesson::whereIn('contract_id', $contracts->pluck('id'))->get()->each(
+            function ($e) use ($schedule) {
+                $lesson = $e->lesson;
+                $lesson->contractLesson = extract_fields($e, [
+                    'price', 'status', 'minutes_late'
+                ]);
+                $schedule->push($lesson);
+            }
+        );
+
+        foreach ($contracts as $contract) {
+            foreach ($contract->groups as $group) {
+                $schedule = $schedule->merge($group->lessons);
+            }
+        }
+
+        return $schedule
+            ->unique(fn ($e) => $e->id)
+            ->transform(fn ($e) => extract_fields($e, [
+                'date', 'time', 'status', 'contractLesson'
+            ], [
+                'group' => extract_fields($e->group, [
+                    'program'
+                ])
+            ]))
+            ->groupBy('date');
     }
 }

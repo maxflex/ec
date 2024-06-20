@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Cabinet;
 use App\Enums\LessonStatus;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 class Lesson extends Model
@@ -33,6 +34,11 @@ class Lesson extends Model
         return $this->belongsTo(Teacher::class);
     }
 
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -41,5 +47,19 @@ class Lesson extends Model
     public function scopeConducted($query)
     {
         return $query->where('status', LessonStatus::conducted);
+    }
+
+    public function date(): Attribute
+    {
+        return Attribute::make(
+            fn () => str($this->start_at)->before(' ')
+        );
+    }
+
+    public function time(): Attribute
+    {
+        return Attribute::make(
+            fn () => str($this->start_at)->after(' ')->beforeLast(':')
+        );
     }
 }

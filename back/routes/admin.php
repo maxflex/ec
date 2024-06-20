@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\{
     MacroController,
     PreviewController,
     PhotoController,
+    ScheduleController,
     StatsController,
     TeacherController,
     TeacherPaymentController,
@@ -40,6 +41,10 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::apiResource('stats', StatsController::class)->only('index');
     Route::controller(BalanceController::class)->prefix('balance')->group(function () {
         Route::get('contract/{contract}', 'contract');
+        Route::get('teacher/{teacher}', 'teacher');
+    });
+    Route::controller(ScheduleController::class)->prefix('schedule')->group(function () {
+        Route::get('client/{client}', 'client');
         Route::get('teacher/{teacher}', 'teacher');
     });
     Route::apiResources([

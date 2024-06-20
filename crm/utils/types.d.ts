@@ -19,6 +19,14 @@ declare global {
 
   type Program = keyof typeof ProgramLabel
 
+  type Year = keyof typeof YearLabel
+
+  type EntityString = keyof typeof EntityType
+
+  type LessonStatus = keyof typeof LessonStatusLabel
+
+  type ContractLessonStatus = keyof typeof ContractLessonStatusLabel
+
   interface Meta {
     current_page: number
     last_page: number
@@ -62,17 +70,10 @@ declare global {
 
   type Menu = MenuItem[]
 
-  // https://stackoverflow.com/a/45486495/2274406
-  type Year = keyof typeof YearLabel
-
   interface Zoom {
     id: string
     password: string
   }
-
-  type EntityString = keyof typeof EntityType
-
-  type LessonStatus = keyof typeof LessonStatusLabel
 
   interface HasPhoto {
     photo_url: string | null
@@ -429,6 +430,27 @@ declare global {
   interface VacationResource {
     id: number
     date: string
+  }
+
+  interface ScheduleItem {
+    id: number
+    date: string
+    time: string
+    status: LessonStatus
+    group: {
+      id: number
+      program: Program
+    }
+    contractLesson: null | {
+      id: number
+      price: number
+      status: ContractLessonStatus
+      minutes_late: null | number
+    }
+  }
+
+  interface Schedule {
+    [key: string]: ScheduleItem[]
   }
 }
 

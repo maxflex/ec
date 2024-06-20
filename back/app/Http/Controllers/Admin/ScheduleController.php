@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ScheduleResource;
 use App\Models\Client;
 use Illuminate\Http\Request;
 
@@ -12,5 +13,6 @@ class ScheduleController extends Controller
     {
         $request->validate(['year' => ['required']]);
         return $client->getSchedule($request->year);
+        // return ScheduleResource::collection();
     }
 }

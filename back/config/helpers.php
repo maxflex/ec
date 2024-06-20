@@ -1,7 +1,10 @@
 <?php
 
-function extract_fields($object, $fields, $merge = []): array
+function extract_fields($object, $fields, $merge = []): ?array
 {
+    if ($object === null) {
+        return null;
+    }
     $return = ['id' => $object->id];
     foreach ($fields as $field) {
         if ($field === '*') {

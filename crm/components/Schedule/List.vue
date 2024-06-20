@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
+import { eachDayOfInterval, endOfMonth, format, getDay, getMonth, startOfMonth } from 'date-fns'
 
-const year = ref<Year>(2023)
 const dayLabels = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']
+const year = ref<Year>(2023)
+const schedule = ref<Schedule>({})
 
 const dates = computed(() => {
   // Define the start and end months for the academic year
@@ -22,8 +23,32 @@ const dates = computed(() => {
 const offset = computed(() => {
   let day = getDay(dates.value[0])
   day = day === 0 ? 7 : day
-  return day - 1
+  const start = day - 1
+  const remainder = (dates.value.length + start) % 7
+  const end = remainder === 0 ? 0 : 7 - remainder
+  return { start, end }
 })
+
+watch(year, loadData)
+
+async function loadData() {
+  const clientId = Number(useRoute().params.id) // допускаем, что clientId хранится в адресной строке
+  const { data } = await useHttp<Schedule>(`schedule/client/${clientId}`, {
+    params: {
+      year: year.value,
+    },
+  })
+  if (data.value) {
+    schedule.value = data.value
+  }
+}
+
+function formatCalendarDate(d: string) {
+  const month = getMonth(d)
+  return format(d, `d ${MonthLabel[month]}`)
+}
+
+nextTick(loadData)
 </script>
 
 <template>
@@ -39,13 +64,44 @@ const offset = computed(() => {
       </div>
     </div>
     <div class="schedule-calendar">
-      <div v-for="dayLabel in dayLabels" :key="dayLabel" class="text-gray">
+      <div
+        v-for="dayLabel in dayLabels" :key="dayLabel"
+        class="schedule-calendar__header"
+      >
         {{ dayLabel }}
       </div>
-      <div v-for="i in offset" :key="i" />
+      <div v-for="i in offset.start" :key="i" />
       <div v-for="d in dates" :key="d">
-        {{ d }}
+        <div class="schedule-calendar__date">
+          {{ formatCalendarDate(d) }}
+        </div>
+        <div class="schedule-calendar__lessons">
+          <div
+            v-for="l in schedule[d]" :key="l.id"
+            class="schedule-calendar__lesson"
+          >
+            <div class="schedule-calendar__lesson-info">
+              <LessonStatus :status="l.status" />
+              <span> {{ l.time }} </span>
+              <span>
+                <NuxtLink :to="{ name: 'groups-id', params: { id: l.group.id } }">
+                  ГР-{{ l.group.id }}
+                </NuxtLink>
+              </span>
+            </div>
+            <!-- <div>
+              {{ ProgramLabel[l.group.program] }}
+            </div> -->
+            <div v-if="l.contractLesson" class="schedule-calendar__lesson-contract">
+              {{ ContractLessonStatusLabel[l.contractLesson.status] }}
+              <span v-if="l.contractLesson.minutes_late">
+                на {{ l.contractLesson.minutes_late }} мин
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
+      <div v-for="i in offset.end" :key="i" />
     </div>
   </div>
 </template>
@@ -55,13 +111,42 @@ const offset = computed(() => {
   &-calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    &:first-child {
-      color: rgb(var(--v-theme-gray));
-    }
     & > div {
+      min-height: 120px;
       padding: 20px;
       border-bottom: 1px solid #e0e0e0;
       border-right: 1px solid #e0e0e0;
+      position: relative;
+    }
+    &__date {
+      color: rgb(var(--v-theme-gray));
+      font-size: 12px;
+      position: absolute;
+      right: 6px;
+      bottom: 2px;
+    }
+    &__header {
+      color: rgb(var(--v-theme-gray));
+      min-height: initial !important;
+    }
+    &__lesson {
+      font-size: 14px;
+      line-height: 18px;
+      &-info {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        & > span {
+          &:nth-child(2) {
+            width: 35px;
+          }
+        }
+      }
+    }
+    &__lessons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
   }
 }
