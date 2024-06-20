@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { eachDayOfInterval, endOfMonth, format, getDay, getMonth, startOfMonth } from 'date-fns'
+import type { LessonDialog } from '#build/components'
 
+const { id, entity } = defineProps<{
+  entity: Extract<EntityString, 'client' | 'teacher' | 'group'>
+  id: number
+}>()
+const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
 const dayLabels = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']
 const year = ref<Year>(2023)
 const schedule = ref<Schedule>({})
@@ -29,11 +35,12 @@ const offset = computed(() => {
   return { start, end }
 })
 
+const editable = computed(() => entity === 'group')
+
 watch(year, loadData)
 
 async function loadData() {
-  const clientId = Number(useRoute().params.id) // допускаем, что clientId хранится в адресной строке
-  const { data } = await useHttp<Schedule>(`schedule/client/${clientId}`, {
+  const { data } = await useHttp<Schedule>(`schedule/${entity}/${id}`, {
     params: {
       year: year.value,
     },
@@ -54,13 +61,22 @@ nextTick(loadData)
 <template>
   <div class="schedule">
     <div class="filters">
-      <div class="filters-inputs">
-        <v-select
-          v-model="year"
-          label="Учебный год"
-          :items="selectItems(YearLabel)"
-          density="comfortable"
-        />
+      <div class="filters-inputs" style="justify-content: space-between; align-items: center; width: 100%">
+        <div>
+          <v-select
+            v-model="year"
+            label="Учебный год"
+            :items="selectItems(YearLabel)"
+            density="comfortable"
+          />
+        </div>
+        <v-btn
+          v-if="editable"
+          color="primary"
+          @click="lessonDialog?.create(id)"
+        >
+          добавить занятие
+        </v-btn>
       </div>
     </div>
     <div class="schedule-calendar">
@@ -104,6 +120,12 @@ nextTick(loadData)
       <div v-for="i in offset.end" :key="i" />
     </div>
   </div>
+  <LessonDialog
+    v-if="editable"
+    ref="lessonDialog"
+    @updated="loadData"
+    @destroyed="loadData"
+  />
 </template>
 
 <style lang="scss">

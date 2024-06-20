@@ -46,6 +46,7 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::controller(ScheduleController::class)->prefix('schedule')->group(function () {
         Route::get('client/{client}', 'client');
         Route::get('teacher/{teacher}', 'teacher');
+        Route::get('group/{group}', 'group');
     });
     Route::apiResources([
         'requests' => RequestsController::class,

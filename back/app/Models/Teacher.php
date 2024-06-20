@@ -9,6 +9,7 @@ use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 class Teacher extends Model
 {
@@ -97,5 +98,25 @@ class Teacher extends Model
         }
 
         return array_reverse($data);
+    }
+
+
+    public function getSchedule(int $year): Collection
+    {
+        $schedule = Lesson::query()
+            ->whereHas('group', fn ($q) => $q->where('year', $year))
+            ->where('teacher_id', $this->id)
+            ->get();
+
+        return $schedule
+            ->unique(fn ($e) => $e->id)
+            ->transform(fn ($e) => extract_fields($e, [
+                'date', 'time', 'status'
+            ], [
+                'group' => extract_fields($e->group, [
+                    'program'
+                ])
+            ]))
+            ->groupBy('date');
     }
 }

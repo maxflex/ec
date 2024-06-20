@@ -182,6 +182,7 @@ export const EntityType = {
   contract: 'App\\Models\\Contract',
   teacher: 'App\\Models\\Teacher',
   user: 'App\\Models\\User',
+  group: 'App\\Models\\Group',
 } as const
 
 export const YearLabel = {

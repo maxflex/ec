@@ -165,7 +165,11 @@ nextTick(loadData)
           <ClientReviewList :items="items" />
         </template>
       </UiDataLoader>
-      <ScheduleList v-else-if="selectedTab === 'schedule'" />
+      <ScheduleList
+        v-else-if="selectedTab === 'schedule'"
+        :id="client.id"
+        entity="client"
+      />
       <!-- <ClientGroupsTab
         v-else-if="selectedTab === 'groups'"
       /> -->

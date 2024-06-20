@@ -21,6 +21,11 @@ class ClientResource extends JsonResource
             'user' => new PersonResource($this->user),
             'parent' => new ParentResource($this->parent),
             'phones' => PhoneListResource::collection($this->phones),
+
+            // remove
+            'groups' => GroupResource::collection($this->groups),
+            'swamps' => $this->swamps,
+            'tests' => ClientTestResource::collection($this->tests),
         ]);
         // return array_merge(parent::toArray($request), [
         //     'photo_url' => $this->photoUrl,

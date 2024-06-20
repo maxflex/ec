@@ -21,7 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
       // сохранить path перед переходом в режим просмотра,
       // чтобы после выхода из режима просмотра вернуться на исходную страницу
       sessionStorage.setItem('redirect', useRoute().fullPath)
-      window.location.href = '/'
+      setTimeout(() => window.location.href = '/')
     }
     else {
       token.value = t
@@ -29,7 +29,7 @@ export const useAuthStore = defineStore('auth', () => {
       if (u.entity_type !== EntityType.teacher) {
         rememberUser.value = u
       }
-      window.location.href = sessionStorage.getItem('redirect') || '/'
+      setTimeout(() => window.location.href = sessionStorage.getItem('redirect') || '/')
       // navigateTo({ path })
     }
   }

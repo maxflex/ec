@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Program;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class Group extends Model
 {
@@ -30,6 +31,24 @@ class Group extends Model
     public function lessons()
     {
         return $this->hasMany(Lesson::class)->orderBy('start_at');
+    }
+
+    public function getSchedule(): Collection
+    {
+        $schedule = Lesson::query()
+            ->where('group_id', $this->id)
+            ->get();
+
+        return $schedule
+            ->unique(fn ($e) => $e->id)
+            ->transform(fn ($e) => extract_fields($e, [
+                'date', 'time', 'status'
+            ], [
+                'group' => extract_fields($e->group, [
+                    'program'
+                ])
+            ]))
+            ->groupBy('date');
     }
 
     public function scopeWhereTeacher($query, $teacherId)

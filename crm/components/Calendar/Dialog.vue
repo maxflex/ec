@@ -15,16 +15,20 @@ const monthLabels = [
   'ноябрь',
   'декабрь',
 ]
-const years = Object.keys(YearLabel).toReversed().map(y => Number(y))
+const years = Object.keys(YearLabel).map(y => Number(y))
 function open() {
   dialog.value = true
-  setTimeout(
-    () =>
-      document
-        ?.querySelector('.calendar--selected')
-        ?.scrollIntoView({ block: 'center' }),
-    100,
-  )
+  setTimeout(() => {
+    const selectedElement = document.querySelector('.calendar--selected')
+    const todayElement = document.querySelector('.calendar--today')
+
+    if (selectedElement) {
+      selectedElement.scrollIntoView({ block: 'center' })
+    }
+    else if (todayElement) {
+      todayElement.scrollIntoView({ block: 'center' })
+    }
+  }, 100)
 }
 const zeroPad = (value: number) => (`0${value}`).slice(-2)
 

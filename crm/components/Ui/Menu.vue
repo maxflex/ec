@@ -28,6 +28,11 @@ switch (user?.entity_type) {
         to: '/groups',
       },
       {
+        icon: mdiCalendar,
+        title: 'Расписание',
+        to: '/schedule',
+      },
+      {
         icon: mdiDotsTriangle,
         title: 'Тесты',
         to: '/tests',
@@ -41,6 +46,11 @@ switch (user?.entity_type) {
         icon: mdiAccountGroup,
         title: 'Группы',
         to: '/groups',
+      },
+      {
+        icon: mdiCalendar,
+        title: 'Расписание',
+        to: '/schedule',
       },
     ]
     break

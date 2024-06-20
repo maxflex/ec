@@ -441,7 +441,7 @@ declare global {
       id: number
       program: Program
     }
-    contractLesson: null | {
+    contractLesson?: null | {
       id: number
       price: number
       status: ContractLessonStatus

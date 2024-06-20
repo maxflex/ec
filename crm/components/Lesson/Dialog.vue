@@ -25,11 +25,11 @@ function openDialog(l: LessonResource) {
   dialog.value = true
 }
 
-function create(g: GroupResource) {
+function create(groupId: number) {
   lessonId.value = undefined
   openDialog({
     ...modelDefaults,
-    group_id: g.id,
+    group_id: groupId,
   })
 }
 

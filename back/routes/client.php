@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Client\{
     GroupController,
     TestController,
+    ScheduleController
 };
 
 Route::middleware(['auth:crm'])->group(function () {
@@ -15,5 +16,6 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::post('start/{clientTest}', 'start');
         Route::post('finish', 'finish');
     });
+    Route::get('schedule/client/{client}', [ScheduleController::class, 'client']);
     Route::apiResource('groups', GroupController::class)->only('index');
 });

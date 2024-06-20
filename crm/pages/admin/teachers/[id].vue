@@ -7,10 +7,12 @@ const teacherDialog = ref<InstanceType<typeof TeacherDialog>>()
 
 const tabs = {
   groups: 'группы',
+  schedule: 'расписание',
   payments: 'платежи',
   balance: 'баланс',
   reviews: 'отзывы',
 } as const
+
 const selectedTab = ref<keyof typeof tabs>('groups')
 
 async function loadData() {
@@ -96,6 +98,11 @@ nextTick(loadData)
         </div>
       </template>
     </UiDataLoader>
+    <ScheduleList
+      v-else-if="selectedTab === 'schedule'"
+      :id="teacher.id"
+      entity="teacher"
+    />
     <UiDataLoader
       v-else-if="selectedTab === 'payments'"
       url="teacher-payments"
