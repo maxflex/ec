@@ -6,6 +6,9 @@ const { items } = defineProps<{ items: ContractResource[] }>()
 const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
 const contractBalanceDialog = ref<InstanceType<typeof ContractBalanceDialog>>()
+const selected = ref(0)
+
+const selectedContract = computed(() => items[selected.value])
 
 function onContractVersionUpdated(cv: ContractVersionListResource) {
   const contractIndex = items.findIndex(c => c.id === cv.contract.id)
@@ -80,33 +83,42 @@ function onClientPaymentDeleted(cp: ClientPaymentResource) {
 </script>
 
 <template>
+  <div class="tabs">
+    <div
+      v-for="(contract, i) in items"
+      :key="contract.id"
+      class="tabs-item"
+      :class="{ 'tabs-item--active': selected === i }"
+      @click="selected = i"
+    >
+      договор №{{ contract.id }}
+    </div>
+  </div>
   <div class="contract-list">
     <div
-      v-for="contract in items"
-      :key="contract.id"
       class="contract-list__item"
     >
       <h3>
-        Договор №{{ contract.id }} на {{ formatYear(contract.year) }}
+        Договор №{{ selectedContract.id }} на {{ formatYear(selectedContract.year) }}
         <div class="contract-list__actions">
           <v-btn
             color="gray"
             icon="$plus"
             variant="plain"
             :size="48"
-            @click="() => contractVersionDialog?.addVersion(contract)"
+            @click="() => contractVersionDialog?.addVersion(selectedContract)"
           />
           <v-btn
             color="gray"
             :icon="mdiWalletBifoldOutline"
             variant="plain"
             :size="48"
-            @click="() => contractBalanceDialog?.open(contract.id)"
+            @click="() => contractBalanceDialog?.open(selectedContract.id)"
           />
         </div>
       </h3>
       <ContractVersionList2
-        :items="contract.versions"
+        :items="selectedContract.versions"
         @edit="contractVersionDialog?.edit"
       />
       <h3>
@@ -117,12 +129,12 @@ function onClientPaymentDeleted(cp: ClientPaymentResource) {
             :size="48"
             icon="$plus"
             variant="plain"
-            @click="() => clientPaymentDialog?.create(contract)"
+            @click="() => clientPaymentDialog?.create(selectedContract)"
           />
         </div>
       </h3>
       <ClientPaymentList
-        :items="contract.payments"
+        :items="selectedContract.payments"
         @open="(p) => clientPaymentDialog?.open(p)"
       />
     </div>
