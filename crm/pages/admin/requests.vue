@@ -1,36 +1,37 @@
 <script setup lang="ts">
 import type { RequestDialog, RequestFilters } from '#build/components'
 
-const items = ref<RequestListResource[]>()
-const paginator = usePaginator()
+const items = ref<RequestListResource[]>([])
 const requestDialog = ref<InstanceType<typeof RequestDialog>>()
 const filters = ref<RequestFilters>({})
+const loading = ref(false)
+let page = 0
+let isLastPage = false
+let scrollContainer: HTMLElement | null = null
 
 async function loadData() {
-  if (paginator.loading) {
+  if (loading.value || isLastPage) {
     return
   }
-  paginator.page++
-  paginator.loading = true
-  console.log('page', paginator.page)
+  page++
+  loading.value = true
   const { data } = await useHttp<ApiResponse<RequestListResource[]>>('requests', {
     params: {
-      page: paginator.page,
+      page,
       ...filters.value,
     },
   })
-  paginator.loading = false
   if (data.value) {
     const { meta, data: newItems } = data.value
-    items.value
-      = paginator.page === 1 ? newItems : items.value?.concat(newItems)
-    paginator.isLastPage = meta.current_page >= meta.last_page
+    items.value = items.value.concat(newItems)
+    isLastPage = meta.current_page >= meta.last_page
   }
+  loading.value = false
 }
 
 function onFiltersApply(f: RequestFilters) {
   filters.value = f
-  paginator.page = 0
+  page = 0
   loadData()
 }
 
@@ -38,20 +39,27 @@ function onRequestCreated(r: RequestListResource) {
   items.value?.unshift(r)
 }
 
-// оставлю как пример
-// parameter destruction + type declaration
-async function onIntersect({
-  done,
-}: {
-  done: (status: InfiniteScrollStatus) => void
-}) {
-  if (paginator.isLastPage) {
+function onScroll() {
+  if (!scrollContainer || loading.value) {
     return
   }
-  done('loading')
-  await loadData()
-  done(paginator.isLastPage ? 'empty' : 'ok')
+  const { scrollTop, scrollHeight, clientHeight } = scrollContainer
+  const scrollPosition = scrollTop + clientHeight
+  const scrollThreshold = scrollHeight * 0.9
+
+  if (scrollPosition >= scrollThreshold) {
+    loadData()
+  }
 }
+
+onMounted(() => {
+  scrollContainer = document.documentElement.querySelector('main')
+  scrollContainer?.addEventListener('scroll', onScroll)
+})
+
+onUnmounted(() => {
+  scrollContainer?.removeEventListener('scroll', onScroll)
+})
 
 nextTick(loadData)
 </script>
@@ -66,19 +74,9 @@ nextTick(loadData)
       добавить заявку
     </a>
   </div>
-  <UiLoader :paginator="paginator" />
-  <div
-    v-if="items"
-    class="requests"
-  >
-    <v-infinite-scroll
-      :margin="100"
-      color="gray"
-      side="end"
-      @load="onIntersect"
-    >
-      <RequestList v-model="items" />
-    </v-infinite-scroll>
+  <div>
+    <UiLoader3 :loading="loading" />
+    <RequestList v-model="items" />
   </div>
   <RequestDialog
     ref="requestDialog"

@@ -31,12 +31,21 @@ function onTeacherPaymentDestroyed(tp: TeacherPaymentResource) {
 
 <template>
   <div
-    class="table table--actions-on-hover"
+    class="table"
   >
     <div
       v-for="payment in items"
       :key="payment.id"
     >
+      <div class="table-actionss">
+        <v-btn
+          icon="$edit"
+          :size="48"
+          variant="plain"
+          color="gray"
+          @click="() => teacherPaymentDialog?.edit(payment)"
+        />
+      </div>
       <div
         v-if="!teacherId"
         style="width: 330px"
@@ -45,16 +54,16 @@ function onTeacherPaymentDestroyed(tp: TeacherPaymentResource) {
           {{ formatFullName(payment.teacher!) }}
         </NuxtLink>
       </div>
-      <div style="width: 130px">
+      <div style="width: 150px">
         {{ formatDate(payment.date) }}
       </div>
       <div style="width: 180px">
         {{ YearLabel[payment.year] }}
       </div>
-      <div style="width: 130px">
+      <div style="width: 180px">
         {{ TeacherPaymentMethodLabel[payment.method] }}
       </div>
-      <div style="width: 150px">
+      <div style="width: 180px">
         {{ formatPrice(payment.sum) }} руб.
       </div>
       <div
@@ -66,21 +75,9 @@ function onTeacherPaymentDestroyed(tp: TeacherPaymentResource) {
       <div
         v-if="teacherId"
         class="text-gray"
-        style="width: 180px"
+        style="width: 150px; flex: initial"
       >
         {{ formatDateTime(payment.created_at!) }}
-      </div>
-      <div
-        style="width: 70px; flex: initial !important"
-        class="text-right table-actions"
-      >
-        <v-btn
-          icon="$edit"
-          :size="48"
-          variant="plain"
-          color="gray"
-          @click="() => teacherPaymentDialog?.edit(payment)"
-        />
       </div>
     </div>
     <div

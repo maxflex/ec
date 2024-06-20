@@ -32,7 +32,7 @@ const emit = defineEmits<{ (e: 'edit', u: UserResource): void }>()
       </div>
       <div
         class="text-gray"
-        style="width: 140px; flex: initial"
+        style="width: 150px; flex: initial"
       >
         {{ formatDateTime(item.created_at!) }}
       </div>
