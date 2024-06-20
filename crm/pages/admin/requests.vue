@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type { RequestDialog, RequestFilters } from '#build/components'
+import type { RequestDialog } from '#build/components'
+import type { Filters } from '~/components/Request/Filters.vue'
 
 const items = ref<RequestListResource[]>([])
 const requestDialog = ref<InstanceType<typeof RequestDialog>>()
-const filters = ref<RequestFilters>({})
+const filters = ref<Filters>({})
 const loading = ref(false)
 let page = 0
 let isLastPage = false
@@ -29,7 +30,7 @@ async function loadData() {
   loading.value = false
 }
 
-function onFiltersApply(f: RequestFilters) {
+function onFiltersApply(f: Filters) {
   filters.value = f
   page = 0
   loadData()

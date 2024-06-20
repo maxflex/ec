@@ -98,11 +98,6 @@ declare global {
     token: string
   }
 
-  interface RequestFilters {
-    status?: RequestStatus
-    program?: Program
-  }
-
   interface PhoneListResource {
     id: number
     number: string

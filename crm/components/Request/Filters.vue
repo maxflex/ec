@@ -1,13 +1,14 @@
 <script lang="ts" setup>
-// const count = computed(
-//   () => Object.values(filters.value).filter(e => e !== undefined).length,
-// )
+export interface Filters {
+  status?: RequestStatus
+  program?: Program
+}
 
 const emit = defineEmits<{
-  (e: 'apply', filters: RequestFilters): void
+  (e: 'apply', filters: Filters): void
 }>()
 
-const filters = ref<RequestFilters>({})
+const filters = ref<Filters>({})
 
 watch(filters.value, () => emit('apply', filters.value))
 </script>
