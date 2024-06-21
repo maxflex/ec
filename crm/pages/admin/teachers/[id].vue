@@ -11,12 +11,14 @@ const tabs = {
   payments: 'платежи',
   balance: 'баланс',
   reviews: 'отзывы',
+  services: 'допуслуги',
 } as const
 
 const selectedTab = ref<keyof typeof tabs>('groups')
 
 const groupFilters = ref<{ year?: Year }>({})
 const paymentFilters = ref<{ year?: Year }>({})
+const serviceFilters = ref<{ year?: Year }>({})
 // const reviewFilters = ref<{ year?: Year }>({})
 
 async function loadData() {
@@ -169,6 +171,33 @@ nextTick(loadData)
           style="top: -20px"
           :items="items"
         />
+      </template>
+    </UiDataLoader>
+    <UiDataLoader
+      v-else-if="selectedTab === 'services'"
+      :key="JSON.stringify(serviceFilters)"
+      url="teacher-services"
+      :filters="{
+        teacher_id: teacher.id,
+        ...serviceFilters,
+      }"
+    >
+      <template #filters>
+        <div class="filters">
+          <div class="filters-inputs">
+            <div>
+              <UiClearableSelect
+                v-model="serviceFilters.year"
+                label="Учебный год"
+                :items="selectItems(YearLabel)"
+                density="comfortable"
+              />
+            </div>
+          </div>
+        </div>
+      </template>
+      <template #default="{ items }">
+        <TeacherServiceList :items="items" :teacher-id="teacher.id" />
       </template>
     </UiDataLoader>
     <BalanceList

@@ -316,6 +316,18 @@ declare global {
     created_at?: string
   }
 
+  interface TeacherServiceResource {
+    id: number
+    sum: number
+    purpose: string | null
+    year: Year
+    date: string
+    teacher_id?: number
+    user?: PersonResource
+    teacher?: PersonResource
+    created_at?: string
+  }
+
   interface BalanceItem {
     comment: string
     sum: number

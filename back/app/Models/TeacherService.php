@@ -7,5 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class TeacherService extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'sum', 'date', 'year', 'purpose', 'teacher_id'
+    ];
+
+    public function teacher()
+    {
+        return $this->belongsTo(Teacher::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
