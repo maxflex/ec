@@ -189,7 +189,7 @@ export const EntityTypeLabel = {
   'App\\Models\\Request': 'заявка',
   'App\\Models\\Client': 'клиент',
   'App\\Models\\Contract': 'договор',
-  'App\\Models\\Teacher': 'учитель',
+  'App\\Models\\Teacher': 'преподаватель',
   'App\\Models\\User': 'администратор',
   'App\\Models\\Group': 'группа',
 } as const
