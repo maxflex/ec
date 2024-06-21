@@ -2,7 +2,8 @@
 import { clone } from 'rambda'
 
 const emit = defineEmits<{
-  (e: 'created' | 'updated', r: RequestListResource): void
+  updated: [r: RequestListResource]
+  deleted: [r: RequestResource]
 }>()
 
 const modelDefaults: RequestResource = {
@@ -15,6 +16,7 @@ const modelDefaults: RequestResource = {
 
 const { dialog, width } = useDialog('default')
 const loading = ref(false)
+const deleting = ref(false)
 const itemId = ref<number>()
 const request = ref<RequestResource>(modelDefaults)
 
@@ -47,6 +49,7 @@ async function save() {
       body: request.value,
     })
     if (data.value) {
+      console.log('SAVED')
       emit('updated', data.value)
     }
   }
@@ -56,10 +59,28 @@ async function save() {
       body: request.value,
     })
     if (data.value) {
-      emit('created', data.value)
+      emit('updated', data.value)
     }
   }
   // emit('saved')
+}
+
+async function destroy() {
+  if (!confirm('Вы уверены, что хотите удалить заявку?')) {
+    return
+  }
+  deleting.value = true
+  const { status } = await useHttp(`requests/${request.value.id}`, {
+    method: 'delete',
+  })
+  if (status.value === 'error') {
+    deleting.value = false
+  }
+  else {
+    emit('deleted', request.value)
+    dialog.value = false
+    setTimeout(() => (deleting.value = false), 300)
+  }
 }
 
 defineExpose({ create, edit })
@@ -120,6 +141,24 @@ defineExpose({ create, edit })
           />
         </div>
         <PhoneEditor v-model="request.phones" />
+        <div
+          v-if="itemId"
+          class="dialog-bottom"
+        >
+          <span v-if="request.created_at">
+            заявка создана
+            {{ request.user ? formatName(request.user) : 'system' }}
+            {{ formatDateTime(request.created_at) }}
+          </span>
+          <v-btn
+            icon="$delete"
+            :size="48"
+            color="red"
+            variant="plain"
+            :loading="deleting"
+            @click="destroy()"
+          />
+        </div>
       </div>
     </div>
   </v-dialog>

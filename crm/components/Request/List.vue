@@ -5,9 +5,20 @@ const model = defineModel<RequestListResource[]>({ default: () => [] })
 const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()
 
 function onRequestUpdated(r: RequestListResource) {
-  const index = model.value.findIndex(m => m.id === r.id)
+  const index = model.value.findIndex(e => e.id === r.id)
   if (index !== -1) {
-    model.value.splice(index, 1, r)
+    model.value[index] = r
+  }
+  else {
+    model.value.unshift(r)
+  }
+  itemUpdated('request', r.id)
+}
+
+function onRequestDeleted(r: RequestResource) {
+  const index = model.value.findIndex(e => e.id === r.id)
+  if (index !== -1) {
+    model.value.splice(index, 1)
   }
 }
 </script>
@@ -16,6 +27,7 @@ function onRequestUpdated(r: RequestListResource) {
   <div class="request-list">
     <div
       v-for="r in model"
+      :id="`request-${r.id}`"
       :key="r.id"
       class="request"
     >
@@ -92,6 +104,7 @@ function onRequestUpdated(r: RequestListResource) {
   <RequestDialog
     ref="requestDialog"
     @updated="onRequestUpdated"
+    @deleted="onRequestDeleted"
   />
 </template>
 

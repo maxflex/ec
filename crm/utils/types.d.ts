@@ -109,6 +109,8 @@ declare global {
     responsible_user_id: number | null
     comment: string | null
     phones: PhoneListResource[]
+    user?: PersonResource
+    created_at?: string
   }
 
   interface RequestListResource {

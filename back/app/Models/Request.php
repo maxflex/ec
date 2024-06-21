@@ -29,6 +29,11 @@ class Request extends Model
         return $this->belongsTo(Client::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public static function booted()
     {
         self::creating(function ($request) {

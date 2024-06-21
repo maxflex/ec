@@ -48,4 +48,10 @@ class RequestsController extends Controller
         $clientRequest->syncRelation($request->all(), 'phones');
         return new RequestListResource($clientRequest);
     }
+
+    public function destroy($id)
+    {
+        $clientRequest = ClientRequest::findOrFail($id);
+        $clientRequest->delete();
+    }
 }

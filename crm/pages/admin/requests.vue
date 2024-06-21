@@ -36,8 +36,15 @@ function onFiltersApply(f: Filters) {
   loadData()
 }
 
-function onRequestCreated(r: RequestListResource) {
-  items.value?.unshift(r)
+function onRequestUpdated(r: RequestListResource) {
+  const index = items.value.findIndex(e => e.id === r.id)
+  if (index !== -1) {
+    items.value[index] = r
+  }
+  else {
+    items.value.unshift(r)
+  }
+  itemUpdated('request', r.id)
 }
 
 function onScroll() {
@@ -81,6 +88,6 @@ nextTick(loadData)
   </div>
   <RequestDialog
     ref="requestDialog"
-    @created="onRequestCreated"
+    @updated="onRequestUpdated"
   />
 </template>
