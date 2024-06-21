@@ -70,6 +70,10 @@ export function formatName(person: PersonResource) {
   return [person.last_name, person.first_name].join(' ')
 }
 
+export function formatNameShort(person: PersonResource) {
+  return [person.last_name, `${person.first_name![0]}.`, `${person.middle_name![0]}.`].join(' ')
+}
+
 export function formatFullName(person: PersonResource) {
   return [person.last_name, person.first_name, person.middle_name].join(' ')
 }

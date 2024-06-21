@@ -444,17 +444,16 @@ declare global {
     id: number
     date: string
     time: string
+    time_end: string
     status: LessonStatus
-    cabinet?: Cabinet
+    cabinet: Cabinet
+    is_unplanned: boolean
+    is_first: boolean
+    teacher?: PersonResource
     group: {
       id: number
       program: Program
-    }
-    contractLesson?: null | {
-      id: number
-      price: number
-      status: ContractLessonStatus
-      minutes_late: null | number
+      contracts_count?: number
     }
   }
 

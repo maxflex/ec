@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Enums\Cabinet;
 use App\Enums\LessonStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -44,6 +45,11 @@ class Lesson extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function chain()
+    {
+        return $this->hasMany(Lesson::class, 'group_id', 'group_id');
+    }
+
     public function scopeConducted($query)
     {
         return $query->where('status', LessonStatus::conducted);
@@ -60,6 +66,31 @@ class Lesson extends Model
     {
         return Attribute::make(
             fn () => str($this->start_at)->after(' ')->beforeLast(':')
+        );
+    }
+
+    /**
+     * Время конца занятия
+     */
+    public function timeEnd(): Attribute
+    {
+        return Attribute::make(
+            fn () => Carbon::parse($this->start_at)
+                ->addMinutes($this->group->duration)
+                ->format("H:i")
+        );
+    }
+
+    /**
+     * Является первым занятием в группе
+     */
+    public function isFirst(): Attribute
+    {
+        return Attribute::make(
+            fn (): bool => !$this
+                ->chain()
+                ->where('start_at', '<', $this->start_at)
+                ->exists()
         );
     }
 }

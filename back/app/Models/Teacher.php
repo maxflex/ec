@@ -109,12 +109,15 @@ class Teacher extends Model
             ->get();
 
         return $schedule
-            ->unique(fn ($e) => $e->id)
-            ->transform(fn ($e) => extract_fields($e, [
-                'date', 'time', 'status'
+            ->unique(fn ($l) => $l->id)
+            ->transform(fn ($l) => extract_fields($l, [
+                'date', 'time', 'time_end', 'status',
+                'cabinet', 'is_first', 'is_unplanned'
             ], [
-                'group' => extract_fields($e->group, [
+                'group' => extract_fields($l->group, [
                     'program'
+                ], [
+                    'contracts_count' => $l->group->contracts()->count()
                 ])
             ]))
             ->groupBy('date');

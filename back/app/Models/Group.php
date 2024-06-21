@@ -41,11 +41,15 @@ class Group extends Model
             ->get();
 
         return $schedule
-            ->unique(fn ($e) => $e->id)
-            ->transform(fn ($e) => extract_fields($e, [
-                'date', 'time', 'status', 'cabinet'
+            ->unique(fn ($l) => $l->id)
+            ->transform(fn ($l) => extract_fields($l, [
+                'date', 'time', 'time_end', 'status',
+                'cabinet', 'is_first', 'is_unplanned'
             ], [
-                'group' => extract_fields($e->group, [
+                'teacher' => extract_fields($l->teacher, [
+                    'first_name', 'last_name', 'middle_name'
+                ]),
+                'group' => extract_fields($l->group, [
                     'program'
                 ])
             ]))

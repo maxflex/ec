@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { eachDayOfInterval, endOfMonth, format, getDay, getMonth, startOfMonth } from 'date-fns'
+// import ScheduleClientItem from '~/components/Schedule/ClientItem.vue'
 import type { LessonDialog } from '#build/components'
 
 const { id, entity } = defineProps<{
@@ -37,6 +38,15 @@ const offset = computed(() => {
 })
 
 const editable = computed(() => entity === 'group')
+
+// const currentComponent = computed(() => {
+//   switch (entity) {
+//     case 'client':
+//       return ScheduleClientItem
+//     default:
+//       return ScheduleClientItem
+//   }
+// })
 
 watch(year, loadData)
 
@@ -98,42 +108,11 @@ nextTick(loadData)
             {{ formatCalendarDate(d) }}
           </div>
           <div class="schedule-calendar__lessons">
-            <div
+            <ScheduleItem
               v-for="l in schedule[d]"
-              :id="`lesson-${l.id}`"
               :key="l.id"
-              class="schedule-calendar__lesson"
-            >
-              <div class="schedule-calendar__lesson-info">
-                <LessonStatus :status="l.status" />
-                <span> {{ l.time }} </span>
-                <span>
-                  <NuxtLink :to="{ name: 'groups-id', params: { id: l.group.id } }">
-                    ГР-{{ l.group.id }}
-                  </NuxtLink>
-                </span>
-              </div>
-              <div v-if="l.cabinet">
-                {{ CabinetLabel[l.cabinet] }}
-              </div>
-              <!-- <div>
-              {{ ProgramLabel[l.group.program] }}
-            </div> -->
-              <div v-if="l.contractLesson" class="schedule-calendar__lesson-contract">
-                {{ ContractLessonStatusLabel[l.contractLesson.status] }}
-                <span v-if="l.contractLesson.minutes_late">
-                  на {{ l.contractLesson.minutes_late }} мин
-                </span>
-              </div>
-              <div v-if="editable" class="table-actionss">
-                <v-btn
-                  variant="plain"
-                  icon="$edit"
-                  :size="36"
-                  @click="lessonDialog?.edit(l.id)"
-                />
-              </div>
-            </div>
+              :item="l"
+            />
           </div>
         </div>
         <div v-for="i in offset.end" :key="i" />
@@ -152,10 +131,10 @@ nextTick(loadData)
 .schedule {
   &-calendar {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     & > div {
       min-height: 120px;
-      padding: 20px;
+      padding: 10px 10px 20px;
       border-bottom: 1px solid #e0e0e0;
       border-right: 1px solid #e0e0e0;
       position: relative;
@@ -171,17 +150,23 @@ nextTick(loadData)
       color: rgb(var(--v-theme-gray));
       min-height: initial !important;
     }
-    &__lesson {
-      font-size: 14px;
-      line-height: 18px;
-      position: relative;
-      &-info {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        & > span {
-          &:nth-child(2) {
-            width: 35px;
+    &__lessons {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      & > div {
+        font-size: 14px;
+        line-height: 20px;
+        position: relative;
+        & > div {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          overflow: hidden; /* Hide overflow content */
+          text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+          white-space: nowrap; /* Prevent text from wrapping */
+          .v-icon {
+            font-size: 18px;
           }
         }
       }
@@ -191,11 +176,6 @@ nextTick(loadData)
         top: -6px !important;
         padding-top: 0 !important;
       }
-    }
-    &__lessons {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
     }
     &__wrapper {
       position: relative;

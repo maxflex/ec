@@ -112,11 +112,11 @@ class Client extends Model
         // фактически проведённые
         ContractLesson::whereIn('contract_id', $contracts->pluck('id'))->get()->each(
             function ($e) use ($schedule) {
-                $lesson = $e->lesson;
-                $lesson->contractLesson = extract_fields($e, [
-                    'price', 'status', 'minutes_late'
-                ]);
-                $schedule->push($lesson);
+                // $lesson = $e->lesson;
+                // $lesson->contractLesson = extract_fields($e, [
+                //     'price', 'status', 'minutes_late'
+                // ]);
+                $schedule->push($e->lesson);
             }
         );
 
@@ -127,12 +127,18 @@ class Client extends Model
         }
 
         return $schedule
-            ->unique(fn ($e) => $e->id)
-            ->transform(fn ($e) => extract_fields($e, [
-                'date', 'time', 'status', 'contractLesson'
+            ->unique(fn ($l) => $l->id)
+            ->transform(fn ($l) => extract_fields($l, [
+                'date', 'time', 'time_end', 'status',
+                'cabinet', 'is_first', 'is_unplanned'
             ], [
-                'group' => extract_fields($e->group, [
+                'teacher' => extract_fields($l->teacher, [
+                    'first_name', 'last_name', 'middle_name'
+                ]),
+                'group' => extract_fields($l->group, [
                     'program'
+                ], [
+                    'contracts_count' => $l->group->contracts()->count()
                 ])
             ]))
             ->groupBy('date');
