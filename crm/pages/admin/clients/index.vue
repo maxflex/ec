@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import type { Filters } from '~/components/Client/Filters.vue'
+
 const items = ref<ClientListResource[]>()
 const paginator = usePaginator()
+const filters = ref<Filters>({})
 // const isLastPage = false
 
 const loadData = async function () {
@@ -8,7 +11,7 @@ const loadData = async function () {
   paginator.page++
   paginator.loading = true
   const { data } = await useHttp<ApiResponse<ClientListResource[]>>('clients', {
-    params: { page: paginator.page },
+    params: { page: paginator.page, ...filters.value },
   })
   paginator.loading = false
   if (data.value) {
@@ -17,6 +20,12 @@ const loadData = async function () {
       = paginator.page === 1 ? newItems : items.value?.concat(newItems)
     paginator.isLastPage = meta.current_page === meta.last_page
   }
+}
+
+function onFiltersApply(f: Filters) {
+  filters.value = f
+  paginator.page = 0
+  loadData()
 }
 
 async function onIntersect({
@@ -33,29 +42,16 @@ nextTick(loadData)
 </script>
 
 <template>
+  <div class="filters">
+    <ClientFilters @apply="onFiltersApply" />
+  </div>
   <UiLoader :paginator="paginator" />
   <v-infinite-scroll
     v-if="items"
     :margin="100"
-    class="table"
     side="end"
     @load="onIntersect"
   >
-    <div
-      v-for="item in items"
-      :key="item.id"
-    >
-      <div width="50">
-        {{ item.id }}
-      </div>
-      <div>
-        <NuxtLink :to="{ name: 'clients-id', params: { id: item.id } }">
-          {{ formatName(item) }}
-        </NuxtLink>
-      </div>
-      <div class="text-right text-gray">
-        {{ formatDateTime(item.created_at) }}
-      </div>
-    </div>
+    <ClientList :items="items" />
   </v-infinite-scroll>
 </template>
