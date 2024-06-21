@@ -45,6 +45,11 @@ class GroupController extends Controller
         return new GroupResource($group);
     }
 
+    public function destroy(Group $group)
+    {
+        $group->delete();
+    }
+
     public function addClient(Request $request)
     {
         $group = Group::find($request->group_id);

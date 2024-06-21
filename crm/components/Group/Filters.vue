@@ -1,14 +1,15 @@
 <script lang="ts" setup>
-// const count = computed(
-//   () => Object.values(filters.value).filter(e => e !== undefined).length,
-// )
+export interface Filters {
+  program?: Program
+  year?: Year
+}
 
 const emit = defineEmits<{
-  (e: 'apply', filters: GroupFilters): void
+  (e: 'apply', filters: Filters): void
 }>()
 
-// const filters = ref<GroupFilters>({})
-const filters = ref(loadFilters<GroupFilters>({}))
+// const filters = ref<Filters>({})
+const filters = ref(loadFilters<Filters>({}))
 
 watch(filters.value, () => {
   saveFilters(filters.value)

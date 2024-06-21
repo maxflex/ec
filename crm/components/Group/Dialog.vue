@@ -2,12 +2,14 @@
 import { clone } from 'rambda'
 
 const emit = defineEmits<{
-  (e: 'created', r: GroupListResource): void
-  (e: 'updated', r: GroupResource): void
+  created: [g: GroupListResource]
+  updated: [g: GroupResource]
+  deleted: [g: GroupResource]
 }>()
 
 const modelDefaults: GroupResource = {
   is_archived: false,
+  contracts: [],
   zoom: {
     id: '',
     password: '',
@@ -16,6 +18,7 @@ const modelDefaults: GroupResource = {
 
 const { dialog, width } = useDialog('default')
 const loading = ref(false)
+const deleting = ref(false)
 const itemId = ref<number>()
 const group = ref<GroupResource>(modelDefaults)
 
@@ -59,6 +62,24 @@ async function save() {
     if (data.value) {
       emit('created', data.value)
     }
+  }
+}
+
+async function destroy() {
+  if (!confirm('Вы уверены, что хотите удалить группу?')) {
+    return
+  }
+  deleting.value = true
+  const { status } = await useHttp(`groups/${group.value.id}`, {
+    method: 'delete',
+  })
+  if (status.value === 'error') {
+    deleting.value = false
+  }
+  else {
+    emit('deleted', group.value)
+    dialog.value = false
+    setTimeout(() => (deleting.value = false), 300)
   }
 }
 
@@ -130,6 +151,23 @@ defineExpose({ create, edit })
           <v-checkbox
             v-model="group.is_archived"
             label="Заархивирована"
+          />
+        </div>
+        <div
+          v-if="itemId"
+          class="dialog-bottom"
+        >
+          <span v-if="group.created_at">
+            группа создана
+            {{ formatDateTime(group.created_at) }}
+          </span>
+          <v-btn
+            icon="$delete"
+            :size="48"
+            color="red"
+            variant="plain"
+            :loading="deleting"
+            @click="destroy()"
           />
         </div>
       </div>

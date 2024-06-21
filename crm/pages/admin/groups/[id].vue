@@ -28,6 +28,10 @@ async function removeFromGroup(c: ContractResource) {
   loadData()
 }
 
+function onGroupDeleted() {
+  navigateTo('/groups')
+}
+
 nextTick(loadData)
 </script>
 
@@ -121,5 +125,6 @@ nextTick(loadData)
   <GroupDialog
     ref="groupDialog"
     @updated="g => (group = g)"
+    @deleted="onGroupDeleted"
   />
 </template>

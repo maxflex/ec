@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { GroupDialog, GroupFilters } from '#build/components'
+import type { GroupDialog } from '#build/components'
+import type { Filters } from '~/components/Group/Filters.vue'
 
 const items = ref<GroupListResource[]>()
 const paginator = usePaginator()
 const groupDialog = ref<null | InstanceType<typeof GroupDialog>>()
-let filters = loadFilters<GroupFilters>({})
+let filters = loadFilters<Filters>({})
 
 async function loadData() {
   if (paginator.loading) {
@@ -28,14 +29,15 @@ async function loadData() {
   }
 }
 
-function onFiltersApply(f: GroupFilters) {
+function onFiltersApply(f: Filters) {
   filters = f
   paginator.page = 0
   loadData()
 }
 
-function onGroupCreated(r: GroupListResource) {
-  items.value?.unshift(r)
+function onGroupCreated(g: GroupListResource) {
+  items.value?.unshift(g)
+  itemUpdated('group', g.id)
 }
 
 // оставлю как пример

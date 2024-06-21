@@ -16,6 +16,7 @@ function onClick(g: GroupListResource) {
 <template>
   <div
     v-for="item in items"
+    :id="`group-${item.id}`"
     :key="item.id"
     class="group-item"
     :class="{ 'group-item--selectable': selectable }"

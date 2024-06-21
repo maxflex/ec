@@ -249,11 +249,7 @@ declare global {
     is_archived: boolean
     zoom: Zoom
     contracts: ContractResource[]
-  }
-
-  interface GroupFilters {
-    program?: Program
-    year?: Year
+    created_at?: string
   }
 
   interface LessonListResource {
