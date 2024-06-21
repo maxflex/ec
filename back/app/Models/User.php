@@ -15,6 +15,10 @@ class User extends Authenticatable
         'first_name', 'last_name', 'middle_name'
     ];
 
+    protected $casts = [
+        'is_active' => 'boolean'
+    ];
+
     public function requests()
     {
         return $this->hasMany(Request::class);

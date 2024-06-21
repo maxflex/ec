@@ -24,11 +24,20 @@ const emit = defineEmits<{ (e: 'edit', u: UserResource): void }>()
       <div style="width: 300px">
         {{ formatName(item) }}
       </div>
+
       <div style="flex: 1">
         <PhoneActions
           :items="item.phones"
           style="width: 250px"
         />
+      </div>
+      <div style="width: 300px">
+        <span v-if="item.is_active">
+          действующий сотрудник
+        </span>
+        <span v-else class="text-gray">
+          больше не работает
+        </span>
       </div>
       <div
         class="text-gray"

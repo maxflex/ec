@@ -125,6 +125,12 @@ defineExpose({ create, edit })
           />
         </div>
         <PhoneEditor v-model="item.phones" />
+        <div>
+          <v-checkbox
+            v-model="item.is_active"
+            label="Действующий сотрудник"
+          />
+        </div>
         <div
           v-if="itemId"
           class="dialog-bottom"
