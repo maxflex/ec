@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CommentResource extends JsonResource
+class PersonWithPhotoResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,9 +15,7 @@ class CommentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'text', 'created_at'
-        ], [
-            'user' => new PersonWithPhotoResource($this->user)
+            'first_name', 'last_name', 'middle_name', 'photo_url'
         ]);
     }
 }

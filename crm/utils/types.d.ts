@@ -83,14 +83,11 @@ declare global {
     phones: PhoneListResource[]
   }
 
-  interface User {
+  interface User extends PersonResource, HasPhoto {
     id: number
     entity_type: string
     telegram_id: string | null
-    first_name: string | null
-    last_name: string | null
-    middle_name: string | null
-    number: string
+    number: string // phone number
   }
 
   interface TokenResponse {
@@ -151,7 +148,7 @@ declare global {
   interface CommentResource {
     id: number
     text: string
-    user: PersonResource
+    user: PersonResource & HasPhoto
     created_at?: string
   }
 

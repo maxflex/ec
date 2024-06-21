@@ -163,8 +163,9 @@ definePageMeta({ layout: 'login' })
             {{ formatPhone(rememberUser.number) }}
           </template>
           <template #prepend>
-            <UserAvatar
-              :user="rememberUser"
+            <UiAvatar
+              :item="rememberUser"
+              :size="63"
               class="mr-3"
             />
           </template>

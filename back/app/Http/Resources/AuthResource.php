@@ -26,6 +26,7 @@ class AuthResource extends JsonResource
             'last_name' => $entity->last_name,
             'middle_name' => $entity->middle_name,
             'number' => $this->number,
+            'photo_url' => $entity->photo_url,
         ];
     }
 }

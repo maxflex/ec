@@ -96,8 +96,8 @@ defineExpose({ open })
           :key="c.id"
           class="comment"
         >
-          <UserAvatar
-            :user="c.user"
+          <UiAvatar
+            :item="c.user"
             :size="46"
           />
           <div>
