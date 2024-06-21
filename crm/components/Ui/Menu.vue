@@ -9,6 +9,7 @@ import {
   mdiDotsTriangle,
   mdiFileDocumentOutline,
   mdiFinance,
+  mdiHistory,
   mdiHumanMaleBoard,
   mdiInbox,
   mdiLogout,
@@ -132,6 +133,11 @@ switch (user?.entity_type) {
         icon: mdiAccountMultiple,
         title: 'Пользователи',
         to: '/users',
+      },
+      {
+        icon: mdiHistory,
+        title: 'Логи',
+        to: '/logs',
       },
     ]
 }

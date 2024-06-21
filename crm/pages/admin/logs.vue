@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import type { RequestDialog } from '#build/components'
-import type { Filters } from '~/components/Request/Filters.vue'
+import type { Filters } from '~/components/Log/Filters.vue'
 
-const items = ref<RequestListResource[]>([])
-const requestDialog = ref<InstanceType<typeof RequestDialog>>()
+const items = ref<LogResource[]>([])
 const filters = ref<Filters>({})
 const loading = ref(false)
 let page = 0
@@ -16,7 +14,7 @@ async function loadData() {
   }
   page++
   loading.value = true
-  const { data } = await useHttp<ApiResponse<RequestListResource[]>>('requests', {
+  const { data } = await useHttp<ApiResponse<LogResource[]>>('logs', {
     params: {
       page,
       ...filters.value,
@@ -33,18 +31,8 @@ async function loadData() {
 function onFiltersApply(f: Filters) {
   filters.value = f
   page = 0
+  isLastPage = false
   loadData()
-}
-
-function onRequestUpdated(r: RequestListResource) {
-  const index = items.value.findIndex(e => e.id === r.id)
-  if (index !== -1) {
-    items.value[index] = r
-  }
-  else {
-    items.value.unshift(r)
-  }
-  itemUpdated('request', r.id)
 }
 
 function onScroll() {
@@ -74,20 +62,10 @@ nextTick(loadData)
 
 <template>
   <div class="filters">
-    <RequestFilters @apply="onFiltersApply" />
-    <a
-      class="cursor-pointer"
-      @click="requestDialog?.create()"
-    >
-      добавить заявку
-    </a>
+    <LogFilters @apply="onFiltersApply" />
   </div>
   <div>
     <UiLoader3 :loading="loading" />
-    <RequestList v-model="items" />
+    <LogList :items="items" />
   </div>
-  <RequestDialog
-    ref="requestDialog"
-    @updated="onRequestUpdated"
-  />
 </template>

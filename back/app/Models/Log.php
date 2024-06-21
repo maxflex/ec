@@ -20,9 +20,9 @@ class Log extends Model
         'type' => LogType::class
     ];
 
-    public function user()
+    public function entity()
     {
-        return $this->belongsTo(User::class);
+        return $this->morphTo();
     }
 
     public static function add(LogType $type, $model)

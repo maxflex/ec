@@ -1,4 +1,8 @@
 declare global {
+  type LogTable = keyof typeof LogTableLabel
+
+  type LogType = keyof typeof LogTypeLabel
+
   type StatsMode = keyof typeof StatsModeLabel
 
   type ClientPaymentMethod = keyof typeof ClientPaymentMethodLabel
@@ -443,6 +447,17 @@ declare global {
 
   interface Schedule {
     [key: string]: ScheduleItem[]
+  }
+
+  interface LogResource {
+    id: number
+    type: LogType
+    table: LogTable | null
+    created_at: string
+    entity: PersonResource
+    row_id: number | null
+    entity_type: typeof EntityType.client | typeof EntityType.teacher | typeof EntityType.user
+    data: object
   }
 }
 

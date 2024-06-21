@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class LogResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return extract_fields($this, [
+            'type', 'table', 'created_at', 'entity_type', 'ip',
+            'row_id', 'data'
+        ], [
+            'entity' => new PersonResource($this->entity)
+        ]);
+    }
+}

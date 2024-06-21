@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\{
     VacationController,
     WebReviewController,
 };
+use App\Http\Controllers\Common\LogController;
 
 Route::middleware(['auth:crm'])->group(function () {
     // TODO: улучшить
@@ -48,6 +49,7 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::get('teacher/{teacher}', 'teacher');
         Route::get('group/{group}', 'group');
     });
+    Route::apiResource('logs', LogController::class)->only('index');
     Route::apiResources([
         'requests' => RequestsController::class,
         'clients' => ClientController::class,
