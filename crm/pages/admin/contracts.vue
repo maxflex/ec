@@ -3,39 +3,36 @@ import type { ContractVersionDialog } from '#build/components'
 import type { Filters } from '~/components/ContractVersion/Filters.vue'
 
 const items = ref<ContractVersionListResource[]>([])
-const paginator = usePaginator()
-const key = ref(0)
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
-let filters: Filters = loadFilters({})
+const loading = ref(false)
+const filters = ref<Filters>({})
+const total = ref<number>()
+let page = 0
+let isLastPage = false
+let scrollContainer: HTMLElement | null = null
 
-const loadData = async function () {
-  if (paginator.loading) {
+async function loadData() {
+  if (loading.value || isLastPage) {
     return
   }
-  paginator.page++
-  paginator.loading = true
+  page++
+  loading.value = true
   const { data } = await useHttp<ApiResponse<ContractVersionListResource[]>>(
     'contract-versions',
     {
       params: {
-        ...filters,
-        page: paginator.page,
+        page,
+        ...filters.value,
       },
     },
   )
-  paginator.loading = false
   if (data.value) {
     const { meta, data: newItems } = data.value
-    if (paginator.page === 1) {
-      items.value = []
-      key.value++
-    }
-    for (const item of newItems) {
-      items.value.push(item)
-    }
-    // items.value = [...items.value, ...newItems]
-    paginator.isLastPage = meta.current_page === meta.last_page
+    items.value = page === 1 ? newItems : items.value.concat(newItems)
+    isLastPage = meta.current_page >= meta.last_page
+    total.value = meta.total
   }
+  loading.value = false
 }
 
 function onUpdated(cv: ContractVersionListResource) {
@@ -46,24 +43,33 @@ function onUpdated(cv: ContractVersionListResource) {
   }
 }
 
-async function onIntersect({
-  done,
-}: {
-  done: (status: InfiniteScrollStatus) => void
-}) {
-  if (paginator.isLastPage) {
-    return
-  }
-  done('loading')
-  await loadData()
-  done('ok')
-}
-
 function onFiltersApply(f: Filters) {
-  filters = f
-  paginator.page = 0
+  filters.value = f
+  page = 0
   loadData()
 }
+
+function onScroll() {
+  if (!scrollContainer || loading.value) {
+    return
+  }
+  const { scrollTop, scrollHeight, clientHeight } = scrollContainer
+  const scrollPosition = scrollTop + clientHeight
+  const scrollThreshold = scrollHeight * 0.9
+
+  if (scrollPosition >= scrollThreshold) {
+    loadData()
+  }
+}
+
+onMounted(() => {
+  scrollContainer = document.documentElement.querySelector('main')
+  scrollContainer?.addEventListener('scroll', onScroll)
+})
+
+onUnmounted(() => {
+  scrollContainer?.removeEventListener('scroll', onScroll)
+})
 
 nextTick(loadData)
 </script>
@@ -71,17 +77,20 @@ nextTick(loadData)
 <template>
   <div class="filters">
     <ContractVersionFilters @apply="onFiltersApply" />
+    <v-fade-transition>
+      <div v-if="total !== undefined" style="flex: 1" class="text-gray">
+        всего:
+        {{ formatPrice(total) }}
+      </div>
+    </v-fade-transition>
   </div>
-  <UiLoader :paginator="paginator" />
-  <v-infinite-scroll
-    :margin="100"
-    @load="onIntersect"
-  >
+  <div>
+    <UiLoader3 :loading="loading" />
     <ContractVersionList
       :items="items"
       @edit="contractVersionDialog?.edit"
     />
-  </v-infinite-scroll>
+  </div>
   <ContractVersionDialog
     ref="contractVersionDialog"
     @updated="onUpdated"
