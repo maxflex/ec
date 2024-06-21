@@ -19,6 +19,7 @@ onMounted(async () => {
 </script>
 
 <template>
+  <slot name="filters" />
   <UiLoaderr v-if="loading" />
   <slot
     v-else-if="items.length > 0"

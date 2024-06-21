@@ -9,7 +9,8 @@ use Illuminate\Support\Collection;
 class Group extends Model
 {
     protected $fillable = [
-        'duration', 'program', 'year', 'zoom', 'is_archived'
+        'duration', 'program', 'year', 'zoom', 'is_archived',
+        'exam_date'
     ];
 
     protected $casts = [

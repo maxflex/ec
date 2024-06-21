@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class ClientReviewController extends Controller
 {
     protected $filters = [
-        'equals' => ['client_id', 'teacher_id', 'rating', 'program']
+        'equals' => ['client_id', 'teacher_id', 'rating', 'program', 'year']
     ];
 
     public function index(Request $request)

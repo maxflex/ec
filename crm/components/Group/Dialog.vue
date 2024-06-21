@@ -137,6 +137,9 @@ defineExpose({ create, edit })
             suffix="минут"
           />
         </div>
+        <div>
+          <UiDateInput v-model="group.exam_date" label="Дата экзамена" />
+        </div>
         <div class="double-input">
           <v-text-field
             v-model="group.zoom.id"

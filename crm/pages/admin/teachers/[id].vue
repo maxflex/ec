@@ -15,6 +15,10 @@ const tabs = {
 
 const selectedTab = ref<keyof typeof tabs>('groups')
 
+const groupFilters = ref<{ year?: Year }>({})
+const paymentFilters = ref<{ year?: Year }>({})
+// const reviewFilters = ref<{ year?: Year }>({})
+
 async function loadData() {
   const { data } = await useHttp<TeacherResource>(`teachers/${route.params.id}`)
   if (data.value) {
@@ -87,9 +91,27 @@ nextTick(loadData)
     </div>
     <UiDataLoader
       v-if="selectedTab === 'groups'"
+      :key="groupFilters.year"
       url="groups"
-      :filters="{ teacher_id: teacher.id }"
+      :filters="{
+        teacher_id: teacher.id,
+        ...groupFilters,
+      }"
     >
+      <template #filters>
+        <div class="filters">
+          <div class="filters-inputs">
+            <div>
+              <UiClearableSelect
+                v-model="groupFilters.year"
+                label="Учебный год"
+                :items="selectItems(YearLabel)"
+                density="comfortable"
+              />
+            </div>
+          </div>
+        </div>
+      </template>
       <template #default="{ items }">
         <div class="table table--padding">
           <GroupList
@@ -105,9 +127,27 @@ nextTick(loadData)
     />
     <UiDataLoader
       v-else-if="selectedTab === 'payments'"
+      :key="JSON.stringify(paymentFilters)"
       url="teacher-payments"
-      :filters="{ teacher_id: teacher.id }"
+      :filters="{
+        teacher_id: teacher.id,
+        ...paymentFilters,
+      }"
     >
+      <template #filters>
+        <div class="filters">
+          <div class="filters-inputs">
+            <div>
+              <UiClearableSelect
+                v-model="paymentFilters.year"
+                label="Учебный год"
+                :items="selectItems(YearLabel)"
+                density="comfortable"
+              />
+            </div>
+          </div>
+        </div>
+      </template>
       <template #default="{ items }">
         <TeacherPaymentList
           :items="items"

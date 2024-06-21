@@ -247,6 +247,7 @@ declare global {
     year?: Year
     duration?: number
     is_archived: boolean
+    exam_date?: string
     zoom: Zoom
     contracts: ContractResource[]
     created_at?: string

@@ -5,6 +5,7 @@ import {
   mdiAccountMultiple,
   mdiCalendar,
   mdiCash,
+  mdiCurrencyRub,
   mdiDotsTriangle,
   mdiFileDocumentOutline,
   mdiFinance,
@@ -51,6 +52,11 @@ switch (user?.entity_type) {
         icon: mdiCalendar,
         title: 'Расписание',
         to: '/schedule',
+      },
+      {
+        icon: mdiCurrencyRub,
+        title: 'Баланс',
+        to: '/balance',
       },
     ]
     break

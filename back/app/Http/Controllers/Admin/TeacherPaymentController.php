@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class TeacherPaymentController extends Controller
 {
     protected $filters = [
-        'equals' => ['teacher_id']
+        'equals' => ['teacher_id', 'year', 'method']
     ];
 
     public function index(Request $request)
