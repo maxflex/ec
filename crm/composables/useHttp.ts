@@ -24,7 +24,7 @@ export const useHttp: useFetchType = (path: string, options = {}) => {
         clearCurrentToken()
         if (route.name !== 'login') {
           sessionStorage.setItem('redirect', route.fullPath)
-          navigateTo({ name: 'login' })
+          window.location.href = '/login'
         }
       }
     },

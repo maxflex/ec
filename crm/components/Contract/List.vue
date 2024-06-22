@@ -83,16 +83,26 @@ function onClientPaymentDeleted(cp: ClientPaymentResource) {
 </script>
 
 <template>
-  <div class="tabs">
-    <div
-      v-for="(contract, i) in items"
-      :key="contract.id"
-      class="tabs-item"
-      :class="{ 'tabs-item--active': selected === i }"
-      @click="selected = i"
-    >
-      договор №{{ contract.id }}
+  <div class="filters">
+    <div class="smenttt">
+      <v-btn
+        v-for="(contract, i) in items"
+        :key="contract.id"
+        class="tab-btn"
+        :class="{ 'tab-btn--active': selected === i }"
+        variant="plain"
+        :ripple="false"
+        @click="selected = i"
+      >
+        договор №{{ contract.id }}
+      </v-btn>
     </div>
+    <v-btn
+      color="primary"
+      @click="contractVersionDialog?.createContract()"
+    >
+      новый договор
+    </v-btn>
   </div>
   <div class="contract-list">
     <div
@@ -137,14 +147,6 @@ function onClientPaymentDeleted(cp: ClientPaymentResource) {
         :items="selectedContract.payments"
         @open="(p) => clientPaymentDialog?.open(p)"
       />
-    </div>
-    <div class="contract-list__add">
-      <v-btn
-        color="primary"
-        @click="contractVersionDialog?.createContract()"
-      >
-        добавить новый договор
-      </v-btn>
     </div>
   </div>
   <ContractVersionDialog
@@ -194,6 +196,11 @@ function onClientPaymentDeleted(cp: ClientPaymentResource) {
   }
   &__add {
     padding: 20px;
+  }
+}
+.smenttt {
+  .v-btn {
+    transition: all cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
   }
 }
 </style>

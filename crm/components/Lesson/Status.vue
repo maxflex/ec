@@ -5,7 +5,11 @@ const { status } = defineProps<{
 </script>
 
 <template>
-  <div :class="`lesson-status lesson-status--${status}`" />
+	<v-tooltip text="проведено" bottom>
+		<template #activator="{ props }">
+			<div :class="`lesson-status lesson-status--${status}`" v-bind="props"/>
+		</template>
+	</v-tooltip>
 </template>
 
 <style lang="scss">

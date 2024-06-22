@@ -7,7 +7,7 @@ const { item } = defineProps<{
 </script>
 
 <template>
-  <div :id="`lesson-${item.id}`">
+  <div :id="`lesson-${item.id}`" :class="{ 'opacity-4': item.status === 'cancelled' }">
     <div class="font-weight-medium">
       <LessonStatus :status="item.status" />
       <span> {{ item.time }} – {{ item.time_end }} </span>

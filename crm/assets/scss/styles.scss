@@ -367,6 +367,18 @@ a:not(.v-list-item) {
   }
 }
 
+.tab-btn {
+  transition: all cubic-bezier(0.4, 0, 0.2, 1) 0.2s !important;
+  &:hover {
+    background: #f6f6f6;
+  }
+  &--active {
+    background: #e4e4e4 !important;
+    opacity: 1 !important;
+    // pointer-events: none;
+  }
+}
+
 .panel {
   display: flex;
   flex-direction: column;
@@ -446,5 +458,17 @@ a:not(.v-list-item) {
   &-1 {
     position: relative;
     top: -1px;
+  }
+}
+
+.opacity {
+  &-5 {
+    opacity: 0.5;
+  }
+  &-4 {
+    opacity: 0.4;
+  }
+  &-3 {
+    opacity: 0.3;
   }
 }
