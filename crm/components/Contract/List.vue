@@ -84,7 +84,7 @@ function onClientPaymentDeleted(cp: ClientPaymentResource) {
 
 <template>
   <div class="filters">
-    <div class="smenttt">
+    <div>
       <v-btn
         v-for="(contract, i) in items"
         :key="contract.id"
@@ -196,11 +196,6 @@ function onClientPaymentDeleted(cp: ClientPaymentResource) {
   }
   &__add {
     padding: 20px;
-  }
-}
-.smenttt {
-  .v-btn {
-    transition: all cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
   }
 }
 </style>

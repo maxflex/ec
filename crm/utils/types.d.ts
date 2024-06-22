@@ -468,8 +468,9 @@ declare global {
     created_at: string
     entity: PersonResource
     row_id: number | null
+    ip: string
     entity_type: typeof EntityType.client | typeof EntityType.teacher | typeof EntityType.user
-    data: object
+    data: any
   }
 }
 

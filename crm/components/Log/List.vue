@@ -46,11 +46,14 @@ function getRouteName(log: LogResource) {
         </RouterLink>
       </div>
       <template v-else>
-        <div style="width: 150px">
+        <div v-if="log.table" style="width: 150px">
           {{ log.table }}
           <div v-if="log.row_id" style="font-size: 14px" class="text-gray">
             ID {{ log.row_id }}
           </div>
+        </div>
+        <div v-else style="width: 150px">
+          {{ log.ip }}
         </div>
         <div class="log-list__data">
           <table v-if="log.type === 'update'">
