@@ -11,6 +11,7 @@ const tabs = {
   schedule: 'расписание',
   groups: 'группы',
   reviews: 'отзывы',
+  webReviews: 'отзывы на сайте',
   tests: 'тесты',
 } as const
 
@@ -163,6 +164,18 @@ nextTick(loadData)
       >
         <template #default="{ items }">
           <ClientReviewList :items="items" />
+        </template>
+      </UiDataLoader>
+      <UiDataLoader
+        v-else-if="selectedTab === 'webReviews'"
+        url="web-reviews"
+        :filters="{
+          client_id: client.id,
+          with: 'client',
+        }"
+      >
+        <template #default="{ items }">
+          <WebReviewList :items="items" />
         </template>
       </UiDataLoader>
       <ScheduleList

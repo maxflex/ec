@@ -363,6 +363,8 @@ declare global {
     program: Program
     text: string
     rating: number
+    score?: number
+    max_score?: number
     client?: PersonResource
     teacher?: PersonResource
     created_at?: string
@@ -372,7 +374,8 @@ declare global {
     id: number
     program?: Program
     score?: number
-    max_score?: number
+    // TODO: переименовать в max_score
+    score_max?: number
   }
 
   interface WebReviewResource {

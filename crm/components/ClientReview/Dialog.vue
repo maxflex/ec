@@ -85,6 +85,23 @@ defineExpose({ edit })
             label="Программа"
           />
         </div>
+        <div
+          class="double-input"
+        >
+          <v-text-field
+            v-model="item.score"
+            label="балл"
+            type="number"
+            hide-spin-buttons
+          />
+
+          <v-text-field
+            v-model="item.max_score"
+            label="из"
+            type="number"
+            hide-spin-buttons
+          />
+        </div>
         <div>
           <v-textarea
             v-model="item.text"

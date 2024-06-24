@@ -121,7 +121,7 @@ defineExpose({ edit })
           />
 
           <v-text-field
-            v-model="s.max_score"
+            v-model="s.score_max"
             label="из"
             type="number"
             hide-spin-buttons

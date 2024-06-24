@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ClientReview extends Model
 {
     protected $fillable = [
-        'program', 'text', 'rating'
+        'program', 'text', 'rating', 'score', 'max_score'
     ];
 
     protected $casts = [
