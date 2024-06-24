@@ -25,6 +25,7 @@ return new class extends Migration
             );
             $table->unsignedInteger('minutes_late')->nullable();
             $table->boolean('is_remote')->default(false);
+            $table->unique(['contract_id', 'lesson_id']);
         });
     }
 

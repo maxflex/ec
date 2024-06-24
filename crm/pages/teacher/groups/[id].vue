@@ -45,7 +45,7 @@ nextTick(loadData)
         <div>
           <div>zoom</div>
           <div>
-            {{ group.zoom.id || 'не установлено' }}
+            {{ group.zoom?.id || 'не установлено' }}
           </div>
         </div>
       </div>
@@ -62,7 +62,7 @@ nextTick(loadData)
       </div>
     </div>
     <div v-if="selectedTab === 'schedule'">
-      <LessonList :group="group" />
+      <ScheduleList :id="group.id!" entity="group" conductable />
     </div>
   </div>
 </template>

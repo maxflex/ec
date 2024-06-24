@@ -17,7 +17,7 @@ class LessonListResource extends JsonResource
         return extract_fields($this, [
             'status', 'start_at', 'cabinet', 'topic'
         ], [
-            'teacher' => new PersonResource($this->teacher),
+            'teacher' => $this->whenLoaded('teacher', fn () => new PersonResource($this->teacher)),
         ]);
     }
 }

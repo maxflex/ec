@@ -59,7 +59,7 @@ nextTick(loadData)
       <div style="width: 100px">
         каб. {{ l.cabinet }}
       </div>
-      <div style="width: 270px">
+      <div v-if="l.teacher !== undefined" style="width: 270px">
         <NuxtLink
           v-if="l.teacher"
           :to="{ name: 'teachers-id', params: { id: l.teacher.id } }"

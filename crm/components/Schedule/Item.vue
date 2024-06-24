@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { mdiAccountGroup, mdiDoor } from '@mdi/js'
 
-const { item } = defineProps<{
+const { item, conductable } = defineProps<{
   item: ScheduleItem
+  actions?: boolean
 }>()
+const emit = defineEmits<{ open: [lessonId: number] }>()
 </script>
 
 <template>
@@ -42,19 +44,13 @@ const { item } = defineProps<{
         К-{{ CabinetLabel[item.cabinet!] }}
       </span>
     </div>
-    <!-- <div v-if="item.contractLesson" class="schedule-calendar__lesson-contract">
-      {{ ContractLessonStatusLabel[item.contractLesson.status] }}
-      <span v-if="item.contractLesson.minutes_late">
-        на {{ item.contractLesson.minutes_late }} мин
-      </span>
-    </div> -->
-    <!-- <div v-if="editable" class="table-actionss">
-    <v-btn
-      variant="plain"
-      icon="$edit"
-      :size="36"
-      @click="lessonDialog?.edit(item.id)"
-    />
-  </div> -->
+    <div v-if="actions" class="table-actionss">
+      <v-btn
+        variant="plain"
+        icon="$edit"
+        :size="36"
+        @click="emit('open', item.id)"
+      />
+    </div>
   </div>
 </template>

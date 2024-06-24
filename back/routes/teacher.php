@@ -9,8 +9,14 @@ use App\Http\Controllers\Teacher\{
 };
 
 Route::middleware(['auth:crm'])->group(function () {
-    Route::get('schedule/teacher/{teacher}', [ScheduleController::class, 'teacher']);
+    Route::controller(ScheduleController::class)->prefix('schedule')->group(function () {
+        Route::get('teacher/{teacher}', 'teacher');
+        Route::get('group/{group}', 'group');
+    });
     Route::get('balance/teacher/{teacher}', [BalanceController::class, 'teacher']);
     Route::apiResource('groups', GroupController::class);
-    Route::apiResource('lessons', LessonController::class)->only('index');
+    Route::post('lessons/conduct/{lesson}', [LessonController::class, 'conduct']);
+    Route::apiResource('lessons', LessonController::class)->only([
+        'index', 'update', 'show'
+    ]);
 });

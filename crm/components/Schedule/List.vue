@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { eachDayOfInterval, endOfMonth, format, getDay, getMonth, startOfMonth } from 'date-fns'
 // import ScheduleClientItem from '~/components/Schedule/ClientItem.vue'
-import type { LessonDialog } from '#build/components'
+import type { LessonConductDialog, LessonDialog } from '#build/components'
 
-const { id, entity } = defineProps<{
+const { id, entity, editable, conductable } = defineProps<{
   entity: Extract<EntityString, 'client' | 'teacher' | 'group'>
   id: number
+  editable?: boolean
+  conductable?: boolean
 }>()
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
+const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 const dayLabels = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']
 const year = ref<Year>(2023)
 const schedule = ref<Schedule>({})
@@ -36,8 +39,6 @@ const offset = computed(() => {
   const end = remainder === 0 ? 0 : 7 - remainder
   return { start, end }
 })
-
-const editable = computed(() => entity === 'group')
 
 // const currentComponent = computed(() => {
 //   switch (entity) {
@@ -78,7 +79,7 @@ nextTick(loadData)
         <div>
           <v-select
             v-model="year"
-            :disabled="editable"
+            :disabled="entity === 'group'"
             label="Учебный год"
             :items="selectItems(YearLabel)"
             density="comfortable"
@@ -111,7 +112,9 @@ nextTick(loadData)
             <ScheduleItem
               v-for="l in schedule[d]"
               :key="l.id"
+              :actions="editable || conductable"
               :item="l"
+              @open="id => editable ? lessonDialog?.edit(id) : conductDialog?.open(id)"
             />
           </div>
         </div>
@@ -124,6 +127,11 @@ nextTick(loadData)
     ref="lessonDialog"
     @updated="loadData"
     @destroyed="loadData"
+  />
+  <LessonConductDialog
+    v-if="conductable"
+    ref="conductDialog"
+    @updated="loadData()"
   />
 </template>
 
@@ -171,8 +179,10 @@ nextTick(loadData)
         }
       }
       .table-actionss {
+        align-items: flex-start;
+        justify-content: flex-end;
         width: 50px;
-        right: -10px !important;
+        right: -5px !important;
         top: -6px !important;
         padding-top: 0 !important;
       }

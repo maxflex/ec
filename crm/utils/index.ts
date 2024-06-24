@@ -31,7 +31,7 @@ export function newId(): number {
   return _newId
 }
 
-export function selectItems(obj: object) {
+export function selectItems(obj: object): SelectItems {
   const items = Object.entries(obj).map(([value, title]) => ({
     value,
     title,

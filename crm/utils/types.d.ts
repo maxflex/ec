@@ -50,6 +50,7 @@ declare global {
   }
 
   type PersonWithPhonesResource = PersonResource & HasPhones
+  type PersonWithPhotoResource = PersonResource & HasPhoto
 
   type ResponseErrors = string[]
 
@@ -154,7 +155,7 @@ declare global {
   interface CommentResource {
     id: number
     text: string
-    user: PersonResource & HasPhoto
+    user: PersonWithPhotoResource
     created_at?: string
   }
 
@@ -252,14 +253,14 @@ declare global {
     duration?: number
     is_archived: boolean
     exam_date?: string
-    zoom: Zoom
+    zoom: Zoom | null
     contracts: ContractResource[]
     created_at?: string
   }
 
   interface LessonListResource {
     id: number
-    teacher: PersonResource | null
+    teacher?: PersonResource | null
     status: LessonStatus
     start_at: string
     cabinet: Cabinet
@@ -280,6 +281,18 @@ declare global {
     is_unplanned: boolean
     user?: PersonResource
     created_at?: string
+  }
+
+  interface LessonConductResource {
+    id: number
+    status: LessonStatus
+    contracts: Array<{
+      id: number
+      client: PersonWithPhotoResource
+      status: ContractLessonStatus
+      is_remote: boolean
+      minutes_late: number | null
+    }>
   }
 
   interface TeacherListResource extends PersonResource {
@@ -472,6 +485,11 @@ declare global {
     entity_type: typeof EntityType.client | typeof EntityType.teacher | typeof EntityType.user
     data: any
   }
+
+  type SelectItems = Array<{
+    title: string
+    value: string | number | boolean
+  }>
 }
 
 export {}
