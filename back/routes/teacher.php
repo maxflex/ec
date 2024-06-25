@@ -5,6 +5,7 @@ use App\Http\Controllers\Teacher\{
     BalanceController,
     GroupController,
     LessonController,
+    ReportController,
     ScheduleController,
 };
 
@@ -19,4 +20,5 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::apiResource('lessons', LessonController::class)->only([
         'index', 'update', 'show'
     ]);
+    Route::apiResource('reports', ReportController::class)->only(['index', 'show']);
 });

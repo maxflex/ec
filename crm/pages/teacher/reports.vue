@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import type { ContractVersionDialog } from '#build/components'
-import type { Filters } from '~/components/ContractVersion/Filters.vue'
+import type { ReportDialog } from '#build/components'
 
-const items = ref<ContractVersionListResource[]>([])
-const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
+const items = ref<ReportListResource[]>([])
+const reportDialog = ref<InstanceType<typeof ReportDialog>>()
 const loading = ref(false)
-const filters = ref<Filters>({})
-const total = ref<number>()
 let page = 0
 let isLastPage = false
 let scrollContainer: HTMLElement | null = null
+const filters = ref<{ year?: Year }>({})
 
 async function loadData() {
   if (loading.value || isLastPage) {
@@ -17,37 +15,29 @@ async function loadData() {
   }
   page++
   loading.value = true
-  const { data } = await useHttp<ApiResponse<ContractVersionListResource[]>>(
-    'contract-versions',
-    {
-      params: {
-        page,
-        ...filters.value,
-      },
+  const { data } = await useHttp<ApiResponse<ReportListResource[]>>('reports', {
+    params: {
+      page,
+      ...filters.value,
     },
-  )
+  })
   if (data.value) {
     const { meta, data: newItems } = data.value
     items.value = page === 1 ? newItems : items.value.concat(newItems)
     isLastPage = meta.current_page >= meta.last_page
-    total.value = meta.total
   }
   loading.value = false
 }
 
-function onUpdated(cv: ContractVersionListResource) {
-  const index = items.value.findIndex(e => e.id === cv.id)
+function onUpdated(r: ReportListResource) {
+  const index = items.value.findIndex(e => e.id === r.id)
   if (index !== -1) {
-    items.value[index] = cv
-    itemUpdated('contract-version', cv.id)
+    items.value[index] = r
   }
-}
-
-function onFiltersApply(f: Filters) {
-  filters.value = f
-  page = 0
-  isLastPage = false
-  loadData()
+  else {
+    items.value.unshift(r)
+  }
+  itemUpdated('report', r.id)
 }
 
 function onScroll() {
@@ -72,28 +62,34 @@ onUnmounted(() => {
   scrollContainer?.removeEventListener('scroll', onScroll)
 })
 
+watch(filters.value, () => {
+  page = 0
+  isLastPage = false
+  loadData()
+})
+
 nextTick(loadData)
 </script>
 
 <template>
   <div class="filters">
-    <ContractVersionFilters @apply="onFiltersApply" />
-    <v-fade-transition>
-      <div v-if="total !== undefined" style="flex: 1" class="text-gray">
-        всего:
-        {{ formatPrice(total) }}
+    <div class="filters-inputs">
+      <div>
+        <UiClearableSelect
+          v-model="filters.year"
+          label="Учебный год"
+          :items="selectItems(YearLabel)"
+          density="comfortable"
+        />
       </div>
-    </v-fade-transition>
+    </div>
   </div>
   <div>
     <UiLoader3 :loading="loading" />
-    <ContractVersionList
-      :items="items"
-      @edit="contractVersionDialog?.edit"
-    />
+    <ReportList :items="items" editable @edit="r => reportDialog?.edit(r.id)" />
   </div>
-  <ContractVersionDialog
-    ref="contractVersionDialog"
+  <ReportDialog
+    ref="reportDialog"
     @updated="onUpdated"
   />
 </template>

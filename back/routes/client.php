@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Client\{
     GroupController,
+    ReportController,
     TestController,
     ScheduleController
 };
@@ -18,4 +19,5 @@ Route::middleware(['auth:crm'])->group(function () {
     });
     Route::get('schedule/client/{client}', [ScheduleController::class, 'client']);
     Route::apiResource('groups', GroupController::class)->only('index');
+    Route::apiResource('reports', ReportController::class)->only(['index', 'show']);
 });

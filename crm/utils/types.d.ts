@@ -500,6 +500,30 @@ declare global {
     title: string
     value: string | number | boolean
   }>
+
+  interface ReportListResource {
+    id: number
+    year: Year
+    is_published: boolean
+    is_moderated: boolean
+    teacher: PersonResource
+    client: PersonResource
+    program: Program
+    created_at: string
+  }
+
+  interface ReportResource {
+    id: number
+    year: Year
+    is_published: boolean
+    is_moderated: boolean
+    homework_comment: string | null
+    price: number | null
+    teacher?: PersonResource
+    client?: PersonResource
+    program?: Program
+    created_at?: string
+  }
 }
 
 export {}

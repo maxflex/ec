@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type { TeacherDialog } from '#build/components'
+import type { ReportDialog, TeacherDialog } from '#build/components'
 
 const route = useRoute()
 const teacher = ref<TeacherResource>()
 const teacherDialog = ref<InstanceType<typeof TeacherDialog>>()
+const reportDialog = ref<InstanceType<typeof ReportDialog>>()
 
 const tabs = {
   groups: 'группы',
@@ -11,6 +12,7 @@ const tabs = {
   schedule2: 'расписание-2',
   payments: 'платежи',
   balance: 'баланс',
+  reports: 'отчеты',
   reviews: 'отзывы',
   services: 'допуслуги',
 } as const
@@ -18,6 +20,7 @@ const tabs = {
 const selectedTab = ref<keyof typeof tabs>('groups')
 
 const groupFilters = ref<{ year?: Year }>({})
+const reportFilters = ref<{ year?: Year }>({})
 const paymentFilters = ref<{ year?: Year }>({})
 const serviceFilters = ref<{ year?: Year }>({})
 // const reviewFilters = ref<{ year?: Year }>({})
@@ -133,6 +136,34 @@ nextTick(loadData)
       :id="teacher.id"
       entity="teacher"
     />
+    <UiDataLoader
+      v-else-if="selectedTab === 'reports'"
+      :key="reportFilters.year"
+      url="reports"
+      :filters="{
+        ...reportFilters,
+        teacher_id: teacher.id,
+      }"
+    >
+      <template #filters>
+        <div class="filters">
+          <div class="filters-inputs">
+            <div>
+              <UiClearableSelect
+                v-model="reportFilters.year"
+                label="Учебный год"
+                :items="selectItems(YearLabel)"
+                density="comfortable"
+              />
+            </div>
+          </div>
+        </div>
+      </template>
+      <template #default="{ items }">
+        <ReportList editable :items="items" @edit="r => reportDialog?.edit(r.id)" />
+        <ReportDialog ref="reportDialog" />
+      </template>
+    </UiDataLoader>
     <UiDataLoader
       v-else-if="selectedTab === 'payments'"
       :key="JSON.stringify(paymentFilters)"

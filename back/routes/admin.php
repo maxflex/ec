@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\{
     MacroController,
     PreviewController,
     PhotoController,
+    ReportController,
     ScheduleController,
     StatsController,
     TeacherController,
@@ -69,5 +70,6 @@ Route::middleware(['auth:crm'])->group(function () {
         'client-reviews' => ClientReviewController::class,
         'client-payments' => ClientPaymentController::class,
         'web-reviews' => WebReviewController::class,
+        'reports' => ReportController::class,
     ]);
 });

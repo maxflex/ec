@@ -2,6 +2,7 @@
 import type {
   ClientDialog,
   GroupSelectorDialog,
+  ReportDialog,
   TestSelectorDialog,
 } from '#build/components'
 
@@ -11,6 +12,7 @@ const tabs = {
   schedule: 'расписание',
   schedule2: 'расписание-2',
   groups: 'группы',
+  reports: 'отчеты',
   reviews: 'отзывы',
   webReviews: 'отзывы на сайте',
   tests: 'тесты',
@@ -21,6 +23,7 @@ const route = useRoute()
 const client = ref<ClientResource>()
 const clientDialog = ref<null | InstanceType<typeof ClientDialog>>()
 const testSelectorDialog = ref<null | InstanceType<typeof TestSelectorDialog>>()
+const reportDialog = ref<InstanceType<typeof ReportDialog>>()
 const groupSelectorDialog = ref<null | InstanceType<
   typeof GroupSelectorDialog
 >>()
@@ -153,6 +156,16 @@ nextTick(loadData)
       >
         <template #default="{ items }">
           <ContractList :items="items" />
+        </template>
+      </UiDataLoader>
+      <UiDataLoader
+        v-else-if="selectedTab === 'reports'"
+        url="reports"
+        :filters="{ client_id: client.id }"
+      >
+        <template #default="{ items }">
+          <ReportList editable :items="items" @edit="r => reportDialog?.edit(r.id)" />
+          <ReportDialog ref="reportDialog" />
         </template>
       </UiDataLoader>
       <UiDataLoader

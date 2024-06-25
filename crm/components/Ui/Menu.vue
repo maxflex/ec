@@ -7,6 +7,7 @@ import {
   mdiCash,
   mdiCurrencyRub,
   mdiDotsTriangle,
+  mdiFileDocumentEditOutline,
   mdiFileDocumentOutline,
   mdiFinance,
   mdiHistory,
@@ -22,6 +23,9 @@ const { user, logOut, clearCurrentToken } = useAuthStore()
 let menu: Menu
 
 switch (user?.entity_type) {
+  /**
+   * Клиент
+   */
   case EntityType.client:
     menu = [
       {
@@ -35,6 +39,11 @@ switch (user?.entity_type) {
         to: '/schedule',
       },
       {
+        icon: mdiFileDocumentEditOutline,
+        title: 'Отчёты',
+        to: '/reports',
+      },
+      {
         icon: mdiDotsTriangle,
         title: 'Тесты',
         to: '/tests',
@@ -42,6 +51,9 @@ switch (user?.entity_type) {
     ]
     break
 
+  /**
+   * Учитель
+   */
   case EntityType.teacher:
     menu = [
       {
@@ -55,6 +67,11 @@ switch (user?.entity_type) {
         to: '/schedule',
       },
       {
+        icon: mdiFileDocumentEditOutline,
+        title: 'Отчёты',
+        to: '/reports',
+      },
+      {
         icon: mdiCurrencyRub,
         title: 'Баланс',
         to: '/balance',
@@ -62,6 +79,9 @@ switch (user?.entity_type) {
     ]
     break
 
+  /**
+   * Администратор
+   */
   default:
     menu = [
       {
@@ -88,6 +108,11 @@ switch (user?.entity_type) {
         icon: mdiHumanMaleBoard,
         title: 'Преподаватели',
         to: '/teachers',
+      },
+      {
+        icon: mdiFileDocumentEditOutline,
+        title: 'Отчёты',
+        to: '/reports',
       },
       {
         icon: mdiStarBoxOutline,

@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import type { ContractVersionDialog } from '#build/components'
-import type { Filters } from '~/components/ContractVersion/Filters.vue'
+import type { ReportDialog } from '#build/components'
+import type { Filters } from '~/components/Report/Filters.vue'
 
-const items = ref<ContractVersionListResource[]>([])
-const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
-const loading = ref(false)
+const items = ref<ReportListResource[]>([])
+const reportDialog = ref<InstanceType<typeof ReportDialog>>()
 const filters = ref<Filters>({})
-const total = ref<number>()
+const loading = ref(false)
 let page = 0
 let isLastPage = false
 let scrollContainer: HTMLElement | null = null
@@ -17,30 +16,18 @@ async function loadData() {
   }
   page++
   loading.value = true
-  const { data } = await useHttp<ApiResponse<ContractVersionListResource[]>>(
-    'contract-versions',
-    {
-      params: {
-        page,
-        ...filters.value,
-      },
+  const { data } = await useHttp<ApiResponse<ReportListResource[]>>('reports', {
+    params: {
+      page,
+      ...filters.value,
     },
-  )
+  })
   if (data.value) {
     const { meta, data: newItems } = data.value
     items.value = page === 1 ? newItems : items.value.concat(newItems)
     isLastPage = meta.current_page >= meta.last_page
-    total.value = meta.total
   }
   loading.value = false
-}
-
-function onUpdated(cv: ContractVersionListResource) {
-  const index = items.value.findIndex(e => e.id === cv.id)
-  if (index !== -1) {
-    items.value[index] = cv
-    itemUpdated('contract-version', cv.id)
-  }
 }
 
 function onFiltersApply(f: Filters) {
@@ -48,6 +35,17 @@ function onFiltersApply(f: Filters) {
   page = 0
   isLastPage = false
   loadData()
+}
+
+function onUpdated(r: ReportListResource) {
+  const index = items.value.findIndex(e => e.id === r.id)
+  if (index !== -1) {
+    items.value[index] = r
+  }
+  else {
+    items.value.unshift(r)
+  }
+  itemUpdated('report', r.id)
 }
 
 function onScroll() {
@@ -77,23 +75,14 @@ nextTick(loadData)
 
 <template>
   <div class="filters">
-    <ContractVersionFilters @apply="onFiltersApply" />
-    <v-fade-transition>
-      <div v-if="total !== undefined" style="flex: 1" class="text-gray">
-        всего:
-        {{ formatPrice(total) }}
-      </div>
-    </v-fade-transition>
+    <ReportFilters @apply="onFiltersApply" />
   </div>
   <div>
     <UiLoader3 :loading="loading" />
-    <ContractVersionList
-      :items="items"
-      @edit="contractVersionDialog?.edit"
-    />
+    <ReportList :items="items" editable @edit="r => reportDialog?.edit(r.id)" />
   </div>
-  <ContractVersionDialog
-    ref="contractVersionDialog"
+  <ReportDialog
+    ref="reportDialog"
     @updated="onUpdated"
   />
 </template>
