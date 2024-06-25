@@ -61,7 +61,7 @@ class TransferReviews extends Command
                 'web_review_id' => $reviewId,
                 'program' => $program,
                 'score' => $r->score,
-                'score_max' => $r->max_score,
+                'max_score' => $r->max_score,
             ]);
             $bar->advance();
         }

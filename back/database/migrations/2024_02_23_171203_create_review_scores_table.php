@@ -21,7 +21,7 @@ return new class extends Migration
                 collect(Program::cases())->map(fn ($e) => $e->name)->all()
             );
             $table->unsignedSmallInteger('score');
-            $table->unsignedSmallInteger('score_max');
+            $table->unsignedSmallInteger('max_score');
         });
     }
 

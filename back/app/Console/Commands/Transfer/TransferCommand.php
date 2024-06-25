@@ -27,6 +27,7 @@ class TransferCommand extends Command
             'client-payments',
             'set-request-client-id',
             'lessons',
+            'contract-lessons',
             'reviews',
             'comments',
         ] as $command) {

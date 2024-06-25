@@ -374,8 +374,7 @@ declare global {
     id: number
     program?: Program
     score?: number
-    // TODO: переименовать в max_score
-    score_max?: number
+    max_score?: number
   }
 
   interface WebReviewResource {
