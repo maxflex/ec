@@ -3,11 +3,12 @@ import { eachDayOfInterval, endOfMonth, format, getDay, getMonth, startOfMonth }
 // import ScheduleClientItem from '~/components/Schedule/ClientItem.vue'
 import type { LessonConductDialog, LessonDialog } from '#build/components'
 
-const { id, entity, editable, conductable } = defineProps<{
+const { id, entity, editable, conductable, examDate } = defineProps<{
   entity: Extract<EntityString, 'client' | 'teacher' | 'group'>
   id: number
   editable?: boolean
   conductable?: boolean
+  examDate?: string
 }>()
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
@@ -104,7 +105,12 @@ nextTick(loadData)
           {{ dayLabel }}
         </div>
         <div v-for="i in offset.start" :key="i" />
-        <div v-for="d in dates" :key="d">
+        <div
+          v-for="d in dates" :key="d"
+          :class="{
+            'schedule-calendar--exam-date': examDate && examDate === d,
+          }"
+        >
           <div class="schedule-calendar__date">
             {{ formatCalendarDate(d) }}
           </div>
@@ -143,6 +149,9 @@ nextTick(loadData)
   &-calendar {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
+    &--exam-date {
+      background: rgba(var(--v-theme-orange), 0.2);
+    }
     & > div {
       min-height: 120px;
       padding: 10px 10px 20px;

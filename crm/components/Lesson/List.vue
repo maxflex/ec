@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { mdiAccountGroup } from '@mdi/js'
+import { eachDayOfInterval, endOfMonth, format, getDay, getMonth, getWeek, startOfMonth } from 'date-fns'
 import type { LessonConductDialog, LessonDialog } from '#build/components'
 
 const { entity, id, editable, conductable } = defineProps<{
@@ -10,41 +11,58 @@ const { entity, id, editable, conductable } = defineProps<{
 }>()
 const year = ref<Year>(2023)
 const loading = ref(false)
-const lessons = ref<LessonListResource[]>([])
+const schedule = ref<Schedule>({})
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
+const dates = computed(() => {
+  // Define the start and end months for the academic year
+  const startMonth = 8 // September (0-indexed)
+  const endMonth = 4 // May (0-indexed)
+
+  // Define start and end dates for the academic year
+  const startDate = startOfMonth(new Date(year.value, startMonth, 1)) // September 1st
+  const endDate = endOfMonth(new Date(year.value + 1, endMonth, 31)) // May 31st
+
+  // Generate array of all dates between startDate and endDate
+  const allDates = eachDayOfInterval({ start: startDate, end: endDate })
+
+  return allDates.map(d => format(d, 'yyyy-MM-dd'))
+})
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<LessonListResource[]>>('lessons', {
+  const { data } = await useHttp<Schedule>(`schedule/${entity}/${id}`, {
     params: {
-      [`${entity}_id`]: id,
-      year: entity === 'group' ? undefined : year.value,
+      year: year.value,
     },
   })
   if (data.value) {
-    lessons.value = data.value.data
+    schedule.value = data.value
   }
   loading.value = false
 }
 
-function onLessonUpdated(l: LessonListResource) {
-  const index = lessons.value.findIndex(e => e.id === l.id)
-  if (index !== -1) {
-    lessons.value[index] = l
-  }
-  else {
-    lessons.value.push(l)
-    smoothScroll('main', 'bottom')
-  }
+function isNewWeek(d: string) {
+  return getDay(d)
 }
 
-function onLessonDestroyed(l: LessonListResource) {
-  const index = lessons.value.findIndex(e => e.id === l.id)
-  if (index !== -1) {
-    lessons.value.splice(index, 1)
-  }
-}
+// function onLessonUpdated(l: LessonListResource) {
+//   const index = lessons.value.findIndex(e => e.id === l.id)
+//   if (index !== -1) {
+//     lessons.value[index] = l
+//   }
+//   else {
+//     lessons.value.push(l)
+//     smoothScroll('main', 'bottom')
+//   }
+// }
+
+// function onLessonDestroyed(l: LessonListResource) {
+//   const index = lessons.value.findIndex(e => e.id === l.id)
+//   if (index !== -1) {
+//     lessons.value.splice(index, 1)
+//   }
+// }
 
 watch(year, loadData)
 
@@ -65,84 +83,64 @@ nextTick(loadData)
     </div>
   </div>
   <UiLoaderr v-if="loading" />
-  <div v-else class="table table--actions-on-hover lessons">
-    <div
-      v-for="(l, i) in lessons"
-      :key="l.id"
-      style="padding-right: 10px !important"
-    >
-      <div v-if="editable || conductable" class="table-actionss">
-        <v-btn
-          icon="$edit"
-          :size="48"
-          variant="plain"
-          color="gray"
-          @click="editable ? lessonDialog?.edit(l.id) : conductDialog?.open(l.id, l.status)"
-        />
-      </div>
-      <div
-        class="text-gray"
-        style="width: 20px"
-      >
-        {{ i + 1 }}
-      </div>
-      <div style="width: 100px">
-        {{ formatDate(l.start_at) }}
-      </div>
-      <div style="width: 120px">
-        {{ formatTime(l.start_at) }} – {{ l.time_end }}
-      </div>
-      <div style="width: 80px">
-        К–{{ l.cabinet }}
-      </div>
-      <div style="width: 150px">
-        <NuxtLink
-          :to="{ name: 'teachers-id', params: { id: l.teacher.id } }"
-        >
-          {{ formatNameShort(l.teacher) }}
-        </NuxtLink>
-      </div>
-      <div style="width: 90px">
-        <NuxtLink :to="{ name: 'groups-id', params: { id: l.group.id } }">
-          ГР-{{ l.group.id }}
-        </NuxtLink>
-      </div>
-      <div style="width: 120px">
-        {{ ProgramShortLabel[l.group.program] }}
-      </div>
-      <div style="width: 80px; display: flex; align-items: center;">
-        <v-icon :icon="mdiAccountGroup" class="mr-2 vfn-1" />
-        {{ l.group.contracts_count }}
-      </div>
-      <div style="width: 140px">
-        <LessonStatus2 :status="l.status" />
-      </div>
+  <div v-else class="lesson-list">
+    <div v-for="d in dates" :key="d" :class="`week-${getDay(d)}`">
       <div>
-        <v-chip v-if="l.is_first" class="text-deepOrange">
-          первое
-        </v-chip>
-        <v-chip v-else-if="l.is_unplanned" class="text-purple">
-          внеплановое
-        </v-chip>
+        {{ formatDate(d) }}
       </div>
-    </div>
-    <div
-      v-if="editable"
-      style="border: none"
-    >
-      <a
-        class="cursor-pointer"
-        @click="() => lessonDialog?.create(id)"
-      >
-        добавить занятие
-      </a>
+      <div v-for="l in schedule[d]" :key="l.id">
+        <div v-if="editable || conductable" class="table-actionss">
+          <v-btn
+            icon="$edit"
+            :size="48"
+            variant="plain"
+            color="gray"
+            @click="editable ? lessonDialog?.edit(l.id) : conductDialog?.open(l.id, l.status)"
+          />
+        </div>
+        <div style="width: 100px" />
+        <div style="width: 120px">
+          {{ l.time }} – {{ l.time_end }}
+        </div>
+        <div style="width: 80px">
+          К–{{ l.cabinet }}
+        </div>
+        <div v-if="l.teacher" style="width: 150px">
+          <NuxtLink
+            :to="{ name: 'teachers-id', params: { id: l.teacher.id } }"
+          >
+            {{ formatNameShort(l.teacher) }}
+          </NuxtLink>
+        </div>
+        <div style="width: 90px">
+          <NuxtLink :to="{ name: 'groups-id', params: { id: l.group.id } }">
+            ГР-{{ l.group.id }}
+          </NuxtLink>
+        </div>
+        <div style="width: 120px">
+          {{ ProgramShortLabel[l.group.program] }}
+        </div>
+        <div style="width: 80px; display: flex; align-items: center">
+          <v-icon :icon="mdiAccountGroup" class="mr-2 vfn-1" />
+          {{ l.group.contracts_count }}
+        </div>
+        <div style="width: 140px">
+          <LessonStatus2 :status="l.status" />
+        </div>
+        <div>
+          <v-chip v-if="l.is_first" class="text-deepOrange">
+            первое
+          </v-chip>
+          <v-chip v-else-if="l.is_unplanned" class="text-purple">
+            внеплановое
+          </v-chip>
+        </div>
+      </div>
     </div>
   </div>
   <LessonDialog
     v-if="editable"
     ref="lessonDialog"
-    @updated="onLessonUpdated"
-    @destroyed="onLessonDestroyed"
   />
   <LessonConductDialog
     v-else-if="conductable"
@@ -150,3 +148,43 @@ nextTick(loadData)
     @updated="loadData()"
   />
 </template>
+
+<style lang="scss">
+.lesson-list {
+  & > div {
+    position: relative;
+    min-height: 57px;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 20px;
+    border-bottom: thin solid
+      rgba(var(--v-border-color), var(--v-border-opacity));
+    gap: 20px;
+    &.week-0 {
+      // background: red !important;
+      border-bottom: 2px solid rgb(var(--v-theme-gray));
+    }
+    & > div {
+      &:not(:first-child) {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      & > div:last-child {
+        flex: 1;
+        position: relative;
+        .v-chip {
+          top: -16px;
+          position: absolute;
+        }
+      }
+      &:first-child {
+        position: absolute;
+        top: 16px;
+        left: 20px;
+      }
+    }
+  }
+}
+</style>

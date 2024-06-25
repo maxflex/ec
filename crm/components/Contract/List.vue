@@ -94,7 +94,7 @@ function onClientPaymentDeleted(cp: ClientPaymentResource) {
         :ripple="false"
         @click="selected = i"
       >
-        договор №{{ contract.id }}
+        Договор №{{ selectedContract.id }}
       </v-btn>
     </div>
     <v-btn

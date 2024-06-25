@@ -476,7 +476,7 @@ declare global {
     group: {
       id: number
       program: Program
-      contracts_count?: number
+      contracts_count: number
     }
   }
 

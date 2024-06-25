@@ -50,7 +50,9 @@ class Group extends Model
                     'first_name', 'last_name', 'middle_name'
                 ]),
                 'group' => extract_fields($l->group, [
-                    'program'
+                    'program',
+                ], [
+                    'contracts_count' => $l->group->contracts()->count()
                 ])
             ]))
             ->groupBy('date');
