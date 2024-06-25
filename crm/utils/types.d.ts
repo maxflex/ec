@@ -247,7 +247,7 @@ declare global {
   }
 
   interface GroupResource {
-    id?: number
+    id: number
     program?: Program
     year?: Year
     duration?: number
@@ -260,15 +260,22 @@ declare global {
 
   interface LessonListResource {
     id: number
-    teacher?: PersonResource | null
+    teacher: PersonResource
     status: LessonStatus
     start_at: string
+    time_end: string
     cabinet: Cabinet
-    topic: string | null
+    is_unplanned: boolean
+    is_first: boolean
+    group: {
+      id: number
+      program: Program
+      contracts_count: number
+    }
   }
 
   interface LessonResource {
-    id?: number
+    id: number
     teacher_id?: number | null
     group_id?: number
     price?: number
@@ -286,6 +293,7 @@ declare global {
   interface LessonConductResource {
     id: number
     status: LessonStatus
+    conducted_at: string | null
     contracts: Array<{
       id: number
       client: PersonWithPhotoResource

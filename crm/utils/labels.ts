@@ -270,7 +270,7 @@ export const RequestStatusLabel = {
 } as const
 
 export const LessonStatusLabel = {
-  planned: 'запланировано',
+  planned: 'планируется',
   conducted: 'проведено',
   cancelled: 'отменено',
 } as const

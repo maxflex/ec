@@ -34,6 +34,10 @@ class LessonConductResource extends JsonResource
                 'minutes_late' => 10,
             ]));
 
-        return extract_fields($this, ['status'], ['contracts' => $contracts]);
+        return extract_fields($this, [
+            'status', 'conducted_at'
+        ], [
+            'contracts' => $contracts
+        ]);
     }
 }

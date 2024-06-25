@@ -17,7 +17,7 @@ class LessonController extends Controller
     public function index(Request $request)
     {
         $query = Lesson::query()
-            ->with('teacher')
+            ->with(['teacher', 'group', 'contractLessons'])
             ->orderBy('start_at');
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, LessonListResource::class);
@@ -37,6 +37,7 @@ class LessonController extends Controller
             $contractLesson = ContractLesson::find($c['id']);
             $contractLesson->update($c);
         }
+        return new LessonListResource($lesson);
     }
 
     /**
@@ -45,5 +46,6 @@ class LessonController extends Controller
     public function conduct(Lesson $lesson, Request $request)
     {
         $lesson->conduct($request->contracts);
+        return new LessonListResource($lesson);
     }
 }

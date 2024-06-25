@@ -461,6 +461,13 @@ a:not(.v-list-item) {
   }
 }
 
+.vf {
+  &-1 {
+    position: relative;
+    top: 1px;
+  }
+}
+
 .opacity {
   &-5 {
     opacity: 0.5;

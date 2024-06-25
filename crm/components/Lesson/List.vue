@@ -1,19 +1,31 @@
 <script setup lang="ts">
-import type { LessonDialog } from '#build/components'
+import { mdiAccountGroup } from '@mdi/js'
+import type { LessonConductDialog, LessonDialog } from '#build/components'
 
-const { group, editable } = defineProps<{ group: GroupResource, editable?: boolean }>()
+const { entity, id, editable, conductable } = defineProps<{
+  entity: Extract<EntityString, 'client' | 'teacher' | 'group'>
+  id: number
+  editable?: boolean
+  conductable?: boolean
+}>()
+const year = ref<Year>(2023)
+const loading = ref(false)
 const lessons = ref<LessonListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
+const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 
 async function loadData() {
+  loading.value = true
   const { data } = await useHttp<ApiResponse<LessonListResource[]>>('lessons', {
     params: {
-      group_id: group.id,
+      [`${entity}_id`]: id,
+      year: entity === 'group' ? undefined : year.value,
     },
   })
   if (data.value) {
     lessons.value = data.value.data
   }
+  loading.value = false
 }
 
 function onLessonUpdated(l: LessonListResource) {
@@ -34,65 +46,84 @@ function onLessonDestroyed(l: LessonListResource) {
   }
 }
 
+watch(year, loadData)
+
 nextTick(loadData)
 </script>
 
 <template>
-  <div class="table table--actions-on-hover lessons">
+  <div v-if="entity !== 'group'" class="filters">
+    <div class="filters-inputs" style="justify-content: space-between; align-items: center; width: 100%">
+      <div>
+        <v-select
+          v-model="year"
+          label="Учебный год"
+          :items="selectItems(YearLabel)"
+          density="comfortable"
+        />
+      </div>
+    </div>
+  </div>
+  <UiLoaderr v-if="loading" />
+  <div v-else class="table table--actions-on-hover lessons">
     <div
       v-for="(l, i) in lessons"
       :key="l.id"
       style="padding-right: 10px !important"
     >
+      <div v-if="editable || conductable" class="table-actionss">
+        <v-btn
+          icon="$edit"
+          :size="48"
+          variant="plain"
+          color="gray"
+          @click="editable ? lessonDialog?.edit(l.id) : conductDialog?.open(l.id, l.status)"
+        />
+      </div>
       <div
         class="text-gray"
         style="width: 20px"
       >
         {{ i + 1 }}
       </div>
-      <div style="width: 120px">
+      <div style="width: 100px">
         {{ formatDate(l.start_at) }}
       </div>
-      <div style="width: 90px">
-        {{ formatTime(l.start_at) }}
+      <div style="width: 120px">
+        {{ formatTime(l.start_at) }} – {{ l.time_end }}
       </div>
-      <div style="width: 100px">
-        каб. {{ l.cabinet }}
-      </div>
-      <div v-if="l.teacher !== undefined" style="width: 270px">
-        <NuxtLink
-          v-if="l.teacher"
-          :to="{ name: 'teachers-id', params: { id: l.teacher.id } }"
-        >
-          {{ formatFullName(l.teacher) }}
-        </NuxtLink>
-        <span v-else>
-          не установлено
-        </span>
-      </div>
-      <div
-        style="flex: 1"
-        class="text-truncate"
-      >
-        {{ l.topic }}
+      <div style="width: 80px">
+        К–{{ l.cabinet }}
       </div>
       <div style="width: 150px">
-        <span class="pl-4">
-          {{ LessonStatusLabel[l.status] }}
-        </span>
+        <NuxtLink
+          :to="{ name: 'teachers-id', params: { id: l.teacher.id } }"
+        >
+          {{ formatNameShort(l.teacher) }}
+        </NuxtLink>
       </div>
-      <div
-        style="width: 70px; flex: initial !important"
-        class="text-right table-actions"
-      >
-        <v-btn
-          v-if="editable"
-          icon="$edit"
-          :size="48"
-          variant="plain"
-          color="gray"
-          @click="() => lessonDialog?.edit(l)"
-        />
+      <div style="width: 90px">
+        <NuxtLink :to="{ name: 'groups-id', params: { id: l.group.id } }">
+          ГР-{{ l.group.id }}
+        </NuxtLink>
+      </div>
+      <div style="width: 120px">
+        {{ ProgramShortLabel[l.group.program] }}
+      </div>
+      <div style="width: 80px; display: flex; align-items: center;">
+        <v-icon :icon="mdiAccountGroup" class="mr-2 vfn-1" />
+        {{ l.group.contracts_count }}
+      </div>
+      <div style="width: 140px">
+        <LessonStatus2 :status="l.status" />
+      </div>
+      <div>
+        <v-chip v-if="l.is_first" class="text-deepOrange">
+          первое
+        </v-chip>
+        <v-chip v-else-if="l.is_unplanned" class="text-purple">
+          внеплановое
+        </v-chip>
       </div>
     </div>
     <div
@@ -101,9 +132,9 @@ nextTick(loadData)
     >
       <a
         class="cursor-pointer"
-        @click="() => lessonDialog?.create(group)"
+        @click="() => lessonDialog?.create(id)"
       >
-        добавить урок
+        добавить занятие
       </a>
     </div>
   </div>
@@ -112,5 +143,10 @@ nextTick(loadData)
     ref="lessonDialog"
     @updated="onLessonUpdated"
     @destroyed="onLessonDestroyed"
+  />
+  <LessonConductDialog
+    v-else-if="conductable"
+    ref="conductDialog"
+    @updated="loadData()"
   />
 </template>

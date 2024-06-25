@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { mdiAccountGroup, mdiDoor } from '@mdi/js'
 
-const { item, conductable } = defineProps<{
+const { item, actions } = defineProps<{
   item: ScheduleItem
   actions?: boolean
 }>()
-const emit = defineEmits<{ open: [lessonId: number] }>()
+const emit = defineEmits<{ open: [lessonId: number, status: LessonStatus] }>()
 </script>
 
 <template>
@@ -14,7 +14,7 @@ const emit = defineEmits<{ open: [lessonId: number] }>()
       <LessonStatus :status="item.status" />
       <span> {{ item.time }} – {{ item.time_end }} </span>
       <v-spacer />
-      <span v-if="item.is_first" class="text-success vfn-1">
+      <span v-if="item.is_first" class="text-deepOrange vfn-1">
         первое
       </span>
       <span v-else-if="item.is_unplanned" class="text-purple vfn-1">
@@ -49,7 +49,7 @@ const emit = defineEmits<{ open: [lessonId: number] }>()
         variant="plain"
         icon="$edit"
         :size="36"
-        @click="emit('open', item.id)"
+        @click="emit('open', item.id, item.status)"
       />
     </div>
   </div>

@@ -6,10 +6,11 @@ const item = ref<LessonConductResource>()
 
 const loading = ref(false)
 const saving = ref(false)
-const isConducted = computed(() => item.value && item.value.status === 'conducted')
+const isConducted = ref(false)
 
-function open(lessonId: number) {
+function open(lessonId: number, status: LessonStatus) {
   itemId.value = lessonId
+  isConducted.value = status === 'conducted'
   dialog.value = true
   loadData()
 }
@@ -171,6 +172,15 @@ defineExpose({ open })
               </div>
             </v-fade-transition>
           </div>
+        </div>
+        <div
+          v-if="isConducted"
+          class="dialog-bottom mt-4"
+        >
+          <span v-if="item.conducted_at">
+            занятие проведено
+            {{ formatDateTime(item.conducted_at) }}
+          </span>
         </div>
       </div>
     </div>

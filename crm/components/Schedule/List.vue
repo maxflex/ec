@@ -114,7 +114,10 @@ nextTick(loadData)
               :key="l.id"
               :actions="editable || conductable"
               :item="l"
-              @open="id => editable ? lessonDialog?.edit(id) : conductDialog?.open(id)"
+              @open="(id, status) => editable
+                ? lessonDialog?.edit(id)
+                : conductDialog?.open(id, status)
+              "
             />
           </div>
         </div>

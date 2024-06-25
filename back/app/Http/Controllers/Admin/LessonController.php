@@ -10,13 +10,15 @@ use Illuminate\Http\Request;
 class LessonController extends Controller
 {
     protected $filters = [
-        'equals' => ['group_id']
+        'equals' => ['group_id', 'teacher_id'],
+        'group' => ['year'],
+        'client' => ['client_id']
     ];
 
     public function index(Request $request)
     {
         $query = Lesson::query()
-            ->with('teacher')
+            ->with(['teacher', 'group', 'contractLessons'])
             ->orderBy('start_at');
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, LessonListResource::class);
@@ -43,5 +45,23 @@ class LessonController extends Controller
     {
         $lesson->delete();
         return new LessonListResource($lesson);
+    }
+
+    protected function filterGroup(&$query, $value, $field)
+    {
+        $query->whereHas('group', fn ($q) => $q->where($field, $value));
+    }
+
+    protected function filterClient(&$query, $clientId)
+    {
+        $query->whereHas(
+            'group',
+            fn ($q) => $q->whereHas(
+                'contracts',
+                fn ($z) => $z
+                    ->where('year', request()->year)
+                    ->where('client_id', $clientId)
+            )
+        );
     }
 }

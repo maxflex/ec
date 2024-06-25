@@ -9,6 +9,7 @@ const tabs = {
   requests: 'заявки',
   contracts: 'договоры',
   schedule: 'расписание',
+  schedule2: 'расписание-2',
   groups: 'группы',
   reviews: 'отзывы',
   webReviews: 'отзывы на сайте',
@@ -178,8 +179,13 @@ nextTick(loadData)
           <WebReviewList :items="items" />
         </template>
       </UiDataLoader>
-      <ScheduleList
+      <LessonList
         v-else-if="selectedTab === 'schedule'"
+        :id="client.id"
+        entity="client"
+      />
+      <ScheduleList
+        v-else-if="selectedTab === 'schedule2'"
         :id="client.id"
         entity="client"
       />
