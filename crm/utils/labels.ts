@@ -375,6 +375,11 @@ export const TeacherStatusLabel = {
   closed: 'закрыт',
 } as const
 
+export const UserStatusLabel: { [key: number]: string } = {
+  1: 'действующий сотрудник',
+  0: 'больше не работает',
+}
+
 export const SubjectLabel = {
   math: 'математика',
   phys: 'физика',

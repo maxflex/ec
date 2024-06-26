@@ -32,12 +32,15 @@ const emit = defineEmits<{ (e: 'edit', u: UserResource): void }>()
         />
       </div>
       <div style="width: 300px">
-        <span v-if="item.is_active">
+        <span :class="{ 'text-gray': !item.is_active }">
+          {{ UserStatusLabel[Number(item.is_active)] }}
+        </span>
+        <!-- <span v-if="item.is_active">
           действующий сотрудник
         </span>
         <span v-else class="text-gray">
           больше не работает
-        </span>
+        </span> -->
       </div>
       <div
         class="text-gray"

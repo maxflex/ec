@@ -32,7 +32,7 @@ export function newId(): number {
   _newId--
   return _newId
 }
-0
+
 export function selectItems(obj: object): SelectItems {
   const items = Object.entries(obj).map(([value, title]) => ({
     value,
@@ -51,6 +51,13 @@ export function selectItems(obj: object): SelectItems {
     return sorted
   }
   return items
+}
+
+export function yesNo(yesLabel: string, noLabel: string): SelectItems {
+  return selectItems({
+    1: yesLabel,
+    0: noLabel,
+  })
 }
 
 export function smoothScroll(

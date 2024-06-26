@@ -33,6 +33,7 @@ async function loadData() {
 function onFiltersApply(f: Filters) {
   filters.value = f
   page = 0
+  isLastPage = false
   loadData()
 }
 

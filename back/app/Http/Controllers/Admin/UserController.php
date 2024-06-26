@@ -9,9 +9,15 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    protected $filters = [
+        'equals' => ['is_active'],
+        'search' => ['q']
+    ];
+
     public function index(Request $request)
     {
         $query = User::query();
+        $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, UserResource::class);
     }
 
@@ -43,5 +49,17 @@ class UserController extends Controller
         $user->phones->each->delete();
         $user->delete();
         return new UserResource($user);
+    }
+
+    protected function filterSearch(&$query, $value)
+    {
+        $words = explode(' ', $value);
+        $query->where(function ($q) use ($words) {
+            foreach ($words as $word) {
+                $q->where('first_name', 'like', "%{$word}%")
+                    ->orWhere('last_name', 'like', "%{$word}%")
+                    ->orWhere('middle_name', 'like', "%{$word}%");
+            }
+        });
     }
 }
