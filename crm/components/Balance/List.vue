@@ -3,7 +3,7 @@ const { id, entity } = defineProps<{
   entity: Extract<EntityString, 'contract' | 'teacher'>
   id: number
 }>()
-// const year = ref<Year>(currentStudyYear())
+// const year = ref<Year>(currentAcademicYear())
 const year = ref<Year>(2023)
 const balance = ref<Balance[]>([])
 const loading = ref(true)

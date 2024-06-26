@@ -1,7 +1,8 @@
 <script setup lang="ts">
-const { label } = withDefaults(
+const { label, year } = withDefaults(
   defineProps<{
     label?: string
+    year?: Year
   }>(),
   {
     label: 'Дата',
@@ -28,6 +29,7 @@ const calendarDialog = ref()
   <CalendarDialog
     ref="calendarDialog"
     v-model="model"
+    :year="year"
   />
 </template>
 

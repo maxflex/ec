@@ -1,4 +1,7 @@
 <script setup lang="ts">
+const { year } = defineProps<{
+  year?: Year
+}>()
 const { dialog, width, transition } = useDialog('medium')
 const model = defineModel<string>()
 const monthLabels = [
@@ -15,7 +18,11 @@ const monthLabels = [
   'ноябрь',
   'декабрь',
 ]
-const years = Object.keys(YearLabel).map(y => Number(y))
+
+const years = year === undefined
+  ? Object.keys(YearLabel).map(y => Number(y))
+  : [year, year + 1]
+
 function open() {
   dialog.value = true
   setTimeout(() => {
@@ -30,32 +37,45 @@ function open() {
     }
   }, 100)
 }
-const zeroPad = (value: number) => (`0${value}`).slice(-2)
+
+function zeroPad(value: number): string {
+  return (`0${value}`).slice(-2)
+}
 
 // отступ первого дня в календаре
-function firstDayOfWeek(year: number, month: number) {
-  return new Date(year, month - 1, 0).getDay()
+function firstDayOfWeek(y: number, m: number) {
+  return new Date(y, m - 1, 0).getDay()
 }
 
-function daysInMonth(year: number, month: number) {
-  return new Date(year, month, 0).getDate()
+function daysInMonth(y: number, m: number) {
+  return new Date(y, m, 0).getDate()
 }
 
-function getDate(year: number, month: number, day: number): string {
-  return [year, zeroPad(month), zeroPad(day)].join('-')
+function getDate(y: number, m: number, d: number): string {
+  return [y, zeroPad(m), zeroPad(d)].join('-')
 }
 
-function isToday(year: number, month: number, day: number) {
-  return getDate(year, month, day) === today()
+function isToday(y: number, m: number, d: number) {
+  return getDate(y, m, d) === today()
 }
 
-function isSelected(year: number, month: number, day: number) {
-  return getDate(year, month, day) === model.value
+function isSelected(y: number, m: number, d: number) {
+  return getDate(y, m, d) === model.value
 }
 
-function onClick(year: number, month: number, day: number) {
-  model.value = getDate(year, month, day)
+function onClick(y: number, m: number, d: number) {
+  console.log('onClick', y, m, d)
+  model.value = getDate(y, m, d)
   dialog.value = false
+}
+
+function iterateMonths(y: number) {
+  if (year === undefined) {
+    return 12
+  }
+  return y === year
+    ? [9, 10, 11, 12]
+    : [1, 2, 3, 4, 5, 6, 7, 8]
 }
 
 defineExpose({ open })
@@ -74,38 +94,38 @@ defineExpose({ open })
         </v-btn> -->
       </div>
       <div
-        v-for="year in years"
-        :key="year"
+        v-for="y in years"
+        :key="y"
         class="calendar__year"
       >
-        <h2>{{ year }}</h2>
+        <h2>{{ y }}</h2>
         <div class="calendar">
           <div
-            v-for="month in 12"
-            :key="month"
+            v-for="m in iterateMonths(y)"
+            :key="m"
             class="calendar__month"
           >
             <div class="calendar__month-label">
               <span class="text-grey-light">
-                {{ monthLabels[month - 1] }}
+                {{ monthLabels[m - 1] }}
               </span>
             </div>
             <div class="calendar__month-days">
               <div
-                v-for="x in firstDayOfWeek(year, month)"
+                v-for="x in firstDayOfWeek(y, m)"
                 :key="`x${x}`"
                 class="no-pointer-events"
               />
               <div
-                v-for="day in daysInMonth(year, month)"
-                :key="day"
+                v-for="d in daysInMonth(y, m)"
+                :key="d"
                 :class="{
-                  'calendar--today': isToday(year, month, day),
-                  'calendar--selected': isSelected(year, month, day),
+                  'calendar--today': isToday(y, m, d),
+                  'calendar--selected': isSelected(y, m, d),
                 }"
-                @click="onClick(year, month, day)"
+                @click="onClick(y, m, d)"
               >
-                {{ day }}
+                {{ d }}
               </div>
             </div>
           </div>

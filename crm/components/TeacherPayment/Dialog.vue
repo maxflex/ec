@@ -5,7 +5,7 @@ const emit = defineEmits<{ (e: 'updated' | 'destroyed', c: TeacherPaymentResourc
 
 const modelDefaults: TeacherPaymentResource = {
   id: newId(),
-  year: currentStudyYear(),
+  year: currentAcademicYear(),
   date: today(),
   method: 'card',
   purpose: null,

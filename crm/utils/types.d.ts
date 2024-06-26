@@ -249,7 +249,7 @@ declare global {
   interface GroupResource {
     id: number
     program?: Program
-    year?: Year
+    year: Year
     duration?: number
     is_archived: boolean
     exam_date?: string

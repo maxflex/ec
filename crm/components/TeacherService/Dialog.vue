@@ -5,7 +5,7 @@ const emit = defineEmits<{ (e: 'updated' | 'deleted', c: TeacherServiceResource)
 
 const modelDefaults: TeacherServiceResource = {
   id: newId(),
-  year: currentStudyYear(),
+  year: currentAcademicYear(),
   date: today(),
   purpose: null,
   sum: 0,

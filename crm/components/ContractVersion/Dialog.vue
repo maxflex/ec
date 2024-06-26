@@ -15,7 +15,7 @@ const modelDefaults: ContractVersionResource = {
   payments: [],
   contract: {
     id: newId(),
-    year: currentStudyYear(),
+    year: currentAcademicYear(),
     company: 'ooo',
   },
 }

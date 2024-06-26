@@ -10,7 +10,7 @@ const modelDefaults: ClientPaymentResource = {
   id: newId(),
   sum: 0,
   date: today(),
-  year: currentStudyYear(),
+  year: currentAcademicYear(),
   method: 'card',
   entity_type: EntityType.contract,
   entity_id: 0,

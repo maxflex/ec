@@ -6,7 +6,7 @@ const emit = defineEmits<{
 }>()
 const modelDefaults: ReportResource = {
   id: newId(),
-  year: currentStudyYear(),
+  year: currentAcademicYear(),
   is_moderated: false,
   is_published: false,
   homework_comment: null,

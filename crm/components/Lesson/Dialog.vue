@@ -7,6 +7,7 @@ const emit = defineEmits<{
 }>()
 
 const modelDefaults: LessonResource = {
+  id: newId(),
   status: 'planned',
   conducted_at: null,
   is_topic_verified: false,
@@ -22,9 +23,11 @@ const startAt = reactive({
   date: '',
   time: '',
 })
+const year = ref<Year>()
 
-function create(groupId: number) {
+function create(groupId: number, y: Year) {
   itemId.value = undefined
+  year.value = y
   lesson.value = clone(modelDefaults)
   lesson.value.group_id = groupId
   dialog.value = true
@@ -37,6 +40,7 @@ async function edit(lessonId: number) {
   const { data } = await useHttp<LessonResource>(`lessons/${lessonId}`)
   if (data.value) {
     lesson.value = data.value
+    year.value = getAcademicYear(lesson.value.start_at!)
   }
   loading.value = false
 }
@@ -140,7 +144,7 @@ defineExpose({ create, edit })
           />
         </div>
         <div class="double-input">
-          <UiDateInput v-model="startAt.date" />
+          <UiDateInput v-model="startAt.date" :year="year" />
           <div>
             <v-text-field
               v-model="startAt.time"

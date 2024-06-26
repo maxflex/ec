@@ -8,8 +8,10 @@ const emit = defineEmits<{
 }>()
 
 const modelDefaults: GroupResource = {
+  id: newId(),
   is_archived: false,
   contracts: [],
+  year: currentAcademicYear(),
   zoom: {
     id: '',
     password: '',
@@ -138,7 +140,12 @@ defineExpose({ create, edit })
           />
         </div>
         <div>
-          <UiDateInput v-model="group.exam_date" label="Дата экзамена" />
+          <UiDateInput
+            :key="group.year"
+            v-model="group.exam_date"
+            label="Дата экзамена"
+            :year="group.year"
+          />
         </div>
         <div class="double-input">
           <v-text-field

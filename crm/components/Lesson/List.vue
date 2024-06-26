@@ -3,14 +3,16 @@ import { mdiAccountGroup } from '@mdi/js'
 import { eachDayOfInterval, endOfMonth, format, getDay, getMonth, getWeek, startOfMonth } from 'date-fns'
 import type { LessonConductDialog, LessonDialog } from '#build/components'
 
-const { entity, id, editable, conductable } = defineProps<{
+const { entity, id, editable, conductable, group } = defineProps<{
   entity: Extract<EntityString, 'client' | 'teacher' | 'group'>
   id: number
   editable?: boolean
   conductable?: boolean
+  group?: GroupResource
 }>()
+
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
-const year = ref<Year>(2023)
+const year = ref<Year>(group === undefined ? 2023 : group.year)
 const loading = ref(false)
 const schedule = ref<Schedule>({})
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
@@ -49,13 +51,14 @@ function formatCalendarDate(d: string) {
 }
 
 // function onLessonUpdated(l: LessonListResource) {
-//   const index = lessons.value.findIndex(e => e.id === l.id)
-//   if (index !== -1) {
-//     lessons.value[index] = l
-//   }
-//   else {
-//     lessons.value.push(l)
-//     smoothScroll('main', 'bottom')
+//   for (const d in schedule.value) {
+//     const index = schedule.value[d].findIndex(e => e.id === l.id)
+//     if (index !== -1) {
+//       schedule.value[d][index] = l as ScheduleItem
+//     }
+//     else {
+//       schedule.value[d].push(l)
+//     }
 //   }
 // }
 
@@ -77,16 +80,16 @@ nextTick(loadData)
       <div>
         <v-select
           v-model="year"
-          :disabled="entity === 'group'"
+          :disabled="group !== undefined"
           label="Учебный год"
           :items="selectItems(YearLabel)"
           density="comfortable"
         />
       </div>
       <v-btn
-        v-if="editable"
+        v-if="editable && group"
         color="primary"
-        @click="lessonDialog?.create(id)"
+        @click="lessonDialog?.create(id, group?.year!)"
       >
         добавить занятие
       </v-btn>
@@ -94,14 +97,21 @@ nextTick(loadData)
   </div>
   <UiLoaderr v-if="loading" />
   <div v-else class="lesson-list">
-    <div v-for="d in dates" :key="d" :class="{ 'week-separator': getDay(d) === 0 }">
+    <div
+      v-for="d in dates"
+      :key="d"
+      :class="{
+        'week-separator': getDay(d) === 0,
+        'lesson-list--exam-date': group && group.exam_date === d,
+      }"
+    >
       <div>
         {{ formatCalendarDate(d) }}
         <span class="text-gray ml-1">
           {{ dayLabels[getDay(d)] }}
         </span>
       </div>
-      <div v-for="l in schedule[d]" :key="l.id">
+      <div v-for="l in schedule[d]" :id="`lesson-${l.id}`" :key="l.id">
         <div v-if="editable || conductable" class="table-actionss">
           <v-btn
             icon="$edit"
@@ -210,6 +220,9 @@ nextTick(loadData)
         left: 20px;
       }
     }
+  }
+  &--exam-date {
+    background: rgba(var(--v-theme-orange), 0.2);
   }
 }
 </style>

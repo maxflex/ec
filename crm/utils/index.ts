@@ -1,6 +1,8 @@
-import { format } from 'date-fns'
+import { format, getMonth, getYear } from 'date-fns'
 
-export const today = () => format(new Date(), 'yyyy-MM-dd')
+export function today(): string {
+  return format(new Date(), 'yyyy-MM-dd')
+}
 
 export function getCookie(key: string): object | null {
   const cookie = new Map<string, string>(
@@ -30,7 +32,7 @@ export function newId(): number {
   _newId--
   return _newId
 }
-
+0
 export function selectItems(obj: object): SelectItems {
   const items = Object.entries(obj).map(([value, title]) => ({
     value,
@@ -63,8 +65,22 @@ export function smoothScroll(
   )
 }
 
-export function currentStudyYear(): Year {
-  return 2024
+/**
+ * Получить академичекский год по дате
+ * Новый академический год начинается с 1 сентября
+ */
+export function getAcademicYear(d: string): Year {
+  const year = getYear(d)
+  const month = getMonth(d) + 1
+  const academicYear = month >= 9 ? year : year - 1
+  return academicYear as Year
+}
+
+/**
+ * Текущий академический год
+ */
+export function currentAcademicYear(): Year {
+  return getAcademicYear(today())
 }
 
 function getFiltersKey() {
