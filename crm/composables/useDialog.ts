@@ -20,6 +20,10 @@ export default function (w: DialogWidth) {
     }
     else {
       transition.value = 'dialog-second-transition'
+      // x-large не отодвигаем, не хватает места
+      if (el.clientWidth === dialogWidths['x-large']) {
+        return
+      }
       // @ts-expect-error
       el.style.right = val ? `${width * 0.5}px` : null
     }

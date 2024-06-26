@@ -117,7 +117,7 @@ async function save() {
           @click="save()"
         />
       </div>
-      <div class="dialog-body">
+      <div class="dialog-body pa-0">
         <VuePictureCropper
           :box-style="{
             width: '100%',
@@ -129,7 +129,9 @@ async function save() {
           :options="{
             viewMode: 1,
             aspectRatio: 1,
-            dragMode: 'crop',
+            cropBoxMovable: false,
+            cropBoxResizable: false,
+            dragMode: 'move',
           }"
         />
       </div>
@@ -179,6 +181,10 @@ async function save() {
 .cropper-view-box,
 .cropper-face {
   border-radius: 50%;
+}
+
+.cropper-modal {
+  opacity: 0.85 !important;
 }
 
 .cropper-view-box {
