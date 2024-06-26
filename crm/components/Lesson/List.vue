@@ -9,6 +9,7 @@ const { entity, id, editable, conductable } = defineProps<{
   editable?: boolean
   conductable?: boolean
 }>()
+const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const year = ref<Year>(2023)
 const loading = ref(false)
 const schedule = ref<Schedule>({})
@@ -42,8 +43,9 @@ async function loadData() {
   loading.value = false
 }
 
-function isNewWeek(d: string) {
-  return getDay(d)
+function formatCalendarDate(d: string) {
+  const month = getMonth(d)
+  return format(d, `d ${MonthLabel[month]}`)
 }
 
 // function onLessonUpdated(l: LessonListResource) {
@@ -70,23 +72,34 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div v-if="entity !== 'group'" class="filters">
+  <div class="filters">
     <div class="filters-inputs" style="justify-content: space-between; align-items: center; width: 100%">
       <div>
         <v-select
           v-model="year"
+          :disabled="entity === 'group'"
           label="Учебный год"
           :items="selectItems(YearLabel)"
           density="comfortable"
         />
       </div>
+      <v-btn
+        v-if="editable"
+        color="primary"
+        @click="lessonDialog?.create(id)"
+      >
+        добавить занятие
+      </v-btn>
     </div>
   </div>
   <UiLoaderr v-if="loading" />
   <div v-else class="lesson-list">
-    <div v-for="d in dates" :key="d" :class="`week-${getDay(d)}`">
+    <div v-for="d in dates" :key="d" :class="{ 'week-separator': getDay(d) === 0 }">
       <div>
-        {{ formatDate(d) }}
+        {{ formatCalendarDate(d) }}
+        <span class="text-gray ml-1">
+          {{ dayLabels[getDay(d)] }}
+        </span>
       </div>
       <div v-for="l in schedule[d]" :key="l.id">
         <div v-if="editable || conductable" class="table-actionss">
@@ -98,7 +111,7 @@ nextTick(loadData)
             @click="editable ? lessonDialog?.edit(l.id) : conductDialog?.open(l.id, l.status)"
           />
         </div>
-        <div style="width: 100px" />
+        <div style="width: 110px" />
         <div style="width: 120px">
           {{ l.time }} – {{ l.time_end }}
         </div>
@@ -152,17 +165,29 @@ nextTick(loadData)
 <style lang="scss">
 .lesson-list {
   & > div {
+    --height: 57px;
     position: relative;
-    min-height: 57px;
+    min-height: var(--height);
     display: flex;
     flex-direction: column;
     padding: 16px 20px;
     border-bottom: thin solid
       rgba(var(--v-border-color), var(--v-border-opacity));
     gap: 20px;
-    &.week-0 {
-      // background: red !important;
+    &.week-separator {
       border-bottom: 2px solid rgb(var(--v-theme-gray));
+      // margin-bottom: var(--height);
+      // &:after {
+      //   content: '';
+      //   background: #fafafa;
+      //   position: absolute;
+      //   bottom: -58px;
+      //   left: 0;
+      //   width: 100%;
+      //   height: var(--height);
+      //   border-bottom: thin solid
+      //     rgba(var(--v-border-color), var(--v-border-opacity));
+      // }
     }
     & > div {
       &:not(:first-child) {
