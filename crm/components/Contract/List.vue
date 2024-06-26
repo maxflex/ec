@@ -94,7 +94,12 @@ function onClientPaymentDeleted(cp: ClientPaymentResource) {
         :ripple="false"
         @click="selected = i"
       >
-        Договор №{{ selectedContract.id }}
+        <div>
+          Договор №{{ contract.id }}
+        </div>
+        <div style="text-transform: lowercase">
+          на {{ formatYear(contract.year) }}
+        </div>
       </v-btn>
     </div>
     <v-btn

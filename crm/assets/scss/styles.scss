@@ -377,6 +377,15 @@ a:not(.v-list-item) {
     opacity: 1 !important;
     // pointer-events: none;
   }
+
+  .v-btn__content {
+    flex-direction: column;
+    & > div:nth-child(2) {
+      text-align: center;
+      font-size: 13px !important;
+      letter-spacing: normal !important;
+    }
+  }
 }
 
 .panel {
