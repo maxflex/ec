@@ -53,13 +53,14 @@ function selectFile(e: Event) {
 
 async function save() {
   saving.value = true
-  if (!cropper)
+  if (!cropper) {
     return
+  }
   // const base64 = cropper.getDataURL()
   const blob: Blob | null = await cropper.getBlob()
-  if (!blob)
+  if (!blob) {
     return
-  console.log({ blob })
+  }
   const formData = new FormData()
   formData.append('photo', blob)
   formData.append('entity_type', EntityType[entity])

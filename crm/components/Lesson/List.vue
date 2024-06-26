@@ -111,7 +111,12 @@ nextTick(loadData)
           {{ dayLabels[getDay(d)] }}
         </span>
       </div>
-      <div v-for="l in schedule[d]" :id="`lesson-${l.id}`" :key="l.id">
+      <div
+        v-for="l in schedule[d]"
+        :id="`lesson-${l.id}`"
+        :key="l.id"
+        :class="`lesson-list__status--${l.status}`"
+      >
         <div v-if="editable || conductable" class="table-actionss">
           <v-btn
             icon="$edit"
@@ -219,6 +224,11 @@ nextTick(loadData)
         top: 16px;
         left: 20px;
       }
+    }
+  }
+  &__status {
+    &--cancelled {
+      opacity: 0.4;
     }
   }
   &--exam-date {

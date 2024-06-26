@@ -19,13 +19,34 @@ class TransferReports extends Command
         $items = DB::connection('egecrm')->table('reports')->get();
         $bar = $this->output->createProgressBar($items->count());
         foreach ($items as $r) {
-            $gradeId = min($r->grade_id, 11);
-            $gradeId = max($gradeId, 9);
+            $result = DB::connection('egecrm')->select(<<<SQL
+            select c.grade_id
+            from groups g
+            join lessons l on l.group_id = g.id
+            join lesson_contracts lc on lc.lesson_id = l.id
+            join contracts c on c.id = lc.contract_id
+            where l.teacher_id = ?
+                and c.client_id = ?
+                and g.subject_id = ?
+                and g.year = ?
+                and l.status = 'conducted'
+                and l.conducted_at < ?
+            order by l.conducted_at desc
+            limit 1
+            SQL, [
+                $r->teacher_id,
+                $r->client_id,
+                $r->subject_id,
+                $r->year,
+                $r->created_at
+            ]);
             DB::table('reports')->insert([
                 'teacher_id' => $r->teacher_id,
                 'client_id' => $r->client_id,
                 'year' => $r->year,
-                'program' => Program::getBySubjectId($r->subject_id),
+                'program' => count($result)
+                    ? Program::getById($result[0]->grade_id, $r->subject_id)
+                    : Program::getBySubjectId($r->subject_id),
                 'homework_comment' => $r->homework_comment,
                 // 'user_id' => $this->getUserId($r->created_email_id),
                 'is_moderated' => ($r->is_not_moderated + 1) % 2,
