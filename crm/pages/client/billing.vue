@@ -54,8 +54,11 @@ const qrValue = computed(() => {
   ).join('|')
 })
 
-function totalSum(payments: Array<{ sum: number }>) {
-  return payments.reduce((carry, e) => carry + e.sum, 0)
+function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
+  return payments.reduce(
+    (carry, e) => carry + e.sum * (e.is_return ? -1 : 1)
+    , 0,
+  )
 }
 
 // const testValue = 'ST00012|Name=ИП Горшкова Анастасия Александровна|PersonalAcc=40802810401400004731|BankName=АО "АЛЬФА-БАНК"|BIC=044525593|CorrespAcc=30101810200000000593|Purpose=Платные образовательные услуги по договору № 14340 от 24.05.24 г.|PayeeINN=622709802712|KPP=|LastName=Мирошниченко|FirstName=Татьяна|MiddleName=Петровна'
@@ -121,7 +124,14 @@ nextTick(loadData)
               <td width="150">
                 {{ formatDate(p.date) }}
               </td>
-              <td>{{ formatPrice(p.sum) }} руб.</td>
+              <td>
+                <span v-if="p.is_return" class="text-red">
+                  {{ formatPrice(p.sum) }} руб. (возврат)
+                </span>
+                <span v-else>
+                  {{ formatPrice(p.sum) }} руб.
+                </span>
+              </td>
             </tr>
             <tr>
               <td colspan="2" />
