@@ -10,7 +10,7 @@ const VersionFilterLabel = {
 
 export interface Filters {
   year?: Year
-  company?: CompanyType
+  company?: Company
   version?: keyof typeof VersionFilterLabel
 }
 const filters = ref<Filters>({})
@@ -31,7 +31,7 @@ watch(filters.value, () => emit('apply', filters.value))
     <div>
       <UiClearableSelect
         v-model="filters.company"
-        :items="selectItems(CompanyTypeLabel)"
+        :items="selectItems(CompanyLabel)"
         density="comfortable"
         label="Тип"
       />

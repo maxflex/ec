@@ -237,7 +237,7 @@ defineExpose({ edit, createContract, addVersion })
             v-model="item.contract.company"
             label="Компания"
             :disabled="!isNewContract"
-            :items="selectItems(CompanyTypeLabel)"
+            :items="selectItems(CompanyLabel)"
           />
         </div>
         <div class="double-input">

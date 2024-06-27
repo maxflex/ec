@@ -26,6 +26,7 @@
     "lvovich": "^2.0.1",
     "maska": "^2.1.11",
     "pusher-js": "^8.4.0-rc2",
+    "qrcode-vue3": "^1.6.8",
     "rambda": "^9.2.0",
     "sass": "^1.69.5",
     "vite": "latest",

@@ -384,6 +384,7 @@ a:not(.v-list-item) {
       text-align: center;
       font-size: 13px !important;
       letter-spacing: normal !important;
+      text-transform: lowercase !important;
     }
   }
 }
@@ -490,4 +491,8 @@ a:not(.v-list-item) {
   &-2 {
     opacity: 0.2;
   }
+}
+
+.invisible {
+  visibility: hidden;
 }

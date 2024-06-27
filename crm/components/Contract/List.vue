@@ -97,7 +97,7 @@ function onClientPaymentDeleted(cp: ClientPaymentResource) {
         <div>
           Договор №{{ contract.id }}
         </div>
-        <div style="text-transform: lowercase">
+        <div>
           на {{ formatYear(contract.year) }}
         </div>
       </v-btn>

@@ -424,7 +424,7 @@ export const ClientPaymentMethodLabel = {
   invoice: 'счёт',
 } as const
 
-export const CompanyTypeLabel = {
+export const CompanyLabel = {
   ooo: 'ООО',
   ip: 'ИП',
 } as const

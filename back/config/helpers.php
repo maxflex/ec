@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Collection;
+
 function extract_fields($object, $fields, $merge = []): ?array
 {
     if ($object === null) {
@@ -19,6 +21,14 @@ function extract_fields($object, $fields, $merge = []): ?array
         }
     }
     return array_merge($return, $merge);
+}
+
+function extract_fields_array(array | Collection $items, $fields, $merge = []): array
+{
+    if (!$items instanceof Collection) {
+        $items = collect($items);
+    }
+    return $items->map(fn ($e) => extract_fields($e, $fields, $merge))->all();
 }
 
 function key_by($data, string $field, string $field2 = null, $value = null): array

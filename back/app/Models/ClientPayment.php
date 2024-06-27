@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ClientPaymentMethod;
-use App\Enums\CompanyType;
+use App\Enums\Company;
 use Illuminate\Database\Eloquent\Model;
 
 class ClientPayment extends Model
@@ -14,7 +14,7 @@ class ClientPayment extends Model
     ];
 
     protected $casts = [
-        'company' => CompanyType::class,
+        'company' => Company::class,
         'method' => ClientPaymentMethod::class,
         'is_confirmed' => 'boolean',
         'is_return' => 'boolean',

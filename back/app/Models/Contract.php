@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\CompanyType;
+use App\Enums\Company;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
@@ -15,7 +15,7 @@ class Contract extends Model
     ];
 
     protected $casts = [
-        'company' => CompanyType::class,
+        'company' => Company::class,
     ];
 
     public function client()
@@ -35,7 +35,7 @@ class Contract extends Model
 
     public function payments()
     {
-        return $this->morphMany(ClientPayment::class, 'entity')->orderBy('date', 'desc');
+        return $this->morphMany(ClientPayment::class, 'entity');
     }
 
 

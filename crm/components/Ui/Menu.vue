@@ -5,6 +5,7 @@ import {
   mdiAccountMultiple,
   mdiCalendar,
   mdiCash,
+  mdiCreditCardCheckOutline,
   mdiCurrencyRub,
   mdiDotsTriangle,
   mdiFileDocumentEditOutline,
@@ -47,6 +48,11 @@ switch (user?.entity_type) {
         icon: mdiDotsTriangle,
         title: 'Тесты',
         to: '/tests',
+      },
+      {
+        icon: mdiCreditCardCheckOutline,
+        title: 'Оплата обучения',
+        to: '/billing',
       },
     ]
     break
@@ -117,7 +123,7 @@ switch (user?.entity_type) {
       {
         icon: mdiStarBoxOutline,
         title: 'Отзывы',
-        to: '/clients/reviews',
+        to: '/client-reviews',
       },
       {
         icon: mdiStarBox,
@@ -127,12 +133,12 @@ switch (user?.entity_type) {
       {
         icon: mdiCash,
         title: 'Платежи клиентов',
-        to: '/clients/payments',
+        to: '/client-payments',
       },
       {
         icon: mdiCash,
         title: 'Платежи препод',
-        to: '/teachers/payments',
+        to: '/teacher-payments',
       },
       {
         icon: mdiFinance,

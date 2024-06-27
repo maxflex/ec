@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Transfer;
 
-use App\Enums\CompanyType;
+use App\Enums\Company;
 use App\Enums\Program;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
@@ -33,7 +33,7 @@ class TransferContracts extends Command
                 'id' => $c->id,
                 'client_id' => $c->client_id,
                 'year' => $c->year,
-                'company' => $c->type === 'ip' ? CompanyType::ip->name : CompanyType::ooo->name
+                'company' => $c->type === 'ip' ? Company::ip->name : Company::ooo->name
             ]);
             $contractVersions = $allContractVersions->where('contract_id', $c->id);
             $ids = $contractVersions->pluck('id');

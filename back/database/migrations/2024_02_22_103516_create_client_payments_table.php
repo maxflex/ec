@@ -1,7 +1,7 @@
 <?php
 
 use App\Enums\ClientPaymentMethod;
-use App\Enums\CompanyType;
+use App\Enums\Company;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -27,7 +27,7 @@ return new class extends Migration
             );
             $table->enum(
                 'company',
-                collect(CompanyType::cases())->map(fn ($e) => $e->name)->all()
+                collect(Company::cases())->map(fn ($e) => $e->name)->all()
             );
             $table->boolean('is_confirmed')->default(false)->index();
             $table->boolean('is_return')->default(false)->index();

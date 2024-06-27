@@ -7,7 +7,7 @@ declare global {
 
   type ClientPaymentMethod = keyof typeof ClientPaymentMethodLabel
 
-  type CompanyType = keyof typeof CompanyTypeLabel
+  type Company = keyof typeof CompanyLabel
 
   type TeacherPaymentMethod = keyof typeof TeacherPaymentMethodLabel
 
@@ -165,7 +165,7 @@ declare global {
     date: string
     year: Year
     method: ClientPaymentMethod
-    company: CompanyType
+    company: Company
     entity_type: typeof EntityType.contract | typeof EntityType.client
     entity_id: number
     is_confirmed: boolean
@@ -203,7 +203,7 @@ declare global {
     contract: {
       id: number
       year: Year
-      company: CompanyType
+      company: Company
       client?: PersonResource
     }
     created_at?: string
@@ -229,7 +229,7 @@ declare global {
     client?: PersonResource
     client_id: number
     year: Year
-    company: CompanyType
+    company: Company
     versions: ContractVersionListResource[]
     payments: ClientPaymentResource[]
   }
@@ -523,6 +523,28 @@ declare global {
     client?: PersonResource
     program?: Program
     created_at?: string
+  }
+
+  interface BillingResource {
+    id: number
+    year: Year
+    company: Company
+    parent: PersonResource
+    payments: Array<{
+      id: number
+      date: string
+      sum: number
+      is_return: boolean
+    }>
+    version: {
+      id: number
+      date: string
+      payments: Array<{
+        id: number
+        date: string
+        sum: number
+      }>
+    }
   }
 }
 

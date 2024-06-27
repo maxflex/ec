@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\CompanyType;
+use App\Enums\Company;
 use App\Enums\Grade;
 use App\Models\Client;
 use Illuminate\Database\Migrations\Migration;
@@ -20,7 +20,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('year');
             $table->enum(
                 'company',
-                collect(CompanyType::cases())->map(fn ($e) => $e->name)->all()
+                collect(Company::cases())->map(fn ($e) => $e->name)->all()
             );
         });
     }

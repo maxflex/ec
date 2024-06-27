@@ -18,6 +18,10 @@ class ContractVersion extends Model
         return $this->hasMany(ContractProgram::class)->orderBy('is_closed');
     }
 
+    /**
+     * TODO: переименовать в payment_schedule
+     * таблица contract_payment_schedule
+     */
     public function payments()
     {
         return $this->hasMany(ContractPayment::class)->orderBy('date');
@@ -63,10 +67,11 @@ class ContractVersion extends Model
         $query->joinSub(
             $sub,
             'last_versions',
-            fn ($join) =>
-            $join
-                ->on('contract_versions.contract_id', '=', 'last_versions.max_version_contract_id')
-                ->on('contract_versions.version', '=', 'last_versions.max_version')
+            fn ($join) => $join->on(
+                'contract_versions.contract_id',
+                '=',
+                'last_versions.max_version_contract_id'
+            )
         );
     }
 

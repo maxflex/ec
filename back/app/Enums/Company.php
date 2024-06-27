@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum CompanyType: string
+enum Company: string
 {
     case ip = 'ip';
     case ooo = 'ooo';

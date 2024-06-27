@@ -135,7 +135,7 @@ defineExpose({ open, create })
           <v-select
             v-model="item.company"
             label="Компания"
-            :items="selectItems(CompanyTypeLabel)"
+            :items="selectItems(CompanyLabel)"
           />
         </div>
         <div>
