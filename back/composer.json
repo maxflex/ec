@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.8",
         "league/flysystem-aws-s3-v3": "^3.0",
         "pusher/pusher-php-server": "^7.2",
+        "staudenmeir/laravel-cte": "^1.10",
         "telegram-bot/api": "^2.5"
     },
     "require-dev": {

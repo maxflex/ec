@@ -45,11 +45,6 @@ async function loadData() {
   loading.value = false
 }
 
-function formatCalendarDate(d: string) {
-  const month = getMonth(d)
-  return format(d, `d ${MonthLabel[month]}`)
-}
-
 // function onLessonUpdated(l: LessonListResource) {
 //   for (const d in schedule.value) {
 //     const index = schedule.value[d].findIndex(e => e.id === l.id)
@@ -106,7 +101,7 @@ nextTick(loadData)
       }"
     >
       <div>
-        {{ formatCalendarDate(d) }}
+        {{ formatTextDate(d) }}
         <span class="text-gray ml-1">
           {{ dayLabels[getDay(d)] }}
         </span>

@@ -65,11 +65,6 @@ async function loadData() {
   loading.value = false
 }
 
-function formatCalendarDate(d: string) {
-  const month = getMonth(d)
-  return format(d, `d ${MonthLabel[month]}`)
-}
-
 nextTick(loadData)
 </script>
 
@@ -112,7 +107,7 @@ nextTick(loadData)
           }"
         >
           <div class="schedule-calendar__date">
-            {{ formatCalendarDate(d) }}
+            {{ formatTextDate(d) }}
           </div>
           <div class="schedule-calendar__lessons">
             <ScheduleItem

@@ -72,6 +72,11 @@ class Controller extends BaseController
         $query->where(DB::raw($this->getFieldName($field)), $value);
     }
 
+    protected function filterNotNull(string $field, $value, &$query)
+    {
+        $query->whereNotNull($this->getFieldName($field));
+    }
+
     protected function filterFindInSet(&$query, $values, $field)
     {
         if (is_array($values)) {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReportListResource;
 use App\Http\Resources\ReportResource;
+use App\Models\FakeReport;
 use App\Models\Report;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,8 @@ class ReportController extends Controller
     protected $filters = [
         'equals' => [
             'year', 'program', 'is_published', 'is_moderated', 'client_id', 'teacher_id'
-        ]
+        ],
+        'type' => ['type']
     ];
 
     /**
@@ -21,10 +23,22 @@ class ReportController extends Controller
      */
     public function index(Request $request)
     {
+        $request->validate([
+            'year' => ['required']
+        ]);
+
         $query = Report::query()
+            ->prepareForUnion()
             ->latest()
             ->with(['teacher', 'client']);
+
+        $fakeQuery = FakeReport::query();
+
         $this->filter($request, $query);
+        $this->filter($request, $fakeQuery);
+
+        $query->union($fakeQuery);
+
         return $this->handleIndexRequest($request, $query, ReportListResource::class);
     }
 
@@ -59,5 +73,10 @@ class ReportController extends Controller
     public function destroy(Report $report)
     {
         $report->delete();
+    }
+
+    protected function filterType(&$query, $type)
+    {
+        $type ? $query->whereNotNull('id') : $query->whereNull('id');
     }
 }

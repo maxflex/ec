@@ -27,4 +27,19 @@ class Report extends Model
     {
         return $this->belongsTo(Client::class);
     }
+
+    public function scopePrepareForUnion($query)
+    {
+        return $query->selectRaw(<<<SQL
+            id,
+            teacher_id,
+            client_id,
+            year,
+            program,
+            is_moderated,
+            is_published,
+            created_at,
+            NULL as lessons_since_last_report
+        SQL);
+    }
 }

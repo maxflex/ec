@@ -1,8 +1,8 @@
 <script setup lang="ts">
 const emit = defineEmits<{
   deleted: [r: ReportResource]
-  updated: [r: ReportListResource]
-  created: [r: ReportListResource]
+  updated: [r: RealReportItem]
+  created: [r: RealReportItem]
 }>()
 const modelDefaults: ReportResource = {
   id: newId(),
@@ -52,7 +52,7 @@ async function destroy() {
 async function save() {
   dialog.value = false
   if (itemId.value) {
-    const { data } = await useHttp<ReportListResource>(`reports/${itemId.value}`, {
+    const { data } = await useHttp<RealReportItem>(`reports/${itemId.value}`, {
       method: 'put',
       body: item.value,
     })
@@ -61,7 +61,7 @@ async function save() {
     }
   }
   else {
-    const { data } = await useHttp<ReportListResource>('reports', {
+    const { data } = await useHttp<RealReportItem>('reports', {
       method: 'post',
       body: item.value,
     })

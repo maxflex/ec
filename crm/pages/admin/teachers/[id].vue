@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ReportDialog, TeacherDialog } from '#build/components'
+import type { Filters } from '~/components/Report/TeacherFilters.vue'
 
 const route = useRoute()
 const teacher = ref<TeacherResource>()
@@ -20,7 +21,10 @@ const tabs = {
 const selectedTab = ref<keyof typeof tabs>('groups')
 
 const groupFilters = ref<{ year?: Year }>({})
-const reportFilters = ref<{ year?: Year }>({})
+const reportFilters = ref<Filters>({
+  year: currentAcademicYear(),
+})
+
 const paymentFilters = ref<{ year?: Year }>({})
 const serviceFilters = ref<{ year?: Year }>({})
 // const reviewFilters = ref<{ year?: Year }>({})
@@ -97,7 +101,7 @@ nextTick(loadData)
     </div>
     <UiDataLoader
       v-if="selectedTab === 'groups'"
-      :key="groupFilters.year"
+      :key="`groups${groupFilters.year}`"
       url="groups"
       :filters="{
         teacher_id: teacher.id,
@@ -138,35 +142,24 @@ nextTick(loadData)
     />
     <UiDataLoader
       v-else-if="selectedTab === 'reports'"
-      :key="reportFilters.year"
       url="reports"
       :filters="{
-        ...reportFilters,
         teacher_id: teacher.id,
+        ...reportFilters,
       }"
     >
       <template #filters>
         <div class="filters">
-          <div class="filters-inputs">
-            <div>
-              <UiClearableSelect
-                v-model="reportFilters.year"
-                label="Учебный год"
-                :items="selectItems(YearLabel)"
-                density="comfortable"
-              />
-            </div>
-          </div>
+          <ReportTeacherFilters @apply="f => (reportFilters = f)" />
         </div>
       </template>
       <template #default="{ items }">
         <ReportList editable :items="items" @edit="r => reportDialog?.edit(r.id)" />
-        <ReportDialog ref="reportDialog" />
       </template>
     </UiDataLoader>
     <UiDataLoader
       v-else-if="selectedTab === 'payments'"
-      :key="JSON.stringify(paymentFilters)"
+      :key="`payments${paymentFilters.year}`"
       url="teacher-payments"
       :filters="{
         teacher_id: teacher.id,
@@ -247,6 +240,7 @@ nextTick(loadData)
     ref="teacherDialog"
     @updated="onTeacherUpdated"
   />
+  <ReportDialog ref="reportDialog" />
 </template>
 
 <style lang="scss">

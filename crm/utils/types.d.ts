@@ -492,7 +492,10 @@ declare global {
     entity: PersonResource
     row_id: number | null
     ip: string
-    entity_type: typeof EntityType.client | typeof EntityType.teacher | typeof EntityType.user
+    entity_type:
+      | typeof EntityType.client
+      | typeof EntityType.teacher
+      | typeof EntityType.user
     data: any
   }
 
@@ -501,7 +504,7 @@ declare global {
     value: string | number | boolean
   }>
 
-  interface ReportListResource {
+  interface RealReportItem {
     id: number
     year: Year
     is_published: boolean
@@ -511,6 +514,17 @@ declare global {
     program: Program
     created_at: string
   }
+
+  interface FakeReportItem {
+    id: string
+    year: Year
+    teacher: PersonResource
+    client: PersonResource
+    program: Program
+    lessons_since_last_report: number
+  }
+
+  type ReportListResource = RealReportItem | FakeReportItem
 
   interface ReportResource {
     id: number

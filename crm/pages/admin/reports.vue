@@ -4,7 +4,9 @@ import type { Filters } from '~/components/Report/Filters.vue'
 
 const items = ref<ReportListResource[]>([])
 const reportDialog = ref<InstanceType<typeof ReportDialog>>()
-const filters = ref<Filters>({})
+const filters = ref<Filters>({
+  year: currentAcademicYear(),
+})
 const loading = ref(false)
 let page = 0
 let isLastPage = false
@@ -34,10 +36,13 @@ function onFiltersApply(f: Filters) {
   filters.value = f
   page = 0
   isLastPage = false
+  if (scrollContainer) {
+    scrollContainer.scrollTop = 0
+  }
   loadData()
 }
 
-function onUpdated(r: ReportListResource) {
+function onUpdated(r: RealReportItem) {
   const index = items.value.findIndex(e => e.id === r.id)
   if (index !== -1) {
     items.value[index] = r

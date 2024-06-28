@@ -14,10 +14,21 @@ class ReportListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        // real report
+        if ($this->id) {
+            return extract_fields($this, [
+                'year', 'program', 'is_published', 'is_moderated',
+                'created_at'
+            ], [
+                'teacher' => new PersonResource($this->teacher),
+                'client' => new PersonResource($this->client),
+            ]);
+        }
+        // fake report
         return extract_fields($this, [
-            'year', 'program', 'is_published', 'is_moderated',
-            'created_at'
+            'year', 'program', 'lessons_since_last_report'
         ], [
+            'id' => uniqid(),
             'teacher' => new PersonResource($this->teacher),
             'client' => new PersonResource($this->client),
         ]);

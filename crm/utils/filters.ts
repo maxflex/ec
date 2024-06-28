@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { format, getMonth } from 'date-fns'
 
 export function plural(
   number: number,
@@ -37,6 +38,11 @@ export function formatDateMode(date: string, mode: StatsMode) {
     case 'month': return dateObj.format('MMMM YYYY')
     case 'year': return dateObj.format('YYYY год')
   }
+}
+
+export function formatTextDate(date: string, year: boolean = false) {
+  const month = getMonth(date)
+  return format(date, `d ${MonthLabel[month]}${year ? ' yyyy' : ''}`)
 }
 
 export function formatPhone(number: string): string {

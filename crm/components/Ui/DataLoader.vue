@@ -1,26 +1,42 @@
 <script setup lang="ts">
-const { url, filters } = defineProps<{
+const props = withDefaults(defineProps<{
   url: string
-  filters?: object
-}>()
+  filters: object
+}>(), {
+  filters: () => ({}),
+})
+const { url, filters } = toRefs(props)
 const loading = ref(true)
 const items = ref<[]>([])
 
-onMounted(async () => {
-  const { data } = await useHttp<ApiResponse<[]>>(url, {
-    params: filters,
+async function loadData() {
+  console.log('LOAD DATA', filters)
+  loading.value = true
+  const { data } = await useHttp<ApiResponse<[]>>(url.value, {
+    params: filters.value,
   })
   if (data.value) {
     items.value = data.value.data
     // console.log('DATA', data.value.data)
   }
   loading.value = false
-})
+}
+
+onMounted(loadData)
+
+watch(
+  filters,
+  (newFilters) => {
+    console.log('Filters updated:', newFilters)
+    loadData()
+  },
+  { deep: true },
+)
 </script>
 
 <template>
   <slot name="filters" />
-  <UiLoaderr v-if="loading" />
+  <UiLoaderr3 v-if="loading" />
   <slot
     v-else-if="items.length > 0"
     :items="items"

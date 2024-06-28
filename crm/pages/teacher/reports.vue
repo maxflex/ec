@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ReportDialog } from '#build/components'
+import type { Filters } from '~/components/Report/TeacherFilters.vue'
 
 const items = ref<ReportListResource[]>([])
 const reportDialog = ref<InstanceType<typeof ReportDialog>>()
@@ -7,7 +8,9 @@ const loading = ref(false)
 let page = 0
 let isLastPage = false
 let scrollContainer: HTMLElement | null = null
-const filters = ref<{ year?: Year }>({})
+const filters = ref<Filters>({
+  year: currentAcademicYear(),
+})
 
 async function loadData() {
   if (loading.value || isLastPage) {
@@ -29,7 +32,7 @@ async function loadData() {
   loading.value = false
 }
 
-function onUpdated(r: ReportListResource) {
+function onUpdated(r: RealReportItem) {
   const index = items.value.findIndex(e => e.id === r.id)
   if (index !== -1) {
     items.value[index] = r
@@ -53,6 +56,16 @@ function onScroll() {
   }
 }
 
+function onFiltersApply(f: Filters) {
+  filters.value = f
+  page = 0
+  isLastPage = false
+  if (scrollContainer) {
+    scrollContainer.scrollTop = 0
+  }
+  loadData()
+}
+
 onMounted(() => {
   scrollContainer = document.documentElement.querySelector('main')
   scrollContainer?.addEventListener('scroll', onScroll)
@@ -73,16 +86,7 @@ nextTick(loadData)
 
 <template>
   <div class="filters">
-    <div class="filters-inputs">
-      <div>
-        <UiClearableSelect
-          v-model="filters.year"
-          label="Учебный год"
-          :items="selectItems(YearLabel)"
-          density="comfortable"
-        />
-      </div>
-    </div>
+    <ReportTeacherFilters @apply="onFiltersApply" />
   </div>
   <div>
     <UiLoader3 :loading="loading" />
