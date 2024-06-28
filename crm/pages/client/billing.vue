@@ -148,7 +148,7 @@ nextTick(loadData)
             </tr>
           </tbody>
           <tbody>
-            <tr>
+            <tr class="billing__total">
               <td colspan="2">
                 <b>
                   Итого остаток по договору
@@ -221,7 +221,7 @@ nextTick(loadData)
     }
     & > div {
       &:first-child {
-        width: 600px;
+        width: 650px;
       }
       &:last-child {
         // text-align: center;
@@ -234,7 +234,15 @@ nextTick(loadData)
       }
       table {
         margin-bottom: 50px;
+        border-collapse: collapse;
       }
+    }
+  }
+  &__total {
+    td {
+      border-top: 1px solid #e0e0e0;
+      padding-top: 28px;
+      font-size: 20px;
     }
   }
 }
