@@ -1,26 +1,47 @@
 <script setup lang="ts">
 import { mdiCheckAll, mdiWeb } from '@mdi/js'
+import type { ReportDialog } from '#build/components'
 
-const { items } = defineProps<{
+const props = defineProps<{
   items: ReportListResource[]
 }>()
-
-const emit = defineEmits<{
-  edit: [r: RealReportItem]
-  create: [r: FakeReportItem]
-}>()
+const { user } = useAuthStore()
+const { items } = toRefs(props)
+const reportDialog = ref<InstanceType<typeof ReportDialog>>()
 
 function isRealReport(r: ReportListResource): r is RealReportItem {
   return 'created_at' in r
+}
+
+function onUpdated(r: RealReportItem) {
+  const index = items.value.findIndex(e => e.id === r.id)
+  if (index === -1) {
+    return
+  }
+  items.value[index] = r
+  itemUpdated('report', r.id)
+}
+
+function onCreated(r: RealReportItem, fakeItemId: string) {
+  const index = items.value.findIndex(e => e.id === fakeItemId)
+  if (index === -1) {
+    return
+  }
+  items.value[index] = r
+  itemUpdated('report', r.id)
+}
+
+function onDeleted(r: RealReportItem) {
+  const index = items.value.findIndex(e => e.id === r.id)
+  if (index !== -1) {
+    items.value.splice(index, 1)
+  }
 }
 </script>
 
 <template>
   <div class="table">
     <div v-for="r in items" :id="`report-${r.id}`" :key="r.id">
-      <!-- <div style="width: 60px">
-        {{ r.id }}
-      </div> -->
       <div style="width: 170px">
         <NuxtLink
           :to="{ name: 'teachers-id', params: { id: r.teacher.id } }"
@@ -47,7 +68,7 @@ function isRealReport(r: ReportListResource): r is RealReportItem {
             icon="$edit"
             :size="48"
             variant="plain"
-            @click="emit('edit', r)"
+            @click="reportDialog?.edit(r.id)"
           />
         </div>
         <div
@@ -74,12 +95,12 @@ function isRealReport(r: ReportListResource): r is RealReportItem {
         </div>
       </template>
       <template v-else>
-        <div class="table-actionss">
+        <div v-if="user?.entity_type === EntityType.teacher" class="table-actionss">
           <v-btn
             icon="$edit"
             :size="48"
             variant="plain"
-            @click="emit('create', r)"
+            @click="reportDialog?.create(r)"
           />
         </div>
         <div style="width: 100px; flex: 1">
@@ -96,4 +117,10 @@ function isRealReport(r: ReportListResource): r is RealReportItem {
       </template>
     </div>
   </div>
+  <ReportDialog
+    ref="reportDialog"
+    @updated="onUpdated"
+    @created="onCreated"
+    @deleted="onDeleted"
+  />
 </template>

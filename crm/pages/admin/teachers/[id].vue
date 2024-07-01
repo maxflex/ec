@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import type { ReportDialog, TeacherDialog } from '#build/components'
+import type { TeacherDialog } from '#build/components'
 import type { Filters } from '~/components/Report/TeacherFilters.vue'
 
 const route = useRoute()
 const teacher = ref<TeacherResource>()
 const teacherDialog = ref<InstanceType<typeof TeacherDialog>>()
-const reportDialog = ref<InstanceType<typeof ReportDialog>>()
 
 const tabs = {
   groups: 'группы',
@@ -154,7 +153,7 @@ nextTick(loadData)
         </div>
       </template>
       <template #default="{ items }">
-        <ReportList editable :items="items" @edit="r => reportDialog?.edit(r.id)" />
+        <ReportList :items="items" />
       </template>
     </UiDataLoader>
     <UiDataLoader
@@ -240,7 +239,6 @@ nextTick(loadData)
     ref="teacherDialog"
     @updated="onTeacherUpdated"
   />
-  <ReportDialog ref="reportDialog" />
 </template>
 
 <style lang="scss">

@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import type { ReportDialog } from '#build/components'
 import type { Filters } from '~/components/Report/Filters.vue'
 
 const items = ref<ReportListResource[]>([])
-const reportDialog = ref<InstanceType<typeof ReportDialog>>()
 const filters = ref<Filters>({
   year: currentAcademicYear(),
 })
@@ -42,17 +40,6 @@ function onFiltersApply(f: Filters) {
   loadData()
 }
 
-function onUpdated(r: RealReportItem) {
-  const index = items.value.findIndex(e => e.id === r.id)
-  if (index !== -1) {
-    items.value[index] = r
-  }
-  else {
-    items.value.unshift(r)
-  }
-  itemUpdated('report', r.id)
-}
-
 function onScroll() {
   if (!scrollContainer || loading.value) {
     return
@@ -84,10 +71,6 @@ nextTick(loadData)
   </div>
   <div>
     <UiLoader3 :loading="loading" />
-    <ReportList :items="items" editable @edit="r => reportDialog?.edit(r.id)" />
+    <ReportList :items="items" />
   </div>
-  <ReportDialog
-    ref="reportDialog"
-    @updated="onUpdated"
-  />
 </template>

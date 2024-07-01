@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import type { ReportDialog } from '#build/components'
 import type { Filters } from '~/components/Report/TeacherFilters.vue'
 
 const items = ref<ReportListResource[]>([])
-const reportDialog = ref<InstanceType<typeof ReportDialog>>()
 const loading = ref(false)
 let page = 0
 let isLastPage = false
@@ -30,31 +28,6 @@ async function loadData() {
     isLastPage = meta.current_page >= meta.last_page
   }
   loading.value = false
-}
-
-function onUpdated(r: RealReportItem) {
-  const index = items.value.findIndex(e => e.id === r.id)
-  if (index === -1) {
-    return
-  }
-  items.value[index] = r
-  itemUpdated('report', r.id)
-}
-
-function onCreated(r: RealReportItem, fakeItemId: string) {
-  const index = items.value.findIndex(e => e.id === fakeItemId)
-  if (index === -1) {
-    return
-  }
-  items.value[index] = r
-  itemUpdated('report', r.id)
-}
-
-function onDeleted(r: RealReportItem) {
-  const index = items.value.findIndex(e => e.id === r.id)
-  if (index !== -1) {
-    items.value.splice(index, 1)
-  }
 }
 
 function onScroll() {
@@ -104,16 +77,6 @@ nextTick(loadData)
   </div>
   <div>
     <UiLoader3 :loading="loading" />
-    <ReportList
-      :items="items"
-      @edit="r => reportDialog?.edit(r.id)"
-      @create="reportDialog?.create"
-    />
+    <ReportList :items="items" />
   </div>
-  <ReportDialog
-    ref="reportDialog"
-    @updated="onUpdated"
-    @created="onCreated"
-    @deleted="onDeleted"
-  />
 </template>

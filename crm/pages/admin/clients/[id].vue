@@ -2,9 +2,9 @@
 import type {
   ClientDialog,
   GroupSelectorDialog,
-  ReportDialog,
   TestSelectorDialog,
 } from '#build/components'
+import type { Filters } from '~/components/Report/TeacherFilters.vue'
 
 const tabs = {
   requests: 'заявки',
@@ -23,10 +23,12 @@ const route = useRoute()
 const client = ref<ClientResource>()
 const clientDialog = ref<null | InstanceType<typeof ClientDialog>>()
 const testSelectorDialog = ref<null | InstanceType<typeof TestSelectorDialog>>()
-const reportDialog = ref<InstanceType<typeof ReportDialog>>()
 const groupSelectorDialog = ref<null | InstanceType<
   typeof GroupSelectorDialog
 >>()
+const reportFilters = ref<Filters>({
+  year: currentAcademicYear(),
+})
 
 async function loadData() {
   const { data } = await useHttp(`clients/${route.params.id}`)
@@ -161,11 +163,15 @@ nextTick(loadData)
       <UiDataLoader
         v-else-if="selectedTab === 'reports'"
         url="reports"
-        :filters="{ client_id: client.id }"
+        :filters="{ client_id: client.id, ...reportFilters }"
       >
+        <template #filters>
+          <div class="filters">
+            <ReportTeacherFilters @apply="f => (reportFilters = f)" />
+          </div>
+        </template>
         <template #default="{ items }">
-          <ReportList editable :items="items" @edit="r => reportDialog?.edit(r.id)" />
-          <ReportDialog ref="reportDialog" />
+          <ReportList :items="items" />
         </template>
       </UiDataLoader>
       <UiDataLoader
