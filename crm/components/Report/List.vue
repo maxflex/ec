@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { mdiCheckAll, mdiWeb } from '@mdi/js'
 
-const { items, editable } = defineProps<{
+const { items } = defineProps<{
   items: ReportListResource[]
-  editable?: boolean
 }>()
 
 const emit = defineEmits<{
   edit: [r: RealReportItem]
+  create: [r: FakeReportItem]
 }>()
 
 function isRealReport(r: ReportListResource): r is RealReportItem {
@@ -42,7 +42,7 @@ function isRealReport(r: ReportListResource): r is RealReportItem {
         {{ ProgramShortLabel[r.program] }}
       </div>
       <template v-if="isRealReport(r)">
-        <div v-if="editable" class="table-actionss">
+        <div class="table-actionss">
           <v-btn
             icon="$edit"
             :size="48"
@@ -74,16 +74,24 @@ function isRealReport(r: ReportListResource): r is RealReportItem {
         </div>
       </template>
       <template v-else>
+        <div class="table-actionss">
+          <v-btn
+            icon="$edit"
+            :size="48"
+            variant="plain"
+            @click="emit('create', r)"
+          />
+        </div>
         <div style="width: 100px; flex: 1">
           прошло занятий: {{ r.lessons_since_last_report }}
         </div>
         <div style="width: 160px; flex: initial">
-          <!-- <span class="text-error">
+          <span class="text-error">
             требуется отчёт
-          </span> -->
-          <v-chip class="text-error">
+          </span>
+          <!-- <v-chip class="text-error">
             требуется отчёт
-          </v-chip>
+          </v-chip> -->
         </div>
       </template>
     </div>

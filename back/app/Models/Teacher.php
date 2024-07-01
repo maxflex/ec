@@ -30,6 +30,11 @@ class Teacher extends Model
         return $this->hasMany(TeacherPayment::class)->latest();
     }
 
+    public function reports()
+    {
+        return $this->hasMany(Report::class);
+    }
+
     public function subjects(): Attribute
     {
         return Attribute::make(

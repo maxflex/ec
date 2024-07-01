@@ -20,5 +20,5 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::apiResource('lessons', LessonController::class)->only([
         'index', 'update', 'show'
     ]);
-    Route::apiResource('reports', ReportController::class)->only(['index', 'show']);
+    Route::apiResource('reports', ReportController::class);
 });

@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { clone } from 'rambda'
+
 const emit = defineEmits<{
-  deleted: [r: ReportResource]
+  deleted: [r: RealReportItem]
   updated: [r: RealReportItem]
-  created: [r: RealReportItem]
+  created: [r: RealReportItem, fakeItemId: string]
 }>()
 const modelDefaults: ReportResource = {
   id: newId(),
@@ -14,6 +16,7 @@ const modelDefaults: ReportResource = {
 }
 const { dialog, width } = useDialog('default')
 const itemId = ref<number>()
+let fakeItemId: string = ''
 const item = ref<ReportResource>(modelDefaults)
 const loading = ref(false)
 const deleting = ref(false)
@@ -31,6 +34,19 @@ async function edit(reportId: number) {
   loading.value = false
 }
 
+async function create(r: FakeReportItem) {
+  itemId.value = undefined
+  fakeItemId = r.id
+  item.value = clone({
+    ...modelDefaults,
+    year: r.year,
+    teacher: r.teacher,
+    client: r.client,
+    program: r.program,
+  })
+  dialog.value = true
+}
+
 async function destroy() {
   if (!confirm('Вы уверены, что хотите удалить отчёт?')) {
     return
@@ -43,7 +59,7 @@ async function destroy() {
     deleting.value = false
   }
   else {
-    emit('deleted', item.value)
+    emit('deleted', item.value as RealReportItem)
     dialog.value = false
     setTimeout(() => (deleting.value = false), 300)
   }
@@ -63,22 +79,30 @@ async function save() {
   else {
     const { data } = await useHttp<RealReportItem>('reports', {
       method: 'post',
-      body: item.value,
+      body: {
+        ...item.value,
+        client_id: item.value.client?.id,
+      },
     })
     if (data.value) {
-      emit('created', data.value)
+      emit('created', data.value, fakeItemId)
     }
   }
 }
 
-defineExpose({ edit })
+defineExpose({ edit, create })
 </script>
 
 <template>
   <v-dialog v-model="dialog" :width="width">
     <div class="dialog-wrapper">
       <div class="dialog-header">
-        Редактирование отчёта
+        <tempate v-if="itemId">
+          Редактирование отчёта
+        </tempate>
+        <template v-else>
+          Новый отчёт
+        </template>
         <v-btn
           icon="$save"
           :size="48"
@@ -88,32 +112,34 @@ defineExpose({ edit })
       </div>
       <UiLoaderr v-if="loading" />
       <div v-else class="dialog-body">
-        <div v-if="item.teacher">
-          <v-text-field
-            :model-value="formatFullName(item.teacher)"
-            label="Преподаватель"
-            disabled
-          />
+        <div class="double-input">
+          <div v-if="item.teacher">
+            <v-text-field
+              :model-value="formatNameShort(item.teacher)"
+              label="Преподаватель"
+              disabled
+            />
+          </div>
+          <div v-if="item.client">
+            <v-text-field
+              :model-value="formatName(item.client)"
+              label="Клиент"
+              disabled
+            />
+          </div>
         </div>
-        <div v-if="item.client">
-          <v-text-field
-            :model-value="formatFullName(item.client)"
-            label="Клиент"
-            disabled
-          />
-        </div>
-        <div>
+        <div class="double-input">
           <UiClearableSelect
             v-model="item.year"
             label="Учебный год"
             :items="selectItems(YearLabel)"
+            disabled
           />
-        </div>
-        <div>
           <UiClearableSelect
             v-model="item.program"
             :items="selectItems(ProgramLabel)"
             label="Программа"
+            disabled
           />
         </div>
         <div>

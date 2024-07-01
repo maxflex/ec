@@ -34,13 +34,27 @@ async function loadData() {
 
 function onUpdated(r: RealReportItem) {
   const index = items.value.findIndex(e => e.id === r.id)
-  if (index !== -1) {
-    items.value[index] = r
+  if (index === -1) {
+    return
   }
-  else {
-    items.value.unshift(r)
-  }
+  items.value[index] = r
   itemUpdated('report', r.id)
+}
+
+function onCreated(r: RealReportItem, fakeItemId: string) {
+  const index = items.value.findIndex(e => e.id === fakeItemId)
+  if (index === -1) {
+    return
+  }
+  items.value[index] = r
+  itemUpdated('report', r.id)
+}
+
+function onDeleted(r: RealReportItem) {
+  const index = items.value.findIndex(e => e.id === r.id)
+  if (index !== -1) {
+    items.value.splice(index, 1)
+  }
 }
 
 function onScroll() {
@@ -90,10 +104,16 @@ nextTick(loadData)
   </div>
   <div>
     <UiLoader3 :loading="loading" />
-    <ReportList :items="items" editable @edit="r => reportDialog?.edit(r.id)" />
+    <ReportList
+      :items="items"
+      @edit="r => reportDialog?.edit(r.id)"
+      @create="reportDialog?.create"
+    />
   </div>
   <ReportDialog
     ref="reportDialog"
     @updated="onUpdated"
+    @created="onCreated"
+    @deleted="onDeleted"
   />
 </template>

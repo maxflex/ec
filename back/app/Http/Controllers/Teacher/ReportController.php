@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Teacher;
 
+use App\Enums\Program;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReportListResource;
 use App\Http\Resources\ReportResource;
 use App\Models\FakeReport;
 use App\Models\Report;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ReportController extends Controller
 {
@@ -46,7 +48,13 @@ class ReportController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'client_id' => ['required', 'exists:clients,id'],
+            'program' => [Rule::enum(Program::class)],
+            'year' => ['required', 'numeric', 'gt:0']
+        ]);
+        $report = auth()->user()->entity->reports()->create($request->all());
+        return new ReportListResource($report);
     }
 
     /**
@@ -60,17 +68,18 @@ class ReportController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Report $report)
     {
-        //
+        $report->update($request->all());
+        return new ReportListResource($report);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Report $report)
     {
-        //
+        $report->delete();
     }
 
     protected function filterType(&$query, $type)
