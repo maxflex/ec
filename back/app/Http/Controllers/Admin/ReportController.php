@@ -29,7 +29,6 @@ class ReportController extends Controller
 
         $query = Report::query()
             ->prepareForUnion()
-            ->latest()
             ->with(['teacher', 'client']);
 
         $fakeQuery = FakeReport::query();

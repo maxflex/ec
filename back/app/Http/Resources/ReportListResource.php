@@ -18,15 +18,16 @@ class ReportListResource extends JsonResource
         if ($this->id) {
             return extract_fields($this, [
                 'year', 'program', 'is_published', 'is_moderated',
-                'created_at'
+                'price', 'created_at'
             ], [
+                'lessons_count' => $this->lessons->count(),
                 'teacher' => new PersonResource($this->teacher),
                 'client' => new PersonResource($this->client),
             ]);
         }
         // fake report
         return extract_fields($this, [
-            'year', 'program', 'lessons_since_last_report'
+            'year', 'program', 'lessons_count'
         ], [
             'id' => uniqid(),
             'teacher' => new PersonResource($this->teacher),

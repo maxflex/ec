@@ -513,6 +513,8 @@ declare global {
     client: PersonResource
     program: Program
     created_at: string
+    lessons_count: number
+    price: number | null
   }
 
   interface FakeReportItem {
@@ -521,7 +523,7 @@ declare global {
     teacher: PersonResource
     client: PersonResource
     program: Program
-    lessons_since_last_report: number
+    lessons_count: number
   }
 
   type ReportListResource = RealReportItem | FakeReportItem

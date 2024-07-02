@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\LessonStatus;
 use App\Enums\Program;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Report extends Model
@@ -28,6 +30,39 @@ class Report extends Model
         return $this->belongsTo(Client::class);
     }
 
+    public function getPreviousAttribute(): ?Report
+    {
+        return Report::query()
+            ->where('teacher_id', $this->teacher_id)
+            ->where('client_id', $this->client_id)
+            ->where('year', $this->year)
+            ->where('program', $this->program)
+            ->where('created_at', '<', $this->created_at)
+            ->latest()
+            ->first();
+    }
+
+    public function getLessonsAttribute(): Builder
+    {
+        $query = Lesson::query()
+            ->join('groups as g', 'g.id', '=', 'lessons.group_id')
+            ->join('contract_lessons as cl', 'cl.lesson_id', '=', 'lessons.id')
+            ->join('contracts as c', 'c.id', '=', 'cl.contract_id')
+            ->where('lessons.status', LessonStatus::conducted->value)
+            ->where('conducted_at', '<', $this->created_at)
+            ->where('teacher_id', $this->teacher_id)
+            ->where('c.client_id', $this->client_id)
+            ->where('g.year', $this->year)
+            ->where('g.program', $this->program);
+
+        $previousReport = $this->previous;
+        if ($previousReport !== null) {
+            $query->where('lessons.conducted_at', '>', $previousReport->created_at);
+        }
+
+        return $query;
+    }
+
     public function scopePrepareForUnion($query)
     {
         return $query->selectRaw(<<<SQL
@@ -39,7 +74,8 @@ class Report extends Model
             is_moderated,
             is_published,
             created_at,
-            NULL as lessons_since_last_report
+            price,
+            NULL as lessons_count
         SQL);
     }
 }

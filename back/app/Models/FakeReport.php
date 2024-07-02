@@ -47,7 +47,8 @@ class FakeReport
                 NULL as is_moderated,
                 NULL as is_published,
                 NULL as created_at,
-                COUNT(*) as lessons_since_last_report
+                NULL as price,
+                COUNT(*) as lessons_count
             SQL)
             ->where('l.status', LessonStatus::conducted->value)
             ->whereRaw(<<<SQL

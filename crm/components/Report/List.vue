@@ -56,10 +56,7 @@ function onDeleted(r: RealReportItem) {
           {{ formatName(r.client) }}
         </NuxtLink>
       </div>
-      <div style="width: 180px">
-        {{ YearLabel[r.year] }}
-      </div>
-      <div style="width: 130px">
+      <div style="width: 140px">
         {{ ProgramShortLabel[r.program] }}
       </div>
       <template v-if="isRealReport(r)">
@@ -70,6 +67,14 @@ function onDeleted(r: RealReportItem) {
             variant="plain"
             @click="reportDialog?.edit(r.id)"
           />
+        </div>
+        <div style="width: 200px">
+          прошло занятий: {{ r.lessons_count }}
+        </div>
+        <div style="width: 110px">
+          <span v-if="r.price">
+            {{ formatPrice(r.price) }} руб.
+          </span>
         </div>
         <div
           style="width: 100px; flex: 1"
@@ -104,7 +109,7 @@ function onDeleted(r: RealReportItem) {
           />
         </div>
         <div style="width: 100px; flex: 1">
-          прошло занятий: {{ r.lessons_since_last_report }}
+          прошло занятий: {{ r.lessons_count }}
         </div>
         <div style="width: 160px; flex: initial">
           <span class="text-error">
