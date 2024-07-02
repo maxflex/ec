@@ -147,6 +147,11 @@ switch (user?.entity_type) {
       },
       {
         icon: mdiCalendar,
+        title: 'События',
+        to: '/events',
+      },
+      {
+        icon: mdiCalendar,
         title: 'Праздники',
         to: '/vacations',
       },

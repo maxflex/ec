@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { mdiAccountGroup } from '@mdi/js'
-import { eachDayOfInterval, endOfMonth, format, getDay, getMonth, getWeek, startOfMonth } from 'date-fns'
+import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import type { LessonConductDialog, LessonDialog } from '#build/components'
 
 const { entity, id, editable, conductable, group } = defineProps<{
@@ -12,7 +12,7 @@ const { entity, id, editable, conductable, group } = defineProps<{
 }>()
 
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
-const year = ref<Year>(group === undefined ? 2023 : group.year)
+const year = ref<Year>(group === undefined ? currentAcademicYear() : group.year)
 const loading = ref(false)
 const schedule = ref<Schedule>({})
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()

@@ -562,6 +562,17 @@ declare global {
       }>
     }
   }
+  interface EventResource {
+    id: number
+    name: string
+    date: string
+    time?: string
+    duration: number | null
+    description: string | null
+    is_afterclass: boolean
+    user?: PersonResource
+    created_at?: string
+  }
 }
 
 export {}

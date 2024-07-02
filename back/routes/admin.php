@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\{
     CommentController,
     ContractController,
     ContractVersionController,
+    EventController,
     GroupController,
     LessonController,
     MacroController,
@@ -71,5 +72,6 @@ Route::middleware(['auth:crm'])->group(function () {
         'client-payments' => ClientPaymentController::class,
         'web-reviews' => WebReviewController::class,
         'reports' => ReportController::class,
+        'events' => EventController::class,
     ]);
 });
