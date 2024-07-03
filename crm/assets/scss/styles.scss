@@ -204,9 +204,9 @@ a:not(.v-list-item) {
     font-weight: bold;
     border-bottom: thin solid
       rgba(var(--v-border-color), var(--v-border-opacity));
-    & > span {
-      font-size: var(--header-font-size);
-    }
+    // & > span {
+    //   font-size: var(--header-font-size);
+    // }
   }
   &-section {
     margin-top: 30px;

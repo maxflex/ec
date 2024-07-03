@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
+import type { PersonSelectorDialog } from '#build/components'
 
 const emit = defineEmits<{
   updated: [e: EventListResource]
@@ -17,9 +18,11 @@ const modelDefaults: EventResource = {
   date: today(),
   description: null,
   duration: null,
+  participants: [],
   is_afterclass: false,
 }
 const item = ref<EventResource>(modelDefaults)
+const personSelectorDialog = ref<InstanceType<typeof PersonSelectorDialog>>()
 
 function create() {
   itemId.value = undefined
@@ -52,6 +55,10 @@ async function save() {
   }
   dialog.value = false
   setTimeout(() => saving.value = false, 300)
+}
+
+function onParticipantsSelected(participants: PersonListResource[]) {
+  item.value.participants = participants
 }
 
 async function destroy() {
@@ -125,6 +132,19 @@ defineExpose({ create, edit })
             label="Внеучебное"
           />
         </div>
+
+        <div>
+          <a
+            class="link-icon"
+            @click="personSelectorDialog?.open()"
+          >
+            участники ({{ item.participants.length }})
+            <v-icon
+              :size="16"
+              icon="$next"
+            />
+          </a>
+        </div>
         <div
           v-if="itemId"
           class="dialog-bottom"
@@ -146,4 +166,5 @@ defineExpose({ create, edit })
       </div>
     </div>
   </v-dialog>
+  <PersonSelectorDialog ref="personSelectorDialog" @selected="onParticipantsSelected" />
 </template>

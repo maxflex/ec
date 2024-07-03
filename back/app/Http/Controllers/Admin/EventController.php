@@ -18,7 +18,9 @@ class EventController extends Controller
         $request->validate([
             'year' => ['required']
         ]);
-        $query = Event::whereYear($request->year);
+        $query = Event::query()
+            ->whereYear($request->year)
+            ->withCount('participants');
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, EventListResource::class);
     }
@@ -37,6 +39,7 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
+        $event->loadCount('participants');
         return new EventResource($event);
     }
 
@@ -46,6 +49,14 @@ class EventController extends Controller
     public function update(Request $request, Event $event)
     {
         $event->update($request->all());
+        $event->participants()->delete();
+        foreach ($request->participants as $p) {
+            $event->participants()->create([
+                'entity_id' => $p['id'],
+                'entity_type' => $p['entity_type']
+            ]);
+        }
+        $event->loadCount('participants');
         return new EventListResource($event);
     }
 

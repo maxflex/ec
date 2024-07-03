@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\{
     GroupController,
     LessonController,
     MacroController,
+    PersonController,
     PreviewController,
     PhotoController,
     ReportController,
@@ -53,6 +54,7 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::get('group/{group}', 'group');
     });
     Route::apiResource('logs', LogController::class)->only('index');
+    Route::get('persons', PersonController::class);
     Route::apiResources([
         'requests' => RequestsController::class,
         'clients' => ClientController::class,

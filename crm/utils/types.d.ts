@@ -51,6 +51,9 @@ declare global {
 
   type PersonWithPhonesResource = PersonResource & HasPhones
   type PersonWithPhotoResource = PersonResource & HasPhoto
+  type PersonListResource = PersonWithPhotoResource & {
+    entity_type: typeof EntityType.teacher | typeof EntityType.client
+  }
 
   type ResponseErrors = string[]
 
@@ -568,6 +571,7 @@ declare global {
     date: string
     description: string | null
     is_afterclass: boolean
+    participants_count: number
     time?: string
     time_end?: string
   }
@@ -580,6 +584,7 @@ declare global {
     duration: number | null
     description: string | null
     is_afterclass: boolean
+    participants: PersonListResource[]
     user?: PersonResource
     created_at?: string
   }

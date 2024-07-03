@@ -31,7 +31,7 @@ defineEmits<{
     </div>
     <div style="width: 80px; display: flex; align-items: center">
       <v-icon :icon="mdiAccountGroup" class="mr-2 vfn-1" />
-      {{ 10 }}
+      {{ item.participants_count }}
     </div>
     <div style="width: 140px">
       <div class="event-status">

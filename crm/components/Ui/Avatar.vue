@@ -3,7 +3,7 @@ import { getGender } from 'lvovich'
 
 const { item, size } = withDefaults(
   defineProps<{
-    item: PersonResource & HasPhoto
+    item: PersonWithPhotoResource
     size?: number
   }>(),
   {
