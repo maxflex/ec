@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
 
+const emit = defineEmits<{
+  updated: [e: EventListResource]
+  deleted: [e: EventResource]
+}>()
 const { width, dialog } = useDialog('default')
 const timeMask = { mask: '##:##' }
+const deleting = ref(false)
 const saving = ref(false)
+const loading = ref(false)
 const itemId = ref<number>()
 const modelDefaults: EventResource = {
   id: newId(),
@@ -21,22 +27,52 @@ function create() {
   dialog.value = true
 }
 
-async function save() {
-  saving.value = true
-  if (itemId.value) {
-    //
+async function edit(e: EventListResource) {
+  const { id } = e
+  itemId.value = id
+  loading.value = true
+  dialog.value = true
+  const { data } = await useHttp<EventResource>(`events/${id}`)
+  if (data.value) {
+    item.value = data.value
   }
-  else {
-    const { data } = await useHttp(`events`, {
-      method: 'post',
-      body: item.value,
-    })
-    console.log(data)
-  }
-  saving.value = false
+  loading.value = false
 }
 
-defineExpose({ create })
+async function save() {
+  saving.value = true
+  const method = itemId.value ? `put` : `post`
+  const url = itemId.value ? `events/${itemId.value}` : `events`
+  const { data } = await useHttp<EventListResource>(url, {
+    method,
+    body: item.value,
+  })
+  if (data.value) {
+    emit('updated', data.value)
+  }
+  dialog.value = false
+  setTimeout(() => saving.value = false, 300)
+}
+
+async function destroy() {
+  if (!confirm('Вы уверены, что хотите удалить событие?')) {
+    return
+  }
+  deleting.value = true
+  const { data, status } = await useHttp(`events/${item.value.id}`, {
+    method: 'delete',
+  })
+  if (status.value === 'error') {
+    deleting.value = false
+  }
+  else if (data.value) {
+    emit('deleted', item.value)
+    dialog.value = false
+    setTimeout(() => deleting.value = false, 300)
+  }
+}
+
+defineExpose({ create, edit })
 </script>
 
 <template>
@@ -56,7 +92,8 @@ defineExpose({ create })
           @click="save()"
         />
       </div>
-      <div class="dialog-body">
+      <UiLoaderr v-if="loading" />
+      <div v-else class="dialog-body">
         <div class="double-input">
           <UiDateInput v-model="item.date" />
           <div>
@@ -86,6 +123,24 @@ defineExpose({ create })
           <v-checkbox
             v-model="item.is_afterclass"
             label="Внеучебное"
+          />
+        </div>
+        <div
+          v-if="itemId"
+          class="dialog-bottom"
+        >
+          <span>
+            событие создано
+            {{ formatName(item.user!) }}
+            {{ formatDateTime(item.created_at!) }}
+          </span>
+          <v-btn
+            icon="$delete"
+            :size="48"
+            color="red"
+            variant="plain"
+            :loading="deleting"
+            @click="destroy()"
           />
         </div>
       </div>

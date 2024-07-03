@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\EventListResource;
 use App\Http\Resources\EventResource;
 use App\Models\Event;
 use Illuminate\Http\Request;
@@ -17,9 +18,9 @@ class EventController extends Controller
         $request->validate([
             'year' => ['required']
         ]);
-        $query = Event::query();
+        $query = Event::whereYear($request->year);
         $this->filter($request, $query);
-        return $this->handleIndexRequest($request, $query, EventResource::class);
+        return $this->handleIndexRequest($request, $query, EventListResource::class);
     }
 
     /**
@@ -28,30 +29,32 @@ class EventController extends Controller
     public function store(Request $request)
     {
         $event = auth()->user()->entity->events()->create($request->all());
-        return new EventResource($event);
+        return new EventListResource($event);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Event $event)
     {
-        //
+        return new EventResource($event);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Event $event)
     {
-        //
+        $event->update($request->all());
+        return new EventListResource($event);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Event $event)
     {
-        //
+        $event->participants->each->delete();
+        $event->delete();
     }
 }

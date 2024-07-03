@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class EventResource extends JsonResource
+class EventListResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,8 +14,9 @@ class EventResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return extract_fields($this, ['*'], [
-            'user' => new PersonResource($this->user),
+        return extract_fields($this, [
+            'date', 'name', 'time', 'time_end',
+            'is_afterclass'
         ]);
     }
 }

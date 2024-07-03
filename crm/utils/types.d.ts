@@ -562,6 +562,16 @@ declare global {
       }>
     }
   }
+  interface EventListResource {
+    id: number
+    name: string
+    date: string
+    description: string | null
+    is_afterclass: boolean
+    time?: string
+    time_end?: string
+  }
+
   interface EventResource {
     id: number
     name: string

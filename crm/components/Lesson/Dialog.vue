@@ -18,7 +18,7 @@ const { dialog, width } = useDialog('default')
 const loading = ref(false)
 const itemId = ref<number | undefined>()
 const lesson = ref<LessonResource>(clone(modelDefaults))
-const destroying = ref(false)
+const deleting = ref(false)
 const startAt = reactive({
   date: '',
   time: '',
@@ -72,17 +72,17 @@ async function destroy() {
   if (!confirm('Вы уверены, что хотите удалить урок?')) {
     return
   }
-  destroying.value = true
+  deleting.value = true
   const { data, status } = await useHttp<LessonListResource>(`lessons/${lesson.value.id}`, {
     method: 'delete',
   })
   if (status.value === 'error') {
-    destroying.value = false
+    deleting.value = false
   }
   else if (data.value) {
     emit('destroyed', data.value)
     dialog.value = false
-    setTimeout(() => destroying.value = false, 300)
+    setTimeout(() => deleting.value = false, 300)
   }
 }
 
@@ -185,7 +185,7 @@ defineExpose({ create, edit })
             :size="48"
             color="red"
             variant="plain"
-            :loading="destroying"
+            :loading="deleting"
             @click="destroy()"
           />
         </div>

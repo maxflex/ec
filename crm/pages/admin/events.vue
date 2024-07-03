@@ -3,65 +3,61 @@ import type { EventDialog } from '#build/components'
 import type { Filters } from '~/components/Event/Filters.vue'
 
 const loading = ref(false)
-const items = ref<EventResource[]>([])
+const items = ref<EventListResource[]>([])
 let filters: Filters = {
   year: currentAcademicYear(),
 }
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
-let page = 0
-let isLastPage = false
 let scrollContainer: HTMLElement | null = null
 
 async function loadData() {
-  if (loading.value || isLastPage) {
+  if (loading.value) {
     return
   }
-  page++
   loading.value = true
-  const { data } = await useHttp<ApiResponse<EventResource[]>>(
+  const { data } = await useHttp<ApiResponse<EventListResource[]>>(
     'events',
     {
       params: {
-        page,
         ...filters,
       },
     },
   )
   if (data.value) {
-    const { meta, data: newItems } = data.value
-    items.value = page === 1 ? newItems : items.value.concat(newItems)
-    isLastPage = meta.current_page >= meta.last_page
+    const { data: newItems } = data.value
+    items.value = newItems
   }
   loading.value = false
 }
 
 function onFiltersApply(f: Filters) {
   filters = f
-  page = 0
-  isLastPage = false
+  if (scrollContainer) {
+    scrollContainer.scrollTop = 0
+  }
   loadData()
 }
 
-function onScroll() {
-  if (!scrollContainer || loading.value) {
-    return
+function onUpdated(e: EventListResource) {
+  const index = items.value.findIndex(x => x.id === e.id)
+  if (index !== -1) {
+    items.value[index] = e
   }
-  const { scrollTop, scrollHeight, clientHeight } = scrollContainer
-  const scrollPosition = scrollTop + clientHeight
-  const scrollThreshold = scrollHeight * 0.9
+  else {
+    items.value.unshift(e)
+  }
+  itemUpdated('event', e.id)
+}
 
-  if (scrollPosition >= scrollThreshold) {
-    loadData()
+function onDeleted(e: EventResource) {
+  const index = items.value.findIndex(x => x.id === e.id)
+  if (index !== -1) {
+    items.value.splice(index, 1)
   }
 }
 
 onMounted(() => {
   scrollContainer = document.documentElement.querySelector('main')
-  scrollContainer?.addEventListener('scroll', onScroll)
-})
-
-onUnmounted(() => {
-  scrollContainer?.removeEventListener('scroll', onScroll)
 })
 
 nextTick(loadData)
@@ -80,7 +76,7 @@ nextTick(loadData)
   </div>
   <div>
     <UiLoader3 :loading="loading" />
-    <EventList :items="items" />
+    <EventList :items="items" :year="filters.year" @edit="eventDialog?.edit" />
   </div>
-  <EventDialog ref="eventDialog" />
+  <EventDialog ref="eventDialog" @updated="onUpdated" @deleted="onDeleted" />
 </template>
