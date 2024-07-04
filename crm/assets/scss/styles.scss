@@ -497,22 +497,26 @@ a:not(.v-list-item) {
   visibility: hidden;
 }
 
-.bottom-bar-transition {
-  $ms: 0.3s;
-  $move: 49px;
-  &-leave-active,
-  &-enter-active {
-    transition: all linear $ms;
+.score {
+  $size: 30px;
+  border-radius: 50%;
+  height: $size;
+  width: $size;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  margin-right: 12px;
+  &--5 {
+    background: rgb(var(--v-theme-success), 0.5);
   }
-  &-leave-to {
-    opacity: 0;
-    transform: translateY($move);
+  &--4 {
+    background: rgb(var(--v-theme-success), 0.2);
   }
-  &-enter {
-    opacity: 0;
-    transform: translateY($move);
+  &--3 {
+    background: rgb(var(--v-theme-orange), 0.4);
   }
-  // &-move {
-  //   transition: transform $ms;
-  // }
+  &--2 {
+    background: rgb(var(--v-theme-error), 0.4);
+  }
 }

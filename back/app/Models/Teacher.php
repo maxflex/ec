@@ -113,18 +113,6 @@ class Teacher extends Model
             ->where('teacher_id', $this->id)
             ->get();
 
-        return $schedule
-            ->unique(fn ($l) => $l->id)
-            ->transform(fn ($l) => extract_fields($l, [
-                'date', 'time', 'time_end', 'status',
-                'cabinet', 'is_first', 'is_unplanned'
-            ], [
-                'group' => extract_fields($l->group, [
-                    'program'
-                ], [
-                    'contracts_count' => $l->group->contracts()->count()
-                ])
-            ]))
-            ->groupBy('date');
+        return $schedule->unique(fn ($l) => $l->id);
     }
 }

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { mdiChevronDown } from '@mdi/js'
-
 const { items, disabled } = defineProps<{
   items: SelectItems
   disabled?: boolean
@@ -20,7 +18,7 @@ const selectedItem = computed(() => items.find(e => e.value === model.value))
         }"
       >
         {{ selectedItem?.title }}
-        <v-icon :icon="mdiChevronDown" />
+        <v-icon icon="$expand" />
       </a>
     </template>
     <v-list>

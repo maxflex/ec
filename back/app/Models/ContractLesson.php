@@ -16,7 +16,8 @@ class ContractLesson extends Model
 
     protected $casts = [
         'status' => ContractLessonStatus::class,
-        'is_remote' => 'boolean'
+        'is_remote' => 'boolean',
+        'scores' => 'array',
     ];
 
     public function lesson()
@@ -27,5 +28,10 @@ class ContractLesson extends Model
     public function contract()
     {
         return $this->belongsTo(Contract::class);
+    }
+
+    public function getScoresAttribute($value)
+    {
+        return $value ?? [];
     }
 }

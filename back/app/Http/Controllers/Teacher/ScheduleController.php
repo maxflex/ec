@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\LessonListResource;
 use App\Models\{Teacher, Group};
 use Illuminate\Http\Request;
 
@@ -16,11 +17,15 @@ class ScheduleController extends Controller
         if ($teacher->id !== auth()->id()) {
             return response(status: 412);
         }
-        return $teacher->getSchedule($request->year);
+        return LessonListResource::collection(
+            $teacher->getSchedule($request->year)
+        );
     }
 
     public function group(Group $group)
     {
-        return $group->getSchedule();
+        return LessonListResource::collection(
+            $group->getSchedule()
+        );
     }
 }

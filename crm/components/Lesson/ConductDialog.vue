@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const emit = defineEmits(['conducted'])
-const { width, dialog } = useDialog('medium')
+const { width, dialog } = useDialog('large')
 const itemId = ref<number>()
 const item = ref<LessonConductResource>()
 
@@ -149,17 +149,53 @@ defineExpose({ open })
                 :items="selectItems(ContractLessonStatusLabel)"
               />
             </div>
-            <v-fade-transition group>
-              <div v-if="c.status !== 'absent'" style="width: 110px">
-                <UiDropdown
-                  v-model="c.is_remote"
-                  :items="[
-                    { value: false, title: 'очно' },
-                    { value: true, title: 'удалённо' },
-                  ]"
+            <div v-if="c.status !== 'absent'" style="width: 110px">
+              <UiDropdown
+                v-model="c.is_remote"
+                :items="[
+                  { value: false, title: 'очно' },
+                  { value: true, title: 'удалённо' },
+                ]"
+              />
+            </div>
+            <div v-if="c.status !== 'absent'">
+              <div v-for="(score, index) in c.scores" :key="index" class="contract-lesson__scores">
+                <span :class="`score score--${score.score}`">
+                  {{ score.score }}
+                </span>
+                <v-text-field
+                  v-model="c.scores[index].comment"
+                  density="compact"
+                  placeholder="комментарий к оценке"
+                  persistent-placeholder
                 />
               </div>
-              <div v-if="c.status === 'late'" style="width: 190px">
+              <v-menu>
+                <template #activator="{ props }">
+                  <a
+                    v-bind="props"
+                    class="ui-dropdown"
+                  >
+                    добавить оценку
+                    <v-icon icon="$expand" />
+                  </a>
+                </template>
+                <v-list>
+                  <v-list-item
+                    v-for="score in [5, 4, 3, 2] as LessonScore[]"
+                    :key="score"
+                    @click="c.scores.push({ score, comment: null })"
+                  >
+                    <span :class="`score score--${score}`">
+                      {{ score }}
+                    </span>
+                    {{ LessonScoreLabel[score] }}
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </div>
+
+            <!-- <div v-if="c.status === 'late'" style="width: 190px">
                 <v-text-field
                   v-model="c.minutes_late"
                   type="number"
@@ -169,8 +205,7 @@ defineExpose({ open })
                   suffix="минут"
                   persistent-placeholder
                 />
-              </div>
-            </v-fade-transition>
+              </div> -->
           </div>
         </div>
         <div
@@ -189,12 +224,16 @@ defineExpose({ open })
 
 <style lang="scss">
 .contract-lesson {
-  transition: background cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+  // transition: background cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
   &--absent {
     background: rgba(var(--v-theme-error), 0.1);
   }
-  &--late {
-    // background: rgba(var(--v-theme-warning), 0.1);
+  // &--late {
+  //   background: rgba(var(--v-theme-warning), 0.1);
+  // }
+  &__scores {
+    display: flex;
+    align-items: center;
   }
 }
 </style>

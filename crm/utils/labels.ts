@@ -314,6 +314,13 @@ export const EntityTypeLabel = {
   'App\\Models\\Group': 'группа',
 } as const
 
+export const LessonScoreLabel = {
+  5: 'пятeрка',
+  4: 'четвeрка',
+  3: 'тройка',
+  2: 'двойка',
+}
+
 export const YearLabel = {
   2024: '2024–2025 уч. г.',
   2023: '2023–2024 уч. г.',

@@ -19,7 +19,7 @@ class LessonConductResource extends JsonResource
         $contracts = $this->status === LessonStatus::conducted
             ? $this->contractLessons()->get()->map(
                 fn ($cl) => extract_fields($cl, [
-                    'is_remote', 'minutes_late', 'status'
+                    'is_remote', 'minutes_late', 'status', 'scores'
                 ], [
                     'client' => new PersonWithPhotoResource($cl->contract->client)
                 ])
@@ -32,6 +32,7 @@ class LessonConductResource extends JsonResource
                 'status' => ContractLessonStatus::present,
                 'is_remote' => false,
                 'minutes_late' => 10,
+                'scores' => []
             ]));
 
         return extract_fields($this, [

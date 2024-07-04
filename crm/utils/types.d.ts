@@ -31,6 +31,8 @@ declare global {
 
   type ContractLessonStatus = keyof typeof ContractLessonStatusLabel
 
+  type LessonScore = keyof typeof LessonScoreLabel
+
   interface Meta {
     current_page: number
     last_page: number
@@ -305,6 +307,10 @@ declare global {
       status: ContractLessonStatus
       is_remote: boolean
       minutes_late: number | null
+      scores: Array<{
+        score: LessonScore
+        comment: string | null
+      }>
     }>
   }
 
