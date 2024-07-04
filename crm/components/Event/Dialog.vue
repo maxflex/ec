@@ -14,8 +14,9 @@ const loading = ref(false)
 const itemId = ref<number>()
 const modelDefaults: EventResource = {
   id: newId(),
-  name: '',
+  year: currentAcademicYear(),
   date: today(),
+  name: '',
   description: null,
   duration: null,
   participants: [],
@@ -24,9 +25,10 @@ const modelDefaults: EventResource = {
 const item = ref<EventResource>(modelDefaults)
 const personSelectorDialog = ref<InstanceType<typeof PersonSelectorDialog>>()
 
-function create() {
+function create(year: Year) {
   itemId.value = undefined
   item.value = clone(modelDefaults)
+  item.value.year = year
   dialog.value = true
 }
 
@@ -101,8 +103,15 @@ defineExpose({ create, edit })
       </div>
       <UiLoaderr v-if="loading" />
       <div v-else class="dialog-body">
+        <div>
+          <v-select
+            v-model="item.year"
+            label="Учебный год"
+            :items="selectItems(YearLabel)"
+          />
+        </div>
         <div class="double-input">
-          <UiDateInput v-model="item.date" />
+          <UiDateInput :key="item.year" v-model="item.date" :year="item.year" />
           <div>
             <v-text-field
               v-model="item.time"

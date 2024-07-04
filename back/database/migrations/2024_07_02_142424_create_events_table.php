@@ -14,7 +14,8 @@ return new class extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->date('date')->index();
+            $table->unsignedSmallInteger('year')->index();
+            $table->date('date');
             $table->time('time')->nullable();
             $table->unsignedSmallInteger('duration')->nullable();
             $table->string('name');

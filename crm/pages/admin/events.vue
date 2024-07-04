@@ -69,7 +69,7 @@ nextTick(loadData)
     <v-btn
       append-icon="$next"
       color="primary"
-      @click="eventDialog?.create()"
+      @click="eventDialog?.create(filters.year)"
     >
       добавить событие
     </v-btn>

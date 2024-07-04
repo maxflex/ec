@@ -8,9 +8,14 @@ use Illuminate\Http\Request;
 
 class VacationController extends Controller
 {
+    protected $filters = [
+        'year' => ['year']
+    ];
+
     public function index(Request $request)
     {
         $query = Vacation::query();
+        $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query);
     }
 
@@ -21,5 +26,10 @@ class VacationController extends Controller
             return Vacation::create($request->all());
         }
         $vacation->delete();
+    }
+
+    protected function filterYear(&$query, $year)
+    {
+        $query->whereYear($year);
     }
 }

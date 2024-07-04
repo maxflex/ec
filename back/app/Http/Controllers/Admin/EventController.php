@@ -5,11 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EventListResource;
 use App\Http\Resources\EventResource;
-use App\Models\Event;
+use App\Models\{Client, Event, Teacher};
 use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
+    protected $filters = [
+        'equals' => ['year'],
+        'client' => ['client_id'],
+        'teacher' => ['teacher_id']
+    ];
+
     /**
      * Display a listing of the resource.
      */
@@ -18,9 +24,7 @@ class EventController extends Controller
         $request->validate([
             'year' => ['required']
         ]);
-        $query = Event::query()
-            ->whereYear($request->year)
-            ->withCount('participants');
+        $query = Event::withCount('participants');
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, EventListResource::class);
     }
@@ -31,6 +35,13 @@ class EventController extends Controller
     public function store(Request $request)
     {
         $event = auth()->user()->entity->events()->create($request->all());
+        foreach ($request->participants as $p) {
+            $event->participants()->create([
+                'entity_id' => $p['id'],
+                'entity_type' => $p['entity_type']
+            ]);
+        }
+        $event->loadCount('participants');
         return new EventListResource($event);
     }
 
@@ -67,5 +78,25 @@ class EventController extends Controller
     {
         $event->participants->each->delete();
         $event->delete();
+    }
+
+    protected function filterClient(&$query, $clientId)
+    {
+        $query->whereHas(
+            'participants',
+            fn ($q) => $q
+                ->where('entity_type', Client::class)
+                ->where('entity_id', $clientId)
+        );
+    }
+
+    protected function filterTeacher(&$query, $teacherId)
+    {
+        $query->whereHas(
+            'participants',
+            fn ($q) => $q
+                ->where('entity_type', Teacher::class)
+                ->where('entity_id', $teacherId)
+        );
     }
 }

@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
@@ -11,7 +9,7 @@ class Event extends Model
 {
     protected $fillable = [
         'date', 'time', 'name', 'description',
-        'is_afterclass', 'duration'
+        'is_afterclass', 'duration', 'year'
     ];
 
     protected $casts = [
@@ -37,15 +35,5 @@ class Event extends Model
         return Carbon::parse($this->date . ' ' . $this->time)
             ->addMinutes($this->duration)
             ->format("H:i");
-    }
-
-    public function scopeWhereYear($query, $year): Builder
-    {
-        return $query->whereRaw(<<<SQL
-            `date` between ? and ?
-        SQL, [
-            $year . '-09-01',
-            ($year + 1) . '-05-31'
-        ]);
     }
 }

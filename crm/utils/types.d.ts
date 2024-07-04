@@ -265,7 +265,8 @@ declare global {
     id: number
     teacher: PersonResource
     status: LessonStatus
-    start_at: string
+    date: string
+    time: string
     time_end: string
     cabinet: Cabinet
     is_unplanned: boolean
@@ -579,6 +580,7 @@ declare global {
   interface EventResource {
     id: number
     name: string
+    year: Year
     date: string
     time?: string
     duration: number | null

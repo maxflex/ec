@@ -9,7 +9,7 @@ defineEmits<{
 </script>
 
 <template>
-  <div :id="`event-${item.id}`">
+  <div :id="`event-${item.id}`" class="event-item">
     <div class="table-actionss">
       <v-btn
         icon="$edit"
@@ -26,7 +26,7 @@ defineEmits<{
         – {{ item.time_end }}
       </template>
     </div>
-    <div style="width: 440px">
+    <div style="width: 500px">
       {{ item.name }}
     </div>
     <div style="width: 80px; display: flex; align-items: center">
@@ -48,6 +48,15 @@ defineEmits<{
 </template>
 
 <style lang="scss">
+.event-item {
+  position: relative;
+  .table-actionss {
+    right: -10px !important;
+    top: -16px !important;
+    height: 60px !important;
+  }
+}
+
 .event-status {
   display: flex;
   align-items: center;

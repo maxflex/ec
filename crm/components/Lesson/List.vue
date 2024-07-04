@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { mdiAccountGroup } from '@mdi/js'
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
-import type { LessonConductDialog, LessonDialog } from '#build/components'
+import { groupBy } from 'rambda'
+import type { EventDialog, LessonConductDialog, LessonDialog } from '#build/components'
 
 const { entity, id, editable, conductable, group } = defineProps<{
   entity: Extract<EntityString, 'client' | 'teacher' | 'group'>
@@ -14,9 +14,12 @@ const { entity, id, editable, conductable, group } = defineProps<{
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const year = ref<Year>(group === undefined ? currentAcademicYear() : group.year)
 const loading = ref(false)
-const schedule = ref<Schedule>({})
+const lessons = ref<LessonListResource[]>([])
+const events = ref<EventListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
+const eventDialog = ref<InstanceType<typeof EventDialog>>()
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
+const vacations = ref<Record<string, boolean>>({})
 const dates = computed(() => {
   // Define the start and end months for the academic year
   const startMonth = 8 // September (0-indexed)
@@ -32,17 +35,60 @@ const dates = computed(() => {
   return allDates.map(d => format(d, 'yyyy-MM-dd'))
 })
 
-async function loadData() {
+const itemsByDate = computed((): {
+  [index: string]: Array<LessonListResource | EventListResource>
+} => {
+  return groupBy(x => x.date, [
+    ...lessons.value,
+    ...events.value,
+  ])
+})
+
+async function loadLessons() {
   loading.value = true
-  const { data } = await useHttp<Schedule>(`schedule/${entity}/${id}`, {
+  const { data } = await useHttp<LessonListResource[]>(`schedule/${entity}/${id}`, {
     params: {
       year: year.value,
     },
   })
   if (data.value) {
-    schedule.value = data.value
+    lessons.value = data.value
   }
   loading.value = false
+}
+
+async function loadEvents() {
+  const { data } = await useHttp<ApiResponse<EventListResource[]>>(`events`, {
+    params: {
+      year: year.value,
+      [`${entity}_id`]: id,
+    },
+  })
+  if (data.value) {
+    events.value = data.value.data
+  }
+}
+
+async function loadVacations() {
+  vacations.value = {}
+  const { data } = await useHttp<ApiResponse<VacationResource[]>>(`vacations`, {
+    params: { year: year.value },
+  })
+  if (data.value) {
+    for (const { date } of data.value.data) {
+      vacations.value[date] = true
+    }
+  }
+}
+
+function isEvent(item: LessonListResource | EventListResource): item is EventListResource {
+  return 'participants_count' in item
+}
+
+async function loadData() {
+  await loadLessons()
+  await loadEvents()
+  await loadVacations()
 }
 
 // function onLessonUpdated(l: LessonListResource) {
@@ -97,7 +143,7 @@ nextTick(loadData)
       :key="d"
       :class="{
         'week-separator': getDay(d) === 0,
-        'lesson-list--exam-date': group && group.exam_date === d,
+        'lesson-list--vacation': vacations[d] === true,
       }"
     >
       <div>
@@ -106,59 +152,22 @@ nextTick(loadData)
           {{ dayLabels[getDay(d)] }}
         </span>
       </div>
-      <div
-        v-for="l in schedule[d]"
-        :id="`lesson-${l.id}`"
-        :key="l.id"
-        :class="`lesson-list__status--${l.status}`"
-      >
-        <div v-if="editable || conductable" class="table-actionss">
-          <v-btn
-            icon="$edit"
-            :size="48"
-            variant="plain"
-            color="gray"
-            @click="editable ? lessonDialog?.edit(l.id) : conductDialog?.open(l.id, l.status)"
-          />
-        </div>
-        <div style="width: 110px" />
-        <div style="width: 120px">
-          {{ l.time }} – {{ l.time_end }}
-        </div>
-        <div style="width: 80px">
-          К–{{ l.cabinet }}
-        </div>
-        <div v-if="l.teacher" style="width: 150px">
-          <NuxtLink
-            :to="{ name: 'teachers-id', params: { id: l.teacher.id } }"
-          >
-            {{ formatNameShort(l.teacher) }}
-          </NuxtLink>
-        </div>
-        <div style="width: 90px">
-          <NuxtLink :to="{ name: 'groups-id', params: { id: l.group.id } }">
-            ГР-{{ l.group.id }}
-          </NuxtLink>
-        </div>
-        <div style="width: 120px">
-          {{ ProgramShortLabel[l.group.program] }}
-        </div>
-        <div style="width: 80px; display: flex; align-items: center">
-          <v-icon :icon="mdiAccountGroup" class="mr-2 vfn-1" />
-          {{ l.group.contracts_count }}
-        </div>
-        <div style="width: 140px">
-          <LessonStatus2 :status="l.status" />
-        </div>
-        <div>
-          <v-chip v-if="l.is_first" class="text-deepOrange">
-            первое
-          </v-chip>
-          <v-chip v-else-if="l.is_unplanned" class="text-purple">
-            внеплановое
-          </v-chip>
-        </div>
-      </div>
+      <template v-for="item in itemsByDate[d]">
+        <EventItem
+          v-if="isEvent(item)"
+          :key="`e-${item.id}`"
+          :item="item"
+          @edit="eventDialog?.edit"
+        />
+        <LessonItem
+          v-else :key="`l-${item.id}`"
+          :item="item"
+          :conductable="conductable"
+          :editable="editable"
+          @edit="lessonDialog?.edit"
+          @conduct="conductDialog?.open"
+        />
+      </template>
     </div>
   </div>
   <LessonDialog
@@ -168,8 +177,9 @@ nextTick(loadData)
   <LessonConductDialog
     v-else-if="conductable"
     ref="conductDialog"
-    @updated="loadData()"
+    @updated="loadLessons()"
   />
+  <EventDialog ref="eventDialog" />
 </template>
 
 <style lang="scss">
@@ -226,8 +236,8 @@ nextTick(loadData)
       opacity: 0.4;
     }
   }
-  &--exam-date {
-    background: rgba(var(--v-theme-orange), 0.2);
+  &--vacation {
+    background: rgba(var(--v-theme-red), 0.1);
   }
 }
 </style>
