@@ -27,7 +27,11 @@ const emit = defineEmits<{
         @click="editable ? emit('edit', item.id) : emit('conduct', item.id, item.status)"
       />
     </div>
-    <div style="width: 110px" />
+    <div style="width: 110px; position: relative;">
+      <div v-if="editable" style="position: absolute; left: 90px; top: -25px">
+        <slot name="checkbox" />
+      </div>
+    </div>
     <div style="width: 120px">
       {{ item.time }} – {{ item.time_end }}
     </div>

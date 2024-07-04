@@ -46,7 +46,7 @@ class LessonController extends Controller
      * Групповое добавление
      * @method POST
      */
-    public function batch(Request $request)
+    public function batchStore(Request $request)
     {
         $from = Carbon::parse($request->batch['start_date']);
         $to = Carbon::parse($request->batch['end_date']);
@@ -64,6 +64,20 @@ class LessonController extends Controller
         }
 
         return LessonListResource::collection($lessons);
+    }
+
+    public function batchUpdate(Request $request)
+    {
+        $lessons = Lesson::whereIn('id', $request->ids)->get();
+        $data = array_filter($request->lesson);
+        foreach ($lessons as $lesson) {
+            $lesson->update($data);
+        }
+    }
+
+    public function batchDestroy(Request $request)
+    {
+        Lesson::whereIn('id', $request->ids)->get()->each->delete();
     }
 
     public function destroy(Lesson $lesson)

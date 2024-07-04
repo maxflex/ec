@@ -285,6 +285,7 @@ declare global {
     price?: number
     cabinet?: Cabinet
     start_at?: string
+    duration: number
     status: LessonStatus
     topic?: string | null
     conducted_at: string | null

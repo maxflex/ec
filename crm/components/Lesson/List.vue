@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { groupBy } from 'rambda'
-import type { EventDialog, LessonConductDialog, LessonDialog } from '#build/components'
+import type { EventDialog, LessonBatchDialog, LessonConductDialog, LessonDialog } from '#build/components'
 
 const { entity, id, editable, conductable, group } = defineProps<{
   entity: Extract<EntityString, 'client' | 'teacher' | 'group'>
@@ -17,9 +17,20 @@ const loading = ref(false)
 const lessons = ref<LessonListResource[]>([])
 const events = ref<EventListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
+const lessonBatchDialog = ref<InstanceType<typeof LessonBatchDialog>>()
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 const vacations = ref<Record<string, boolean>>({})
+const checkboxes = ref<{ [key: number]: boolean }>({})
+const lessonIds = computed((): number[] => {
+  const result = []
+  for (const key in checkboxes.value) {
+    if (checkboxes.value[key] === true) {
+      result.push(Number.parseInt(key))
+    }
+  }
+  return result
+})
 const dates = computed(() => {
   // Define the start and end months for the academic year
   const startMonth = 8 // September (0-indexed)
@@ -92,6 +103,11 @@ async function loadData() {
   await loadLessons()
   await loadEvents()
   await loadVacations()
+}
+
+function onBatchUpdated() {
+  loadLessons()
+  checkboxes.value = {}
 }
 
 // function onLessonUpdated(l: LessonListResource) {
@@ -170,14 +186,46 @@ nextTick(loadData)
           :editable="editable"
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
-        />
+        >
+          <template #checkbox>
+            <v-checkbox v-model="checkboxes[item.id]" />
+          </template>
+        </LessonItem>
       </template>
     </div>
   </div>
+  <v-slide-y-reverse-transition>
+    <div v-if="lessonIds.length" class="bottom-bar">
+      <div>
+        выбрано:
+        <span class="text-gray">
+          {{ lessons.length }} /
+        </span>
+        {{ lessonIds.length }}
+      </div>
+      <div class="d-flex ga-4">
+        <v-btn variant="text" @click="checkboxes = {}">
+          отмена
+        </v-btn>
+        <v-btn
+          v-if="editable && group"
+          color="primary"
+          @click="lessonBatchDialog?.open(lessonIds, group?.year!)"
+        >
+          редактировать
+        </v-btn>
+      </div>
+    </div>
+  </v-slide-y-reverse-transition>
   <LessonDialog
     v-if="editable"
     ref="lessonDialog"
     @batch-saved="loadLessons"
+  />
+  <LessonBatchDialog
+    v-if="editable"
+    ref="lessonBatchDialog"
+    @updated="onBatchUpdated"
   />
   <LessonConductDialog
     v-else-if="conductable"
@@ -244,5 +292,20 @@ nextTick(loadData)
   &--vacation {
     background: rgba(var(--v-theme-red), 0.1);
   }
+}
+.bottom-bar {
+  position: absolute;
+  bottom: 0;
+  left: 255px;
+  padding: 0 20px;
+  height: 57px;
+  z-index: 3;
+  background: #fafafa;
+  width: calc(100vw - 255px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+  // border-top: 2px solid rgb(var(--v-theme-gray));
 }
 </style>

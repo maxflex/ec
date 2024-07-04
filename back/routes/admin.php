@@ -58,6 +58,14 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::apiResource('topics', TopicController::class)->only('index');
     Route::get('persons', PersonController::class);
     Route::post('lessons/batch', [LessonController::class, 'batch']);
+
+    // Групповое редактирование уроков
+    Route::prefix('lessons/batch')->controller(LessonController::class)->group(function () {
+        Route::post('/', 'batchStore');
+        Route::put('/', 'batchUpdate');
+        Route::delete('/', 'batchDestroy');
+    });
+
     Route::apiResources([
         'requests' => RequestsController::class,
         'clients' => ClientController::class,
