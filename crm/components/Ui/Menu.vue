@@ -3,6 +3,7 @@ import {
   mdiAccount,
   mdiAccountGroup,
   mdiAccountMultiple,
+  mdiBookOpenOutline,
   mdiCalendar,
   mdiCash,
   mdiCreditCardCheckOutline,
@@ -114,6 +115,11 @@ switch (user?.entity_type) {
         icon: mdiHumanMaleBoard,
         title: 'Преподаватели',
         to: '/teachers',
+      },
+      {
+        icon: mdiBookOpenOutline,
+        title: 'Темы',
+        to: '/topics',
       },
       {
         icon: mdiFileDocumentEditOutline,

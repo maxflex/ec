@@ -83,6 +83,7 @@ defineExpose({ edit })
             v-model="item.program"
             :items="selectItems(ProgramLabel)"
             label="Программа"
+            disabled
           />
         </div>
         <div

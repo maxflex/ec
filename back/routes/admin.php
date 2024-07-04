@@ -29,6 +29,7 @@ use App\Http\Controllers\Admin\{
     WebReviewController,
 };
 use App\Http\Controllers\Common\LogController;
+use App\Http\Controllers\TopicController;
 
 Route::middleware(['auth:crm'])->group(function () {
     // TODO: улучшить
@@ -54,6 +55,7 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::get('group/{group}', 'group');
     });
     Route::apiResource('logs', LogController::class)->only('index');
+    Route::apiResource('topics', TopicController::class)->only('index');
     Route::get('persons', PersonController::class);
     Route::apiResources([
         'requests' => RequestsController::class,

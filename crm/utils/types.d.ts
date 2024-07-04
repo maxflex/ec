@@ -590,6 +590,15 @@ declare global {
     user?: PersonResource
     created_at?: string
   }
+
+  interface TopicListResource {
+    id: number
+    teacher: PersonResource
+    is_topic_verified: boolean
+    topic: string
+    date: string
+    time: string
+  }
 }
 
 export {}
