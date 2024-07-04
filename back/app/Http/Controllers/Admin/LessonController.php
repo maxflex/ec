@@ -55,11 +55,9 @@ class LessonController extends Controller
 
         while ($from->lessThanOrEqualTo($to)) {
             $dayOfWeek = ($from->dayOfWeek + 6) % 7;
-            if (in_array($dayOfWeek, $request->batch['weekdays'])) {
-                $data['start_at'] = join(' ', [
-                    $from->format('Y-m-d'),
-                    $request->time,
-                ]);
+            $time = $request->batch['weekdays'][$dayOfWeek];
+            if ($time) {
+                $data['start_at'] = join(' ', [$from->format('Y-m-d'), $time]);
                 $lessons[] = auth()->user()->entity->lessons()->create($data);
             }
             $from->addDay();

@@ -58,6 +58,9 @@ async function loadLessons() {
 }
 
 async function loadEvents() {
+  if (entity === 'group') {
+    return
+  }
   const { data } = await useHttp<ApiResponse<EventListResource[]>>(`events`, {
     params: {
       year: year.value,
@@ -160,7 +163,8 @@ nextTick(loadData)
           @edit="eventDialog?.edit"
         />
         <LessonItem
-          v-else :key="`l-${item.id}`"
+          v-else
+          :key="`l-${item.id}`"
           :item="item"
           :conductable="conductable"
           :editable="editable"
@@ -173,11 +177,12 @@ nextTick(loadData)
   <LessonDialog
     v-if="editable"
     ref="lessonDialog"
+    @batch-saved="loadLessons"
   />
   <LessonConductDialog
     v-else-if="conductable"
     ref="conductDialog"
-    @updated="loadLessons()"
+    @updated="loadLessons"
   />
   <EventDialog ref="eventDialog" />
 </template>

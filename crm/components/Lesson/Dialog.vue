@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
 
+interface BatchAdd {
+  weekdays: { [key: number]: string }
+  start_date: string
+  end_date: string
+}
+
 const emit = defineEmits<{
   updated: [l: LessonListResource]
   destroyed: [l: LessonListResource]
   batchSaved: [l: LessonListResource[]]
 }>()
-
-const dayLabels = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']
 
 const modelDefaults: LessonResource = {
   id: newId(),
@@ -16,11 +20,21 @@ const modelDefaults: LessonResource = {
   is_topic_verified: false,
   is_unplanned: false,
 }
-const batchDefaults = {
-  weekdays: [],
+const dayLabels = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'] as const
+const batchDefaults: BatchAdd = {
+  weekdays: {
+    0: '',
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+    5: '',
+    6: '',
+  },
   start_date: '',
   end_date: '',
 }
+const saving = ref(false)
 const timeMask = { mask: '##:##' }
 const { dialog, width } = useDialog('default')
 const loading = ref(false)
@@ -35,6 +49,8 @@ const year = ref<Year>()
 
 // групповое добавление
 const batch = ref(clone(batchDefaults))
+
+const isBatchAdd = computed(() => Object.values(batch.value.weekdays).some(e => !!e))
 
 function create(groupId: number, y: Year) {
   itemId.value = undefined
@@ -64,10 +80,10 @@ watch(lesson, () => {
 })
 
 async function save() {
-  loading.value = true
+  saving.value = true
   // групповое добавление
-  if (batch.value.weekdays.length) {
-    return batchSave()
+  if (isBatchAdd.value) {
+    return saveBatch()
   }
   lesson.value.start_at = [startAt.date, startAt.time].join(' ')
   const method = itemId.value ? 'put' : 'post'
@@ -81,10 +97,10 @@ async function save() {
     itemUpdated('lesson', data.value.id)
   }
   dialog.value = false
-  setTimeout(() => loading.value = false, 300)
+  setTimeout(() => saving.value = false, 300)
 }
 
-async function batchSave() {
+async function saveBatch() {
   const { data } = await useHttp<LessonListResource[]>(
     `lessons/batch`,
     {
@@ -92,7 +108,6 @@ async function batchSave() {
       body: {
         batch: batch.value,
         lesson: lesson.value,
-        time: startAt.time,
       },
     },
   )
@@ -100,7 +115,7 @@ async function batchSave() {
     emit('batchSaved', data.value)
   }
   dialog.value = false
-  setTimeout(() => loading.value = false, 300)
+  setTimeout(() => saving.value = false, 300)
 }
 
 async function destroy() {
@@ -141,6 +156,7 @@ defineExpose({ create, edit })
           icon="$save"
           :size="48"
           color="#fafafa"
+          :loading="saving"
           @click="save()"
         />
       </div>
@@ -182,13 +198,14 @@ defineExpose({ create, edit })
           <UiDateInput
             v-model="startAt.date"
             :year="year"
-            :disabled="batch.weekdays.length > 0"
+            :disabled="isBatchAdd"
           />
           <div>
             <v-text-field
               v-model="startAt.time"
               v-maska:[timeMask]
               label="Время"
+              :disabled="isBatchAdd"
             />
           </div>
         </div>
@@ -209,34 +226,36 @@ defineExpose({ create, edit })
             label="Внеплановое"
           />
         </div>
-        <template v-if="!itemId">
-          <h4>Групповое добавление</h4>
-          <div>
-            <v-btn-toggle
-              v-model="batch.weekdays"
-              multiple
-              group
-              color="primary"
-            >
-              <v-btn
-                v-for="(label, index) in dayLabels"
-                :key="index"
-                :rounded="false"
-                size="default"
+        <div v-if="!itemId" class="dialog-section">
+          <div class="dialog-section__title">
+            Групповое добавление
+          </div>
+          <div class="table mt-4 mb-10">
+            <div v-for="(label, index) in dayLabels" :key="index">
+              <div
+                class="text-uppercase" style="width: 50px"
+                :class="{
+                  'opacity-2': !batch.weekdays[index],
+                }"
               >
                 {{ label }}
-              </v-btn>
-            </v-btn-toggle>
+              </div>
+              <div style="width: 100px">
+                <v-text-field
+                  v-model="batch.weekdays[index]"
+                  v-maska:[timeMask]
+                  density="compact"
+                />
+              </div>
+              <div />
+            </div>
           </div>
           <div class="double-input">
             <UiDateInput v-model="batch.start_date" :year="year" label="Дата от" />
             <UiDateInput v-model="batch.end_date" :year="year" label="до" />
           </div>
-        </template>
-        <div
-          v-else
-          class="dialog-bottom"
-        >
+        </div>
+        <div v-else class="dialog-bottom">
           <span v-if="lesson.user && lesson.created_at">
             урок создан
             {{ formatName(lesson.user) }}
