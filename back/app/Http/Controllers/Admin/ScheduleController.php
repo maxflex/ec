@@ -24,6 +24,8 @@ class ScheduleController extends Controller
 
     public function group(Group $group)
     {
-        return $group->getSchedule();
+        return  LessonListResource::collection(
+            $group->getSchedule()
+        );
     }
 }

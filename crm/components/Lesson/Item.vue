@@ -60,7 +60,7 @@ const emit = defineEmits<{
       <v-chip v-if="item.is_first" class="text-deepOrange">
         первое
       </v-chip>
-      <v-chip v-else-if="item.is_unplanned" class="text-purple">
+      <v-chip v-else-if="item.is_unplanned" class="text-deepOrange">
         внеплановое
       </v-chip>
     </div>

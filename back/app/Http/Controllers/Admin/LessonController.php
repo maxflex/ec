@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\{LessonResource, LessonListResource};
 use App\Models\Lesson;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class LessonController extends Controller
 {
@@ -39,6 +40,32 @@ class LessonController extends Controller
     {
         $lesson = auth()->user()->entity->lessons()->create($request->all());
         return new LessonListResource($lesson);
+    }
+
+    /**
+     * Групповое добавление
+     * @method POST
+     */
+    public function batch(Request $request)
+    {
+        $from = Carbon::parse($request->batch['start_date']);
+        $to = Carbon::parse($request->batch['end_date']);
+        $data = $request->lesson;
+        $lessons = [];
+
+        while ($from->lessThanOrEqualTo($to)) {
+            $dayOfWeek = ($from->dayOfWeek + 6) % 7;
+            if (in_array($dayOfWeek, $request->batch['weekdays'])) {
+                $data['start_at'] = join(' ', [
+                    $from->format('Y-m-d'),
+                    $request->time,
+                ]);
+                $lessons[] = auth()->user()->entity->lessons()->create($data);
+            }
+            $from->addDay();
+        }
+
+        return LessonListResource::collection($lessons);
     }
 
     public function destroy(Lesson $lesson)

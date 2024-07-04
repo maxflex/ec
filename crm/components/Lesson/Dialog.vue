@@ -4,7 +4,10 @@ import { clone } from 'rambda'
 const emit = defineEmits<{
   updated: [l: LessonListResource]
   destroyed: [l: LessonListResource]
+  batchSaved: [l: LessonListResource[]]
 }>()
+
+const dayLabels = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']
 
 const modelDefaults: LessonResource = {
   id: newId(),
@@ -12,6 +15,11 @@ const modelDefaults: LessonResource = {
   conducted_at: null,
   is_topic_verified: false,
   is_unplanned: false,
+}
+const batchDefaults = {
+  weekdays: [],
+  start_date: '',
+  end_date: '',
 }
 const timeMask = { mask: '##:##' }
 const { dialog, width } = useDialog('default')
@@ -25,11 +33,15 @@ const startAt = reactive({
 })
 const year = ref<Year>()
 
+// групповое добавление
+const batch = ref(clone(batchDefaults))
+
 function create(groupId: number, y: Year) {
   itemId.value = undefined
   year.value = y
   lesson.value = clone(modelDefaults)
   lesson.value.group_id = groupId
+  batch.value = clone(batchDefaults)
   dialog.value = true
 }
 
@@ -52,8 +64,11 @@ watch(lesson, () => {
 })
 
 async function save() {
-  dialog.value = false
   loading.value = true
+  // групповое добавление
+  if (batch.value.weekdays.length) {
+    return batchSave()
+  }
   lesson.value.start_at = [startAt.date, startAt.time].join(' ')
   const method = itemId.value ? 'put' : 'post'
   const url = itemId.value ? `lessons/${itemId.value}` : 'lessons'
@@ -65,7 +80,27 @@ async function save() {
     emit('updated', data.value)
     itemUpdated('lesson', data.value.id)
   }
-  loading.value = false
+  dialog.value = false
+  setTimeout(() => loading.value = false, 300)
+}
+
+async function batchSave() {
+  const { data } = await useHttp<LessonListResource[]>(
+    `lessons/batch`,
+    {
+      method: 'post',
+      body: {
+        batch: batch.value,
+        lesson: lesson.value,
+        time: startAt.time,
+      },
+    },
+  )
+  if (data.value) {
+    emit('batchSaved', data.value)
+  }
+  dialog.value = false
+  setTimeout(() => loading.value = false, 300)
 }
 
 async function destroy() {
@@ -144,7 +179,11 @@ defineExpose({ create, edit })
           />
         </div>
         <div class="double-input">
-          <UiDateInput v-model="startAt.date" :year="year" />
+          <UiDateInput
+            v-model="startAt.date"
+            :year="year"
+            :disabled="batch.weekdays.length > 0"
+          />
           <div>
             <v-text-field
               v-model="startAt.time"
@@ -170,8 +209,32 @@ defineExpose({ create, edit })
             label="Внеплановое"
           />
         </div>
+        <template v-if="!itemId">
+          <h4>Групповое добавление</h4>
+          <div>
+            <v-btn-toggle
+              v-model="batch.weekdays"
+              multiple
+              group
+              color="primary"
+            >
+              <v-btn
+                v-for="(label, index) in dayLabels"
+                :key="index"
+                :rounded="false"
+                size="default"
+              >
+                {{ label }}
+              </v-btn>
+            </v-btn-toggle>
+          </div>
+          <div class="double-input">
+            <UiDateInput v-model="batch.start_date" :year="year" label="Дата от" />
+            <UiDateInput v-model="batch.end_date" :year="year" label="до" />
+          </div>
+        </template>
         <div
-          v-if="itemId"
+          v-else
           class="dialog-bottom"
         >
           <span v-if="lesson.user && lesson.created_at">

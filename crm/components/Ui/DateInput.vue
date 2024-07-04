@@ -1,13 +1,15 @@
 <script setup lang="ts">
-const { label, year } = withDefaults(
+const props = withDefaults(
   defineProps<{
     label?: string
     year?: Year
+    disabled?: boolean
   }>(),
   {
     label: 'Дата',
   },
 )
+const { label, year, disabled } = toRefs(props)
 const model = defineModel<string>()
 const calendarDialog = ref()
 </script>
@@ -15,12 +17,16 @@ const calendarDialog = ref()
 <template>
   <div
     class="date-input"
+    :class="{
+      'no-pointer-events': disabled,
+    }"
     @click="() => calendarDialog.open()"
   >
     <v-text-field
       :label="label"
       :model-value="model ? formatDate(model) : null"
       hide-details
+      :disabled="disabled"
     />
     <v-icon
       icon="$next"

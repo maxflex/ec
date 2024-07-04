@@ -57,6 +57,7 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::apiResource('logs', LogController::class)->only('index');
     Route::apiResource('topics', TopicController::class)->only('index');
     Route::get('persons', PersonController::class);
+    Route::post('lessons/batch', [LessonController::class, 'batch']);
     Route::apiResources([
         'requests' => RequestsController::class,
         'clients' => ClientController::class,

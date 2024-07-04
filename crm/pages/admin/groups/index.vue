@@ -5,7 +5,9 @@ import type { Filters } from '~/components/Group/Filters.vue'
 const items = ref<GroupListResource[]>()
 const paginator = usePaginator()
 const groupDialog = ref<null | InstanceType<typeof GroupDialog>>()
-let filters = loadFilters<Filters>({})
+let filters = loadFilters<Filters>({
+  year: currentAcademicYear(),
+})
 
 async function loadData() {
   if (paginator.loading) {
