@@ -170,7 +170,7 @@ defineExpose({ open })
                   persistent-placeholder
                 />
               </div>
-              <v-menu>
+              <v-menu v-if="c.scores.length < 4">
                 <template #activator="{ props }">
                   <a
                     v-bind="props"
