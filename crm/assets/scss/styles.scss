@@ -520,3 +520,14 @@ a:not(.v-list-item) {
     background: rgb(var(--v-theme-error), 0.4);
   }
 }
+
+.contract-programs {
+  display: inline-flex;
+  & > span {
+    position: relative;
+    &:not(:last-child)::after {
+      content: '/';
+      padding: 0 3px;
+    }
+  }
+}

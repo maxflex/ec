@@ -42,28 +42,22 @@ const emit = defineEmits<{
         </template>
       </div>
       <div>
-        <div class="contract-version-list-2__programs">
-          <div
-            v-for="p in version.programs.slice(
-              0,
-              version.programs.length > 3 ? 2 : 3,
-            )"
-            :key="p.id"
-          >
-            <span :class="{ 'text-error': p.is_closed }">
-              {{ ProgramLabel[p.program] }}
+        <span v-if="version.programs.length === 0" class="text-gray"> нет программ </span>
+        <template v-else>
+          программы:
+          <span class="contract-programs">
+            <span v-if="version.programs.some((e) => !e.is_closed)">
+              {{ version.programs.filter((e) => !e.is_closed).length }}
             </span>
-            <span class="text-grey">
-              {{ p.lessons }}
+
+            <span
+              v-if="version.programs.some((e) => e.is_closed)"
+              class="text-error"
+            >
+              {{ version.programs.filter((e) => e.is_closed).length }}
             </span>
-          </div>
-          <div
-            v-if="version.programs.length > 3"
-            class="text-gray"
-          >
-            ... ещё {{ version.programs.length - 2 }}
-          </div>
-        </div>
+          </span>
+        </template>
       </div>
     </div>
   </div>

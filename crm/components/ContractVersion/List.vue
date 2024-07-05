@@ -40,50 +40,30 @@ const emit = defineEmits<{
         {{ YearLabel[item.contract.year] }}
       </div>
       <div style="width: 150px">
-        программы:
-        <span class="contract-version-list__programs">
-          <span v-if="item.programs.some(e => !e.is_closed)">
-            {{ item.programs.filter(e => !e.is_closed).length }}
-          </span>
+        <span v-if="item.programs.length === 0" class="text-gray"> нет программ </span>
+        <template v-else>
+          программы:
+          <span class="contract-programs">
+            <span v-if="item.programs.some((e) => !e.is_closed)">
+              {{ item.programs.filter((e) => !e.is_closed).length }}
+            </span>
 
-          <span
-            v-if="item.programs.some(e => e.is_closed)"
-            class="text-error"
-          >
-            {{ item.programs.filter(e => e.is_closed).length }}
+            <span
+              v-if="item.programs.some((e) => e.is_closed)"
+              class="text-error"
+            >
+              {{ item.programs.filter((e) => e.is_closed).length }}
+            </span>
           </span>
-
-        </span>
+        </template>
       </div>
       <div style="width: 150px">
-        <span
-          v-if="!item.payments_count"
-          class="text-gray"
-        >
+        <span v-if="!item.payments_count" class="text-gray">
           платежей нет
         </span>
-        <span v-else>
-          платежей: {{ item.payments_count }}
-        </span>
+        <span v-else> платежей: {{ item.payments_count }} </span>
       </div>
-      <div>
-        {{ formatPrice(item.sum) }} руб.
-      </div>
+      <div>{{ formatPrice(item.sum) }} руб.</div>
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.contract-version-list {
-  &__programs {
-    display: inline-flex;
-    & > span {
-      position: relative;
-      &:not(:last-child)::after {
-        content: '/';
-        padding: 0 3px;
-      }
-    }
-  }
-}
-</style>
