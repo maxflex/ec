@@ -127,18 +127,5 @@ class Client extends Model
         }
 
         return $schedule->unique(fn ($l) => $l->id);
-        // ->transform(fn ($l) => extract_fields($l, [
-        //     'date', 'time', 'time_end', 'status',
-        //     'cabinet', 'is_first', 'is_unplanned'
-        // ], [
-        //     'teacher' => extract_fields($l->teacher, [
-        //         'first_name', 'last_name', 'middle_name'
-        //     ]),
-        //     'group' => extract_fields($l->group, [
-        //         'program'
-        //     ], [
-        //         'contracts_count' => $l->group->contracts()->count()
-        //     ])
-        // ]));
     }
 }

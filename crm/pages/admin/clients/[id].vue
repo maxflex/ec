@@ -10,7 +10,6 @@ const tabs = {
   requests: 'заявки',
   contracts: 'договоры',
   schedule: 'расписание',
-  schedule2: 'расписание-2',
   groups: 'группы',
   reports: 'отчеты',
   reviews: 'отзывы',
@@ -203,14 +202,6 @@ nextTick(loadData)
         :id="client.id"
         entity="client"
       />
-      <ScheduleList
-        v-else-if="selectedTab === 'schedule2'"
-        :id="client.id"
-        entity="client"
-      />
-      <!-- <ClientGroupsTab
-        v-else-if="selectedTab === 'groups'"
-      /> -->
       <div
         v-else-if="selectedTab === 'groups'"
       >

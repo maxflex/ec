@@ -64,19 +64,21 @@ defineExpose({ edit })
             color="orange"
           />
         </div>
-        <div v-if="item.client">
-          <v-text-field
-            :model-value="formatFullName(item.client)"
-            label="Клиент"
-            disabled
-          />
-        </div>
-        <div v-if="item.teacher">
-          <v-text-field
-            :model-value="formatFullName(item.teacher)"
-            label="Преподаватель"
-            disabled
-          />
+        <div class="double-input">
+          <div v-if="item.teacher">
+            <v-text-field
+              :model-value="formatNameShort(item.teacher)"
+              label="Преподаватель"
+              disabled
+            />
+          </div>
+          <div v-if="item.client">
+            <v-text-field
+              :model-value="formatName(item.client)"
+              label="Клиент"
+              disabled
+            />
+          </div>
         </div>
         <div>
           <v-select

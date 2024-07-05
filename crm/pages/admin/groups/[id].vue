@@ -3,7 +3,6 @@ import type { GroupDialog } from '#build/components'
 
 const tabs = {
   schedule: 'расписание',
-  schedule2: 'расписание-2',
   students: 'ученики',
 } as const
 
@@ -89,10 +88,7 @@ nextTick(loadData)
         </div>
       </div>
     </div>
-    <div v-if="selectedTab === 'schedule2'">
-      <ScheduleList :id="group.id!" entity="group" editable conductable :group="group" />
-    </div>
-    <div v-else-if="selectedTab === 'schedule'">
+    <div v-if="selectedTab === 'schedule'">
       <LessonList :id="group.id" editable entity="group" :group="group" />
     </div>
     <div

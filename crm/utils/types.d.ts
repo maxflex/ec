@@ -95,7 +95,7 @@ declare global {
 
   interface User extends PersonResource, HasPhoto {
     id: number
-    entity_type: string
+    entity_type: typeof EntityType.client | typeof EntityType.user | typeof EntityType.teacher
     telegram_id: string | null
     number: string // phone number
   }

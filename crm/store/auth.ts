@@ -44,6 +44,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function logOut() {
     await useHttp('common/auth/logout')
+    clearCurrentToken()
+    const path = sessionStorage.getItem('redirect') || '/'
+    window.location.href = path
   }
 
   async function getLoggedUser() {

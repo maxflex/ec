@@ -12,7 +12,9 @@ class ScheduleController extends Controller
     public function teacher(Teacher $teacher, Request $request)
     {
         $request->validate(['year' => ['required']]);
-        return $teacher->getSchedule($request->year);
+        return LessonListResource::collection(
+            $teacher->getSchedule($request->year)
+        );
     }
 
     public function client(Client $client, Request $request)

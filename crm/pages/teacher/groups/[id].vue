@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const tabs = {
   schedule: 'расписание',
-  schedule2: 'расписание-2',
 } as const
 
 const selectedTab = ref<keyof typeof tabs>('schedule')
@@ -64,9 +63,6 @@ nextTick(loadData)
     </div>
     <div v-if="selectedTab === 'schedule'">
       <LessonList :id="group.id" entity="group" conductable :group="group" />
-    </div>
-    <div v-else-if="selectedTab === 'schedule2'">
-      <ScheduleList :id="group.id" entity="group" conductable :group="group" />
     </div>
   </div>
 </template>

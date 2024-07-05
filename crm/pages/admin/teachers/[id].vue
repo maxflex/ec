@@ -9,7 +9,6 @@ const teacherDialog = ref<InstanceType<typeof TeacherDialog>>()
 const tabs = {
   groups: 'группы',
   schedule: 'расписание',
-  schedule2: 'расписание-2',
   payments: 'платежи',
   balance: 'баланс',
   reports: 'отчеты',
@@ -131,11 +130,6 @@ nextTick(loadData)
     </UiDataLoader>
     <LessonList
       v-else-if="selectedTab === 'schedule'"
-      :id="teacher.id"
-      entity="teacher"
-    />
-    <ScheduleList
-      v-else-if="selectedTab === 'schedule2'"
       :id="teacher.id"
       entity="teacher"
     />

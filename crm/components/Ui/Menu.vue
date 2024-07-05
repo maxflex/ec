@@ -21,7 +21,7 @@ import {
   mdiStarBoxOutline,
 } from '@mdi/js'
 
-const { user, logOut, clearCurrentToken } = useAuthStore()
+const { user, logOut } = useAuthStore()
 let menu: Menu
 
 switch (user?.entity_type) {
@@ -183,13 +183,6 @@ switch (user?.entity_type) {
       },
     ]
 }
-
-async function exit() {
-  await logOut()
-  clearCurrentToken()
-  const path = sessionStorage.getItem('redirect') || '/'
-  window.location.href = path
-}
 </script>
 
 <template>
@@ -211,11 +204,17 @@ async function exit() {
       </template>
       {{ title }}
     </v-list-item>
-    <v-list-item @click="exit()">
+    <v-list-item v-if="user?.entity_type === EntityType.user" @click="logOut()">
       <template #prepend>
         <v-icon :icon="mdiLogout" />
       </template>
       Выход
+    </v-list-item>
+    <v-list-item v-else-if="user" :to="{ name: 'profile' }">
+      <template #prepend>
+        <UiAvatar :item="user" :size="26" />
+      </template>
+      {{ formatName(user) }}
     </v-list-item>
   </v-list>
 </template>
