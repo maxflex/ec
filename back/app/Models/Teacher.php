@@ -45,6 +45,8 @@ class Teacher extends Model
 
     public function getBalance(int $year)
     {
+        $balanceItems = collect();
+
         $lessons = Lesson::query()
             ->conducted()
             ->whereRaw(<<<SQL
@@ -55,11 +57,6 @@ class Teacher extends Model
             SQL)
             ->where('teacher_id', $this->id)
             ->get();
-
-        $payments = $this->payments()->where('year', $year)->get();
-
-        $balanceItems = collect();
-
         foreach ($lessons as $lesson) {
             $balanceItems->push((object) [
                 'dateTime' => $lesson->conducted_at,
@@ -73,6 +70,7 @@ class Teacher extends Model
             ]);
         }
 
+        $payments = $this->payments()->where('year', $year)->get();
         foreach ($payments as $payment) {
             $balanceItems->push((object) [
                 'dateTime' => $payment->created_at->format('Y-m-d H:i:s'),
@@ -80,6 +78,18 @@ class Teacher extends Model
                 'comment' => sprintf(
                     '%s (обучение)',
                     $payment->method->getTitle()
+                )
+            ]);
+        }
+
+        $reports = $this->reports()->where('year', $year)->where('price', '>', 0)->get();
+        foreach ($reports as $report) {
+            $balanceItems->push((object) [
+                'dateTime' => $report->created_at->format('Y-m-d H:i:s'),
+                'sum' => $report->price,
+                'comment' => sprintf(
+                    'отчет по ученику %s',
+                    format_name($report->client)
                 )
             ]);
         }

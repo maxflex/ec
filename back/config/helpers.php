@@ -64,3 +64,12 @@ function cdn(string $folder, string $file)
 {
     return "https://cdn.ege-centr.ru/{$folder}/{$file}";
 }
+
+function format_name($person)
+{
+    return join(' ', [
+        $person->last_name,
+        mb_substr($person->first_name, 0, 1) . '.',
+        mb_substr($person->middle_name, 0, 1) . '.',
+    ]);
+}
