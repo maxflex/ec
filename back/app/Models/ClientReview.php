@@ -29,4 +29,21 @@ class ClientReview extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+
+    public function scopePrepareForUnion($query)
+    {
+        return $query->selectRaw(<<<SQL
+            id,
+            teacher_id,
+            client_id,
+            year,
+            program,
+            is_moderated,
+            is_published,
+            created_at,
+            price,
+            NULL as lessons_count
+        SQL);
+    }
 }

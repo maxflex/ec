@@ -9,7 +9,7 @@ defineEmits<{
 </script>
 
 <template>
-  <div :id="`event-${item.id}`" class="event-item">
+  <div :id="`event-${item.id}`" class="event-item" :class="{ 'event-item--study': !item.is_afterclass }">
     <div class="table-actionss">
       <v-btn
         icon="$edit"
@@ -19,7 +19,7 @@ defineEmits<{
         @click="$emit('edit', item)"
       />
     </div>
-    <div style="width: 110px" />
+    <div style="width: 90px" />
     <div style="width: 120px">
       {{ formatTime(item.time!) }}
       <template v-if="item.time_end">
@@ -28,6 +28,9 @@ defineEmits<{
     </div>
     <div style="width: 500px">
       {{ item.name }}
+      <div v-if="item.description" class="mt-2 pr-10">
+        {{ filterTruncate(item.description, 100) }}
+      </div>
     </div>
     <div style="width: 80px; display: flex; align-items: center">
       <v-icon :icon="mdiAccountGroup" class="mr-2 vfn-1" />
@@ -43,6 +46,9 @@ defineEmits<{
       <v-chip v-if="item.is_afterclass" class="text-purple">
         внеклассное
       </v-chip>
+      <v-chip v-else class="text-deepOrange">
+        учебное
+      </v-chip>
     </div>
   </div>
 </template>
@@ -50,10 +56,32 @@ defineEmits<{
 <style lang="scss">
 .event-item {
   position: relative;
+  align-items: flex-start !important;
+  // background: rgba(#9c27b0, 0.05);
+  padding: 20px;
   .table-actionss {
     right: -10px !important;
     top: -16px !important;
     height: 60px !important;
+  }
+  .v-chip {
+    top: -4px !important;
+  }
+  &:after {
+    content: '';
+    background: rgba(#9c27b0, 0.05);
+    // background: rgba(#337ab7, 0.05);
+    width: calc(100% - 110px);
+    height: 100%;
+    position: absolute;
+    left: 110px;
+    top: 0;
+    border-radius: 4px;
+  }
+  &--study {
+    &:after {
+      background: rgba(#fe8a1e, 0.05);
+    }
   }
 }
 

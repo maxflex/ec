@@ -108,6 +108,10 @@ export function formatClientTestResults(clientTest: ClientTestResource) {
   return `${score} из ${total}`
 }
 
+export function filterTruncate(text: string, stop: number, clamp = '...') {
+  return text.slice(0, stop) + (stop < text.length ? clamp : '')
+}
+
 export function isDefined<T>(value: T | undefined | null): value is T {
   return value !== undefined && value !== null
 }
