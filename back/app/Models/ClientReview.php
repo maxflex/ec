@@ -37,13 +37,9 @@ class ClientReview extends Model
             id,
             teacher_id,
             client_id,
-            year,
             program,
-            is_moderated,
-            is_published,
-            created_at,
-            price,
-            NULL as lessons_count
+            rating,
+            created_at
         SQL);
     }
 }

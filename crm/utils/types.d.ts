@@ -377,15 +377,32 @@ declare global {
     created_at?: string
   }
 
+  interface RealClientReviewItem {
+    id: number
+    rating: number
+    program: Program
+    teacher: PersonResource
+    client: PersonResource
+    created_at: string
+  }
+
+  interface FakeClientReviewItem {
+    id: string
+    program: Program
+    teacher: PersonResource
+    client: PersonResource
+  }
+
+  type ClientReviewListResource = RealClientReviewItem | FakeClientReviewItem
+
   interface ClientReviewResource {
     id: number
-    program: Program
     text: string
     rating: number
-    score?: number
-    max_score?: number
-    client?: PersonResource
+    user?: PersonResource
     teacher?: PersonResource
+    client?: PersonResource
+    program?: Program
     created_at?: string
   }
 

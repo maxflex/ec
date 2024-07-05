@@ -14,6 +14,12 @@ class ClientReviewResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return extract_fields($this, [
+            'program', 'text', 'rating', 'created_at'
+        ], [
+            'user' => new PersonResource($this->user),
+            'teacher' => new PersonResource($this->teacher),
+            'client' => new PersonResource($this->client),
+        ]);
     }
 }

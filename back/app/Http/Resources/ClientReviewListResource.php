@@ -17,7 +17,7 @@ class ClientReviewListResource extends JsonResource
         // real
         if ($this->id) {
             return extract_fields($this, [
-                'program',
+                'program', 'rating'
             ], [
                 'teacher' => new PersonResource($this->teacher),
                 'client' => new PersonResource($this->client),

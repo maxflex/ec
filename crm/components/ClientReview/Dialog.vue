@@ -1,52 +1,103 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
 
-const emit = defineEmits<{ (e: 'updated', i: ClientReviewResource): void }>()
-const { width, dialog } = useDialog('default')
-
+const emit = defineEmits<{
+  deleted: [r: ClientReviewResource]
+  updated: [r: RealClientReviewItem]
+  created: [r: RealClientReviewItem, fakeItemId: string]
+}>()
 const modelDefaults: ClientReviewResource = {
   id: newId(),
-  program: 'bio10',
   text: '',
   rating: 0,
 }
+const { dialog, width } = useDialog('default')
+const itemId = ref<number>()
+let fakeItemId: string = ''
 const item = ref<ClientReviewResource>(modelDefaults)
-const saving = ref(false)
-const editMode = computed(() => item.value.id > 0)
+const loading = ref(false)
+const deleting = ref(false)
 
-function edit(i: ClientReviewResource) {
-  item.value = clone(i)
+async function edit(clientReviewId: number) {
+  itemId.value = clientReviewId
+  dialog.value = true
+  loading.value = true
+  const { data } = await useHttp<ClientReviewResource>(
+    `client-reviews/${clientReviewId}`,
+  )
+  if (data.value) {
+    item.value = data.value
+  }
+  loading.value = false
+}
+
+async function create(r: FakeClientReviewItem) {
+  itemId.value = undefined
+  fakeItemId = r.id
+  item.value = clone({
+    ...modelDefaults,
+    teacher: r.teacher,
+    client: r.client,
+    program: r.program,
+  })
   dialog.value = true
 }
 
-async function save() {
-  saving.value = true
-  const { data } = await useHttp<ClientReviewResource>(`client-reviews/${item.value.id}`, {
-    method: 'put',
-    body: item.value,
-  })
-  if (data.value) {
-    emit('updated', item.value)
+async function destroy() {
+  if (!confirm('Вы уверены, что хотите удалить отзыв?')) {
+    return
   }
-  dialog.value = false
-  setTimeout(() => saving.value = false, 200)
+  deleting.value = true
+  const { status } = await useHttp(`reports/${item.value.id}`, {
+    method: 'delete',
+  })
+  if (status.value === 'error') {
+    deleting.value = false
+  }
+  else {
+    emit('deleted', item.value)
+    dialog.value = false
+    setTimeout(() => (deleting.value = false), 300)
+  }
 }
 
-defineExpose({ edit })
+async function save() {
+  dialog.value = false
+  if (itemId.value) {
+    const { data } = await useHttp<RealClientReviewItem>(`reports/${itemId.value}`, {
+      method: 'put',
+      body: item.value,
+    })
+    if (data.value) {
+      emit('updated', data.value)
+    }
+  }
+  else {
+    const { data } = await useHttp<RealClientReviewItem>('reports', {
+      method: 'post',
+      body: {
+        ...item.value,
+        client_id: item.value.client?.id,
+      },
+    })
+    if (data.value) {
+      emit('created', data.value, fakeItemId)
+    }
+  }
+}
+
+defineExpose({ edit, create })
 </script>
 
 <template>
-  <v-dialog
-    v-model="dialog"
-    :width="width"
-  >
+  <v-dialog v-model="dialog" :width="width">
     <div class="dialog-wrapper">
       <div class="dialog-header">
-        <template v-if="editMode">
+        <tempate v-if="itemId">
           Редактирование отзыва
-        </template>
+        </tempate>
         <template v-else>
-          Добавить отзыв
+          Новый отзыв
         </template>
         <v-btn
           icon="$save"
@@ -55,7 +106,8 @@ defineExpose({ edit })
           @click="save()"
         />
       </div>
-      <div class="dialog-body">
+      <UiLoaderr v-if="loading" />
+      <div v-else class="dialog-body">
         <div class="text-center pb-2">
           <v-rating
             v-model="item.rating"
@@ -81,28 +133,11 @@ defineExpose({ edit })
           </div>
         </div>
         <div>
-          <v-select
+          <UiClearableSelect
             v-model="item.program"
             :items="selectItems(ProgramLabel)"
             label="Программа"
             disabled
-          />
-        </div>
-        <div
-          class="double-input"
-        >
-          <v-text-field
-            v-model="item.score"
-            label="балл"
-            type="number"
-            hide-spin-buttons
-          />
-
-          <v-text-field
-            v-model="item.max_score"
-            label="из"
-            type="number"
-            hide-spin-buttons
           />
         </div>
         <div>
@@ -112,6 +147,24 @@ defineExpose({ edit })
             no-resize
             auto-grow
             label="Текст отзыва"
+          />
+        </div>
+        <div
+          v-if="itemId"
+          class="dialog-bottom"
+        >
+          <span v-if="item.created_at && item.user">
+            отзыв создан
+            {{ formatName(item.user) }}
+            {{ formatDateTime(item.created_at) }}
+          </span>
+          <v-btn
+            icon="$delete"
+            :size="48"
+            color="red"
+            variant="plain"
+            :loading="deleting"
+            @click="destroy()"
           />
         </div>
       </div>

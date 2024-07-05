@@ -2,7 +2,7 @@
 import { clone } from 'rambda'
 
 const emit = defineEmits<{
-  deleted: [r: RealReportItem]
+  deleted: [r: ReportResource]
   updated: [r: RealReportItem]
   created: [r: RealReportItem, fakeItemId: string]
 }>()
@@ -59,7 +59,7 @@ async function destroy() {
     deleting.value = false
   }
   else {
-    emit('deleted', item.value as RealReportItem)
+    emit('deleted', item.value)
     dialog.value = false
     setTimeout(() => (deleting.value = false), 300)
   }

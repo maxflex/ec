@@ -6,7 +6,7 @@ use App\Enums\LessonStatus;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
-class FakeReview
+class FakeClientReview
 {
     const DISABLE_LOGS = true;
 
@@ -24,16 +24,12 @@ class FakeReview
                     ->on('cr.program', '=', 'g.program')
             )
             ->selectRaw(<<<SQL
-                NULL as id,
+                NULL AS id,
                 l.teacher_id,
                 c.client_id,
-                g.year,
                 g.program,
-                NULL as is_moderated,
-                NULL as is_published,
-                NULL as created_at,
-                NULL as price,
-                COUNT(*) as lessons_count
+                NULL AS `rating`,
+                NULL AS `created_at`
             SQL)
             ->where('l.status', LessonStatus::conducted->value)
             ->whereNull('cr.id')

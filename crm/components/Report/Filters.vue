@@ -36,7 +36,7 @@ watch(filters.value, () => {
       <UiClearableSelect
         v-model="filters.type"
         label="Тип"
-        :items="yesNo('созданные', 'требуется отчёт')"
+        :items="yesNo('созданные', 'требуется отчет')"
         density="comfortable"
       />
     </div>

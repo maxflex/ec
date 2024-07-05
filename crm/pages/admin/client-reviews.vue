@@ -1,60 +1,64 @@
 <script setup lang="ts">
-// import type { ClientReviewFilters } from '#build/components'
-// type Filters = EmitType<InstanceType<typeof ClientReviewFilters>['$emit']>
-
 import type { Filters } from '~/components/ClientReview/Filters.vue'
 
-const items = ref<ClientReviewResource[]>([])
-const paginator = usePaginator()
-let filters: Filters = {}
-const key = ref(0)
+const items = ref<ClientReviewListResource[]>([])
+const filters = ref<Filters>({})
+const loading = ref(false)
+let page = 0
+let isLastPage = false
+let scrollContainer: HTMLElement | null = null
 
-const loadData = async function () {
-  if (paginator.loading) {
+async function loadData() {
+  if (loading.value || isLastPage) {
     return
   }
-  paginator.page++
-  paginator.loading = true
-  const { data } = await useHttp<ApiResponse<ClientReviewResource[]>>('client-reviews', {
+  page++
+  loading.value = true
+  const { data } = await useHttp<ApiResponse<ClientReviewListResource[]>>('client-reviews', {
     params: {
-      ...filters,
-      'page': paginator.page,
-      'with[]': ['client', 'teacher'],
+      page,
+      ...filters.value,
     },
   })
-  paginator.loading = false
   if (data.value) {
     const { meta, data: newItems } = data.value
-    if (paginator.page === 1) {
-      items.value = []
-      key.value++
-    }
-    for (const item of newItems) {
-      items.value.push(item)
-    }
-    // items.value = [...items.value, ...newItems]
-    paginator.isLastPage = meta.current_page === meta.last_page
+    items.value = page === 1 ? newItems : items.value.concat(newItems)
+    isLastPage = meta.current_page >= meta.last_page
   }
+  loading.value = false
 }
 
 function onFiltersApply(f: Filters) {
-  filters = f
-  paginator.page = 0
+  filters.value = f
+  page = 0
+  isLastPage = false
+  if (scrollContainer) {
+    scrollContainer.scrollTop = 0
+  }
   loadData()
 }
 
-async function onIntersect({
-  done,
-}: {
-  done: (status: InfiniteScrollStatus) => void
-}) {
-  if (paginator.isLastPage) {
+function onScroll() {
+  if (!scrollContainer || loading.value) {
     return
   }
-  done('loading')
-  await loadData()
-  done(paginator.isLastPage ? 'empty' : 'ok')
+  const { scrollTop, scrollHeight, clientHeight } = scrollContainer
+  const scrollPosition = scrollTop + clientHeight
+  const scrollThreshold = scrollHeight * 0.9
+
+  if (scrollPosition >= scrollThreshold) {
+    loadData()
+  }
 }
+
+onMounted(() => {
+  scrollContainer = document.documentElement.querySelector('main')
+  scrollContainer?.addEventListener('scroll', onScroll)
+})
+
+onUnmounted(() => {
+  scrollContainer?.removeEventListener('scroll', onScroll)
+})
 
 nextTick(loadData)
 </script>
@@ -63,16 +67,8 @@ nextTick(loadData)
   <div class="filters">
     <ClientReviewFilters @apply="onFiltersApply" />
   </div>
-  <UiLoader :paginator="paginator" />
-  <v-infinite-scroll
-    v-if="items"
-    :margin="100"
-    side="end"
-    @load="onIntersect"
-  >
-    <ClientReviewList
-      :key="key"
-      :items="items"
-    />
-  </v-infinite-scroll>
+  <div>
+    <UiLoader3 :loading="loading" />
+    <ClientReviewList :items="items" />
+  </div>
 </template>

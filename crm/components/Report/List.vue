@@ -31,7 +31,7 @@ function onCreated(r: RealReportItem, fakeItemId: string) {
   itemUpdated('report', r.id)
 }
 
-function onDeleted(r: RealReportItem) {
+function onDeleted(r: ReportResource) {
   const index = items.value.findIndex(e => e.id === r.id)
   if (index !== -1) {
     items.value.splice(index, 1)
