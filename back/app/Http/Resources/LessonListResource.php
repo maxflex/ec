@@ -19,7 +19,12 @@ class LessonListResource extends JsonResource
             'status', 'date', 'time', 'time_end',
             'cabinet', 'is_unplanned', 'is_first',
         ], [
-
+            'contractLesson' => $this->when(
+                $this->contractLesson,
+                extract_fields($this->contractLesson, [
+                    'status', 'scores', 'minutes_late', 'is_remote'
+                ])
+            ),
             'group' => extract_fields($this->group, [
                 'program'
             ], [

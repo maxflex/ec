@@ -315,10 +315,10 @@ export const EntityTypeLabel = {
 } as const
 
 export const LessonScoreLabel = {
-  5: 'пятeрка',
-  4: 'четвeрка',
-  3: 'тройка',
-  2: 'двойка',
+  5: 'пять',
+  4: 'четыре',
+  3: 'три',
+  2: 'два',
 }
 
 export const YearLabel = {

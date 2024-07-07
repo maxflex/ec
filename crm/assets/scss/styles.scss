@@ -33,7 +33,7 @@ a:not(.v-list-item) {
     width: 100px;
     height: 100%;
     text-align: right;
-    overflow: hidden;
+    // overflow: hidden;
     // background: red;
     .v-btn {
       opacity: 0;
@@ -497,6 +497,17 @@ a:not(.v-list-item) {
   visibility: hidden;
 }
 
+.contract-programs {
+  display: inline-flex;
+  & > span {
+    position: relative;
+    &:not(:last-child)::after {
+      content: '/';
+      padding: 0 3px;
+    }
+  }
+}
+
 .score {
   $size: 30px;
   border-radius: 50%;
@@ -505,8 +516,8 @@ a:not(.v-list-item) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 500;
-  margin-right: 12px;
+  // font-weight: 500;
+  font-size: 14px;
   &--5 {
     background: rgb(var(--v-theme-success), 0.5);
   }
@@ -518,16 +529,5 @@ a:not(.v-list-item) {
   }
   &--2 {
     background: rgb(var(--v-theme-error), 0.4);
-  }
-}
-
-.contract-programs {
-  display: inline-flex;
-  & > span {
-    position: relative;
-    &:not(:last-child)::after {
-      content: '/';
-      padding: 0 3px;
-    }
   }
 }

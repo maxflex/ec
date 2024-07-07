@@ -11,7 +11,7 @@ class ContractLesson extends Model
 
     protected $fillable = [
         'contract_id', 'price', 'status',
-        'minutes_late', 'is_remote'
+        'minutes_late', 'is_remote', 'scores'
     ];
 
     protected $casts = [
@@ -32,6 +32,6 @@ class ContractLesson extends Model
 
     public function getScoresAttribute($value)
     {
-        return $value ?? [];
+        return json_decode($value) ?? [];
     }
 }

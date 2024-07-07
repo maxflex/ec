@@ -33,6 +33,11 @@ declare global {
 
   type LessonScore = keyof typeof LessonScoreLabel
 
+  interface ContractLessonScore {
+    score: LessonScore
+    comment: string | null
+  }
+
   interface Meta {
     current_page: number
     last_page: number
@@ -273,6 +278,12 @@ declare global {
     cabinet: Cabinet
     is_unplanned: boolean
     is_first: boolean
+    contractLesson?: {
+      status: ContractLessonStatus
+      scores: ContractLessonScore[]
+      minutes_late: number | null
+      is_remote: boolean
+    }
     group: {
       id: number
       program: Program
@@ -307,10 +318,7 @@ declare global {
       status: ContractLessonStatus
       is_remote: boolean
       minutes_late: number | null
-      scores: Array<{
-        score: LessonScore
-        comment: string | null
-      }>
+      scores: ContractLessonScore[]
     }>
   }
 

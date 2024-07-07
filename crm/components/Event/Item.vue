@@ -61,7 +61,7 @@ defineEmits<{
   padding: 20px;
   .table-actionss {
     right: -10px !important;
-    top: -16px !important;
+    // top: -16px !important;
     height: 60px !important;
   }
   .v-chip {

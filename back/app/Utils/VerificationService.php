@@ -16,7 +16,9 @@ class VerificationService
         // }
         $code = self::generateCode();
         self::storeCode($phone, $code);
-        Telegram::sendMessage($phone->telegram_id, "*{$code}* – код для авторизации в ЛК", 'MarkdownV2');
+        if (!is_localhost()) {
+            Telegram::sendMessage($phone->telegram_id, "*{$code}* – код для авторизации в ЛК", 'MarkdownV2');
+        }
     }
 
     public static function verifyCode(Phone $phone, $code)
@@ -31,6 +33,9 @@ class VerificationService
 
     public static function generateCode()
     {
+        if (is_localhost()) {
+            return 1111;
+        }
         return mt_rand(1000, 9999);
     }
 

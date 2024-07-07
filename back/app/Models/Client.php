@@ -110,22 +110,28 @@ class Client extends Model
         $contracts = $this->contracts()->where('year', $year)->get();
 
         // фактически проведённые
-        ContractLesson::whereIn('contract_id', $contracts->pluck('id'))->get()->each(
-            function ($e) use ($schedule) {
-                // $lesson = $e->lesson;
-                // $lesson->contractLesson = extract_fields($e, [
-                //     'price', 'status', 'minutes_late'
-                // ]);
-                $schedule->push($e->lesson);
-            }
-        );
+        $fact = [];
+        $contractLessons = ContractLesson::whereIn('contract_id', $contracts->pluck('id'))->get();
+        foreach ($contractLessons as $contractLesson) {
+            $lesson = $contractLesson->lesson;
+            // $lesson->load('contractLessons', fn ($q) => $q->whereId($contractLesson->id));
+            $lesson->contractLesson = $contractLesson;
+            $schedule->push($lesson);
+            $fact[$lesson->id] = true;
+        }
 
         foreach ($contracts as $contract) {
             foreach ($contract->groups as $group) {
-                $schedule = $schedule->merge($group->lessons);
+                foreach ($group->lessons as $lesson) {
+                    // пропускаем фактически проведённые
+                    if (isset($fact[$lesson->id])) {
+                        continue;
+                    }
+                    $schedule->push($lesson);
+                }
             }
         }
 
-        return $schedule->unique(fn ($l) => $l->id);
+        return $schedule;
     }
 }

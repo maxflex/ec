@@ -73,3 +73,9 @@ function format_name($person)
         mb_substr($person->middle_name, 0, 1) . '.',
     ]);
 }
+
+
+function is_localhost()
+{
+    return app()->environment('local');
+}

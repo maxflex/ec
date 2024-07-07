@@ -125,6 +125,7 @@ class Lesson extends Model
                     : null,
                 'is_remote' => $c->is_remote,
                 'price' => $program->price,
+                'scores' => count($c->scores) ? $c->scores : null
             ]);
         }
 

@@ -7,6 +7,7 @@ const item = ref<LessonConductResource>()
 const loading = ref(false)
 const saving = ref(false)
 const isConducted = ref(false)
+const scores = [5, 4, 3, 2] as LessonScore[]
 
 function open(lessonId: number, status: LessonStatus) {
   itemId.value = lessonId
@@ -143,13 +144,13 @@ defineExpose({ open })
             <div style="width: 220px">
               {{ formatName(c.client) }}
             </div>
-            <div style="width: 110px">
+            <div style="width: 120px">
               <UiDropdown
                 v-model="c.status"
                 :items="selectItems(ContractLessonStatusLabel)"
               />
             </div>
-            <div v-if="c.status !== 'absent'" style="width: 110px">
+            <div v-if="c.status !== 'absent'" style="width: 120px">
               <UiDropdown
                 v-model="c.is_remote"
                 :items="[
@@ -159,16 +160,22 @@ defineExpose({ open })
               />
             </div>
             <div v-if="c.status !== 'absent'">
-              <div v-for="(score, index) in c.scores" :key="index" class="contract-lesson__scores">
-                <span :class="`score score--${score.score}`">
-                  {{ score.score }}
-                </span>
-                <v-text-field
-                  v-model="c.scores[index].comment"
-                  density="compact"
-                  placeholder="комментарий к оценке"
-                  persistent-placeholder
-                />
+              <div v-if="c.scores.length > 0" class="contract-lesson__scores">
+                <div v-for="(score, index) in c.scores" :key="index">
+                  <span :class="`score score--${score.score}`">
+                    {{ score.score }}
+                  </span>
+                  <v-text-field
+                    v-model="c.scores[index].comment"
+                    density="compact"
+                    placeholder="комментарий к оценке"
+                    persistent-placeholder
+                  />
+                  <v-icon
+                    icon="$close"
+                    @click="c.scores.splice(index, 1)"
+                  />
+                </div>
               </div>
               <v-menu v-if="c.scores.length < 4">
                 <template #activator="{ props }">
@@ -182,11 +189,11 @@ defineExpose({ open })
                 </template>
                 <v-list>
                   <v-list-item
-                    v-for="score in [5, 4, 3, 2] as LessonScore[]"
+                    v-for="score in scores"
                     :key="score"
                     @click="c.scores.push({ score, comment: null })"
                   >
-                    <span :class="`score score--${score}`">
+                    <span :class="`score score--${score}`" class="mr-3">
                       {{ score }}
                     </span>
                     {{ LessonScoreLabel[score] }}
@@ -225,6 +232,15 @@ defineExpose({ open })
 <style lang="scss">
 .contract-lesson {
   // transition: background cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+  align-items: flex-start !important;
+  & > div {
+    &:first-child {
+      padding-top: 4px;
+    }
+    &:not(:first-child) {
+      padding: 16px 0;
+    }
+  }
   &--absent {
     background: rgba(var(--v-theme-error), 0.1);
   }
@@ -232,8 +248,27 @@ defineExpose({ open })
   //   background: rgba(var(--v-theme-warning), 0.1);
   // }
   &__scores {
-    display: flex;
-    align-items: center;
+    position: relative;
+    top: -6px;
+    margin-bottom: 6px;
+    & > div {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    input {
+      padding-left: 10px !important;
+      padding-right: 10px !important;
+    }
+    .v-icon {
+      opacity: 0.25;
+      cursor: pointer;
+      font-size: 20px !important;
+      &:hover {
+        opacity: 1;
+        color: rgb(var(--v-theme-error));
+      }
+    }
   }
 }
 </style>

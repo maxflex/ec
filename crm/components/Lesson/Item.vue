@@ -60,7 +60,7 @@ const emit = defineEmits<{
     <div style="width: 140px">
       <LessonStatus2 :status="item.status" />
     </div>
-    <div>
+    <div style="flex: 1">
       <v-chip v-if="item.is_first" class="text-deepOrange">
         первое
       </v-chip>
@@ -68,5 +68,57 @@ const emit = defineEmits<{
         внеплановое
       </v-chip>
     </div>
+    <div v-if="item.contractLesson" class="lesson-list__contract-lesson">
+      <!-- <div style="width: 240px">
+        {{ item.contractLesson.is_remote ? 'удалённо' : 'очно' }}
+      </div> -->
+      <div style="width: 110px" />
+      <div class="lesson-list__scores" style="width: 500px">
+        <div v-for="(score, i) in item.contractLesson.scores" :key="i">
+          <span :class="`score score--${score.score}`" class="mr-3">
+            {{ score.score }}
+          </span>
+          <div>
+            {{ score.comment }}
+          </div>
+        </div>
+      </div>
+      <div style="width: 220px">
+        {{ item.contractLesson.is_remote ? 'удалённо' : 'очно' }}
+      </div>
+      <div style="flex: 1">
+        <UiCircleStatus
+          :class="{
+            'text-error': item.contractLesson.status === 'absent',
+            'text-warning': item.contractLesson.status === 'late',
+            'text-success': item.contractLesson.status === 'present',
+          }"
+        >
+          {{ ContractLessonStatusLabel[item.contractLesson.status] }}
+          <template v-if="item.contractLesson.minutes_late">
+            на {{ item.contractLesson.minutes_late }} мин.
+          </template>
+        </UiCircleStatus>
+      </div>
+    </div>
   </div>
 </template>
+
+<style lang="scss">
+.lesson-list {
+  &__contract-lesson {
+    flex: auto !important;
+    display: flex;
+    gap: 20px;
+    // padding-left: 650px;
+  }
+  &__scores {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    & > div {
+      display: flex;
+    }
+  }
+}
+</style>

@@ -266,7 +266,8 @@ nextTick(loadData)
       &:not(:first-child) {
         display: flex;
         align-items: center;
-        gap: 20px;
+        column-gap: 20px;
+        row-gap: 10px;
         flex-wrap: wrap;
       }
       & > div:last-child {
