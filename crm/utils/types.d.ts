@@ -631,6 +631,18 @@ declare global {
     date: string
     time: string
   }
+
+  interface GroupVisitResource {
+    id: number
+    start_at: string
+    contractLessons: Array<{
+      id: number
+      is_remote: boolean
+      minutes_late: number
+      status: ContractLessonStatus
+      client: PersonResource
+    }>
+  }
 }
 
 export {}

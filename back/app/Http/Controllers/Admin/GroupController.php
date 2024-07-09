@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupRequest;
 use App\Http\Resources\GroupListResource;
 use App\Http\Resources\GroupResource;
+use App\Http\Resources\GroupVisitResource;
 use App\Models\Client;
 use App\Models\ContractGroup;
 use App\Models\Group;
@@ -49,6 +50,13 @@ class GroupController extends Controller
     public function destroy(Group $group)
     {
         $group->delete();
+    }
+
+    public function visits(Group $group)
+    {
+        return GroupVisitResource::collection(
+            $group->lessons
+        );
     }
 
     public function addClient(Request $request)

@@ -3,6 +3,7 @@ import type { GroupDialog } from '#build/components'
 
 const tabs = {
   schedule: 'расписание',
+  visits: 'посещаемость',
   students: 'ученики',
 } as const
 
@@ -91,6 +92,7 @@ nextTick(loadData)
     <div v-if="selectedTab === 'schedule'">
       <LessonList :id="group.id" editable entity="group" :group="group" />
     </div>
+    <GroupVisits v-else-if="selectedTab === 'visits'" :id="group.id" />
     <div
       v-else
       class="table table--actions-on-hover"

@@ -9,7 +9,9 @@ const emit = defineEmits<{
 }>()
 
 function onClick(g: GroupListResource) {
-  selectable && emit('select', g)
+  if (selectable) {
+    emit('select', g)
+  }
 }
 </script>
 
