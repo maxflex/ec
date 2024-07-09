@@ -22,10 +22,10 @@ const route = useRoute()
 const client = ref<ClientResource>()
 const clientDialog = ref<null | InstanceType<typeof ClientDialog>>()
 const testSelectorDialog = ref<null | InstanceType<typeof TestSelectorDialog>>()
-const groupSelectorDialog = ref<null | InstanceType<
-  typeof GroupSelectorDialog
->>()
 const reportFilters = ref<Filters>({
+  year: currentAcademicYear(),
+})
+const groupFilters = ref<{ year: Year }>({
   year: currentAcademicYear(),
 })
 
@@ -202,23 +202,35 @@ nextTick(loadData)
         :id="client.id"
         entity="client"
       />
-      <div
+      <UiDataLoader
         v-else-if="selectedTab === 'groups'"
+        :key="`groups${groupFilters.year}`"
+        url="groups"
+        :filters="{
+          client_id: client.id,
+          ...groupFilters,
+        }"
       >
-        <div class="table table--padding table--hover table--actions-on-hover">
-          <GroupList :items="client.groups" />
-          <GroupSwamp
-            v-for="swamp in client.swamps"
-            :key="swamp.id"
-            :swamp="swamp"
-            @attach="(s) => groupSelectorDialog?.open(s.program)"
-          />
-        </div>
-        <GroupSelectorDialog
-          ref="groupSelectorDialog"
-          @select="onGroupSelected"
-        />
-      </div>
+        <template #filters>
+          <div class="filters">
+            <div class="filters-inputs">
+              <div>
+                <v-select
+                  v-model="groupFilters.year"
+                  label="Учебный год"
+                  :items="selectItems(YearLabel)"
+                  density="comfortable"
+                />
+              </div>
+            </div>
+          </div>
+        </template>
+        <template #default="{ items }">
+          <div class="table table--padding">
+            <GroupList :items="items" />
+          </div>
+        </template>
+      </UiDataLoader>
       <div
         v-else
       >

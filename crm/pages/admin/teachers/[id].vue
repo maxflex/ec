@@ -18,7 +18,9 @@ const tabs = {
 
 const selectedTab = ref<keyof typeof tabs>('groups')
 
-const groupFilters = ref<{ year?: Year }>({})
+const groupFilters = ref<{ year: Year }>({
+  year: currentAcademicYear(),
+})
 const reportFilters = ref<Filters>({
   year: currentAcademicYear(),
 })
@@ -110,7 +112,7 @@ nextTick(loadData)
         <div class="filters">
           <div class="filters-inputs">
             <div>
-              <UiClearableSelect
+              <v-select
                 v-model="groupFilters.year"
                 label="Учебный год"
                 :items="selectItems(YearLabel)"

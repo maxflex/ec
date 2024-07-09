@@ -50,4 +50,12 @@ class Group extends Model
             fn ($q) => $q->where('teacher_id', $teacherId)
         );
     }
+
+    public function scopeWhereClient($query, $clientId)
+    {
+        return $query->whereHas(
+            'contracts',
+            fn ($q) => $q->where('client_id', $clientId)
+        );
+    }
 }

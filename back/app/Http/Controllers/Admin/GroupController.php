@@ -16,6 +16,7 @@ class GroupController extends Controller
     protected $filters = [
         'equals' => ['program', 'year'],
         'teacher' => ['teacher_id'],
+        'client' => ['client_id'],
     ];
 
     public function index(Request $request)
@@ -75,5 +76,10 @@ class GroupController extends Controller
     protected function filterTeacher(&$query, $teacherId)
     {
         $query->whereTeacher($teacherId);
+    }
+
+    protected function filterClient(&$query, $clientId)
+    {
+        $query->whereClient($clientId);
     }
 }
