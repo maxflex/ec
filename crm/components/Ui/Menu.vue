@@ -16,6 +16,7 @@ import {
   mdiHumanMaleBoard,
   mdiInbox,
   mdiLogout,
+  mdiNumeric5BoxMultiple,
   mdiPrinter,
   mdiStarBox,
   mdiStarBoxOutline,
@@ -150,6 +151,11 @@ switch (user?.entity_type) {
         icon: mdiFinance,
         title: 'Итоги',
         to: '/stats',
+      },
+      {
+        icon: mdiNumeric5BoxMultiple,
+        title: 'Оценки',
+        to: '/scores',
       },
       {
         icon: mdiCalendar,
