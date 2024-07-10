@@ -177,8 +177,11 @@ defineExpose({ create, edit })
           />
         </div>
 
-        <div class="dialog-bottom">
-          <span v-if="lesson.user && lesson.created_at">
+        <div
+          v-if="lesson.user && lesson.created_at"
+          class="dialog-bottom"
+        >
+          <span>
             урок создан
             {{ formatName(lesson.user) }}
             {{ formatDateTime(lesson.created_at) }}
