@@ -1,14 +1,26 @@
 <script setup lang="ts">
 import { mdiCheckAll } from '@mdi/js'
+import type { LessonDialog } from '#build/components'
 
 const { items } = defineProps<{
   items: TopicListResource[]
 }>()
+
+const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
 </script>
 
 <template>
   <div class="table">
     <div v-for="l in items" :key="l.id">
+      <div class="table-actionss">
+        <v-btn
+          icon="$edit"
+          :size="48"
+          variant="plain"
+          color="gray"
+          @click="lessonDialog?.edit(l.id)"
+        />
+      </div>
       <div style="width: 100px">
         {{ formatDate(l.date) }}
       </div>
@@ -34,4 +46,5 @@ const { items } = defineProps<{
       </div>
     </div>
   </div>
+  <LessonDialog ref="lessonDialog" />
 </template>

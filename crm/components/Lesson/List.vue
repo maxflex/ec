@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { groupBy } from 'rambda'
-import type { EventDialog, LessonBatchDialog, LessonConductDialog, LessonDialog } from '#build/components'
+import type { EventDialog, LessonBatchCreateDialog, LessonBatchUpdateDialog, LessonConductDialog, LessonDialog } from '#build/components'
 
 const { entity, id, editable, conductable, group } = defineProps<{
   entity: Extract<EntityString, 'client' | 'teacher' | 'group'>
@@ -17,7 +17,8 @@ const loading = ref(false)
 const lessons = ref<LessonListResource[]>([])
 const events = ref<EventListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
-const lessonBatchDialog = ref<InstanceType<typeof LessonBatchDialog>>()
+const lessonBatchUpdateDialog = ref<InstanceType<typeof LessonBatchUpdateDialog>>()
+const lessonBatchCreateDialog = ref<InstanceType<typeof LessonBatchCreateDialog>>()
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 const vacations = ref<Record<string, boolean>>({})
@@ -146,13 +147,21 @@ nextTick(loadData)
           density="comfortable"
         />
       </div>
-      <v-btn
-        v-if="editable && group"
-        color="primary"
-        @click="lessonDialog?.create(id, group?.year!)"
-      >
-        добавить занятие
-      </v-btn>
+      <v-menu v-if="editable && group">
+        <template #activator="{ props }">
+          <v-btn color="primary" v-bind="props">
+            добавить занятия
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item @click="lessonDialog?.create(id, group?.year!)">
+            добавить одно занятие
+          </v-list-item>
+          <v-list-item @click="lessonBatchCreateDialog?.create(id, group?.year!)">
+            добавить несколько занятий
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </div>
   </div>
   <UiLoaderr v-if="loading" />
@@ -210,23 +219,26 @@ nextTick(loadData)
         <v-btn
           v-if="editable && group"
           color="primary"
-          @click="lessonBatchDialog?.open(lessonIds, group?.year!)"
+          @click="lessonBatchUpdateDialog?.open(lessonIds, group?.year!)"
         >
           редактировать
         </v-btn>
       </div>
     </div>
   </v-slide-y-reverse-transition>
-  <LessonDialog
-    v-if="editable"
-    ref="lessonDialog"
-    @batch-saved="loadLessons"
-  />
-  <LessonBatchDialog
-    v-if="editable"
-    ref="lessonBatchDialog"
-    @updated="onBatchUpdated"
-  />
+  <template v-if="editable">
+    <LessonDialog
+      ref="lessonDialog"
+    />
+    <LessonBatchUpdateDialog
+      ref="lessonBatchUpdateDialog"
+      @updated="onBatchUpdated"
+    />
+    <LessonBatchCreateDialog
+      ref="lessonBatchCreateDialog"
+      @updated="loadLessons"
+    />
+  </template>
   <LessonConductDialog
     v-else-if="conductable"
     ref="conductDialog"
