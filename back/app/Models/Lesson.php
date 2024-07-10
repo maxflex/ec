@@ -21,7 +21,8 @@ class Lesson extends Model
         'topic',
         'conducted_at',
         'is_topic_verified',
-        'is_unplanned'
+        'is_unplanned',
+        'quarter'
     ];
 
     protected $casts = [

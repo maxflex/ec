@@ -3,6 +3,7 @@ const emit = defineEmits<{ (e: 'updated'): void }>()
 
 interface BatchItem {
   cabinet?: Cabinet
+  quarter?: Quarter
   start_at?: string
   teacher_id?: number
   price?: number
@@ -96,6 +97,20 @@ defineExpose({ open })
           />
         </div>
         <div>
+          <UiClearableSelect
+            v-model="lesson.cabinet"
+            :items="selectItems(CabinetLabel)"
+            label="Кабинет"
+          />
+        </div>
+        <div>
+          <UiClearableSelect
+            v-model="lesson.quarter"
+            :items="selectItems(QuarterLabel, ['final' as Quarter])"
+            label="Четверть"
+          />
+        </div>
+        <div>
           <v-text-field
             v-model="lesson.price"
             label="Цена"
@@ -103,13 +118,7 @@ defineExpose({ open })
             hide-spin-buttons
           />
         </div>
-        <div>
-          <UiClearableSelect
-            v-model="lesson.cabinet"
-            :items="selectItems(CabinetLabel)"
-            label="Кабинет"
-          />
-        </div>
+
         <div class="double-input">
           <UiDateInput
             v-model="startAt.date"

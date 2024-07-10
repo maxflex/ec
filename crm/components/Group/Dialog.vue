@@ -99,7 +99,7 @@ defineExpose({ create, edit })
     >
       <div class="dialog-header">
         <template v-if="itemId">
-          Группа {{ itemId }}
+          Редактирование группы
         </template>
         <template v-else>
           Новая группа

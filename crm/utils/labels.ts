@@ -281,6 +281,14 @@ export const ContractLessonStatusLabel = {
   absent: 'не был',
 } as const
 
+export const QuarterLabel = {
+  q1: '1 четверть',
+  q2: '2 четверть',
+  q3: '3 четверть',
+  q4: '4 четверть',
+  final: 'итоговая',
+} as const
+
 export const MonthLabel = [
   'янв', // январь
   'фев', // февраль

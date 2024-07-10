@@ -11,6 +11,7 @@ const tabs = {
   contracts: 'договоры',
   schedule: 'расписание',
   groups: 'группы',
+  grades: 'оценки',
   reports: 'отчеты',
   reviews: 'отзывы',
   webReviews: 'отзывы на сайте',
@@ -28,6 +29,9 @@ const reportFilters = ref<Filters>({
 const groupFilters = ref<{ year: Year }>({
   year: currentAcademicYear(),
 })
+const gradeFilters = ref<{ year: Year }>({
+  year: currentAcademicYear(),
+})
 
 async function loadData() {
   const { data } = await useHttp(`clients/${route.params.id}`)
@@ -38,16 +42,16 @@ function onClientUpdated(c: ClientResource) {
   client.value = c
 }
 
-async function onGroupSelected(g: GroupListResource) {
-  await useHttp(`groups/add-client`, {
-    method: 'post',
-    params: {
-      group_id: g.id,
-      client_id: client.value?.id,
-    },
-  })
-  loadData()
-}
+// async function onGroupSelected(g: GroupListResource) {
+//   await useHttp(`groups/add-client`, {
+//     method: 'post',
+//     params: {
+//       group_id: g.id,
+//       client_id: client.value?.id,
+//     },
+//   })
+//   loadData()
+// }
 
 function onTestsSaved(tests: TestResource[]) {
   if (!client.value) {
@@ -229,6 +233,33 @@ nextTick(loadData)
           <div class="table table--padding">
             <GroupList :items="items" />
           </div>
+        </template>
+      </UiDataLoader>
+      <UiDataLoader
+        v-else-if="selectedTab === 'grades'"
+        :key="`grades${gradeFilters.year}`"
+        url="grades"
+        :filters="{
+          client_id: client.id,
+          ...gradeFilters,
+        }"
+      >
+        <template #filters>
+          <div class="filters">
+            <div class="filters-inputs">
+              <div>
+                <v-select
+                  v-model="gradeFilters.year"
+                  label="Учебный год"
+                  :items="selectItems(YearLabel)"
+                  density="comfortable"
+                />
+              </div>
+            </div>
+          </div>
+        </template>
+        <template #default="{ items }">
+          <GradeList :items="items" />
         </template>
       </UiDataLoader>
       <div

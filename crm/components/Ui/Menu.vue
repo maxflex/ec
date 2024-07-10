@@ -155,7 +155,7 @@ switch (user?.entity_type) {
       {
         icon: mdiNumeric5BoxMultiple,
         title: 'Оценки',
-        to: '/scores',
+        to: '/grades',
       },
       {
         icon: mdiCalendar,

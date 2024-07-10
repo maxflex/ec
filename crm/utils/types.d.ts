@@ -1,4 +1,6 @@
 declare global {
+  type Quarter = keyof typeof QuarterLabel
+
   type LogTable = keyof typeof LogTableLabel
 
   type LogType = keyof typeof LogTypeLabel
@@ -298,8 +300,8 @@ declare global {
     price?: number
     cabinet?: Cabinet
     start_at?: string
-    duration: number
     status: LessonStatus
+    quarter: Quarter | null
     topic?: string | null
     conducted_at: string | null
     is_topic_verified: boolean
@@ -642,6 +644,36 @@ declare global {
       status: ContractLessonStatus
       client: PersonResource
     }>
+  }
+
+  interface RealGradeItem {
+    id: number
+    client: PersonResource
+    program: Program
+    year: Year
+    quarter: Quarter
+    grade: LessonScore
+  }
+
+  interface FakeGradeItem {
+    id: string
+    client: PersonResource
+    program: Program
+    quarter: Quarter
+    year: Year
+  }
+
+  type GradeListResource = RealGradeItem | FakeGradeItem
+
+  interface GradeResource {
+    id: number
+    program?: Program
+    quarter?: Quarter
+    year?: Year
+    teacher?: PersonResource
+    client?: PersonResource
+    created_at?: string
+    grade: LessonScore | null
   }
 }
 

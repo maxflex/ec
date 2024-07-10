@@ -33,11 +33,14 @@ export function newId(): number {
   return _newId
 }
 
-export function selectItems(obj: object): SelectItems {
-  const items = Object.entries(obj).map(([value, title]) => ({
-    value,
-    title,
-  }))
+export function selectItems(obj: object, skip: string[] = []): SelectItems {
+  const items = Object.entries(obj)
+    .map(([value, title]) => ({
+      value,
+      title,
+    }))
+    .filter(e => !skip.includes(e.value))
+
   // если ключ – это число (например, годы '2024')
   // то приводим к числу, чтоб чётенько было
   // и сортирум (сверху дополнительно)

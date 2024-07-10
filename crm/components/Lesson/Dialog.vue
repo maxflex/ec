@@ -19,6 +19,7 @@ const modelDefaults: LessonResource = {
   conducted_at: null,
   is_topic_verified: false,
   is_unplanned: false,
+  quarter: null,
 }
 const dayLabels = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'] as const
 const batchDefaults: BatchAdd = {
@@ -166,17 +167,23 @@ defineExpose({ create, edit })
         class="dialog-body"
       >
         <div>
-          <v-select
-            v-model="lesson.status"
-            label="Статус"
-            :items="selectItems(LessonStatusLabel)"
-            :disabled="lesson.conducted_at !== null"
-          />
-        </div>
-        <div>
           <TeacherSelector
             v-model="lesson.teacher_id"
             label="Преподаватель"
+          />
+        </div>
+        <div>
+          <UiClearableSelect
+            v-model="lesson.cabinet"
+            :items="selectItems(CabinetLabel)"
+            label="Кабинет"
+          />
+        </div>
+        <div>
+          <UiClearableSelect
+            v-model="lesson.quarter"
+            :items="selectItems(QuarterLabel, ['final' as Quarter])"
+            label="Четверть"
           />
         </div>
         <div>
@@ -187,13 +194,7 @@ defineExpose({ create, edit })
             hide-spin-buttons
           />
         </div>
-        <div>
-          <UiClearableSelect
-            v-model="lesson.cabinet"
-            :items="selectItems(CabinetLabel)"
-            label="Кабинет"
-          />
-        </div>
+
         <div class="double-input">
           <UiDateInput
             v-model="startAt.date"

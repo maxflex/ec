@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\{
     ContractController,
     ContractVersionController,
     EventController,
+    GradeController,
     GroupController,
     LessonController,
     MacroController,
@@ -88,5 +89,6 @@ Route::middleware(['auth:crm'])->group(function () {
         'web-reviews' => WebReviewController::class,
         'reports' => ReportController::class,
         'events' => EventController::class,
+        'grades' => GradeController::class,
     ]);
 });
