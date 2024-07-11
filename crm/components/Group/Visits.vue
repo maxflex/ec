@@ -64,6 +64,7 @@ nextTick(loadData)
             {{ c.middle_name[0] }}.
           </template>
         </td>
+        <td />
       </tr>
       <tr v-for="l in items" :key="l.id">
         <td>
@@ -83,6 +84,7 @@ nextTick(loadData)
             }"
           />
         </td>
+        <td />
       </tr>
     </tbody>
   </v-table>
@@ -99,6 +101,9 @@ nextTick(loadData)
         border-bottom: 1px solid #e0e0e0 !important;
         &:first-child {
           width: 130px !important;
+        }
+        &:last-child {
+          width: auto !important;
         }
       }
       &:first-child {
