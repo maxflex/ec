@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { Filters } from '~/components/TeacherPayment/Filters.vue'
 
-const filters = ref<Filters>({})
+const filters = ref<Filters>({
+  year: currentAcademicYear(),
+})
 const items = ref([])
 const paginator = usePaginator()
 // const isLastPage = false

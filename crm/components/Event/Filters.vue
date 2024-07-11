@@ -20,7 +20,7 @@ watch(filters.value, () => {
 <template>
   <div class="filters-inputs">
     <div>
-      <UiClearableSelect
+      <v-select
         v-model="filters.year"
         label="Учебный год"
         :items="selectItems(YearLabel)"

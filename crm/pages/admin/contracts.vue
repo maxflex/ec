@@ -5,7 +5,9 @@ import type { Filters } from '~/components/ContractVersion/Filters.vue'
 const items = ref<ContractVersionListResource[]>([])
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
 const loading = ref(false)
-const filters = ref<Filters>({})
+const filters = ref<Filters>({
+  year: currentAcademicYear(),
+})
 const total = ref<number>()
 let page = 0
 let isLastPage = false

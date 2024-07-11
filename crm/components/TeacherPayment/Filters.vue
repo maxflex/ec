@@ -1,10 +1,12 @@
 <script lang="ts" setup>
 export interface Filters {
-  year?: Year
+  year: Year
   method?: TeacherPaymentMethod
 }
 const emit = defineEmits<{ (e: 'apply', filters: Filters): void }>()
-const filters = ref(loadFilters<Filters>({}))
+const filters = ref(loadFilters<Filters>({
+  year: currentAcademicYear(),
+}))
 
 watch(filters.value, () => {
   saveFilters(filters.value)
@@ -15,7 +17,7 @@ watch(filters.value, () => {
 <template>
   <div class="filters-inputs">
     <div>
-      <UiClearableSelect
+      <v-select
         v-model="filters.year"
         label="Учебный год"
         :items="selectItems(YearLabel)"

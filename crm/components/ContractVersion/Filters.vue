@@ -9,11 +9,11 @@ const VersionFilterLabel = {
 }
 
 export interface Filters {
-  year?: Year
+  year: Year
   company?: Company
   version?: keyof typeof VersionFilterLabel
 }
-const filters = ref<Filters>({})
+const filters = ref<Filters>({ year: currentAcademicYear() })
 
 watch(filters.value, () => emit('apply', filters.value))
 </script>
@@ -21,7 +21,7 @@ watch(filters.value, () => emit('apply', filters.value))
 <template>
   <div class="filters-inputs">
     <div>
-      <UiClearableSelect
+      <v-select
         v-model="filters.year"
         label="Учебный год"
         :items="selectItems(YearLabel)"
