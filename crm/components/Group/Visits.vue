@@ -98,7 +98,7 @@ nextTick(loadData)
         width: 100px;
         border-bottom: 1px solid #e0e0e0 !important;
         &:first-child {
-          width: 130px;
+          width: 130px !important;
         }
       }
       &:first-child {
