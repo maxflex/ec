@@ -35,6 +35,11 @@ class Teacher extends Model
         return $this->hasMany(Report::class);
     }
 
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class);
+    }
+
     public function subjects(): Attribute
     {
         return Attribute::make(

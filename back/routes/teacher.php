@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Teacher\{
     BalanceController,
+    GradeController,
     GroupController,
     LessonController,
     ReportController,
@@ -20,5 +21,8 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::apiResource('lessons', LessonController::class)->only([
         'index', 'update', 'show'
     ]);
-    Route::apiResource('reports', ReportController::class);
+    Route::apiResources([
+        'reports' => ReportController::class,
+        'grades' => GradeController::class,
+    ]);
 });

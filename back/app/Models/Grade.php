@@ -19,7 +19,7 @@ class Grade extends Model
         return $this->belongsTo(Client::class);
     }
 
-    public static function fakeQuery(): Builder
+    public static function fakeQuery(?Teacher $teacher = null): Builder
     {
         /**
          * Группа-четверть, в которой прошли все занятия (нет запланированных)
@@ -32,6 +32,11 @@ class Grade extends Model
                 LessonStatus::planned->value
             ])
             ->whereNotNull('quarter')
+            ->when(
+                $teacher,
+                fn ($q) =>
+                $q->whereIn('group_id', $teacher->lessons()->pluck('group_id')->unique())
+            )
             ->groupBy('group_id', 'quarter')
             ->having('planned', '=', 0);
 
@@ -88,7 +93,7 @@ class Grade extends Model
             ->groupBy('group_id')
             ->having('planned', '=', 0);
 
-        $fakeGrades = DB::table('lessons as l')
+        $finalGrades = DB::table('lessons as l')
             ->join('groups as g', 'g.id', '=', 'l.group_id')
             ->join('contract_lessons as cl', 'cl.lesson_id', '=', 'l.id')
             ->join('contracts as c', 'c.id', '=', 'cl.contract_id')
@@ -118,7 +123,7 @@ class Grade extends Model
             ->groupBy('c.client_id', 'g.program', 'g.year');
 
         return DB::table('final_grades')
-            ->withExpression('final_grades', $fakeGrades)
+            ->withExpression('final_grades', $finalGrades)
             ->select('*');
     }
 

@@ -80,6 +80,11 @@ switch (user?.entity_type) {
         to: '/reports',
       },
       {
+        icon: mdiNumeric5BoxMultiple,
+        title: 'Оценки',
+        to: '/grades',
+      },
+      {
         icon: mdiCurrencyRub,
         title: 'Баланс',
         to: '/balance',
