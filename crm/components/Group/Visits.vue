@@ -67,9 +67,9 @@ nextTick(loadData)
       </tr>
       <tr v-for="l in items" :key="l.id">
         <td>
-          {{ formatTextDate(l.start_at) }}
+          {{ formatTextDate(l.dateTime) }}
           <span class="text-gray ml-1">
-            {{ dayLabels[getDay(l.start_at)] }}
+            {{ dayLabels[getDay(l.dateTime)] }}
           </span>
         </td>
         <td v-for="c in clients" :key="c.id" :class="{ 'is-remote': contractLessons[l.id][c.id] && contractLessons[l.id][c.id].is_remote }">

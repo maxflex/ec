@@ -18,7 +18,7 @@ class LessonController extends Controller
     {
         $query = Lesson::query()
             ->with(['teacher', 'group', 'contractLessons'])
-            ->orderBy('start_at');
+            ->orderByRaw('date, time');
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, LessonListResource::class);
     }

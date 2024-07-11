@@ -19,7 +19,7 @@ class TopicController extends Controller
         $query = Lesson::query()
             ->with(['teacher'])
             ->whereNotNull('topic')
-            ->orderBy('start_at', 'desc');
+            ->orderBy('date', 'desc');
         $this->filter($request, $query);
         return $this->handleIndexRequest(
             $request,

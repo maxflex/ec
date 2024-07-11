@@ -54,7 +54,7 @@ class Contract extends Model
                 'sum' => $contractLesson->price * -1,
                 'comment' => sprintf(
                     'занятие %s, группа %d, кабинет %s',
-                    Carbon::parse($lesson->start_at)->format('d.m.y в H:i'),
+                    Carbon::parse($lesson->dateTime)->format('d.m.y в H:i'),
                     $lesson->group_id,
                     $lesson->cabinet->value
                 )

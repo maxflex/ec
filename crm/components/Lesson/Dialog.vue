@@ -21,10 +21,6 @@ const loading = ref(false)
 const itemId = ref<number | undefined>()
 const lesson = ref<LessonResource>(clone(modelDefaults))
 const deleting = ref(false)
-const startAt = reactive({
-  date: '',
-  time: '',
-})
 const year = ref<Year>()
 
 function create(groupId: number, y: Year) {
@@ -42,20 +38,13 @@ async function edit(lessonId: number) {
   const { data } = await useHttp<LessonResource>(`lessons/${lessonId}`)
   if (data.value) {
     lesson.value = data.value
-    year.value = getAcademicYear(lesson.value.start_at!)
+    year.value = getAcademicYear(lesson.value.date!)
   }
   loading.value = false
 }
 
-watch(lesson, () => {
-  [startAt.date, startAt.time] = lesson.value.start_at
-    ? lesson.value.start_at.split(' ')
-    : ['', '']
-})
-
 async function save() {
   saving.value = true
-  lesson.value.start_at = [startAt.date, startAt.time].join(' ')
   const method = itemId.value ? 'put' : 'post'
   const url = itemId.value ? `lessons/${itemId.value}` : 'lessons'
   const { data } = await useHttp<LessonListResource>(url, {
@@ -148,12 +137,12 @@ defineExpose({ create, edit })
 
         <div class="double-input">
           <UiDateInput
-            v-model="startAt.date"
+            v-model="lesson.date"
             :year="year"
           />
           <div>
             <v-text-field
-              v-model="startAt.time"
+              v-model="lesson.time"
               v-maska:[timeMask]
               label="Время"
             />

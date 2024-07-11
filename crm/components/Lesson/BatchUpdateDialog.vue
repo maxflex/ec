@@ -4,7 +4,7 @@ const emit = defineEmits<{ (e: 'updated'): void }>()
 interface BatchItem {
   cabinet?: Cabinet
   quarter?: Quarter
-  start_at?: string
+  time?: string
   teacher_id?: number
   price?: number
 }
@@ -14,10 +14,6 @@ const timeMask = { mask: '##:##' }
 const { dialog, width } = useDialog('default')
 const lesson = ref<BatchItem>({})
 const deleting = ref(false)
-const startAt = reactive({
-  date: '',
-  time: '',
-})
 const year = ref<Year>()
 const ids = ref<number[]>([])
 
@@ -28,15 +24,8 @@ function open(lessonIds: number[], y: Year) {
   dialog.value = true
 }
 
-watch(lesson, () => {
-  [startAt.date, startAt.time] = lesson.value.start_at
-    ? lesson.value.start_at.split(' ')
-    : ['', '']
-})
-
 async function save() {
   saving.value = true
-  lesson.value.start_at = [startAt.date, startAt.time].join(' ')
   await useHttp(`lessons/batch`, {
     method: 'put',
     body: {
@@ -121,7 +110,7 @@ defineExpose({ open })
 
         <div>
           <v-text-field
-            v-model="startAt.time"
+            v-model="lesson.time"
             v-maska:[timeMask]
             label="Время"
           />

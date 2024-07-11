@@ -100,7 +100,7 @@ defineExpose({ create })
         <div class="table mb-6">
           <div v-for="(label, index) in dayLabels" :key="index">
             <div
-              class="text-uppercase" style="width: 50px"
+              class="text-uppercase font-weight-medium" style="width: 50px"
               :class="{
                 'opacity-2': !batch.weekdays[index],
               }"

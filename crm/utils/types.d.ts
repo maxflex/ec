@@ -72,6 +72,9 @@ declare global {
     isLastPage: boolean
   }
 
+  // type Date = `${Year}-${number}${number}-${number}${number}`
+  // type Time = `${number}${number}:${number}${number}:${number}${number}`
+
   type InfiniteScrollSide = 'start' | 'end' | 'both'
   type InfiniteScrollStatus = 'ok' | 'empty' | 'loading' | 'error'
   interface InfiniteScrollCallback {
@@ -299,7 +302,8 @@ declare global {
     group_id?: number
     price?: number
     cabinet?: Cabinet
-    start_at?: string
+    date?: string
+    time?: string
     status: LessonStatus
     quarter: Quarter | null
     topic?: string | null
@@ -636,7 +640,7 @@ declare global {
 
   interface GroupVisitResource {
     id: number
-    start_at: string
+    dateTime: string
     contractLessons: Array<{
       id: number
       is_remote: boolean

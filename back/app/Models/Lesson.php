@@ -8,6 +8,7 @@ use App\Enums\ContractLessonStatus;
 use App\Enums\LessonStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Lesson extends Model
 {
@@ -16,7 +17,8 @@ class Lesson extends Model
         'group_id',
         'price',
         'cabinet',
-        'start_at',
+        'date',
+        'time',
         'status',
         'topic',
         'conducted_at',
@@ -62,17 +64,10 @@ class Lesson extends Model
         return $query->where('status', LessonStatus::conducted);
     }
 
-    public function date(): Attribute
+    public function dateTime(): Attribute
     {
         return Attribute::make(
-            fn () => str($this->start_at)->before(' ')
-        );
-    }
-
-    public function time(): Attribute
-    {
-        return Attribute::make(
-            fn () => str($this->start_at)->after(' ')->beforeLast(':')
+            fn () => join(' ', [$this->date, $this->time])
         );
     }
 
@@ -82,9 +77,9 @@ class Lesson extends Model
     public function timeEnd(): Attribute
     {
         return Attribute::make(
-            fn () => Carbon::parse($this->start_at)
+            fn () => Carbon::parse($this->time)
                 ->addMinutes($this->group->duration)
-                ->format("H:i")
+                ->format("H:i:s")
         );
     }
 
@@ -96,7 +91,7 @@ class Lesson extends Model
         return Attribute::make(
             fn (): bool => !$this
                 ->chain()
-                ->where('start_at', '<', $this->start_at)
+                ->where(DB::raw("concat(`date`, ' ', `time`)"), '<', $this->dateTime)
                 ->exists()
         );
     }

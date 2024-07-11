@@ -31,7 +31,7 @@ class Group extends Model
 
     public function lessons()
     {
-        return $this->hasMany(Lesson::class)->orderBy('start_at');
+        return $this->hasMany(Lesson::class);
     }
 
     public function getSchedule(): Collection

@@ -2,6 +2,7 @@
 
 use App\Enums\Cabinet;
 use App\Enums\LessonStatus;
+use App\Enums\Quarter;
 use App\Models\Group;
 use App\Models\Teacher;
 use App\Models\User;
@@ -23,10 +24,19 @@ return new class extends Migration
             $table->unsignedInteger('price');
             $table->enum('status', collect(LessonStatus::cases())->map(fn ($e) => $e->name)->all());
             $table->enum('cabinet', collect(Cabinet::cases())->map(fn ($e) => $e->value)->all());
-            $table->dateTime('start_at');
+
+            $table->enum(
+                'quarter',
+                collect(Quarter::cases())->map(fn ($e) => $e->name)->all()
+            )->nullable()->default(null)->after('cabinet')->index();
+
+            // $table->dateTime('start_at');
+            $table->time('time');
+            $table->date('date');
+
             $table->dateTime('conducted_at')->nullable();
-            $table->boolean('is_unplanned');
-            $table->boolean('is_topic_verified');
+            $table->boolean('is_unplanned')->default(false);
+            $table->boolean('is_topic_verified')->default(false);
             $table->string('topic')->nullable();
             $table->foreignIdFor(User::class)->nullable()->constrained()->nullable();
             $table->timestamps();

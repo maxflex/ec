@@ -52,7 +52,7 @@ class FakeReport
             SQL)
             ->where('l.status', LessonStatus::conducted->value)
             ->whereRaw(<<<SQL
-                (lr.last_report_created_at IS NULL OR l.start_at > lr.last_report_created_at)
+                (lr.last_report_created_at IS NULL OR l.date > lr.last_report_created_at)
             SQL)
             ->groupBy('l.teacher_id', 'c.client_id', 'g.year', 'g.program')
             ->havingRaw(<<<SQL

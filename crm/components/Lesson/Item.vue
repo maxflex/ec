@@ -33,7 +33,7 @@ const emit = defineEmits<{
       </div>
     </div>
     <div style="width: 120px">
-      {{ item.time }} – {{ item.time_end }}
+      {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
     <div style="width: 80px">
       К–{{ item.cabinet }}

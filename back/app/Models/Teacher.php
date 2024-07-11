@@ -68,7 +68,7 @@ class Teacher extends Model
                 'sum' => $lesson->price,
                 'comment' => sprintf(
                     'занятие %s, группа %d, кабинет %s',
-                    Carbon::parse($this->start_at)->format('d.m.y в H:i'),
+                    Carbon::parse($this->dateTime)->format('d.m.y в H:i'),
                     $lesson->group_id,
                     $lesson->cabinet->value
                 )
