@@ -30,11 +30,8 @@ const emit = defineEmits<{ (e: 'open', p: ClientPaymentResource): void }>()
         </span>
       </div>
       <div>от {{ formatDate(item.date) }}</div>
-      <div>
-        {{ YearLabel[item.year] }}
-      </div>
       <div>{{ item.sum }} руб.</div>
-      <div>
+      <div style="width: 220px">
         {{ ClientPaymentMethodLabel[item.method] }}
       </div>
       <div>

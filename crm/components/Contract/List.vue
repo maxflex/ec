@@ -102,18 +102,35 @@ function onClientPaymentDeleted(cp: ClientPaymentResource) {
         </div>
       </v-btn>
     </div>
-    <v-btn
-      color="primary"
-      @click="contractVersionDialog?.createContract()"
-    >
-      новый договор
-    </v-btn>
+    <v-menu>
+      <template #activator="{ props }">
+        <v-btn color="primary" v-bind="props">
+          действия
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item @click="contractVersionDialog?.createContract()">
+          новый договор
+        </v-list-item>
+        <v-list-item @click="() => contractBalanceDialog?.open(selectedContract.id)">
+          баланс по договору
+        </v-list-item>
+        <v-list-item
+          @click="() => contractVersionDialog?.addVersion(selectedContract)"
+        >
+          добавить версию
+        </v-list-item>
+        <v-list-item @click="() => clientPaymentDialog?.create(selectedContract)">
+          добавить платеж
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </div>
   <div class="contract-list">
     <div
-      class="contract-list__item"
+      class="contract-list__item pt-0"
     >
-      <h3>
+      <!-- <h3>
         Договор №{{ selectedContract.id }} на {{ formatYear(selectedContract.year) }}
         <div class="contract-list__actions">
           <v-btn
@@ -128,15 +145,14 @@ function onClientPaymentDeleted(cp: ClientPaymentResource) {
             :icon="mdiWalletBifoldOutline"
             variant="plain"
             :size="48"
-            @click="() => contractBalanceDialog?.open(selectedContract.id)"
           />
         </div>
-      </h3>
+      </h3> -->
       <ContractVersionList2
         :items="selectedContract.versions"
         @edit="contractVersionDialog?.edit"
       />
-      <h3>
+      <!-- <h3>
         Платежи
         <div class="contract-list__actions">
           <v-btn
@@ -147,7 +163,7 @@ function onClientPaymentDeleted(cp: ClientPaymentResource) {
             @click="() => clientPaymentDialog?.create(selectedContract)"
           />
         </div>
-      </h3>
+      </h3> -->
       <ClientPaymentList
         :items="selectedContract.payments"
         @open="(p) => clientPaymentDialog?.open(p)"
@@ -201,6 +217,20 @@ function onClientPaymentDeleted(cp: ClientPaymentResource) {
   }
   &__add {
     padding: 20px;
+  }
+  .client-payments {
+    padding-top: 57px;
+    position: relative;
+    &:before {
+      content: '';
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 57px;
+      background: #fafafa;
+      position: absolute;
+      border-bottom: 1px solid #e0e0e0;
+    }
   }
 }
 </style>
