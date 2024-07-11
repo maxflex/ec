@@ -119,18 +119,12 @@ defineExpose({ open })
           />
         </div>
 
-        <div class="double-input">
-          <UiDateInput
-            v-model="startAt.date"
-            :year="year"
+        <div>
+          <v-text-field
+            v-model="startAt.time"
+            v-maska:[timeMask]
+            label="Время"
           />
-          <div>
-            <v-text-field
-              v-model="startAt.time"
-              v-maska:[timeMask]
-              label="Время"
-            />
-          </div>
         </div>
         <div class="dialog-bottom">
           <v-spacer />
