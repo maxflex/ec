@@ -47,11 +47,7 @@ const emit = defineEmits<{
             <span v-if="item.programs.some((e) => !e.is_closed)">
               {{ item.programs.filter((e) => !e.is_closed).length }}
             </span>
-
-            <span
-              v-if="item.programs.some((e) => e.is_closed)"
-              class="text-error"
-            >
+            <span v-if="item.programs.some((e) => e.is_closed)" class="text-error">
               {{ item.programs.filter((e) => e.is_closed).length }}
             </span>
           </span>

@@ -181,17 +181,17 @@ declare global {
     year: Year
     method: ClientPaymentMethod
     company: Company
-    entity_type: typeof EntityType.contract | typeof EntityType.client
-    entity_id: number
-    is_confirmed: boolean
+    client?: PersonResource
     is_return: boolean
+    is_confirmed: boolean
     purpose: string | null
-    extra: string | null
+    pko_number: number | null
+    card_number: string | null
     created_at?: string
     user?: PersonResource
   }
 
-  interface ContractProgramResource {
+  interface ContractVersionProgramResource {
     id: number
     program: Program
     lessons: number
@@ -201,7 +201,7 @@ declare global {
     contract_version_id: number
   }
 
-  interface ContractPaymentResource {
+  interface ContractVersionPaymentResource {
     id: number
     sum: number
     date: string
@@ -213,8 +213,8 @@ declare global {
     version: number
     sum?: number
     date: string
-    programs: ContractProgramResource[]
-    payments: ContractPaymentResource[]
+    programs: ContractVersionProgramResource[]
+    payments: ContractVersionPaymentResource[]
     contract: {
       id: number
       year: Year
@@ -231,12 +231,25 @@ declare global {
     version: number
     sum: number
     payments_count: number
-    programs: ContractProgramResource[]
+    programs: ContractVersionProgramResource[]
     contract: {
       id: number
       year: Year
       client: PersonResource
     }
+  }
+
+  interface ContractPaymentResource {
+    id: number
+    sum: number
+    date: string
+    method: ClientPaymentMethod
+    is_return: boolean
+    is_confirmed: boolean
+    pko_number: number | null
+    card_number: string | null
+    created_at?: string
+    user?: PersonResource
   }
 
   interface ContractResource {
@@ -246,7 +259,7 @@ declare global {
     year: Year
     company: Company
     versions: ContractVersionListResource[]
-    payments: ClientPaymentResource[]
+    payments: ContractPaymentResource[]
   }
 
   interface Zoom {

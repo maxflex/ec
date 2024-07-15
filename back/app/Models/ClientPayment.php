@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 class ClientPayment extends Model
 {
     protected $fillable = [
-        'entity_id', 'entity_type', 'sum', 'date', 'is_confirmed', 'is_return',
-        'purpose', 'extra', 'company', 'method', 'year'
+        'sum', 'date', 'purpose', 'company', 'method', 'year',
+        'client_id', 'card_number', 'pko_number', 'is_confirmed', 'is_return'
     ];
 
     protected $casts = [
@@ -20,9 +20,13 @@ class ClientPayment extends Model
         'is_return' => 'boolean',
     ];
 
-
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
     }
 }

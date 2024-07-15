@@ -55,7 +55,7 @@ class Client extends Model
     }
 
     /**
-     * @return ContractProgram[]
+     * @return ContractVersionProgram[]
      */
     public function swamps(): Attribute
     {

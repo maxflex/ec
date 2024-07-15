@@ -35,7 +35,7 @@ class Contract extends Model
 
     public function payments()
     {
-        return $this->morphMany(ClientPayment::class, 'entity');
+        return $this->hasMany(ContractPayment::class);
     }
 
 
@@ -61,12 +61,7 @@ class Contract extends Model
             ]);
         }
 
-        $payments = ClientPayment::query()
-            ->where('entity_type', Contract::class)
-            ->where('entity_id', $this->id)
-            ->get();
-
-        foreach ($payments as $payment) {
+        foreach ($this->payments as $payment) {
             $balanceItems->push((object) [
                 'dateTime' => $payment->created_at->format('Y-m-d H:i:s'),
                 'sum' => $payment->sum * ($payment->is_return ? -1 : 1),

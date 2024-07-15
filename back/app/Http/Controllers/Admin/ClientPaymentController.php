@@ -9,9 +9,14 @@ use Illuminate\Http\Request;
 
 class ClientPaymentController extends Controller
 {
+    protected $filters = [
+        'equals' => ['year', 'method']
+    ];
+
     public function index(Request $request)
     {
         $query = ClientPayment::query()->latest();
+        $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, ClientPaymentResource::class);
     }
 

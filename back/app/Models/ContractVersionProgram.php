@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Enums\Program;
 use Illuminate\Database\Eloquent\Model;
 
-class ContractProgram extends Model
+class ContractVersionProgram extends Model
 {
     public $timestamps = false;
 

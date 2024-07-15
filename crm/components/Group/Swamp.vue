@@ -1,8 +1,8 @@
 <script setup lang="ts">
-const { swamp } = defineProps<{ swamp: ContractProgramResource }>()
+const { swamp } = defineProps<{ swamp: ContractVersionProgramResource }>()
 
 const emit = defineEmits<{
-  (e: 'attach', swamp: ContractProgramResource): void
+  (e: 'attach', swamp: ContractVersionProgramResource): void
 }>()
 </script>
 

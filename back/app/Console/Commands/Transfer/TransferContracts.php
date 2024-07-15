@@ -6,6 +6,7 @@ use App\Enums\Company;
 use App\Enums\Program;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Schema;
 
 class TransferContracts extends Command
 {
@@ -16,8 +17,9 @@ class TransferContracts extends Command
 
     public function handle()
     {
-        DB::table('contract_programs')->delete();
-        DB::table('contract_payments')->delete();
+        Schema::disableForeignKeyConstraints();
+        DB::table('contract_version_programs')->delete();
+        DB::table('contract_version_payments')->delete();
         DB::table('contract_versions')->delete();
         DB::table('contracts')->delete();
 
@@ -56,7 +58,7 @@ class TransferContracts extends Command
                     'updated_at' => $cv->updated_at,
                 ]);
                 foreach ($contractSubjects->where('contract_version_id', $cv->id) as $cs) {
-                    DB::table('contract_programs')->insert([
+                    DB::table('contract_version_programs')->insert([
                         'contract_version_id' => $id,
                         'program' => Program::getById($c->grade_id, $cs->subject_id)->name,
                         'lessons' => $cs->lessons ?? 0,
@@ -66,7 +68,7 @@ class TransferContracts extends Command
                     ]);
                 }
                 foreach ($contractPayments->where('contract_version_id', $cv->id) as $cp) {
-                    DB::table('contract_payments')->insert([
+                    DB::table('contract_version_payments')->insert([
                         'contract_version_id' => $id,
                         'sum' => $cp->sum,
                         'date' => $cp->date
@@ -77,5 +79,6 @@ class TransferContracts extends Command
             $bar->advance();
         }
         $bar->finish();
+        Schema::enableForeignKeyConstraints();
     }
 }

@@ -103,7 +103,7 @@ async function destroy() {
   }
 }
 
-function toggleCloseProgram(p: ContractProgramResource) {
+function toggleCloseProgram(p: ContractVersionProgramResource) {
   p.is_closed = !p.is_closed
 }
 
@@ -140,7 +140,7 @@ function addPayment() {
   smoothScroll('dialog', 'bottom')
 }
 
-function deletePayment(p: ContractPaymentResource) {
+function deletePayment(p: ContractVersionPaymentResource) {
   item.value.payments.splice(
     item.value.payments.findIndex(e => e.id === p.id),
     1,
