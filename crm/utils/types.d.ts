@@ -1,4 +1,6 @@
 declare global {
+  type Exam = keyof typeof ExamLabel
+
   type Quarter = keyof typeof QuarterLabel
 
   type LogTable = keyof typeof LogTableLabel
@@ -691,6 +693,17 @@ declare global {
     client?: PersonResource
     created_at?: string
     grade: LessonScore | null
+  }
+
+  interface ExamScoreResource {
+    id: number
+    year: Year
+    client_id?: number
+    exam?: Exam
+    score?: number
+    user?: PersonResource
+    client?: PersonResource
+    created_at?: string
   }
 }
 

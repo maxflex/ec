@@ -444,6 +444,30 @@ export const CompanyLabel = {
   ip: 'ИП',
 } as const
 
+export const ExamLabel = {
+  ogeMath: 'ОГЭ математика',
+  ogePhys: 'ОГЭ физика',
+  ogeChem: 'ОГЭ химия',
+  ogeEng: 'ОГЭ английский',
+  ogeInf: 'ОГЭ информатика',
+  ogeRus: 'ОГЭ русский',
+  ogeLit: 'ОГЭ литература',
+  ogeGeo: 'ОГЭ география',
+  ogeHis: 'ОГЭ история',
+  ogeSoc: 'ОГЭ обществознание',
+  egeMathBase: 'ЕГЭ математика база',
+  egeMathProf: 'ЕГЭ математика профиль',
+  egePhys: 'ЕГЭ физика',
+  egeChem: 'ЕГЭ химия',
+  egeEng: 'ЕГЭ английский',
+  egeInf: 'ЕГЭ информатика',
+  egeRus: 'ЕГЭ русский',
+  egeLit: 'ЕГЭ литература',
+  egeGeo: 'ЕГЭ география',
+  egeHis: 'ЕГЭ история',
+  egeSoc: 'ЕГЭ обществознание',
+}
+
 export const StatsModeLabel = {
   day: 'по дням',
   month: 'по месяцам',

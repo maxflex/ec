@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\{
     ContractController,
     ContractVersionController,
     EventController,
+    ExamScoreController,
     GradeController,
     GroupController,
     LessonController,
@@ -92,5 +93,6 @@ Route::middleware(['auth:crm'])->group(function () {
         'reports' => ReportController::class,
         'events' => EventController::class,
         'grades' => GradeController::class,
+        'exam-scores' => ExamScoreController::class,
     ]);
 });

@@ -12,6 +12,7 @@ const tabs = {
   schedule: 'расписание',
   groups: 'группы',
   grades: 'оценки',
+  examScores: 'экзамены',
   reports: 'отчеты',
   reviews: 'отзывы',
   webReviews: 'отзывы на сайте',
@@ -201,6 +202,7 @@ nextTick(loadData)
           <WebReviewList :items="items" />
         </template>
       </UiDataLoader>
+      <ExamScoreTab v-else-if="selectedTab === 'examScores'" :client-id="client.id" />
       <LessonList
         v-else-if="selectedTab === 'schedule'"
         :id="client.id"

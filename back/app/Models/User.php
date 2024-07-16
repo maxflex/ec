@@ -34,6 +34,11 @@ class User extends Authenticatable
         return $this->hasMany(Comment::class);
     }
 
+    public function examScores()
+    {
+        return $this->hasMany(ExamScore::class);
+    }
+
     public function contractVersions()
     {
         return $this->hasMany(ContractVersion::class);
