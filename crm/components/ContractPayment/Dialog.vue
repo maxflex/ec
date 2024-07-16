@@ -2,8 +2,8 @@
 import { clone } from 'rambda'
 
 const emit = defineEmits<{
-  updated: [e: ClientPaymentResource]
-  deleted: [e: ClientPaymentResource]
+  updated: [e: ContractPaymentResource]
+  deleted: [e: ContractPaymentResource]
 }>()
 const { width, dialog } = useDialog('default')
 const deleting = ref(false)
@@ -11,18 +11,16 @@ const saving = ref(false)
 const loading = ref(false)
 const itemId = ref<number>()
 
-const modelDefaults: ClientPaymentResource = {
+const modelDefaults: ContractPaymentResource = {
   id: newId(),
   sum: 0,
   date: today(),
   year: currentAcademicYear(),
   method: 'card',
-  company: 'ooo',
-  purpose: null,
   is_confirmed: false,
   is_return: false,
 }
-const item = ref<ClientPaymentResource>(modelDefaults)
+const item = ref<ContractPaymentResource>(modelDefaults)
 
 function create(year: Year) {
   itemId.value = undefined
@@ -31,12 +29,12 @@ function create(year: Year) {
   dialog.value = true
 }
 
-async function edit(e: ClientPaymentResource) {
+async function edit(e: ContractPaymentResource) {
   const { id } = e
   itemId.value = id
   loading.value = true
   dialog.value = true
-  const { data } = await useHttp<ClientPaymentResource>(`client-payments/${id}`)
+  const { data } = await useHttp<ContractPaymentResource>(`contract-payments/${id}`)
   if (data.value) {
     item.value = data.value
   }
@@ -46,8 +44,8 @@ async function edit(e: ClientPaymentResource) {
 async function save() {
   saving.value = true
   const method = itemId.value ? `put` : `post`
-  const url = itemId.value ? `client-payments/${itemId.value}` : `client-payments`
-  const { data } = await useHttp<ClientPaymentResource>(url, {
+  const url = itemId.value ? `contract-payments/${itemId.value}` : `contract-payments`
+  const { data } = await useHttp<ContractPaymentResource>(url, {
     method,
     body: item.value,
   })
@@ -63,7 +61,7 @@ async function destroy() {
     return
   }
   deleting.value = true
-  const { data, status } = await useHttp(`client-payments/${item.value.id}`, {
+  const { data, status } = await useHttp(`contract-payments/${item.value.id}`, {
     method: 'delete',
   })
   if (status.value === 'error') {
@@ -108,16 +106,6 @@ defineExpose({ create, edit })
         </div>
         <UiDateInput v-model="item.date" />
         <div>
-          <v-select v-model="item.year" label="Учебный год" :items="selectItems(YearLabel)" />
-        </div>
-        <div>
-          <v-select
-            v-model="item.company"
-            label="Компания"
-            :items="selectItems(CompanyLabel)"
-          />
-        </div>
-        <div>
           <v-select
             v-model="item.method"
             label="Способ оплаты"
@@ -138,15 +126,7 @@ defineExpose({ create, edit })
             type="number"
             hide-spin-buttons
           />
-          <v-text-field v-else disabled value="Будет присвоен" label="Номер ПКО" />
-        </div>
-        <div>
-          <v-textarea
-            v-model="item.purpose"
-            label="Назначение"
-            no-resize
-            rows="3"
-          />
+          <v-text-field v-else disabled model-value="Будет присвоен" label="Номер ПКО" />
         </div>
         <div>
           <v-checkbox

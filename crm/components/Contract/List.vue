@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { mdiWalletBifoldOutline } from '@mdi/js'
-import type { ClientPaymentDialog, ContractBalanceDialog, ContractVersionDialog } from '#build/components'
+import type { ContractBalanceDialog, ContractPaymentDialog, ContractVersionDialog } from '#build/components'
 
 const { items } = defineProps<{ items: ContractResource[] }>()
-const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()
+const contractPaymentDialog = ref<InstanceType<typeof ContractPaymentDialog>>()
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
 const contractBalanceDialog = ref<InstanceType<typeof ContractBalanceDialog>>()
 const selected = ref(0)
@@ -52,7 +52,7 @@ function onContractVersionDeleted(cv: ContractVersionResource) {
   }
 }
 
-function onClientPaymentUpdated(cp: ClientPaymentResource) {
+function onContractPaymentUpdated(cp: ContractPaymentResource) {
   const contractIndex = items.findIndex(c => c.id === cp.entity_id)
   if (contractIndex === -1) {
     return
@@ -69,7 +69,7 @@ function onClientPaymentUpdated(cp: ClientPaymentResource) {
   itemUpdated('client-payment', cp.id)
 }
 
-function onClientPaymentDeleted(cp: ClientPaymentResource) {
+function onContractPaymentDeleted(cp: ContractPaymentResource) {
   const contractIndex = items.findIndex(c => c.id === cp.entity_id)
   if (contractIndex === -1) {
     return
@@ -120,7 +120,7 @@ function onClientPaymentDeleted(cp: ClientPaymentResource) {
         >
           добавить версию
         </v-list-item>
-        <v-list-item @click="() => clientPaymentDialog?.create(selectedContract)">
+        <v-list-item @click="() => contractPaymentDialog?.create(selectedContract)">
           добавить платеж
         </v-list-item>
       </v-list>
@@ -130,43 +130,13 @@ function onClientPaymentDeleted(cp: ClientPaymentResource) {
     <div
       class="contract-list__item pt-0"
     >
-      <!-- <h3>
-        Договор №{{ selectedContract.id }} на {{ formatYear(selectedContract.year) }}
-        <div class="contract-list__actions">
-          <v-btn
-            color="gray"
-            icon="$plus"
-            variant="plain"
-            :size="48"
-            @click="() => contractVersionDialog?.addVersion(selectedContract)"
-          />
-          <v-btn
-            color="gray"
-            :icon="mdiWalletBifoldOutline"
-            variant="plain"
-            :size="48"
-          />
-        </div>
-      </h3> -->
       <ContractVersionList2
         :items="selectedContract.versions"
         @edit="contractVersionDialog?.edit"
       />
-      <!-- <h3>
-        Платежи
-        <div class="contract-list__actions">
-          <v-btn
-            color="gray"
-            :size="48"
-            icon="$plus"
-            variant="plain"
-            @click="() => clientPaymentDialog?.create(selectedContract)"
-          />
-        </div>
-      </h3> -->
-      <ClientPaymentList
+      <ContractPaymentList
         :items="selectedContract.payments"
-        @open="(p) => clientPaymentDialog?.open(p)"
+        @open="contractPaymentDialog?.edit"
       />
     </div>
   </div>
@@ -176,10 +146,10 @@ function onClientPaymentDeleted(cp: ClientPaymentResource) {
     @deleted="onContractVersionDeleted"
     @created="onContractCreated"
   />
-  <ClientPaymentDialog
-    ref="clientPaymentDialog"
-    @updated="onClientPaymentUpdated"
-    @deleted="onClientPaymentDeleted"
+  <ContractPaymentDialog
+    ref="contractPaymentDialog"
+    @updated="onContractPaymentUpdated"
+    @deleted="onContractPaymentDeleted"
   />
   <ContractBalanceDialog ref="contractBalanceDialog" />
 </template>

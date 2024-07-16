@@ -15,7 +15,9 @@ class ClientPaymentController extends Controller
 
     public function index(Request $request)
     {
-        $query = ClientPayment::query()->latest();
+        $query = ClientPayment::query()
+            ->with(['user', 'client'])
+            ->latest();
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, ClientPaymentResource::class);
     }
@@ -23,6 +25,11 @@ class ClientPaymentController extends Controller
     public function store(Request $request)
     {
         $clientPayment = auth()->user()->entity->clientPayments()->create($request->all());
+        return new ClientPaymentResource($clientPayment);
+    }
+
+    public function show(ClientPayment $clientPayment)
+    {
         return new ClientPaymentResource($clientPayment);
     }
 

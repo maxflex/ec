@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import type { ClientPaymentDialog } from '#build/components'
 import type { Filters } from '~/components/ClientPayment/Filters.vue'
+
+const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()
 
 const { items, loading, onFiltersApply } = useIndex<ClientPaymentResource, Filters>(`client-payments`)
 </script>
@@ -10,6 +13,7 @@ const { items, loading, onFiltersApply } = useIndex<ClientPaymentResource, Filte
   </div>
   <div>
     <UiLoader3 :loading="loading" />
-    <ClientPaymentList :items="items" />
+    <ClientPaymentList :items="items" @open="clientPaymentDialog?.edit" />
   </div>
+  <ClientPaymentDialog ref="clientPaymentDialog" />
 </template>

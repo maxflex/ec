@@ -1,13 +1,13 @@
 <script setup lang="ts">
-const { items } = defineProps<{ items: ClientPaymentResource[] }>()
-const emit = defineEmits<{ (e: 'open', p: ClientPaymentResource): void }>()
+const { items } = defineProps<{ items: ContractPaymentResource[] }>()
+const emit = defineEmits<{ (e: 'open', p: ContractPaymentResource): void }>()
 </script>
 
 <template>
-  <div class="table client-payments">
+  <div class="table contract-payments">
     <div
       v-for="item in items"
-      :id="`client-payment-${item.id}`"
+      :id="`contract-payment-${item.id}`"
       :key="item.id"
     >
       <div class="table-actionss">
@@ -18,12 +18,7 @@ const emit = defineEmits<{ (e: 'open', p: ClientPaymentResource): void }>()
           @click="emit('open', item)"
         />
       </div>
-      <div style="width: 200px">
-        <NuxtLink :to="{ name: 'clients-id', params: { id: item.client!.id } }">
-          {{ formatName(item.client!) }}
-        </NuxtLink>
-      </div>
-      <div style="width: 100px">
+      <div style="width: 150px">
         <span
           v-if="item.is_return"
           class="text-error"
@@ -34,10 +29,10 @@ const emit = defineEmits<{ (e: 'open', p: ClientPaymentResource): void }>()
           платеж
         </span>
       </div>
-      <div style="width: 150px">
+      <div style="width: 220px">
         от {{ formatDate(item.date) }}
       </div>
-      <div style="width: 150px">
+      <div style="width: 220px">
         {{ formatPrice(item.sum) }} руб.
       </div>
       <div style="width: 220px">

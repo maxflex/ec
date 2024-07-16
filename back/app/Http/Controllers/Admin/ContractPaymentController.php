@@ -11,24 +11,35 @@ class ContractPaymentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ContractPayment::query()->latest();
-        return $this->handleIndexRequest($request, $query, ContractPaymentResource::class);
+        $query = ContractPayment::query()
+            ->with(['user', 'contract'])
+            ->latest();
+        return $this->handleIndexRequest(
+            $request,
+            $query,
+            ContractPaymentResource::class
+        );
+    }
+
+    public function show(ContractPayment $contractPayment)
+    {
+        return new ContractPaymentResource($contractPayment);
     }
 
     public function store(Request $request)
     {
-        $clientService = auth()->user()->entity->clientServices()->create($request->all());
-        return new ContractPaymentResource($clientService);
+        $contractPayment = auth()->user()->entity->contractPayments()->create($request->all());
+        return new ContractPaymentResource($contractPayment);
     }
 
-    public function update(ContractPayment $clientService, Request $request)
+    public function update(ContractPayment $contractPayment, Request $request)
     {
-        $clientService->update($request->all());
-        return new ContractPaymentResource($clientService);
+        $contractPayment->update($request->all());
+        return new ContractPaymentResource($contractPayment);
     }
 
-    public function destroy(ContractPayment $clientService)
+    public function destroy(ContractPayment $contractPayment)
     {
-        $clientService->delete();
+        $contractPayment->delete();
     }
 }

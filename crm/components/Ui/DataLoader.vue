@@ -36,7 +36,7 @@ watch(
 
 <template>
   <slot name="filters" />
-  <UiLoaderr3 v-if="loading" />
+  <UiLoaderr v-if="loading" />
   <slot
     v-else-if="items.length > 0"
     :items="items"
