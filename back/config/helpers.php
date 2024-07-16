@@ -1,5 +1,9 @@
 <?php
 
+use App\Enums\ClientPaymentMethod;
+use App\Enums\Company;
+use App\Models\ClientPayment;
+use App\Models\ContractPayment;
 use Illuminate\Support\Collection;
 
 function extract_fields($object, $fields, $merge = []): ?array
@@ -78,4 +82,18 @@ function format_name($person)
 function is_localhost()
 {
     return app()->environment('local');
+}
+
+function get_max_pko_number(Company $company)
+{
+    return max(
+        ClientPayment::query()
+            ->where('company', $company)
+            ->where('method', ClientPaymentMethod::cash)
+            ->max('pko_number'),
+        ContractPayment::query()
+            ->whereHas('contract', fn ($q) => $q->where('company', $company))
+            ->where('method', ClientPaymentMethod::cash)
+            ->max('pko_number'),
+    );
 }
