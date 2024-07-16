@@ -88,7 +88,7 @@ defineExpose({ create, edit })
           Редактировать платеж
         </template>
         <template v-else>
-          Новый платеж
+          Добавить платеж
         </template>
         <v-btn
           icon="$save"
