@@ -62,7 +62,7 @@ nextTick(loadData)
       color="primary"
       @click="clientPaymentDialog?.create(clientId, filters.year)"
     >
-      добавить
+      добавить платеж
     </v-btn>
   </div>
   <div>

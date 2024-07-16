@@ -12,7 +12,7 @@ const tabs = {
   schedule: 'расписание',
   groups: 'группы',
   payments: 'платежи',
-  examScores: 'экзамены',
+  examScores: 'баллы на экзаменах',
   grades: 'оценки',
   reports: 'отчеты',
   reviews: 'отзывы',

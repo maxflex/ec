@@ -62,7 +62,7 @@ nextTick(loadData)
       color="primary"
       @click="examScoreDialog?.create(clientId, filters.year)"
     >
-      добавить
+      добавить баллы
     </v-btn>
   </div>
   <div>
