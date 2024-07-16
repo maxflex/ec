@@ -24,10 +24,11 @@ const modelDefaults: ClientPaymentResource = {
 }
 const item = ref<ClientPaymentResource>(modelDefaults)
 
-function create(year: Year) {
+function create(clientId: number, year: Year) {
   itemId.value = undefined
   item.value = clone(modelDefaults)
   item.value.year = year
+  item.value.client_id = clientId
   dialog.value = true
 }
 

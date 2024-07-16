@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ExamScoreDialog } from '#build/components'
+import type { ClientPaymentDialog } from '#build/components'
 
 const { clientId } = defineProps<{
   clientId: number
@@ -10,16 +10,16 @@ const filters = ref<{
   year: currentAcademicYear(),
 })
 const loading = ref(false)
-const items = ref<ExamScoreResource[]>([])
-const examScoreDialog = ref<InstanceType<typeof ExamScoreDialog>>()
+const items = ref<ClientPaymentResource[]>([])
+const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()
 
 async function loadData() {
   if (loading.value) {
     return
   }
   loading.value = true
-  const { data } = await useHttp<ApiResponse<ExamScoreResource[]>>(
-    'exam-scores',
+  const { data } = await useHttp<ApiResponse<ClientPaymentResource[]>>(
+    'client-payments',
     {
       params: {
         ...filters.value,
@@ -36,15 +36,15 @@ async function loadData() {
 
 watch(filters.value, () => loadData())
 
-function onUpdated(es: ExamScoreResource) {
-  const index = items.value.findIndex(e => e.id === es.id)
+function onUpdated(p: ClientPaymentResource) {
+  const index = items.value.findIndex(e => e.id === p.id)
   if (index !== -1) {
-    items.value[index] = es
+    items.value[index] = p
   }
   else {
-    items.value.unshift(es)
+    items.value.unshift(p)
   }
-  itemUpdated('exam-score', es.id)
+  itemUpdated('client-payments', p.id)
 }
 
 nextTick(loadData)
@@ -60,14 +60,14 @@ nextTick(loadData)
     </div>
     <v-btn
       color="primary"
-      @click="examScoreDialog?.create(clientId, filters.year)"
+      @click="clientPaymentDialog?.create(clientId, filters.year)"
     >
       добавить
     </v-btn>
   </div>
   <div>
     <UiLoader3 :loading="loading" />
-    <ExamScoreList :items="items" @edit="examScoreDialog?.edit" />
+    <ClientPaymentList :items="items" @open="clientPaymentDialog?.edit" />
   </div>
-  <ExamScoreDialog ref="examScoreDialog" @updated="onUpdated" />
+  <ClientPaymentDialog ref="clientPaymentDialog" @updated="onUpdated" />
 </template>

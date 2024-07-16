@@ -184,6 +184,7 @@ declare global {
     method: ClientPaymentMethod
     company: Company
     client?: PersonResource
+    client_id: number
     is_return: boolean
     is_confirmed: boolean
     purpose: string | null
