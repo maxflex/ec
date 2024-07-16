@@ -24,9 +24,12 @@ const groupFilters = ref<{ year: Year }>({
 const reportFilters = ref<Filters>({
   year: currentAcademicYear(),
 })
-
-const paymentFilters = ref<{ year?: Year }>({})
-const serviceFilters = ref<{ year?: Year }>({})
+const paymentFilters = ref<{ year: Year }>({
+  year: currentAcademicYear(),
+})
+const serviceFilters = ref<{ year: Year }>({
+  year: currentAcademicYear(),
+})
 // const reviewFilters = ref<{ year?: Year }>({})
 
 async function loadData() {
@@ -54,7 +57,7 @@ nextTick(loadData)
           <UiAvatar :item="teacher" />
         </div>
         <div>
-          <div>преподаватель {{ teacher.id }}</div>
+          <div>преподаватель</div>
           <div>
             {{ formatFullName(teacher) }}
             <PhoneActions :items="teacher.phones" />
@@ -165,7 +168,7 @@ nextTick(loadData)
         <div class="filters">
           <div class="filters-inputs">
             <div>
-              <UiClearableSelect
+              <v-select
                 v-model="paymentFilters.year"
                 label="Учебный год"
                 :items="selectItems(YearLabel)"
@@ -211,7 +214,7 @@ nextTick(loadData)
         <div class="filters">
           <div class="filters-inputs">
             <div>
-              <UiClearableSelect
+              <v-select
                 v-model="serviceFilters.year"
                 label="Учебный год"
                 :items="selectItems(YearLabel)"

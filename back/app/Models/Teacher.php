@@ -30,6 +30,11 @@ class Teacher extends Model
         return $this->hasMany(TeacherPayment::class)->latest();
     }
 
+    public function services()
+    {
+        return $this->hasMany(TeacherService::class)->latest();
+    }
+
     public function reports()
     {
         return $this->hasMany(Report::class);
@@ -84,6 +89,15 @@ class Teacher extends Model
                     '%s (обучение)',
                     $payment->method->getTitle()
                 )
+            ]);
+        }
+
+        $services = $this->services()->where('year', $year)->get();
+        foreach ($services as $service) {
+            $balanceItems->push((object) [
+                'dateTime' => $service->created_at->format('Y-m-d H:i:s'),
+                'sum' => $service->sum,
+                'comment' => $service->purpose,
             ]);
         }
 
