@@ -188,7 +188,7 @@ function onContractPaymentDeleted(cp: ContractPaymentResource) {
   &__add {
     padding: 20px;
   }
-  .client-payments {
+  .contract-payments {
     padding-top: 57px;
     position: relative;
     &:before {

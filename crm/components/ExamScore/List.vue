@@ -21,7 +21,7 @@ const emit = defineEmits<{
           {{ formatName(e.client!) }}
         </NuxtLink>
       </div>
-      <div style="width: 150px">
+      <div style="width: 220px">
         {{ ExamLabel[e.exam!] }}
       </div>
       <div style="width: 200px">
