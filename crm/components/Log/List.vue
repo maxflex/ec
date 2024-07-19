@@ -22,20 +22,25 @@ function getRouteName(log: LogResource) {
         {{ formatDateTime(log.created_at) }}
       </div>
       <div style="width: 180px">
-        <a
-          v-if="log.entity_type === EntityType.user"
-          class="cursor-pointer"
-          @click="userDialog?.edit(log.entity as UserResource)"
-        >
-          {{ formatName(log.entity) }}
+        <template v-if="log.entity">
+          <a
+            v-if="log.entity_type === EntityType.user"
+            class="cursor-pointer"
+            @click="userDialog?.edit(log.entity as UserResource)"
+          >
+            {{ formatName(log.entity) }}
 
-        </a>
-        <NuxtLink v-else :to="{ name: getRouteName(log), params: { id: log.entity.id } }">
-          {{ formatName(log.entity) }}
-        </NuxtLink>
-        <div style="font-size: 14px" class="text-gray">
-          {{ EntityTypeLabel[log.entity_type] }}
-        </div>
+          </a>
+          <NuxtLink v-else :to="{ name: getRouteName(log), params: { id: log.entity.id } }">
+            {{ formatName(log.entity) }}
+          </NuxtLink>
+          <div style="font-size: 14px" class="text-gray">
+            {{ EntityTypeLabel[log.entity_type!] }}
+          </div>
+        </template>
+        <template v-else>
+          system
+        </template>
       </div>
       <div style="width: 130px">
         {{ LogTypeLabel[log.type] }}

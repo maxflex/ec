@@ -549,13 +549,14 @@ declare global {
     type: LogType
     table: LogTable | null
     created_at: string
-    entity: PersonResource
+    entity: PersonResource | null
     row_id: number | null
     ip: string
     entity_type:
       | typeof EntityType.client
       | typeof EntityType.teacher
       | typeof EntityType.user
+      | null
     data: any
   }
 
