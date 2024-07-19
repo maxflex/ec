@@ -28,6 +28,10 @@ export default function<T, F>(apiUrl: string) {
 
   function onFiltersApply(f: F) {
     filters.value = f
+    reloadData()
+  }
+
+  function reloadData() {
     page = 0
     isLastPage = false
     loadData()
@@ -61,5 +65,6 @@ export default function<T, F>(apiUrl: string) {
     items,
     loading,
     onFiltersApply,
+    reloadData,
   }
 }

@@ -12,7 +12,8 @@ use Illuminate\Http\Request;
 class TelegramMessageController extends Controller
 {
     protected $filters = [
-        'equals' => ['phone_id']
+        'type' => ['type'],
+        'equals' => ['phone_id'],
     ];
 
     /**
@@ -21,6 +22,9 @@ class TelegramMessageController extends Controller
     public function index(Request $request)
     {
         $query = TelegramMessage::query();
+        if (!$request->has('phone_id')) {
+            $query->latest();
+        }
         $this->filter($request, $query);
         return $this->handleIndexRequest(
             $request,
@@ -51,6 +55,31 @@ class TelegramMessageController extends Controller
         return new TelegramMessageResource($telegramMessage);
     }
 
+    public function bulkStore(Request $request)
+    {
+        $entryId = TelegramMessage::max('entry_id') ?? 0;
+        $entryId++;
+
+        foreach ($request->participants as $p) {
+            $phone = Phone::query()
+                ->where('entity_id', $p['id'])
+                ->where('entity_type', $p['entity_type'])
+                ->whereNotNull('telegram_id')
+                ->first();
+            $message = Telegram::sendMessage(
+                $phone->telegram_id,
+                view('telegram.admin-message', ['text' => $request->text]),
+                'HTML',
+            );
+            auth()->user()->entity->telegramMessages()->create([
+                'id' => $message->getMessageId(),
+                'phone_id' => $phone->id,
+                'entry_id' => $entryId,
+                'text' => $request->text,
+            ]);
+        }
+    }
+
     /**
      * Display the specified resource.
      */
@@ -73,5 +102,10 @@ class TelegramMessageController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    protected function filterType(&$query, $type)
+    {
+        $type ? $query->whereNotNull('entry_id') : $query->whereNull('entry_id');
     }
 }

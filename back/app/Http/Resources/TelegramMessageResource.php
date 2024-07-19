@@ -14,7 +14,7 @@ class TelegramMessageResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return extract_fields($this, ['text', 'created_at'], [
+        return extract_fields($this, ['text', 'created_at', 'entry_id'], [
             'user' => new PersonWithPhotoResource(
                 $this->user ?? $this->phone->entity
             )

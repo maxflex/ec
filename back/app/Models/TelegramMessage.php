@@ -9,7 +9,7 @@ class TelegramMessage extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'id', 'text', 'phone_id'
+        'id', 'text', 'phone_id', 'entry_id'
     ];
 
     public function phone()

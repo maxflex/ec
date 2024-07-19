@@ -18,6 +18,7 @@ import {
   mdiLogout,
   mdiNumeric5BoxMultiple,
   mdiPrinter,
+  mdiSendCircle,
   mdiStarBox,
   mdiStarBoxOutline,
 } from '@mdi/js'
@@ -161,6 +162,11 @@ switch (user?.entity_type) {
         icon: mdiNumeric5BoxMultiple,
         title: 'Оценки',
         to: '/grades',
+      },
+      {
+        icon: mdiSendCircle,
+        title: 'Телеграм',
+        to: '/telegram-messages',
       },
       {
         icon: mdiCalendar,

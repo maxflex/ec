@@ -70,6 +70,8 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::delete('/', 'batchDestroy');
     });
 
+    Route::post('telegram-messages/bulk', [TelegramMessageController::class, 'bulkStore']);
+
     Route::get('groups/visits/{group}', [GroupController::class, 'visits']);
 
     Route::apiResources([

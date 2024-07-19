@@ -133,7 +133,7 @@ defineExpose({ create, edit })
           <v-text-field v-model="item.name" label="Название" />
         </div>
         <div>
-          <v-textarea v-model="item.description" label="Описание" />
+          <v-textarea v-model="item.description" label="Описание" no-resize />
         </div>
         <div>
           <v-checkbox

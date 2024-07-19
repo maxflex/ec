@@ -1,4 +1,11 @@
 <script setup lang="ts">
+const { title, filters } = withDefaults(defineProps<{
+  title: string
+  filters: any
+}>(), {
+  title: 'Выберите участников',
+  filters: {},
+})
 const emit = defineEmits<{
   selected: [items: PersonListResource[]]
 }>()
@@ -29,6 +36,7 @@ async function loadData() {
   page++
   const { data } = await useHttp<ApiResponse<PersonListResource[]>>(`persons`, {
     params: {
+      ...filters,
       page,
     },
   })
@@ -73,7 +81,7 @@ defineExpose({ open })
     <div class="dialog-wrapper">
       <div class="dialog-header">
         <span>
-          Выберите участников
+          {{ title }}
           <span
             v-if="selected.length"
             class="ml-1 text-gray"

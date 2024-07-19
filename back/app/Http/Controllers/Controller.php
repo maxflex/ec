@@ -95,6 +95,12 @@ class Controller extends BaseController
         }
     }
 
+    protected function filterOrder(&$query, $value)
+    {
+        $order = is_array($value) ? (object) $value : json_decode($value);
+        $query->orderBy($this->getFieldName($order->field), $order->order);
+    }
+
     private function getFieldName($field)
     {
         foreach ($this->mapFilters as $originalFieldName => $mappedFieldName) {

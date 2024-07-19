@@ -711,6 +711,7 @@ declare global {
 
   interface TelegramMessageResource {
     id: number
+    entry_id: number
     text: string
     user: PersonWithPhonesResource
     created_at: string
