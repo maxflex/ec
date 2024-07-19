@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { mdiEmailOutline, mdiHistory } from '@mdi/js'
+import { mdiSend } from '@mdi/js'
+import type { TelegramMessageDialog } from '#build/components'
 
-const { items } = defineProps<{
+const { items, person } = defineProps<{
   items: PhoneListResource[]
+  person: PersonResource
 }>()
+const telegramMessageDialog = ref<InstanceType<typeof TelegramMessageDialog>>()
 </script>
 
 <template>
@@ -21,11 +24,20 @@ const { items } = defineProps<{
         </a>
       </div>
       <div class="phone-actions__actions">
-        <v-icon :icon="mdiEmailOutline" />
-        <v-icon :icon="mdiHistory" />
+        <v-btn
+          :icon="mdiSend"
+          :size="28"
+          variant="text"
+          color="secondary"
+          :disabled="!p.telegram_id"
+          @click="telegramMessageDialog?.open(p, person)"
+        />
+        <!-- <v-icon :icon="mdiEmailOutline" />
+        <v-icon :icon="mdiHistory" /> -->
       </div>
     </div>
   </div>
+  <TelegramMessageDialog ref="telegramMessageDialog" />
 </template>
 
 <style lang="scss">
@@ -42,7 +54,7 @@ const { items } = defineProps<{
     }
   }
   &__number {
-    min-width: 160px;
+    min-width: 170px;
   }
   &__actions {
     display: flex;
@@ -51,9 +63,10 @@ const { items } = defineProps<{
     opacity: 0;
     transition: opacity cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
     .v-icon {
-      top: -2px;
+      // top: -2px;
+      left: 1px;
       font-size: 18px;
-      color: rgb(var(--v-theme-gray));
+      // color: rgb(var(--v-theme-gray));
     }
   }
 }

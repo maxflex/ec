@@ -34,6 +34,11 @@ class User extends Authenticatable
         return $this->hasMany(Comment::class);
     }
 
+    public function telegramMessages()
+    {
+        return $this->hasMany(TelegramMessage::class);
+    }
+
     public function examScores()
     {
         return $this->hasMany(ExamScore::class);

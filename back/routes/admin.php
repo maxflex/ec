@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\{
     TeacherController,
     TeacherPaymentController,
     TeacherServiceController,
+    TelegramMessageController,
     TestController,
     UserController,
     VacationController,
@@ -94,5 +95,6 @@ Route::middleware(['auth:crm'])->group(function () {
         'events' => EventController::class,
         'grades' => GradeController::class,
         'exam-scores' => ExamScoreController::class,
+        'telegram-messages' => TelegramMessageController::class,
     ]);
 });

@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PhoneListResource extends JsonResource
+class TelegramMessageResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,9 +14,10 @@ class PhoneListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return extract_fields($this, [
-            'number', 'comment', 'is_verified', 'telegram_id',
-            'entity_type'
+        return extract_fields($this, ['text', 'created_at'], [
+            'user' => new PersonWithPhotoResource(
+                $this->user ?? $this->phone->entity
+            )
         ]);
     }
 }

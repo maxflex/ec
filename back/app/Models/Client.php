@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\HasPhones;
 use App\Traits\HasPhoto;
+use App\Traits\HasTelegramMessages;
 use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Support\Collection;
 
 class Client extends Model
 {
-    use HasPhones, HasPhoto, RelationSyncable;
+    use HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'branches',

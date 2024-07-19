@@ -42,6 +42,11 @@ class Phone extends Model implements Authenticatable
         return $this->morphTo();
     }
 
+    public function telegramMessages()
+    {
+        return $this->hasMany(TelegramMessage::class);
+    }
+
     public function scopeWhereNumber($query, $number)
     {
         return $query->where('number', UtilsPhone::clean($number));

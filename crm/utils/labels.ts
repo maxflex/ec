@@ -307,6 +307,7 @@ export const MonthLabel = [
 export const EntityType = {
   request: 'App\\Models\\Request',
   client: 'App\\Models\\Client',
+  clientParent: 'App\\Models\\ClientParent',
   contract: 'App\\Models\\Contract',
   teacher: 'App\\Models\\Teacher',
   user: 'App\\Models\\User',
@@ -316,6 +317,7 @@ export const EntityType = {
 export const EntityTypeLabel = {
   'App\\Models\\Request': 'заявка',
   'App\\Models\\Client': 'клиент',
+  'App\\Models\\ClientParent': 'родитель',
   'App\\Models\\Contract': 'договор',
   'App\\Models\\Teacher': 'преподаватель',
   'App\\Models\\User': 'администратор',

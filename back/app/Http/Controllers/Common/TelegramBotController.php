@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Common;
 
+use App\Events\NewTelegramMessage;
 use App\Events\TelegramBotAdded;
 use App\Http\Controllers\Controller;
 use App\Models\Phone;
@@ -9,9 +10,9 @@ use Illuminate\Http\Request;
 use TelegramBot\Api\{Client, Exception};
 use TelegramBot\Api\Types\{ReplyKeyboardMarkup, ReplyKeyboardRemove, Update};
 
-class TelegramController extends Controller
+class TelegramBotController extends Controller
 {
-    public function bot(Request $request)
+    public function __invoke(Request $request)
     {
         logger("TELEGRAM: " . json_encode($request->all(), JSON_PRETTY_PRINT));
         // dd($request->all());
@@ -33,9 +34,9 @@ class TelegramController extends Controller
                     resizeKeyboard: true,
                     isPersistent: true
                 );
-                $chatId = $message->getChat()->getId();
+                $telegramId = $message->getChat()->getId();
                 $bot->sendMessage(
-                    $chatId,
+                    $telegramId,
                     view('telegram.hello'),
                     "HTML",
                     replyMarkup: $replyMarkup
@@ -48,26 +49,43 @@ class TelegramController extends Controller
                 if ($message === null) {
                     return;
                 }
-                $chatId = $message->getChat()->getId();
+                $telegramId = $message->getChat()->getId();
                 $contact = $message->getContact();
                 if ($contact !== null) {
-                    $phone = Phone::auth($contact->getPhoneNumber());
+                    $number = $contact->getPhoneNumber();
+                    $phone = Phone::auth($number);
                     if ($phone === null) {
-                        $bot->sendMessage($chatId, view('telegram.auth-fail', compact('number')));
+                        $bot->sendMessage($telegramId, view('telegram.auth-fail', compact('number')));
                     } else {
                         $phone->telegram_id = $contact->getUserId();
                         $phone->save();
                         TelegramBotAdded::dispatch($phone);
                         $bot->sendMessage(
-                            $chatId,
+                            $telegramId,
                             view('telegram.auth-success', compact('phone')),
                             'HTML',
                             replyMarkup: new ReplyKeyboardRemove()
                         );
                     }
                 } else {
+                    $phone = Phone::where('telegram_id', $telegramId)->first();
+                    if ($phone === null) {
+                        $bot->sendMessage(
+                            $telegramId,
+                            view('telegram.unidentified')
+                        );
+                    } else {
+                        $telegramMessage = $phone->telegramMessages()->create([
+                            'id' => $message->getMessageId(),
+                            'text' => $message->getText()
+                        ]);
+                        NewTelegramMessage::dispatch(
+                            $phone,
+                            $telegramMessage
+                        );
+                    }
                     // $bot->sendMessage(
-                    //     $chatId,
+                    //     $telegramId,
                     //     'Вы написали: ' . $message->getText(),
                     //     replyMarkup: new ReplyKeyboardRemove()
                     // );

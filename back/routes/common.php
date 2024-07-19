@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\Common\{AuthController, LogController, TelegramController};
+use App\Http\Controllers\Common\{AuthController, LogController, TelegramBotController};
 use Illuminate\Support\Facades\Route;
 
-Route::post('telegram', [TelegramController::class, 'bot']);
+Route::post('telegram', TelegramBotController::class);
 
 Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::post('login', 'login');

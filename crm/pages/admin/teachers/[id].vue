@@ -60,7 +60,7 @@ nextTick(loadData)
           <div>преподаватель</div>
           <div>
             {{ formatFullName(teacher) }}
-            <PhoneActions :items="teacher.phones" />
+            <PhoneActions :items="teacher.phones" :person="teacher" />
           </div>
         </div>
         <div>

@@ -122,6 +122,8 @@ declare global {
     number: string
     comment: string | null
     is_verified: boolean
+    telegram_id: number | null
+    entity_type: typeof EntityType.client | typeof EntityType.teacher | typeof EntityType.clientParent | typeof EntityType.user
   }
 
   interface RequestResource {
@@ -705,6 +707,13 @@ declare global {
     user?: PersonResource
     client?: PersonResource
     created_at?: string
+  }
+
+  interface TelegramMessageResource {
+    id: number
+    text: string
+    user: PersonWithPhonesResource
+    created_at: string
   }
 }
 
