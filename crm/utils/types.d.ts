@@ -714,7 +714,12 @@ declare global {
     id: number
     entry_id: number
     text: string
-    user: PersonWithPhonesResource
+    user: PersonWithPhotoResource | null
+    phone: {
+      id: number
+      number: string
+      entity: PersonWithPhotoResource
+    }
     created_at: string
   }
 }

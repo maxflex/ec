@@ -134,11 +134,11 @@ defineExpose({ open })
         tag="div"
       >
         <div v-for="m in telegramMessages" :key="m.id" class="telegram-message">
-          <UiAvatar :item="m.user" :size="46" />
+          <UiAvatar :item="m.user || m.phone.entity" :size="46" />
           <div>
             <div class="telegram-message__title">
               <span>
-                {{ formatName(m.user) }}
+                {{ formatName(m.user || m.phone.entity) }}
               </span>
               <span v-if="m.created_at">
                 {{ formatDateTime(m.created_at) }}

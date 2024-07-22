@@ -21,7 +21,7 @@ class TelegramMessageController extends Controller
      */
     public function index(Request $request)
     {
-        $query = TelegramMessage::query();
+        $query = TelegramMessage::with(['phone', 'phone.entity', 'user']);
         if (!$request->has('phone_id')) {
             $query->latest();
         }
