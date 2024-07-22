@@ -4,9 +4,13 @@ namespace App\Models;
 
 use App\Enums\LessonStatus;
 use App\Enums\Program;
+use App\Enums\TelegramTemplate;
+use App\Observers\ReportObserver;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 
+#[ObservedBy(ReportObserver::class)]
 class Report extends Model
 {
     protected $fillable = [
@@ -61,6 +65,23 @@ class Report extends Model
         }
 
         return $query;
+    }
+
+    public function getContractLessonsAttribute()
+    {
+        return ContractLesson::whereIn('id', $this->lessons->pluck('cl.id'))->with('lesson')->get();
+    }
+
+    /**
+     * Прочитать отчёт
+     */
+    public function read()
+    {
+        TelegramMessage::sendTemplate(
+            TelegramTemplate::reportRead,
+            $this->client->parent->phones()->withTelegram()->get()->all(),
+            ['id' => $this->id]
+        );
     }
 
     public function scopePrepareForUnion($query)

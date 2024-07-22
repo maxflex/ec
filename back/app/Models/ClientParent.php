@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasName;
 use App\Traits\HasPhones;
 use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Model;
 
 class ClientParent extends Model
 {
-    use HasPhones, RelationSyncable;
+    use HasName, HasPhones, RelationSyncable;
 
     public $timestamps = false;
 

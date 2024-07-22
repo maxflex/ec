@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Common;
 
+use App\Enums\TelegramTemplate;
 use App\Events\NewTelegramMessage;
 use App\Events\TelegramBotAdded;
 use App\Http\Controllers\Controller;
 use App\Models\Phone;
 use Illuminate\Http\Request;
 use TelegramBot\Api\{Client, Exception};
-use TelegramBot\Api\Types\{ReplyKeyboardMarkup, ReplyKeyboardRemove, Update};
+use TelegramBot\Api\Types\{CallbackQuery, ReplyKeyboardMarkup, ReplyKeyboardRemove, Update};
 
 class TelegramBotController extends Controller
 {
@@ -37,7 +38,7 @@ class TelegramBotController extends Controller
                 $telegramId = $message->getChat()->getId();
                 $bot->sendMessage(
                     $telegramId,
-                    view('telegram.hello'),
+                    view('bot.hello'),
                     "HTML",
                     replyMarkup: $replyMarkup
                 );
@@ -45,51 +46,81 @@ class TelegramBotController extends Controller
 
             //Handle text messages
             $bot->on(function (Update $update) use ($bot) {
+                /**
+                 * Обработка шаблонов
+                 */
+                $callback = $update->getCallbackQuery();
+                if ($callback !== null) {
+                    $message = $callback->getMessage();
+                    $bot->deleteMessage(
+                        $message->getChat()->getId(),
+                        $message->getMessageId(),
+                    );
+                    $data = json_decode($callback->getData());
+                    $template = TelegramTemplate::from($data->template);
+                    $template->callback($data);
+                    logger("Callback data:", $data);
+                    // logger("answerCallbackQuery");
+                    // $bot->answerCallbackQuery(
+                    //     $callbackQuery->getId(),
+                    //     'Catched the callback query!',
+                    //     true,
+                    // );
+                    return;
+                }
+
                 $message = $update->getMessage();
                 if ($message === null) {
                     return;
                 }
                 $telegramId = $message->getChat()->getId();
                 $contact = $message->getContact();
+
+                /**
+                 * Поделиться номером телефона
+                 */
                 if ($contact !== null) {
                     $number = $contact->getPhoneNumber();
                     $phone = Phone::auth($number);
                     if ($phone === null) {
-                        $bot->sendMessage($telegramId, view('telegram.auth-fail', compact('number')));
+                        $bot->sendMessage($telegramId, view('bot.auth-fail', compact('number')));
                     } else {
                         $phone->telegram_id = $contact->getUserId();
                         $phone->save();
                         TelegramBotAdded::dispatch($phone);
                         $bot->sendMessage(
                             $telegramId,
-                            view('telegram.auth-success', compact('phone')),
+                            view('bot.auth-success', compact('phone')),
                             'HTML',
                             replyMarkup: new ReplyKeyboardRemove()
                         );
                     }
-                } else {
-                    $phone = Phone::where('telegram_id', $telegramId)->first();
-                    if ($phone === null) {
-                        $bot->sendMessage(
-                            $telegramId,
-                            view('telegram.unidentified')
-                        );
-                    } else {
-                        $telegramMessage = $phone->telegramMessages()->create([
-                            'id' => $message->getMessageId(),
-                            'text' => $message->getText()
-                        ]);
-                        NewTelegramMessage::dispatch(
-                            $phone,
-                            $telegramMessage
-                        );
-                    }
-                    // $bot->sendMessage(
-                    //     $telegramId,
-                    //     'Вы написали: ' . $message->getText(),
-                    //     replyMarkup: new ReplyKeyboardRemove()
-                    // );
+                    return;
                 }
+
+                /**
+                 * Произвольное сообщение клиента – в администрацию
+                 */
+                $phone = Phone::where('telegram_id', $telegramId)->first();
+                if ($phone === null) {
+                    return $bot->sendMessage(
+                        $telegramId,
+                        view('bot.unidentified')
+                    );
+                }
+                $telegramMessage = $phone->telegramMessages()->create([
+                    'id' => $message->getMessageId(),
+                    'text' => $message->getText()
+                ]);
+                NewTelegramMessage::dispatch(
+                    $phone,
+                    $telegramMessage
+                );
+                // $bot->sendMessage(
+                //     $telegramId,
+                //     'Вы написали: ' . $message->getText(),
+                //     replyMarkup: new ReplyKeyboardRemove()
+                // );
                 // logger("UPD", json_encode($update->getMe))
                 // $id = $message->getChat()->getId();
                 // $bot->sendMessage($id, 'Your message: ' . $message->getText());

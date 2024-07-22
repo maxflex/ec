@@ -17,12 +17,17 @@ const { items } = defineProps<{
       <div style="width: 170px">
         {{ formatPhone(m.phone.number) }}
       </div>
-      <div style="flex: 1">
+      <div style="flex: 1" class="text-truncate">
         {{ m.text }}
       </div>
-      <div style="width: 100px">
-        <v-chip v-if="m.entry_id" class="text-purple">
+      <div v-if="m.entry_id" style="width: 100px">
+        <v-chip class="text-purple">
           группа {{ m.entry_id }}
+        </v-chip>
+      </div>
+      <div v-if="m.template">
+        <v-chip class="text-deepOrange">
+          {{ TelegramTemplateLabel[m.template] }}
         </v-chip>
       </div>
       <div v-if="m.user" class="telegram-message-list__avatar-name">

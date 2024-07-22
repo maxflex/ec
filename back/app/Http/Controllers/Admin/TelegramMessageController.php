@@ -12,8 +12,8 @@ use Illuminate\Http\Request;
 class TelegramMessageController extends Controller
 {
     protected $filters = [
+        'equals' => ['phone_id', 'template'],
         'type' => ['type'],
-        'equals' => ['phone_id'],
     ];
 
     /**
@@ -45,7 +45,7 @@ class TelegramMessageController extends Controller
         $phone = Phone::find($request->phone_id);
         $message = Telegram::sendMessage(
             $phone->telegram_id,
-            view('telegram.admin-message', ['text' => $request->text]),
+            view('admin-message', ['text' => $request->text]),
             'HTML',
         );
         $telegramMessage = auth()->user()->entity->telegramMessages()->create([
@@ -68,7 +68,7 @@ class TelegramMessageController extends Controller
                 ->first();
             $message = Telegram::sendMessage(
                 $phone->telegram_id,
-                view('telegram.admin-message', ['text' => $request->text]),
+                view('admin-message', ['text' => $request->text]),
                 'HTML',
             );
             auth()->user()->entity->telegramMessages()->create([

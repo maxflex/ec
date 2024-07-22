@@ -52,6 +52,11 @@ class Phone extends Model implements Authenticatable
         return $query->where('number', UtilsPhone::clean($number));
     }
 
+    public function scopeWithTelegram($query)
+    {
+        return $query->whereNotNull('telegram_id');
+    }
+
     public static function auth($number): ?Phone
     {
         $phones = Phone::query()

@@ -118,6 +118,11 @@ export const ProgramLabel = {
   mathProf: 'математика профиль',
 } as const
 
+export const TelegramTemplateLabel = {
+  reportPublished: 'отчёт отправлен',
+  reportRead: 'отчёт прочитан',
+}
+
 export const ProgramShortLabel = {
   math9: '9-МАТ',
   phys9: '9-ФИЗ',

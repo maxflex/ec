@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 export interface Filters {
+  template?: TelegramTemplate
   type?: number
 }
 
 const emit = defineEmits<{
-  (e: 'apply', filters: Filters): void
+  apply: [f: Filters]
 }>()
 
 const filters = ref<Filters>({})
@@ -14,6 +15,14 @@ watch(filters.value, () => emit('apply', filters.value))
 
 <template>
   <div class="filters-inputs">
+    <div>
+      <UiClearableSelect
+        v-model="filters.template"
+        label="Шаблон"
+        :items="selectItems(TelegramTemplateLabel)"
+        density="comfortable"
+      />
+    </div>
     <div>
       <UiClearableSelect
         v-model="filters.type"

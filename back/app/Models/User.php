@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasName;
 use App\Traits\HasPhones;
 use App\Traits\HasPhoto;
 use App\Traits\RelationSyncable;
@@ -9,7 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasPhones, HasPhoto, RelationSyncable;
+    use HasName, HasPhones, HasPhoto, RelationSyncable;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name'

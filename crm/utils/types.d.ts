@@ -1,4 +1,6 @@
 declare global {
+  type TelegramTemplate = keyof typeof TelegramTemplateLabel
+
   type Exam = keyof typeof ExamLabel
 
   type Quarter = keyof typeof QuarterLabel
@@ -715,6 +717,7 @@ declare global {
     entry_id: number
     text: string
     user: PersonWithPhotoResource | null
+    template: TelegramTemplate | null
     phone: {
       id: number
       number: string

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TeacherStatus;
+use App\Traits\HasName;
 use App\Traits\HasPhones;
 use App\Traits\HasPhoto;
 use App\Traits\RelationSyncable;
@@ -13,7 +14,7 @@ use Illuminate\Support\Collection;
 
 class Teacher extends Model
 {
-    use HasPhones, HasPhoto, RelationSyncable;
+    use HasName, HasPhones, HasPhoto, RelationSyncable;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'status', 'subjects',
@@ -108,7 +109,7 @@ class Teacher extends Model
                 'sum' => $report->price,
                 'comment' => sprintf(
                     'отчет по ученику %s',
-                    format_name($report->client)
+                    $report->client->formatName()
                 )
             ]);
         }
