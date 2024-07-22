@@ -5,13 +5,13 @@ const { items } = defineProps<{
 </script>
 
 <template>
-  <div class="table">
+  <div class="table telegram-message-list">
     <div v-for="m in items" :key="m.id">
       <!-- <div style="width: 30px">
         {{ m.id }}
       </div> -->
-      <div style="width: 200px">
-        <UiAvatar :item="m.phone.entity" :size="40" class="mr-2" />
+      <div class="telegram-message-list__avatar-name">
+        <UiAvatar :item="m.phone.entity" :size="40" />
         {{ formatName(m.phone.entity) }}
       </div>
       <div style="width: 170px">
@@ -25,8 +25,8 @@ const { items } = defineProps<{
           группа {{ m.entry_id }}
         </v-chip>
       </div>
-      <div v-if="m.user" style="width: 200px">
-        <UiAvatar :item="m.user" :size="40" class="mr-2" />
+      <div v-if="m.user" class="telegram-message-list__avatar-name">
+        <UiAvatar :item="m.user" :size="40" />
         {{ formatName(m.user) }}
       </div>
       <div style="flex: initial; width: 140px" class="text-gray">
@@ -35,3 +35,16 @@ const { items } = defineProps<{
     </div>
   </div>
 </template>
+
+<style lang="scss">
+.telegram-message-list {
+  &__avatar-name {
+    width: 200px;
+    display: inline-flex;
+    align-items: center;
+    .v-avatar {
+      margin-right: 10px;
+    }
+  }
+}
+</style>
