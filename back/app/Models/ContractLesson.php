@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use App\Enums\ContractLessonStatus;
+use App\Observers\ContractLessonObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 
+#[ObservedBy(ContractLessonObserver::class)]
 class ContractLesson extends Model
 {
     public $timestamps = false;
