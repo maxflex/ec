@@ -21,7 +21,7 @@ class ContractLessonObserver
         ) {
             TelegramMessage::sendTemplate(
                 TelegramTemplate::clientLessonStatus,
-                $contractLesson->client->parent->phones()->withTelegram()->get()->all(),
+                $contractLesson->contract->client->parent->phones()->withTelegram()->get()->all(),
                 ['contractLesson' => $contractLesson]
             );
         }

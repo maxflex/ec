@@ -33,11 +33,6 @@ class ContractLesson extends Model
         return $this->belongsTo(Contract::class);
     }
 
-    public function client()
-    {
-        return $this->belongsTo(Client::class);
-    }
-
     public function getScoresAttribute($value)
     {
         return json_decode($value) ?? [];
