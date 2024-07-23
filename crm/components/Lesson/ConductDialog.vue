@@ -149,6 +149,17 @@ defineExpose({ open })
                 v-model="c.status"
                 :items="selectItems(ContractLessonStatusLabel)"
               />
+              <div v-if="c.status === 'late'" style="width: 100px">
+                <v-text-field
+                  v-model="c.minutes_late"
+                  class="mt-2"
+                  type="number"
+                  hide-spin-buttons
+                  density="compact"
+                  suffix="минут"
+                  persistent-placeholder
+                />
+              </div>
             </div>
             <div v-if="c.status !== 'absent'" style="width: 120px">
               <UiDropdown
@@ -202,17 +213,7 @@ defineExpose({ open })
               </v-menu>
             </div>
 
-            <!-- <div v-if="c.status === 'late'" style="width: 190px">
-                <v-text-field
-                  v-model="c.minutes_late"
-                  type="number"
-                  hide-spin-buttons
-                  density="compact"
-                  prefix="опоздание"
-                  suffix="минут"
-                  persistent-placeholder
-                />
-              </div> -->
+            <!--  -->
           </div>
         </div>
         <div
@@ -251,6 +252,9 @@ defineExpose({ open })
     position: relative;
     top: -6px;
     margin-bottom: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
     & > div {
       display: flex;
       align-items: center;
