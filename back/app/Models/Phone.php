@@ -63,6 +63,7 @@ class Phone extends Model implements Authenticatable
             ->whereIn('entity_type', [
                 User::class,
                 Client::class,
+                ClientParent::class,
                 Teacher::class,
             ])
             ->whereNumber($number)
