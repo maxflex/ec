@@ -26,7 +26,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('telegram_messages', function (Blueprint $table) {
-            //
+            $table->dropColumn('template');
         });
     }
 };

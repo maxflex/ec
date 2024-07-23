@@ -30,15 +30,16 @@ class TelegramMessage extends Model
     public static function sendTemplate(
         TelegramTemplate $template,
         array $phones,
-        array $data = []
+        array $viewVariables = [],
+        array $callbackData = []
     ) {
         foreach ($phones as $phone) {
-            $text = $template->getText($data);
+            $text = $template->getText($viewVariables);
             $message = Telegram::sendMessage(
                 $phone->telegram_id,
                 $text,
                 'HTML',
-                replyMarkup: $template->getReplyMarkup($data)
+                replyMarkup: $template->getReplyMarkup($callbackData)
             );
             $phone->telegramMessages()->create([
                 'id' => $message->getMessageId(),

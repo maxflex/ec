@@ -121,6 +121,7 @@ export const ProgramLabel = {
 export const TelegramTemplateLabel = {
   reportPublished: 'отчёт отправлен',
   reportRead: 'отчёт прочитан',
+  contractLessonStatus: 'опоздал/не пришёл',
 }
 
 export const ProgramShortLabel = {

@@ -80,7 +80,7 @@ class Report extends Model
         TelegramMessage::sendTemplate(
             TelegramTemplate::reportRead,
             $this->client->parent->phones()->withTelegram()->get()->all(),
-            ['id' => $this->id]
+            ['report' => $this]
         );
     }
 

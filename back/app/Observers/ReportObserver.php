@@ -27,6 +27,7 @@ class ReportObserver
             TelegramMessage::sendTemplate(
                 EnumsTelegramTemplate::reportPublished,
                 $report->client->parent->phones()->withTelegram()->get()->all(),
+                ['report' => $report],
                 ['id' => $report->id]
             );
         }
