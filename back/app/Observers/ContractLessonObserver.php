@@ -20,7 +20,7 @@ class ContractLessonObserver
             || $contractLesson->is_remote
         ) {
             TelegramMessage::sendTemplate(
-                TelegramTemplate::clientLessonStatus,
+                TelegramTemplate::contractLessonStatus,
                 $contractLesson->contract->client->parent->phones()->withTelegram()->get()->all(),
                 ['contractLesson' => $contractLesson]
             );
