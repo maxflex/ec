@@ -3,7 +3,7 @@
 namespace App\Utils;
 
 use Illuminate\Support\Facades\{Redis, Hash};
-use App\Models\{Phone, Teacher, Client, Log, User};
+use App\Models\{Phone, Teacher, Client, ClientParent, Log, User};
 
 class Session
 {
@@ -32,6 +32,7 @@ class Session
         $hour = 60 * 60;
         return match ($phone->entity_type) {
             Client::class => $hour * 24 * 365,
+            ClientParent::class => $hour * 24 * 365,
             Teacher::class => $hour * 3,
             User::class => $hour * 3
         };
