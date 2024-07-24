@@ -60,10 +60,15 @@ nextTick(loadData)
 
 <template>
   <v-table class="group-visits" hover>
+    <colgroup>
+      <col class="group-visits__col--date">
+      <col v-for="t in teachers" :key="t.id" class="group-visits__col--teacher">
+      <col v-for="c in clients" :key="c.id" class="group-visits__col--client">
+    </colgroup>
     <tbody>
       <tr>
         <td />
-        <td v-for="t in teachers" :key="t.id">
+        <td v-for="t in teachers" :key="t.id" class="group-visits__col--teacher">
           {{ t.last_name }} <br>
           {{ t.first_name![0] }}. {{ t.middle_name![0] }}.
         </td>
@@ -149,7 +154,12 @@ nextTick(loadData)
   }
   &__teacher-status {
     .circle-status__circle {
-      --size: 12px !important;
+      --size: 10px !important;
+    }
+  }
+  &__col {
+    &--teacher {
+      background: #f6f8fb !important;
     }
   }
 }
