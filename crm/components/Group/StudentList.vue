@@ -47,7 +47,9 @@ async function onGroupSelected(g: GroupListResource, c?: ContractResource) {
       :key="contract.id"
     >
       <div style="width: 300px">
+        <UiAvatar :item="contract.client!" :size="38" class="mr-4" />
         <NuxtLink
+          class="vf-1"
           :to="{
             name: 'clients-id',
             params: { id: contract.client!.id },
