@@ -19,6 +19,7 @@
     "@nuxt/eslint-config": "^0.3.13",
     "@pinia/nuxt": "^0.5.1",
     "@types/pusher-js": "^5.1.0",
+    "@vueup/vue-quill": "latest",
     "codemirror": "5.x",
     "codemirror-editor-vue3": "^2.4.1",
     "date-fns": "^3.3.1",

@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\{
     ExamScoreController,
     GradeController,
     GroupController,
+    InstructionController,
     LessonController,
     MacroController,
     PersonController,
@@ -77,6 +78,8 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::get('groups/candidates/{group}', [GroupController::class, 'candidates']);
     Route::get('groups/visits/{group}', [GroupController::class, 'visits']);
 
+    Route::get('instructions/diff/{instruction}', [InstructionController::class, 'diff']);
+
     Route::apiResource('event-participants', EventParticipantController::class)->only(['update']);
 
     Route::apiResources([
@@ -103,5 +106,6 @@ Route::middleware(['auth:crm'])->group(function () {
         'grades' => GradeController::class,
         'exam-scores' => ExamScoreController::class,
         'telegram-messages' => TelegramMessageController::class,
+        'instructions' => InstructionController::class,
     ]);
 });

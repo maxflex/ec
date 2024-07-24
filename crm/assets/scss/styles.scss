@@ -3,13 +3,18 @@ main {
   overflow-y: scroll;
 }
 
-a:not(.v-list-item) {
+a:not(.v-list-item):not(.table-item) {
   text-decoration: none;
   color: rgb(var(--v-theme-secondary));
   &:hover {
     color: rgba(var(--v-theme-secondary), 0.9);
     // color: rgba(var(--v-theme-accent));
   }
+}
+
+a.table-item {
+  text-decoration: none;
+  color: initial;
 }
 
 .page-title {
@@ -60,7 +65,8 @@ a:not(.v-list-item) {
       }
     }
   }
-  & > div {
+  & > div,
+  & > a {
     position: relative;
     // &:hover {
     //   .table-actionss {
@@ -74,7 +80,8 @@ a:not(.v-list-item) {
   & > .v-infinite-scroll__side:first-child {
     display: none;
   }
-  & > div:not(.v-infinite-scroll__side) {
+  & > div:not(.v-infinite-scroll__side),
+  & > a {
     border-bottom: thin solid
       rgba(var(--v-border-color), var(--v-border-opacity));
     padding: 0 20px;
@@ -95,7 +102,8 @@ a:not(.v-list-item) {
     text-align: right;
   }
   &--hover {
-    & > div {
+    & > div,
+    & > a {
       transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
       &:hover {
         background: rgba(var(--v-border-color), var(--v-hover-opacity));
@@ -117,7 +125,8 @@ a:not(.v-list-item) {
   }
   &--padding {
     --padding: 16px;
-    & > div {
+    & > div,
+    & > a {
       padding-top: var(--padding) !important;
       padding-bottom: var(--padding) !important;
     }

@@ -20,6 +20,11 @@ class User extends Authenticatable
         'is_active' => 'boolean'
     ];
 
+    public function instructions()
+    {
+        return $this->hasMany(Instruction::class);
+    }
+
     public function events()
     {
         return $this->hasMany(Event::class);

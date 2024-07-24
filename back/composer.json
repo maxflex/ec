@@ -12,6 +12,7 @@
         "doctrine/dbal": "^3.5.1",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^2",
+        "jfcherng/php-diff": "^6.16",
         "laravel/framework": "^10.10",
         "laravel/tinker": "^2.8",
         "league/flysystem-aws-s3-v3": "^3.0",

@@ -13,6 +13,7 @@ import {
   mdiDotsTriangle,
   mdiFileDocumentEditOutline,
   mdiFileDocumentOutline,
+  mdiFileSign,
   mdiFinance,
   mdiHistory,
   mdiHumanMaleBoard,
@@ -169,6 +170,11 @@ switch (user?.entity_type) {
         icon: mdiSendCircle,
         title: 'Телеграм',
         to: '/telegram-messages',
+      },
+      {
+        icon: mdiFileSign,
+        title: 'Инструкции',
+        to: '/instructions',
       },
       {
         icon: mdiCalendar,

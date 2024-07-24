@@ -737,6 +737,40 @@ declare global {
     program: Program
     client: PersonResource
   }
+
+  interface InstructionBaseResource {
+    id: number
+    title: string
+    text: string | null
+    entry_id?: number
+  }
+
+  interface InstructionResource extends InstructionBaseResource {
+    entry_id: number
+    versions: Array<{
+      id: number
+      created_at: string
+    }>
+  }
+
+  interface InstructionListResource {
+    id: number
+    title: string
+    versions_count: number
+  }
+
+  interface InstructionDiffResource {
+    current: {
+      created_at: string
+      title: string
+    }
+    prev: {
+      created_at: string
+      title: string
+    }
+    diff: string
+    diff_all: string
+  }
 }
 
 export {}
