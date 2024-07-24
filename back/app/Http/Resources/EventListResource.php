@@ -18,6 +18,13 @@ class EventListResource extends JsonResource
             'date', 'name', 'time', 'time_end',
             'is_afterclass', 'participants_count',
             'description'
+        ], [
+            'participant' => $this->whenLoaded(
+                'participants',
+                fn () => extract_fields($this->participants[0], [
+                    'is_confirmed'
+                ])
+            )
         ]);
     }
 }

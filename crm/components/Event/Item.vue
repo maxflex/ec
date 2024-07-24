@@ -6,10 +6,16 @@ defineEmits<{
   edit: [e: EventListResource]
 }>()
 
-const isConfirmed = ref(false)
+const isConfirmed = ref<boolean>(!!item.participant?.is_confirmed)
 
 function confirm() {
   isConfirmed.value = true
+  useHttp(`event-participants/${item.participant!.id}`, {
+    method: 'put',
+    body: {
+      is_confirmed: true,
+    },
+  })
 }
 </script>
 
@@ -36,7 +42,7 @@ function confirm() {
       <div v-if="item.description" class="mt-2 pr-10">
         {{ filterTruncate(item.description, 100) }}
       </div>
-      <div class="mt-2">
+      <div v-if="item.participant" class="mt-2">
         <span v-if="isConfirmed" class="text-gray">
           <v-icon :icon="mdiCheckAll" size="16" class="vfn-1 mr-1" />
           Вы подтвердили участие в мероприятии

@@ -82,21 +82,23 @@ class EventController extends Controller
 
     protected function filterClient(&$query, $clientId)
     {
-        $query->whereHas(
-            'participants',
-            fn ($q) => $q
-                ->where('entity_type', Client::class)
-                ->where('entity_id', $clientId)
-        );
+        $where = [
+            ['entity_type', Client::class],
+            ['entity_id', $clientId]
+        ];
+        $query
+            ->whereHas('participants', fn ($q) => $q->where($where))
+            ->with('participants', fn ($q) => $q->where($where));
     }
 
     protected function filterTeacher(&$query, $teacherId)
     {
-        $query->whereHas(
-            'participants',
-            fn ($q) => $q
-                ->where('entity_type', Teacher::class)
-                ->where('entity_id', $teacherId)
-        );
+        $where = [
+            ['entity_type', Teacher::class],
+            ['entity_id', $teacherId]
+        ];
+        $query
+            ->whereHas('participants', fn ($q) => $q->where($where))
+            ->with('participants', fn ($q) => $q->where($where));
     }
 }

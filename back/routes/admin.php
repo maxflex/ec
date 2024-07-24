@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\{
     ContractController,
     ContractVersionController,
     EventController,
+    EventParticipantController,
     ExamScoreController,
     GradeController,
     GroupController,
@@ -75,6 +76,8 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::post('groups/bulk-store-candidates/{group}', [GroupController::class, 'bulkStoreCandidates']);
     Route::get('groups/candidates/{group}', [GroupController::class, 'candidates']);
     Route::get('groups/visits/{group}', [GroupController::class, 'visits']);
+
+    Route::apiResource('event-participants', EventParticipantController::class)->only(['update']);
 
     Route::apiResources([
         'requests' => RequestsController::class,

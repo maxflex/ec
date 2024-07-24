@@ -632,6 +632,10 @@ declare global {
     participants_count: number
     time?: string
     time_end?: string
+    participant?: {
+      id: number
+      is_confirmed: boolean
+    }
   }
 
   interface EventResource {
