@@ -97,6 +97,7 @@ nextTick(loadData)
         display: inline-flex;
         .v-icon {
           font-size: 24px !important;
+          color: rgb(148, 157, 177);
         }
       }
     }
