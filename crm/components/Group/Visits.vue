@@ -152,11 +152,11 @@ nextTick(loadData)
   .is-remote {
     background: rgba(var(--v-theme-orange), 0.2);
   }
-  &__teacher-status {
-    .circle-status__circle {
-      --size: 10px !important;
-    }
-  }
+  // &__teacher-status {
+  //   .circle-status__circle {
+  //     --size: 10px !important;
+  //   }
+  // }
   &__col {
     &--teacher {
       background: #f6f8fb !important;
