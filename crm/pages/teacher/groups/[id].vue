@@ -24,9 +24,9 @@ nextTick(loadData)
     <div class="panel">
       <div class="panel-info">
         <div>
-          <div>группа {{ group.id }}</div>
+          <div>группа</div>
           <div>
-            {{ group.is_archived ? 'заархивирована' : 'активна' }}
+            номер {{ group.id }}
           </div>
         </div>
         <div>

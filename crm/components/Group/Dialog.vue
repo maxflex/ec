@@ -9,7 +9,6 @@ const emit = defineEmits<{
 
 const modelDefaults: GroupResource = {
   id: newId(),
-  is_archived: false,
   contracts: [],
   year: currentAcademicYear(),
   zoom: {
@@ -139,14 +138,6 @@ defineExpose({ create, edit })
             suffix="минут"
           />
         </div>
-        <div>
-          <UiDateInput
-            :key="group.year"
-            v-model="group.exam_date"
-            label="Дата экзамена"
-            :year="group.year"
-          />
-        </div>
         <div class="double-input">
           <v-text-field
             v-model="group.zoom.id"
@@ -155,12 +146,6 @@ defineExpose({ create, edit })
           <v-text-field
             v-model="group.zoom.password"
             label="Zoom пароль"
-          />
-        </div>
-        <div>
-          <v-checkbox
-            v-model="group.is_archived"
-            label="Заархивирована"
           />
         </div>
         <div

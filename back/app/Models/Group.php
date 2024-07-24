@@ -9,14 +9,12 @@ use Illuminate\Support\Collection;
 class Group extends Model
 {
     protected $fillable = [
-        'duration', 'program', 'year', 'zoom', 'is_archived',
-        'exam_date'
+        'duration', 'program', 'year', 'zoom',
     ];
 
     protected $casts = [
         'program' => Program::class,
         'zoom' => 'array',
-        'is_archived' => 'boolean',
     ];
 
     public function teacher()
