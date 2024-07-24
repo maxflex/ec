@@ -45,7 +45,7 @@ function confirm() {
       <div v-if="item.participant" class="mt-2">
         <span v-if="isConfirmed" class="text-gray">
           <v-icon :icon="mdiCheckAll" size="16" class="vfn-1 mr-1" />
-          Вы подтвердили участие в мероприятии
+          Вы подтвердили участие
         </span>
         <a v-else class="cursor-pointer" @click="confirm()">
           <v-icon icon="$complete" size="16" class="vfn-1 mr-1" />
