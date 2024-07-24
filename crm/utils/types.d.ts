@@ -757,6 +757,8 @@ declare global {
     id: number
     title: string
     versions_count: number
+    signs_count: number
+    created_at: string
   }
 
   interface InstructionDiffResource {

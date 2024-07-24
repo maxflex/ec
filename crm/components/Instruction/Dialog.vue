@@ -2,6 +2,7 @@
 import { clone } from 'rambda'
 
 const emit = defineEmits<{
+  created: [e: InstructionListResource]
   updated: [e: InstructionResource ]
   deleted: [e: InstructionBaseResource]
 }>()
@@ -48,24 +49,34 @@ async function edit(i: InstructionResource) {
 
 async function save() {
   saving.value = true
-  const method = itemId.value ? `put` : `post`
-  const url = itemId.value ? `instructions/${itemId.value}` : `instructions`
-  const { data } = await useHttp<InstructionResource>(url, {
-    method,
-    body: item.value,
-  })
-  if (data.value) {
-  // была добавлена новая версия – редирект на её страницу
-    if (!itemId.value && item.value.entry_id) {
-      useRouter().push({
-        name: 'instructions-id',
-        params: {
-          id: data.value.id,
-        },
-      })
-      return
+  // обновление
+  if (itemId.value) {
+    const { data } = await useHttp<InstructionResource>(`instructions/${itemId.value}`, {
+      method: 'put',
+      body: item.value,
+    })
+    if (data.value) {
+      emit('updated', data.value)
     }
-    emit('updated', data.value)
+  }
+  else {
+    const { data } = await useHttp<InstructionListResource>(`instructions`, {
+      method: 'post',
+      body: item.value,
+    })
+    if (data.value) {
+      // была добавлена новая версия – редирект на её страницу
+      if (item.value.entry_id) {
+        useRouter().push({
+          name: 'instructions-id',
+          params: {
+            id: data.value.id,
+          },
+        })
+        return
+      }
+      emit('created', data.value)
+    }
   }
   dialog.value = false
   setTimeout(() => saving.value = false, 300)

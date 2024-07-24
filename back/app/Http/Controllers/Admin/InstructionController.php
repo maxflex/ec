@@ -18,7 +18,7 @@ class InstructionController extends Controller
         $query = Instruction::query()
             ->lastVersions()
             ->latest()
-            ->withCount('versions');
+            ->withCount('versions', 'signs');
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, InstructionListResource::class);
     }
@@ -29,7 +29,8 @@ class InstructionController extends Controller
     public function store(Request $request)
     {
         $instruction = auth()->user()->entity->instructions()->create($request->all());
-        return new InstructionResource($instruction);
+        $instruction->loadCount('versions', 'signs');
+        return new InstructionListResource($instruction);
     }
 
     /**

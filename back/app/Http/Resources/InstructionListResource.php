@@ -15,7 +15,7 @@ class InstructionListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'title', 'versions_count'
+            'title', 'versions_count', 'signs_count', 'created_at'
         ]);
     }
 }

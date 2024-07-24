@@ -4,6 +4,11 @@ import type { InstructionDialog } from '#build/components'
 
 const instructionDialog = ref<InstanceType<typeof InstructionDialog>>()
 const { items, loading, onFiltersApply } = useIndex<InstructionListResource, Filters>(`instructions`)
+
+function onCreated(item: InstructionListResource) {
+  items.value.unshift(item)
+  itemUpdated('instruction', item.id)
+}
 </script>
 
 <template>
@@ -22,5 +27,5 @@ const { items, loading, onFiltersApply } = useIndex<InstructionListResource, Fil
     <UiLoader3 :loading="loading" />
     <InstructionList :items="items" />
   </div>
-  <InstructionDialog ref="instructionDialog" />
+  <InstructionDialog ref="instructionDialog" @created="onCreated" />
 </template>
