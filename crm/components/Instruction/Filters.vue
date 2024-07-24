@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 export interface Filters {
-  type?: number
+  signed?: number
 }
 
 const emit = defineEmits<{
@@ -16,9 +16,9 @@ watch(filters.value, () => emit('apply', filters.value))
   <div class="filters-inputs">
     <div>
       <UiClearableSelect
-        v-model="filters.type"
+        v-model="filters.signed"
         label="Тип"
-        :items="yesNo('подписанные', 'не подписанные')"
+        :items="yesNo('подписанные', 'неподписанные')"
         density="comfortable"
       />
     </div>

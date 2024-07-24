@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class InstructionListResource extends JsonResource
+class InstructionTeacherResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,12 +15,7 @@ class InstructionListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'title', 'versions_count', 'signs_count', 'created_at'
-        ], [
-            'signed_at' => $this->whenLoaded(
-                'signs',
-                fn () => $this->signs->first()?->signed_at,
-            )
+            'title', 'created_at', 'signed_at'
         ]);
     }
 }

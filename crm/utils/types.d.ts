@@ -761,6 +761,13 @@ declare global {
     created_at: string
   }
 
+  interface InstructionTeacherResource {
+    id: number
+    title: string
+    created_at: string
+    signed_at: string | null
+  }
+
   interface InstructionDiffResource {
     current: {
       created_at: string

@@ -24,6 +24,16 @@ class Instruction extends Model
         return $this->hasMany(self::class, 'entry_id', 'entry_id');
     }
 
+    public function scopeWithLastVersionsCte($query)
+    {
+        $lastVersionsCte = self::selectRaw(<<<SQL
+            entry_id,
+            MAX(id) as max_id
+        SQL)->groupBy('entry_id');
+
+        $query->withExpression('last_versions', $lastVersionsCte);
+    }
+
     public function scopeLastVersions($query)
     {
         $sub = self::selectRaw(<<<SQL

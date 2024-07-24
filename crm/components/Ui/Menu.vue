@@ -93,6 +93,11 @@ switch (user?.entity_type) {
         title: 'Баланс',
         to: '/balance',
       },
+      {
+        icon: mdiFileSign,
+        title: 'Инструкции',
+        to: '/instructions',
+      },
     ]
     break
 
