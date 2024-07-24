@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { mdiWalletBifoldOutline } from '@mdi/js'
-import type { ContractBalanceDialog, ContractPaymentDialog, ContractVersionDialog } from '#build/components'
+import type { ContractPaymentDialog, ContractVersionDialog } from '#build/components'
 
 const { items } = defineProps<{ items: ContractResource[] }>()
 const contractPaymentDialog = ref<InstanceType<typeof ContractPaymentDialog>>()
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
-const contractBalanceDialog = ref<InstanceType<typeof ContractBalanceDialog>>()
 const selected = ref(0)
 
 const selectedContract = computed(() => items[selected.value])
@@ -112,9 +110,6 @@ function onContractPaymentDeleted(cp: ContractPaymentResource) {
         <v-list-item @click="contractVersionDialog?.createContract()">
           новый договор
         </v-list-item>
-        <v-list-item @click="() => contractBalanceDialog?.open(selectedContract.id)">
-          баланс по договору
-        </v-list-item>
         <v-list-item
           @click="() => contractVersionDialog?.addVersion(selectedContract)"
         >
@@ -128,7 +123,7 @@ function onContractPaymentDeleted(cp: ContractPaymentResource) {
   </div>
   <div class="contract-list">
     <div
-      class="contract-list__item pt-0"
+      class="contract-list__item"
     >
       <ContractVersionList2
         :items="selectedContract.versions"
@@ -138,6 +133,7 @@ function onContractPaymentDeleted(cp: ContractPaymentResource) {
         :items="selectedContract.payments"
         @open="contractPaymentDialog?.edit"
       />
+      <BalanceList :id="selectedContract.id" entity="contract" />
     </div>
   </div>
   <ContractVersionDialog
@@ -151,7 +147,6 @@ function onContractPaymentDeleted(cp: ContractPaymentResource) {
     @updated="onContractPaymentUpdated"
     @deleted="onContractPaymentDeleted"
   />
-  <ContractBalanceDialog ref="contractBalanceDialog" />
 </template>
 
 <style lang="scss">
@@ -175,32 +170,25 @@ function onContractPaymentDeleted(cp: ContractPaymentResource) {
     }
   }
   &__item {
-    // отступ между цепями договоров
-    margin-bottom: 80px;
-    // отступ платежи по договору
-    h3:not(:first-child) {
-      margin-top: 30px;
-    }
-    &:first-child {
-      padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 57px;
+    & > * {
+      position: relative;
+      &:before {
+        content: '';
+        bottom: -57px;
+        left: 0;
+        width: 100%;
+        height: 57px;
+        background: #fafafa;
+        position: absolute;
+        border-bottom: 1px solid #e0e0e0;
+      }
     }
   }
   &__add {
     padding: 20px;
-  }
-  .contract-payments {
-    padding-top: 57px;
-    position: relative;
-    &:before {
-      content: '';
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 57px;
-      background: #fafafa;
-      position: absolute;
-      border-bottom: 1px solid #e0e0e0;
-    }
   }
 }
 </style>
