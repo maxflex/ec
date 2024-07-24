@@ -18,17 +18,6 @@ async function loadData() {
   group.value = data.value as GroupResource
 }
 
-async function removeFromGroup(c: ContractResource) {
-  await useHttp(`groups/remove-contract`, {
-    method: 'post',
-    params: {
-      group_id: group.value?.id,
-      contract_id: c.id,
-    },
-  })
-  loadData()
-}
-
 function onGroupDeleted() {
   navigateTo('/groups')
 }
@@ -93,36 +82,7 @@ nextTick(loadData)
       <LessonList :id="group.id" editable entity="group" :group="group" />
     </div>
     <GroupVisits v-else-if="selectedTab === 'visits'" :id="group.id" />
-    <div
-      v-else
-      class="table table--actions-on-hover"
-    >
-      <div
-        v-for="contract in group.contracts"
-        :key="contract.id"
-      >
-        <div style="width: 300px">
-          <NuxtLink
-            :to="{
-              name: 'clients-id',
-              params: { id: contract.client.id },
-            }"
-          >
-            {{ formatName(contract.client) }}
-          </NuxtLink>
-        </div>
-        <div class="text-left table-actions">
-          <v-btn
-            icon="$close"
-            variant="plain"
-            color="red"
-            :size="48"
-            :ripple="false"
-            @click="removeFromGroup(contract)"
-          />
-        </div>
-      </div>
-    </div>
+    <GroupStudentList v-else :group="group" :contracts="group.contracts" @updated="loadData" />
   </div>
   <GroupDialog
     ref="groupDialog"

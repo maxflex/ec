@@ -725,6 +725,14 @@ declare global {
     }
     created_at: string
   }
+
+  interface GroupCandidateResource {
+    id: number
+    contract_id: number
+    is_closed: boolean
+    program: Program
+    client: PersonResource
+  }
 }
 
 export {}

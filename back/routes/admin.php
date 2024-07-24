@@ -72,6 +72,8 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::post('telegram-messages/bulk', [TelegramMessageController::class, 'bulkStore']);
 
+    Route::post('groups/bulk-store-candidates/{group}', [GroupController::class, 'bulkStoreCandidates']);
+    Route::get('groups/candidates/{group}', [GroupController::class, 'candidates']);
     Route::get('groups/visits/{group}', [GroupController::class, 'visits']);
 
     Route::apiResources([

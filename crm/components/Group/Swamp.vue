@@ -27,7 +27,7 @@ const emit = defineEmits<{
         color="primary"
         @click="emit('attach', swamp)"
       >
-        присвоить группу
+        прикрепить группу
       </v-btn>
     </div>
   </div>

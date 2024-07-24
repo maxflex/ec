@@ -56,4 +56,26 @@ class Group extends Model
             fn ($q) => $q->where('client_id', $clientId)
         );
     }
+
+    /**
+     * Нажимаем "добавить ученика в текущую группу"
+     * Получаем список кандидатов
+     *
+     * @return ContractVersionProgram[]
+     */
+    public function getCandidates()
+    {
+        return ContractVersionProgram::query()
+            ->where('program', $this->program)
+            ->whereHas(
+                'contractVersion',
+                fn ($q) => $q
+                    ->lastVersions()
+                    ->whereHas(
+                        'contract',
+                        fn ($q) => $q->where('year', $this->year)->whereDoesntHave('groups')
+                    )
+            )
+            ->get();
+    }
 }

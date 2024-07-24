@@ -27,4 +27,9 @@ class ContractVersionProgram extends Model
     {
         $query->where('is_closed', true);
     }
+
+    public function contractVersion()
+    {
+        return $this->belongsTo(ContractVersion::class);
+    }
 }

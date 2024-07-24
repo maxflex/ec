@@ -1,18 +1,20 @@
 <script setup lang="ts">
 const emit = defineEmits<{
-  select: [g: GroupListResource]
+  select: [g: GroupListResource, c?: ContractResource]
 }>()
 const { dialog, width } = useDialog('large')
 const groups = ref<GroupListResource[]>()
+const contract = ref<ContractResource>()
 
-function open(p: Program) {
+function open(p: Program, c?: ContractResource) {
   dialog.value = true
+  contract.value = c
   loadGroups(p)
 }
 
 function onSelect(g: GroupListResource) {
   dialog.value = false
-  emit('select', g)
+  emit('select', g, contract.value)
 }
 
 async function loadGroups(p: Program) {
@@ -36,7 +38,7 @@ defineExpose({ open })
   >
     <div class="dialog-wrapper">
       <div class="dialog-header">
-        Присвоить группу
+        Выберите группу
       </div>
       <div class="dialog-body pt-0">
         <v-fade-transition>
