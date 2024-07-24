@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import { mdiAccountGroup } from '@mdi/js'
+import { mdiAccountGroup, mdiCheckAll } from '@mdi/js'
 
 const { item } = defineProps<{ item: EventListResource }>()
-
 defineEmits<{
   edit: [e: EventListResource]
 }>()
+
+const isConfirmed = ref(false)
+
+function confirm() {
+  isConfirmed.value = true
+}
 </script>
 
 <template>
@@ -30,6 +35,16 @@ defineEmits<{
       {{ item.name }}
       <div v-if="item.description" class="mt-2 pr-10">
         {{ filterTruncate(item.description, 100) }}
+      </div>
+      <div class="mt-2">
+        <span v-if="isConfirmed" class="text-gray">
+          <v-icon :icon="mdiCheckAll" size="16" class="vfn-1 mr-1" />
+          Вы подтвердили участие в мероприятии
+        </span>
+        <a v-else class="cursor-pointer" @click="confirm()">
+          <v-icon icon="$complete" size="16" class="vfn-1 mr-1" />
+          Подтвердить участие
+        </a>
       </div>
     </div>
     <div style="width: 80px; display: flex; align-items: center">
@@ -77,6 +92,7 @@ defineEmits<{
     left: 110px;
     top: 0;
     border-radius: 4px;
+    pointer-events: none;
   }
   &--study {
     &:after {

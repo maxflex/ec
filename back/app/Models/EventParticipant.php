@@ -9,7 +9,11 @@ class EventParticipant extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'entity_type', 'entity_id'
+        'entity_type', 'entity_id', 'is_confirmed'
+    ];
+
+    protected $casts = [
+        'is_confirmed' => 'boolean'
     ];
 
     public function event()
