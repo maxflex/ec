@@ -23,8 +23,9 @@ const tabs = {
 const selectedTab = ref<keyof typeof tabs>('requests')
 const route = useRoute()
 const client = ref<ClientResource>()
-const clientDialog = ref<null | InstanceType<typeof ClientDialog>>()
-const testSelectorDialog = ref<null | InstanceType<typeof TestSelectorDialog>>()
+const clientDialog = ref<InstanceType<typeof ClientDialog>>()
+const testSelectorDialog = ref<InstanceType<typeof TestSelectorDialog>>()
+const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
 const reportFilters = ref<Filters>({
   year: currentAcademicYear(),
 })
@@ -44,16 +45,16 @@ function onClientUpdated(c: ClientResource) {
   client.value = c
 }
 
-// async function onGroupSelected(g: GroupListResource) {
-//   await useHttp(`groups/add-client`, {
-//     method: 'post',
-//     params: {
-//       group_id: g.id,
-//       client_id: client.value?.id,
-//     },
-//   })
-//   loadData()
-// }
+async function onGroupSelected(g: GroupListResource) {
+  await useHttp(`groups/add-client`, {
+    method: 'post',
+    params: {
+      group_id: g.id,
+      client_id: client.value?.id,
+    },
+  })
+  loadData()
+}
 
 function onTestsSaved(tests: TestResource[]) {
   if (!client.value) {
@@ -236,6 +237,12 @@ nextTick(loadData)
         <template #default="{ items }">
           <div class="table table--padding">
             <GroupList :items="items" />
+            <GroupSwamp
+              v-for="swamp in client.swamps"
+              :key="swamp.id"
+              :swamp="swamp"
+              @attach="(s) => groupSelectorDialog?.open(s.program)"
+            />
           </div>
         </template>
       </UiDataLoader>
@@ -287,6 +294,10 @@ nextTick(loadData)
     <ClientDialog
       ref="clientDialog"
       @updated="onClientUpdated"
+    />
+    <GroupSelectorDialog
+      ref="groupSelectorDialog"
+      @select="onGroupSelected"
     />
   </div>
 </template>

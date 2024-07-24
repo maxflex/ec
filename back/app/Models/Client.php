@@ -61,18 +61,17 @@ class Client extends Model
      */
     public function swamps(): Attribute
     {
-        return Attribute::make(fn () => []);
-        // $programs = $this->groups->pluck('program');
-        // $result = [];
+        $programs = $this->groups->pluck('program');
+        $result = [];
 
-        // foreach ($this->contracts as $contract) {
-        //     foreach ($contract->versions[0]->programs as $p) {
-        //         if (!$programs->contains($p->program)) {
-        //             $result[] = $p;
-        //         }
-        //     }
-        // }
-        // return Attribute::make(fn () => $result);
+        foreach ($this->contracts as $contract) {
+            foreach ($contract->versions->last()->programs as $p) {
+                if (!$programs->contains($p->program)) {
+                    $result[] = $p;
+                }
+            }
+        }
+        return Attribute::make(fn () => $result);
     }
 
     public function branches(): Attribute
