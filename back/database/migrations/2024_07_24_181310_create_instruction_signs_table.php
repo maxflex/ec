@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('instruction_signs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId(Teacher::class)->constrained();
+            $table->foreignIdFor(Teacher::class)->constrained();
             $table->foreignIdFor(Instruction::class)->constrained();
             $table->dateTime('signed_at');
         });
