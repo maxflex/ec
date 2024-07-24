@@ -5,6 +5,8 @@ import {
   mdiAccountMultiple,
   mdiBookOpenOutline,
   mdiCalendar,
+  mdiCalendarBadge,
+  mdiCalendarStar,
   mdiCash,
   mdiCreditCardCheckOutline,
   mdiCurrencyRub,
@@ -170,11 +172,16 @@ switch (user?.entity_type) {
       },
       {
         icon: mdiCalendar,
+        title: 'Занятия',
+        to: '/lessons',
+      },
+      {
+        icon: mdiCalendarBadge,
         title: 'События',
         to: '/events',
       },
       {
-        icon: mdiCalendar,
+        icon: mdiCalendarStar,
         title: 'Праздники',
         to: '/vacations',
       },

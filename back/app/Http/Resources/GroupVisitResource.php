@@ -17,8 +17,9 @@ class GroupVisitResource extends JsonResource
         $contractLessons = $this->contractLessons()->with('contract.client')->get();
 
         return extract_fields($this, [
-            'dateTime'
+            'dateTime', 'status'
         ], [
+            'teacher' => new PersonResource($this->teacher),
             'contractLessons' => $contractLessons->map(fn ($c) => extract_fields($c, [
                 'status', 'is_remote', 'minutes_late'
             ], [

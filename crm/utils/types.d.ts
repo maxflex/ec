@@ -662,6 +662,8 @@ declare global {
   interface GroupVisitResource {
     id: number
     dateTime: string
+    teacher: PersonResource
+    status: LessonStatus
     contractLessons: Array<{
       id: number
       is_remote: boolean

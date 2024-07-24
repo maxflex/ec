@@ -39,6 +39,14 @@ const contractLessons = computed(() => {
   return result
 })
 
+const teachers = computed(() => {
+  const result: PersonResource[] = []
+  for (const item of items.value) {
+    result.push(item.teacher)
+  }
+  return uniq(result)
+})
+
 async function loadData() {
   const { data } = await useHttp<GroupVisitResource[]>(`groups/visits/${id}`)
   if (data.value) {
@@ -55,14 +63,13 @@ nextTick(loadData)
     <tbody>
       <tr>
         <td />
+        <td v-for="t in teachers" :key="t.id">
+          {{ t.last_name }} <br>
+          {{ t.first_name![0] }}. {{ t.middle_name![0] }}.
+        </td>
         <td v-for="c in clients" :key="c.id">
           {{ c.last_name }} <br>
-          <template v-if="c.first_name">
-            {{ c.first_name[0] }}.
-          </template>
-          <template v-if="c.middle_name">
-            {{ c.middle_name[0] }}.
-          </template>
+          {{ c.first_name }}
         </td>
         <td />
       </tr>
@@ -73,6 +80,17 @@ nextTick(loadData)
             {{ dayLabels[getDay(l.dateTime)] }}
           </span>
         </td>
+        <td v-for="t in teachers" :key="t.id">
+          <UiCircleStatus
+            v-if="l.teacher.id === t.id"
+            class="group-visits__teacher-status"
+            :class="{
+              'text-success': l.status === 'conducted',
+              'text-error': l.status === 'cancelled',
+              'text-gray': l.status === 'planned',
+            }"
+          />
+        </td>
         <td v-for="c in clients" :key="c.id" :class="{ 'is-remote': contractLessons[l.id][c.id] && contractLessons[l.id][c.id].is_remote }">
           <UiCircleStatus
             v-if="contractLessons[l.id][c.id]"
@@ -80,7 +98,6 @@ nextTick(loadData)
               'text-error': contractLessons[l.id][c.id].status === 'absent',
               'text-warning': contractLessons[l.id][c.id].status === 'late',
               'text-success': contractLessons[l.id][c.id].status === 'present',
-
             }"
           />
         </td>
@@ -99,6 +116,7 @@ nextTick(loadData)
       td {
         width: 100px;
         border-bottom: 1px solid #e0e0e0 !important;
+        border-right: 1px solid #e0e0e0;
         &:first-child {
           width: 130px !important;
         }
@@ -128,6 +146,11 @@ nextTick(loadData)
   }
   .is-remote {
     background: rgba(var(--v-theme-orange), 0.2);
+  }
+  &__teacher-status {
+    .circle-status__circle {
+      --size: 12px !important;
+    }
   }
 }
 </style>
