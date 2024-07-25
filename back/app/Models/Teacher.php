@@ -36,6 +36,12 @@ class Teacher extends Model
         return $this->hasMany(TeacherService::class)->latest();
     }
 
+
+    public function signs()
+    {
+        return $this->hasMany(InstructionSign::class);
+    }
+
     public function reports()
     {
         return $this->hasMany(Report::class);
@@ -135,6 +141,10 @@ class Teacher extends Model
         return array_reverse($data);
     }
 
+    public function scopeActive($query)
+    {
+        $query->where('status', TeacherStatus::active);
+    }
 
     public function getSchedule(int $year): Collection
     {

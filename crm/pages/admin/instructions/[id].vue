@@ -41,29 +41,18 @@ nextTick(loadData)
           <div v-html="instruction.text" />
         </div>
       </div>
-      <div
-        v-if="instruction.signs.length"
-        class="table table--hover instruction__signs"
-      >
-        <div class="table-header">
-          <div>
-            {{ plural(instruction.signs.length, [
-              'преподаватель подписал',
-              'преподавателя подписали',
-              'преподавателей подписали',
-            ]) }}
-          </div>
-        </div>
-        <div v-for="s in instruction.signs" :key="s.id">
+      <div class="table table--hover instruction__signs">
+        <div v-for="t in instruction.teachers" :key="t.id">
           <div style="flex: 1">
-            <UiAvatar :item="s.teacher" :size="38" class="mr-4" />
-            <NuxtLink :to="{ name: 'teachers-id', params: { id: s.teacher.id } }">
-              {{ formatNameInitials(s.teacher) }}
+            <UiAvatar :item="t" :size="38" class="mr-4" />
+            <NuxtLink :to="{ name: 'teachers-id', params: { id: t.id } }">
+              {{ formatNameInitials(t) }}
             </NuxtLink>
           </div>
           <div style="width: 230px; flex: initial" class="text-gray">
-            подписано
-            {{ formatDateTime(s.signed_at) }}
+            <template v-if="t.signed_at">
+              подписано {{ formatDateTime(t.signed_at) }}
+            </template>
           </div>
         </div>
       </div>

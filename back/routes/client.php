@@ -14,7 +14,7 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::get('/', 'index');
         Route::get('active', 'active');
         Route::get('results/{clientTest}', 'results');
-        Route::get('/{test}', 'show');
+        Route::get('/{clientTest}', 'show');
         Route::post('start/{clientTest}', 'start');
         Route::post('finish', 'finish');
     });

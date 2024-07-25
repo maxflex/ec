@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,6 +18,7 @@ class InstructionListResource extends JsonResource
         return extract_fields($this, [
             'title', 'versions_count', 'signs_count', 'created_at'
         ], [
+            'signs_needed' => Teacher::active()->count(),
             'signed_at' => $this->whenLoaded(
                 'signs',
                 fn () => $this->signs->first()?->signed_at,

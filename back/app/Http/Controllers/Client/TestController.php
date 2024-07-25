@@ -18,9 +18,9 @@ class TestController extends Controller
         return $this->handleIndexRequest($request, $query, ClientTestResource::class);
     }
 
-    public function show(Test $test)
+    public function show(ClientTest $clientTest)
     {
-        return new TestResource($test);
+        return new TestResource($clientTest);
     }
 
     public function results(ClientTest $clientTest)
