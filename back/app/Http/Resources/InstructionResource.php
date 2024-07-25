@@ -19,7 +19,9 @@ class InstructionResource extends JsonResource
         if (auth()->user()->isTeacher()) {
             $versions = Instruction::queryForTeacher(auth()->id())
                 ->where('entry_id', $this->entry_id)
-                ->get();
+                ->get()
+                ->sortBy('created_at')
+                ->values();
             $sign = $this->signs()
                 ->where('teacher_id', auth()->id())
                 ->first();
@@ -40,11 +42,12 @@ class InstructionResource extends JsonResource
                 ], [
                     'signed_at' => $t->signs()->where('instruction_id', $this->id)->first()?->signed_at
                 ]))
-                    ->sortByDesc(fn ($t) => $t['signed_at'] !== null)
                     ->sortBy([
+                        ['signed_at', 'desc'],
                         ['last_name', 'asc'],
                         ['first_name', 'asc']
-                    ])->values()->all()
+                    ])
+                    ->values()
             ),
             'signs' => $this->when(
                 auth()->user()->isAdmin(),
