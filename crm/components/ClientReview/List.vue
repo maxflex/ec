@@ -44,7 +44,7 @@ function onDeleted(r: ClientReviewResource) {
         <NuxtLink
           :to="{ name: 'teachers-id', params: { id: r.teacher.id } }"
         >
-          {{ formatNameShort(r.teacher) }}
+          {{ formatNameInitials(r.teacher) }}
         </NuxtLink>
       </div>
       <div style="width: 210px">

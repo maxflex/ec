@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { TeacherDialog } from '#build/components'
 import type { Filters } from '~/components/Report/TeacherFilters.vue'
+import type { Filters as InstructionFilters } from '~/components/Instruction/Filters.vue'
 
 const route = useRoute()
 const teacher = ref<TeacherResource>()
@@ -14,6 +15,7 @@ const tabs = {
   reports: 'отчеты',
   reviews: 'отзывы',
   services: 'допуслуги',
+  instructions: 'инструкции',
 } as const
 
 const selectedTab = ref<keyof typeof tabs>('groups')
@@ -30,6 +32,7 @@ const paymentFilters = ref<{ year: Year }>({
 const serviceFilters = ref<{ year: Year }>({
   year: currentAcademicYear(),
 })
+const instructionFilters = ref<InstructionFilters>({})
 // const reviewFilters = ref<{ year?: Year }>({})
 
 async function loadData() {
@@ -199,6 +202,27 @@ nextTick(loadData)
           style="top: -20px"
           :items="items"
         />
+      </template>
+    </UiDataLoader>
+    <UiDataLoader
+      v-else-if="selectedTab === 'instructions'"
+      url="instructions"
+      :filters="{
+        teacher_id: teacher.id,
+        ...instructionFilters,
+      }"
+    >
+      <template #filters>
+        <div class="filters">
+          <div class="filters-inputs">
+            <div>
+              <InstructionFilters @apply="f => (instructionFilters = f)" />
+            </div>
+          </div>
+        </div>
+      </template>
+      <template #default="{ items }">
+        <InstructionTeacherList :items="items" />
       </template>
     </UiDataLoader>
     <UiDataLoader

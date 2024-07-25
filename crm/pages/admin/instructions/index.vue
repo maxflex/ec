@@ -3,7 +3,7 @@ import type { Filters } from '~/components/Instruction/Filters.vue'
 import type { InstructionDialog } from '#build/components'
 
 const instructionDialog = ref<InstanceType<typeof InstructionDialog>>()
-const { items, loading, onFiltersApply } = useIndex<InstructionListResource, Filters>(`instructions`)
+const { items, loading } = useIndex<InstructionListResource, Filters>(`instructions`)
 
 function onCreated(item: InstructionListResource) {
   items.value.unshift(item)
@@ -13,7 +13,7 @@ function onCreated(item: InstructionListResource) {
 
 <template>
   <div class="filters">
-    <InstructionFilters @apply="onFiltersApply" />
+    <!-- <InstructionFilters @apply="onFiltersApply" /> -->
     <div />
     <v-btn
       append-icon="$next"

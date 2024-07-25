@@ -115,7 +115,7 @@ defineExpose({ edit, create })
         <div class="double-input">
           <div v-if="item.teacher">
             <v-text-field
-              :model-value="formatNameShort(item.teacher)"
+              :model-value="formatNameInitials(item.teacher)"
               label="Преподаватель"
               disabled
             />

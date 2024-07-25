@@ -29,7 +29,7 @@ const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
       </div>
       <div style="width: 170px">
         <NuxtLink :to="{ name: 'teachers-id', params: { id: l.teacher.id } }">
-          {{ formatNameShort(l.teacher) }}
+          {{ formatNameInitials(l.teacher) }}
         </nuxtlink>
       </div>
       <div style="flex: 1" class="text-truncate">

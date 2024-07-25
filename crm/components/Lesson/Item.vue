@@ -42,7 +42,7 @@ const emit = defineEmits<{
       <NuxtLink
         :to="{ name: 'teachers-id', params: { id: item.teacher.id } }"
       >
-        {{ formatNameShort(item.teacher) }}
+        {{ formatNameInitials(item.teacher) }}
       </NuxtLink>
     </div>
     <div style="width: 90px">

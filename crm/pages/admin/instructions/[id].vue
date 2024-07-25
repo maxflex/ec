@@ -41,6 +41,32 @@ nextTick(loadData)
           <div v-html="instruction.text" />
         </div>
       </div>
+      <div
+        v-if="instruction.signs.length"
+        class="table table--hover instruction__signs"
+      >
+        <div class="table-header">
+          <div>
+            {{ plural(instruction.signs.length, [
+              'преподаватель подписал',
+              'преподавателя подписали',
+              'преподавателей подписали',
+            ]) }}
+          </div>
+        </div>
+        <div v-for="s in instruction.signs" :key="s.id">
+          <div style="flex: 1">
+            <UiAvatar :item="s.teacher" :size="38" class="mr-4" />
+            <NuxtLink :to="{ name: 'teachers-id', params: { id: s.teacher.id } }">
+              {{ formatNameInitials(s.teacher) }}
+            </NuxtLink>
+          </div>
+          <div style="width: 230px; flex: initial" class="text-gray">
+            подписано
+            {{ formatDateTime(s.signed_at) }}
+          </div>
+        </div>
+      </div>
     </div>
     <div class="instruction__panel">
       <div class="table table--padding table--hover">
@@ -59,6 +85,14 @@ nextTick(loadData)
           версия {{ index + 1 }}
           <div class="text-gray">
             создана {{ formatDateTime(v.created_at) }}
+          </div>
+          <div class="text-gray">
+            <template v-if="v.signs_count">
+              {{ v.signs_count }} подписали
+            </template>
+            <template v-else>
+              нет подписей
+            </template>
           </div>
         </RouterLink>
         <div>
@@ -79,55 +113,3 @@ nextTick(loadData)
   <InstructionDialog ref="instructionDialog" @updated="i => (instruction = i)" />
   <InstructionDiffDialog ref="instructionDiffDialog" />
 </template>
-
-<style lang="scss">
-.instruction {
-  display: flex;
-  min-height: 100vh;
-  &__content {
-    flex: 1;
-    padding: 20px;
-    margin-right: 255px; /* Ensure space for the fixed panel */
-    & > h1 {
-      margin-bottom: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      & > div {
-        display: inline-flex;
-        .v-icon {
-          font-size: 24px !important;
-          color: rgb(148, 157, 177);
-        }
-      }
-    }
-  }
-  &__panel {
-    width: 255px;
-    border-left: 1px solid #e0e0e0;
-    position: fixed;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    overflow-y: auto; /* Allow scrolling within the panel if needed */
-    .table {
-      & > a {
-        display: block !important;
-      }
-      & > div {
-        border-bottom: none !important;
-        &:hover {
-          background: none !important;
-        }
-      }
-      .selected {
-        background: rgba(
-          var(--v-border-color),
-          var(--v-hover-opacity)
-        ) !important;
-        pointer-events: none;
-      }
-    }
-  }
-}
-</style>

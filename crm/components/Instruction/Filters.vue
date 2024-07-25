@@ -17,7 +17,7 @@ watch(filters.value, () => emit('apply', filters.value))
     <div>
       <UiClearableSelect
         v-model="filters.signed"
-        label="Тип"
+        label="Статус"
         :items="yesNo('подписанные', 'неподписанные')"
         density="comfortable"
       />

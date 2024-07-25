@@ -1,14 +1,25 @@
 <script setup lang="ts">
-import { mdiContentCopy } from '@mdi/js'
-import type { InstructionDialog, InstructionDiffDialog } from '#build/components'
+import { mdiCheckAll, mdiContentCopy } from '@mdi/js'
+import type { InstructionDiffDialog } from '#build/components'
 
+const loading = ref(false)
 const route = useRoute()
 const instruction = ref<InstructionResource>()
-const instructionDialog = ref<InstanceType<typeof InstructionDialog>>()
 const instructionDiffDialog = ref<InstanceType<typeof InstructionDiffDialog>>()
 
 async function loadData() {
   const { data } = await useHttp<InstructionResource>(`instructions/${route.params.id}`)
+  instruction.value = data.value as InstructionResource
+}
+
+async function sign() {
+  if (!confirm(`Подписать "${instruction.value?.title}"?`)) {
+    return
+  }
+  loading.value = true
+  const { data } = await useHttp<InstructionResource>(`instructions/sign/${instruction.value?.id}`, {
+    method: 'post',
+  })
   instruction.value = data.value as InstructionResource
 }
 
@@ -28,18 +39,21 @@ nextTick(loadData)
             :disabled="instruction.versions[0].id === instruction.id"
             @click="instructionDiffDialog?.open(instruction!)"
           />
-          <v-btn
-            variant="plain"
-            icon="$edit"
-            :size="48"
-            @click="instructionDialog?.edit(instruction!)"
-          />
         </div>
       </h1>
       <div class="ql-snow">
         <div class="ql-editor pa-0">
           <div v-html="instruction.text" />
         </div>
+      </div>
+      <div class="instruction__sign">
+        <v-chip v-if="instruction.signed_at" color="success" size="large">
+          <v-icon :icon="mdiCheckAll" :size="20" class="mr-2" />
+          Вы подписали инструкцию {{ formatDateTime(instruction.signed_at) }}
+        </v-chip>
+        <v-btn v-else color="primary" size="x-large" :width="400" @click="sign()">
+          Подписать инструкцию
+        </v-btn>
       </div>
     </div>
     <div class="instruction__panel">
@@ -60,74 +74,16 @@ nextTick(loadData)
           <div class="text-gray">
             создана {{ formatDateTime(v.created_at) }}
           </div>
+          <div v-if="v.signed_at" class="text-success">
+            <v-icon :icon="mdiCheckAll" :size="16" class="mr-1" />
+            подписано {{ formatDate(v.signed_at) }}
+          </div>
+          <div v-else class="text-error">
+            не подписано
+          </div>
         </RouterLink>
-        <div>
-          <a
-            class="link-icon"
-            @click="instructionDialog?.addVersion(instruction!)"
-          >
-            добавить версию
-            <v-icon
-              :size="16"
-              icon="$next"
-            />
-          </a>
-        </div>
       </div>
     </div>
   </div>
-  <InstructionDialog ref="instructionDialog" @updated="i => (instruction = i)" />
   <InstructionDiffDialog ref="instructionDiffDialog" />
 </template>
-
-<style lang="scss">
-.instruction {
-  display: flex;
-  min-height: 100vh;
-  &__content {
-    flex: 1;
-    padding: 20px;
-    margin-right: 255px; /* Ensure space for the fixed panel */
-    & > h1 {
-      margin-bottom: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      & > div {
-        display: inline-flex;
-        .v-icon {
-          font-size: 24px !important;
-          color: rgb(148, 157, 177);
-        }
-      }
-    }
-  }
-  &__panel {
-    width: 255px;
-    border-left: 1px solid #e0e0e0;
-    position: fixed;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    overflow-y: auto; /* Allow scrolling within the panel if needed */
-    .table {
-      & > a {
-        display: block !important;
-      }
-      & > div {
-        border-bottom: none !important;
-        &:hover {
-          background: none !important;
-        }
-      }
-      .selected {
-        background: rgba(
-          var(--v-border-color),
-          var(--v-hover-opacity)
-        ) !important;
-        pointer-events: none;
-      }
-    }
-  }
-}
-</style>

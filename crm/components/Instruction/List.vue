@@ -20,7 +20,12 @@ const { items } = defineProps<{
         {{ plural(item.versions_count, ['версия', 'версии', 'версий']) }}
       </div>
       <div style="width: 140px">
-        {{ item.signs_count }} подписали
+        <template v-if="item.signs_count">
+          {{ item.signs_count }} подписали
+        </template>
+        <span v-else class="text-gray">
+          нет подписей
+        </span>
       </div>
       <div style="flex: initial; width: 150px" class="text-gray">
         {{ formatDateTime(item.created_at) }}

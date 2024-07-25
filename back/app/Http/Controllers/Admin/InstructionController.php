@@ -5,22 +5,34 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InstructionListResource;
 use App\Http\Resources\InstructionResource;
+use App\Http\Resources\InstructionTeacherResource;
 use App\Models\Instruction;
 use Illuminate\Http\Request;
 
 class InstructionController extends Controller
 {
+    protected $filters = [
+        'signed' => ['signed']
+    ];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $query = Instruction::query()
-            ->lastVersions()
-            ->latest()
-            ->withCount('versions', 'signs');
+
+        if ($request->has('teacher_id')) {
+            $query = Instruction::queryForTeacher($request->teacher_id);
+            $resource = InstructionTeacherResource::class;
+        } else {
+            $query = Instruction::query()
+                ->lastVersions()
+                ->latest()
+                ->withCount('versions', 'signs');
+            $resource = InstructionListResource::class;
+        }
         $this->filter($request, $query);
-        return $this->handleIndexRequest($request, $query, InstructionListResource::class);
+        return $this->handleIndexRequest($request, $query, $resource);
     }
 
     /**
@@ -52,7 +64,7 @@ class InstructionController extends Controller
 
     public function diff(Instruction $instruction)
     {
-        return $instruction->diff;
+        return $instruction->getDiff();
     }
 
     /**
@@ -61,5 +73,12 @@ class InstructionController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    protected function filterSigned(&$query, $value)
+    {
+        $value
+            ? $query->whereNotNull('signed_at')
+            : $query->whereNull('signed_at');
     }
 }

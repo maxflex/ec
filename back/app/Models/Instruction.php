@@ -27,33 +27,63 @@ class Instruction extends Model
     public function scopeWithLastVersionsCte($query)
     {
         $lastVersionsCte = self::selectRaw(<<<SQL
-            entry_id,
+            entry_id as max_entry_id,
             MAX(id) as max_id
         SQL)->groupBy('entry_id');
 
         $query->withExpression('last_versions', $lastVersionsCte);
     }
 
-    public function scopeLastVersions($query)
+    public function scopeQueryForTeacher($query, $teacherId)
     {
-        $sub = self::selectRaw(<<<SQL
-            entry_id,
-            MAX(id) as max_id
-        SQL)
-            ->groupBy('entry_id');
-        $query->joinSub(
-            $sub,
-            'last_versions',
-            fn ($join) => $join
-                ->on('instructions.entry_id', '=', 'last_versions.entry_id')
-                ->on('instructions.id', '=', 'last_versions.max_id')
-        );
+        $query
+            ->withLastVersionsCte()
+            ->leftJoin(
+                'last_versions',
+                fn ($join) => $join
+                    ->on('last_versions.max_id', '=', 'instructions.id')
+                    ->on('last_versions.max_entry_id', '=', 'instructions.entry_id')
+            )
+            ->leftJoin(
+                'instruction_signs',
+                fn ($join) => $join
+                    ->on('instruction_signs.instruction_id', '=', 'instructions.id')
+                    ->where('instruction_signs.teacher_id', $teacherId)
+            )
+            ->whereRaw(<<<SQL
+                (instruction_signs.id IS NOT NULL OR last_versions.max_id IS NOT NULL)
+            SQL)
+            ->selectRaw('instructions.*, signed_at')
+            ->orderByRaw(<<<SQL
+                if(signed_at is null, 0, 1) asc,
+                signed_at desc,
+                instructions.created_at desc
+            SQL);
     }
 
-    public function getDiffAttribute()
+    public function scopeLastVersions($query)
+    {
+        $query
+            ->withLastVersionsCte()
+            ->join(
+                'last_versions',
+                fn ($join) => $join
+                    ->on('last_versions.max_id', '=', 'instructions.id')
+                    ->on('last_versions.max_entry_id', '=', 'instructions.entry_id')
+            );
+    }
+
+    public function getDiff($teacherId = null)
     {
         $prev = $this->versions()
             ->where('created_at', '<', $this->created_at)
+            ->when(
+                $teacherId,
+                fn ($q) => $q->whereHas(
+                    'signs',
+                    fn ($q) => $q->where('teacher_id', $teacherId)
+                )
+            )
             ->latest()
             ->first();
 
@@ -64,14 +94,14 @@ class Instruction extends Model
         return [
             'current' => extract_fields($this, ['created_at', 'title']),
             'prev' => extract_fields($prev, ['created_at', 'title']),
-            'diff' => $this->getDiff($prev),
-            'diff_all' => $this->getDiff($prev, [
+            'diff' => $this->_getDiff($prev),
+            'diff_all' => $this->_getDiff($prev, [
                 'context' => Differ::CONTEXT_ALL
             ])
         ];
     }
 
-    private function getDiff(Instruction $prev, $options = [])
+    private function _getDiff(Instruction $prev, $options = [])
     {
         return DiffHelper::calculate(
             $prev->getTidyText(),

@@ -74,6 +74,24 @@ class Phone extends Model implements Authenticatable
         return $phones->first();
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->entity_type === User::class;
+    }
+
+    public function isTeacher(): bool
+    {
+        return $this->entity_type === Teacher::class;
+    }
+
+    public function isClient(): bool
+    {
+        return in_array($this->entity_type, [
+            Client::class,
+            ClientParent::class
+        ]);
+    }
+
     public function createSessionToken(): string
     {
         return Session::createToken($this);

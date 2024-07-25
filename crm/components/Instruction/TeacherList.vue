@@ -18,11 +18,11 @@ const { items } = defineProps<{
       </div>
       <div style="width: 250px">
         <v-chip v-if="item.signed_at" class="text-success">
-          подписан {{ formatDateTime(item.signed_at) }}
+          подписано {{ formatDateTime(item.signed_at) }}
         </v-chip>
 
         <v-chip v-else class="text-error">
-          не подписан
+          не подписано
         </v-chip>
       </div>
       <div style="flex: initial; width: 150px" class="text-gray">
