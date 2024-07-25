@@ -13,9 +13,6 @@ async function loadData() {
 }
 
 async function sign() {
-  if (!confirm(`Подписать "${instruction.value?.title}"?`)) {
-    return
-  }
   loading.value = true
   const { data } = await useHttp<InstructionResource>(`instructions/sign/${instruction.value?.id}`, {
     method: 'post',

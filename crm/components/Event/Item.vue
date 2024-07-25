@@ -8,7 +8,10 @@ defineEmits<{
 
 const isConfirmed = ref<boolean>(!!item.participant?.is_confirmed)
 
-function confirm() {
+function confirmParticipant() {
+  if (!confirm(`Вы подтверждаете участие в событии ${item.name}?`)) {
+    return
+  }
   isConfirmed.value = true
   useHttp(`event-participants/${item.participant!.id}`, {
     method: 'put',
@@ -47,7 +50,7 @@ function confirm() {
           <v-icon :icon="mdiCheckAll" size="16" class="vfn-1 mr-1" />
           Вы подтвердили участие
         </span>
-        <a v-else class="cursor-pointer" @click="confirm()">
+        <a v-else class="cursor-pointer" @click="confirmParticipant()">
           <v-icon icon="$complete" size="16" class="vfn-1 mr-1" />
           Подтвердить участие
         </a>
