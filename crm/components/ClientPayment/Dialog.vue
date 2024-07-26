@@ -107,7 +107,7 @@ defineExpose({ create, edit })
             hide-spin-buttons
           />
         </div>
-        <UiDateInput v-model="item.date" />
+        <UiDateInput v-model="item.date" today-btn />
         <div>
           <v-select v-model="item.year" label="Учебный год" :items="selectItems(YearLabel)" />
         </div>

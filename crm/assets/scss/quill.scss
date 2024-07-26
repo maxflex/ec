@@ -32,7 +32,7 @@
   height: 100%;
   outline: none;
   overflow-y: auto;
-  padding: 12px 15px;
+  padding: 0 !important;
   tab-size: 4;
   -moz-tab-size: 4;
   text-align: left;
@@ -411,11 +411,12 @@
   cursor: pointer;
   display: inline-block;
   float: left;
-  height: 24px;
+  height: 27px;
   padding: 3px 5px;
-  width: 28px;
-  margin-left: 1px;
-  margin-right: 1px;
+  // width: 42px;
+  // margin-left: 1px;
+  // margin-right: 1px;
+  background: #ebe8e8;
 }
 .ql-snow.ql-toolbar button svg,
 .ql-snow .ql-toolbar button svg {
@@ -438,7 +439,7 @@
 .ql-snow .ql-toolbar .ql-picker-label:hover,
 .ql-snow.ql-toolbar .ql-picker-item:hover,
 .ql-snow .ql-toolbar .ql-picker-item:hover {
-  background-color: #f3f4f6;
+  background-color: #f0f0f0 !important;
 }
 .ql-snow.ql-toolbar button.ql-active,
 .ql-snow .ql-toolbar button.ql-active,
@@ -520,8 +521,9 @@
   transform: translateY(-10px);
 }
 .ql-snow .ql-formats {
-  display: inline-block;
   vertical-align: middle;
+  display: inline-flex !important;
+  gap: 4px;
 }
 .ql-snow .ql-formats:after {
   clear: both;
@@ -841,10 +843,11 @@
   background-color: #000;
 }
 .ql-toolbar.ql-snow {
-  border: 1px solid #9e9e9e;
+  border: none !important;
   box-sizing: border-box;
   font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
-  padding: 8px;
+  padding: 0 !important;
+  margin-bottom: 18px;
 }
 .ql-toolbar.ql-snow .ql-formats {
   margin-right: 15px;
@@ -936,7 +939,7 @@
   color: #2563eb;
 }
 .ql-container.ql-snow {
-  border: 1px solid #9e9e9e;
+  border: none !important;
 }
 
 /**

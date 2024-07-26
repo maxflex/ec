@@ -134,7 +134,7 @@ defineExpose({ create, edit })
           />
         </div>
         <div>
-          <UiDateInput v-model="item.date" />
+          <UiDateInput v-model="item.date" today-btn />
         </div>
 
         <div>

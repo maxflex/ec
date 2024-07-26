@@ -247,7 +247,7 @@ defineExpose({ edit, createContract, addVersion })
             type="number"
             hide-spin-buttons
           />
-          <UiDateInput v-model="item.date" />
+          <UiDateInput v-model="item.date" today-btn />
         </div>
 
         <div class="dialog-section">
@@ -339,6 +339,7 @@ defineExpose({ edit, createContract, addVersion })
                 <UiDateInput
                   v-model="p.date"
                   label=""
+                  density="compact"
                 />
               </div>
               <div style="width: 100px">
@@ -415,6 +416,11 @@ defineExpose({ edit, createContract, addVersion })
           flex: none !important;
         }
       }
+    }
+  }
+  &__payments {
+    .date-input {
+      width: 150px !important;
     }
   }
   .table {

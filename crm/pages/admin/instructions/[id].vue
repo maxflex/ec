@@ -32,7 +32,12 @@ nextTick(loadData)
             variant="plain"
             icon="$edit"
             :size="48"
-            @click="instructionDialog?.edit(instruction!)"
+            :to="{
+              name: 'instructions-edit-id',
+              params: {
+                id: instruction.id,
+              },
+            }"
           />
         </div>
       </h1>
