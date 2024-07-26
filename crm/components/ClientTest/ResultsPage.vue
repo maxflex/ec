@@ -4,7 +4,9 @@ const test = ref<ClientTestResource>()
 const answers = ref<TestAnswers>()
 
 async function loadData() {
-  const { data } = await useHttp<ClientTestResource>(`tests/results/${route.params.id}`)
+  const { data } = await useHttp<ClientTestResource>(
+    `client-tests/${route.params.id}`,
+  )
   if (data.value) {
     test.value = data.value
     if (test.value.answers) {

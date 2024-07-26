@@ -6,8 +6,6 @@ use App\Enums\Program;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
-use function PHPUnit\Framework\once;
-
 class ClientTest extends Model
 {
     protected $fillable = [
@@ -20,6 +18,11 @@ class ClientTest extends Model
         'questions' => 'array',
         'answers' => 'array',
     ];
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
 
     public function user()
     {
@@ -36,6 +39,18 @@ class ClientTest extends Model
             and finished_at is null
             and now() < started_at + interval `minutes` + 1 minute
         SQL);
+    }
+
+    public function scopeFinished($query)
+    {
+        $now = now();
+        return $query->where(function ($query) use ($now) {
+            $query->whereNotNull('started_at')
+                ->where(function ($query) use ($now) {
+                    $query->whereNotNull('finished_at')
+                        ->orWhereRaw('started_at + interval `minutes` + 1 minute <= ?', [$now]);
+                });
+        });
     }
 
     /**
@@ -88,6 +103,13 @@ class ClientTest extends Model
     public function start()
     {
         $this->started_at = now()->format('Y-m-d H:i:s');
+        $this->save();
+    }
+
+    public function finish($answers)
+    {
+        $this->finished_at = now()->format('Y-m-d H:i:s');
+        $this->answers = $answers;
         $this->save();
     }
 }

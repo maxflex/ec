@@ -2,8 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\ClientTest;
-use App\Models\Test;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,7 +15,7 @@ class ClientTestResource extends JsonResource
     public function toArray(Request $request): array
     {
         $extra = [
-            'user' => new PersonResource($this->user)
+            'client' => $this->whenLoaded('client', fn () => new PersonResource($this->client))
         ];
 
         if ($this->is_finished) {
@@ -38,6 +36,7 @@ class ClientTestResource extends JsonResource
         return extract_fields($this, [
             'program', 'name', 'is_finished', 'is_active',
             'minutes', 'questions_count', 'file', 'created_at',
+            'finished_at', 'started_at'
         ], $extra);
     }
 }

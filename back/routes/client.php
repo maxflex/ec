@@ -11,9 +11,6 @@ use App\Http\Controllers\Client\{
 
 Route::middleware(['auth:crm'])->group(function () {
     Route::controller(ClientTestController::class)->prefix('client-tests')->group(function () {
-        // Route::get('/', 'index');
-        // Route::get('results/{clientTest}', 'results');
-        // Route::get('/{clientTest}', 'show');
         Route::get('active', 'active');
         Route::post('start/{clientTest}', 'start');
         Route::post('finish', 'finish');

@@ -207,6 +207,11 @@ switch (user?.entity_type) {
         to: '/tests',
       },
       {
+        icon: mdiDotsTriangle,
+        title: 'Тесты клиентов',
+        to: '/client-tests',
+      },
+      {
         icon: mdiAccountMultiple,
         title: 'Пользователи',
         to: '/users',

@@ -510,3 +510,9 @@ export const LogTableLabel = {
   tests: 'tests',
   vacations: 'vacations',
 } as const
+
+export const ClientTestStatusLabel = {
+  new: 'новые',
+  active: 'активные',
+  finished: 'завершённые',
+}

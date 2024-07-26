@@ -11,12 +11,16 @@ use Illuminate\Http\Request;
 class ClientTestController extends Controller
 {
     protected $filters = [
-        'equals' => ['client_id', 'year']
+        'equals' => ['client_id', 'year', 'program'],
+        'status' => ['status']
     ];
 
     public function index(Request $request)
     {
-        $query = ClientTest::with('user');
+        $query = ClientTest::query();
+        if (!$request->has('client_id')) {
+            $query->with('client');
+        }
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, ClientTestResource::class);
     }
@@ -44,5 +48,30 @@ class ClientTestController extends Controller
         }
 
         return ClientTestResource::collection($clientTests);
+    }
+
+    public function show(ClientTest $clientTest)
+    {
+        return new ClientTestResource($clientTest);
+    }
+
+    public function destroy(ClientTest $clientTest)
+    {
+        $clientTest->delete();
+    }
+
+    protected function filterStatus(&$query, $status)
+    {
+        switch ($status) {
+            case 'active':
+                $query->active();
+                break;
+            case 'finished':
+                $query->finished();
+                break;
+            case 'new':
+                $query->whereNull('started_at');
+                break;
+        }
     }
 }

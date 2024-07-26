@@ -3,6 +3,8 @@ declare global {
 
   type Exam = keyof typeof ExamLabel
 
+  type ClientTestStatus = keyof typeof ClientTestStatusLabel
+
   type Quarter = keyof typeof QuarterLabel
 
   type LogTable = keyof typeof LogTableLabel
@@ -487,7 +489,7 @@ declare global {
     is_finished: boolean
     is_active: boolean
     questions_count: number
-    user: PersonResource
+    client?: PersonResource
     created_at: string
   }
 

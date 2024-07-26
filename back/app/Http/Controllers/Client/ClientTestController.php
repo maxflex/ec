@@ -16,8 +16,12 @@ class ClientTestController extends Controller
         return $this->handleIndexRequest($request, $query, ClientTestResource::class);
     }
 
-    public function show(ClientTest $clientTest)
+    public function show($id)
     {
+        $clientTest = ClientTest::query()
+            ->whereId($id)
+            ->where('client_id', auth()->id())
+            ->firstOrFail();
         return new ClientTestResource($clientTest);
     }
 
@@ -45,5 +49,14 @@ class ClientTestController extends Controller
                 $activeTest->minutes * 60 - Carbon::parse($activeTest->started_at)->diffInSeconds(now())
             )
         ];
+    }
+
+    public function finish(Request $request)
+    {
+        $activeTest = ClientTest::active(auth()->id())->first();
+        if ($activeTest === null) {
+            return response(null, 404);
+        }
+        $activeTest->finish($request->answers);
     }
 }

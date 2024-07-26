@@ -47,6 +47,19 @@ async function onTestsSelected(tests: TestResource[]) {
   }
 }
 
+function onDestroy(clientTest: ClientTestResource) {
+  if (!confirm(`Вы уверены, что хотите удалить тест ${clientTest.name}?`)) {
+    return
+  }
+  const index = items.value.findIndex(t => t.id === clientTest.id)
+  if (index !== -1) {
+    items.value.splice(index, 1)
+    useHttp(`client-tests/${clientTest.id}`, {
+      method: 'delete',
+    })
+  }
+}
+
 watch(year, loadData)
 
 nextTick(loadData)
@@ -71,7 +84,7 @@ nextTick(loadData)
       </v-btn>
     </div>
     <UiLoader v-if="loading" />
-    <ClientTestList v-else :items="items" />
+    <ClientTestList v-else :items="items" @destroy="onDestroy" />
   </div>
   <TestSelectorDialog
     ref="testSelectorDialog"

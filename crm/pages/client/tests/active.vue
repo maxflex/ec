@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { mdiClockOutline } from '@mdi/js'
-
-const { $dayjs } = useNuxtApp()
 const answers = ref<TestAnswers>([])
 const cookie = useCookie<TestAnswers>('answers', { maxAge: 60 * 60 * 3 }) // 3 hours
 const test = ref<ClientTestResource>()
@@ -44,7 +41,7 @@ async function loadData() {
 
 async function finish() {
   finishing.value = true
-  await useHttp(`tests/finish`, {
+  await useHttp(`client-tests/finish`, {
     method: 'post',
     body: {
       answers: answers.value,
@@ -117,10 +114,7 @@ nextTick(loadData)
           <!-- <span class="ml-2" style="width: 50px; opacity: 0.5">
             {{ answered }}/{{ test.answers?.length }}
           </span> -->
-          <span class="test__timer-in-btn">
-            <v-icon :icon="mdiClockOutline" />
-            {{ $dayjs.duration(seconds, "second").format("mm:ss") }}
-          </span>
+          <ClientTestCountDown class="test__timer-in-btn" :item="test" />
         </v-btn>
         <v-btn
           v-else
