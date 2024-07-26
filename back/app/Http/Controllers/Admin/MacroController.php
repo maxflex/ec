@@ -15,6 +15,11 @@ class MacroController extends Controller
         return $this->handleIndexRequest($request, $query, MacroListResource::class);
     }
 
+    public function show(Macro $macro)
+    {
+        return $macro;
+    }
+
     public function update(Macro $macro, Request $request)
     {
         $macro->update($request->all());

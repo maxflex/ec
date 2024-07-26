@@ -43,24 +43,6 @@ const { user } = useAuthStore()
           начать тест
         </v-btn>
       </template>
-      <!-- <div class="table-actions">
-        <router-link
-          v-if="t.is_finished"
-          :to="{ name: 'tests-result-id', params: { id: t.id } }"
-        >
-          {{ formatClientTestResults(t) }}
-          баллов
-        </router-link>
-        <template v-else>
-          <span
-            v-if="user?.entity_type === EntityType.user"
-            class="text-gray"
-          >
-            не пройден
-          </span>
-
-        </template>
-      </div> -->
     </div>
   </div>
 </template>

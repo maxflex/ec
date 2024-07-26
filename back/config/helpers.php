@@ -85,5 +85,5 @@ function get_max_pko_number(Company $company)
             ->whereHas('contract', fn ($q) => $q->where('company', $company))
             ->where('method', ClientPaymentMethod::cash)
             ->max('pko_number'),
-    );
+    ) + 1;
 }

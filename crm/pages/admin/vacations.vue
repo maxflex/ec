@@ -136,10 +136,11 @@ nextTick(loadData)
 .vcalendar {
   display: flex;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   margin-top: 40px;
   color: black;
   gap: 30px 40px;
+  max-width: 1500px;
   &-card {
     align-items: flex-start;
     height: 100vh;
@@ -161,9 +162,10 @@ nextTick(loadData)
     }
     &-days {
       display: grid;
-      $size: 48px;
+      $size: 30px;
       grid-template-columns: repeat(7, $size);
       grid-gap: 3px;
+      // grid-gap: 1;
       & > div {
         height: $size;
         // width: $size;
@@ -189,12 +191,13 @@ nextTick(loadData)
     margin-bottom: 40px;
     margin-left: 20px;
     & > h2 {
-      position: sticky;
-      top: 18px;
+      // position: sticky;
+      // top: 18px;
       z-index: 99;
       margin-left: 10px;
       display: inline;
       color: black;
+      font-size: 30px;
     }
   }
   &__header {
@@ -210,16 +213,16 @@ nextTick(loadData)
       margin-right: 30px;
       background: transparent;
     }
-    &:before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      height: 70px;
-      width: 106px;
-      background: white;
-      box-shadow: 0 0 10px 10px white;
-    }
+    // &:before {
+    //   content: '';
+    //   position: absolute;
+    //   left: 0;
+    //   top: 0;
+    //   height: 70px;
+    //   width: 106px;
+    //   background: white;
+    //   box-shadow: 0 0 10px 10px white;
+    // }
   }
 }
 </style>

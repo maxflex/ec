@@ -479,11 +479,13 @@ declare global {
     name: string
     file: string
     minutes: number
+    seconds_left?: number
     questions: TestQuestions
     answers: TestAnswers | null
     started_at: string | null
     finished_at: string | null
     is_finished: boolean
+    is_active: boolean
     questions_count: number
     user: PersonResource
     created_at: string

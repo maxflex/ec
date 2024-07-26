@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class Macro extends Model
 {
     public $timestamps = false;
-    protected $fillable = ['text'];
+    protected $fillable = ['text', 'title'];
 }
