@@ -44,12 +44,8 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::post('add-client', 'addClient');
         Route::post('remove-contract', 'removeContract');
     });
-    Route::controller(TestController::class)->prefix('tests')->group(function () {
-        Route::post('add-client/{client}', 'addClient');
-        Route::post('upload-pdf/{test}', 'uploadPdf');
-    });
+    Route::post('tests/upload-pdf/{test}', [TestController::class, 'uploadPdf']);
     Route::post('preview', [PreviewController::class, 'enter']);
-    Route::get('tests/results/{clientTest}', [TestController::class, 'results']);
     Route::apiResource('photos', PhotoController::class)->only('store');
     Route::apiResource('stats', StatsController::class)->only('index');
     Route::controller(BalanceController::class)->prefix('balance')->group(function () {
@@ -93,6 +89,7 @@ Route::middleware(['auth:crm'])->group(function () {
         'vacations' => VacationController::class,
         'macros' => MacroController::class,
         'tests' => TestController::class,
+        'client-tests' => ClientTestController::class,
         'teacher-services' => TeacherServiceController::class,
         'teacher-payments' => TeacherPaymentController::class,
         'teachers' => TeacherController::class,
@@ -107,7 +104,6 @@ Route::middleware(['auth:crm'])->group(function () {
         'grades' => GradeController::class,
         'exam-scores' => ExamScoreController::class,
         'telegram-messages' => TelegramMessageController::class,
-        'client-tests' => ClientTestController::class,
         'instructions' => InstructionController::class,
     ]);
 });

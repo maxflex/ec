@@ -3,10 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ClientTestResource;
 use App\Http\Resources\TestResource;
-use App\Models\Client;
-use App\Models\ClientTest;
 use App\Models\Test;
 use Illuminate\Http\Request;
 
@@ -30,6 +27,11 @@ class TestController extends Controller
         return new TestResource($test);
     }
 
+    public function show(Test $test)
+    {
+        return new TestResource($test);
+    }
+
     public function uploadPdf(Request $request, Test $test)
     {
         if ($request->has('pdf')) {
@@ -38,27 +40,5 @@ class TestController extends Controller
             $test->file = $file;
             $test->save();
         }
-    }
-
-    public function addClient(Client $client, Request $request)
-    {
-        $request->validate([
-            'ids' => ['required', 'array'],
-            'ids.*' => ['exists:tests,id']
-        ]);
-
-        Test::whereIn('id', $request->ids)->get()->each(function ($test) use ($client) {
-            $test->addClient($client);
-        });
-    }
-
-    public function show(Test $test)
-    {
-        return new TestResource($test);
-    }
-
-    public function results(ClientTest $clientTest)
-    {
-        return new ClientTestResource($clientTest);
     }
 }
