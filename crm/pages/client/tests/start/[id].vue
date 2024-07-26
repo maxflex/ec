@@ -2,17 +2,17 @@
 definePageMeta({ middleware: ['check-active-test'] })
 
 const route = useRoute()
-const test = ref<ClientTestResource>()
+const item = ref<ClientTestResource>()
 const loading = ref(false)
 
 async function loadData() {
-  const { data } = await useHttp(`tests/${route.params.id}`)
-  test.value = data.value as ClientTestResource
+  const { data } = await useHttp(`client-tests/${route.params.id}`)
+  item.value = data.value as ClientTestResource
 }
 
 async function start() {
   loading.value = true
-  await useHttp(`tests/start/${route.params.id}`, {
+  await useHttp(`client-tests/start/${item.value?.id}`, {
     method: 'post',
   })
   useCookie('answers').value = null
@@ -23,16 +23,13 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div
-    v-if="test"
-    class="test-start"
-  >
+  <div v-if="item" class="test-start">
     <h1>
-      {{ test.name }}
+      {{ item.name }}
     </h1>
     <div class="test-start__info">
-      Длительность: {{ test.minutes }} минут.
-      {{ plural(test.questions_count, ["вопрос", "вопроса", "вопросов"]) }}.
+      Длительность: {{ item.minutes }} минут.
+      {{ plural(item.questions_count, ["вопрос", "вопроса", "вопросов"]) }}.
       <br>
       Во время прохождения не закрывайте браузер!
     </div>

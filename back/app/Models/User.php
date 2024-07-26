@@ -20,6 +20,11 @@ class User extends Authenticatable
         'is_active' => 'boolean'
     ];
 
+    public function clientTests()
+    {
+        return $this->hasMany(ClientTest::class);
+    }
+
     public function instructions()
     {
         return $this->hasMany(Instruction::class);

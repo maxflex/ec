@@ -16,24 +16,28 @@ class ClientTestResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $extra = [
+            'user' => new PersonResource($this->user)
+        ];
+
+        if ($this->is_finished) {
+            $extra = [
+                ...$extra,
+                'questions' => $this->questions,
+                'answers' => $this->answers
+            ];
+        }
+
+        if ($this->is_active) {
+            $extra = [
+                ...$extra,
+                'seconds_left' => $this->secondsLeft,
+            ];
+        }
+
         return extract_fields($this, [
-            'program', 'name', 'is_finished', 'minutes', 'questions_count',
-            'file'
-        ], $this->is_finished ? [
-            'questions' => $this->questions,
-            'answers' => $this->answers
-        ] : []);
-        // $fields = ['program', 'name', 'file', 'minutes'];
-        // $clientId = auth()->user()->entity_id;
-        // $result = $this->results[$clientId];
-        // $isFinished = Test::whereId($this->id)->finished($clientId)->exists();
-        // if ($isFinished) {
-        //     $fields[] = 'questions';
-        // }
-        // return extract_fields($this, $fields, [
-        //     'questions_count' => count($this->questions),
-        //     'result' => $result,
-        //     'is_finished' => $isFinished,
-        // ]);
+            'program', 'name', 'is_finished', 'is_active',
+            'minutes', 'questions_count', 'file', 'created_at',
+        ], $extra);
     }
 }

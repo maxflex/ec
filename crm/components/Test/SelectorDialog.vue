@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 const emit = defineEmits<{
-  (e: 'saved', tests: TestResource[]): void
+  selected: [tests: TestResource[]]
 }>()
 const { dialog, width } = useDialog('large')
 const selected = ref<TestResource[]>([])
@@ -8,6 +8,7 @@ const tests = ref<TestResource[]>()
 
 function open() {
   dialog.value = true
+  selected.value = []
   loadData()
 }
 
@@ -24,7 +25,7 @@ async function loadData() {
 
 function save() {
   dialog.value = false
-  emit('saved', selected.value)
+  emit('selected', selected.value)
 }
 
 defineExpose({ open })

@@ -4,12 +4,11 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ClientTestResource;
-use App\Http\Resources\TestResource;
-use App\Models\ClientTest;
 use Illuminate\Http\Request;
+use App\Models\ClientTest;
 use Illuminate\Support\Carbon;
 
-class TestController extends Controller
+class ClientTestController extends Controller
 {
     public function index(Request $request)
     {
@@ -19,15 +18,25 @@ class TestController extends Controller
 
     public function show(ClientTest $clientTest)
     {
-        return new TestResource($clientTest);
+        return new ClientTestResource($clientTest);
+    }
+
+    public function start(ClientTest $clientTest)
+    {
+        $clientTest->start();
     }
 
     public function active()
     {
-        $activeTest = ClientTest::active()->where('client_id', auth()->id())->first();
+        $activeTest = ClientTest::query()
+            ->active()
+            ->where('client_id', auth()->id())
+            ->first();
+
         if ($activeTest === null) {
             return response(null, 404);
         }
+
         return [
             'test' => new ClientTestResource($activeTest),
             // сколько в секундах осталось на выполнение теста
@@ -36,16 +45,5 @@ class TestController extends Controller
                 $activeTest->minutes * 60 - Carbon::parse($activeTest->started_at)->diffInSeconds(now())
             )
         ];
-    }
-
-    public function finish(Request $request)
-    {
-        $activeTest = ClientTest::active(auth()->id())->first();
-        if ($activeTest === null) {
-            return response(null, 404);
-        }
-        $activeTest->finished_at = now()->format('Y-m-d H:i:s');
-        $activeTest->answers = $request->answers;
-        $activeTest->save();
     }
 }

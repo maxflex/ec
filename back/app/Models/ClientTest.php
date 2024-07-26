@@ -3,15 +3,16 @@
 namespace App\Models;
 
 use App\Enums\Program;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
+
+use function PHPUnit\Framework\once;
 
 class ClientTest extends Model
 {
-    public $timestamps = false;
-
     protected $fillable = [
         'name', 'minutes', 'program', 'questions', 'file',
+        'year', 'client_id'
     ];
 
     protected $casts = [
@@ -19,6 +20,11 @@ class ClientTest extends Model
         'questions' => 'array',
         'answers' => 'array',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     /**
      * + 1 minute – 1 минута запас на всякий случай
@@ -32,28 +38,56 @@ class ClientTest extends Model
         SQL);
     }
 
-    public function isFinished(): Attribute
+    /**
+     * TODO: use once()
+     */
+    public function getIsFinishedAttribute(): bool
     {
-        return Attribute::make(
-            fn (): bool => $this->started_at !== null && (
-                $this->finished_at !== null
-                || $this->started_at < now()
-                ->subMinutes($this->minutes)
-                ->subMinute()
-                ->format('Y-m-d H:i:s')
-            )
+        $deadline = now()
+            ->subMinutes($this->minutes)
+            ->subMinute()
+            ->format('Y-m-d H:i:s');
+        return $this->started_at !== null
+            && ($this->finished_at !== null || $this->started_at < $deadline);
+    }
+
+    /**
+     * TODO: use once()
+     */
+    public function getIsActiveAttribute(): bool
+    {
+        return  $this->started_at
+            && !$this->finished_at
+            && now()->lt(Carbon::parse($this->started_at)->addMinutes($this->minutes)->addMinute());
+    }
+
+    public function getSecondsLeftAttribute(): int | null
+    {
+        if (!$this->isActive) {
+            return null;
+        }
+        return max(
+            0,
+            $this->minutes * 60 - Carbon::parse($this->started_at)->diffInSeconds(now())
         );
     }
 
-    public function questionsCount(): Attribute
+    /**
+     * TODO: refactor with $this->loadCount('questions')
+     */
+    public function getQuestionsCountAttribute(): int
     {
-        return Attribute::make(
-            fn (): int => count($this->questions)
-        );
+        return count($this->questions);
     }
 
     public function getFileAttribute($file): string
     {
         return cdn('tests', $file);
+    }
+
+    public function start()
+    {
+        $this->started_at = now()->format('Y-m-d H:i:s');
+        $this->save();
     }
 }

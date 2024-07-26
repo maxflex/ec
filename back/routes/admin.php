@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\{
     ClientController,
     ClientPaymentController,
     ClientReviewController,
+    ClientTestController,
     ContractPaymentController,
     CommentController,
     ContractController,
@@ -106,6 +107,7 @@ Route::middleware(['auth:crm'])->group(function () {
         'grades' => GradeController::class,
         'exam-scores' => ExamScoreController::class,
         'telegram-messages' => TelegramMessageController::class,
+        'client-tests' => ClientTestController::class,
         'instructions' => InstructionController::class,
     ]);
 });

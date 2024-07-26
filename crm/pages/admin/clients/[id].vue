@@ -2,7 +2,6 @@
 import type {
   ClientDialog,
   GroupSelectorDialog,
-  TestSelectorDialog,
 } from '#build/components'
 import type { Filters } from '~/components/Report/TeacherFilters.vue'
 
@@ -24,7 +23,6 @@ const selectedTab = ref<keyof typeof tabs>('requests')
 const route = useRoute()
 const client = ref<ClientResource>()
 const clientDialog = ref<InstanceType<typeof ClientDialog>>()
-const testSelectorDialog = ref<InstanceType<typeof TestSelectorDialog>>()
 const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
 const reportFilters = ref<Filters>({
   year: currentAcademicYear(),
@@ -54,17 +52,6 @@ async function onGroupSelected(g: GroupListResource) {
     },
   })
   loadData()
-}
-
-function onTestsSaved(tests: TestResource[]) {
-  if (!client.value) {
-    return
-  }
-  client.value.tests = [...tests]
-  useHttp(`tests/add-client/${client.value.id}`, {
-    method: 'post',
-    body: { ids: tests.map(t => t.id) },
-  })
 }
 
 nextTick(loadData)
@@ -273,23 +260,10 @@ nextTick(loadData)
           <GradeList :items="items" />
         </template>
       </UiDataLoader>
-      <div
+      <ClientTestTab
         v-else
-      >
-        <ClientTestList :tests="client.tests" />
-        <TestSelectorDialog
-          ref="testSelectorDialog"
-          @saved="onTestsSaved"
-        />
-        <div style="margin: 20px">
-          <v-btn
-            color="primary"
-            @click="() => testSelectorDialog?.open()"
-          >
-            добавить тест
-          </v-btn>
-        </div>
-      </div>
+        :client-id="client.id"
+      />
     </div>
     <ClientDialog
       ref="clientDialog"

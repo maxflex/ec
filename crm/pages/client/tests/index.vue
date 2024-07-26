@@ -3,13 +3,13 @@ import type { TestDialog } from '#build/components'
 
 definePageMeta({ middleware: ['check-active-test'] })
 
-const testDialog = ref<null | InstanceType<typeof TestDialog>>()
-const tests = ref<ClientTestResource[]>()
+const testDialog = ref<InstanceType<typeof TestDialog>>()
+const items = ref<ClientTestResource[]>()
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<ClientTestResource[]>>('tests')
+  const { data } = await useHttp<ApiResponse<ClientTestResource[]>>(`client-tests`)
   if (data.value) {
-    tests.value = data.value.data
+    items.value = data.value.data
   }
 }
 
@@ -19,8 +19,8 @@ nextTick(loadData)
 <template>
   <div class="tests">
     <ClientTestList
-      v-if="tests"
-      :tests="tests"
+      v-if="items"
+      :items="items"
       @open="testDialog?.open"
     />
   </div>

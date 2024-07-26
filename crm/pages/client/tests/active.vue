@@ -19,7 +19,7 @@ function saveAnswers() {
 }
 
 async function loadData() {
-  const { data, error } = await useHttp<ActiveTest>(`tests/active`)
+  const { data, error } = await useHttp<ActiveTest>(`client-tests/active`)
   // нет активного теста
   if (error.value) {
     return navigateTo({ name: 'tests' })

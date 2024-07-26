@@ -485,6 +485,8 @@ declare global {
     finished_at: string | null
     is_finished: boolean
     questions_count: number
+    user: PersonResource
+    created_at: string
   }
 
   interface TestResource {
