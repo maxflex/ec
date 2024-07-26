@@ -45,7 +45,7 @@ const { user } = useAuthStore()
         </div>
         <div v-if="t.is_finished">
           <span v-if="t.finished_at">
-            закончен
+            завершен
             {{ formatDateTime(t.finished_at) }}
           </span>
           <span v-else class="text-error">
@@ -54,6 +54,9 @@ const { user } = useAuthStore()
         </div>
         <div v-else-if="t.is_active" class="text-success">
           активен
+        </div>
+        <div v-else class="text-gray">
+          не пройден
         </div>
       </div>
       <div style="width: 100px">

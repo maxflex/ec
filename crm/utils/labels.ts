@@ -512,7 +512,7 @@ export const LogTableLabel = {
 } as const
 
 export const ClientTestStatusLabel = {
-  new: 'новые',
-  active: 'активные',
-  finished: 'завершённые',
+  new: 'не пройден',
+  active: 'активен',
+  finished: 'завершен',
 }

@@ -4,6 +4,7 @@ const props = withDefaults(
     label?: string
     year?: Year
     disabled?: boolean
+    todayBtn?: boolean
   }>(),
   {
     label: 'Дата',
@@ -28,6 +29,9 @@ const calendarDialog = ref()
       hide-details
       :disabled="disabled"
     />
+    <a v-if="todayBtn">
+      сегодня
+    </a>
     <v-icon
       icon="$next"
     />

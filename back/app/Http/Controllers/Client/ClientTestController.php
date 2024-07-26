@@ -12,7 +12,9 @@ class ClientTestController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ClientTest::where('client_id', auth()->id());
+        $query = ClientTest::query()
+            ->where('client_id', auth()->id())
+            ->latest();
         return $this->handleIndexRequest($request, $query, ClientTestResource::class);
     }
 

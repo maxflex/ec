@@ -17,7 +17,7 @@ class ClientTestController extends Controller
 
     public function index(Request $request)
     {
-        $query = ClientTest::query();
+        $query = ClientTest::latest();
         if (!$request->has('client_id')) {
             $query->with('client');
         }
