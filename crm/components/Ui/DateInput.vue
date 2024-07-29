@@ -81,7 +81,7 @@ function setToday() {
     }
     &--compact {
       & > .v-icon {
-        top: 8px !important;
+        top: 13px !important;
       }
     }
   }

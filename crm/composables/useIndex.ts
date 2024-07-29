@@ -1,7 +1,7 @@
-export default function<T, F>(apiUrl: string) {
+export default function<T, F extends object>(apiUrl: string, defaultFilters: F = {} as F) {
   const loading = ref(false)
   const items = ref<T[]>([]) as Ref<T[]>
-  const filters = ref<F>()
+  let filters: F = defaultFilters
   let scrollContainer: HTMLElement | null = null
   let page = 0
   let isLastPage = false
@@ -15,7 +15,7 @@ export default function<T, F>(apiUrl: string) {
     const { data } = await useHttp<ApiResponse<T[]>>(apiUrl, {
       params: {
         page,
-        ...filters.value,
+        ...filters,
       },
     })
     if (data.value) {
@@ -27,7 +27,7 @@ export default function<T, F>(apiUrl: string) {
   }
 
   function onFiltersApply(f: F) {
-    filters.value = f
+    filters = f
     reloadData()
   }
 

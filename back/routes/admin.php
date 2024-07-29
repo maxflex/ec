@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\{
     ReportController,
     ScheduleController,
     StatsController,
+    SwampController,
     TeacherController,
     TeacherPaymentController,
     TeacherServiceController,
@@ -76,6 +77,8 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::get('groups/visits/{group}', [GroupController::class, 'visits']);
 
     Route::get('instructions/diff/{instruction}', [InstructionController::class, 'diff']);
+
+    Route::apiResource('swamps', SwampController::class)->only('index');
 
     Route::apiResource('event-participants', EventParticipantController::class)->only(['update']);
 

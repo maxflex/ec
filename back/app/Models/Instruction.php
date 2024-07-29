@@ -92,8 +92,12 @@ class Instruction extends Model
         }
 
         return [
-            'current' => extract_fields($this, ['created_at', 'title']),
-            'prev' => extract_fields($prev, ['created_at', 'title']),
+            'current' => extract_fields($this, [
+                'version_number', 'title', 'created_at'
+            ]),
+            'prev' => extract_fields($prev, [
+                'version_number', 'title', 'created_at'
+            ]),
             'diff' => $this->_getDiff($prev),
             'diff_all' => $this->_getDiff($prev, [
                 'context' => Differ::CONTEXT_ALL
@@ -130,5 +134,12 @@ class Instruction extends Model
         $result = preg_replace("/&gt;/", ">", $result);
         $result = preg_replace("/&lt;/", "<", $result);
         return $result;
+    }
+
+    public function getVersionNumberAttribute()
+    {
+        return $this->versions()
+            ->where('id', '<=', $this->id)
+            ->count();
     }
 }

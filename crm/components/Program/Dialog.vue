@@ -4,9 +4,11 @@ const emit = defineEmits<{ (e: 'saved', programs: Program[]): void }>()
 const { dialog, width, transition } = useDialog('default')
 const programs = ref<Program[]>([])
 const selected = ref<Program[]>([])
+const preSelected = ref<Program[]>([])
 
 function open(preSelect: Program[] = []) {
   selected.value = [...preSelect]
+  preSelected.value = [...preSelect]
   programs.value = Object.keys(ProgramLabel) as Program[]
   programs.value = programs.value.sort((a, b) => Number(preSelect.includes(b)) - Number(preSelect.includes(a)))
   dialog.value = true
@@ -34,7 +36,7 @@ defineExpose({ open })
     <div class="dialog-wrapper">
       <div class="dialog-header">
         <span>
-          Выбор программ
+          Добавить программы
           <span
             v-if="selected.length"
             class="ml-1 text-gray"
@@ -45,7 +47,7 @@ defineExpose({ open })
         <v-btn
           icon="$save"
           :size="48"
-          color="#fafafa"
+          variant="text"
           @click="save()"
         />
       </div>
@@ -55,6 +57,7 @@ defineExpose({ open })
             v-for="p in programs"
             :key="p"
             class="cursor-pointer unselectable"
+            :class="{ 'program-selector--disabled': preSelected.includes(p) }"
             @click="select(p)"
           >
             <v-icon
@@ -66,10 +69,23 @@ defineExpose({ open })
               v-else
               icon="$checkboxOff"
             />
-            {{ ProgramLabel[p] }}
+            <span>
+              {{ ProgramLabel[p] }}
+            </span>
           </div>
         </div>
       </div>
     </div>
   </v-dialog>
 </template>
+
+<style lang="scss">
+.program-selector {
+  &--disabled {
+    pointer-events: none;
+    & > * {
+      opacity: 0.3;
+    }
+  }
+}
+</style>

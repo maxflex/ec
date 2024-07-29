@@ -26,8 +26,14 @@ nextTick(loadData)
             :icon="mdiContentCopy"
             :size="48"
             :disabled="instruction.versions[0].id === instruction.id"
-            @click="instructionDiffDialog?.open(instruction!)"
+            :to="{
+              name: 'instructions-diff-id',
+              params: {
+                id: instruction.id,
+              },
+            }"
           />
+          <!--     -->
           <v-btn
             variant="plain"
             icon="$edit"

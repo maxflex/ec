@@ -5,7 +5,7 @@
         permanent
         absolute
       >
-        <UiMenu />
+        <MenuBase />
       </v-navigation-drawer>
       <v-main>
         <NuxtPage />
