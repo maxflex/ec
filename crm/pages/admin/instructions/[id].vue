@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { mdiContentCopy } from '@mdi/js'
-import type { InstructionDialog, InstructionDiffDialog } from '#build/components'
+import type { InstructionDialog } from '#build/components'
 
 const route = useRoute()
 const instruction = ref<InstructionResource>()
 const instructionDialog = ref<InstanceType<typeof InstructionDialog>>()
-const instructionDiffDialog = ref<InstanceType<typeof InstructionDiffDialog>>()
 
 async function loadData() {
   const { data } = await useHttp<InstructionResource>(`instructions/${route.params.id}`)
@@ -111,5 +110,4 @@ nextTick(loadData)
     </div>
   </div>
   <InstructionDialog ref="instructionDialog" @updated="i => (instruction = i)" />
-  <InstructionDiffDialog ref="instructionDiffDialog" />
 </template>

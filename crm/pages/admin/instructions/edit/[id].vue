@@ -7,7 +7,6 @@ const QuillEditor = defineAsyncComponent({
 const saving = ref(false)
 const route = useRoute()
 const item = ref<InstructionBaseResource>()
-// const instructionDiffDialog = ref<InstanceType<typeof InstructionDiffDialog>>()
 
 async function save() {
   saving.value = true

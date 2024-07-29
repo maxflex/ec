@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { mdiCheckAll, mdiContentCopy } from '@mdi/js'
-import type { InstructionDiffDialog } from '#build/components'
 
 const loading = ref(false)
 const route = useRoute()
 const instruction = ref<InstructionResource>()
-const instructionDiffDialog = ref<InstanceType<typeof InstructionDiffDialog>>()
 
 async function loadData() {
   const { data } = await useHttp<InstructionResource>(`instructions/${route.params.id}`)
@@ -34,7 +32,12 @@ nextTick(loadData)
             :icon="mdiContentCopy"
             :size="48"
             :disabled="instruction.versions[0].id === instruction.id"
-            @click="instructionDiffDialog?.open(instruction!)"
+            :to="{
+              name: 'instructions-diff-id',
+              params: {
+                id: instruction.id,
+              },
+            }"
           />
         </div>
       </h1>
@@ -82,5 +85,4 @@ nextTick(loadData)
       </div>
     </div>
   </div>
-  <InstructionDiffDialog ref="instructionDiffDialog" />
 </template>
