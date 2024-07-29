@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const route = useRoute()
 const item = ref<InstructionDiffResource>()
-// const instructionDiffDialog = ref<InstanceType<typeof InstructionDiffDialog>>()
 
 async function loadData() {
   const { data } = await useHttp<InstructionDiffResource>(
@@ -23,17 +22,17 @@ nextTick(loadData)
           {{ item.prev.title }}
         </b>
         <br>
-        версия {{ item.prev.version_number }}
+        версия {{ item.prev.index }}
       </div>
       <div>
         <b class="text-black">
           {{ item.current.title }}
         </b>
         <br>
-        версия {{ item.current.version_number }}
+        версия {{ item.current.index }}
       </div>
     </div>
-    <div v-if="item.diff" v-html="item.diff_all" />
+    <div v-if="item.diff" v-html="item.diff" />
     <div v-else class="no-diff">
       <div>без изменений</div>
       <div>без изменений</div>

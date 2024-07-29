@@ -93,27 +93,19 @@ class Instruction extends Model
 
         return [
             'current' => extract_fields($this, [
-                'version_number', 'title', 'created_at'
+                'index', 'title'
             ]),
             'prev' => extract_fields($prev, [
-                'version_number', 'title', 'created_at'
+                'index', 'title'
             ]),
-            'diff' => $this->_getDiff($prev),
-            'diff_all' => $this->_getDiff($prev, [
-                'context' => Differ::CONTEXT_ALL
-            ])
+            'diff' => DiffHelper::calculate(
+                $prev->getTidyText(),
+                $this->getTidyText(),
+                'SideBySide',
+                ['context' => Differ::CONTEXT_ALL],
+                ['showHeader' => false]
+            ),
         ];
-    }
-
-    private function _getDiff(Instruction $prev, $options = [])
-    {
-        return DiffHelper::calculate(
-            $prev->getTidyText(),
-            $this->getTidyText(),
-            'SideBySide',
-            $options,
-            ['showHeader' => false]
-        );
     }
 
     private function getTidyText()
@@ -136,7 +128,10 @@ class Instruction extends Model
         return $result;
     }
 
-    public function getVersionNumberAttribute()
+    /**
+     * Номер версии
+     */
+    public function getIndexAttribute()
     {
         return $this->versions()
             ->where('id', '<=', $this->id)

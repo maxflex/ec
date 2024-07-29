@@ -788,15 +788,14 @@ declare global {
 
   interface InstructionDiffResource {
     current: {
-      version_number: number
       title: string
+      index: number
     }
     prev: {
-      version_number: number
       title: string
+      index: number
     }
     diff: string
-    diff_all: string
   }
 
   interface SwampListResource {
