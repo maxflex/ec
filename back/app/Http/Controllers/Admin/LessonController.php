@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\{LessonResource, LessonListResource};
+use App\Http\Resources\{LessonConductResource, LessonResource, LessonListResource};
 use App\Models\Lesson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -25,8 +25,11 @@ class LessonController extends Controller
         return $this->handleIndexRequest($request, $query, LessonListResource::class);
     }
 
-    public function show(Lesson $lesson)
+    public function show(Lesson $lesson, Request $request)
     {
+        if ($request->has('conduct')) {
+            return new LessonConductResource($lesson);
+        }
         return new LessonResource($lesson);
     }
 

@@ -19,7 +19,7 @@ function open(lessonId: number, status: LessonStatus) {
 async function loadData() {
   loading.value = true
   const { data } = await useHttp<LessonConductResource>(
-    `lessons/${itemId.value}`,
+    `lessons/${itemId.value}?conduct=1`,
   )
   if (data.value) {
     console.log(data.value)
@@ -87,7 +87,7 @@ defineExpose({ open })
             <v-btn
               icon="$save"
               :size="48"
-              color="#fafafa"
+              variant="text"
               :loading="saving"
               @click="save()"
             />

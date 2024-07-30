@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiAccountGroup } from '@mdi/js'
+import { mdiAccountEdit, mdiAccountGroup } from '@mdi/js'
 
 const { item, editable, conductable } = defineProps<{
   item: LessonListResource
@@ -20,11 +20,20 @@ const emit = defineEmits<{
   >
     <div v-if="editable || conductable" class="table-actionss">
       <v-btn
+        v-if="conductable"
+        :icon="mdiAccountEdit"
+        :size="48"
+        variant="text"
+        color="gray"
+        @click="emit('conduct', item.id, item.status)"
+      />
+      <v-btn
+        v-if="editable"
         icon="$edit"
         :size="48"
-        variant="plain"
+        variant="text"
         color="gray"
-        @click="editable ? emit('edit', item.id) : emit('conduct', item.id, item.status)"
+        @click="emit('edit', item.id)"
       />
     </div>
     <div style="width: 110px; position: relative;">

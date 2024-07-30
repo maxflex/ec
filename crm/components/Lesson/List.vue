@@ -3,14 +3,14 @@ import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'dat
 import { groupBy } from 'rambda'
 import type { EventDialog, LessonBatchCreateDialog, LessonBatchUpdateDialog, LessonConductDialog, LessonDialog } from '#build/components'
 
-const { entity, id, editable, conductable, group } = defineProps<{
+const { entity, id, group } = defineProps<{
   entity: Extract<EntityString, 'client' | 'teacher' | 'group'>
   id: number
-  editable?: boolean
-  conductable?: boolean
   group?: GroupResource
 }>()
 
+const { user } = useAuthStore()
+const editable = user?.entity_type === EntityType.user
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const year = ref<Year>(group === undefined ? currentAcademicYear() : group.year)
 const loading = ref(false)
@@ -98,6 +98,16 @@ async function loadVacations() {
 
 function isEvent(item: LessonListResource | EventListResource): item is EventListResource {
   return 'participants_count' in item
+}
+
+function isConductable(item: LessonListResource) {
+  if (user?.entity_type === EntityType.teacher) {
+    return true
+  }
+  if (user?.entity_type === EntityType.client) {
+    return false
+  }
+  return item.status === 'conducted'
 }
 
 async function loadData() {
@@ -191,7 +201,7 @@ nextTick(loadData)
           v-else
           :key="`l-${item.id}`"
           :item="item"
-          :conductable="conductable"
+          :conductable="isConductable(item)"
           :editable="editable"
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
@@ -240,7 +250,6 @@ nextTick(loadData)
     />
   </template>
   <LessonConductDialog
-    v-else-if="conductable"
     ref="conductDialog"
     @updated="loadLessons"
   />
@@ -251,6 +260,7 @@ nextTick(loadData)
 .lesson-list {
   & > div {
     --height: 57px;
+    overflow: hidden;
     position: relative;
     min-height: var(--height);
     display: flex;

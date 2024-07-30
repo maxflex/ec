@@ -79,7 +79,7 @@ nextTick(loadData)
       </div>
     </div>
     <div v-if="selectedTab === 'schedule'">
-      <LessonList :id="group.id" editable entity="group" :group="group" />
+      <LessonList :id="group.id" entity="group" :group="group" />
     </div>
     <GroupVisits v-else-if="selectedTab === 'visits'" :id="group.id" />
     <GroupStudentList v-else :group="group" :contracts="group.contracts" @updated="loadData" />
