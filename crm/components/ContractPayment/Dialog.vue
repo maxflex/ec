@@ -81,18 +81,36 @@ defineExpose({ create, edit })
   <v-dialog v-model="dialog" :width="width">
     <div class="dialog-wrapper">
       <div class="dialog-header">
-        <template v-if="itemId">
+        <span v-if="itemId">
           Редактировать платеж
-        </template>
-        <template v-else>
-          Новое платеж
-        </template>
-        <v-btn
-          icon="$save"
-          :size="48"
-          variant="text"
-          @click="save()"
-        />
+          <div class="dialog-subheader">
+            <template v-if="item.user && item.created_at">
+              {{ formatName(item.user) }}
+              {{ formatDateTime(item.created_at) }}
+            </template>
+          </div>
+        </span>
+        <span v-else>
+          Новый платеж
+        </span>
+        <div>
+          <v-btn
+            v-if="itemId"
+            icon="$delete"
+            :size="48"
+            variant="text"
+            :loading="deleting"
+            class="remove-btn"
+            @click="destroy()"
+          />
+          <v-btn
+            icon="$save"
+            :size="48"
+            variant="text"
+            :loading="saving"
+            @click="save()"
+          />
+        </div>
       </div>
       <UiLoaderr v-if="loading" />
       <div v-else class="dialog-body">
@@ -136,21 +154,6 @@ defineExpose({ create, edit })
           <v-checkbox
             v-model="item.is_return"
             label="Возврат"
-          />
-        </div>
-        <div v-if="itemId" class="dialog-bottom">
-          <span v-if="item.user && item.created_at">
-            платеж создан
-            {{ formatName(item.user) }}
-            {{ formatDateTime(item.created_at) }}
-          </span>
-          <v-btn
-            icon="$delete"
-            :size="48"
-            color="red"
-            variant="plain"
-            :loading="deleting"
-            @click="destroy()"
           />
         </div>
       </div>

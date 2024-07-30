@@ -227,7 +227,7 @@ const isPaymentSumValid = computed(() => {
     return false
   }
   const contractSum = Number.parseInt(item.value.sum) || 0
-  return contractSum === programSum.value && programSum.value === paymentSum.value
+  return contractSum > 0 && contractSum === programSum.value && programSum.value === paymentSum.value
 })
 
 // defineExpose({ create, editVersion, addVersion })
@@ -245,9 +245,11 @@ defineExpose({ edit, createContract, addVersion })
         <span v-else-if="isEditMode">
           Редактирование договора
           <span>№{{ contractId }}–{{ version }}</span>
-          <div v-if="item.user && item.created_at" class="dialog-subheader">
-            {{ formatName(item.user) }}
-            {{ formatDateTime(item.created_at) }}
+          <div class="dialog-subheader">
+            <template v-if="item.user && item.created_at">
+              {{ formatName(item.user) }}
+              {{ formatDateTime(item.created_at) }}
+            </template>
           </div>
         </span>
         <span v-else>
@@ -256,11 +258,12 @@ defineExpose({ edit, createContract, addVersion })
         </span>
         <div>
           <v-btn
+            v-if="isEditMode"
             icon="$delete"
             :size="48"
             variant="text"
-            :loading="saving"
-            class="remove-btn mr-12"
+            :loading="deleting"
+            class="remove-btn"
             @click="destroy()"
           />
           <v-btn
@@ -640,18 +643,6 @@ defineExpose({ edit, createContract, addVersion })
     }
   }
 
-  .remove-btn {
-    opacity: 0.3;
-    .v-icon {
-      transition: none !important;
-    }
-    &:hover {
-      opacity: 1;
-      .v-icon {
-        color: rgb(var(--v-theme-error));
-      }
-    }
-  }
   &__sum {
     position: relative;
     .v-icon {

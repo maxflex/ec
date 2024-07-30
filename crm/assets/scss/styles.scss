@@ -306,3 +306,17 @@ a.table-item {
     background: rgb(var(--v-theme-error), 0.4);
   }
 }
+
+.remove-btn {
+  margin-right: 48px;
+  opacity: 0.3;
+  .v-icon {
+    transition: none !important;
+  }
+  &:hover {
+    opacity: 1;
+    .v-icon {
+      color: rgb(var(--v-theme-error));
+    }
+  }
+}

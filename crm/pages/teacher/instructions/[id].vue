@@ -47,12 +47,12 @@ nextTick(loadData)
         </div>
       </div>
       <div class="instruction__sign">
-        <v-chip v-if="instruction.signed_at" color="success" size="large">
+        <v-btn v-if="instruction.signed_at" color="success" size="x-large" :width="400" disabled @click="sign()">
           <v-icon :icon="mdiCheckAll" :size="20" class="mr-2" />
-          Вы подписали инструкцию {{ formatDateTime(instruction.signed_at) }}
-        </v-chip>
+          Подписано {{ formatDateTime(instruction.signed_at) }}
+        </v-btn>
         <v-btn v-else color="primary" size="x-large" :width="400" @click="sign()">
-          Подписать инструкцию
+          Подписать
         </v-btn>
       </div>
     </div>
@@ -76,7 +76,7 @@ nextTick(loadData)
           </div>
           <div v-if="v.signed_at" class="text-success">
             <v-icon :icon="mdiCheckAll" :size="16" class="mr-1" />
-            подписано {{ formatDate(v.signed_at) }}
+            подписано
           </div>
           <div v-else class="text-error">
             не подписано

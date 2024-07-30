@@ -33,7 +33,7 @@ const modelDefaults: ClientResource = {
   },
 }
 
-const { dialog, width } = useDialog('x-large')
+const { dialog, width } = useDialog('medium')
 const client = ref<ClientResource>(clone(modelDefaults))
 const loading = ref(false)
 const itemId = ref<number>()
@@ -104,99 +104,96 @@ defineExpose({ create, edit })
           @click="save()"
         />
       </div>
-      <div class="dialog-body-2-col">
-        <div class="dialog-body">
-          <!-- <div class="dialog-section__title">
+      <div class="dialog-body">
+        <!-- <div class="dialog-section__title">
             Ученик
           </div> -->
-          <div style="margin-bottom: 49px;">
-            <AvatarLoader
-              :key="client.id"
-              entity="client"
-              :item="client"
-            />
-          </div>
-          <div class="double-input">
-            <v-text-field
-              v-model="client.last_name"
-              label="Фамилия"
-            />
-            <v-text-field
-              v-model="client.first_name"
-              label="Имя"
-            />
-            <v-text-field
-              v-model="client.middle_name"
-              label="Отчество"
-            />
-          </div>
-          <div class="double-input">
-            <v-select
-              v-model="client.branches"
-              label="Филиалы"
-              multiple
-              :items="selectItems(BranchLabel)"
-            />
+        <div style="margin-bottom: 49px;">
+          <AvatarLoader
+            :key="client.id"
+            entity="client"
+            :item="client"
+          />
+        </div>
+        <div class="double-input">
+          <v-text-field
+            v-model="client.last_name"
+            label="Фамилия"
+          />
+          <v-text-field
+            v-model="client.first_name"
+            label="Имя"
+          />
+          <v-text-field
+            v-model="client.middle_name"
+            label="Отчество"
+          />
+        </div>
+        <div class="double-input">
+          <v-select
+            v-model="client.branches"
+            label="Филиалы"
+            multiple
+            :items="selectItems(BranchLabel)"
+          />
 
-            <TeacherSelector
-              v-model="client.head_teacher_id"
-              label="Куратор"
-            />
-          </div>
-          <PhoneEditor v-model="client.phones" />
+          <TeacherSelector
+            v-model="client.head_teacher_id"
+            label="Куратор"
+          />
         </div>
-        <div class="dialog-body">
-          <div class="dialog-section__title">
-            Представитель
-          </div>
-          <div class="double-input">
-            <v-text-field
-              v-model="client.parent.last_name"
-              label="Фамилия"
-            />
-            <v-text-field
-              v-model="client.parent.first_name"
-              label="Имя"
-            />
-            <v-text-field
-              v-model="client.parent.middle_name"
-              label="Отчество"
-            />
-          </div>
-          <div class="double-input">
-            <v-text-field
-              v-model="client.parent.passport_series"
-              label="Серия паспорта"
-            />
-            <v-text-field
-              v-model="client.parent.passport_number"
-              label="Номер паспорта"
-            />
-            <v-text-field
-              v-model="client.parent.passport_code"
-              label="Код подразделения"
-            />
-          </div>
-          <v-textarea
-            v-model="client.parent.passport_issued_by"
-            label="Паспорт выдан"
-            no-resize
-            rows="3"
-          />
-          <v-textarea
-            v-model="client.parent.passport_address"
-            label="Адрес регистрации"
-            no-resize
-            rows="3"
-          />
-          <v-textarea
-            v-model="client.parent.fact_address"
-            label="Фактический адрес"
-            no-resize
-            rows="3"
-          />
-          <PhoneEditor v-model="client.parent.phones" />
+        <PhoneEditor v-model="client.phones" />
+
+        <div class="dialog-section__title">
+          Представитель
         </div>
+        <div class="double-input">
+          <v-text-field
+            v-model="client.parent.last_name"
+            label="Фамилия"
+          />
+          <v-text-field
+            v-model="client.parent.first_name"
+            label="Имя"
+          />
+          <v-text-field
+            v-model="client.parent.middle_name"
+            label="Отчество"
+          />
+        </div>
+        <div class="double-input">
+          <v-text-field
+            v-model="client.parent.passport_series"
+            label="Серия паспорта"
+          />
+          <v-text-field
+            v-model="client.parent.passport_number"
+            label="Номер паспорта"
+          />
+          <v-text-field
+            v-model="client.parent.passport_code"
+            label="Код подразделения"
+          />
+        </div>
+        <v-textarea
+          v-model="client.parent.passport_issued_by"
+          label="Паспорт выдан"
+          no-resize
+          rows="3"
+        />
+        <v-textarea
+          v-model="client.parent.passport_address"
+          label="Адрес регистрации"
+          no-resize
+          rows="3"
+        />
+        <v-textarea
+          v-model="client.parent.fact_address"
+          label="Фактический адрес"
+          no-resize
+          rows="3"
+        />
+        <PhoneEditor v-model="client.parent.phones" />
       </div>
     </div>
   </v-dialog>

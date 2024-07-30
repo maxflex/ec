@@ -15,6 +15,7 @@ class ClientPaymentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, ['*'], [
+            'client' => new PersonResource($this->client),
             'user' => new PersonResource($this->user),
         ]);
     }

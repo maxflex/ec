@@ -44,7 +44,14 @@ function onUpdated(p: ClientPaymentResource) {
   else {
     items.value.unshift(p)
   }
-  itemUpdated('client-payments', p.id)
+  itemUpdated('client-payment', p.id)
+}
+
+function onDeleted(p: ClientPaymentResource) {
+  const index = items.value.findIndex(e => e.id === p.id)
+  if (index !== -1) {
+    items.value.splice(index, 1)
+  }
 }
 
 nextTick(loadData)
@@ -69,5 +76,9 @@ nextTick(loadData)
     <UiLoader3 :loading="loading" />
     <ClientPaymentList :items="items" @open="clientPaymentDialog?.edit" />
   </div>
-  <ClientPaymentDialog ref="clientPaymentDialog" @updated="onUpdated" />
+  <ClientPaymentDialog
+    ref="clientPaymentDialog"
+    @updated="onUpdated"
+    @deleted="onDeleted"
+  />
 </template>
