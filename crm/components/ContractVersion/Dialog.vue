@@ -295,7 +295,7 @@ defineExpose({ edit, createContract, addVersion })
           <div class="contract-version-dialog__sum">
             <v-text-field
               v-model="item.sum"
-              label="Сумма"
+              label="Сумма, руб."
               type="number"
               hide-spin-buttons
             />
@@ -308,7 +308,7 @@ defineExpose({ edit, createContract, addVersion })
           <!-- <div class="dialog-section__title">Программы</div> -->
 
           <table class="dialog-table contract-version-dialog__programss">
-            <thead>
+            <thead v-if="item.programs.length">
               <tr>
                 <th width="400">
                   программа
@@ -389,13 +389,13 @@ defineExpose({ edit, createContract, addVersion })
                   </a>
                 </td>
                 <td>
-                  {{ getSum('lessons') }}
+                  {{ getSum('lessons') || '' }}
                 </td>
                 <td>
-                  {{ getSum('lessons_planned') }}
+                  {{ getSum('lessons_planned') || '' }}
                 </td>
                 <td>
-                  {{ programSum }}
+                  {{ programSum || '' }}
                 </td>
                 <td />
               </tr>
@@ -405,7 +405,7 @@ defineExpose({ edit, createContract, addVersion })
 
         <div class="dialog-section">
           <table class="dialog-table contract-version-dialog__paymentss">
-            <thead>
+            <thead v-if="item.payments.length">
               <tr>
                 <th width="400">
                   номер
@@ -414,7 +414,7 @@ defineExpose({ edit, createContract, addVersion })
                   дата
                 </th>
                 <th width="180">
-                  сумма
+                  сумма, руб.
                 </th>
                 <th />
               </tr>
@@ -468,7 +468,7 @@ defineExpose({ edit, createContract, addVersion })
                 </td>
                 <td />
                 <td>
-                  {{ paymentSum }}
+                  {{ paymentSum || '' }}
                 </td>
               </tr>
             </tbody>

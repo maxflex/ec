@@ -56,7 +56,7 @@ export function selectItems(obj: object, skip: string[] = []): SelectItems {
   return items
 }
 
-export function yesNo(yesLabel: string, noLabel: string): SelectItems {
+export function yesNo(yesLabel: string = 'да', noLabel: string = 'нет'): SelectItems {
   return selectItems({
     1: yesLabel,
     0: noLabel,

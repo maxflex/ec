@@ -28,6 +28,9 @@ export default function<T, F extends object>(apiUrl: string, defaultFilters: F =
 
   function onFiltersApply(f: F) {
     filters = f
+    if (scrollContainer) {
+      scrollContainer.scrollTop = 0
+    }
     reloadData()
   }
 

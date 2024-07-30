@@ -799,7 +799,14 @@ declare global {
   }
 
   interface SwampListResource {
-    id: number
+    id: string
+    client: PersonResource
+    program: Program
+    year: Year
+    group_id: number | null
+    contract_id: number
+    is_closed: boolean
+    contract_version_program_id: number | null
   }
 }
 

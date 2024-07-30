@@ -72,10 +72,16 @@ class Controller extends BaseController
         $query->where(DB::raw($this->getFieldName($field)), $value);
     }
 
-    protected function filterNotNull(string $field, $value, &$query)
+    protected function filterNull(&$query, $value, $field)
     {
-        $query->whereNotNull($this->getFieldName($field));
+        $field = $this->getFieldName($field);
+        $value ? $query->whereNotNull($field) : $query->whereNull($field);
     }
+
+    // protected function filterNotNull(string $field, $value, &$query)
+    // {
+    //     $query->whereNotNull($this->getFieldName($field));
+    // }
 
     protected function filterFindInSet(&$query, $values, $field)
     {
@@ -115,6 +121,6 @@ class Controller extends BaseController
             }
         }
 
-        return "`" . $field . "`";
+        return $field;
     }
 }

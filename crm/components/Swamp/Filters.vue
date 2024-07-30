@@ -2,6 +2,8 @@
 export interface Filters {
   year: Year
   program?: Program
+  group_id?: boolean
+  is_closed?: boolean
 }
 
 const emit = defineEmits<{
@@ -32,6 +34,22 @@ watch(filters.value, () => {
         v-model="filters.program"
         label="Программа"
         :items="selectItems(ProgramLabel)"
+        density="comfortable"
+      />
+    </div>
+    <div>
+      <UiClearableSelect
+        v-model="filters.group_id"
+        label="В группе"
+        :items="yesNo()"
+        density="comfortable"
+      />
+    </div>
+    <div>
+      <UiClearableSelect
+        v-model="filters.is_closed"
+        label="Расторгнут"
+        :items="yesNo()"
         density="comfortable"
       />
     </div>

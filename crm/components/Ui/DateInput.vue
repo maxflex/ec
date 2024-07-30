@@ -87,6 +87,7 @@ function setToday() {
   }
   &__today {
     padding-left: 16px;
+    font-size: 14px;
   }
 }
 </style>
