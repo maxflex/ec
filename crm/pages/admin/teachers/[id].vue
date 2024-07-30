@@ -26,12 +26,6 @@ const groupFilters = ref<{ year: Year }>({
 const reportFilters = ref<Filters>({
   year: currentAcademicYear(),
 })
-const paymentFilters = ref<{ year: Year }>({
-  year: currentAcademicYear(),
-})
-const serviceFilters = ref<{ year: Year }>({
-  year: currentAcademicYear(),
-})
 const instructionFilters = ref<InstructionFilters>({})
 // const reviewFilters = ref<{ year?: Year }>({})
 
@@ -158,36 +152,7 @@ nextTick(loadData)
         <ReportList :items="items" />
       </template>
     </UiDataLoader>
-    <UiDataLoader
-      v-else-if="selectedTab === 'payments'"
-      :key="`payments${paymentFilters.year}`"
-      url="teacher-payments"
-      :filters="{
-        teacher_id: teacher.id,
-        ...paymentFilters,
-      }"
-    >
-      <template #filters>
-        <div class="filters">
-          <div class="filters-inputs">
-            <div>
-              <v-select
-                v-model="paymentFilters.year"
-                label="Учебный год"
-                :items="selectItems(YearLabel)"
-                density="comfortable"
-              />
-            </div>
-          </div>
-        </div>
-      </template>
-      <template #default="{ items }">
-        <TeacherPaymentList
-          :items="items"
-          :teacher-id="teacher.id"
-        />
-      </template>
-    </UiDataLoader>
+
     <UiDataLoader
       v-else-if="selectedTab === 'reviews'"
       url="client-reviews"
@@ -225,33 +190,8 @@ nextTick(loadData)
         <InstructionTeacherList :items="items" />
       </template>
     </UiDataLoader>
-    <UiDataLoader
-      v-else-if="selectedTab === 'services'"
-      :key="JSON.stringify(serviceFilters)"
-      url="teacher-services"
-      :filters="{
-        teacher_id: teacher.id,
-        ...serviceFilters,
-      }"
-    >
-      <template #filters>
-        <div class="filters">
-          <div class="filters-inputs">
-            <div>
-              <v-select
-                v-model="serviceFilters.year"
-                label="Учебный год"
-                :items="selectItems(YearLabel)"
-                density="comfortable"
-              />
-            </div>
-          </div>
-        </div>
-      </template>
-      <template #default="{ items }">
-        <TeacherServiceList :items="items" :teacher-id="teacher.id" />
-      </template>
-    </UiDataLoader>
+    <TeacherPaymentTab v-else-if="selectedTab === 'payments'" :teacher-id="teacher.id" />
+    <TeacherServiceTab v-else-if="selectedTab === 'services'" :teacher-id="teacher.id" />
     <BalanceList
       v-else
       :id="teacher.id"

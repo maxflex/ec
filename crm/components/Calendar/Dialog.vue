@@ -2,7 +2,7 @@
 const { year } = defineProps<{
   year?: Year
 }>()
-const { dialog, width, transition } = useDialog('medium')
+const { dialog, width, transition } = useDialog('small')
 const model = defineModel<string>()
 const monthLabels = [
   'январь',
@@ -139,7 +139,7 @@ defineExpose({ open })
 .calendar {
   display: flex;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
   margin-top: 40px;
   color: black;
   gap: 30px 50px;

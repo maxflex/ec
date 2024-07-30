@@ -23,10 +23,11 @@ function open(c: TeacherServiceResource) {
   dialog.value = true
 }
 
-function create(teacherId: number) {
+function create(teacherId: number, year: Year) {
   itemId.value = undefined
   open({
     ...modelDefaults,
+    year,
     teacher_id: teacherId,
   })
   nextTick(() => {
@@ -126,7 +127,7 @@ defineExpose({ create, edit })
           />
         </div>
         <div>
-          <UiDateInput v-model="item.date" />
+          <UiDateInput v-model="item.date" today-btn />
         </div>
 
         <div>
