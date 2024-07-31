@@ -31,6 +31,7 @@ class InstructionTeacherResource extends JsonResource
             ], [
                 'signed_at' => $v->getSignedAt(auth()->id())
             ])),
+            'is_first_version' => $this->getIsFirstVersion(auth()->id()),
             'signed_at' => $this->getSignedAt(auth()->id())
         ]);
     }

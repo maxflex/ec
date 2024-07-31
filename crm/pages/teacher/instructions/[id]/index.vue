@@ -37,7 +37,8 @@ nextTick(loadData)
             variant="plain"
             :icon="mdiContentCopy"
             :size="48"
-            :disabled="instruction.versions[0].id === instruction.id"
+            :disabled="instruction.is_first_version"
+            :ripple="false"
             :to="{
               name: 'instructions-id-diff',
               params: {

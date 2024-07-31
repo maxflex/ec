@@ -17,13 +17,13 @@ const { items } = defineProps<{
         {{ item.title }}
       </div>
       <div style="width: 250px">
-        <v-chip v-if="item.signed_at" class="text-success">
+        <v-chip v-if="item.signed_at" color="success">
           подписано {{ formatDateTime(item.signed_at) }}
         </v-chip>
-        <v-chip v-else-if="!item.is_last_version">
+        <v-chip v-else-if="!item.is_last_version" color="gray">
           архив
         </v-chip>
-        <v-chip v-else class="text-error">
+        <v-chip v-else color="error">
           не подписано
         </v-chip>
       </div>

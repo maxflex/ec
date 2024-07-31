@@ -793,6 +793,7 @@ declare global {
     title: string
     text: string
     is_last_version: boolean
+    is_first_version: boolean
     versions: Array<{
       id: number
       created_at: string

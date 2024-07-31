@@ -147,12 +147,28 @@ class Instruction extends Model
             ->count();
     }
 
+    /**
+     * Используется преподами
+     */
     public function getIsLastVersionAttribute()
     {
         return !$this->versions()
+            ->published()
             ->where('id', '>', $this->id)
             ->exists();
     }
+
+    /**
+     * Используется преподами
+     */
+    public function getIsFirstVersion(int $teacherId)
+    {
+        return !Instruction::queryForTeacher($teacherId)
+            ->where('entry_id', $this->entry_id)
+            ->where('instructions.id', '<', $this->id)
+            ->exists();
+    }
+
 
     public function getSignedAt(int $teacherId)
     {
