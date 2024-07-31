@@ -748,7 +748,7 @@ declare global {
     id: number
     is_published: boolean
     title: string
-    text: string | null
+    text: string
     entry_id?: number
   }
 

@@ -1,43 +1,8 @@
 <script setup lang="ts">
-import ImageUploader from 'quill-image-uploader'
-import BlotFormatter from 'quill-blot-formatter'
-
-const QuillEditor = defineAsyncComponent({
-  loader: () =>
-    import('@vueup/vue-quill').then(VueQuill => VueQuill.QuillEditor),
-})
-
-const modules = [
-  {
-    name: 'imageUploader',
-    module: ImageUploader,
-    options: {
-      upload: async (photo: Blob) => {
-        const formData = new FormData()
-        formData.append('photo', photo)
-        const { data } = await useHttp<{ name: string }>(
-          `photos/upload`,
-          {
-            method: 'post',
-            body: formData,
-          },
-        )
-        if (data.value) {
-          return data.value.name
-        }
-      },
-    },
-  },
-  {
-    name: 'blotFormatter',
-    module: BlotFormatter,
-  },
-]
-
 const modelDefaults: InstructionBaseResource = {
   id: newId(),
   title: '',
-  text: null,
+  text: '',
   is_published: false,
 }
 const titleInput = ref()
@@ -143,16 +108,7 @@ nextTick(loadData)
       </div>
     </div>
     <div>
-      <QuillEditor
-        v-model:content="item.text"
-        theme="snow"
-        content-type="html"
-        :modules="modules"
-        :toolbar="[
-          [{ header: 1 }, 'bold', 'italic', 'underline'],
-          [{ list: 'bullet' }, { list: 'ordered' }],
-        ]"
-      />
+      <InstructionWysiwyg v-model="item.text" />
     </div>
   </div>
 </template>

@@ -958,3 +958,8 @@
 .blot-formatter__toolbar {
   display: none !important;
 }
+
+.image-uploading:before {
+  content: none !important;
+  display: none !important;
+}
