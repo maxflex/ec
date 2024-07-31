@@ -617,8 +617,11 @@
   overflow: visible;
 }
 .ql-snow .ql-editor img {
-  max-width: 100%;
+  max-width: min(100%, 1000px) !important;
+  cursor: default !important;
+  border-radius: 8px;
 }
+
 .ql-snow .ql-picker {
   color: #4b5563;
   display: inline-block;
@@ -950,4 +953,8 @@
 }
 .ql-toolbar {
   border-radius: 4px 4px 0 0;
+}
+
+.blot-formatter__toolbar {
+  display: none !important;
 }

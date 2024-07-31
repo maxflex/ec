@@ -1,8 +1,38 @@
 <script setup lang="ts">
+import ImageUploader from 'quill-image-uploader'
+import BlotFormatter from 'quill-blot-formatter'
+
 const QuillEditor = defineAsyncComponent({
   loader: () =>
     import('@vueup/vue-quill').then(VueQuill => VueQuill.QuillEditor),
 })
+
+const modules = [
+  {
+    name: 'imageUploader',
+    module: ImageUploader,
+    options: {
+      upload: async (photo: Blob) => {
+        const formData = new FormData()
+        formData.append('photo', photo)
+        const { data } = await useHttp<{ name: string }>(
+          `photos/upload`,
+          {
+            method: 'post',
+            body: formData,
+          },
+        )
+        if (data.value) {
+          return data.value.name
+        }
+      },
+    },
+  },
+  {
+    name: 'blotFormatter',
+    module: BlotFormatter,
+  },
+]
 
 const modelDefaults: InstructionBaseResource = {
   id: newId(),
@@ -52,7 +82,7 @@ async function save() {
         method: 'put',
         body: item.value,
       })
-      setTimeout(() => saving.value = false, 200)
+      setTimeout(() => (saving.value = false), 200)
   }
 }
 
@@ -77,7 +107,9 @@ async function loadData() {
     setTimeout(() => titleInput?.value.focus(), 50)
   }
   else {
-    const { data } = await useHttp<InstructionResource>(`instructions/${route.params.id}`)
+    const { data } = await useHttp<InstructionResource>(
+      `instructions/${route.params.id}`,
+    )
     item.value = data.value as InstructionResource
   }
   loading.value = false
@@ -107,12 +139,7 @@ nextTick(loadData)
           class="remove-btn"
           @click="destroy()"
         />
-        <v-btn
-          icon="$save"
-          :size="48"
-          :loading="saving"
-          @click="save()"
-        />
+        <v-btn icon="$save" :size="48" :loading="saving" @click="save()" />
       </div>
     </div>
     <div>
@@ -120,6 +147,7 @@ nextTick(loadData)
         v-model:content="item.text"
         theme="snow"
         content-type="html"
+        :modules="modules"
         :toolbar="[
           [{ header: 1 }, 'bold', 'italic', 'underline'],
           [{ list: 'bullet' }, { list: 'ordered' }],

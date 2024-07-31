@@ -32,6 +32,18 @@ class Photo extends Model
         return Storage::put($name, $file);
     }
 
+    /**
+     * Свободная загрузка.
+     * Используется в загрузке фоток в инструкции
+     */
+    public static function arbitraryUpload(UploadedFile $file)
+    {
+        $file = Image::make($file)->stream('jpg');
+        $fileName = uniqid('instruction_') . ".jpg";
+        Storage::put(join('/', ['photos', $fileName]), $file);
+        return cdn('photos', $fileName);
+    }
+
     public function deleteFromCdn()
     {
         $name = join('/', ['photos', $this->id . ".jpg"]);
