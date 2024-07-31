@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { mdiContentCopy } from '@mdi/js'
-import type { InstructionDialog } from '#build/components'
 
 const route = useRoute()
 const instruction = ref<InstructionResource>()
-const instructionDialog = ref<InstanceType<typeof InstructionDialog>>()
 
 async function loadData() {
   const { data } = await useHttp<InstructionResource>(`instructions/${route.params.id}`)
@@ -25,20 +23,21 @@ nextTick(loadData)
             :icon="mdiContentCopy"
             :size="48"
             :disabled="instruction.versions[0].id === instruction.id"
+            :ripple="false"
             :to="{
-              name: 'instructions-diff-id',
+              name: 'instructions-id-diff',
               params: {
                 id: instruction.id,
               },
             }"
           />
-          <!--     -->
           <v-btn
             variant="plain"
             icon="$edit"
             :size="48"
+            :ripple="false"
             :to="{
-              name: 'instructions-edit-id',
+              name: 'instructions-id-edit',
               params: {
                 id: instruction.id,
               },
@@ -95,19 +94,23 @@ nextTick(loadData)
           </div>
         </RouterLink>
         <div>
-          <a
+          <NuxtLink
             class="link-icon"
-            @click="instructionDialog?.addVersion(instruction!)"
+            :to="{
+              name: 'instructions-id-new-version',
+              params: {
+                id: instruction!.id,
+              },
+            }"
           >
             добавить версию
             <v-icon
               :size="16"
               icon="$next"
             />
-          </a>
+          </NuxtLink>
         </div>
       </div>
     </div>
   </div>
-  <InstructionDialog ref="instructionDialog" @updated="i => (instruction = i)" />
 </template>

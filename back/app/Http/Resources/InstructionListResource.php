@@ -16,7 +16,8 @@ class InstructionListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'title', 'versions_count', 'signs_count', 'created_at'
+            'title', 'versions_count', 'signs_count', 'created_at',
+            'is_published'
         ], [
             'signs_needed' => Teacher::active()->count(),
             'signed_at' => $this->whenLoaded(

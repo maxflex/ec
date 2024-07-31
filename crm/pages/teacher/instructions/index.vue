@@ -1,16 +1,10 @@
 <script setup lang="ts">
-import type { Filters } from '~/components/Instruction/Filters.vue'
-
-const { items, loading, onFiltersApply } = useIndex<InstructionTeacherResource, Filters>(
+const { items, loading } = useIndex<InstructionTeacherResource>(
   `instructions`,
 )
 </script>
 
 <template>
-  <div class="filters">
-    <InstructionFilters @apply="onFiltersApply" />
-    <div />
-  </div>
   <div>
     <UiLoader3 :loading="loading" />
     <InstructionTeacherList :items="items" />

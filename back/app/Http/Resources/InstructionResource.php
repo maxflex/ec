@@ -30,7 +30,7 @@ class InstructionResource extends JsonResource
         }
 
         return extract_fields($this, [
-            'title', 'text', 'entry_id'
+            'title', 'text', 'entry_id', 'is_published'
         ], [
             'versions' => $versions->map(fn ($v) => extract_fields($v, [
                 'title', 'created_at', 'signed_at', 'signs_count'

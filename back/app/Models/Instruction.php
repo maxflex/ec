@@ -11,7 +11,11 @@ use Jfcherng\Diff\{DiffHelper, Differ};
 class Instruction extends Model
 {
     protected $fillable = [
-        'title', 'text', 'entry_id'
+        'title', 'text', 'entry_id', 'is_published'
+    ];
+
+    protected $casts = [
+        'is_published' => 'boolean'
     ];
 
     public function signs()

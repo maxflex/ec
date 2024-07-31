@@ -5,6 +5,7 @@ export default antfu({
 }).overrideRules({
   'no-console': 'off',
   'no-alert': 'off',
+  'no-case-declarations': 'off',
   'ts/ban-ts-comment': 'off',
   'eslint-comments/no-unlimited-disable': 'off',
   // '@typescript-eslint/ban-ts-comment': 'off',

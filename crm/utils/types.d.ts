@@ -746,6 +746,7 @@ declare global {
 
   interface InstructionBaseResource {
     id: number
+    is_published: boolean
     title: string
     text: string | null
     entry_id?: number
@@ -773,6 +774,7 @@ declare global {
   interface InstructionListResource {
     id: number
     title: string
+    is_published: boolean
     versions_count: number
     signs_count: number
     signs_needed: number

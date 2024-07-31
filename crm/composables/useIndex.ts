@@ -1,4 +1,7 @@
-export default function<T, F extends object>(apiUrl: string, defaultFilters: F = {} as F) {
+export default function<T, F extends object | undefined = undefined>(
+  apiUrl: string,
+  defaultFilters: F = {} as F,
+) {
   const loading = ref(false)
   const items = ref<T[]>([]) as Ref<T[]>
   let filters: F = defaultFilters

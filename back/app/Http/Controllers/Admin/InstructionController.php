@@ -70,9 +70,9 @@ class InstructionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Instruction $instruction)
     {
-        //
+        $instruction->delete();
     }
 
     protected function filterSigned(&$query, $value)
