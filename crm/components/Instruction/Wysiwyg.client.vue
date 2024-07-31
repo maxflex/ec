@@ -2,6 +2,7 @@
 import { QuillEditor } from '@vueup/vue-quill'
 import ImageUploader from 'quill-image-uploader'
 import BlotFormatter from 'quill-blot-formatter/dist/BlotFormatter'
+import 'quill-image-uploader/dist/quill.imageUploader.min.css'
 
 const text = defineModel<string>()
 
