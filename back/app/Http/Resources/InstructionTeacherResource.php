@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Instruction;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,8 +16,22 @@ class InstructionTeacherResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $versions = Instruction::query()
+            ->published()
+            ->where('entry_id', $this->entry_id)
+            ->get()
+            ->sortBy('created_at')
+            ->values();
+
         return extract_fields($this, [
-            'title', 'created_at', 'signed_at'
+            'title', 'text', 'is_last_version'
+        ], [
+            'versions' => $versions->map(fn ($v) => extract_fields($v, [
+                'title', 'created_at', 'is_last_version'
+            ], [
+                'signed_at' => $v->getSignedAt(auth()->id())
+            ])),
+            'signed_at' => $this->getSignedAt(auth()->id())
         ]);
     }
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { items, loading } = useIndex<InstructionTeacherResource>(
+const { items, loading } = useIndex<InstructionTeacherListResource>(
   `instructions`,
 )
 </script>

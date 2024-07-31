@@ -754,7 +754,6 @@ declare global {
 
   interface InstructionResource extends InstructionBaseResource {
     entry_id: number
-    signed_at?: string // есть только у преподов
     teachers: Array<PersonWithPhotoResource & {
       signed_at: string | null
     }>
@@ -767,7 +766,6 @@ declare global {
       id: number
       created_at: string
       signs_count: number
-      signed_at: string | null
     }>
   }
 
@@ -781,11 +779,26 @@ declare global {
     created_at: string
   }
 
-  interface InstructionTeacherResource {
+  interface InstructionTeacherListResource {
     id: number
     title: string
     created_at: string
     signed_at: string | null
+    is_last_version: boolean
+  }
+
+  interface InstructionTeacherResource {
+    id: number
+    signed_at: string | null
+    title: string
+    text: string
+    is_last_version: boolean
+    versions: Array<{
+      id: number
+      created_at: string
+      is_last_version: boolean
+      signed_at: string | null
+    }>
   }
 
   interface InstructionDiffResource {

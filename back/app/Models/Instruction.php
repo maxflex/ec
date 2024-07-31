@@ -77,6 +77,11 @@ class Instruction extends Model
             );
     }
 
+    public function scopePublished($query)
+    {
+        $query->where('is_published', true);
+    }
+
     public function getDiff($teacherId = null)
     {
         $prev = $this->versions()
@@ -140,5 +145,17 @@ class Instruction extends Model
         return $this->versions()
             ->where('id', '<=', $this->id)
             ->count();
+    }
+
+    public function getIsLastVersionAttribute()
+    {
+        return !$this->versions()
+            ->where('id', '>', $this->id)
+            ->exists();
+    }
+
+    public function getSignedAt(int $teacherId)
+    {
+        return $this->signs()->where('teacher_id', $teacherId)->value('signed_at');
     }
 }

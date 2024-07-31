@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { items } = defineProps<{
-  items: InstructionTeacherResource[]
+  items: InstructionTeacherListResource[]
 }>()
 </script>
 
@@ -20,7 +20,9 @@ const { items } = defineProps<{
         <v-chip v-if="item.signed_at" class="text-success">
           подписано {{ formatDateTime(item.signed_at) }}
         </v-chip>
-
+        <v-chip v-else-if="!item.is_last_version">
+          архив
+        </v-chip>
         <v-chip v-else class="text-error">
           не подписано
         </v-chip>

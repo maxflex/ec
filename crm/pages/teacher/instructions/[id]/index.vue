@@ -3,19 +3,21 @@ import { mdiCheckAll, mdiContentCopy } from '@mdi/js'
 
 const loading = ref(false)
 const route = useRoute()
-const instruction = ref<InstructionResource>()
+const instruction = ref<InstructionTeacherResource>()
+const isArchive = ref(false)
 
 async function loadData() {
-  const { data } = await useHttp<InstructionResource>(`instructions/${route.params.id}`)
-  instruction.value = data.value as InstructionResource
+  const { data } = await useHttp<InstructionTeacherResource>(`instructions/${route.params.id}`)
+  instruction.value = data.value as InstructionTeacherResource
+  isArchive.value = !instruction.value.signed_at && !instruction.value.is_last_version
 }
 
 async function sign() {
   loading.value = true
-  const { data } = await useHttp<InstructionResource>(`instructions/sign/${instruction.value?.id}`, {
+  const { data } = await useHttp<InstructionTeacherResource>(`instructions/sign/${instruction.value?.id}`, {
     method: 'post',
   })
-  instruction.value = data.value as InstructionResource
+  instruction.value = data.value as InstructionTeacherResource
 }
 
 nextTick(loadData)
@@ -27,13 +29,17 @@ nextTick(loadData)
       <h1>
         {{ instruction.title }}
         <div>
+          <v-chip v-if="isArchive" color="gray">
+            архив
+          </v-chip>
           <v-btn
+            v-else
             variant="plain"
             :icon="mdiContentCopy"
             :size="48"
             :disabled="instruction.versions[0].id === instruction.id"
             :to="{
-              name: 'instructions-diff-id',
+              name: 'instructions-id-diff',
               params: {
                 id: instruction.id,
               },
@@ -46,7 +52,7 @@ nextTick(loadData)
           <div v-html="instruction.text" />
         </div>
       </div>
-      <div class="instruction__sign">
+      <div v-if="!isArchive" class="instruction__sign">
         <v-btn v-if="instruction.signed_at" color="success" size="x-large" :width="400" disabled @click="sign()">
           <v-icon :icon="mdiCheckAll" :size="20" class="mr-2" />
           Подписано {{ formatDateTime(instruction.signed_at) }}
@@ -77,6 +83,9 @@ nextTick(loadData)
           <div v-if="v.signed_at" class="text-success">
             <v-icon :icon="mdiCheckAll" :size="16" class="mr-1" />
             подписано
+          </div>
+          <div v-else-if="!v.is_last_version" class="text-gray">
+            архив
           </div>
           <div v-else class="text-error">
             не подписано

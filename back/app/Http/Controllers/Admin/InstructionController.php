@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InstructionListResource;
 use App\Http\Resources\InstructionResource;
-use App\Http\Resources\InstructionTeacherResource;
+use App\Http\Resources\InstructionTeacherListResource;
 use App\Models\Instruction;
 use Illuminate\Http\Request;
 
@@ -23,7 +23,7 @@ class InstructionController extends Controller
 
         if ($request->has('teacher_id')) {
             $query = Instruction::queryForTeacher($request->teacher_id);
-            $resource = InstructionTeacherResource::class;
+            $resource = InstructionTeacherListResource::class;
         } else {
             $query = Instruction::query()
                 ->lastVersions()
