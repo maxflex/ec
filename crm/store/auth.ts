@@ -24,6 +24,7 @@ export const useAuthStore = defineStore('auth', () => {
       setTimeout(() => window.location.href = '/')
     }
     else {
+      previewToken.value = undefined
       token.value = t
       // если не учитель, сохраняем в remember me
       if (u.entity_type !== EntityType.teacher) {
