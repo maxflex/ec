@@ -275,6 +275,16 @@ export const RequestStatusLabel = {
   finished: 'выполненные',
 } as const
 
+export const WeekdayLabel = {
+  0: 'пн',
+  1: 'вт',
+  2: 'ср',
+  3: 'чт',
+  4: 'пт',
+  5: 'сб',
+  6: 'вс',
+} as const
+
 export const LessonStatusLabel = {
   planned: 'планируется',
   conducted: 'проведено',

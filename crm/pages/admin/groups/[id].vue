@@ -57,6 +57,12 @@ nextTick(loadData)
             {{ group.zoom?.id || 'не установлено' }}
           </div>
         </div>
+        <div>
+          <div class="mb-1">
+            расписание
+          </div>
+          <Teeth :items="group.teeth" />
+        </div>
         <div class="panel-actions">
           <v-btn
             icon="$edit"

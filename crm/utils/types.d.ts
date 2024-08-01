@@ -1,6 +1,8 @@
 declare global {
   type TelegramTemplate = keyof typeof TelegramTemplateLabel
 
+  type Weekday = keyof typeof WeekdayLabel
+
   type Exam = keyof typeof ExamLabel
 
   type ClientTestStatus = keyof typeof ClientTestStatusLabel
@@ -290,6 +292,7 @@ declare global {
     duration?: number
     zoom: Zoom | null
     contracts: ContractResource[]
+    teeth: Teeth
     created_at?: string
   }
 
@@ -823,6 +826,17 @@ declare global {
     contract_id: number
     is_closed: boolean
     contract_version_program_id: number | null
+  }
+
+  interface Tooth {
+    left: number
+    width: number
+    time: string
+    time_end: string
+  }
+
+  interface Teeth {
+    [key: number]: Tooth[]
   }
 }
 

@@ -39,7 +39,8 @@ const colors = {
   gray: '#949db1',
   error: '#eb4432',
   red: '#eb4432',
-  bg: '#fafafa',
+  bg: '#fafafa', // очень светлый серый
+  bg2: '#e0e0e0', // просто серый
 }
 
 const myTheme: ThemeDefinition = {

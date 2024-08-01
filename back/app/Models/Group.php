@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Program;
+use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
@@ -77,5 +78,13 @@ class Group extends Model
                     )
             )
             ->get();
+    }
+
+    /**
+     * Получить "зубы" группы
+     */
+    public function getTeeth()
+    {
+        return Teeth::get($this->lessons()->getQuery());
     }
 }

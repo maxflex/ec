@@ -2,7 +2,7 @@
 import { clone } from 'rambda'
 
 interface BatchItem {
-  weekdays: { [key: number]: string }
+  weekdays: { [key in Weekday]: string }
   start_date: string
   end_date: string
 }
@@ -18,7 +18,6 @@ const modelDefaults = {
   price: null,
   group_id: 0,
 }
-const dayLabels = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'] as const
 const batchDefaults: BatchItem = {
   weekdays: {
     0: '',
@@ -98,7 +97,7 @@ defineExpose({ create })
         class="dialog-body pt-0"
       >
         <div class="table mb-6">
-          <div v-for="(label, index) in dayLabels" :key="index">
+          <div v-for="(label, index) in WeekdayLabel" :key="index">
             <div
               class="text-uppercase font-weight-medium" style="width: 50px"
               :class="{

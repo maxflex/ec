@@ -14,7 +14,8 @@ class GroupResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return array_merge(parent::toArray($request), [
+        return extract_fields($this, ['*'], [
+            'teeth' => $this->getTeeth(),
             'contracts' => $this->contracts()->with('client.photo')->get()->map(
                 fn ($c) => extract_fields($c, [], [
                     'client' => new PersonWithPhotoResource($c->client)
