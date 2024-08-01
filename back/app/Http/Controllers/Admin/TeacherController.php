@@ -39,6 +39,11 @@ class TeacherController extends Controller
         return new TeacherResource($teacher);
     }
 
+    public function destroy(Teacher $teacher)
+    {
+        $teacher->delete();
+    }
+
     protected function filterSearch(&$query, $value)
     {
         $words = explode(' ', $value);

@@ -2,6 +2,7 @@
 const { items } = defineProps<{
   items: Teeth
 }>()
+
 </script>
 
 <template>

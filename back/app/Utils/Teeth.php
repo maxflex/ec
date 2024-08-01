@@ -6,13 +6,12 @@
 
 namespace App\Utils;
 
-use App\Enums\LessonStatus;
 use Illuminate\Database\Eloquent\Builder;
 
 class Teeth
 {
-    const MIN_SECONDS = 36000; // SEC_TO_TIME = 10:00
-    const MAX_SECONDS = 75600; // SEC_TO_TIME = 21:00
+    const MIN_SECONDS = 37200; // SEC_TO_TIME = 10:20
+    const MAX_SECONDS = 74400; // SEC_TO_TIME = 20:40
 
     /**
      * @param Lesson[] $lessons
