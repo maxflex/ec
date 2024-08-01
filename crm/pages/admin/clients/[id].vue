@@ -228,7 +228,7 @@ nextTick(loadData)
               v-for="swamp in client.swamps"
               :key="swamp.id"
               :swamp="swamp"
-              @attach="(s) => groupSelectorDialog?.open(s.program)"
+              @attach="(s) => groupSelectorDialog?.open(s.program, currentAcademicYear())"
             />
           </div>
         </template>
@@ -278,7 +278,6 @@ nextTick(loadData)
 
 <style lang="scss">
 .client {
-  // padding: 20px;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -287,29 +286,11 @@ nextTick(loadData)
     display: flex;
     flex-direction: column;
     & > div {
-      // padding: 20px;
       height: 100%;
     }
   }
-  // & > div {
-  //   &:not(:first-child) {
-  //     margin-top: 60px;
-  //   }
-  // }
-
-  // .request-list,
-  // .table {
-  //   left: -20px;
-  //   position: relative;
-  //   width: calc(100% + 40px);
-  // }
   .request-list {
-    padding-top: 0 !important;
     flex: 1;
-    // background: red;
-    // & > .request:first-child {
-    //   border-top: 1px solid #e0e0e0;
-    // }
   }
 }
 </style>

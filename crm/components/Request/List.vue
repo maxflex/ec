@@ -111,10 +111,9 @@ function onRequestDeleted(r: RequestResource) {
 <style lang="scss">
 .request {
   background: #fff;
-  border: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
   border-left: none;
   border-right: none;
-  margin-bottom: 24px;
   padding: 20px;
   display: flex;
   position: relative;
@@ -184,11 +183,5 @@ function onRequestDeleted(r: RequestResource) {
 }
 .request-list {
   background: #fafafa;
-  & > .request {
-    &:first-child {
-      border-top: none;
-      // margin-top: 24px;
-    }
-  }
 }
 </style>

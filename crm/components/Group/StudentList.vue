@@ -70,7 +70,7 @@ async function onGroupSelected(g: GroupListResource, c?: ContractResource) {
             />
           </template>
           <v-list>
-            <v-list-item @click="groupSelectorDialog?.open(group.program!, contract)">
+            <v-list-item @click="groupSelectorDialog?.open(group.program!, group.year, contract)">
               <template #prepend>
                 <v-icon :icon="mdiSwapHorizontal" />
               </template>

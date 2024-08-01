@@ -76,12 +76,12 @@ nextTick(loadData)
 <template>
   <div class="filters">
     <RequestFilters @apply="onFiltersApply" />
-    <a
-      class="cursor-pointer"
+    <v-btn
+      color="primary"
       @click="requestDialog?.create()"
     >
       добавить заявку
-    </a>
+    </v-btn>
   </div>
   <div>
     <UiLoader3 :loading="loading" />

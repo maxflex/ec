@@ -110,10 +110,13 @@
       bottom: -14px;
     }
   }
-  .table {
+  .table,
+  .filters {
     left: #{-$paddingX};
     position: relative;
     width: calc(100% + #{$paddingX * 2});
+  }
+  .table {
     & > div {
       padding-left: $paddingX !important;
       position: relative;
@@ -123,6 +126,9 @@
       right: 9px;
       top: 5px;
     }
+  }
+  .filters {
+    padding-left: $paddingX !important;
   }
   .v-checkbox-btn {
     left: -7px;

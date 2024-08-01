@@ -3,13 +3,20 @@ const emit = defineEmits<{
   select: [g: GroupListResource, c?: ContractResource]
 }>()
 const { dialog, width } = useDialog('large')
-const groups = ref<GroupListResource[]>()
+const groups = ref<GroupListResource[]>([])
 const contract = ref<ContractResource>()
+const filters = ref<{
+  year?: Year
+  program?: Program
+}>({})
 
-function open(p: Program, c?: ContractResource) {
+function open(p: Program, y: Year, c?: ContractResource) {
   dialog.value = true
   contract.value = c
-  loadGroups(p)
+  filters.value = {
+    year: y,
+    program: p,
+  }
 }
 
 function onSelect(g: GroupListResource) {
@@ -17,16 +24,19 @@ function onSelect(g: GroupListResource) {
   emit('select', g, contract.value)
 }
 
-async function loadGroups(p: Program) {
-  const { data } = await useHttp<ApiResponse<GroupListResource[]>>('groups', {
-    params: {
-      program: p,
+async function loadData() {
+  const { data } = await useHttp<ApiResponse<GroupListResource[]>>(
+    'groups',
+    {
+      params: filters.value,
     },
-  })
+  )
   if (data.value) {
     groups.value = data.value.data
   }
 }
+
+watch(filters, loadData, { deep: true })
 
 defineExpose({ open })
 </script>
@@ -41,21 +51,23 @@ defineExpose({ open })
         Выберите группу
       </div>
       <div class="dialog-body pt-0">
-        <v-fade-transition>
-          <div
-            v-if="!groups"
-            class="dialog-loader"
-          >
-            <v-progress-circular
-              :size="50"
-              indeterminate
+        <div class="filters">
+          <div class="filters-inputs">
+            <v-select
+              v-model="filters.year"
+              label="Учебный год"
+              :items="selectItems(YearLabel)"
+              density="comfortable"
+            />
+            <UiClearableSelect
+              v-model="filters.program"
+              label="Программа"
+              :items="selectItems(ProgramLabel)"
+              density="comfortable"
             />
           </div>
-        </v-fade-transition>
-        <div
-          v-if="groups"
-          class="table table--hover table--padding"
-        >
+        </div>
+        <div class="table table--hover table--padding">
           <GroupList
             :items="groups"
             selectable
