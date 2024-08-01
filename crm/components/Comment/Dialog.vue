@@ -182,7 +182,7 @@ defineExpose({ open })
       top: 2px;
       position: relative;
       padding: 15px 8px 0 !important;
-      &::-webkit-scrollbar {
+      &:-webkit-scrollbar {
         width: 0; /** webkit */
       }
     }
@@ -197,7 +197,7 @@ defineExpose({ open })
       z-index: 10;
     }
     &--no-scroll {
-      &::-webkit-scrollbar {
+      &:-webkit-scrollbar {
         display: none;
       }
     }

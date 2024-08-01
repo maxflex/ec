@@ -126,7 +126,7 @@ defineExpose({ open })
 <style lang="scss">
 .test-dialog {
   &__questions {
-    &::-webkit-scrollbar {
+    &:-webkit-scrollbar {
       display: none;
     }
     flex: 1;
