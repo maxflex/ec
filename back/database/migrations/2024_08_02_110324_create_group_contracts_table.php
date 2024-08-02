@@ -20,9 +20,6 @@ return new class extends Migration
             $table->foreignIdFor(Contract::class)->constrained();
             $table->unique(['group_id', 'contract_id']);
         });
-        $data = DB::table('contract_group')->get();
-        DB::table('group_contracts')->insert($data->map(fn ($d) => (array) $d)->all());
-        Schema::dropIfExists('contract_group');
     }
 
     /**
