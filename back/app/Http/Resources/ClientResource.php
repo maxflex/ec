@@ -21,6 +21,7 @@ class ClientResource extends JsonResource
             'user' => new PersonResource($this->user),
             'parent' => new ParentResource($this->parent),
             'phones' => PhoneListResource::collection($this->phones),
+            'teeth' => $this->getTeeth(),
 
             // remove
             'groups' => GroupResource::collection($this->groups),

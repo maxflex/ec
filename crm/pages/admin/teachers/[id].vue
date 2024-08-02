@@ -134,7 +134,9 @@ nextTick(loadData)
       v-else-if="selectedTab === 'schedule'"
       :id="teacher.id"
       entity="teacher"
-    />
+    >
+      <Teeth :items="teacher.teeth!" />
+    </LessonList>
     <UiDataLoader
       v-else-if="selectedTab === 'reports'"
       url="reports"

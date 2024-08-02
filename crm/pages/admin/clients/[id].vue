@@ -197,7 +197,11 @@ nextTick(loadData)
         v-else-if="selectedTab === 'schedule'"
         :id="client.id"
         entity="client"
-      />
+      >
+        <div>
+          <Teeth :items="client.teeth!" />
+        </div>
+      </LessonList>
       <UiDataLoader
         v-else-if="selectedTab === 'groups'"
         :key="`groups${groupFilters.year}`"

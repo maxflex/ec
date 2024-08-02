@@ -173,6 +173,8 @@ nextTick(loadData)
         </v-list>
       </v-menu>
     </div>
+
+    <slot />
   </div>
   <UiLoaderr v-if="loading" />
   <div v-else class="lesson-list">

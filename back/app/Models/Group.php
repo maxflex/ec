@@ -35,6 +35,11 @@ class Group extends Model
         );
     }
 
+    public function groupContracts()
+    {
+        return $this->hasMany(GroupContract::class);
+    }
+
     public function lessons()
     {
         return $this->hasMany(Lesson::class);

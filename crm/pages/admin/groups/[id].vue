@@ -61,7 +61,7 @@ nextTick(loadData)
           <div class="mb-1">
             расписание
           </div>
-          <Teeth :items="group.teeth" />
+          <Teeth :items="group.teeth!" />
         </div>
         <div class="panel-actions">
           <v-btn

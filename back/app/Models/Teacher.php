@@ -7,6 +7,7 @@ use App\Traits\HasName;
 use App\Traits\HasPhones;
 use App\Traits\HasPhoto;
 use App\Traits\RelationSyncable;
+use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -154,5 +155,12 @@ class Teacher extends Model
             ->get();
 
         return $schedule->unique(fn ($l) => $l->id);
+    }
+
+    public function getTeeth()
+    {
+        $query = Lesson::query()
+            ->where('teacher_id', $this->id);
+        return Teeth::get($query);
     }
 }

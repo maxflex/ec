@@ -17,6 +17,7 @@ class TeacherResource extends JsonResource
         return array_merge(parent::toArray($request), [
             'photo_url' => $this->photo_url,
             'payments' => $this->payments,
+            'teeth' => $this->getTeeth(),
             'phones' => PhoneListResource::collection($this->phones),
         ]);
     }

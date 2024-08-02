@@ -56,7 +56,7 @@ nextTick(loadData)
     class="table table--actions-on-hover"
   >
     <div v-for="item in items" :key="item.id">
-      <div style="width: 300px">
+      <div style="width: 230px">
         <UiAvatar :item="item.client" :size="38" class="mr-4" />
         <NuxtLink
           class="vf-1"
@@ -67,6 +67,9 @@ nextTick(loadData)
         >
           {{ formatName(item.client) }}
         </NuxtLink>
+      </div>
+      <div>
+        <Teeth :items="item.teeth" />
       </div>
       <div class="text-left table-actions">
         <v-menu>
@@ -113,5 +116,9 @@ nextTick(loadData)
     ref="groupSelectorDialog"
     @select="onGroupSelected"
   />
-  <GroupAddStudentDialog ref="groupAddStudentDialog" :group="group" @updated="loadData" />
+  <GroupAddStudentDialog
+    ref="groupAddStudentDialog"
+    :group="group"
+    @updated="loadData"
+  />
 </template>

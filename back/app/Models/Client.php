@@ -7,6 +7,7 @@ use App\Traits\HasPhones;
 use App\Traits\HasPhoto;
 use App\Traits\HasTelegramMessages;
 use App\Traits\RelationSyncable;
+use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -46,9 +47,9 @@ class Client extends Model
     public function getGroupsAttribute()
     {
         return Group::whereHas(
-            'contracts',
-            fn ($q) => $q->whereIn('id', $this->contracts()->pluck('id'))
-        );
+            'groupContracts',
+            fn ($q) => $q->whereIn('contract_id', $this->contracts()->pluck('id'))
+        )->get();
     }
 
     /**
@@ -129,5 +130,13 @@ class Client extends Model
         }
 
         return $schedule;
+    }
+
+    public function getTeeth()
+    {
+        $query = Lesson::query()
+            ->join('group_contracts as gc', 'gc.group_id', '=', 'lessons.group_id')
+            ->whereIn('gc.contract_id', $this->contracts()->pluck('id'));
+        return Teeth::get($query);
     }
 }

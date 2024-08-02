@@ -175,6 +175,7 @@ declare global {
     head_teacher_id: number | null
     parent: ParentResource
     user?: PersonResource
+    teeth?: Teeth
   }
 
   interface CommentResource {
@@ -368,6 +369,7 @@ declare global {
     passport_code?: string
     passport_issued_by?: string
     so?: number
+    teeth?: Teeth
     created_at?: string
   }
 
@@ -841,6 +843,7 @@ declare global {
   interface GroupContractResource {
     id: number
     contract_id: number
+    teeth: Teeth
     client: PersonWithPhotoResource
   }
 }
