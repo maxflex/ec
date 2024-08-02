@@ -69,7 +69,7 @@ nextTick(loadData)
         </NuxtLink>
       </div>
       <div>
-        <Teeth :items="item.teeth" />
+        <Teeth :items="item.teeth" :current="group.teeth!" />
       </div>
       <div class="text-left table-actions">
         <v-menu>

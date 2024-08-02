@@ -33,12 +33,6 @@ nextTick(loadData)
     <div class="panel">
       <div class="panel-info">
         <div>
-          <div>группа</div>
-          <div>
-            номер {{ group.id }}
-          </div>
-        </div>
-        <div>
           <div>учебный год</div>
           <div v-if="group.year">
             {{ YearLabel[group.year] }}
@@ -48,13 +42,6 @@ nextTick(loadData)
           <div>программа</div>
           <div v-if="group.program">
             {{ ProgramLabel[group.program] }}
-          </div>
-        </div>
-
-        <div>
-          <div>zoom</div>
-          <div>
-            {{ group.zoom?.id || 'не установлено' }}
           </div>
         </div>
         <div>

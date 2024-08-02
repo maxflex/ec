@@ -1,8 +1,21 @@
 <script setup lang="ts">
-const { items } = defineProps<{
+const { items, current } = defineProps<{
   items: Teeth
+  current?: Teeth
 }>()
 
+function isCurrent(weekday: Weekday, tooth: Tooth): boolean {
+  if (current === undefined || !(weekday in current)) {
+    return false
+  }
+  const { left, width } = tooth
+  for (const t of current[weekday]) {
+    if (t.left === left && t.width === width) {
+      return true
+    }
+  }
+  return false
+}
 </script>
 
 <template>
@@ -16,6 +29,9 @@ const { items } = defineProps<{
         v-for="(tooth, index) in items[weekday]"
         :key="index"
         class="teeth__tooth"
+        :class="{
+          'teeth__tooth--current': isCurrent(weekday, tooth),
+        }"
         :style="{
           left: `${tooth.left}%`,
           width: `${tooth.width}%`,
@@ -68,6 +84,9 @@ const { items } = defineProps<{
       top: 0;
       width: 100%;
       height: 100%;
+    }
+    &--current {
+      background: rgb(var(--v-theme-success));
     }
   }
 }

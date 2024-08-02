@@ -11,58 +11,66 @@ class Swamp
 
     public static function query(): Builder
     {
-        $contractVersionProgramsCte = ContractVersion::query()
-            ->lastVersions()
+        $lastVersionsCte =  ContractVersion::selectRaw(<<<SQL
+            contract_id,
+            MAX(version) as last_version
+        SQL)->groupBy('contract_id');
+
+        $cvpQuery = DB::table('contract_version_programs', 'cvp')
+            ->withExpression('lv', $lastVersionsCte)
+            ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
             ->join(
-                'contracts as c',
-                'c.id',
-                '=',
-                'contract_versions.contract_id'
+                'lv',
+                fn ($join) => $join
+                    ->on('cv.contract_id', '=', 'lv.contract_id')
+                    ->on('cv.version', '=', 'lv.last_version')
             )
-            ->join(
-                'contract_version_programs as cvp',
-                'cvp.contract_version_id',
-                '=',
-                'contract_versions.id',
-            )->selectRaw(<<<SQL
-                c.id as `contract_id`,
-                cvp.id as `contract_version_program_id`,
+            ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
+            ->leftJoin('group_contracts as gc', 'gc.contract_id', '=', 'c.id')
+            ->leftJoin(
+                'groups as g',
+                fn ($join) => $join
+                    ->on('g.id', '=', 'gc.group_id')
+                    ->on('g.program', '=', 'cvp.program')
+            )
+            ->selectRaw(<<<SQL
+                cvp.id,
+                g.id,
+                cv.contract_id,
                 c.year,
                 cvp.program,
                 cvp.is_closed
             SQL);
 
-        $groupsCte = DB::table('contract_group as cg')
-            ->join('groups as g', 'g.id', '=', 'cg.group_id')
-            ->selectRaw(<<<SQL
-                g.id as `group_id`,
-                g.year,
-                g.program,
-                cg.contract_id
-            SQL);
-
-        $swampsCte = DB::table('c')
-            ->withExpression('c', $contractVersionProgramsCte)
-            ->withExpression('g', $groupsCte)
-            ->join(
-                'g',
+        $groupsQuery = DB::table('group_contracts', 'gc')
+            ->join('groups as g', 'g.id', '=', 'gc.group_id')
+            ->leftJoin(
+                'cvp',
                 fn ($join) => $join
-                    ->on('g.contract_id', '=', 'c.contract_id')
-                    ->on('g.program', '=', 'c.program')
-                    ->on('g.year', '=', 'c.year'),
-                'full outer'
+                    ->on('gc.contract_id', '=', 'cvp.contract_id')
+                    ->on('g.program', '=', 'cvp.program')
+                    ->on('g.year', '=', 'cvp.year'),
             )
+            // ->leftJoinSub(
+            //     $cvpQuery,
+            //     'cvp',
+            //     fn ($join) => $join
+            //         ->on('gc.contract_id', '=', 'cvp.contract_id')
+            //         ->on('g.program', '=', 'cvp.program')
+            //         ->on('g.year', '=', 'cvp.year'),
+            // )
+            ->whereNull('gc.id')
             ->selectRaw(<<<SQL
                 UUID() as `id`,
-                g.group_id,
-                c.is_closed,
-                `contract_version_program_id`,
-                ifnull(c.contract_id, g.contract_id) as `contract_id`,
-                ifnull(c.program, g.program) as `program`,
-                ifnull(c.year, g.year) as `year`
+                gc.group_id,
+                gc.contract_id,
+                g.year,
+                g.program,
+                NULL as `is_closed`
             SQL);
 
-        return DB::table('swamps')->withExpression('swamps', $swampsCte);
+        return DB::table('cvp')->withExpression('cvp', $cvpQuery)->union($groupsQuery);
+        // return $cvpQuery->union($groupsQuery);
     }
 }
 

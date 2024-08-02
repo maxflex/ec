@@ -96,7 +96,7 @@ defineExpose({ create })
         v-else
         class="dialog-body pt-0"
       >
-        <div class="table mb-6">
+        <!-- <div class="table mb-6">
           <div v-for="(label, index) in WeekdayLabel" :key="index">
             <div
               class="text-uppercase font-weight-medium" style="width: 50px"
@@ -115,32 +115,59 @@ defineExpose({ create })
             </div>
             <div />
           </div>
-        </div>
+        </div> -->
+        <table class="dialog-table weekdays-dialog-table">
+          <tbody>
+            <tr v-for="(arr, index) in [[0, 4], [1, 5], [2, 6], [3, -1]]" :key="index">
+              <td width="60" class="text-uppercase">
+                {{ WeekdayLabel[arr[0]] }}
+              </td>
+              <td>
+                <v-text-field
+                  v-model="batch.weekdays[arr[0]]"
+                  v-maska:[timeMask]
+                />
+              </td>
+              <td width="63" class="text-uppercase">
+                <template v-if="arr[1] !== -1">
+                  {{ WeekdayLabel[arr[1]] }}
+                </template>
+              </td>
+              <td :class="{ 'no-pointer-events': arr[1] === -1 }">
+                <v-text-field
+                  v-model="batch.weekdays[arr[1]]"
+                  v-maska:[timeMask]
+                />
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 20px !important" colspan="2" />
+            </tr>
+          </tbody>
+        </table>
         <div class="double-input">
           <UiDateInput v-model="batch.start_date" :year="year" label="Дата от" />
           <UiDateInput v-model="batch.end_date" :year="year" label="до" />
         </div>
-
-        <div>
-          <TeacherSelector
-            v-model="lesson.teacher_id"
-            label="Преподаватель"
-          />
-        </div>
-        <div>
+        <div class="double-input">
           <UiClearableSelect
             v-model="lesson.cabinet"
             :items="selectItems(CabinetLabel)"
             label="Кабинет"
           />
-        </div>
-        <div>
           <UiClearableSelect
             v-model="lesson.quarter"
             :items="selectItems(QuarterLabel, ['final' as Quarter])"
             label="Четверть"
           />
         </div>
+        <div>
+          <TeacherSelector
+            v-model="lesson.teacher_id"
+            label="Преподаватель"
+          />
+        </div>
+
         <div>
           <v-text-field
             v-model="lesson.price"
@@ -153,3 +180,27 @@ defineExpose({ create })
     </div>
   </v-dialog>
 </template>
+
+<style lang="scss">
+.weekays-inputs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  row-gap: 20px;
+  column-gap: 20px;
+}
+.weekdays-dialog-table {
+  tr {
+    td {
+      &:nth-child(1),
+      &:nth-child(3) {
+        border-right: none !important;
+        color: rgb(var(--v-theme-gray));
+        text-transform: uppercase;
+      }
+      &:nth-child(3) {
+        padding-left: 16px;
+      }
+    }
+  }
+}
+</style>
