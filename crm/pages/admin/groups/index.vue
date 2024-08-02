@@ -63,12 +63,12 @@ nextTick(loadData)
 <template>
   <div class="filters">
     <GroupFilters @apply="onFiltersApply" />
-    <a
-      class="cursor-pointer"
+    <v-btn
+      color="primary"
       @click="groupDialog?.create()"
     >
       добавить группу
-    </a>
+    </v-btn>
   </div>
   <UiLoader :paginator="paginator" />
   <div

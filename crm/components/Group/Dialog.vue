@@ -105,7 +105,7 @@ defineExpose({ create, edit })
         <v-btn
           icon="$save"
           :size="48"
-          color="#fafafa"
+          variant="text"
           @click="save()"
         />
       </div>
