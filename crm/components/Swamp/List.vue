@@ -23,21 +23,18 @@ const { items } = defineProps<{ items: SwampListResource[] }>()
         >
           Группа {{ swamp.group_id }}
         </NuxtLink>
-        <span v-else-if="!swamp.is_closed">
-          к исполнению
-        </span>
       </div>
       <div>
-        <v-chip v-if="!swamp.contract_version_program_id">
-          программы нет в договоре
+        <v-chip v-if="!swamp.group_id && !swamp.is_closed" color="success">
+          к исполнению
         </v-chip>
-        <!-- <v-chip v-else-if="swamp.is_closed && swamp.group_id" color="error">
+        <v-chip v-else-if="swamp.group_id && swamp.is_closed" color="error">
           в группе с закрытым договором
-        </v-chip> -->
+        </v-chip>
+        <v-chip v-else-if="swamp.group_id && swamp.cvp_id === null" color="error">
+          в группе без договора
+        </v-chip>
       </div>
-      <!-- <div>
-        {{ YearLabel[swamp.year] }}
-      </div> -->
     </div>
   </div>
 </template>

@@ -1,14 +1,19 @@
 <script lang="ts" setup>
-export interface Filters {
-  year: Year
-  program?: Program
-  group_id?: boolean
-  is_closed?: boolean
-}
-
 const emit = defineEmits<{
   apply: [f: Filters]
 }>()
+
+const swampFilterStatusLabel = {
+  toFullfill: 'к исполнению',
+  closedInGroup: 'в группе с закрытым договором',
+  noContractInGroup: 'в группе без договора',
+} as const
+
+export interface Filters {
+  year: Year
+  program?: Program
+  status?: keyof typeof swampFilterStatusLabel
+}
 
 const filters = ref(loadFilters<Filters>({
   year: currentAcademicYear(),
@@ -39,17 +44,9 @@ watch(filters.value, () => {
     </div>
     <div>
       <UiClearableSelect
-        v-model="filters.group_id"
-        label="В группе"
-        :items="yesNo()"
-        density="comfortable"
-      />
-    </div>
-    <div>
-      <UiClearableSelect
-        v-model="filters.is_closed"
-        label="Расторгнут"
-        :items="yesNo()"
+        v-model="filters.status"
+        label="Статус"
+        :items="selectItems(swampFilterStatusLabel)"
         density="comfortable"
       />
     </div>

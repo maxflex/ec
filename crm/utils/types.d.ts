@@ -824,12 +824,13 @@ declare global {
 
   interface SwampListResource {
     id: string
+    cvp_id: null | number
     client: PersonResource
     program: Program
     year: Year
     contract_id: number
-    group_id: null | number
-    is_closed: null | boolean
+    group_id: null | number // group_id = null это к исполнению
+    is_closed: null | boolean // null – когда не найдено соответвующей программы
   }
 
   interface Tooth {
