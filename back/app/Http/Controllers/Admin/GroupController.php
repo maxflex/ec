@@ -8,8 +8,7 @@ use App\Http\Resources\GroupCandidateResource;
 use App\Http\Resources\GroupListResource;
 use App\Http\Resources\GroupResource;
 use App\Http\Resources\GroupVisitResource;
-use App\Models\Client;
-use App\Models\ContractGroup;
+use App\Models\GroupContract;
 use App\Models\Group;
 use Illuminate\Http\Request;
 
@@ -60,23 +59,6 @@ class GroupController extends Controller
         );
     }
 
-    public function addClient(Request $request)
-    {
-        $group = Group::find($request->group_id);
-        $client = Client::find($request->client_id);
-
-        foreach ($client->contracts as $contract) {
-            foreach ($contract->versions->last()->programs as $p) {
-                if ($p->program === $group->program) {
-                    return ContractGroup::create([
-                        'group_id' => $group->id,
-                        'contract_id' => $contract->id
-                    ]);
-                }
-            }
-        }
-    }
-
     /**
      * Нажимаем "добавить ученика в текущую группу"
      * Получаем список кандидатов
@@ -91,16 +73,11 @@ class GroupController extends Controller
     public function bulkStoreCandidates(Group $group, Request $request)
     {
         foreach ($request->ids as $contractId) {
-            ContractGroup::create([
+            GroupContract::create([
                 'group_id' => $group->id,
                 'contract_id' => $contractId
             ]);
         }
-    }
-
-    public function removeContract(Request $request)
-    {
-        ContractGroup::where($request->all())->delete();
     }
 
     protected function filterTeacher(&$query, $teacherId)

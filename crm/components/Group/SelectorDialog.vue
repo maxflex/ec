@@ -1,18 +1,18 @@
 <script setup lang="ts">
 const emit = defineEmits<{
-  select: [g: GroupListResource, c?: ContractResource]
+  select: [g: GroupListResource, contractId: number]
 }>()
 const { dialog, width } = useDialog('large')
+let contractId: number
 const groups = ref<GroupListResource[]>([])
-const contract = ref<ContractResource>()
 const filters = ref<{
   year?: Year
   program?: Program
 }>({})
 
-function open(p: Program, y: Year, c?: ContractResource) {
+function open(p: Program, y: Year, _contractId: number) {
   dialog.value = true
-  contract.value = c
+  contractId = _contractId
   filters.value = {
     year: y,
     program: p,
@@ -21,7 +21,7 @@ function open(p: Program, y: Year, c?: ContractResource) {
 
 function onSelect(g: GroupListResource) {
   dialog.value = false
-  emit('select', g, contract.value)
+  emit('select', g, contractId)
 }
 
 async function loadData() {

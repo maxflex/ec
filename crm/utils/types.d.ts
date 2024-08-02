@@ -291,8 +291,7 @@ declare global {
     year: Year
     duration?: number
     zoom: Zoom | null
-    contracts: ContractResource[]
-    teeth: Teeth
+    teeth?: Teeth
     created_at?: string
   }
 
@@ -837,6 +836,12 @@ declare global {
 
   interface Teeth {
     [key: number]: Tooth[]
+  }
+
+  interface GroupContractResource {
+    id: number
+    contract_id: number
+    client: PersonWithPhotoResource
   }
 }
 

@@ -30,11 +30,6 @@ class Client extends Model
         return $this->hasMany(Contract::class)->orderBy('id', 'desc');
     }
 
-    public function contractGroup()
-    {
-        return $this->hasManyThrough(ContractGroup::class, Contract::class);
-    }
-
     public function payments()
     {
         return $this->morphMany(ClientPayment::class, 'entity');
@@ -48,11 +43,11 @@ class Client extends Model
     /**
      * @return Group[]
      */
-    public function groups(): Attribute
+    public function getGroupsAttribute()
     {
-        return Attribute::make(
-            fn (): Collection =>
-            $this->contractGroup()->with('group')->get()->map(fn ($e) => $e->group)
+        return Group::whereHas(
+            'contracts',
+            fn ($q) => $q->whereIn('id', $this->contracts()->pluck('id'))
         );
     }
 

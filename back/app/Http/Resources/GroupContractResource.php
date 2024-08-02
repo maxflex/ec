@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class GroupResource extends JsonResource
+class GroupContractResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,8 +14,8 @@ class GroupResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return extract_fields($this, ['*'], [
-            'teeth' => $this->getTeeth()
+        return extract_fields($this, ['contract_id'], [
+            'client' => new PersonWithPhotoResource($this->contract->client)
         ]);
     }
 }

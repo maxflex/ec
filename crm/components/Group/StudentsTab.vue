@@ -2,60 +2,70 @@
 import { mdiSwapHorizontal } from '@mdi/js'
 import type { GroupAddStudentDialog, GroupSelectorDialog } from '#build/components'
 
-const { group, contracts } = defineProps<{
-  group: GroupResource
-  contracts: ContractResource[]
-}>()
-const emit = defineEmits(['updated'])
+const { group } = defineProps<{ group: GroupResource }>()
+const loading = ref(false)
+const items = ref<GroupContractResource[]>([])
 const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
 const groupAddStudentDialog = ref<InstanceType<typeof GroupAddStudentDialog>>()
 
-async function removeFromGroupAndUpdate(c: ContractResource) {
-  await removeFromGroup(c)
-  emit('updated')
-}
-
-async function removeFromGroup(c: ContractResource) {
-  await useHttp(`groups/remove-contract`, {
-    method: 'post',
-    params: {
-      group_id: group.id,
-      contract_id: c.id,
-    },
+async function destroy(gc: GroupContractResource) {
+  const index = items.value.findIndex(i => i.id === gc.id)
+  if (index === -1) {
+    return
+  }
+  items.value.splice(index, 1)
+  await useHttp(`group-contracts/${gc.id}`, {
+    method: 'delete',
   })
 }
 
-async function onGroupSelected(g: GroupListResource, c?: ContractResource) {
-  await removeFromGroup(c!)
-  await useHttp(`groups/add-client`, {
+async function onGroupSelected(g: GroupListResource, contractId: number) {
+  await destroy(
+    items.value.find(i => i.contract_id === contractId)!,
+  )
+  await useHttp(`group-contracts`, {
     method: 'post',
     params: {
       group_id: g.id,
-      client_id: c!.client_id,
+      contract_id: contractId,
     },
   })
-  emit('updated')
 }
+
+async function loadData() {
+  loading.value = true
+  const { data } = await useHttp<ApiResponse<GroupContractResource[]>>(
+    `group-contracts`,
+    {
+      params: {
+        group_id: group.id,
+      },
+    },
+  )
+  if (data.value) {
+    items.value = data.value.data
+  }
+  loading.value = false
+}
+
+nextTick(loadData)
 </script>
 
 <template>
   <div
     class="table table--actions-on-hover"
   >
-    <div
-      v-for="contract in contracts"
-      :key="contract.id"
-    >
+    <div v-for="item in items" :key="item.id">
       <div style="width: 300px">
-        <UiAvatar :item="contract.client!" :size="38" class="mr-4" />
+        <UiAvatar :item="item.client" :size="38" class="mr-4" />
         <NuxtLink
           class="vf-1"
           :to="{
             name: 'clients-id',
-            params: { id: contract.client!.id },
+            params: { id: item.client.id },
           }"
         >
-          {{ formatName(contract.client!) }}
+          {{ formatName(item.client) }}
         </NuxtLink>
       </div>
       <div class="text-left table-actions">
@@ -70,13 +80,13 @@ async function onGroupSelected(g: GroupListResource, c?: ContractResource) {
             />
           </template>
           <v-list>
-            <v-list-item @click="groupSelectorDialog?.open(group.program!, group.year, contract)">
+            <v-list-item @click="groupSelectorDialog?.open(group.program!, group.year, item.contract_id)">
               <template #prepend>
                 <v-icon :icon="mdiSwapHorizontal" />
               </template>
               переместить в группу
             </v-list-item>
-            <v-list-item @click="removeFromGroupAndUpdate(contract)">
+            <v-list-item @click="destroy(item)">
               <template #prepend>
                 <v-icon icon="$close" />
               </template>
@@ -103,5 +113,5 @@ async function onGroupSelected(g: GroupListResource, c?: ContractResource) {
     ref="groupSelectorDialog"
     @select="onGroupSelected"
   />
-  <GroupAddStudentDialog ref="groupAddStudentDialog" :group="group" @updated="emit('updated')" />
+  <GroupAddStudentDialog ref="groupAddStudentDialog" :group="group" @updated="loadData" />
 </template>

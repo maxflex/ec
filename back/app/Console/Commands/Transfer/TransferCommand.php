@@ -21,7 +21,7 @@ class TransferCommand extends Command
             'phones',
             'contracts',
             'groups',
-            'contract-group',
+            'group-contracts',
             'teacher-payments',
             'teacher-services',
             'client-payments',

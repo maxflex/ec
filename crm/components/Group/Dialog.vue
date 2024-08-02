@@ -9,7 +9,6 @@ const emit = defineEmits<{
 
 const modelDefaults: GroupResource = {
   id: newId(),
-  contracts: [],
   year: currentAcademicYear(),
   zoom: {
     id: '',

@@ -25,7 +25,14 @@ class Group extends Model
 
     public function contracts()
     {
-        return $this->belongsToMany(Contract::class);
+        return $this->hasManyThrough(
+            Contract::class,
+            GroupContract::class,
+            'group_id',
+            'id',
+            'id',
+            'contract_id'
+        );
     }
 
     public function lessons()

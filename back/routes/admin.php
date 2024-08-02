@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\{
     EventParticipantController,
     ExamScoreController,
     GradeController,
+    GroupContractController,
     GroupController,
     InstructionController,
     LessonController,
@@ -40,11 +41,6 @@ use App\Http\Controllers\Common\LogController;
 use App\Http\Controllers\TopicController;
 
 Route::middleware(['auth:crm'])->group(function () {
-    // TODO: улучшить
-    Route::controller(GroupController::class)->prefix('groups')->group(function () {
-        Route::post('add-client', 'addClient');
-        Route::post('remove-contract', 'removeContract');
-    });
     Route::post('tests/upload-pdf/{test}', [TestController::class, 'uploadPdf']);
     Route::post('preview', [PreviewController::class, 'enter']);
     Route::post('photos/upload', [PhotoController::class, 'upload']);
@@ -87,6 +83,7 @@ Route::middleware(['auth:crm'])->group(function () {
         'requests' => RequestsController::class,
         'clients' => ClientController::class,
         'groups' => GroupController::class,
+        'group-contracts' => GroupContractController::class,
         'contracts' => ContractController::class,
         'contract-versions' => ContractVersionController::class,
         'contract-payments' => ContractPaymentController::class,

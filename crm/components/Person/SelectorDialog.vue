@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { title, filters } = withDefaults(defineProps<{
-  title: string
-  filters: any
+  title?: string
+  filters?: any
 }>(), {
   title: 'Выберите участников',
   filters: {},
