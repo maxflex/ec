@@ -105,34 +105,7 @@ defineExpose({ open })
         </template>
       </div>
       <UiLoaderr v-if="loading" />
-      <div v-else-if="item" class="dialog-body">
-        <div>
-          <v-alert
-            v-if="isConducted"
-            type="success"
-            variant="tonal"
-            title="Это занятие уже проведено"
-          >
-            При редактировании данных не
-            отправляются СМС, комментарии, не производится начисление оплаты
-          </v-alert>
-          <v-alert
-            v-else
-            title="В момент проводки занятия автоматически происходит:"
-            type="info"
-            variant="tonal"
-          >
-            <div class="pt-2">
-              – отправка СМС об опоздании или отсутствии ученика родителям
-            </div>
-            <div>
-              – отправка СМС с вашими комментариями родителям
-            </div>
-            <div>
-              – начисление оплаты и бонусов за проведенное занятие
-            </div>
-          </v-alert>
-        </div>
+      <div v-else-if="item" class="dialog-body pt-1">
         <div class="table">
           <div
             v-for="c in item?.contracts" :key="c.id"
@@ -242,9 +215,9 @@ defineExpose({ open })
       padding: 16px 0;
     }
   }
-  &--absent {
-    background: rgba(var(--v-theme-error), 0.1);
-  }
+  // &--absent {
+  //   background: rgba(var(--v-theme-error), 0.1);
+  // }
   // &--late {
   //   background: rgba(var(--v-theme-warning), 0.1);
   // }

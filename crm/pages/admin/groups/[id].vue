@@ -45,6 +45,14 @@ nextTick(loadData)
           </div>
         </div>
         <div>
+          <div>преподаватели</div>
+          <div v-for="t in group.teachers" :key="t.id">
+            <RouterLink :to="{ name: 'teachers-id', params: { id: t.id } }">
+              {{ formatNameInitials(t) }}
+            </RouterLink>
+          </div>
+        </div>
+        <div>
           <div class="mb-1">
             расписание
           </div>

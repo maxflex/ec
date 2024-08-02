@@ -27,7 +27,7 @@ const reportFilters = ref<Filters>({
   year: currentAcademicYear(),
 })
 const instructionFilters = ref<InstructionFilters>({})
-// const reviewFilters = ref<{ year?: Year }>({})
+const reviewFilters = ref<{ type?: number }>({})
 
 async function loadData() {
   const { data } = await useHttp<TeacherResource>(`teachers/${route.params.id}`)
@@ -161,8 +161,21 @@ nextTick(loadData)
       :filters="{
         teacher_id: teacher.id,
         with: 'teacher',
+        ...reviewFilters,
       }"
     >
+      <template #filters>
+        <div class="filters">
+          <div class="filters-inputs">
+            <UiClearableSelect
+              v-model="reviewFilters.type"
+              label="Тип"
+              :items="yesNo('созданные', 'требуется создание')"
+              density="comfortable"
+            />
+          </div>
+        </div>
+      </template>
       <template #default="{ items }">
         <ClientReviewList
           no-teacher

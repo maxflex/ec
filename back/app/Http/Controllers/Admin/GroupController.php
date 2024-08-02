@@ -23,7 +23,7 @@ class GroupController extends Controller
     public function index(Request $request)
     {
         $query = Group::query()
-            ->withCount('lessons')
+            ->withCount('lessons', 'groupContracts')
             ->orderBy('id', 'desc');
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, GroupListResource::class);

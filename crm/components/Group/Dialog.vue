@@ -10,6 +10,7 @@ const emit = defineEmits<{
 const modelDefaults: GroupResource = {
   id: newId(),
   year: currentAcademicYear(),
+  teachers: [],
   zoom: {
     id: '',
     password: '',

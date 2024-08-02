@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { mdiAccountGroup } from '@mdi/js'
+
 const { items, selectable } = defineProps<{
   items: GroupListResource[]
   selectable?: boolean
@@ -24,44 +26,38 @@ function onClick(g: GroupListResource) {
     :class="{ 'group-item--selectable': selectable }"
     @click="onClick(item)"
   >
-    <div>
+    <div style="width: 180px">
       <NuxtLink :to="{ name: 'groups-id', params: { id: item.id } }">
         Группа {{ item.id }}
       </NuxtLink>
     </div>
-    <div />
-    <div>
-      {{ ProgramLabel[item.program] }}
+    <div style="width: 200px">
+      <div v-for="t in item.teachers" :key="t.id">
+        <RouterLink :to="{ name: 'teachers-id', params: { id: t.id } }">
+          {{ formatNameInitials(t) }}
+        </RouterLink>
+      </div>
     </div>
-    <div>
+    <div style="width: 120px">
+      {{ ProgramShortLabel[item.program] }}
+    </div>
+    <div style="width: 120px">
       <template v-if="item.lessons_count">
         {{ plural(item.lessons_count, ['урок', 'урока', 'уроков']) }}
       </template>
     </div>
-    <div
-      v-if="item.zoom"
-      class="text-gray"
-      style="flex: none; width: 80vw"
-    >
-      Идентификатор ZOOM: {{ item.zoom.id }} <br>
-      Пароль ZOOM: {{ item.zoom.password }}
+    <div style="width: 80px">
+      <v-icon :icon="mdiAccountGroup" class="mr-2" style="top: -3px; position: relative;" />
+      {{ item.group_contracts_count }}
+    </div>
+    <div>
+      <Teeth :items="item.teeth" />
     </div>
   </div>
 </template>
 
 <style lang="scss">
 .group-item {
-  & > div {
-    &:nth-child(1) {
-      width: 200px;
-    }
-    &:nth-child(2) {
-      width: 250px;
-    }
-    &:nth-child(3) {
-      width: 350px;
-    }
-  }
   &--selectable {
     cursor: pointer;
   }

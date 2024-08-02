@@ -282,8 +282,11 @@ declare global {
   interface GroupListResource {
     id: number
     lessons_count: number
+    group_contracts_count: number
     program: Program
+    teachers: PersonResource[]
     zoom: Zoom | null
+    teeth: Teeth
   }
 
   interface GroupResource {
@@ -292,6 +295,7 @@ declare global {
     year: Year
     duration?: number
     zoom: Zoom | null
+    teachers: PersonResource[]
     teeth?: Teeth
     created_at?: string
   }

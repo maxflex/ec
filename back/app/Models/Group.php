@@ -99,4 +99,13 @@ class Group extends Model
     {
         return Teeth::get($this->lessons()->getQuery());
     }
+
+    public function getTeachers()
+    {
+        return $this->lessons()
+            // ->where('status', LessonStatus::planned)
+            ->where('is_unplanned', 0)
+            ->groupBy('teacher_id')
+            ->pluck('teacher_id');
+    }
 }
