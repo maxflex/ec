@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type {
   ClientDialog,
-  GroupSelectorDialog,
 } from '#build/components'
 import type { Filters } from '~/components/Report/TeacherFilters.vue'
 
@@ -23,11 +22,7 @@ const selectedTab = ref<keyof typeof tabs>('requests')
 const route = useRoute()
 const client = ref<ClientResource>()
 const clientDialog = ref<InstanceType<typeof ClientDialog>>()
-const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
 const reportFilters = ref<Filters>({
-  year: currentAcademicYear(),
-})
-const groupFilters = ref<{ year: Year }>({
   year: currentAcademicYear(),
 })
 const gradeFilters = ref<{ year: Year }>({
@@ -41,17 +36,6 @@ async function loadData() {
 
 function onClientUpdated(c: ClientResource) {
   client.value = c
-}
-
-async function onGroupSelected(g: GroupListResource) {
-  await useHttp(`groups/add-client`, {
-    method: 'post',
-    params: {
-      group_id: g.id,
-      client_id: client.value?.id,
-    },
-  })
-  loadData()
 }
 
 nextTick(loadData)
@@ -238,10 +222,6 @@ nextTick(loadData)
     <ClientDialog
       ref="clientDialog"
       @updated="onClientUpdated"
-    />
-    <GroupSelectorDialog
-      ref="groupSelectorDialog"
-      @select="onGroupSelected"
     />
   </div>
 </template>

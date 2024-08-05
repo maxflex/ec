@@ -58,8 +58,5 @@ const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
       <div />
     </div>
   </div>
-  <GroupSelectorDialog
-    ref="groupSelectorDialog"
-    @select="(g, contractId) => $emit('select', g, contractId)"
-  />
+  <GroupSelectorDialog ref="groupSelectorDialog" />
 </template>
