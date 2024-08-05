@@ -2,7 +2,7 @@
 const emit = defineEmits<{
   select: [g: GroupListResource, contractId: number]
 }>()
-const { dialog, width } = useDialog('large')
+const { dialog, width } = useDialog('x-large')
 let contractId: number
 const groups = ref<GroupListResource[]>([])
 const filters = ref<{
@@ -49,6 +49,7 @@ defineExpose({ open })
     <div class="dialog-wrapper">
       <div class="dialog-header">
         Выберите группу
+        <v-btn icon="$close" :size="48" variant="text" @click="dialog = false" />
       </div>
       <div class="dialog-body pt-0">
         <div class="filters">

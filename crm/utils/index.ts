@@ -41,26 +41,30 @@ export function selectItems(obj: object, skip: string[] = []): SelectItems {
     }))
     .filter(e => !skip.includes(e.value))
 
-  // если ключ – это число (например, годы '2024')
+  // если ключ – это число (например, годы '2024'),
   // то приводим к числу, чтоб чётенько было
-  // и сортирум (сверху дополнительно)
+  // и сортируем (сверху дополнительно)
   if (Number.isFinite(+items[0].value)) {
-    const sorted = items
+    return items
       .map(({ value, title }) => ({
         title,
         value: Number.parseInt(value),
       }))
       .sort((a, b) => b.value - a.value)
-    return sorted
   }
   return items
 }
 
-export function yesNo(yesLabel: string = 'да', noLabel: string = 'нет'): SelectItems {
-  return selectItems({
-    1: yesLabel,
-    0: noLabel,
-  })
+export function yesNo(
+  yesLabel: string = 'да',
+  noLabel: string = 'нет',
+  reverse: boolean = false,
+): SelectItems {
+  const items: SelectItems = [
+    { value: 1, title: yesLabel },
+    { value: 0, title: noLabel },
+  ]
+  return reverse ? items.reverse() : items
 }
 
 export function smoothScroll(
@@ -76,7 +80,7 @@ export function smoothScroll(
 }
 
 /**
- * Получить академичекский год по дате
+ * Получить академический год по дате
  * Новый академический год начинается с 1 сентября
  */
 export function getAcademicYear(d: string): Year {

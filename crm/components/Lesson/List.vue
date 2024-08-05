@@ -14,6 +14,7 @@ const editable = user?.entity_type === EntityType.user
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const year = ref<Year>(group === undefined ? currentAcademicYear() : group.year)
 const loading = ref(false)
+const hideEmptyDates = ref(0)
 const lessons = ref<LessonListResource[]>([])
 const events = ref<EventListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
@@ -44,7 +45,22 @@ const dates = computed(() => {
   // Generate array of all dates between startDate and endDate
   const allDates = eachDayOfInterval({ start: startDate, end: endDate })
 
-  return allDates.map(d => format(d, 'yyyy-MM-dd'))
+  const result = []
+  for (const d of allDates) {
+    const dateString = format(d, 'yyyy-MM-dd')
+    if (hideEmptyDates.value) {
+      if (
+        lessons.value.some(e => e.date === dateString)
+        || events.value.some(e => e.date === dateString)
+      ) {
+        result.push(dateString)
+      }
+    }
+    else {
+      result.push(dateString)
+    }
+  }
+  return result
 })
 
 const itemsByDate = computed((): {
@@ -147,33 +163,36 @@ nextTick(loadData)
 
 <template>
   <div class="filters">
-    <div class="filters-inputs" style="justify-content: space-between; align-items: center; width: 100%">
-      <div>
-        <v-select
-          v-model="year"
-          :disabled="group !== undefined"
-          label="Учебный год"
-          :items="selectItems(YearLabel)"
-          density="comfortable"
-        />
-      </div>
-      <v-menu v-if="editable && group">
-        <template #activator="{ props }">
-          <v-btn color="primary" v-bind="props">
-            добавить занятия
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item @click="lessonDialog?.create(id, group?.year!)">
-            добавить одно занятие
-          </v-list-item>
-          <v-list-item @click="lessonBatchCreateDialog?.create(id, group?.year!)">
-            добавить несколько занятий
-          </v-list-item>
-        </v-list>
-      </v-menu>
+    <div class="filters-inputs">
+      <v-select
+        v-model="year"
+        :disabled="group !== undefined"
+        label="Учебный год"
+        :items="selectItems(YearLabel)"
+        density="comfortable"
+      />
+      <v-select
+        v-model="hideEmptyDates"
+        label="Даты"
+        :items="yesNo('скрыть пустые', 'показывать все', true)"
+        density="comfortable"
+      />
     </div>
-
+    <v-menu v-if="editable && group">
+      <template #activator="{ props }">
+        <v-btn color="primary" v-bind="props">
+          добавить занятия
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item @click="lessonDialog?.create(id, group?.year!)">
+          добавить одно занятие
+        </v-list-item>
+        <v-list-item @click="lessonBatchCreateDialog?.create(id, group?.year!)">
+          добавить несколько занятий
+        </v-list-item>
+      </v-list>
+    </v-menu>
     <slot />
   </div>
   <UiLoaderr v-if="loading" />
@@ -182,7 +201,7 @@ nextTick(loadData)
       v-for="d in dates"
       :key="d"
       :class="{
-        'week-separator': getDay(d) === 0,
+        'week-separator': !hideEmptyDates && getDay(d) === 0,
         'lesson-list--vacation': vacations[d] === true,
       }"
     >
