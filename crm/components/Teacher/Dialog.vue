@@ -32,6 +32,7 @@ function create() {
   itemId.value = undefined
   open(modelDefaults)
 }
+
 async function edit(c: TeacherResource) {
   itemId.value = c.id
   loading.value = true
@@ -99,7 +100,7 @@ defineExpose({ create, edit })
       class="dialog-wrapper"
     >
       <div class="dialog-header">
-        <span v-if="teacher.id > 0">
+        <div v-if="teacher.id > 0">
           Редактирование преподавателя
           <div class="dialog-subheader">
             <template v-if="teacher.created_at">
@@ -107,11 +108,11 @@ defineExpose({ create, edit })
               {{ formatDateTime(teacher.created_at) }}
             </template>
           </div>
-        </span>
+        </div>
         <span v-else> Добавить преподавателя </span>
         <div>
           <v-btn
-            v-if="teacher.id"
+            v-if="teacher.id > 0"
             icon="$delete"
             :size="48"
             variant="text"

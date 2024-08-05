@@ -6,6 +6,7 @@ use App\Traits\HasName;
 use App\Traits\HasPhones;
 use App\Traits\HasPhoto;
 use App\Traits\RelationSyncable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
@@ -20,68 +21,73 @@ class User extends Authenticatable
         'is_active' => 'boolean'
     ];
 
-    public function clientTests()
+    public function clientTests(): HasMany
     {
         return $this->hasMany(ClientTest::class);
     }
 
-    public function instructions()
+    public function instructions(): HasMany
     {
         return $this->hasMany(Instruction::class);
     }
 
-    public function events()
+    public function events(): HasMany
     {
         return $this->hasMany(Event::class);
     }
 
-    public function requests()
+    public function requests(): HasMany
     {
         return $this->hasMany(Request::class);
     }
 
-    public function comments()
+    public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
     }
 
-    public function telegramMessages()
+    public function telegramMessages(): HasMany
     {
         return $this->hasMany(TelegramMessage::class);
     }
 
-    public function examScores()
+    public function examScores(): HasMany
     {
         return $this->hasMany(ExamScore::class);
     }
 
-    public function contractVersions()
+    public function contractVersions(): HasMany
     {
         return $this->hasMany(ContractVersion::class);
     }
 
-    public function clientPayments()
+    public function clientPayments(): HasMany
     {
         return $this->hasMany(ClientPayment::class);
     }
 
-    public function contractPayments()
+    public function contractPayments(): HasMany
     {
         return $this->hasMany(ContractPayment::class);
     }
 
-    public function teacherPayments()
+    public function teacherPayments(): HasMany
     {
         return $this->hasMany(TeacherPayment::class);
     }
 
-    public function teacherServices()
+    public function teacherServices(): HasMany
     {
         return $this->hasMany(TeacherService::class);
     }
 
-    public function lessons()
+    public function lessons(): HasMany
     {
         return $this->hasMany(Lesson::class);
+    }
+
+    public function teachers(): HasMany
+    {
+        return $this->hasMany(Teacher::class);
     }
 }

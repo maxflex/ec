@@ -39,6 +39,14 @@ class TeacherController extends Controller
         return new TeacherResource($teacher);
     }
 
+    public function store(Request $request)
+    {
+        $teacher = auth()->user()->teachers()->create([
+            $request->all()
+        ]);
+        return new TeacherResource($teacher);
+    }
+
     public function destroy(Teacher $teacher)
     {
         $teacher->delete();
