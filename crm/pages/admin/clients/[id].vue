@@ -199,44 +199,10 @@ nextTick(loadData)
         entity="client"
       >
         <div>
-          <Teeth :items="client.teeth!" />
+          <TeethBar :items="client.teeth!" />
         </div>
       </LessonList>
-      <UiDataLoader
-        v-else-if="selectedTab === 'groups'"
-        :key="`groups${groupFilters.year}`"
-        url="groups"
-        :filters="{
-          client_id: client.id,
-          ...groupFilters,
-        }"
-      >
-        <template #filters>
-          <div class="filters">
-            <div class="filters-inputs">
-              <div>
-                <v-select
-                  v-model="groupFilters.year"
-                  label="Учебный год"
-                  :items="selectItems(YearLabel)"
-                  density="comfortable"
-                />
-              </div>
-            </div>
-          </div>
-        </template>
-        <template #default="{ items }">
-          <div class="table table--padding">
-            <GroupList :items="items" />
-            <GroupSwamp
-              v-for="swamp in client.swamps"
-              :key="swamp.id"
-              :swamp="swamp"
-              @attach="(s) => groupSelectorDialog?.open(s.program, currentAcademicYear())"
-            />
-          </div>
-        </template>
-      </UiDataLoader>
+      <ClientGroupsTab v-else-if="selectedTab === 'groups'" :client-id="client.id" />
       <UiDataLoader
         v-else-if="selectedTab === 'grades'"
         :key="`grades${gradeFilters.year}`"

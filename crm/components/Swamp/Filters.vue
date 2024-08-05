@@ -3,16 +3,10 @@ const emit = defineEmits<{
   apply: [f: Filters]
 }>()
 
-const swampFilterStatusLabel = {
-  toFullfill: 'к исполнению',
-  closedInGroup: 'в группе с закрытым договором',
-  noContractInGroup: 'в группе без договора',
-} as const
-
 export interface Filters {
   year: Year
   program?: Program
-  status?: keyof typeof swampFilterStatusLabel
+  status?: SwampFilterStatus
 }
 
 const filters = ref(loadFilters<Filters>({
@@ -46,7 +40,7 @@ watch(filters.value, () => {
       <UiClearableSelect
         v-model="filters.status"
         label="Статус"
-        :items="selectItems(swampFilterStatusLabel)"
+        :items="selectItems(SwampFilterStatusLabel)"
         density="comfortable"
       />
     </div>

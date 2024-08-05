@@ -135,7 +135,7 @@ nextTick(loadData)
       :id="teacher.id"
       entity="teacher"
     >
-      <Teeth :items="teacher.teeth!" />
+      <TeethBar :items="teacher.teeth!" />
     </LessonList>
     <UiDataLoader
       v-else-if="selectedTab === 'reports'"

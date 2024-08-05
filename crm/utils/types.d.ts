@@ -1,4 +1,8 @@
+import type { SwampFilterStatusLabel } from '~/utils/labels'
+
 declare global {
+  type SwampFilterStatus = keyof typeof SwampFilterStatusLabel
+
   type TelegramTemplate = keyof typeof TelegramTemplateLabel
 
   type Weekday = keyof typeof WeekdayLabel
@@ -825,12 +829,13 @@ declare global {
   interface SwampListResource {
     id: string
     cvp_id: null | number
+    lessons: null | number
     client: PersonResource
     program: Program
     year: Year
     contract_id: number
-    group_id: null | number // group_id = null это к исполнению
-    is_closed: null | boolean // null – когда не найдено соответвующей программы
+    group_id: null | number // group_id = null это к исполнению
+    is_closed: null | boolean // null – когда не найдено соответствующей программы
   }
 
   interface Tooth {
@@ -840,8 +845,8 @@ declare global {
     time_end: string
   }
 
-  interface Teeth {
-    [key: number]: Tooth[]
+  type Teeth = {
+    [key in Weekday]: Tooth[]
   }
 
   interface GroupContractResource {

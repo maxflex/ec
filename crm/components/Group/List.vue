@@ -26,7 +26,7 @@ function onClick(g: GroupListResource) {
     :class="{ 'group-item--selectable': selectable }"
     @click="onClick(item)"
   >
-    <div style="width: 180px">
+    <div style="width: 200px">
       <NuxtLink :to="{ name: 'groups-id', params: { id: item.id } }">
         Группа {{ item.id }}
       </NuxtLink>
@@ -46,12 +46,12 @@ function onClick(g: GroupListResource) {
         {{ plural(item.lessons_count, ['урок', 'урока', 'уроков']) }}
       </template>
     </div>
-    <div style="width: 80px">
+    <div style="width: 100px">
       <v-icon :icon="mdiAccountGroup" class="mr-2" style="top: -3px; position: relative;" />
       {{ item.group_contracts_count }}
     </div>
     <div>
-      <Teeth :items="item.teeth" />
+      <TeethAsText :items="item.teeth" />
     </div>
   </div>
 </template>

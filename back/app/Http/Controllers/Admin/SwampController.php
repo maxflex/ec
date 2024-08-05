@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SwampListResource;
+use App\Models\Contract;
 use App\Models\ContractVersion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,20 +13,29 @@ class SwampController extends Controller
 {
     protected $filters = [
         'equals' => ['year', 'program'],
-        'status' => ['status']
+        'status' => ['status'],
+        'client' => ['client_id'],
     ];
 
     public function index(Request $request)
     {
-        $lastVersionsQuery =  ContractVersion::selectRaw(<<<SQL
-            contract_id as last_contract_id,
-            MAX(version) as last_version
-        SQL)->groupBy('contract_id');
+        $lastVersionsCte = ContractVersion::query()
+            ->selectRaw(<<<SQL
+                contract_id as last_contract_id,
+                MAX(version) as last_version
+            SQL)->groupBy('contract_id');
+
+        /**
+         * group_contracts и groups
+         */
+        $gcgCte = DB::table('group_contracts', 'gc')
+            ->select('gc.contract_id', 'gc.group_id', 'g.program', 'g.year')
+            ->join('groups as g', 'g.id', '=', 'gc.group_id');
 
         /**
          * Программы последней версии договора
          */
-        $cvpQuery = DB::table('contract_version_programs', 'cvp')
+        $cvpCte = DB::table('contract_version_programs', 'cvp')
             ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
             ->join(
                 'lv',
@@ -34,17 +44,15 @@ class SwampController extends Controller
                     ->on('cv.version', '=', 'lv.last_version')
             )
             ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
-            ->leftJoin('group_contracts as gc', 'gc.contract_id', '=', 'c.id')
-            ->leftJoin(
-                'groups as g',
-                fn ($join) => $join
-                    ->on('g.id', '=', 'gc.group_id')
-                    ->on('g.program', '=', 'cvp.program')
+            ->leftJoin('gcg', fn ($join) => $join
+                ->on('gcg.contract_id', '=', 'c.id')
+                ->on('gcg.program', '=', 'cvp.program')
             )
             ->selectRaw(<<<SQL
                 cvp.id,
                 cvp.id as `cvp_id`,
-                g.id as `group_id`,
+                cvp.lessons,
+                `group_id`,
                 cv.contract_id,
                 c.year,
                 cvp.program,
@@ -54,56 +62,66 @@ class SwampController extends Controller
         /**
          * В группе, но нет соответствующей программы в последней версии договора
          */
-        $groupContractsQuery = DB::table('group_contracts', 'gc')
-            ->join('groups as g', 'g.id', '=', 'gc.group_id')
+        $noContractInGroupCte = DB::table('gcg')
             ->leftJoin(
                 'cvp',
                 fn ($join) => $join
-                    ->on('gc.contract_id', '=', 'cvp.contract_id')
-                    ->on('g.program', '=', 'cvp.program')
-                    ->on('g.year', '=', 'cvp.year'),
+                    ->on('gcg.contract_id', '=', 'cvp.contract_id')
+                    ->on('gcg.program', '=', 'cvp.program')
+                    ->on('gcg.year', '=', 'cvp.year'),
             )
-            ->whereNull('cvp.id')
+            ->whereNull('cvp.id') // нет программы
             ->selectRaw(<<<SQL
                 UUID() as `id`,
-                NULL as `cvp_id`,
-                gc.group_id,
-                gc.contract_id,
-                g.year,
-                g.program,
-               false as `is_closed`
+                `cvp_id`,
+                `lessons`,
+                gcg.group_id,
+                gcg.contract_id,
+                gcg.year,
+                gcg.program,
+               `is_closed`
             SQL);
 
-        $q1 = DB::table('cvp');
-        $q2 = DB::table('gc');
+        $cvpQuery = DB::table('cvp');
+        $noContractInGroupQuery = DB::table('noContractInGroup');
 
-        $this->filter($request, $q1);
-        $this->filter($request, $q2);
+        $this->filter($request, $cvpQuery);
+        $this->filter($request, $noContractInGroupQuery);
 
-        $q1->withExpression('lv', $lastVersionsQuery)
-            ->withExpression('cvp', $cvpQuery)
-            ->withExpression('gc', $groupContractsQuery)
-            ->union($q2);
+        $cvpQuery->withExpression('lv', $lastVersionsCte)
+            ->withExpression('gcg', $gcgCte)
+            ->withExpression('cvp', $cvpCte)
+            ->withExpression('noContractInGroup', $noContractInGroupCte)
+            ->union($noContractInGroupQuery);
 
         // $query->where('contract_id', 14740);
-        return $this->handleIndexRequest($request, $q1, SwampListResource::class);
+        return $this->handleIndexRequest($request, $cvpQuery, SwampListResource::class);
     }
 
     protected function filterStatus(&$query, $status)
     {
         switch ($status) {
-            case 'toFullfill':
-                return $query
+            case 'toFulfil':
+                $query
                     ->whereNull('group_id')
                     ->where('is_closed', false);
+                break;
             case 'closedInGroup':
-                return $query
+                $query
                     ->where('is_closed', true)
                     ->whereNotNull('group_id');
+                break;
             case 'noContractInGroup':
-                return $query
+                $query
                     ->whereNotNull('group_id')
                     ->whereNull('cvp_id');
+                break;
         }
+    }
+
+    protected function filterClient(&$query, $clientId)
+    {
+        $contractIds = Contract::query()->where('client_id', $clientId)->pluck('id');
+        $query->whereIn('contract_id', $contractIds);
     }
 }
