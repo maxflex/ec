@@ -139,4 +139,9 @@ class Client extends Model
             ->whereIn('gc.contract_id', $this->contracts()->pluck('id'));
         return Teeth::get($query);
     }
+
+    public function scopeActive($query): void
+    {
+        $query->whereHas('contracts');
+    }
 }

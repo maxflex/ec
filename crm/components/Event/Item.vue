@@ -4,6 +4,7 @@ import { mdiAccountGroup, mdiCheckAll } from '@mdi/js'
 const { item } = defineProps<{ item: EventListResource }>()
 defineEmits<{
   edit: [e: EventListResource]
+  participants: [e: EventListResource]
 }>()
 
 const isConfirmed = ref<boolean>(!!item.participant?.is_confirmed)
@@ -26,9 +27,16 @@ function confirmParticipant() {
   <div :id="`event-${item.id}`" class="event-item" :class="{ 'event-item--study': !item.is_afterclass }">
     <div class="table-actionss">
       <v-btn
+        :icon="mdiAccountGroup"
+        :size="48"
+        variant="text"
+        color="gray"
+        @click="$emit('participants', item)"
+      />
+      <v-btn
         icon="$edit"
         :size="48"
-        variant="plain"
+        variant="text"
         color="gray"
         @click="$emit('edit', item)"
       />

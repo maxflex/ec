@@ -310,9 +310,7 @@ a.table-item {
 .remove-btn {
   margin-right: 48px;
   opacity: 0.3;
-  .v-icon {
-    transition: none !important;
-  }
+  transition: none !important;
   &:hover {
     opacity: 1;
     .v-icon {

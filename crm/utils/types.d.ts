@@ -73,6 +73,7 @@ declare global {
   type PersonWithPhonesResource = PersonResource & HasPhones
   type PersonWithPhotoResource = PersonResource & HasPhoto
   type PersonListResource = PersonWithPhotoResource & {
+    entity_id: number
     entity_type: typeof EntityType.teacher | typeof EntityType.client
   }
 
@@ -89,6 +90,7 @@ declare global {
 
   type InfiniteScrollSide = 'start' | 'end' | 'both'
   type InfiniteScrollStatus = 'ok' | 'empty' | 'loading' | 'error'
+
   interface InfiniteScrollCallback {
     side: InfiniteScrollSide
     status: InfiniteScrollStatus
@@ -641,6 +643,7 @@ declare global {
       }>
     }
   }
+
   interface EventListResource {
     id: number
     name: string
@@ -665,9 +668,21 @@ declare global {
     duration: number | null
     description: string | null
     is_afterclass: boolean
-    participants: PersonListResource[]
     user?: PersonResource
     created_at?: string
+  }
+
+  interface EventParticipant {
+    id: number
+    is_confirmed: boolean
+    entity_id: number
+    entity_type: typeof EntityType.client | typeof EntityType.teacher
+    entity: PersonWithPhotoResource
+  }
+
+  interface EventWithParticipantsResource {
+    id: number
+    participants: EventParticipant[]
   }
 
   interface TopicListResource {

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 const { title, filters } = withDefaults(defineProps<{
   title?: string
   filters?: any
@@ -77,7 +77,7 @@ defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :width="width" :transition="transition">
+  <v-dialog v-model="dialog" :transition="transition" :width="width">
     <div class="dialog-wrapper">
       <div class="dialog-header">
         <span>
@@ -90,9 +90,9 @@ defineExpose({ open })
           </span>
         </span>
         <v-btn
-          icon="$save"
           :size="48"
-          color="#fafafa"
+          icon="$save"
+          variant="text"
           @click="save()"
         />
       </div>

@@ -1,6 +1,5 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { clone } from 'rambda'
-import type { PersonSelectorDialog } from '#build/components'
 
 const emit = defineEmits<{
   updated: [e: EventListResource]
@@ -19,11 +18,9 @@ const modelDefaults: EventResource = {
   name: '',
   description: null,
   duration: null,
-  participants: [],
   is_afterclass: false,
 }
 const item = ref<EventResource>(modelDefaults)
-const personSelectorDialog = ref<InstanceType<typeof PersonSelectorDialog>>()
 
 function create(year: Year) {
   itemId.value = undefined
@@ -59,10 +56,6 @@ async function save() {
   setTimeout(() => saving.value = false, 300)
 }
 
-function onParticipantsSelected(participants: PersonListResource[]) {
-  item.value.participants = participants
-}
-
 async function destroy() {
   if (!confirm('Вы уверены, что хотите удалить событие?')) {
     return
@@ -88,26 +81,43 @@ defineExpose({ create, edit })
   <v-dialog v-model="dialog" :width="width">
     <div class="dialog-wrapper">
       <div class="dialog-header">
-        <template v-if="itemId">
+        <div v-if="itemId">
           Редактировать событие
-        </template>
+          <div class="dialog-subheader">
+            <template v-if="item.user && item.created_at">
+              {{ formatName(item.user) }}
+              {{ formatDateTime(item.created_at) }}
+            </template>
+          </div>
+        </div>
         <template v-else>
           Новое событие
         </template>
-        <v-btn
-          icon="$save"
-          :size="48"
-          color="#fafafa"
-          @click="save()"
-        />
+        <div>
+          <v-btn
+            v-if="itemId"
+            :loading="deleting"
+            :size="48"
+            class="remove-btn"
+            icon="$delete"
+            variant="text"
+            @click="destroy()"
+          />
+          <v-btn
+            :size="48"
+            icon="$save"
+            variant="text"
+            @click="save()"
+          />
+        </div>
       </div>
       <UiLoaderr v-if="loading" />
       <div v-else class="dialog-body">
         <div>
           <v-select
             v-model="item.year"
-            label="Учебный год"
             :items="selectItems(YearLabel)"
+            label="Учебный год"
           />
         </div>
         <div class="double-input">
@@ -123,10 +133,10 @@ defineExpose({ create, edit })
         <div>
           <v-text-field
             v-model="item.duration"
-            label="Длительность"
-            type="number"
-            suffix="минут"
             hide-spin-buttons
+            label="Длительность"
+            suffix="минут"
+            type="number"
           />
         </div>
         <div>
@@ -141,39 +151,7 @@ defineExpose({ create, edit })
             label="Внеучебное"
           />
         </div>
-
-        <div>
-          <a
-            class="link-icon"
-            @click="personSelectorDialog?.open()"
-          >
-            участники ({{ item.participants.length }})
-            <v-icon
-              :size="16"
-              icon="$next"
-            />
-          </a>
-        </div>
-        <div
-          v-if="itemId"
-          class="dialog-bottom"
-        >
-          <span>
-            событие создано
-            {{ formatName(item.user!) }}
-            {{ formatDateTime(item.created_at!) }}
-          </span>
-          <v-btn
-            icon="$delete"
-            :size="48"
-            color="red"
-            variant="plain"
-            :loading="deleting"
-            @click="destroy()"
-          />
-        </div>
       </div>
     </div>
   </v-dialog>
-  <PersonSelectorDialog ref="personSelectorDialog" @selected="onParticipantsSelected" />
 </template>

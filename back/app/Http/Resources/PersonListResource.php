@@ -16,7 +16,7 @@ class PersonListResource extends JsonResource
     {
         return extract_fields($this, [
             'first_name', 'last_name', 'middle_name',
-            'entity_type', 'photo_url'
+            'entity_type', 'entity_id', 'photo_url',
         ]);
     }
 }

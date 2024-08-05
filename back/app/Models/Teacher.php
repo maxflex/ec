@@ -142,7 +142,7 @@ class Teacher extends Model
         return array_reverse($data);
     }
 
-    public function scopeActive($query)
+    public function scopeActive($query): void
     {
         $query->where('status', TeacherStatus::active);
     }

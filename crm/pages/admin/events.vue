@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { EventDialog } from '#build/components'
+import type { EventDialog, EventParticipantsDialog } from '#components'
 import type { Filters } from '~/components/Event/Filters.vue'
 
 const loading = ref(false)
@@ -8,6 +8,7 @@ let filters: Filters = {
   year: currentAcademicYear(),
 }
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
+const eventParticipantsDialog = ref<InstanceType<typeof EventParticipantsDialog>>
 let scrollContainer: HTMLElement | null = null
 
 async function loadData() {
@@ -76,7 +77,13 @@ nextTick(loadData)
   </div>
   <div>
     <UiLoader3 :loading="loading" />
-    <EventList :items="items" :year="filters.year" @edit="eventDialog?.edit" />
+    <EventList
+      :items="items"
+      :year="filters.year"
+      @edit="eventDialog?.edit"
+      @participants="eventParticipantsDialog?.open"
+    />
   </div>
   <EventDialog ref="eventDialog" @updated="onUpdated" @deleted="onDeleted" />
+  <EventParticipantsDialog ref="eventParticipantsDialog" />
 </template>
