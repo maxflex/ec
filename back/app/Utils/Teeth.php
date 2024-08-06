@@ -32,6 +32,7 @@ class Teeth
             ->groupBy('weekday', 'time', 'duration')
             ->get();
 
+        $teeth = [];
         foreach ($lessons as $l) {
             $weekday = $l->weekday === 1 ? 6 : $l->weekday - 2;
             $startPercent = self::getPercent($l->start);

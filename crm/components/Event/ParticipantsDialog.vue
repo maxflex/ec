@@ -12,6 +12,7 @@ function open(e: EventListResource) {
 }
 
 async function loadData(e: EventListResource) {
+  item.value = undefined
   const { data } = await useHttp<EventWithParticipantsResource>(
       `event-participants/${e.id}`,
   )

@@ -60,6 +60,9 @@ function onClick(g: GroupListResource) {
 .group-item {
   &--selectable {
     cursor: pointer;
+    & > div:first-child {
+      width: 120px !important;
+    }
   }
 }
 </style>
