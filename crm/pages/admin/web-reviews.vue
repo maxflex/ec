@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import type { WebReviewDialog } from '#components'
+
 const items = ref<WebReviewResource[]>([])
 const paginator = usePaginator()
+const webReviewDialog = ref<InstanceType<typeof WebReviewDialog>>()
 
 const loadData = async function () {
   if (paginator.loading) {
@@ -19,6 +22,19 @@ const loadData = async function () {
     }
     paginator.isLastPage = meta.current_page === meta.last_page
   }
+}
+
+function onUpdated(item: WebReviewResource, deleted: boolean) {
+  const index = items.value.findIndex(e => e.id === item.id)
+  if (index === -1) {
+    items.value.unshift(item)
+  }
+  else {
+    deleted
+      ? items.value.splice(index, 1)
+      : items.value.splice(index, 1, item)
+  }
+  itemUpdated('web-review', item.id)
 }
 
 async function onIntersect({
@@ -45,6 +61,7 @@ nextTick(loadData)
     side="end"
     @load="onIntersect"
   >
-    <WebReviewList :items="items" />
+    <WebReviewList :items="items" @edit="webReviewDialog?.edit" />
   </v-infinite-scroll>
+  <WebReviewDialog ref="webReviewDialog" @updated="onUpdated" />
 </template>

@@ -51,7 +51,3 @@ nextTick(loadData)
   <WebReviewList v-else :items="items" @edit="webReviewDialog?.edit" />
   <WebReviewDialog ref="webReviewDialog" @updated="onUpdated" />
 </template>
-
-<style lang="scss" scoped>
-
-</style>
