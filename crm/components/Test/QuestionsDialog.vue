@@ -126,12 +126,12 @@ defineExpose({ open })
 <style lang="scss">
 .test-dialog {
   &__questions {
-    &::-webkit-scrollbar {
-      display: none;
-    }
     flex: 1;
     // padding: 20px;
     overflow: scroll;
+    &::-webkit-scrollbar {
+      display: none;
+    }
     h2 {
       margin-bottom: 16px;
       cursor: default;

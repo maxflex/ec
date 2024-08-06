@@ -22,9 +22,21 @@ class WebReviewController extends Controller
         return $this->handleIndexRequest($request, $query, WebReviewResource::class);
     }
 
+    public function store(Request $request)
+    {
+        $webReview = auth()->user()->entity->webReviews()->create($request->all());
+        return new WebReviewResource($webReview);
+    }
+
     public function update(WebReview $webReview, Request $request)
     {
         $webReview->update($request->all());
         return new WebReviewResource($webReview);
+    }
+
+    public function destroy(WebReview $webReview)
+    {
+        $webReview->scores->each->delete();
+        $webReview->delete();
     }
 }

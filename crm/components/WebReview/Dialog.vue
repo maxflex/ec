@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
 
-const emit = defineEmits<{ (e: 'updated', i: WebReviewResource): void }>()
+const emit = defineEmits<{
+  updated: [item: WebReviewResource, deleted: boolean]
+}>()
 const { width, dialog } = useDialog('default')
 
 const modelDefaults: WebReviewResource = {
   id: newId(),
+  client_id: newId(),
   text: '',
   signature: '',
   is_published: false,
@@ -14,24 +17,58 @@ const modelDefaults: WebReviewResource = {
 }
 const item = ref<WebReviewResource>(modelDefaults)
 const saving = ref(false)
+const deleting = ref(false)
 const editMode = computed(() => item.value.id > 0)
 
-function edit(i: WebReviewResource) {
-  item.value = clone(i)
+function edit(wr: WebReviewResource) {
+  item.value = clone(wr)
+  dialog.value = true
+}
+
+function create(clientId: number) {
+  item.value = clone({
+    ...modelDefaults,
+    client_id: clientId,
+  })
   dialog.value = true
 }
 
 async function save() {
   saving.value = true
-  const { data } = await useHttp<WebReviewResource>(`web-reviews/${item.value.id}`, {
-    method: 'put',
-    body: item.value,
-  })
-  if (data.value) {
-    emit('updated', item.value)
+  if (item.value.id > 0) {
+    const { data } = await useHttp<WebReviewResource>(`web-reviews/${item.value.id}`, {
+      method: 'put',
+      body: item.value,
+    })
+    if (data.value) {
+      item.value = data.value
+    }
   }
+  else {
+    const { data } = await useHttp<WebReviewResource>(`web-reviews`, {
+      method: 'post',
+      body: item.value,
+    })
+    if (data.value) {
+      item.value = data.value
+    }
+  }
+  emit('updated', item.value, false)
   dialog.value = false
   setTimeout(() => saving.value = false, 200)
+}
+
+async function destroy() {
+  if (!confirm('Вы уверены, что хотите удалить отзыв?')) {
+    return
+  }
+  deleting.value = true
+  await useHttp(`web-reviews/${item.value.id}`, {
+    method: 'delete',
+  })
+  emit('updated', item.value, true)
+  dialog.value = false
+  setTimeout(() => deleting.value = false, 300)
 }
 
 function addScores() {
@@ -41,7 +78,7 @@ function addScores() {
   smoothScroll('dialog', 'bottom')
 }
 
-defineExpose({ edit })
+defineExpose({ edit, create })
 </script>
 
 <template>
@@ -51,18 +88,35 @@ defineExpose({ edit })
   >
     <div class="dialog-wrapper">
       <div class="dialog-header">
-        <template v-if="editMode">
+        <div v-if="editMode">
           Редактирование отзыва
-        </template>
+          <div class="dialog-subheader">
+            <template v-if="item.user && item.created_at">
+              {{ formatName(item.user) }}
+              {{ formatDateTime(item.created_at) }}
+            </template>
+          </div>
+        </div>
         <template v-else>
           Добавить отзыв
         </template>
-        <v-btn
-          icon="$save"
-          :size="48"
-          color="#fafafa"
-          @click="save()"
-        />
+        <div>
+          <v-btn
+            v-if="editMode"
+            :loading="deleting"
+            :size="48"
+            class="remove-btn"
+            icon="$delete"
+            variant="text"
+            @click="destroy()"
+          />
+          <v-btn
+            :size="48"
+            icon="$save"
+            variant="text"
+            @click="save()"
+          />
+        </div>
       </div>
       <div class="dialog-body">
         <div class="text-center pb-2">

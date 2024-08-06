@@ -15,9 +15,11 @@ class WebReviewResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'text', 'signature', 'rating', 'is_published', 'scores'
+            'text', 'signature', 'rating', 'is_published',
+            'scores', 'client_id', 'created_at'
         ], [
-            'client' => new PersonResource($this->client)
+            'client' => new PersonResource($this->client),
+            'user' => new PersonResource($this->user)
         ]);
     }
 }

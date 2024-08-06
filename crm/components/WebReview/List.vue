@@ -1,24 +1,17 @@
 <script setup lang="ts">
 import { mdiWeb } from '@mdi/js'
-import type { WebReviewDialog } from '#build/components'
 
 const { items } = defineProps<{ items: WebReviewResource[] }>()
-const webReviewDialog = ref<InstanceType<typeof WebReviewDialog>>()
-
-function onUpdated(i: WebReviewResource) {
-  const index = items.findIndex(e => e.id === i.id)
-
-  if (index !== -1) {
-    // eslint-disable-next-line
-    items[index] = i
-  }
-}
+defineEmits<{
+  edit: [item: WebReviewResource]
+}>()
 </script>
 
 <template>
   <div class="table">
     <div
       v-for="item in items"
+      :id="`web-review-${item.id}`"
       :key="item.id"
     >
       <div class="table-actionss">
@@ -26,7 +19,7 @@ function onUpdated(i: WebReviewResource) {
           icon="$edit"
           :size="48"
           variant="plain"
-          @click="webReviewDialog?.edit(item)"
+          @click="$emit('edit', item)"
         />
       </div>
       <div style="width: 50px">
@@ -69,10 +62,6 @@ function onUpdated(i: WebReviewResource) {
       </div>
     </div>
   </div>
-  <WebReviewDialog
-    ref="webReviewDialog"
-    @updated="onUpdated"
-  />
 </template>
 
 <style lang="scss">

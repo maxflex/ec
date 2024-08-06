@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import type {
-  ClientDialog,
-} from '#build/components'
+import type { ClientDialog } from '#build/components'
 import type { Filters } from '~/components/Report/TeacherFilters.vue'
 
 const tabs = {
@@ -163,18 +161,7 @@ nextTick(loadData)
           <ClientReviewList :items="items" />
         </template>
       </UiDataLoader>
-      <UiDataLoader
-        v-else-if="selectedTab === 'webReviews'"
-        url="web-reviews"
-        :filters="{
-          client_id: client.id,
-          with: 'client',
-        }"
-      >
-        <template #default="{ items }">
-          <WebReviewList :items="items" />
-        </template>
-      </UiDataLoader>
+      <WebReviewTab v-else-if="selectedTab === 'webReviews'" :client-id="client.id" />
       <ExamScoreTab v-else-if="selectedTab === 'examScores'" :client-id="client.id" />
       <ClientPaymentTab v-else-if="selectedTab === 'payments'" :client-id="client.id" />
       <LessonList

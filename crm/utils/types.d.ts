@@ -463,12 +463,14 @@ declare global {
 
   interface WebReviewResource {
     id: number
+    client_id: number
     is_published: boolean
     text: string
     signature: string
     rating: number
     scores: WebReviewScore[]
     client?: PersonResource
+    user?: PersonResource
     created_at?: string
   }
 

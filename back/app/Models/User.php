@@ -21,7 +21,6 @@ class User extends Authenticatable
         'is_active' => 'boolean'
     ];
 
-
     public function scopeActive($query): void
     {
         $query->where('is_active', true);
@@ -30,6 +29,11 @@ class User extends Authenticatable
     public function clientTests(): HasMany
     {
         return $this->hasMany(ClientTest::class);
+    }
+
+    public function webReviews(): HasMany
+    {
+        return $this->hasMany(WebReview::class);
     }
 
     public function instructions(): HasMany
