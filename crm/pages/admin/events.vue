@@ -8,7 +8,7 @@ let filters: Filters = {
   year: currentAcademicYear(),
 }
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
-const eventParticipantsDialog = ref<InstanceType<typeof EventParticipantsDialog>>
+const eventParticipantsDialog = ref<InstanceType<typeof EventParticipantsDialog>>()
 let scrollContainer: HTMLElement | null = null
 
 async function loadData() {
