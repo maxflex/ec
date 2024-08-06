@@ -1,6 +1,8 @@
-import type { SwampFilterStatusLabel } from '~/utils/labels'
+import type Metrics from '~/components/Stats/Metrics'
 
 declare global {
+  type StatsMetric = keyof typeof Metrics
+
   type SwampFilterStatus = keyof typeof SwampFilterStatusLabel
 
   type TelegramTemplate = keyof typeof TelegramTemplateLabel

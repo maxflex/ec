@@ -4,8 +4,8 @@ namespace App\Console\Commands\Transfer;
 
 use App\Enums\Company;
 use App\Enums\Program;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class TransferContracts extends Command
@@ -54,7 +54,7 @@ class TransferContracts extends Command
                     'version' => $cv->version,
                     'date' => $cv->date,
                     'sum' => $cv->sum,
-                    'created_at' => $cv->updated_at,
+                    'created_at' => $cv->created_at,
                     'updated_at' => $cv->updated_at,
                 ]);
                 foreach ($contractSubjects->where('contract_version_id', $cv->id) as $cs) {

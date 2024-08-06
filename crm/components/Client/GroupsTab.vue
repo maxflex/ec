@@ -26,6 +26,10 @@ async function loadGroups() {
   }
 }
 
+function onSelected() {
+  console.log('here')
+}
+
 async function loadSwamps() {
   const status: SwampFilterStatus = 'toFulfil'
   const { data } = await useHttp<ApiResponse<SwampListResource[]>>(`swamps`, {
@@ -57,7 +61,7 @@ nextTick(loadData)
     <div class="table table--padding">
       <GroupList :items="groups" />
     </div>
-    <SwampList :items="swamps" />
+    <SwampList :items="swamps" @select="onSelected" />
   </template>
 </template>
 

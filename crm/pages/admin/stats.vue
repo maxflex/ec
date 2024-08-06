@@ -1,68 +1,75 @@
-<script setup lang="ts">
-import type { Filters } from '~/components/Stats/Filters.vue'
+<script lang="ts" setup>
+import { clone } from 'rambda'
+import type { StatsMetricsDialog } from '#build/components'
+import Metrics from '~/components/Stats/Metrics'
 
-const items = ref<StatsResource[]>()
-const paginator = usePaginator()
-let filters = loadFilters<Filters>({ mode: 'day' })
+const { dialog, width } = useDialog('default')
 
-// const isLastPage = false
+const metrics = ref<StatsMetric[]>([])
+const metricsDialog = ref<InstanceType<typeof StatsMetricsDialog>>()
+const selectedMetric = ref<StatsMetric>('RequestsMetric')
 
-const loadData = async function () {
-  paginator.page++
-  paginator.loading = true
-  const { data } = await useHttp<ApiResponse<StatsResource[]>>('stats', {
-    params: {
-      ...filtersToQuery(filters),
-      page: paginator.page,
-      paginate: 30,
-    },
-  })
-  paginator.loading = false
-  if (data.value) {
-    const { meta, data: newItems } = data.value
-    items.value
-      = paginator.page === 1 ? newItems : items.value?.concat(newItems)
-    paginator.isLastPage = meta.current_page === meta.last_page
-  }
+function onSelect(items: StatsMetric[]) {
+  metrics.value = clone(items)
 }
 
-async function onIntersect({
-  done,
-}: {
-  done: (status: InfiniteScrollStatus) => void
-}) {
-  if (paginator.isLastPage) {
-    return
-  }
-  done('loading')
-  await loadData()
-  done('ok')
+function open(metric: StatsMetric) {
+  selectedMetric.value = metric
+  dialog.value = true
 }
 
-function onFiltersApply(f: Filters) {
-  filters = f
-  paginator.page = 0
-  loadData()
+function saveFilters() {
+  dialog.value = false
 }
 
-nextTick(loadData)
+const MetricComponent = computed(() => Metrics[selectedMetric.value])
 </script>
 
 <template>
-  <div class="filters">
-    <StatsFilters @apply="onFiltersApply" />
+  <div class="table table-stats">
+    <div>
+      <div>
+        <v-btn :size="48" icon="$plus" @click="metricsDialog?.open()" />
+      </div>
+      <div
+        v-for="metric in metrics" :key="metric" class="tabs-item text-truncate"
+        style="width: 100px" @click="open(metric)"
+      >
+        {{ Metrics[metric].label }}
+      </div>
+      <div class="text-right">
+        <v-btn color="primary">
+          применить
+        </v-btn>
+      </div>
+    </div>
   </div>
-  <UiLoader :paginator="paginator" />
-  <div class="table stats-list stats-list__header" />
-  <v-infinite-scroll
-    v-if="items"
-    :margin="100"
-    side="end"
-    @load="onIntersect"
-  >
-    <StatsList
-      :items="items"
-      :mode="filters.mode"
-    />
-  </v-infinite-scroll>
+  <StatsMetricsDialog ref="metricsDialog" @select="onSelect" />
+
+  <v-dialog v-model="dialog" :width="width">
+    <div class="dialog-wrapper">
+      <div class="dialog-header">
+        {{ MetricComponent.label }}
+        <v-btn :size="48" icon="$save" variant="text" @click="saveFilters()" />
+      </div>
+      <div class="dialog-body">
+        <component :is="MetricComponent" />
+      </div>
+    </div>
+  </v-dialog>
 </template>
+
+<style lang="scss" scoped>
+.table-stats {
+  & > div {
+    &:first-child {
+      text-transform: lowercase;
+    }
+  }
+  .tabs-item {
+    text-align: center;
+    border-radius: 10px;
+    padding: 12px 8px !important;
+  }
+}
+</style>
