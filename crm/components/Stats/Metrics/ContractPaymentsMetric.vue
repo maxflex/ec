@@ -1,17 +1,12 @@
 <script lang="ts" setup>
-// const paymentTypeLabel = {
-//   payments: 'только платежи',
-//   returns: 'только возвраты',
-//   diff: 'разница',
-// }
-
 interface Filters {
   year?: Year
   is_return?: number
-  // type: 'payments' | 'returns'
 }
 
 const filters = ref<Filters>({})
+
+defineExpose({ filters })
 </script>
 
 <script lang="ts">

@@ -43,7 +43,7 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::post('preview', [PreviewController::class, 'enter']);
     Route::post('photos/upload', [PhotoController::class, 'upload']);
     Route::apiResource('photos', PhotoController::class)->only('store');
-    Route::apiResource('stats', StatsController::class)->only('index');
+    Route::post('stats', StatsController::class);
     Route::controller(BalanceController::class)->prefix('balance')->group(function () {
         Route::get('contract/{contract}', 'contract');
         Route::get('teacher/{teacher}', 'teacher');

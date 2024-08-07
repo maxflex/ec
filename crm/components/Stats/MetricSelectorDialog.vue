@@ -10,6 +10,7 @@ const selected = ref<StatsMetric[]>([])
 
 function open() {
   dialog.value = true
+  selected.value = []
 }
 
 function onSelect(key: StatsMetric) {
@@ -31,7 +32,7 @@ defineExpose({ open })
   <v-dialog v-model="dialog" :width="width">
     <div class="dialog-wrapper">
       <div class="dialog-header">
-        Выберите метрики
+        Добавить метрики
         <v-btn :size="48" icon="$save" variant="text" @click="save()" />
       </div>
       <div class="dialog-body pt-0">

@@ -5,6 +5,8 @@ interface Filters {
 }
 
 const filters = ref<Filters>({})
+
+defineExpose({ filters })
 </script>
 
 <script lang="ts">

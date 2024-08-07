@@ -1,75 +1,189 @@
 <script lang="ts" setup>
-import { clone } from 'rambda'
-import type { StatsMetricsDialog } from '#build/components'
+import type { StatsMetricFiltersDialog, StatsMetricSelectorDialog } from '#build/components'
 import Metrics from '~/components/Stats/Metrics'
 
-const { dialog, width } = useDialog('default')
+const metricSelectorDialog = ref<InstanceType<typeof StatsMetricSelectorDialog>>()
+const metricFiltersDialog = ref<InstanceType<typeof StatsMetricFiltersDialog>>()
+const selectedMetrics = ref<StatsMetric[]>([])
+const loading = ref(false)
+const mode = ref<StatsMode>('day')
+const items = ref<StatsListResource[]>([])
+const filters = ref<object[]>([])
+const page = ref<number>(0)
+let scrollContainer: HTMLElement | null = null
 
-const metrics = ref<StatsMetric[]>([])
-const metricsDialog = ref<InstanceType<typeof StatsMetricsDialog>>()
-const selectedMetric = ref<StatsMetric>('RequestsMetric')
-
-function onSelect(items: StatsMetric[]) {
-  metrics.value = clone(items)
+function onMetricsSelected(metrics: StatsMetric[]) {
+  for (const metric of metrics) {
+    selectedMetrics.value.push(metric)
+    filters.value.push({})
+  }
 }
 
-function open(metric: StatsMetric) {
-  selectedMetric.value = metric
-  dialog.value = true
+function onFiltersApply(index: number, f: any) {
+  console.log('Filters selected', f)
+  filters.value[index] = f
 }
 
-function saveFilters() {
-  dialog.value = false
+async function loadData() {
+  if (loading.value) {
+    return
+  }
+  loading.value = true
+  page.value++
+  const { data } = await useHttp<StatsListResource[]>(
+      `stats`,
+      {
+        method: 'post',
+        body: {
+          page: page.value,
+          mode: mode.value,
+          items: filters.value.map((filters, i) => ({
+            filters,
+            metric: selectedMetrics.value[i],
+          })),
+        },
+      },
+  )
+  if (data.value) {
+    items.value = page.value === 1 ? data.value : items.value.concat(data.value)
+  }
+  loading.value = false
 }
 
-const MetricComponent = computed(() => Metrics[selectedMetric.value])
+function reloadData() {
+  page.value = 0
+  if (scrollContainer) {
+    scrollContainer.scrollTop = 0
+  }
+  loadData()
+}
+
+function onScroll() {
+  if (!scrollContainer || loading.value || !items.value.length) {
+    return
+  }
+  const { scrollTop, scrollHeight, clientHeight } = scrollContainer
+  const scrollPosition = scrollTop + clientHeight
+  const scrollThreshold = scrollHeight * 0.9
+
+  if (scrollPosition >= scrollThreshold) {
+    loadData()
+  }
+}
+
+onMounted(() => {
+  scrollContainer = document.documentElement.querySelector('main')
+  scrollContainer?.addEventListener('scroll', onScroll)
+})
+
+onUnmounted(() => {
+  scrollContainer?.removeEventListener('scroll', onScroll)
+})
 </script>
 
 <template>
-  <div class="table table-stats">
-    <div>
+  <div :class="{ 'table-stats--loading': loading }" class="table table-stats">
+    <div class="table-stats__header">
       <div>
-        <v-btn :size="48" icon="$plus" @click="metricsDialog?.open()" />
+        <UiDropdown
+          v-model="mode"
+          :items="selectItems(StatsModeLabel)"
+        />
       </div>
       <div
-        v-for="metric in metrics" :key="metric" class="tabs-item text-truncate"
-        style="width: 100px" @click="open(metric)"
+        v-for="(metric, index) in selectedMetrics"
+        :key="index"
+        @click="metricFiltersDialog?.open(metric, index)"
       >
-        {{ Metrics[metric].label }}
+        <span
+          :class="{
+            'table-stats__metric-label--has-items': Object.keys(filters[index]).length > 0,
+          }"
+          class="table-stats__metric-label"
+        >
+          {{ filterTruncate(Metrics[metric].label, 14) }}
+        </span>
+      </div>
+      <div class="table-stats__add" @click="metricSelectorDialog?.open()">
+        <v-icon icon="$plus" />
       </div>
       <div class="text-right">
-        <v-btn color="primary">
+        <v-btn :loading="page === 1 && loading" color="primary" @click="reloadData()">
           применить
         </v-btn>
       </div>
     </div>
-  </div>
-  <StatsMetricsDialog ref="metricsDialog" @select="onSelect" />
-
-  <v-dialog v-model="dialog" :width="width">
-    <div class="dialog-wrapper">
-      <div class="dialog-header">
-        {{ MetricComponent.label }}
-        <v-btn :size="48" icon="$save" variant="text" @click="saveFilters()" />
+    <div v-for="{ date, metrics } in items" :key="date" class="table-stats__metrics">
+      <div class="text-gray">
+        {{ formatDate(date) }}
       </div>
-      <div class="dialog-body">
-        <component :is="MetricComponent" />
+      <div v-for="(metricValue, index) in metrics" :key="index" :class="{ 'text-error': metricValue < 0 }">
+        {{ metricValue ? formatPrice(metricValue) : '' }}
       </div>
     </div>
-  </v-dialog>
+  </div>
+  <StatsMetricSelectorDialog ref="metricSelectorDialog" @select="onMetricsSelected" />
+  <StatsMetricFiltersDialog ref="metricFiltersDialog" @apply="onFiltersApply" />
 </template>
 
 <style lang="scss" scoped>
 .table-stats {
-  & > div {
-    &:first-child {
-      text-transform: lowercase;
+  &--loading {
+    .table-stats__metrics {
+      opacity: 0.5;
     }
   }
-  .tabs-item {
-    text-align: center;
-    border-radius: 10px;
-    padding: 12px 8px !important;
+  & > div {
+    gap: 0 !important;
+    padding: 0 !important;
+    & > div {
+      padding: 0 20px;
+      width: 100px;
+      &:first-child {
+        width: 150px;
+      }
+    }
+  }
+  &__header {
+    position: sticky;
+    top: 0;
+    text-transform: lowercase;
+    background: white;
+    z-index: 1;
+    & > div {
+      &:not(:first-child):not(:last-child) {
+        align-self: stretch;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+        &:hover {
+          background: rgb(var(--v-theme-bg));
+        }
+      }
+    }
+  }
+  &__metric-label {
+    text-wrap: balance;
+    &--has-items {
+      position: relative;
+      &:after {
+        content: '';
+        $size: 8px;
+        height: $size;
+        width: $size;
+        border-radius: 50%;
+        position: absolute;
+        right: -10px;
+        top: 0;
+        background: rgb(var(--v-theme-error));
+      }
+    }
+  }
+  &__add {
+    width: 60px !important;
+    justify-content: center;
+    color: rgb(var(--v-theme-secondary));
   }
 }
 </style>

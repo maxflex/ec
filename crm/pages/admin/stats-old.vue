@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Filters } from '~/components/Stats/Filters.vue'
+import type { Filters } from '~/components/StatsOld/Filters.vue'
 
 const items = ref<StatsResource[]>()
 const paginator = usePaginator()
