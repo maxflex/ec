@@ -25,7 +25,7 @@ class ContractPaymentsMetric extends BaseMetric
             ]);
     }
 
-    public static function getMetric(Builder|QueryBuilder $query): int
+    public static function getQueryValue(Builder|QueryBuilder $query): int
     {
         return $query->sum(DB::raw(<<<SQL
             CAST(IF(is_return = 1, -`sum`, `sum`) AS SIGNED)

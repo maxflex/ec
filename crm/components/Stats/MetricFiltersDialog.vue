@@ -6,17 +6,15 @@ const emit = defineEmits<{
   apply: [index: number, filters: object]
 }>()
 const { dialog, width } = useDialog('default')
-const selectedMetric = ref<StatsMetric>('RequestsMetric')
+const metric = ref<StatsMetric>('RequestsMetric')
 const metricComponentRef = ref()
 let index: number = -1
 
-function open(metric: StatsMetric, i: number, preFilters: object = {}) {
-  selectedMetric.value = metric
+function open(m: MetricItem, i: number) {
+  metric.value = m.metric
   index = i
   dialog.value = true
-  nextTick(() => {
-    metricComponentRef.value.filters = clone(preFilters)
-  })
+  nextTick(() => metricComponentRef.value.filters = clone(m.filters))
 }
 
 function onFiltersApply() {
@@ -25,7 +23,7 @@ function onFiltersApply() {
   emit('apply', index, filters)
 }
 
-const MetricComponent = computed(() => Metrics[selectedMetric.value])
+const MetricComponent = computed(() => Metrics[metric.value])
 
 defineExpose({ open })
 </script>

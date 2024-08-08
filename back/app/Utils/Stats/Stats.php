@@ -6,7 +6,7 @@ use Exception;
 
 class Stats
 {
-    public static function getData(string $mode, int $page, array $items): array
+    public static function getData(string $mode, int $page, array $metrics): array
     {
         $paginate = 30;
 
@@ -45,18 +45,17 @@ class Stats
         $result = [];
         while ($from >= $to) {
             $date = $from->format($format);
-            $metrics = [];
-            foreach ($items as $item) {
-                $item = (object)$item;
-                $metricClass = join('\\', [__NAMESPACE__, 'Metrics', $item->metric]);
+            $values = [];
+            foreach ($metrics as $metric) {
+                $metricClass = join('\\', [__NAMESPACE__, 'Metrics', $metric['metric']]);
                 if (!class_exists($metricClass)) {
                     throw new Exception("Class $metricClass not found");
                 }
-                $metrics[] = $metricClass::run($item->filters, $date, $sqlFormat);
+                $values[] = $metricClass::getValue($metric['filters'], $date, $sqlFormat);
             }
             $result[] = [
                 'date' => $date,
-                'metrics' => $metrics
+                'values' => $values
             ];
             $from->modify("-1 $mode");
         }

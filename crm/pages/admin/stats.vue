@@ -7,7 +7,7 @@ import Metrics from '~/components/Stats/Metrics'
 const metricSelectorDialog = ref<InstanceType<typeof StatsMetricSelectorDialog>>()
 const metricFiltersDialog = ref<InstanceType<typeof StatsMetricFiltersDialog>>()
 const mode = ref<StatsMode>('day')
-const metrics = ref<StatsMetric[]>([])
+const metrics = ref<MetricItem[]>([])
 const loading = ref(false)
 // сохраняем параметры ответа сервера, чтобы не зависеть от текущих параметров
 // (например, если снесли метрику или изменили режим на "по годам", чтобы не менялось форматирование)
@@ -16,7 +16,6 @@ const responseParams = ref({
   metrics: clone(metrics.value),
 })
 const items = ref<StatsListResource[]>([])
-const filters = ref<object[]>([])
 const page = ref<number>(0)
 
 const isDragging = ref(false)
@@ -25,20 +24,20 @@ let scrollContainer: HTMLElement | null = null
 
 function onMetricsSelected(items: StatsMetric[]) {
   for (const metric of items) {
-    metrics.value.push(metric)
-    filters.value.push({})
+    metrics.value.push({
+      metric,
+      filters: {},
+    })
   }
 }
 
 function deleteMetric(index: number, event: MouseEvent) {
   event.stopPropagation()
-  filters.value.splice(index, 1)
   metrics.value.splice(index, 1)
 }
 
 function onFiltersApply(index: number, f: any) {
-  console.log('Filters selected', f)
-  filters.value[index] = f
+  metrics.value[index].filters = f
 }
 
 async function loadMore() {
@@ -54,10 +53,7 @@ async function loadMore() {
         body: {
           page: page.value,
           mode: mode.value,
-          items: filters.value.map((filters, i) => ({
-            filters,
-            metric: metrics.value[i],
-          })),
+          metrics: metrics.value,
         },
       },
   )
@@ -84,12 +80,12 @@ function loadData() {
   loadMore()
 }
 
-function hasFilters(index: number): boolean {
-  return Object.keys(filters.value[index]).length > 0
+function hasFilters(m: MetricItem): boolean {
+  return Object.keys(m.filters).length > 0
 }
 
-function getWidth(metric: StatsMetric) {
-  const { width } = Metrics[metric]
+function getWidth(m: MetricItem) {
+  const { width } = Metrics[m.metric]
   return {
     width: `${width || 90}px`,
   }
@@ -142,14 +138,14 @@ onUnmounted(() => {
           v-for="(metric, index) in metrics"
           :key="index"
           :class="{
-            'table-stats__header-metric--has-items': hasFilters(index),
+            'table-stats__header-metric--has-items': hasFilters(metric),
           }"
           :style="getWidth(metric)"
           class="table-stats__header-metric"
-          @click="metricFiltersDialog?.open(metric, index, filters[index])"
+          @click="metricFiltersDialog?.open(metric, index)"
         >
           <span>
-            {{ Metrics[metric].label }}
+            {{ Metrics[metric.metric].label }}
           </span>
           <v-icon icon="$close" @click="deleteMetric(index, $event)" />
         </div>
@@ -163,17 +159,17 @@ onUnmounted(() => {
         </v-btn>
       </div>
     </div>
-    <div v-for="{ date, metrics } in items" :key="date" class="table-stats__body">
+    <div v-for="{ date, values } in items" :key="date" class="table-stats__body">
       <div class="text-gray">
         {{ formatDateMode(date, responseParams.mode) }}
       </div>
       <div
-        v-for="(metricValue, index) in metrics"
+        v-for="(value, index) in values"
         :key="index"
-        :class="{ 'text-error': metricValue < 0 }"
+        :class="{ 'text-error': value < 0 }"
         :style="getWidth(responseParams.metrics[index])"
       >
-        {{ metricValue ? formatPrice(metricValue) : '' }}
+        {{ value ? formatPrice(value) : '' }}
       </div>
     </div>
   </div>

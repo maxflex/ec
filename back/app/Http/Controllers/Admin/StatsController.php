@@ -16,7 +16,7 @@ class StatsController extends Controller
         return Stats::getData(
             $request->mode,
             $request->page,
-            $request->items,
+            $request->metrics,
         );
     }
 }

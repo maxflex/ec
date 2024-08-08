@@ -478,7 +478,7 @@ declare global {
 
   interface StatsListResource {
     date: string
-    metrics: number[]
+    values: number[]
   }
 
   // утилита извлекает тип из emit-функции
@@ -867,6 +867,11 @@ declare global {
     contract_id: number
     teeth: Teeth
     client: PersonWithPhotoResource
+  }
+
+  interface MetricItem {
+    metric: StatsMetric
+    filters: object
   }
 }
 

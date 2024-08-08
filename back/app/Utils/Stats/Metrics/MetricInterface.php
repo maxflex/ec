@@ -9,5 +9,5 @@ interface MetricInterface
 {
     public static function getQuery(string $date, string $sqlFormat): EloquentBuilder|QueryBuilder;
 
-    public static function getMetric(EloquentBuilder|QueryBuilder $query): int;
+    public static function getQueryValue(EloquentBuilder|QueryBuilder $query): int;
 }

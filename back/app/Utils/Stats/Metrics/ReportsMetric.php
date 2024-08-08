@@ -23,7 +23,7 @@ class ReportsMetric extends BaseMetric
             ]);
     }
 
-    public static function getMetric(Builder|QueryBuilder $query): int
+    public static function getQueryValue(Builder|QueryBuilder $query): int
     {
         return $query->count();
     }
