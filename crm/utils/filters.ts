@@ -33,9 +33,10 @@ export function formatDateTime(dateTime: string | null): string {
 
 export function formatDateMode(date: string, mode: StatsMode) {
   const dateObj = dayjs(date)
+  const month = MonthLabel[getMonth(date)]
   switch (mode) {
-    case 'day': return dateObj.format('D MMM YYYY')
-    case 'month': return dateObj.format('MMMM YYYY')
+    case 'day': return dateObj.format(`D ${month} YYYY`)
+    case 'month': return dateObj.format(`${month} YYYY`)
     case 'year': return dateObj.format('YYYY год')
   }
 }

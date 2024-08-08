@@ -1,23 +1,28 @@
 <script lang="ts" setup>
+import { clone, isNotNil, pickBy } from 'rambda'
 import Metrics from '~/components/Stats/Metrics'
 
 const emit = defineEmits<{
-  apply: [index: number, f: any]
+  apply: [index: number, filters: object]
 }>()
 const { dialog, width } = useDialog('default')
 const selectedMetric = ref<StatsMetric>('RequestsMetric')
 const metricComponentRef = ref()
 let index: number = -1
 
-function open(metric: StatsMetric, i: number) {
+function open(metric: StatsMetric, i: number, preFilters: object = {}) {
   selectedMetric.value = metric
   index = i
   dialog.value = true
+  nextTick(() => {
+    metricComponentRef.value.filters = clone(preFilters)
+  })
 }
 
 function onFiltersApply() {
   dialog.value = false
-  emit('apply', index, metricComponentRef.value.filters)
+  const filters = pickBy<any, object>(isNotNil, metricComponentRef.value.filters)
+  emit('apply', index, filters)
 }
 
 const MetricComponent = computed(() => Metrics[selectedMetric.value])

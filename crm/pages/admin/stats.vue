@@ -1,22 +1,35 @@
 <script lang="ts" setup>
+import { clone } from 'rambda'
 import type { StatsMetricFiltersDialog, StatsMetricSelectorDialog } from '#build/components'
 import Metrics from '~/components/Stats/Metrics'
 
 const metricSelectorDialog = ref<InstanceType<typeof StatsMetricSelectorDialog>>()
 const metricFiltersDialog = ref<InstanceType<typeof StatsMetricFiltersDialog>>()
-const selectedMetrics = ref<StatsMetric[]>([])
-const loading = ref(false)
 const mode = ref<StatsMode>('day')
+const metrics = ref<StatsMetric[]>([])
+const loading = ref(false)
+// сохраняем параметры ответа сервера, чтобы не зависеть от текущих параметров
+// (например, если снесли метрику или изменили режим на "по годам", чтобы не менялось форматирование)
+const responseParams = ref({
+  mode: mode.value,
+  metrics: clone(metrics.value),
+})
 const items = ref<StatsListResource[]>([])
 const filters = ref<object[]>([])
 const page = ref<number>(0)
 let scrollContainer: HTMLElement | null = null
 
-function onMetricsSelected(metrics: StatsMetric[]) {
-  for (const metric of metrics) {
-    selectedMetrics.value.push(metric)
+function onMetricsSelected(items: StatsMetric[]) {
+  for (const metric of items) {
+    metrics.value.push(metric)
     filters.value.push({})
   }
+}
+
+function deleteMetric(index: number, event: MouseEvent) {
+  event.stopPropagation()
+  filters.value.splice(index, 1)
+  metrics.value.splice(index, 1)
 }
 
 function onFiltersApply(index: number, f: any) {
@@ -24,7 +37,7 @@ function onFiltersApply(index: number, f: any) {
   filters.value[index] = f
 }
 
-async function loadData() {
+async function loadMore() {
   if (loading.value) {
     return
   }
@@ -39,23 +52,43 @@ async function loadData() {
           mode: mode.value,
           items: filters.value.map((filters, i) => ({
             filters,
-            metric: selectedMetrics.value[i],
+            metric: metrics.value[i],
           })),
         },
       },
   )
   if (data.value) {
-    items.value = page.value === 1 ? data.value : items.value.concat(data.value)
+    if (page.value === 1) {
+      responseParams.value = {
+        mode: mode.value,
+        metrics: clone(metrics.value),
+      }
+      items.value = data.value
+    }
+    else {
+      items.value = items.value.concat(data.value)
+    }
   }
   loading.value = false
 }
 
-function reloadData() {
+function loadData() {
   page.value = 0
   if (scrollContainer) {
     scrollContainer.scrollTop = 0
   }
-  loadData()
+  loadMore()
+}
+
+function hasFilters(index: number): boolean {
+  return Object.keys(filters.value[index]).length > 0
+}
+
+function getWidth(metric: StatsMetric) {
+  const { width } = Metrics[metric]
+  return {
+    width: `${width || 90}px`,
+  }
 }
 
 function onScroll() {
@@ -67,7 +100,7 @@ function onScroll() {
   const scrollThreshold = scrollHeight * 0.9
 
   if (scrollPosition >= scrollThreshold) {
-    loadData()
+    loadMore()
   }
 }
 
@@ -91,33 +124,39 @@ onUnmounted(() => {
         />
       </div>
       <div
-        v-for="(metric, index) in selectedMetrics"
+        v-for="(metric, index) in metrics"
         :key="index"
-        @click="metricFiltersDialog?.open(metric, index)"
+        :class="{
+          'table-stats__metric-label--has-items': hasFilters(index),
+        }"
+        :style="getWidth(metric)"
+        class="table-stats__metric-label"
+        @click="metricFiltersDialog?.open(metric, index, filters[index])"
       >
-        <span
-          :class="{
-            'table-stats__metric-label--has-items': Object.keys(filters[index]).length > 0,
-          }"
-          class="table-stats__metric-label"
-        >
-          {{ filterTruncate(Metrics[metric].label, 14) }}
+        <span>
+          {{ Metrics[metric].label }}
         </span>
+        <v-icon icon="$close" @click="deleteMetric(index, $event)" />
       </div>
       <div class="table-stats__add" @click="metricSelectorDialog?.open()">
         <v-icon icon="$plus" />
       </div>
       <div class="text-right">
-        <v-btn :loading="page === 1 && loading" color="primary" @click="reloadData()">
+        <v-btn :loading="page === 1 && loading" color="primary" @click="loadData()">
           применить
         </v-btn>
       </div>
     </div>
     <div v-for="{ date, metrics } in items" :key="date" class="table-stats__metrics">
       <div class="text-gray">
-        {{ formatDate(date) }}
+        {{ formatDateMode(date, responseParams.mode) }}
       </div>
-      <div v-for="(metricValue, index) in metrics" :key="index" :class="{ 'text-error': metricValue < 0 }">
+      <div
+        v-for="(metricValue, index) in metrics"
+        :key="index"
+        :class="{ 'text-error': metricValue < 0 }"
+        :style="getWidth(responseParams.metrics[index])"
+      >
         {{ metricValue ? formatPrice(metricValue) : '' }}
       </div>
     </div>
@@ -138,7 +177,7 @@ onUnmounted(() => {
     padding: 0 !important;
     & > div {
       padding: 0 20px;
-      width: 100px;
+      //width: 100px;
       &:first-child {
         width: 150px;
       }
@@ -164,19 +203,39 @@ onUnmounted(() => {
     }
   }
   &__metric-label {
-    text-wrap: balance;
+    position: relative;
+    line-height: 20px;
+    &:hover {
+      background: rgb(var(--v-theme-bg));
+      .v-icon {
+        opacity: 1;
+      }
+    }
     &--has-items {
-      position: relative;
-      &:after {
-        content: '';
-        $size: 8px;
-        height: $size;
-        width: $size;
-        border-radius: 50%;
-        position: absolute;
-        right: -10px;
-        top: 0;
-        background: rgb(var(--v-theme-error));
+      span {
+        position: relative;
+        &:after {
+          content: '';
+          $size: 8px;
+          height: $size;
+          width: $size;
+          border-radius: 50%;
+          position: absolute;
+          right: -10px;
+          top: 0;
+          background: rgb(var(--v-theme-error));
+        }
+      }
+    }
+    .v-icon {
+      position: absolute;
+      right: 0;
+      top: 0;
+      font-size: 20px;
+      color: rgb(var(--v-theme-bg2));
+      opacity: 0;
+      &:hover {
+        color: rgb(var(--v-theme-error));
       }
     }
   }
