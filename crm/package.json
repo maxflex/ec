@@ -34,6 +34,7 @@
     "rambda": "^9.2.0",
     "sass": "^1.69.5",
     "vite": "latest",
+    "vue-draggable-next": "^2.2.1",
     "vue-picture-cropper": "^0.7.0"
   },
   "devDependencies": {

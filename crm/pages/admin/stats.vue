@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { clone } from 'rambda'
+import { VueDraggableNext } from 'vue-draggable-next'
 import type { StatsMetricFiltersDialog, StatsMetricSelectorDialog } from '#build/components'
 import Metrics from '~/components/Stats/Metrics'
 
@@ -17,6 +18,9 @@ const responseParams = ref({
 const items = ref<StatsListResource[]>([])
 const filters = ref<object[]>([])
 const page = ref<number>(0)
+
+const isDragging = ref(false)
+
 let scrollContainer: HTMLElement | null = null
 
 function onMetricsSelected(items: StatsMetric[]) {
@@ -117,37 +121,49 @@ onUnmounted(() => {
 <template>
   <div :class="{ 'table-stats--loading': loading }" class="table table-stats">
     <div class="table-stats__header">
-      <div>
+      <div class="table-stats__header-mode">
         <UiDropdown
           v-model="mode"
           :items="selectItems(StatsModeLabel)"
         />
       </div>
-      <div
-        v-for="(metric, index) in metrics"
-        :key="index"
+      <VueDraggableNext
+        v-model="metrics"
+        :animation="200"
         :class="{
-          'table-stats__metric-label--has-items': hasFilters(index),
+          'table-stats__header-metrics--dragging': isDragging,
         }"
-        :style="getWidth(metric)"
-        class="table-stats__metric-label"
-        @click="metricFiltersDialog?.open(metric, index, filters[index])"
+        class="table-stats__header-metrics"
+        direction="horizontal"
+        @end="() => (isDragging = false)"
+        @start="() => (isDragging = true)"
       >
-        <span>
-          {{ Metrics[metric].label }}
-        </span>
-        <v-icon icon="$close" @click="deleteMetric(index, $event)" />
-      </div>
-      <div class="table-stats__add" @click="metricSelectorDialog?.open()">
+        <div
+          v-for="(metric, index) in metrics"
+          :key="index"
+          :class="{
+            'table-stats__header-metric--has-items': hasFilters(index),
+          }"
+          :style="getWidth(metric)"
+          class="table-stats__header-metric"
+          @click="metricFiltersDialog?.open(metric, index, filters[index])"
+        >
+          <span>
+            {{ Metrics[metric].label }}
+          </span>
+          <v-icon icon="$close" @click="deleteMetric(index, $event)" />
+        </div>
+      </VueDraggableNext>
+      <div class="table-stats__header-add" @click="metricSelectorDialog?.open()">
         <v-icon icon="$plus" />
       </div>
-      <div class="text-right">
+      <div class="table-stats__header-apply">
         <v-btn :loading="page === 1 && loading" color="primary" @click="loadData()">
           применить
         </v-btn>
       </div>
     </div>
-    <div v-for="{ date, metrics } in items" :key="date" class="table-stats__metrics">
+    <div v-for="{ date, metrics } in items" :key="date" class="table-stats__body">
       <div class="text-gray">
         {{ formatDateMode(date, responseParams.mode) }}
       </div>
@@ -167,8 +183,9 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .table-stats {
+  $padding: 0 20px;
   &--loading {
-    .table-stats__metrics {
+    .table-stats__body {
       opacity: 0.5;
     }
   }
@@ -176,8 +193,6 @@ onUnmounted(() => {
     gap: 0 !important;
     padding: 0 !important;
     & > div {
-      padding: 0 20px;
-      //width: 100px;
       &:first-child {
         width: 150px;
       }
@@ -189,60 +204,86 @@ onUnmounted(() => {
     text-transform: lowercase;
     background: white;
     z-index: 1;
-    & > div {
-      &:not(:first-child):not(:last-child) {
-        align-self: stretch;
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-        user-select: none;
-        &:hover {
-          background: rgb(var(--v-theme-bg));
+    &-mode {
+      padding: $padding;
+    }
+    &-metric {
+      position: relative;
+      line-height: 20px;
+      padding: $padding;
+      &--has-items {
+        span {
+          position: relative;
+          &:after {
+            content: '';
+            $size: 8px;
+            height: $size;
+            width: $size;
+            border-radius: 50%;
+            position: absolute;
+            right: -10px;
+            top: 0;
+            background: rgb(var(--v-theme-error));
+          }
         }
       }
-    }
-  }
-  &__metric-label {
-    position: relative;
-    line-height: 20px;
-    &:hover {
-      background: rgb(var(--v-theme-bg));
       .v-icon {
-        opacity: 1;
-      }
-    }
-    &--has-items {
-      span {
-        position: relative;
-        &:after {
-          content: '';
-          $size: 8px;
-          height: $size;
-          width: $size;
-          border-radius: 50%;
-          position: absolute;
-          right: -10px;
-          top: 0;
-          background: rgb(var(--v-theme-error));
+        position: absolute;
+        right: 0;
+        top: 0;
+        font-size: 20px;
+        color: rgb(var(--v-theme-bg2));
+        opacity: 0;
+        &:hover {
+          color: rgb(var(--v-theme-error));
         }
       }
     }
-    .v-icon {
-      position: absolute;
-      right: 0;
-      top: 0;
-      font-size: 20px;
-      color: rgb(var(--v-theme-bg2));
-      opacity: 0;
-      &:hover {
-        color: rgb(var(--v-theme-error));
+    &-add,
+    &-metric {
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    &-metrics {
+      display: flex;
+      align-self: stretch;
+      &:not(.table-stats__header-metrics--dragging) {
+        & > div:hover {
+          background: rgb(var(--v-theme-bg));
+          .v-icon {
+            opacity: 1;
+          }
+        }
       }
     }
+    &-add {
+      width: 60px !important;
+      justify-content: center;
+      color: rgb(var(--v-theme-secondary));
+      &:hover {
+        background: rgb(var(--v-theme-bg));
+      }
+    }
+    &-apply {
+      padding: $padding;
+      text-align: right;
+    }
   }
-  &__add {
-    width: 60px !important;
-    justify-content: center;
-    color: rgb(var(--v-theme-secondary));
+  &__body {
+    & > div {
+      padding: $padding;
+    }
   }
+}
+.sortable-drag {
+  .v-icon {
+    display: none;
+  }
+}
+.sortable-ghost {
+  background: rgba(var(--v-theme-secondary), 0.1);
 }
 </style>
