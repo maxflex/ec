@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { mdiWeb } from '@mdi/js'
+import { mdiNumeric5BoxMultiple, mdiWeb } from '@mdi/js'
+import type { ExamScoreDialog } from '#components'
 
 const { items } = defineProps<{ items: WebReviewResource[] }>()
 defineEmits<{
   edit: [item: WebReviewResource]
 }>()
+const examScoreDialog = ref<InstanceType<typeof ExamScoreDialog>>()
 </script>
 
 <template>
@@ -46,13 +48,26 @@ defineEmits<{
         {{ item.text }}
       </div>
       <div
-        style="width: 50px"
+        style="width: 100px"
         class="text-center"
       >
         <v-icon
-          :class="`web-review--${item.is_published ? 'published' : 'unpublished'}`"
+          :class="{ 'opacity-2': !item.is_published }"
           :icon="mdiWeb"
           :color="item.is_published ? 'secondary' : 'gray'"
+          class="mr-3"
+        />
+        <v-icon
+          v-if="item.exam_score_id"
+          :icon="mdiNumeric5BoxMultiple"
+          color="secondary"
+          @click="examScoreDialog?.edit(item.exam_score_id)"
+        />
+        <v-icon
+          v-else
+          :icon="mdiNumeric5BoxMultiple"
+          class="opacity-2"
+          color="gray"
         />
       </div>
       <div
@@ -62,12 +77,5 @@ defineEmits<{
       </div>
     </div>
   </div>
+  <ExamScoreDialog ref="examScoreDialog" />
 </template>
-
-<style lang="scss">
-.web-review {
-  &--unpublished {
-    opacity: 0.2;
-  }
-}
-</style>

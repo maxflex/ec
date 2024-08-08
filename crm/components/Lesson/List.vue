@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { groupBy } from 'rambda'
-import type { EventDialog, LessonBatchCreateDialog, LessonBatchUpdateDialog, LessonConductDialog, LessonDialog } from '#build/components'
+import type {
+  EventDialog,
+  LessonBatchCreateDialog,
+  LessonBatchUpdateDialog,
+  LessonConductDialog,
+  LessonDialog,
+} from '#build/components'
 
 const { entity, id, group } = defineProps<{
   entity: Extract<EntityString, 'client' | 'teacher' | 'group'>
@@ -248,9 +254,9 @@ nextTick(loadData)
           отмена
         </v-btn>
         <v-btn
-          v-if="editable && group"
+          v-if="editable"
           color="primary"
-          @click="lessonBatchUpdateDialog?.open(lessonIds, group?.year!)"
+          @click="lessonBatchUpdateDialog?.open(lessonIds)"
         >
           редактировать
         </v-btn>

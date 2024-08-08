@@ -14,12 +14,10 @@ const timeMask = { mask: '##:##' }
 const { dialog, width } = useDialog('default')
 const lesson = ref<BatchItem>({})
 const deleting = ref(false)
-const year = ref<Year>()
 const ids = ref<number[]>([])
 
-function open(lessonIds: number[], y: Year) {
+function open(lessonIds: number[]) {
   ids.value = lessonIds
-  year.value = y
   lesson.value = {}
   dialog.value = true
 }

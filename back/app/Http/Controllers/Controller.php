@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Resources\JustAttributesResource;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
 
 class Controller extends BaseController
@@ -105,6 +105,12 @@ class Controller extends BaseController
     {
         $order = is_array($value) ? (object) $value : json_decode($value);
         $query->orderBy($this->getFieldName($order->field), $order->order);
+    }
+
+    protected function filterHas(&$query, $value, $field)
+    {
+        $relation = str($field)->after("has_")->camel()->value();
+        $value ? $query->whereHas($relation) : $query->whereDoesntHave($relation);
     }
 
     private function getFieldName($field)

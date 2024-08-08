@@ -36,7 +36,8 @@ watch(filters.value, () => emit('apply', filters.value))
     <div>
       <UiClearableSelect
         v-model="filters.status"
-        :items="selectItems(ClientTestStatusLabel)" label="Статус"
+        :items="selectItems(ClientTestStatusLabel)"
+        label="Статус"
         density="comfortable"
       />
     </div>

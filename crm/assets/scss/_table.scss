@@ -109,4 +109,12 @@
       padding-bottom: var(--padding) !important;
     }
   }
+
+  &-item-disabled {
+    & > div {
+      opacity: 0.3;
+    }
+
+    pointer-events: none;
+  }
 }

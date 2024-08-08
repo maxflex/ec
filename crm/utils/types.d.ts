@@ -466,6 +466,7 @@ declare global {
   interface WebReviewResource {
     id: number
     client_id: number
+    exam_score_id: ?number
     is_published: boolean
     text: string
     signature: string
@@ -738,6 +739,7 @@ declare global {
 
   interface ExamScoreResource {
     id: number
+    web_review_id: number | null
     year: Year
     client_id?: number
     exam?: Exam

@@ -67,7 +67,7 @@ nextTick(loadData)
   </div>
   <div>
     <UiLoader3 :loading="loading" />
-    <ExamScoreList :items="items" @edit="examScoreDialog?.edit" />
+    <ExamScoreList :items="items" @edit="({ id }) => examScoreDialog?.edit(id)" />
   </div>
   <ExamScoreDialog ref="examScoreDialog" @updated="onUpdated" />
 </template>

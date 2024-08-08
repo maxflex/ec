@@ -24,8 +24,8 @@ class WebReview extends Model
         return $this->belongsTo(Client::class);
     }
 
-    public function scores()
+    public function examScore()
     {
-        return $this->hasMany(WebReviewScore::class);
+        return $this->hasOne(ExamScore::class);
     }
 }

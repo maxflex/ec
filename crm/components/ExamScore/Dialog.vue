@@ -12,9 +12,11 @@ const loading = ref(false)
 const itemId = ref<number>()
 const modelDefaults: ExamScoreResource = {
   id: newId(),
+  web_review_id: null,
   year: currentAcademicYear(),
 }
 const item = ref<ExamScoreResource>(modelDefaults)
+const webReviews = ref<WebReviewResource[]>([])
 
 function create(clientId: number, year: Year) {
   itemId.value = undefined
@@ -22,10 +24,10 @@ function create(clientId: number, year: Year) {
   item.value.client_id = clientId
   item.value.year = year
   dialog.value = true
+  loadWebReviews()
 }
 
-async function edit(e: ExamScoreResource) {
-  const { id } = e
+async function edit(id: number) {
   itemId.value = id
   loading.value = true
   dialog.value = true
@@ -34,6 +36,7 @@ async function edit(e: ExamScoreResource) {
     item.value = data.value
   }
   loading.value = false
+  loadWebReviews()
 }
 
 async function save() {
@@ -49,6 +52,18 @@ async function save() {
   }
   dialog.value = false
   setTimeout(() => saving.value = false, 300)
+}
+
+async function loadWebReviews() {
+  const { data } = await useHttp<ApiResponse<WebReviewResource[]>>(`web-reviews`, {
+    params: {
+      exam_score_id: item.value?.id,
+      client_id: item.value?.client_id,
+    },
+  })
+  if (data.value) {
+    webReviews.value = data.value.data
+  }
 }
 
 async function destroy() {
@@ -69,6 +84,10 @@ async function destroy() {
   }
 }
 
+function selectWebReview({ id }: WebReviewResource) {
+  item.value.web_review_id = item.value.web_review_id === id ? null : id
+}
+
 defineExpose({ create, edit })
 </script>
 
@@ -76,18 +95,36 @@ defineExpose({ create, edit })
   <v-dialog v-model="dialog" :width="width">
     <div class="dialog-wrapper">
       <div class="dialog-header">
-        <template v-if="itemId">
+        <div v-if="itemId">
           Редактировать баллы
-        </template>
+          <div class="dialog-subheader">
+            <template v-if="item.user && item.created_at">
+              {{ formatName(item.user) }}
+              {{ formatDateTime(item.created_at) }}
+            </template>
+          </div>
+        </div>
         <template v-else>
           Добавить баллы
         </template>
-        <v-btn
-          icon="$save"
-          :size="48"
-          color="#fafafa"
-          @click="save()"
-        />
+        <div>
+          <v-btn
+            v-if="itemId"
+            :loading="deleting"
+            :size="48"
+            class="remove-btn"
+            icon="$delete"
+            variant="text"
+            @click="destroy()"
+          />
+          <v-btn
+            :loading="saving"
+            :size="48"
+            icon="$save"
+            variant="text"
+            @click="save()"
+          />
+        </div>
       </div>
       <UiLoaderr v-if="loading" />
       <div v-else class="dialog-body">
@@ -108,23 +145,35 @@ defineExpose({ create, edit })
         <div>
           <v-text-field v-model="item.score" label="Балл" type="number" hide-spin-buttons />
         </div>
-        <div
-          v-if="itemId"
-          class="dialog-bottom"
-        >
-          <span>
-            оценка создана
-            {{ formatName(item.user!) }}
-            {{ formatDateTime(item.created_at!) }}
-          </span>
-          <v-btn
-            icon="$delete"
-            :size="48"
-            color="red"
-            variant="plain"
-            :loading="deleting"
-            @click="destroy()"
-          />
+        <div class="table table--hover">
+          <div
+            v-for="webReview in webReviews"
+            :key="webReview.id"
+            :class="{ 'table-item-disabled': webReview.exam_score_id }"
+            class="cursor-pointer"
+            @click="selectWebReview(webReview)"
+          >
+            <div class="vfn-1" style="width: 20px">
+              <v-icon
+                v-if="webReview.exam_score_id || item.web_review_id === webReview.id"
+                color="secondary"
+                icon="$checkboxOn"
+              />
+              <v-icon
+                v-else
+                color="gray"
+                icon="$checkboxOff"
+              />
+            </div>
+            <div class="text-truncate" style="flex: 1">
+              {{ webReview.text }}
+            </div>
+            <div
+              style="width: 100px; flex: initial !important"
+            >
+              <UiRating v-model="webReview.rating" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
