@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class WebReview extends Model
 {
     protected $fillable = [
-        'text', 'signature', 'rating', 'is_published', 'client_id'
+        'text', 'signature', 'rating', 'is_published', 'client_id', 'exam_score_id'
     ];
 
     protected $casts = [
@@ -27,5 +27,12 @@ class WebReview extends Model
     public function examScore()
     {
         return $this->hasOne(ExamScore::class);
+    }
+
+    public function setExamScoreIdAttribute($id)
+    {
+        ExamScore::find($id)->update([
+            'web_review_id' => $this->id
+        ]);
     }
 }

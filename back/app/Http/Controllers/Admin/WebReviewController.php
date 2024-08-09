@@ -17,16 +17,9 @@ class WebReviewController extends Controller
     public function index(Request $request)
     {
         $query = WebReview::query()
-            ->with('client')
+            ->with(['client', 'examScore'])
             ->latest();
 
-        if ($request->has('exam_score_id')) {
-            $query->with('examScore',
-                fn($q) => $q->where('id', '<>', $request->exam_score_id)
-            );
-        } else {
-            $query->with('examScore');
-        }
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, WebReviewResource::class);
     }
@@ -40,6 +33,11 @@ class WebReviewController extends Controller
     public function update(WebReview $webReview, Request $request)
     {
         $webReview->update($request->all());
+        return new WebReviewResource($webReview);
+    }
+
+    public function show(WebReview $webReview)
+    {
         return new WebReviewResource($webReview);
     }
 

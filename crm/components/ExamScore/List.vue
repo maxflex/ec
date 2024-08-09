@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { WebReviewDialog } from '#components'
+
 const { items } = defineProps<{ items: ExamScoreResource[] }>()
 const emit = defineEmits<{
   edit: [e: ExamScoreResource]
 }>()
+const webReviewDialog = ref<InstanceType<typeof WebReviewDialog>>()
 </script>
 
 <template>
@@ -27,9 +30,15 @@ const emit = defineEmits<{
       <div style="width: 200px">
         {{ YearLabel[e.year] }}
       </div>
-      <div>
+      <div style="width: 140px">
         балл: {{ e.score }}
+      </div>
+      <div>
+        <a v-if="e.web_review_id" class="cursor-pointer" @click="webReviewDialog?.edit(e.web_review_id)">
+          отзыв {{ e.web_review_id }}
+        </a>
       </div>
     </div>
   </div>
+  <WebReviewDialog ref="webReviewDialog" />
 </template>

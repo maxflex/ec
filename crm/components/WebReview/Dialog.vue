@@ -10,27 +10,39 @@ const modelDefaults: WebReviewResource = {
   id: newId(),
   client_id: newId(),
   text: '',
+  exam_score_id: null,
   signature: '',
   is_published: false,
   rating: 0,
   scores: [],
 }
 const item = ref<WebReviewResource>(modelDefaults)
+const itemId = ref<number>()
+const examScores = ref<ExamScoreResource[]>([])
 const saving = ref(false)
 const deleting = ref(false)
-const editMode = computed(() => item.value.id > 0)
+const loading = ref(false)
 
-function edit(wr: WebReviewResource) {
-  item.value = clone(wr)
+async function edit(id: number) {
+  itemId.value = id
+  loading.value = true
   dialog.value = true
+  const { data } = await useHttp<WebReviewResource>(`web-reviews/${id}`)
+  if (data.value) {
+    item.value = data.value
+  }
+  loading.value = false
+  loadExamScores()
 }
 
 function create(clientId: number) {
+  itemId.value = undefined
   item.value = clone({
     ...modelDefaults,
     client_id: clientId,
   })
   dialog.value = true
+  loadExamScores()
 }
 
 async function save() {
@@ -58,6 +70,22 @@ async function save() {
   setTimeout(() => saving.value = false, 200)
 }
 
+async function loadExamScores() {
+  examScores.value = []
+  const { data } = await useHttp<ApiResponse<ExamScoreResource[]>>(
+      `exam-scores`,
+      {
+        params: {
+          web_review_id: item.value?.id,
+          client_id: item.value?.client_id,
+        },
+      },
+  )
+  if (data.value) {
+    examScores.value = data.value.data
+  }
+}
+
 async function destroy() {
   if (!confirm('Вы уверены, что хотите удалить отзыв?')) {
     return
@@ -71,11 +99,8 @@ async function destroy() {
   setTimeout(() => deleting.value = false, 300)
 }
 
-function addScores() {
-  item.value.scores.push({
-    id: newId(),
-  })
-  smoothScroll('dialog', 'bottom')
+function selectExamScore({ id }: ExamScoreResource) {
+  item.value.exam_score_id = item.value.exam_score_id === id ? null : id
 }
 
 defineExpose({ edit, create })
@@ -88,7 +113,7 @@ defineExpose({ edit, create })
   >
     <div class="dialog-wrapper">
       <div class="dialog-header">
-        <div v-if="editMode">
+        <div v-if="itemId">
           Редактирование отзыва
           <div class="dialog-subheader">
             <template v-if="item.user && item.created_at">
@@ -102,7 +127,7 @@ defineExpose({ edit, create })
         </template>
         <div>
           <v-btn
-            v-if="editMode"
+            v-if="itemId"
             :loading="deleting"
             :size="48"
             class="remove-btn"
@@ -118,7 +143,8 @@ defineExpose({ edit, create })
           />
         </div>
       </div>
-      <div class="dialog-body">
+      <UiLoaderr v-if="loading" />
+      <div v-else class="dialog-body">
         <div class="text-center pb-2">
           <v-rating
             v-model="item.rating"
@@ -132,6 +158,14 @@ defineExpose({ edit, create })
             :model-value="formatFullName(item.client)"
             label="Клиент"
             disabled
+          />
+        </div>
+        <div>
+          <v-select
+            v-model="item.is_published" :items="[
+              { value: false, title: 'не опубликован' },
+              { value: true, title: 'опубликован' },
+            ]" label="Публикация"
           />
         </div>
         <div>
@@ -149,54 +183,38 @@ defineExpose({ edit, create })
             label="Текст отзыва"
           />
         </div>
-        <div>
-          <v-checkbox
-            v-model="item.is_published"
-            label="Опубликован"
-          />
-        </div>
-        <div
-          v-for="s in item.scores"
-          :key="s.id"
-          class="double-input web-review-scores"
-        >
-          <div>
-            <UiClearableSelect
-              v-model="s.program"
-              :items="selectItems(ProgramLabel)"
-              label="Программа"
-            />
-          </div>
-          <v-text-field
-            v-model="s.score"
-            label="балл"
-            type="number"
-            hide-spin-buttons
-          />
 
-          <v-text-field
-            v-model="s.max_score"
-            label="из"
-            type="number"
-            hide-spin-buttons
-          />
-        </div>
-        <div>
-          <a
+        <div class="table table--hover">
+          <div
+            v-for="examScore in examScores"
+            :key="examScore.id"
             class="cursor-pointer"
-            @click="addScores()"
+            :class="{ 'table-item-disabled': examScore.web_review_id }"
+            @click="selectExamScore(examScore)"
           >
-            добавить баллы
-          </a>
+            <div class="vfn-1" style="width: 20px">
+              <v-icon
+                v-if="examScore.web_review_id || item.exam_score_id === examScore.id"
+                color="secondary"
+                icon="$checkboxOn"
+              />
+              <v-icon
+                v-else
+                class="opacity-6"
+                icon="$checkboxOff"
+              />
+            </div>
+            <div style="width: 320px">
+              {{ ExamLabel[examScore.exam!] }}
+            </div>
+            <div>
+              балл: {{ examScore.score }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </v-dialog>
 </template>
 
-<style lang="scss">
-.web-review-scores {
-  display: grid;
-  grid-template-columns: 3fr 1fr 1fr;
-}
-</style>
+<style lang="scss"></style>

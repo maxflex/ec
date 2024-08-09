@@ -4,7 +4,7 @@ import type { ExamScoreDialog } from '#components'
 
 const { items } = defineProps<{ items: WebReviewResource[] }>()
 defineEmits<{
-  edit: [item: WebReviewResource]
+  edit: [itemId: number]
 }>()
 const examScoreDialog = ref<InstanceType<typeof ExamScoreDialog>>()
 </script>
@@ -21,7 +21,7 @@ const examScoreDialog = ref<InstanceType<typeof ExamScoreDialog>>()
           icon="$edit"
           :size="48"
           variant="plain"
-          @click="$emit('edit', item)"
+          @click="$emit('edit', item.id)"
         />
       </div>
       <div style="width: 50px">

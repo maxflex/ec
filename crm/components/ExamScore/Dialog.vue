@@ -16,7 +16,6 @@ const modelDefaults: ExamScoreResource = {
   year: currentAcademicYear(),
 }
 const item = ref<ExamScoreResource>(modelDefaults)
-const webReviews = ref<WebReviewResource[]>([])
 
 function create(clientId: number, year: Year) {
   itemId.value = undefined
@@ -24,7 +23,6 @@ function create(clientId: number, year: Year) {
   item.value.client_id = clientId
   item.value.year = year
   dialog.value = true
-  loadWebReviews()
 }
 
 async function edit(id: number) {
@@ -36,7 +34,6 @@ async function edit(id: number) {
     item.value = data.value
   }
   loading.value = false
-  loadWebReviews()
 }
 
 async function save() {
@@ -52,18 +49,6 @@ async function save() {
   }
   dialog.value = false
   setTimeout(() => saving.value = false, 300)
-}
-
-async function loadWebReviews() {
-  const { data } = await useHttp<ApiResponse<WebReviewResource[]>>(`web-reviews`, {
-    params: {
-      exam_score_id: item.value?.id,
-      client_id: item.value?.client_id,
-    },
-  })
-  if (data.value) {
-    webReviews.value = data.value.data
-  }
 }
 
 async function destroy() {
@@ -82,10 +67,6 @@ async function destroy() {
     dialog.value = false
     setTimeout(() => deleting.value = false, 300)
   }
-}
-
-function selectWebReview({ id }: WebReviewResource) {
-  item.value.web_review_id = item.value.web_review_id === id ? null : id
 }
 
 defineExpose({ create, edit })
@@ -144,36 +125,6 @@ defineExpose({ create, edit })
         </div>
         <div>
           <v-text-field v-model="item.score" label="Балл" type="number" hide-spin-buttons />
-        </div>
-        <div class="table table--hover">
-          <div
-            v-for="webReview in webReviews"
-            :key="webReview.id"
-            :class="{ 'table-item-disabled': webReview.exam_score_id }"
-            class="cursor-pointer"
-            @click="selectWebReview(webReview)"
-          >
-            <div class="vfn-1" style="width: 20px">
-              <v-icon
-                v-if="webReview.exam_score_id || item.web_review_id === webReview.id"
-                color="secondary"
-                icon="$checkboxOn"
-              />
-              <v-icon
-                v-else
-                color="gray"
-                icon="$checkboxOff"
-              />
-            </div>
-            <div class="text-truncate" style="flex: 1">
-              {{ webReview.text }}
-            </div>
-            <div
-              style="width: 100px; flex: initial !important"
-            >
-              <UiRating v-model="webReview.rating" />
-            </div>
-          </div>
         </div>
       </div>
     </div>
