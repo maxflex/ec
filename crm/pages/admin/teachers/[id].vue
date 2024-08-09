@@ -36,7 +36,7 @@ async function loadData() {
   }
 }
 
-function onTeacherUpdated(t: TeacherResource) {
+function onUpdated(t: TeacherResource) {
   teacher.value = t
 }
 
@@ -215,7 +215,7 @@ nextTick(loadData)
   </div>
   <TeacherDialog
     ref="teacherDialog"
-    @updated="onTeacherUpdated"
+    @updated="onUpdated"
   />
 </template>
 

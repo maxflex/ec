@@ -37,7 +37,6 @@ class Teacher extends Model
         return $this->hasMany(TeacherService::class)->latest();
     }
 
-
     public function signs()
     {
         return $this->hasMany(InstructionSign::class);
@@ -51,6 +50,11 @@ class Teacher extends Model
     public function lessons()
     {
         return $this->hasMany(Lesson::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function subjects(): Attribute
@@ -121,13 +125,13 @@ class Teacher extends Model
             ]);
         }
 
-        $balanceItemsGroupped = $balanceItems
+        $balanceItemsGrouped = $balanceItems
             ->sort(fn ($a, $b) => $a->dateTime > $b->dateTime)
             ->groupBy(fn ($item) => str($item->dateTime)->before(' '));
 
         $data = [];
         $balance = 0;
-        foreach ($balanceItemsGroupped as $date => $balanceItems) {
+        foreach ($balanceItemsGrouped as $date => $balanceItems) {
             $balance += $balanceItems->sum(fn ($e) => $e->sum);
             $data[] = (object) [
                 'date' => $date,

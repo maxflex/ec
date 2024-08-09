@@ -23,6 +23,14 @@ class Group extends Model
         return $this->belongsTo(Teacher::class);
     }
 
+    public function getZoomAttribute($value)
+    {
+        return json_decode($value) ?? [
+            'id' => '',
+            'password' => ''
+        ];
+    }
+
     public function contracts()
     {
         return $this->hasManyThrough(
@@ -33,6 +41,11 @@ class Group extends Model
             'id',
             'contract_id'
         );
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function groupContracts()

@@ -476,44 +476,7 @@ defineExpose({ edit, createContract, addVersion })
               </tr>
             </tbody>
           </table>
-          <!-- <div
-            class="table table--actions-on-hover contract-version-dialog__payments"
-          >
-            <div class="table-header">
-              <div style="width: 170px">
-                дата
-              </div>
-              <div style="width: 100px">
-                сумма
-              </div>
-              <div />
-            </div>
-
-            <div style="border-bottom: 0">
-              <span>
-                <a
-                  class="cursor-pointer"
-                  @click="addPayment()"
-                >
-                  добавить платеж
-                </a>
-              </span>
-            </div>
-          </div> -->
         </div>
-        <!-- <div
-          v-if="isEditMode"
-          class="dialog-bottomm"
-        >
-          <v-btn
-            icon="$delete"
-            :size="48"
-            color="red"
-            variant="plain"
-            :loading="deleting"
-            @click="destroy()"
-          />
-        </div> -->
       </div>
     </div>
   </v-dialog>

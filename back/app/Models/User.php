@@ -96,6 +96,16 @@ class User extends Authenticatable
         return $this->hasMany(Lesson::class);
     }
 
+    public function groups(): HasMany
+    {
+        return $this->hasMany(Group::class);
+    }
+
+    public function tests(): HasMany
+    {
+        return $this->hasMany(Test::class);
+    }
+
     public function teachers(): HasMany
     {
         return $this->hasMany(Teacher::class);

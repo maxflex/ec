@@ -16,6 +16,7 @@ class GroupResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, ['*'], [
+            'user' => new PersonResource($this->user),
             'teachers' => $this->getTeachers()->map(
                 fn ($id) =>
                 new PersonResource(Teacher::find($id))

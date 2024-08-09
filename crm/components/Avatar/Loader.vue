@@ -113,7 +113,7 @@ async function save() {
         <v-btn
           icon="$save"
           :size="48"
-          color="#fafafa"
+          variant="text"
           :loading="saving"
           @click="save()"
         />

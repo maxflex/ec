@@ -94,18 +94,34 @@ defineExpose({ edit, create })
   <v-dialog v-model="dialog" :width="width">
     <div class="dialog-wrapper">
       <div class="dialog-header">
-        <tempate v-if="itemId">
+        <div v-if="itemId">
           Редактирование оценки
-        </tempate>
+          <div class="dialog-subheader">
+            <template v-if="item.created_at">
+              {{ formatDateTime(item.created_at) }}
+            </template>
+          </div>
+        </div>
         <template v-else>
           Новая оценка
         </template>
-        <v-btn
-          icon="$save"
-          :size="48"
-          variant="text"
-          @click="save()"
-        />
+        <div>
+          <v-btn
+            v-if="itemId"
+            icon="$delete"
+            :size="48"
+            class="remove-btn"
+            variant="text"
+            :loading="deleting"
+            @click="destroy()"
+          />
+          <v-btn
+            icon="$save"
+            :size="48"
+            variant="text"
+            @click="save()"
+          />
+        </div>
       </div>
       <UiLoaderr v-if="loading" />
       <div v-else class="dialog-body">
@@ -163,28 +179,6 @@ defineExpose({ edit, create })
               </v-list-item>
             </template>
           </v-select>
-          <!-- <UiClearableSelect
-            v-model="item.grade"
-            label="Оценка"
-            :items="selectItems(LessonScoreLabel)"
-          /> -->
-        </div>
-        <div
-          v-if="itemId"
-          class="dialog-bottom"
-        >
-          <span v-if="item.created_at">
-            оценка создана
-            {{ formatDateTime(item.created_at) }}
-          </span>
-          <v-btn
-            icon="$delete"
-            :size="48"
-            color="red"
-            variant="plain"
-            :loading="deleting"
-            @click="destroy()"
-          />
         </div>
       </div>
     </div>

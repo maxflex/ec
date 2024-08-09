@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('contract_versions', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->constrained();
             $table->foreignIdFor(Contract::class)->constrained();
             $table->unsignedSmallInteger('version');
             $table->date('date');
             $table->unsignedInteger('sum');
+            $table->foreignIdFor(User::class)->constrained();
             $table->timestamps();
         });
     }

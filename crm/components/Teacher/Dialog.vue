@@ -61,7 +61,12 @@ async function save() {
       body: teacher.value,
     })
     if (data.value) {
-      emit('created', data.value)
+      useRouter().push({
+        name: 'teachers-id',
+        params: {
+          id: data.value.id,
+        },
+      })
     }
   }
 
@@ -103,8 +108,8 @@ defineExpose({ create, edit })
         <div v-if="teacher.id > 0">
           Редактирование преподавателя
           <div class="dialog-subheader">
+            {{ teacher.user ? formatName(teacher.user) : 'неизвестно' }}
             <template v-if="teacher.created_at">
-              создан
               {{ formatDateTime(teacher.created_at) }}
             </template>
           </div>

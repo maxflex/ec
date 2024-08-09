@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\Program;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 class Test extends Model
@@ -17,19 +16,16 @@ class Test extends Model
         'questions' => 'array',
     ];
 
-    public function getFileAttribute($file): string
+    public function user()
     {
-        return cdn('tests', $file);
+        return $this->belongsTo(User::class);
     }
 
-    public function addClient(Client $client)
+    public function getFileAttribute($file): ?string
     {
-        $client->tests()->create([
-            'program' => $this->program,
-            'name' => $this->name,
-            'file' => $this->getRawOriginal('file'),
-            'minutes' => $this->minutes,
-            'questions' => $this->questions,
-        ]);
+        if (!$file) {
+            return null;
+        }
+        return cdn('tests', $file);
     }
 }

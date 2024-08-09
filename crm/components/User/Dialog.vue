@@ -82,18 +82,34 @@ defineExpose({ create, edit })
       class="dialog-wrapper"
     >
       <div class="dialog-header">
-        <template v-if="itemId">
+        <div v-if="itemId">
           Редактирование пользователя
-        </template>
+          <div class="dialog-subheader">
+            <template v-if="item.created_at">
+              {{ formatDateTime(item.created_at) }}
+            </template>
+          </div>
+        </div>
         <template v-else>
           Новый пользователь
         </template>
-        <v-btn
-          icon="$save"
-          :size="48"
-          color="#fafafa"
-          @click="save()"
-        />
+        <div>
+          <v-btn
+            v-if="itemId"
+            :loading="destroying"
+            :size="48"
+            class="remove-btn"
+            icon="$delete"
+            variant="text"
+            @click="destroy()"
+          />
+          <v-btn
+            :size="48"
+            icon="$save"
+            variant="text"
+            @click="save()"
+          />
+        </div>
       </div>
       <UiLoaderr v-if="loading" />
       <div
@@ -129,23 +145,6 @@ defineExpose({ create, edit })
           <v-checkbox
             v-model="item.is_active"
             label="Действующий сотрудник"
-          />
-        </div>
-        <div
-          v-if="itemId"
-          class="dialog-bottom"
-        >
-          <span v-if="item.created_at">
-            пользователь создан
-            {{ formatDateTime(item.created_at) }}
-          </span>
-          <v-btn
-            icon="$delete"
-            :size="48"
-            color="red"
-            variant="plain"
-            :loading="destroying"
-            @click="destroy()"
           />
         </div>
       </div>

@@ -97,18 +97,35 @@ defineExpose({ create, edit })
       class="dialog-wrapper"
     >
       <div class="dialog-header">
-        <template v-if="itemId">
+        <div v-if="itemId">
           Редактирование группы
-        </template>
+          <div class="dialog-subheader">
+            {{ group.user ? formatName(group.user) : 'неизвестно' }}
+            <template v-if="group.created_at">
+              {{ formatDateTime(group.created_at) }}
+            </template>
+          </div>
+        </div>
         <template v-else>
           Новая группа
         </template>
-        <v-btn
-          icon="$save"
-          :size="48"
-          variant="text"
-          @click="save()"
-        />
+        <div>
+          <v-btn
+            v-if="itemId"
+            :loading="deleting"
+            :size="48"
+            class="remove-btn"
+            icon="$delete"
+            variant="text"
+            @click="destroy()"
+          />
+          <v-btn
+            :size="48"
+            icon="$save"
+            variant="text"
+            @click="save()"
+          />
+        </div>
       </div>
       <UiLoaderr v-if="loading" />
       <div
@@ -146,23 +163,6 @@ defineExpose({ create, edit })
           <v-text-field
             v-model="group.zoom.password"
             label="Zoom пароль"
-          />
-        </div>
-        <div
-          v-if="itemId"
-          class="dialog-bottom"
-        >
-          <span v-if="group.created_at">
-            группа создана
-            {{ formatDateTime(group.created_at) }}
-          </span>
-          <v-btn
-            icon="$delete"
-            :size="48"
-            color="red"
-            variant="plain"
-            :loading="deleting"
-            @click="destroy()"
           />
         </div>
       </div>

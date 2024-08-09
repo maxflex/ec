@@ -41,14 +41,16 @@ class TeacherController extends Controller
 
     public function store(Request $request)
     {
-        $teacher = auth()->user()->teachers()->create([
+        $teacher = auth()->user()->entity->teachers()->create(
             $request->all()
-        ]);
+        );
+        $teacher->syncRelation($request->all(), 'phones');
         return new TeacherResource($teacher);
     }
 
     public function destroy(Teacher $teacher)
     {
+        $teacher->phones->each->delete();
         $teacher->delete();
     }
 

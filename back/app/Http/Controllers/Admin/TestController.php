@@ -12,12 +12,12 @@ class TestController extends Controller
     public function index(Request $request)
     {
         $query = Test::latest();
-        return $this->handleIndexRequest($request, $query);
+        return $this->handleIndexRequest($request, $query, TestResource::class);
     }
 
     public function store(Request $request)
     {
-        $test = Test::create($request->all());
+        $test = auth()->user()->entity->tests()->create($request->all());
         return new TestResource($test);
     }
 
@@ -30,6 +30,11 @@ class TestController extends Controller
     public function show(Test $test)
     {
         return new TestResource($test);
+    }
+
+    public function destroy(Test $test)
+    {
+        $test->delete();
     }
 
     public function uploadPdf(Request $request, Test $test)

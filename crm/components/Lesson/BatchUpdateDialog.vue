@@ -68,13 +68,23 @@ defineExpose({ open })
             {{ ids.length }}
           </span>
         </span>
-        <v-btn
-          icon="$save"
-          :size="48"
-          color="#fafafa"
-          :loading="saving"
-          @click="save()"
-        />
+        <div>
+          <v-btn
+            :loading="deleting"
+            :size="48"
+            class="remove-btn"
+            icon="$delete"
+            variant="text"
+            @click="destroy()"
+          />
+          <v-btn
+            :loading="saving"
+            :size="48"
+            icon="$save"
+            variant="text"
+            @click="save()"
+          />
+        </div>
       </div>
       <div class="dialog-body">
         <div>
@@ -111,17 +121,6 @@ defineExpose({ open })
             v-model="lesson.time"
             v-maska:[timeMask]
             label="Время"
-          />
-        </div>
-        <div class="dialog-bottom">
-          <v-spacer />
-          <v-btn
-            icon="$delete"
-            :size="48"
-            color="red"
-            variant="plain"
-            :loading="deleting"
-            @click="destroy()"
           />
         </div>
       </div>

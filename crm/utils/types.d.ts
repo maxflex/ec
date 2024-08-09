@@ -184,6 +184,7 @@ declare global {
     parent: ParentResource
     user?: PersonResource
     teeth?: Teeth
+    created_at?: string
   }
 
   interface CommentResource {
@@ -306,6 +307,7 @@ declare global {
     teachers: PersonResource[]
     teeth?: Teeth
     created_at?: string
+    user?: PersonResource
   }
 
   interface LessonListResource {
@@ -383,6 +385,7 @@ declare global {
     so?: number
     teeth?: Teeth
     created_at?: string
+    user?: PersonResource
   }
 
   interface TeacherPaymentResource {
@@ -515,6 +518,7 @@ declare global {
     questions: TestQuestions | null
     created_at: string | null
     updated_at: string | null
+    user?: PersonResource
   }
 
   interface TestQuestion {

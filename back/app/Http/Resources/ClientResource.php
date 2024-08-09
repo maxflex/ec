@@ -16,7 +16,7 @@ class ClientResource extends JsonResource
     {
         return extract_fields($this, [
             'first_name', 'last_name', 'middle_name', 'branches',
-            'birthdate', 'head_teacher_id', 'photo_url'
+            'birthdate', 'head_teacher_id', 'photo_url', 'created_at'
         ], [
             'user' => new PersonResource($this->user),
             'parent' => new ParentResource($this->parent),

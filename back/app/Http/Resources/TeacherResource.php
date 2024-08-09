@@ -19,6 +19,7 @@ class TeacherResource extends JsonResource
             'payments' => $this->payments,
             'teeth' => $this->getTeeth(),
             'phones' => PhoneListResource::collection($this->phones),
+            'user' => new PersonResource($this->user),
         ]);
     }
 }

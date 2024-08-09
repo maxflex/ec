@@ -100,14 +100,33 @@ defineExpose({ create, edit })
       class="dialog-wrapper"
     >
       <div class="dialog-header">
-        <span v-if="item.id > 0"> Редактирование платежа </span>
+        <div v-if="item.id > 0">
+          Редактирование платежа
+          <div class="dialog-subheader">
+            <template v-if="item.user && item.created_at">
+              {{ formatName(item.user) }}
+              {{ formatDateTime(item.created_at) }}
+            </template>
+          </div>
+        </div>
         <span v-else> Добавить платеж </span>
-        <v-btn
-          icon="$save"
-          :size="48"
-          variant="text"
-          @click="save()"
-        />
+        <div>
+          <v-btn
+            v-if="item.id > 0"
+            icon="$delete"
+            :size="48"
+            class="remove-btn"
+            variant="text"
+            :loading="destroying"
+            @click="destroy()"
+          />
+          <v-btn
+            icon="$save"
+            :size="48"
+            variant="text"
+            @click="save()"
+          />
+        </div>
       </div>
       <div class="dialog-body">
         <div>
@@ -143,25 +162,6 @@ defineExpose({ create, edit })
             v-model="item.purpose"
             label="Назначение"
             no-resize
-          />
-        </div>
-
-        <div
-          v-if="isEditMode"
-          class="dialog-bottom"
-        >
-          <span v-if="item.user && item.created_at">
-            платеж создан
-            {{ formatName(item.user) }}
-            {{ formatDateTime(item.created_at) }}
-          </span>
-          <v-btn
-            icon="$delete"
-            :size="48"
-            color="red"
-            variant="plain"
-            :loading="destroying"
-            @click="destroy()"
           />
         </div>
       </div>

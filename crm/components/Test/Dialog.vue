@@ -11,6 +11,7 @@ const input = ref()
 const fileInput = ref()
 const pdf = ref()
 const loading = ref(false)
+const deleting = ref(false)
 const questionsDialog = ref<InstanceType<typeof TestQuestionsDialog>>()
 function open(t: TestResource) {
   pdf.value = null
@@ -90,6 +91,24 @@ function getFileName(f: string) {
   return parts[parts.length - 1]
 }
 
+async function destroy() {
+  if (!confirm('Вы уверены, что хотите удалить тест?')) {
+    return
+  }
+  deleting.value = true
+  const { status } = await useHttp(`tests/${item.value?.id}`, {
+    method: 'delete',
+  })
+  if (status.value === 'error') {
+    deleting.value = false
+  }
+  else {
+    emit('updated')
+    dialog.value = false
+    setTimeout(() => (deleting.value = false), 300)
+  }
+}
+
 defineExpose({ open, create })
 </script>
 
@@ -103,20 +122,37 @@ defineExpose({ open, create })
       class="dialog-wrapper"
     >
       <div class="dialog-header">
-        <span v-if="item.id > 0"> Редактирование теста </span>
+        <div v-if="item.id > 0">
+          Редактирование теста
+          <div class="dialog-subheader">
+            {{ item.user ? formatName(item.user) : 'неизвестно' }}
+            <template v-if="item.created_at">
+              {{ formatDateTime(item.created_at) }}
+            </template>
+          </div>
+        </div>
         <span v-else> Добавить тест </span>
         <div>
           <v-btn
+            v-if="item.id"
+            :loading="deleting"
+            :size="48"
+            class="remove-btn"
+            icon="$delete"
+            variant="text"
+            @click="destroy()"
+          />
+          <v-btn
             icon="$file"
             :size="48"
-            color="#fafafa"
+            variant="text"
             @click="selectFile()"
           />
           <v-btn
             icon="$save"
             :size="48"
             :loading="loading"
-            color="#fafafa"
+            variant="text"
             @click="storeOrUpdate()"
           />
         </div>
@@ -148,7 +184,8 @@ defineExpose({ open, create })
           <a
             class="link-icon"
             @click="() => questionsDialog?.open(item?.questions)"
-          >редактировать вопросы
+          >
+            редактировать вопросы
             <template v-if="item.questions?.length">({{ item.questions.length }})</template>
             <v-icon
               :size="16"

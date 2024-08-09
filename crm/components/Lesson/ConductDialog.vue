@@ -81,7 +81,12 @@ defineExpose({ open })
       <div class="dialog-header">
         <template v-if="isConducted">
           <div>
-            Редактировать занятие
+            Редактирование проведённого занятия
+            <div class="dialog-subheader">
+              <template v-if="item?.conducted_at">
+                {{ formatDateTime(item.conducted_at) }}
+              </template>
+            </div>
           </div>
           <div>
             <v-btn
@@ -188,15 +193,6 @@ defineExpose({ open })
 
             <!--  -->
           </div>
-        </div>
-        <div
-          v-if="isConducted"
-          class="dialog-bottom mt-4"
-        >
-          <span v-if="item.conducted_at">
-            занятие проведено
-            {{ formatDateTime(item.conducted_at) }}
-          </span>
         </div>
       </div>
     </div>

@@ -95,7 +95,15 @@ defineExpose({ create, edit })
       class="dialog-wrapper"
     >
       <div class="dialog-header">
-        <span v-if="client.id > 0"> Редактирование клиента </span>
+        <div v-if="client.id > 0">
+          Редактирование клиента
+          <div class="dialog-subheader">
+            {{ client.user ? formatName(client.user) : 'неизвестно' }}
+            <template v-if="client.created_at">
+              {{ formatDateTime(client.created_at) }}
+            </template>
+          </div>
+        </div>
         <span v-else> Добавить платеж </span>
         <v-btn
           icon="$save"

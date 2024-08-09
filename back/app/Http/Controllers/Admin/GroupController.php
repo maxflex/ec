@@ -8,8 +8,8 @@ use App\Http\Resources\GroupCandidateResource;
 use App\Http\Resources\GroupListResource;
 use App\Http\Resources\GroupResource;
 use App\Http\Resources\GroupVisitResource;
-use App\Models\GroupContract;
 use App\Models\Group;
+use App\Models\GroupContract;
 use Illuminate\Http\Request;
 
 class GroupController extends Controller
@@ -37,7 +37,7 @@ class GroupController extends Controller
 
     public function store(GroupRequest $request)
     {
-        $group = Group::create($request->all());
+        $group = auth()->user()->entity->groups()->create($request->all());
         return new GroupListResource($group);
     }
 

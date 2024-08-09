@@ -87,19 +87,36 @@ defineExpose({ create, edit })
   >
     <div class="dialog-wrapper">
       <div class="dialog-header">
-        <template v-if="itemId">
+        <div v-if="itemId">
           Редактирование занятия
-        </template>
+          <div class="dialog-subheader">
+            {{ lesson.user ? formatName(lesson.user) : 'неизвестно' }}
+            <template v-if="lesson.created_at">
+              {{ formatDateTime(lesson.created_at) }}
+            </template>
+          </div>
+        </div>
         <template v-else>
           Добавить занятие
         </template>
-        <v-btn
-          icon="$save"
-          :size="48"
-          variant="text"
-          :loading="saving"
-          @click="save()"
-        />
+        <div>
+          <v-btn
+            v-if="itemId && lesson.conducted_at === null"
+            icon="$delete"
+            :size="48"
+            class="remove-btn"
+            variant="text"
+            :loading="deleting"
+            @click="destroy()"
+          />
+          <v-btn
+            icon="$save"
+            :size="48"
+            variant="text"
+            :loading="saving"
+            @click="save()"
+          />
+        </div>
       </div>
       <UiLoaderr v-if="loading" />
       <div
@@ -163,26 +180,6 @@ defineExpose({ create, edit })
           <v-checkbox
             v-model="lesson.is_unplanned"
             label="Внеплановое"
-          />
-        </div>
-
-        <div
-          v-if="lesson.user && lesson.created_at"
-          class="dialog-bottom"
-        >
-          <span>
-            урок создан
-            {{ formatName(lesson.user) }}
-            {{ formatDateTime(lesson.created_at) }}
-          </span>
-          <v-btn
-            v-if="lesson.conducted_at === null"
-            icon="$delete"
-            :size="48"
-            color="red"
-            variant="plain"
-            :loading="deleting"
-            @click="destroy()"
           />
         </div>
       </div>

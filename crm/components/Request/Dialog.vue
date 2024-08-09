@@ -96,18 +96,35 @@ defineExpose({ create, edit })
       class="dialog-wrapper"
     >
       <div class="dialog-header">
-        <template v-if="itemId">
+        <div v-if="itemId">
           Заявка {{ itemId }}
-        </template>
+          <div class="dialog-subheader">
+            <template v-if="request.created_at">
+              {{ request.user ? formatName(request.user) : 'неизвестно' }}
+              {{ formatDateTime(request.created_at) }}
+            </template>
+          </div>
+        </div>
         <template v-else>
           Добавить заявку
         </template>
-        <v-btn
-          icon="$save"
-          :size="48"
-          variant="text"
-          @click="save()"
-        />
+        <div>
+          <v-btn
+            v-if="itemId"
+            :loading="deleting"
+            :size="48"
+            class="remove-btn"
+            icon="$delete"
+            variant="text"
+            @click="destroy()"
+          />
+          <v-btn
+            :size="48"
+            icon="$save"
+            variant="text"
+            @click="save()"
+          />
+        </div>
       </div>
       <UiLoaderr v-if="loading" />
       <div
@@ -141,24 +158,6 @@ defineExpose({ create, edit })
           />
         </div>
         <PhoneEditor v-model="request.phones" />
-        <div
-          v-if="itemId"
-          class="dialog-bottom"
-        >
-          <span v-if="request.created_at">
-            заявка создана
-            {{ request.user ? formatName(request.user) : 'system' }}
-            {{ formatDateTime(request.created_at) }}
-          </span>
-          <v-btn
-            icon="$delete"
-            :size="48"
-            color="red"
-            variant="plain"
-            :loading="deleting"
-            @click="destroy()"
-          />
-        </div>
       </div>
     </div>
   </v-dialog>
