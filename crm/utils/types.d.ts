@@ -215,9 +215,8 @@ declare global {
   interface ContractVersionProgramResource {
     id: number
     program: Program
-    lessons: number
     lessons_planned: number
-    price: number
+    prices: Array<Array<number, number>>
     is_closed: boolean
     contract_version_id: number
   }

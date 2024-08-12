@@ -16,6 +16,11 @@ class ContractVersionProgram extends Model
     protected $casts = [
         'program' => Program::class,
         'is_closed' => 'boolean',
+        'prices' => 'array',
+    ];
+
+    protected $attributes = [
+        'prices' => []
     ];
 
     public function scopeActive($query)

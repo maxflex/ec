@@ -33,6 +33,10 @@ export function newId(): number {
   return _newId
 }
 
+export function asInt(n: unknown) {
+  return Number.parseInt(n as string)
+}
+
 export function selectItems(obj: object, skip: string[] = []): SelectItems {
   const items = Object.entries(obj)
     .map(([value, title]) => ({

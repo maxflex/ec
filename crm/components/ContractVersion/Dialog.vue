@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { mdiCheckAll } from '@mdi/js'
 import { clone } from 'rambda'
-import type { ProgramDialog } from '#build/components'
+import type { ContractVersionPricesEditorDialog, ProgramDialog } from '#build/components'
 
 const emit = defineEmits<{
   created: [i: ContractResource]
@@ -25,7 +25,8 @@ const itemId = ref<number>()
 const contractId = ref<number>()
 const version = ref<number>() // для отображения в заголовке
 const { dialog, width } = useDialog('medium')
-const programDialog = ref<null | InstanceType<typeof ProgramDialog>>()
+const programDialog = ref<InstanceType<typeof ProgramDialog>>()
+const pricesEditorDialog = ref<InstanceType<typeof ContractVersionPricesEditorDialog>>()
 const saving = ref(false)
 const deleting = ref(false)
 const loading = ref(false)
@@ -118,8 +119,7 @@ function onProgramsSaved(programs: Program[]) {
         id: newId(),
         program,
         contract_version_id: item.value.contract.id,
-        price: 0,
-        lessons: 0,
+        prices: [],
         lessons_planned: 0,
         is_closed: false,
       })
@@ -129,6 +129,14 @@ function onProgramsSaved(programs: Program[]) {
   item.value.programs = item.value.programs.filter(({ program }) =>
     programs.includes(program),
   )
+}
+
+function onPricesSaved(p: ContractVersionProgramResource) {
+  const index = item.value.programs.findIndex(e => e.program === p.program)
+  if (index === -1) {
+    return
+  }
+  item.value.programs.splice(index, 1, p)
 }
 
 function addPayment() {
@@ -201,22 +209,34 @@ async function save() {
   setTimeout(() => (saving.value = false), 300)
 }
 
-function getSum(field: string) {
+const lessonsPlannedSum = computed(() => {
   let sum = 0
   for (const p of item.value.programs) {
-    sum += (Number.parseInt(p[field]) || 0)
+    sum += asInt(p.lessons_planned)
   }
   return sum
-}
+})
 
-const paymentSum = computed((): number =>
-  item.value.payments.reduce((carry, x) => (Number.parseInt(x.sum) || 0) + carry, 0),
-)
-
-const programSum = computed((): number => {
+const lessonsSum = computed(() => {
   let sum = 0
   for (const p of item.value.programs) {
-    sum += (Number.parseInt(p.price) || 0) * (Number.parseInt(p.lessons) || 1)
+    for (const x of p.prices) {
+      sum += asInt(x[0])
+    }
+  }
+  return sum
+})
+
+const paymentSum = computed((): number =>
+  item.value.payments.reduce((carry, x) => (asInt(x.sum) || 0) + carry, 0),
+)
+
+const lessonsMultipliedByPriceSum = computed((): number => {
+  let sum = 0
+  for (const p of item.value.programs) {
+    for (const x of p.prices) {
+      sum += asInt(x[1]) * (asInt(x[0]) || 1)
+    }
   }
   return sum
 })
@@ -226,9 +246,18 @@ const isPaymentSumValid = computed(() => {
   if (!item.value) {
     return false
   }
-  const contractSum = Number.parseInt(item.value.sum) || 0
-  return contractSum > 0 && contractSum === programSum.value && programSum.value === paymentSum.value
+  const contractSum = asInt(item.value.sum)
+  return contractSum > 0 && contractSum === lessonsMultipliedByPriceSum.value && lessonsMultipliedByPriceSum.value === paymentSum.value
 })
+
+/**
+ * начиная с X занятия
+ */
+// function getFromLessonLabel(p: ContractVersionProgramResource, index: number): number {
+//   return p.prices
+//     .filter((x, i) => i < index)
+//     .reduce((carry, x) => carry + Number.parseInt(x[0]), 0)
+// }
 
 // defineExpose({ create, editVersion, addVersion })
 defineExpose({ edit, createContract, addVersion })
@@ -310,22 +339,22 @@ defineExpose({ edit, createContract, addVersion })
         <div class="dialog-section">
           <!-- <div class="dialog-section__title">Программы</div> -->
 
-          <table class="dialog-table contract-version-dialog__programss">
+          <table class="dialog-table contract-version-dialog__programs">
             <thead v-if="item.programs.length">
               <tr>
-                <th width="400">
+                <th>
                   программа
                 </th>
                 <th width="120">
-                  уроков
-                </th>
-                <th width="120">
-                  прогр.
+                  занятий
                 </th>
                 <th width="120">
                   цена
                 </th>
-                <th />
+                <th width="100">
+                  прогр.
+                </th>
+                <th width="48" />
               </tr>
             </thead>
             <tbody>
@@ -341,13 +370,15 @@ defineExpose({ edit, createContract, addVersion })
                     {{ ProgramLabel[p.program] }}
                   </span>
                 </td>
-                <td>
-                  <v-text-field
-                    v-model="p.lessons"
-                    type="number"
-                    hide-spin-buttons
-                    density="compact"
-                  />
+                <td @click="pricesEditorDialog?.open(p)">
+                  <div v-for="(prices, index) in p.prices" :key="index">
+                    {{ prices[0] }}
+                  </div>
+                </td>
+                <td @click="pricesEditorDialog?.open(p)">
+                  <div v-for="(prices, index) in p.prices" :key="index">
+                    {{ prices[1] }}
+                  </div>
                 </td>
                 <td>
                   <v-text-field
@@ -357,16 +388,9 @@ defineExpose({ edit, createContract, addVersion })
                     density="compact"
                   />
                 </td>
-                <td>
-                  <v-text-field
-                    v-model="p.price"
-                    type="number"
-                    hide-spin-buttons
-                    density="compact"
-                  />
-                </td>
                 <td class="text-right">
                   <v-btn
+                    class="vf-1"
                     icon="$close"
                     variant="plain"
                     color="red"
@@ -392,13 +416,13 @@ defineExpose({ edit, createContract, addVersion })
                   </a>
                 </td>
                 <td>
-                  {{ getSum('lessons') || '' }}
+                  {{ lessonsSum || '' }}
                 </td>
                 <td>
-                  {{ getSum('lessons_planned') || '' }}
+                  {{ lessonsMultipliedByPriceSum || '' }}
                 </td>
-                <td>
-                  {{ programSum || '' }}
+                <td style="padding-top: 13px">
+                  {{ lessonsPlannedSum || '' }}
                 </td>
                 <td />
               </tr>
@@ -407,7 +431,7 @@ defineExpose({ edit, createContract, addVersion })
         </div>
 
         <div class="dialog-section">
-          <table class="dialog-table contract-version-dialog__paymentss">
+          <table class="dialog-table contract-version-dialog__payments">
             <thead v-if="item.payments.length">
               <tr>
                 <th width="400">
@@ -484,57 +508,15 @@ defineExpose({ edit, createContract, addVersion })
     ref="programDialog"
     @saved="onProgramsSaved"
   />
+  <ContractVersionPricesEditorDialog
+    ref="pricesEditorDialog"
+    @saved="onPricesSaved"
+  />
 </template>
 
 <style lang="scss">
 .contract-version-dialog {
-  &__programs {
-    & > div {
-      // border-bottom: none !important;
-      // --height: 50px !important;
-      min-height: auto !important;
-      & > div {
-        border-right: thin solid
-          rgba(var(--v-border-color), var(--v-border-opacity));
-        &:first-child {
-          flex: 1;
-          span {
-            transition: color ease-in-out 0.15s;
-            cursor: pointer;
-            user-select: none;
-            // display: inline-block;
-            // height: 100%;
-            line-height: 40px;
-          }
-        }
-        &:last-child {
-          border-right: none !important;
-        }
-        &:not(:first-child) {
-          width: 80px;
-          flex: none !important;
-        }
-      }
-    }
-    .v-field__outline {
-      display: none !important;
-    }
-    input {
-      padding: 0 !important;
-    }
-  }
   &__payments {
-    .date-input {
-      width: 150px !important;
-    }
-    .table {
-      .v-input {
-        margin-left: -16px;
-      }
-    }
-  }
-
-  .contract-version-dialog__paymentss {
     tr:not(:last-child) {
       td:first-child {
         input {
@@ -543,7 +525,32 @@ defineExpose({ edit, createContract, addVersion })
       }
     }
   }
-
+  &__programs {
+    tbody {
+      tr {
+        td {
+          vertical-align: top;
+          &:first-child {
+            span {
+              cursor: pointer;
+              user-select: none;
+            }
+          }
+          &:nth-child(1),
+          &:nth-child(2),
+          &:nth-child(3) {
+            padding-top: 13px;
+            padding-bottom: 13px;
+          }
+          &:nth-child(2),
+          &:nth-child(3) {
+            padding-left: 16px;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
   &__sum {
     position: relative;
     .v-icon {
