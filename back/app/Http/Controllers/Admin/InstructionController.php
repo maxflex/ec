@@ -22,7 +22,9 @@ class InstructionController extends Controller
     {
 
         if ($request->has('teacher_id')) {
-            $query = Instruction::queryForTeacher($request->teacher_id);
+            $query = Instruction::query()
+                ->published()
+                ->latest();
             $resource = InstructionTeacherListResource::class;
         } else {
             $query = Instruction::query()

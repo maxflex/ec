@@ -14,7 +14,10 @@ class InstructionTeacherListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $signedAt = $this->signs()->where('teacher_id', auth()->id())->value('signed_at');
+        $signedAt = $this->signs()
+            ->where('teacher_id', $request->teacher_id)
+            ->value('signed_at');
+       
         return extract_fields($this, [
             'title', 'created_at', 'is_last_version'
         ], [
