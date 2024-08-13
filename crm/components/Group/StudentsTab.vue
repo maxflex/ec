@@ -56,7 +56,7 @@ nextTick(loadData)
     class="table table--actions-on-hover"
   >
     <div v-for="item in items" :key="item.id">
-      <div style="width: 230px">
+      <div style="width: 280px">
         <UiAvatar :item="item.client" :size="38" class="mr-4" />
         <NuxtLink
           class="vf-1"

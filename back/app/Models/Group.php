@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Contracts\HasTeeth;
 use App\Enums\Program;
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
-class Group extends Model
+class Group extends Model implements HasTeeth
 {
     protected $fillable = [
         'duration', 'program', 'year', 'zoom',
@@ -86,8 +87,6 @@ class Group extends Model
     /**
      * Нажимаем "добавить ученика в текущую группу"
      * Получаем список кандидатов
-     *
-     * @return ContractVersionProgram[]
      */
     public function getCandidates()
     {
@@ -108,9 +107,9 @@ class Group extends Model
     /**
      * Получить "зубы" группы
      */
-    public function getTeeth()
+    public function getTeeth(int $year): object
     {
-        return Teeth::get($this->lessons()->getQuery());
+        return Teeth::get($this->lessons()->getQuery(), $year);
     }
 
     public function getTeachers()

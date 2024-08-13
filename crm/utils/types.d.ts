@@ -183,7 +183,6 @@ declare global {
     head_teacher_id: number | null
     parent: ParentResource
     user?: PersonResource
-    teeth?: Teeth
     created_at?: string
   }
 
@@ -382,7 +381,6 @@ declare global {
     passport_code?: string
     passport_issued_by?: string
     so?: number
-    teeth?: Teeth
     created_at?: string
     user?: PersonResource
   }

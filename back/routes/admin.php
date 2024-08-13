@@ -29,6 +29,7 @@ use App\Http\Controllers\Admin\SwampController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TeacherPaymentController;
 use App\Http\Controllers\Admin\TeacherServiceController;
+use App\Http\Controllers\Admin\TeethController;
 use App\Http\Controllers\Admin\TelegramMessageController;
 use App\Http\Controllers\Admin\TestController;
 use App\Http\Controllers\Admin\UserController;
@@ -72,6 +73,8 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::get('groups/visits/{group}', [GroupController::class, 'visits']);
 
     Route::get('instructions/diff/{instruction}', [InstructionController::class, 'diff']);
+
+    Route::get('teeth', TeethController::class);
 
     Route::apiResource('swamps', SwampController::class)->only('index');
 

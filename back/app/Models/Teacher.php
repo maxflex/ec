@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\HasTeeth;
 use App\Enums\TeacherStatus;
 use App\Traits\HasName;
 use App\Traits\HasPhones;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
-class Teacher extends Model
+class Teacher extends Model implements HasTeeth
 {
     use HasName, HasPhones, HasPhoto, RelationSyncable;
 
@@ -161,10 +162,9 @@ class Teacher extends Model
         return $schedule->unique(fn ($l) => $l->id);
     }
 
-    public function getTeeth()
+    public function getTeeth(int $year): object
     {
-        $query = Lesson::query()
-            ->where('teacher_id', $this->id);
-        return Teeth::get($query);
+        $query = Lesson::where('teacher_id', $this->id);
+        return Teeth::get($query, $year);
     }
 }

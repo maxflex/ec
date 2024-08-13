@@ -9,10 +9,11 @@ import type {
   LessonDialog,
 } from '#build/components'
 
-const { entity, id, group } = defineProps<{
+const { entity, id, group, showTeeth } = defineProps<{
   entity: Extract<EntityString, 'client' | 'teacher' | 'group'>
   id: number
   group?: GroupResource
+  showTeeth?: boolean
 }>()
 
 const { user } = useAuthStore()
@@ -21,6 +22,7 @@ const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const year = ref<Year>(group === undefined ? currentAcademicYear() : group.year)
 const loading = ref(false)
 const hideEmptyDates = ref(0)
+const teeth = ref<Teeth>()
 const lessons = ref<LessonListResource[]>([])
 const events = ref<EventListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
@@ -106,6 +108,22 @@ async function loadEvents() {
   }
 }
 
+async function loadTeeth() {
+  if (!showTeeth) {
+    return
+  }
+  const { data } = await useHttp<Teeth>(`teeth`, {
+    params: {
+      year: year.value,
+      entity_type: EntityType[entity],
+      entity_id: id,
+    },
+  })
+  if (data.value) {
+    teeth.value = data.value
+  }
+}
+
 async function loadVacations() {
   vacations.value = {}
   const { data } = await useHttp<ApiResponse<VacationResource[]>>(`vacations`, {
@@ -133,6 +151,7 @@ function isConductable(item: LessonListResource) {
 }
 
 async function loadData() {
+  await loadTeeth()
   await loadLessons()
   await loadEvents()
   await loadVacations()
@@ -199,7 +218,9 @@ nextTick(loadData)
         </v-list-item>
       </v-list>
     </v-menu>
-    <slot />
+    <v-fade-transition v-else>
+      <TeethBar v-if="teeth" :items="teeth" />
+    </v-fade-transition>
   </div>
   <UiLoaderr v-if="loading" />
   <div v-else class="lesson-list">

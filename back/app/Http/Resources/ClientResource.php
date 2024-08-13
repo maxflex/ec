@@ -5,13 +5,9 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/** @mixin \App\Models\Client */
 class ClientResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
@@ -21,23 +17,6 @@ class ClientResource extends JsonResource
             'user' => new PersonResource($this->user),
             'parent' => new ParentResource($this->parent),
             'phones' => PhoneListResource::collection($this->phones),
-            'teeth' => $this->getTeeth(),
-
-            // remove
-            'groups' => GroupResource::collection($this->groups),
-            'swamps' => $this->swamps,
-            'tests' => ClientTestResource::collection($this->tests),
         ]);
-        // return array_merge(parent::toArray($request), [
-        //     'photo_url' => $this->photoUrl,
-        //     'contracts' => ContractResource::collection($this->contracts),
-        //     'groups' => GroupResource::collection($this->groups),
-        //     'swamps' => $this->swamps,
-        //     'parent' => new ParentResource($this->parent),
-        //     'tests' => ClientTestResource::collection($this->tests),
-        //     'head_teacher' => new PersonResource($this->headTeacher),
-        //     'phones' => $this->phones,
-        //     'requests' => $this->requests,
-        // ]);
     }
 }

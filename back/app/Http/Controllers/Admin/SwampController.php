@@ -51,7 +51,7 @@ class SwampController extends Controller
             ->selectRaw(<<<SQL
                 cvp.id,
                 cvp.id as `cvp_id`,
-                cvp.lessons,
+                cast(prices->>'$[0][0]' as unsigned) as `lessons`,
                 `group_id`,
                 cv.contract_id,
                 c.year,

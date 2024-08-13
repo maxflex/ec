@@ -168,11 +168,8 @@ nextTick(loadData)
         v-else-if="selectedTab === 'schedule'"
         :id="client.id"
         entity="client"
-      >
-        <div>
-          <TeethBar :items="client.teeth!" />
-        </div>
-      </LessonList>
+        show-teeth
+      />
       <ClientGroupsTab v-else-if="selectedTab === 'groups'" :client-id="client.id" />
       <UiDataLoader
         v-else-if="selectedTab === 'grades'"

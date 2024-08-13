@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\HasTeeth;
 use App\Traits\HasName;
 use App\Traits\HasPhones;
 use App\Traits\HasPhoto;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
-class Client extends Model
+class Client extends Model implements HasTeeth
 {
     use HasName, HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable;
 
@@ -96,10 +97,10 @@ class Client extends Model
     }
 
     /**
-     * фактически проведенные занятия
-     * занятия прошедшие без ученика в группе, в которой ученик сейчас присутствует
-     * отмененные занятия в группе, в которой ученик сейчас присутствует
-     * планируемые занятия в группе, в которой ученик сейчас присутствует
+     * Фактически проведенные занятия.
+     * Занятия прошедшие без ученика в группе, в которой ученик сейчас присутствует.
+     * Отмененные занятия в группе, в которой ученик сейчас присутствует.
+     * Планируемые занятия в группе, в которой ученик сейчас присутствует
      */
     public function getSchedule(int $year): Collection
     {
@@ -132,12 +133,12 @@ class Client extends Model
         return $schedule;
     }
 
-    public function getTeeth()
+    public function getTeeth(int $year): object
     {
         $query = Lesson::query()
             ->join('group_contracts as gc', 'gc.group_id', '=', 'lessons.group_id')
             ->whereIn('gc.contract_id', $this->contracts()->pluck('id'));
-        return Teeth::get($query);
+        return Teeth::get($query, $year);
     }
 
     public function scopeActive($query): void

@@ -2,9 +2,11 @@
 
 namespace App\Http\Resources;
 
+use App\Models\GroupContract;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/** @mixin GroupContract */
 class GroupContractResource extends JsonResource
 {
     /**
@@ -16,7 +18,7 @@ class GroupContractResource extends JsonResource
     {
         $client = $this->contract->client;
         return extract_fields($this, ['contract_id'], [
-            'teeth' => $client->getTeeth(),
+            'teeth' => $client->getTeeth($this->group->year),
             'client' => new PersonWithPhotoResource($client)
         ]);
     }

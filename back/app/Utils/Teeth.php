@@ -13,14 +13,12 @@ class Teeth
     const MIN_SECONDS = 37200; // SEC_TO_TIME = 10:20
     const MAX_SECONDS = 74400; // SEC_TO_TIME = 20:40
 
-    /**
-     * @param Lesson[] $lessons
-     */
-    public static function get(Builder $lessonsQuery)
+    public static function get(Builder $lessonsQuery, int $year): object
     {
         $lessons = $lessonsQuery
-            // ->where('status', LessonStatus::planned)
+//            ->where('status', LessonStatus::planned)
             ->where('is_unplanned', 0)
+            ->where('g.year', $year)
             ->join('groups as g', 'g.id', '=', 'lessons.group_id')
             ->selectRaw(<<<SQL
                 DAYOFWEEK(`date`) as `weekday`,

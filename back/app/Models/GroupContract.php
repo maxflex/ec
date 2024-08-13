@@ -14,4 +14,9 @@ class GroupContract extends Model
     {
         return $this->belongsTo(Contract::class);
     }
+
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
+    }
 }

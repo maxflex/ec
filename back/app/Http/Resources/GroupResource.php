@@ -2,10 +2,12 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Group;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/** @mixin Group */
 class GroupResource extends JsonResource
 {
     /**
@@ -21,7 +23,7 @@ class GroupResource extends JsonResource
                 fn ($id) =>
                 new PersonResource(Teacher::find($id))
             ),
-            'teeth' => $this->getTeeth()
+            'teeth' => $this->getTeeth($this->year)
         ]);
     }
 }
