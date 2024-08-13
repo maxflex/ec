@@ -271,7 +271,7 @@ defineExpose({ edit, createContract, addVersion })
     <div class="dialog-wrapper contract-version-dialog">
       <div class="dialog-header">
         <span v-if="isNewContract"> Новый договор </span>
-        <span v-else-if="isEditMode">
+        <div v-else-if="isEditMode">
           Редактирование договора
           <span>№{{ contractId }}–{{ version }}</span>
           <div class="dialog-subheader">
@@ -280,7 +280,7 @@ defineExpose({ edit, createContract, addVersion })
               {{ formatDateTime(item.created_at) }}
             </template>
           </div>
-        </span>
+        </div>
         <span v-else>
           Новая версия договора
           <span>№{{ contractId }}–{{ version }}</span>
@@ -415,13 +415,13 @@ defineExpose({ edit, createContract, addVersion })
                     />
                   </a>
                 </td>
-                <td>
+                <td class="cursor-default">
                   {{ lessonsSum || '' }}
                 </td>
-                <td>
+                <td class="cursor-default">
                   {{ lessonsMultipliedByPriceSum || '' }}
                 </td>
-                <td style="padding-top: 13px">
+                <td style="padding-top: 13px" class="cursor-default">
                   {{ lessonsPlannedSum || '' }}
                 </td>
                 <td />

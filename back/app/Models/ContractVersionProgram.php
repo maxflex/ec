@@ -10,7 +10,7 @@ class ContractVersionProgram extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'program', 'lessons', 'lessons_planned', 'price', 'is_closed'
+        'program', 'prices', 'lessons_planned', 'is_closed'
     ];
 
     protected $casts = [
@@ -36,5 +36,15 @@ class ContractVersionProgram extends Model
     public function contractVersion()
     {
         return $this->belongsTo(ContractVersion::class);
+    }
+
+    public function getNextPrice(): int
+    {
+//        $nextLessonIndex = ContractLesson::query()
+//            ->where('contract_id', $this->contractVersion->contract_id)
+//            ->count();
+//        $nextLessonIndex++;
+        $prices = $this->prices;
+        return intval($prices[count($prices) - 1][1]); // последняя цена
     }
 }

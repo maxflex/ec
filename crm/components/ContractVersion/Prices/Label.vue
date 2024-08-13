@@ -1,9 +1,11 @@
 <script setup lang="ts">
-
+const { item } = defineProps<{
+  item: ContractVersionProgramResource
+}>()
 </script>
 
 <template>
-  $END$
+
 </template>
 
 <style scoped lang="scss">

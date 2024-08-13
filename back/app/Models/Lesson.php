@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use App\Enums\Cabinet;
 use App\Enums\ContractLessonStatus;
 use App\Enums\LessonStatus;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -105,13 +106,17 @@ class Lesson extends Model
             $c = (object) $c;
 
             // подразумеваем, что в договоре есть нужная программа
-            $program = ContractVersion::query()
+            $contractVersionProgram = ContractVersion::query()
                 ->where('contract_id', $c->id)
                 ->lastVersions()
                 ->first()
                 ->programs()
                 ->where('program', $this->group->program)
                 ->first();
+
+            if ($contractVersionProgram === null) {
+                throw new Exception('No contract version program found');
+            }
 
             $this->contractLessons()->create([
                 'contract_id' => $c->id,
@@ -120,7 +125,7 @@ class Lesson extends Model
                     ? $c->minutes_late
                     : null,
                 'is_remote' => $c->is_remote,
-                'price' => $program->price,
+                'price' => $contractVersionProgram->getNextPrice(),
                 'scores' => count($c->scores) ? $c->scores : null
             ]);
         }
