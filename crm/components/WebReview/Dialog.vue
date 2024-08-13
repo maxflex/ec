@@ -186,7 +186,7 @@ defineExpose({ edit, create })
           />
         </div>
 
-        <div class="table table--hover">
+        <div class="table table--hover table--separated mt-6">
           <div
             v-for="examScore in examScores"
             :key="examScore.id"

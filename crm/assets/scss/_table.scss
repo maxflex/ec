@@ -110,6 +110,12 @@
     }
   }
 
+  &--separated {
+    & > div:first-child {
+      border-top: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+    }
+  }
+
   &-item-disabled {
     & > div {
       opacity: 0.3;
