@@ -10,11 +10,10 @@ const modelDefaults: WebReviewResource = {
   id: newId(),
   client_id: newId(),
   text: '',
-  exam_score_id: null,
+  exam_scores: [],
   signature: '',
   is_published: false,
   rating: 0,
-  scores: [],
 }
 const item = ref<WebReviewResource>(modelDefaults)
 const itemId = ref<number>()
@@ -100,7 +99,10 @@ async function destroy() {
 }
 
 function selectExamScore({ id }: ExamScoreResource) {
-  item.value.exam_score_id = item.value.exam_score_id === id ? null : id
+  const index = item.value.exam_scores.findIndex(x => x === id)
+  index === -1
+    ? item.value.exam_scores.push(id)
+    : item.value.exam_scores.splice(index, 1)
 }
 
 defineExpose({ edit, create })
@@ -194,7 +196,7 @@ defineExpose({ edit, create })
           >
             <div class="vfn-1" style="width: 20px">
               <v-icon
-                v-if="examScore.web_review_id || item.exam_score_id === examScore.id"
+                v-if="examScore.web_review_id || item.exam_scores.includes(examScore.id)"
                 color="secondary"
                 icon="$checkboxOn"
               />
@@ -216,5 +218,3 @@ defineExpose({ edit, create })
     </div>
   </v-dialog>
 </template>
-
-<style lang="scss"></style>

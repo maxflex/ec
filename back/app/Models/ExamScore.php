@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ExamScore extends Model
 {
     protected $fillable = [
-        'exam', 'year', 'score', 'client_id', 'web_review_id'
+        'exam', 'year', 'score', 'client_id'
     ];
 
     protected $casts = [
@@ -25,8 +25,8 @@ class ExamScore extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function webReview()
+    public function webReviews()
     {
-        return $this->belongsTo(WebReview::class);
+        return $this->belongsToMany(WebReview::class);
     }
 }

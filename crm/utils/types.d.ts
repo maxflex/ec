@@ -458,22 +458,14 @@ declare global {
     created_at?: string
   }
 
-  interface WebReviewScore {
-    id: number
-    program?: Program
-    score?: number
-    max_score?: number
-  }
-
   interface WebReviewResource {
     id: number
     client_id: number
-    exam_score_id: ?number
+    exam_scores: number[]
     is_published: boolean
     text: string
     signature: string
     rating: number
-    scores: WebReviewScore[]
     client?: PersonResource
     user?: PersonResource
     created_at?: string

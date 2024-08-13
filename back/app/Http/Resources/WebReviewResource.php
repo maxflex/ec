@@ -18,7 +18,7 @@ class WebReviewResource extends JsonResource
             'text', 'signature', 'rating', 'is_published',
             'client_id', 'created_at',
         ], [
-            'exam_score_id' => $this->examScore?->id,
+            'exam_scores' => $this->examScores->pluck('id'),
             'client' => new PersonResource($this->client),
             'user' => new PersonResource($this->user)
         ]);

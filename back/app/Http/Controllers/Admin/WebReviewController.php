@@ -17,7 +17,7 @@ class WebReviewController extends Controller
     public function index(Request $request)
     {
         $query = WebReview::query()
-            ->with(['client', 'examScore'])
+            ->with(['client', 'examScores'])
             ->latest();
 
         $this->filter($request, $query);
@@ -27,12 +27,14 @@ class WebReviewController extends Controller
     public function store(Request $request)
     {
         $webReview = auth()->user()->entity->webReviews()->create($request->all());
+        $webReview->examScores()->sync($request->exam_scores);
         return new WebReviewResource($webReview);
     }
 
     public function update(WebReview $webReview, Request $request)
     {
         $webReview->update($request->all());
+        $webReview->examScores()->sync($request->exam_scores);
         return new WebReviewResource($webReview);
     }
 

@@ -15,7 +15,7 @@ class ExamScoreResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, ['*'], [
-            'web_review_id' => $this->webReview?->id,
+            'web_review_id' => count($this->webReviews) ? $this->webReviews[0]->id : null,
             'user' => new PersonResource($this->user),
             'client' => new PersonResource($this->client),
         ]);

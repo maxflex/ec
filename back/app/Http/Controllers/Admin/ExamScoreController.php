@@ -22,11 +22,11 @@ class ExamScoreController extends Controller
             ->with(['user', 'client'])
             ->latest();
         if ($request->has('web_review_id')) {
-            $query->with('webReview',
+            $query->with('webReviews',
                 fn($q) => $q->where('id', '<>', $request->web_review_id)
             );
         } else {
-            $query->with('webReview');
+            $query->with('webReviews');
         }
         $this->filter($request, $query);
         return $this->handleIndexRequest(

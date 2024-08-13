@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { mdiNumeric5BoxMultiple, mdiWeb } from '@mdi/js'
-import type { ExamScoreDialog } from '#components'
 
 const { items } = defineProps<{ items: WebReviewResource[] }>()
 defineEmits<{
   edit: [itemId: number]
 }>()
-const examScoreDialog = ref<InstanceType<typeof ExamScoreDialog>>()
 </script>
 
 <template>
@@ -58,10 +56,9 @@ const examScoreDialog = ref<InstanceType<typeof ExamScoreDialog>>()
           class="mr-3"
         />
         <v-icon
-          v-if="item.exam_score_id"
+          v-if="item.exam_scores.length"
           :icon="mdiNumeric5BoxMultiple"
           color="secondary"
-          @click="examScoreDialog?.edit(item.exam_score_id)"
         />
         <v-icon
           v-else
@@ -77,5 +74,4 @@ const examScoreDialog = ref<InstanceType<typeof ExamScoreDialog>>()
       </div>
     </div>
   </div>
-  <ExamScoreDialog ref="examScoreDialog" />
 </template>
