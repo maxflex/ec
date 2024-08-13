@@ -3,6 +3,7 @@ import { clone } from 'rambda'
 
 interface BatchItem {
   weekdays: { [key in Weekday]: string }
+  cabinets: { [key in Weekday]: Cabinet | null }
   start_date: string
   end_date: string
 }
@@ -27,6 +28,15 @@ const batchDefaults: BatchItem = {
     4: '',
     5: '',
     6: '',
+  },
+  cabinets: {
+    0: null,
+    1: null,
+    2: null,
+    3: null,
+    4: null,
+    5: null,
+    6: null,
   },
   start_date: '',
   end_date: '',
@@ -116,32 +126,30 @@ defineExpose({ create })
             <div />
           </div>
         </div> -->
+
         <table class="dialog-table weekdays-dialog-table">
           <tbody>
-            <tr v-for="(arr, index) in [[0, 4], [1, 5], [2, 6], [3, -1]]" :key="index">
-              <td width="60" class="text-uppercase">
-                {{ WeekdayLabel[arr[0]] }}
+            <tr v-for="(label, i) in WeekdayLabel" :key="i">
+              <td :class="{ 'weekdays-dialog-table--empty': !(batch.weekdays[i] || batch.cabinets[i]) }">
+                {{ label.toUpperCase() }}
               </td>
-              <td>
+              <td width="180">
                 <v-text-field
-                  v-model="batch.weekdays[arr[0]]"
+                  v-model="batch.weekdays[i]"
                   v-maska:[timeMask]
+                  placeholder="Время"
                 />
               </td>
-              <td width="63" class="text-uppercase">
-                <template v-if="arr[1] !== -1">
-                  {{ WeekdayLabel[arr[1]] }}
-                </template>
-              </td>
-              <td :class="{ 'no-pointer-events': arr[1] === -1 }">
-                <v-text-field
-                  v-model="batch.weekdays[arr[1]]"
-                  v-maska:[timeMask]
+              <td width="180">
+                <UiClearableSelect
+                  v-model="batch.cabinets[i]"
+                  :items="selectItems(CabinetLabel)"
+                  placeholder="Кабинет"
                 />
               </td>
             </tr>
             <tr>
-              <td style="height: 20px !important" colspan="2" />
+              <td colspan="3" style="height: 0" />
             </tr>
           </tbody>
         </table>
@@ -150,10 +158,11 @@ defineExpose({ create })
           <UiDateInput v-model="batch.end_date" :year="year" label="до" />
         </div>
         <div class="double-input">
-          <UiClearableSelect
-            v-model="lesson.cabinet"
-            :items="selectItems(CabinetLabel)"
-            label="Кабинет"
+          <v-text-field
+            v-model="lesson.price"
+            label="Цена"
+            type="number"
+            hide-spin-buttons
           />
           <UiClearableSelect
             v-model="lesson.quarter"
@@ -165,15 +174,6 @@ defineExpose({ create })
           <TeacherSelector
             v-model="lesson.teacher_id"
             label="Преподаватель"
-          />
-        </div>
-
-        <div>
-          <v-text-field
-            v-model="lesson.price"
-            label="Цена"
-            type="number"
-            hide-spin-buttons
           />
         </div>
       </div>
@@ -189,18 +189,21 @@ defineExpose({ create })
   column-gap: 20px;
 }
 .weekdays-dialog-table {
-  tr {
-    td {
-      &:nth-child(1),
-      &:nth-child(3) {
-        border-right: none !important;
-        color: rgb(var(--v-theme-gray));
-        text-transform: uppercase;
-      }
-      &:nth-child(3) {
-        padding-left: 16px;
-      }
+  margin-bottom: 20px;
+  .v-select {
+    max-height: 51px !important;
+    height: 51px !important;
+    input {
+      top: 14px;
+      position: relative;
+      padding: 0 !important;
+      //&::placeholder {
+      //
+      //}
     }
+  }
+  &--empty {
+    color: #9e9e9e;
   }
 }
 </style>

@@ -132,21 +132,21 @@ nextTick(loadData)
       &:first-child {
         position: sticky;
         top: 0;
-        z-index: 2;
+        z-index: 1;
         td {
           background: white;
         }
       }
-      &:not(:first-child) {
-        td {
-          &:first-child {
-            position: sticky !important;
-            z-index: 1;
-            left: 0;
-            background: white;
-          }
+      //&:not(:first-child) {
+      td {
+        &:first-child {
+          position: sticky !important;
+          z-index: 2;
+          left: 0;
+          background: white;
         }
       }
+      //}
     }
   }
   .is-remote {

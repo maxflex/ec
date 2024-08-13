@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { mdiCheckAll } from '@mdi/js'
 import { clone } from 'rambda'
-import type { ContractVersionPricesEditorDialog, ProgramDialog } from '#build/components'
+import type { ProgramDialog } from '#build/components'
 
 const emit = defineEmits<{
   created: [i: ContractResource]
@@ -26,7 +26,7 @@ const contractId = ref<number>()
 const version = ref<number>() // для отображения в заголовке
 const { dialog, width } = useDialog('medium')
 const programDialog = ref<InstanceType<typeof ProgramDialog>>()
-const pricesEditorDialog = ref<InstanceType<typeof ContractVersionPricesEditorDialog>>()
+const priceInput = ref()
 const saving = ref(false)
 const deleting = ref(false)
 const loading = ref(false)
@@ -119,7 +119,7 @@ function onProgramsSaved(programs: Program[]) {
         id: newId(),
         program,
         contract_version_id: item.value.contract.id,
-        prices: [],
+        prices: [['', '']],
         lessons_planned: 0,
         is_closed: false,
       })
@@ -129,14 +129,6 @@ function onProgramsSaved(programs: Program[]) {
   item.value.programs = item.value.programs.filter(({ program }) =>
     programs.includes(program),
   )
-}
-
-function onPricesSaved(p: ContractVersionProgramResource) {
-  const index = item.value.programs.findIndex(e => e.program === p.program)
-  if (index === -1) {
-    return
-  }
-  item.value.programs.splice(index, 1, p)
 }
 
 function addPayment() {
@@ -157,10 +149,8 @@ function deletePayment(p: ContractVersionPaymentResource) {
 }
 
 function deleteProgram(p: ContractVersionProgramResource) {
-  item.value.programs.splice(
-    item.value.programs.findIndex(e => e.id === p.id),
-    1,
-  )
+  const index = item.value.programs.findIndex(e => e.id === p.id)
+  item.value.programs.splice(index, 1)
 }
 
 async function save() {
@@ -250,14 +240,23 @@ const isPaymentSumValid = computed(() => {
   return contractSum > 0 && contractSum === lessonsMultipliedByPriceSum.value && lessonsMultipliedByPriceSum.value === paymentSum.value
 })
 
-/**
- * начиная с X занятия
- */
-// function getFromLessonLabel(p: ContractVersionProgramResource, index: number): number {
-//   return p.prices
-//     .filter((x, i) => i < index)
-//     .reduce((carry, x) => carry + Number.parseInt(x[0]), 0)
-// }
+function addPrices(p: ContractVersionProgramResource) {
+  const index = item.value.programs.findIndex(e => e.id === p.id)
+  item.value.programs[index].prices.push(['', ''])
+  nextTick(() => {
+    priceInput.value[priceInput.value.length - 1].focus()
+  })
+}
+
+function removePrice(p: ContractVersionProgramResource) {
+  const index = item.value.programs.findIndex(e => e.id === p.id)
+  const pricesLength = item.value.programs[index].prices.length
+  if (pricesLength === 1) {
+    deleteProgram(p)
+    return
+  }
+  item.value.programs[index].prices.splice(pricesLength - 1, 1)
+}
 
 // defineExpose({ create, editVersion, addVersion })
 defineExpose({ edit, createContract, addVersion })
@@ -345,40 +344,24 @@ defineExpose({ edit, createContract, addVersion })
                 <th>
                   программа
                 </th>
-                <th width="120">
+                <th width="118">
+                  прогр.
+                </th>
+                <th width="117">
                   занятий
                 </th>
-                <th width="120">
+                <th width="117">
                   цена
-                </th>
-                <th width="100">
-                  прогр.
                 </th>
                 <th width="48" />
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="p in item.programs"
-                :key="p.id"
-              >
+              <tr v-for="p in item.programs" :key="p.id">
                 <td>
-                  <span
-                    :class="{ 'text-error': p.is_closed }"
-                    @click="toggleCloseProgram(p)"
-                  >
+                  <span :class="{ 'text-error': p.is_closed }">
                     {{ ProgramLabel[p.program] }}
                   </span>
-                </td>
-                <td @click="pricesEditorDialog?.open(p)">
-                  <div v-for="(prices, index) in p.prices" :key="index">
-                    {{ prices[0] }}
-                  </div>
-                </td>
-                <td @click="pricesEditorDialog?.open(p)">
-                  <div v-for="(prices, index) in p.prices" :key="index">
-                    {{ prices[1] }}
-                  </div>
                 </td>
                 <td>
                   <v-text-field
@@ -388,16 +371,60 @@ defineExpose({ edit, createContract, addVersion })
                     density="compact"
                   />
                 </td>
+                <td>
+                  <div v-for="(prices, index) in p.prices" :key="index">
+                    <v-text-field
+                      ref="priceInput"
+                      v-model="prices[0]"
+                      type="number"
+                      hide-spin-buttons
+                      density="compact"
+                    />
+                  </div>
+                </td>
+                <td>
+                  <div v-for="(prices, index) in p.prices" :key="index">
+                    <v-text-field
+                      v-model="prices[1]"
+                      type="number"
+                      hide-spin-buttons
+                      density="compact"
+                    />
+                  </div>
+                </td>
                 <td class="text-right">
-                  <v-btn
-                    class="vf-1"
-                    icon="$close"
-                    variant="plain"
-                    color="red"
-                    :size="48"
-                    :ripple="false"
-                    @click="deleteProgram(p)"
-                  />
+                  <v-menu>
+                    <template #activator="{ props }">
+                      <v-btn
+                        v-bind="props"
+                        icon="$more"
+                        variant="plain"
+                        :size="48"
+                        :ripple="false"
+                      />
+                    </template>
+                    <v-list>
+                      <v-list-item @click="toggleCloseProgram(p)">
+                        <template v-if="p.is_closed">
+                          открыть программу
+                        </template>
+                        <template v-else>
+                          закрыть программу
+                        </template>
+                      </v-list-item>
+                      <v-list-item @click="addPrices(p)">
+                        добавить цену
+                      </v-list-item>
+                      <v-list-item @click="removePrice(p)">
+                        <template v-if="p.prices.length < 2">
+                          удалить программу
+                        </template>
+                        <template v-else>
+                          удалить цену
+                        </template>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
                 </td>
               </tr>
               <tr>
@@ -416,13 +443,13 @@ defineExpose({ edit, createContract, addVersion })
                   </a>
                 </td>
                 <td class="cursor-default">
+                  {{ lessonsPlannedSum || '' }}
+                </td>
+                <td class="cursor-default">
                   {{ lessonsSum || '' }}
                 </td>
                 <td class="cursor-default">
                   {{ lessonsMultipliedByPriceSum || '' }}
-                </td>
-                <td style="padding-top: 13px" class="cursor-default">
-                  {{ lessonsPlannedSum || '' }}
                 </td>
                 <td />
               </tr>
@@ -434,7 +461,7 @@ defineExpose({ edit, createContract, addVersion })
           <table class="dialog-table contract-version-dialog__payments">
             <thead v-if="item.payments.length">
               <tr>
-                <th width="400">
+                <th width="410">
                   номер
                 </th>
                 <th width="180">
@@ -508,10 +535,6 @@ defineExpose({ edit, createContract, addVersion })
     ref="programDialog"
     @saved="onProgramsSaved"
   />
-  <ContractVersionPricesEditorDialog
-    ref="pricesEditorDialog"
-    @saved="onPricesSaved"
-  />
 </template>
 
 <style lang="scss">
@@ -528,24 +551,24 @@ defineExpose({ edit, createContract, addVersion })
   &__programs {
     tbody {
       tr {
+        &:last-child {
+          td {
+            padding-top: 13px;
+          }
+        }
         td {
           vertical-align: top;
           &:first-child {
-            span {
-              cursor: pointer;
-              user-select: none;
-            }
-          }
-          &:nth-child(1),
-          &:nth-child(2),
-          &:nth-child(3) {
             padding-top: 13px;
-            padding-bottom: 13px;
           }
-          &:nth-child(2),
-          &:nth-child(3) {
-            padding-left: 16px;
-            cursor: pointer;
+          &:nth-child(3),
+          &:nth-child(4) {
+            & > div {
+              &:not(:last-child) {
+                border-bottom: thin solid
+                  rgba(var(--v-border-color), var(--v-border-opacity));
+              }
+            }
           }
         }
       }

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { plural } from '~/utils/filters'
-
 const { items } = defineProps<{ items: ClientTestResource[] }>()
 
 const emit = defineEmits<{
@@ -84,8 +82,9 @@ const { user } = useAuthStore()
         </div>
       </template>
       <!-- CLIENT -->
-      <template v-else>
+      <div v-else class="text-right">
         <v-btn
+          v-if="!t.is_finished"
           color="primary"
           density="comfortable"
           :to="{
@@ -97,7 +96,7 @@ const { user } = useAuthStore()
         >
           начать тест
         </v-btn>
-      </template>
+      </div>
     </div>
   </div>
 </template>

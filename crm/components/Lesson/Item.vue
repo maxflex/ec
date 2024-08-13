@@ -45,12 +45,12 @@ const emit = defineEmits<{
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
     <div style="width: 80px">
-      К–{{ item.cabinet }}
+      <template v-if="item.cabinet">
+        К–{{ item.cabinet }}
+      </template>
     </div>
     <div v-if="item.teacher" style="width: 150px">
-      <NuxtLink
-        :to="{ name: 'teachers-id', params: { id: item.teacher.id } }"
-      >
+      <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }">
         {{ formatNameInitials(item.teacher) }}
       </NuxtLink>
     </div>

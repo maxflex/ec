@@ -34,7 +34,7 @@ export function newId(): number {
 }
 
 export function asInt(n: unknown) {
-  return Number.parseInt(n as string)
+  return Number.parseInt(n as string) || 0
 }
 
 export function selectItems(obj: object, skip: string[] = []): SelectItems {
@@ -106,11 +106,23 @@ function getFiltersKey() {
   return `filters-${String(name)}`
 }
 
+/**
+ * Сохранение и загрузка фильтров работает только у админа
+ */
 export function saveFilters<T>(filters: T): void {
+  if (getEntityString() !== 'user') {
+    return
+  }
   localStorage.setItem(getFiltersKey(), JSON.stringify(filters))
 }
 
+/**
+ * Сохранение и загрузка фильтров работает только у админа
+ */
 export function loadFilters<T>(defaultFilters: T): T {
+  if (getEntityString() !== 'user') {
+    return defaultFilters
+  }
   const filters = localStorage.getItem(getFiltersKey())
   return filters === null ? defaultFilters : JSON.parse(filters)
 }

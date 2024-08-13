@@ -1,46 +1,17 @@
 <script setup lang="ts">
-const items = ref<GroupListResource[]>()
-const paginator = usePaginator()
+import type { Filters } from '~/components/Group/Filters.vue'
 
-const loadData = async function () {
-  paginator.page++
-  paginator.loading = true
-  const { data } = await useHttp<ApiResponse<GroupListResource[]>>('groups', {
-    params: { page: paginator.page },
-  })
-  paginator.loading = false
-  if (data.value) {
-    const { meta, data: newItems } = data.value
-    items.value
-      = paginator.page === 1 ? newItems : items.value?.concat(newItems)
-    paginator.isLastPage = meta.current_page === meta.last_page
-  }
-}
-
-async function onIntersect({
-  done,
-}: {
-  done: (status: InfiniteScrollStatus) => void
-}) {
-  if (paginator.isLastPage) {
-    return
-  }
-  done('loading')
-  await loadData()
-  done(paginator.isLastPage ? 'empty' : 'ok')
-}
-
-nextTick(loadData)
+const { items, loading, onFiltersApply } = useIndex<GroupListResource, Filters>(`groups`)
 </script>
 
 <template>
-  <UiLoader :paginator="paginator" />
-  <v-infinite-scroll
-    v-if="items"
-    :margin="100"
-    class="table table--padding"
-    @load="onIntersect"
-  >
-    <GroupList :items="items" />
-  </v-infinite-scroll>
+  <div class="filters">
+    <GroupFilters @apply="onFiltersApply" />
+  </div>
+  <div>
+    <UiLoader3 :loading="loading" />
+    <div class="table table--padding">
+      <GroupList :items="items" />
+    </div>
+  </div>
 </template>

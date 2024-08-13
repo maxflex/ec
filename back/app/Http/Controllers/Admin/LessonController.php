@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\{LessonConductResource, LessonResource, LessonListResource};
+use App\Http\Resources\{LessonConductResource, LessonListResource, LessonResource};
 use App\Models\Lesson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -60,8 +60,10 @@ class LessonController extends Controller
             $dayOfWeek = ($from->dayOfWeek + 6) % 7;
             $time = $request->batch['weekdays'][$dayOfWeek];
             if ($time) {
+                $cabinet = $request->batch['cabinets'][$dayOfWeek];
                 $data['date'] = $from->format('Y-m-d');
                 $data['time'] = $time;
+                $data['cabinet'] = $cabinet ?: null;
                 $lessons[] = auth()->user()->entity->lessons()->create($data);
             }
             $from->addDay();

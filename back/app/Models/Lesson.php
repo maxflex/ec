@@ -131,6 +131,7 @@ class Lesson extends Model
         }
 
         $this->update([
+            'conducted_at' => now(),
             'status' => LessonStatus::conducted
         ]);
     }

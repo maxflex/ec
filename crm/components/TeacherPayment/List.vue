@@ -58,9 +58,6 @@ function onTeacherPaymentDestroyed(tp: TeacherPaymentResource) {
         {{ formatDate(payment.date) }}
       </div>
       <div style="width: 180px">
-        {{ YearLabel[payment.year] }}
-      </div>
-      <div style="width: 180px">
         {{ TeacherPaymentMethodLabel[payment.method] }}
       </div>
       <div style="width: 180px">

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreignIdFor(Teacher::class)->nullable()->constrained();
             $table->unsignedInteger('price');
             $table->enum('status', collect(LessonStatus::cases())->map(fn ($e) => $e->name)->all());
-            $table->enum('cabinet', collect(Cabinet::cases())->map(fn ($e) => $e->value)->all());
+            $table->enum('cabinet', collect(Cabinet::cases())->map(fn($e) => $e->value)->all())->nullable();
 
             $table->enum(
                 'quarter',

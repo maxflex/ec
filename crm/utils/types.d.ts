@@ -214,7 +214,7 @@ declare global {
   interface ContractVersionProgramResource {
     id: number
     program: Program
-    lessons_planned: number
+    lessons_planned: number | string
     prices: Array<Array<number, number>>
     is_closed: boolean
     contract_version_id: number
@@ -315,7 +315,7 @@ declare global {
     date: string
     time: string
     time_end: string
-    cabinet: Cabinet
+    cabinet: ?Cabinet
     is_unplanned: boolean
     is_first: boolean
     contractLesson?: {

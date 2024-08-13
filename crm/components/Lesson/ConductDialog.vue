@@ -84,7 +84,7 @@ defineExpose({ open })
             Редактирование проведённого занятия
             <div class="dialog-subheader">
               <template v-if="item?.conducted_at">
-                {{ formatDateTime(item.conducted_at) }}
+                проведено {{ formatDateTime(item.conducted_at) }}
               </template>
             </div>
           </div>
