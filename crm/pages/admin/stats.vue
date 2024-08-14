@@ -118,7 +118,7 @@ onUnmounted(() => {
   <div :class="{ 'table-stats--loading': loading }" class="table table-stats">
     <div class="table-stats__header">
       <div class="table-stats__header-mode">
-        <UiDropdown
+        <UiToggler
           v-model="mode"
           :items="selectItems(StatsModeLabel)"
         />
@@ -160,7 +160,7 @@ onUnmounted(() => {
       </div>
     </div>
     <div v-for="{ date, values } in items" :key="date" class="table-stats__body">
-      <div class="text-gray">
+      <div class="table-stats__date">
         {{ formatDateMode(date, responseParams.mode) }}
       </div>
       <div
@@ -201,7 +201,19 @@ onUnmounted(() => {
     background: white;
     z-index: 1;
     &-mode {
-      padding: $padding;
+      height: 57px;
+      border-right: thin solid
+        rgba(var(--v-border-color), var(--v-border-opacity));
+      &:hover {
+        background: rgb(var(--v-theme-bg));
+      }
+      a {
+        padding: $padding;
+        display: inline-flex;
+        height: 100%;
+        width: 100%;
+        align-items: center;
+      }
     }
     &-metric {
       position: relative;
@@ -272,6 +284,15 @@ onUnmounted(() => {
     & > div {
       padding: $padding;
     }
+  }
+  &__date {
+    color: rgb(var(--v-theme-gray));
+    border-right: thin solid
+      rgba(var(--v-border-color), var(--v-border-opacity));
+    height: 57px;
+    display: inline-flex;
+    width: 100%;
+    align-items: center;
   }
 }
 .sortable-drag {

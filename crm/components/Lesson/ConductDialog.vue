@@ -4,6 +4,7 @@ const { width, dialog } = useDialog('large')
 const itemId = ref<number>()
 const item = ref<LessonConductResource>()
 
+const minutesLateMask = { mask: '###' }
 const loading = ref(false)
 const saving = ref(false)
 const isConducted = ref(false)
@@ -110,90 +111,74 @@ defineExpose({ open })
         </template>
       </div>
       <UiLoaderr v-if="loading" />
-      <div v-else-if="item" class="dialog-body pt-1">
-        <div class="table">
-          <div
-            v-for="c in item?.contracts" :key="c.id"
-            :class="`contract-lesson contract-lesson--${c.status}`"
-          >
-            <div>
-              <UiAvatar :item="c.client" :size="46" />
-            </div>
-            <div style="width: 220px">
-              {{ formatName(c.client) }}
-            </div>
-            <div style="width: 120px">
-              <UiDropdown
-                v-model="c.status"
-                :items="selectItems(ContractLessonStatusLabel)"
-              />
-              <div v-if="c.status === 'late'" style="width: 100px">
+      <div v-else-if="item" class="dialog-body pt-0 conduct-dialog">
+        <table class="dialog-table">
+          <tbody>
+            <tr v-for="c in item?.contracts" :key="c.id">
+              <td width="290">
+                {{ formatName(c.client) }}
+              </td>
+              <td width="100">
+                <UiToggler
+                  v-model="c.status"
+                  :items="selectItems(ContractLessonStatusLabel)"
+                />
+              </td>
+              <td width="80">
                 <v-text-field
+                  v-if="c.status === 'late' "
                   v-model="c.minutes_late"
-                  class="mt-2"
+                  v-maska:[minutesLateMask]
                   type="number"
                   hide-spin-buttons
-                  density="compact"
-                  suffix="минут"
-                  persistent-placeholder
+                  placeholder="минут"
                 />
-              </div>
-            </div>
-            <div v-if="c.status !== 'absent'" style="width: 120px">
-              <UiDropdown
-                v-model="c.is_remote"
-                :items="[
-                  { value: false, title: 'очно' },
-                  { value: true, title: 'удалённо' },
-                ]"
-              />
-            </div>
-            <div v-if="c.status !== 'absent'">
-              <div v-if="c.scores.length > 0" class="contract-lesson__scores">
+              </td>
+              <td width="120">
+                <UiToggler
+                  v-if="c.status !== 'absent'"
+                  v-model="c.is_remote"
+                  :items="[
+                    { value: false, title: 'очно' },
+                    { value: true, title: 'удалённо' },
+                  ]"
+                />
+              </td>
+              <td width="57" class="conduct-dialog__scores">
+                <div
+                  v-for="(score, index) in c.scores" :key="index"
+                  :class="`conduct-dialog__score conduct-dialog__score--${score.score}`"
+                >
+                  <UiToggler
+                    v-model="c.scores[index].score"
+                    :items="scores.map(e => ({ value: e, title: e.toString() }))"
+                  />
+                </div>
+              </td>
+              <td class="conduct-dialog__score-comments">
                 <div v-for="(score, index) in c.scores" :key="index">
-                  <span :class="`score score--${score.score}`">
-                    {{ score.score }}
-                  </span>
                   <v-text-field
                     v-model="c.scores[index].comment"
                     density="compact"
-                    placeholder="комментарий к оценке"
-                    persistent-placeholder
+                    placeholder="комментарий"
                   />
                   <v-icon
                     icon="$close"
                     @click="c.scores.splice(index, 1)"
                   />
                 </div>
-              </div>
-              <v-menu v-if="c.scores.length < 4">
-                <template #activator="{ props }">
-                  <a
-                    v-bind="props"
-                    class="ui-dropdown"
-                  >
-                    добавить оценку
-                    <v-icon icon="$expand" />
-                  </a>
-                </template>
-                <v-list>
-                  <v-list-item
-                    v-for="score in scores"
-                    :key="score"
-                    @click="c.scores.push({ score, comment: null })"
-                  >
-                    <span :class="`score score--${score}`" class="mr-3">
-                      {{ score }}
-                    </span>
-                    {{ LessonScoreLabel[score] }}
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-            </div>
-
-            <!--  -->
-          </div>
-        </div>
+              </td>
+              <td width="20">
+                <a v-if="c.scores.length < 3" @click="c.scores.push({ score: 5, comment: null })">
+                  <v-icon icon="$plus" />
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="100" />
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </v-dialog>
@@ -240,6 +225,104 @@ defineExpose({ open })
       &:hover {
         opacity: 1;
         color: rgb(var(--v-theme-error));
+      }
+    }
+  }
+}
+.conduct-dialog {
+  $height: 56px;
+  .dialog-table {
+    td {
+      height: $height;
+      vertical-align: top;
+      &:first-child {
+        padding-top: 16px;
+      }
+      a {
+        cursor: pointer;
+        display: inline-flex;
+        //align-items: center;
+        height: 100%;
+        width: 100%;
+        padding: 16px 16px;
+        position: relative;
+        &:hover {
+          //background: rgb(var(--v-theme-bg));
+          &:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(var(--v-theme-gray), 0.05);
+            //background: rgba(black, 0.1);
+          }
+        }
+      }
+      .v-field__input {
+        height: 55px;
+      }
+    }
+  }
+
+  &__scores,
+  &__score-comments {
+    & > div {
+      height: 55px;
+      &:not(:last-child) {
+        border-bottom: thin solid
+          rgba(var(--v-border-color), var(--v-border-opacity));
+      }
+    }
+  }
+  &__score-comments {
+    & > div {
+      position: relative;
+    }
+    .v-icon {
+      position: absolute;
+      right: 12px;
+      top: 19px;
+      opacity: 0.25;
+      z-index: 1;
+      // transition: all ease-in-out 0.1s;
+      cursor: pointer;
+      font-size: 20px !important;
+      &:hover {
+        opacity: 1;
+        color: rgb(var(--v-theme-error));
+      }
+    }
+    input {
+      padding-right: 30px !important;
+    }
+  }
+  &__score {
+    a {
+      color: black !important;
+      &:hover:before {
+        background: rgba(white, 0.1) !important;
+      }
+    }
+    &--5 {
+      a {
+        background: rgb(var(--v-theme-success), 0.5);
+      }
+    }
+    &--4 {
+      a {
+        background: rgb(var(--v-theme-success), 0.2);
+      }
+    }
+    &--3 {
+      a {
+        background: rgb(var(--v-theme-orange), 0.4);
+      }
+    }
+    &--2 {
+      a {
+        background: rgb(var(--v-theme-error), 0.4);
       }
     }
   }
