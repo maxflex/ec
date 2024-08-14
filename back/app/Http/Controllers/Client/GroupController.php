@@ -20,7 +20,7 @@ class GroupController extends Controller
                 'contracts',
                 fn ($q) => $q->where('client_id', auth()->id())
             )
-            ->withCount('lessons', 'groupContracts')
+            ->withCount('lessons', 'clientGroups')
             ->orderBy('id', 'desc');
 
         $this->filter($request, $query);

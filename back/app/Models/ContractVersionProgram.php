@@ -40,7 +40,7 @@ class ContractVersionProgram extends Model
 
     public function getNextPrice(): int
     {
-//        $nextLessonIndex = ContractLesson::query()
+//        $nextLessonIndex = ClientLesson::query()
 //            ->where('contract_id', $this->contractVersion->contract_id)
 //            ->count();
 //        $nextLessonIndex++;

@@ -48,7 +48,7 @@ class Client extends Model implements HasTeeth
     public function getGroupsAttribute()
     {
         return Group::whereHas(
-            'groupContracts',
+            'clientGroups',
             fn ($q) => $q->whereIn('contract_id', $this->contracts()->pluck('id'))
         )->get();
     }
@@ -109,11 +109,11 @@ class Client extends Model implements HasTeeth
 
         // фактически проведённые
         $fact = [];
-        $contractLessons = ContractLesson::whereIn('contract_id', $contracts->pluck('id'))->get();
-        foreach ($contractLessons as $contractLesson) {
-            $lesson = $contractLesson->lesson;
-            // $lesson->load('contractLessons', fn ($q) => $q->whereId($contractLesson->id));
-            $lesson->contractLesson = $contractLesson;
+        $clientLessons = ClientLesson::whereIn('contract_id', $contracts->pluck('id'))->get();
+        foreach ($clientLessons as $clientLesson) {
+            $lesson = $clientLesson->lesson;
+            // $lesson->load('clientLessons', fn ($q) => $q->whereId($clientLesson->id));
+            $lesson->clientLesson = $clientLesson;
             $schedule->push($lesson);
             $fact[$lesson->id] = true;
         }
@@ -136,7 +136,7 @@ class Client extends Model implements HasTeeth
     public function getTeeth(int $year): object
     {
         $query = Lesson::query()
-            ->join('group_contracts as gc', 'gc.group_id', '=', 'lessons.group_id')
+            ->join('client_groups as gc', 'gc.group_id', '=', 'lessons.group_id')
             ->whereIn('gc.contract_id', $this->contracts()->pluck('id'));
         return Teeth::get($query, $year);
     }

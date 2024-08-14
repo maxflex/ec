@@ -18,7 +18,7 @@ class GroupListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'program', 'zoom', 'lessons_count', 'group_contracts_count'
+            'program', 'zoom', 'lessons_count', 'client_groups_count'
         ], [
             'teachers' => $this->getTeachers()->map(
                 fn ($id) =>

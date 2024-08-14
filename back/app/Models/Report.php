@@ -50,7 +50,7 @@ class Report extends Model
     {
         $query = Lesson::query()
             ->join('groups as g', 'g.id', '=', 'lessons.group_id')
-            ->join('contract_lessons as cl', 'cl.lesson_id', '=', 'lessons.id')
+            ->join('client_lessons as cl', 'cl.lesson_id', '=', 'lessons.id')
             ->join('contracts as c', 'c.id', '=', 'cl.contract_id')
             ->where('lessons.status', LessonStatus::conducted->value)
             ->where('conducted_at', '<', $this->created_at)
@@ -67,9 +67,9 @@ class Report extends Model
         return $query;
     }
 
-    public function getContractLessonsAttribute()
+    public function getClientLessonsAttribute()
     {
-        return ContractLesson::whereIn('id', $this->lessons->pluck('cl.id'))->with('lesson')->get();
+        return ClientLesson::whereIn('id', $this->lessons->pluck('cl.id'))->with('lesson')->get();
     }
 
     /**

@@ -77,13 +77,13 @@ const emit = defineEmits<{
         внеплановое
       </v-chip>
     </div>
-    <div v-if="item.contractLesson" class="lesson-list__contract-lesson">
+    <div v-if="item.clientLesson" class="lesson-list__contract-lesson">
       <!-- <div style="width: 240px">
-        {{ item.contractLesson.is_remote ? 'удалённо' : 'очно' }}
+        {{ item.clientLesson.is_remote ? 'удалённо' : 'очно' }}
       </div> -->
       <div style="width: 110px" />
       <div class="lesson-list__scores" style="width: 500px">
-        <div v-for="(score, i) in item.contractLesson.scores" :key="i">
+        <div v-for="(score, i) in item.clientLesson.scores" :key="i">
           <span :class="`score score--${score.score}`" class="mr-3">
             {{ score.score }}
           </span>
@@ -93,19 +93,19 @@ const emit = defineEmits<{
         </div>
       </div>
       <div style="width: 220px">
-        {{ item.contractLesson.is_remote ? 'удалённо' : 'очно' }}
+        {{ item.clientLesson.is_remote ? 'удалённо' : 'очно' }}
       </div>
       <div style="flex: 1">
         <UiCircleStatus
           :class="{
-            'text-error': item.contractLesson.status === 'absent',
-            'text-warning': item.contractLesson.status === 'late',
-            'text-success': item.contractLesson.status === 'present',
+            'text-error': item.clientLesson.status === 'absent',
+            'text-warning': item.clientLesson.status === 'late',
+            'text-success': item.clientLesson.status === 'present',
           }"
         >
-          {{ ContractLessonStatusLabel[item.contractLesson.status] }}
-          <template v-if="item.contractLesson.minutes_late">
-            на {{ item.contractLesson.minutes_late }} мин.
+          {{ ClientLessonStatusLabel[item.clientLesson.status] }}
+          <template v-if="item.clientLesson.minutes_late">
+            на {{ item.clientLesson.minutes_late }} мин.
           </template>
         </UiCircleStatus>
       </div>

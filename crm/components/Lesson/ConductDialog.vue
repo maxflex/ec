@@ -125,7 +125,7 @@ defineExpose({ open })
             <div style="width: 120px">
               <UiDropdown
                 v-model="c.status"
-                :items="selectItems(ContractLessonStatusLabel)"
+                :items="selectItems(ClientLessonStatusLabel)"
               />
               <div v-if="c.status === 'late'" style="width: 100px">
                 <v-text-field

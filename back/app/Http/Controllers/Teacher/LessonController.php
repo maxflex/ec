@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\{LessonConductResource, LessonListResource};
-use App\Models\ContractLesson;
+use App\Models\ClientLesson;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
 
@@ -17,7 +17,7 @@ class LessonController extends Controller
     public function index(Request $request)
     {
         $query = Lesson::query()
-            ->with(['teacher', 'group', 'contractLessons'])
+            ->with(['teacher', 'group', 'clientLessons'])
             ->orderByRaw('date, time');
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, LessonListResource::class);
@@ -34,8 +34,8 @@ class LessonController extends Controller
     public function update(Lesson $lesson, Request $request)
     {
         foreach ($request->contracts as $c) {
-            $contractLesson = ContractLesson::find($c['id']);
-            $contractLesson->update($c);
+            $clientLesson = ClientLesson::find($c['id']);
+            $clientLesson->update($c);
         }
         return new LessonListResource($lesson);
     }

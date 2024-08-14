@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use App\Enums\ContractLessonStatus;
-use App\Observers\ContractLessonObserver;
+use App\Enums\ClientLessonStatus;
+use App\Observers\ClientLessonObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 
-#[ObservedBy(ContractLessonObserver::class)]
-class ContractLesson extends Model
+#[ObservedBy(ClientLessonObserver::class)]
+class ClientLesson extends Model
 {
     public $timestamps = false;
 
@@ -18,7 +18,7 @@ class ContractLesson extends Model
     ];
 
     protected $casts = [
-        'status' => ContractLessonStatus::class,
+        'status' => ClientLessonStatus::class,
         'is_remote' => 'boolean',
         'scores' => 'array',
     ];

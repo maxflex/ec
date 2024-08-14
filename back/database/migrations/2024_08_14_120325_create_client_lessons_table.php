@@ -1,22 +1,21 @@
 <?php
 
 use App\Enums\ClientLessonStatus;
-use App\Models\Contract;
+use App\Models\ContractVersionProgram;
 use App\Models\Lesson;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('contract_lessons', function (Blueprint $table) {
+        Schema::create('client_lessons', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Contract::class)->constrained();
+            $table->foreignIdFor(ContractVersionProgram::class)->constrained();
             $table->foreignIdFor(Lesson::class)->constrained();
             $table->unsignedInteger('price');
             $table->enum(
@@ -25,8 +24,9 @@ return new class extends Migration
             );
             $table->unsignedInteger('minutes_late')->nullable();
             $table->boolean('is_remote')->default(false);
-            $table->unique(['contract_id', 'lesson_id']);
+            $table->unique(['contract_version_program_id', 'lesson_id']);
         });
+        Schema::dropIfExists('contract_lessons');
     }
 
     /**
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('contract_lessons');
+        Schema::dropIfExists('client_lessons');
     }
 };

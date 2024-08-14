@@ -45,11 +45,11 @@ declare global {
 
   type LessonStatus = keyof typeof LessonStatusLabel
 
-  type ContractLessonStatus = keyof typeof ContractLessonStatusLabel
+  type ClientLessonStatus = keyof typeof ClientLessonStatusLabel
 
   type LessonScore = keyof typeof LessonScoreLabel
 
-  interface ContractLessonScore {
+  interface ClientLessonScore {
     score: LessonScore
     comment: string | null
   }
@@ -289,7 +289,7 @@ declare global {
   interface GroupListResource {
     id: number
     lessons_count: number
-    group_contracts_count: number
+    client_groups_count: number
     program: Program
     teachers: PersonResource[]
     zoom: Zoom | null
@@ -318,9 +318,9 @@ declare global {
     cabinet: ?Cabinet
     is_unplanned: boolean
     is_first: boolean
-    contractLesson?: {
-      status: ContractLessonStatus
-      scores: ContractLessonScore[]
+    clientLesson?: {
+      status: ClientLessonStatus
+      scores: ClientLessonScore[]
       minutes_late: number | null
       is_remote: boolean
     }
@@ -356,10 +356,10 @@ declare global {
     contracts: Array<{
       id: number
       client: PersonWithPhotoResource
-      status: ContractLessonStatus
+      status: ClientLessonStatus
       is_remote: boolean
       minutes_late: number | null
-      scores: ContractLessonScore[]
+      scores: ClientLessonScore[]
     }>
   }
 
@@ -691,11 +691,11 @@ declare global {
     dateTime: string
     teacher: PersonResource
     status: LessonStatus
-    contractLessons: Array<{
+    clientLessons: Array<{
       id: number
       is_remote: boolean
       minutes_late: number
-      status: ContractLessonStatus
+      status: ClientLessonStatus
       client: PersonResource
     }>
   }
@@ -857,7 +857,7 @@ declare global {
     [key in Weekday]: Tooth[]
   }
 
-  interface GroupContractResource {
+  interface ClientGroupResource {
     id: number
     contract_id: number
     teeth: Teeth

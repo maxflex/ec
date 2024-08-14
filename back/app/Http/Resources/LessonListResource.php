@@ -19,9 +19,9 @@ class LessonListResource extends JsonResource
             'status', 'date', 'time', 'time_end',
             'cabinet', 'is_unplanned', 'is_first',
         ], [
-            'contractLesson' => $this->when(
-                $this->contractLesson,
-                extract_fields($this->contractLesson, [
+            'clientLesson' => $this->when(
+                $this->clientLesson,
+                extract_fields($this->clientLesson, [
                     'status', 'scores', 'minutes_late', 'is_remote'
                 ])
             ),
@@ -30,7 +30,7 @@ class LessonListResource extends JsonResource
             ], [
                 'contracts_count' =>
                 $this->status === LessonStatus::conducted
-                    ? $this->contractLessons->count()
+                    ? $this->clientLessons->count()
                     : $this->group->contracts()->count()
             ]),
             'teacher' =>  new PersonResource($this->teacher),

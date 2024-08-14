@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands\Transfer;
 
+use App\Enums\Program;
+use App\Models\{Client, ClientParent, ContractVersion, Request, Teacher, User};
 use Illuminate\Support\Facades\DB;
-use App\Models\{Teacher, User, Request, Client, ClientParent};
 
 trait TransferTrait
 {
@@ -62,5 +63,22 @@ trait TransferTrait
             ET_CLIENT => Client::class,
             ET_PARENT => ClientParent::class,
         };
+    }
+
+    protected function getContractVersionProgramId(
+        int $contractId,
+        int $gradeId,
+        int $subjectId
+    ): int
+    {
+//        dump([$contractId, $gradeId, $subjectId]);
+        $program = Program::getById($gradeId, $subjectId);
+        return ContractVersion::query()
+            ->where('contract_id', $contractId)
+            ->lastVersions()
+            ->first()
+            ->programs()
+            ->where('program', $program)
+            ->value('id') ?? 33883;
     }
 }

@@ -19,7 +19,7 @@ class LessonController extends Controller
     public function index(Request $request)
     {
         $query = Lesson::query()
-            ->with(['teacher', 'group', 'contractLessons'])
+            ->with(['teacher', 'group', 'clientLessons'])
             ->orderByRaw('date, time');
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, LessonListResource::class);

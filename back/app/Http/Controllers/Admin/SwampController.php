@@ -26,9 +26,9 @@ class SwampController extends Controller
             SQL)->groupBy('contract_id');
 
         /**
-         * group_contracts и groups
+         * client_groups и groups
          */
-        $gcgCte = DB::table('group_contracts', 'gc')
+        $gcgCte = DB::table('client_groups', 'gc')
             ->select('gc.contract_id', 'gc.group_id', 'g.program', 'g.year')
             ->join('groups as g', 'g.id', '=', 'gc.group_id');
 

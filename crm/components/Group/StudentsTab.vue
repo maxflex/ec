@@ -4,17 +4,17 @@ import type { GroupAddStudentDialog, GroupSelectorDialog } from '#build/componen
 
 const { group } = defineProps<{ group: GroupResource }>()
 const loading = ref(false)
-const items = ref<GroupContractResource[]>([])
+const items = ref<ClientGroupResource[]>([])
 const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
 const groupAddStudentDialog = ref<InstanceType<typeof GroupAddStudentDialog>>()
 
-async function destroy(gc: GroupContractResource) {
+async function destroy(gc: ClientGroupResource) {
   const index = items.value.findIndex(i => i.id === gc.id)
   if (index === -1) {
     return
   }
   items.value.splice(index, 1)
-  await useHttp(`group-contracts/${gc.id}`, {
+  await useHttp(`client-groups/${gc.id}`, {
     method: 'delete',
   })
 }
@@ -23,7 +23,7 @@ async function onGroupSelected(g: GroupListResource, contractId: number) {
   await destroy(
     items.value.find(i => i.contract_id === contractId)!,
   )
-  await useHttp(`group-contracts`, {
+  await useHttp(`client-groups`, {
     method: 'post',
     params: {
       group_id: g.id,
@@ -34,8 +34,8 @@ async function onGroupSelected(g: GroupListResource, contractId: number) {
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<GroupContractResource[]>>(
-    `group-contracts`,
+  const { data } = await useHttp<ApiResponse<ClientGroupResource[]>>(
+    `client-groups`,
     {
       params: {
         group_id: group.id,

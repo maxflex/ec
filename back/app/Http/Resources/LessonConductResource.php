@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Enums\ContractLessonStatus;
+use App\Enums\ClientLessonStatus;
 use App\Enums\LessonStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -17,7 +17,7 @@ class LessonConductResource extends JsonResource
     public function toArray(Request $request): array
     {
         $contracts = match ($this->status) {
-            LessonStatus::conducted => $this->contractLessons()->get()->map(
+            LessonStatus::conducted => $this->clientLessons()->get()->map(
                 fn ($cl) => extract_fields($cl, [
                     'is_remote', 'minutes_late', 'status', 'scores'
                 ], [
@@ -29,7 +29,7 @@ class LessonConductResource extends JsonResource
                 ->get()
                 ->map(fn ($c) => extract_fields($c, [], [
                     'client' => new PersonWithPhotoResource($c->client),
-                    'status' => ContractLessonStatus::present,
+                    'status' => ClientLessonStatus::present,
                     'is_remote' => false,
                     'minutes_late' => 10,
                     'scores' => []

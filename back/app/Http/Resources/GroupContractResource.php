@@ -2,12 +2,12 @@
 
 namespace App\Http\Resources;
 
-use App\Models\GroupContract;
+use App\Models\ClientGroup;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin GroupContract */
-class GroupContractResource extends JsonResource
+/** @mixin ClientGroup */
+class ClientGroupResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

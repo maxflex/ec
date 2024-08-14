@@ -121,7 +121,7 @@ export const ProgramLabel = {
 export const TelegramTemplateLabel = {
   reportPublished: 'отчёт отправлен',
   reportRead: 'отчёт прочитан',
-  contractLessonStatus: 'опоздал/не пришёл',
+  clientLessonStatus: 'опоздал/не пришёл',
 }
 
 export const ProgramShortLabel = {
@@ -291,7 +291,7 @@ export const LessonStatusLabel = {
   cancelled: 'отменено',
 } as const
 
-export const ContractLessonStatusLabel = {
+export const ClientLessonStatusLabel = {
   present: 'был',
   late: 'опоздал',
   absent: 'не был',
@@ -505,7 +505,7 @@ export const LogTableLabel = {
   client_reviews: 'client_reviews',
   client_tests: 'client_tests',
   comments: 'comments',
-  contract_lessons: 'contract_lessons',
+  client_lessons: 'client_lessons',
   contract_version_payments: 'contract_version_payments',
   contract_version_programs: 'contract_version_programs',
   contract_versions: 'contract_versions',

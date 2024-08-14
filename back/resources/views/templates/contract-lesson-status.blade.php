@@ -1,1 +1,7 @@
-{{ $contractLesson->contract->client->formatName() }} @if ($contractLesson->status === \App\Enums\ContractLessonStatus::absent) пропустил(а) урок @elseif ($contractLesson->is_remote) был(а) удалённо на уроке @else опоздал(а) на {{ $contractLesson->minutes_late }} минут на урок @endif по программе {{ $contractLesson->lesson->group->program->getName() }} {{ date('d.m.Y', strtotime($contractLesson->lesson->date)) }}
+{{ $clientLesson->contract->client->formatName() }} @if ($clientLesson->status === \App\Enums\ClientLessonStatus::absent)
+    пропустил(а) урок
+@elseif ($clientLesson->is_remote)
+    был(а) удалённо на уроке
+@else
+    опоздал(а) на {{ $clientLesson->minutes_late }} минут на урок
+@endif по программе {{ $clientLesson->lesson->group->program->getName() }} {{ date('d.m.Y', strtotime($clientLesson->lesson->date)) }}

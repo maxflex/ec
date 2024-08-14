@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Enums\LessonStatus;
 use App\Enums\Quarter;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class Grade extends Model
@@ -42,7 +42,7 @@ class Grade extends Model
 
         $fakeGrades = DB::table('lessons as l')
             ->join('groups as g', 'g.id', '=', 'l.group_id')
-            ->join('contract_lessons as cl', 'cl.lesson_id', '=', 'l.id')
+            ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
             ->join('contracts as c', 'c.id', '=', 'cl.contract_id')
             ->joinSub(
                 $groupQuarterSub,
@@ -95,7 +95,7 @@ class Grade extends Model
 
         $finalGrades = DB::table('lessons as l')
             ->join('groups as g', 'g.id', '=', 'l.group_id')
-            ->join('contract_lessons as cl', 'cl.lesson_id', '=', 'l.id')
+            ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
             ->join('contracts as c', 'c.id', '=', 'cl.contract_id')
             ->joinSub($finalSub, 'f', 'f.group_id', '=', 'g.id')
             ->leftJoin(
