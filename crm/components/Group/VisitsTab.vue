@@ -115,6 +115,7 @@ nextTick(loadData)
 <style lang="scss">
 .group-visits {
   height: calc(100vh - 118px);
+  position: relative;
   table {
     table-layout: fixed;
     tr {
@@ -132,21 +133,21 @@ nextTick(loadData)
       &:first-child {
         position: sticky;
         top: 0;
-        z-index: 1;
+        z-index: 2;
         td {
           background: white;
         }
       }
-      //&:not(:first-child) {
-      td {
-        &:first-child {
-          position: sticky !important;
-          z-index: 2;
-          left: 0;
-          background: white;
+      &:not(:first-child) {
+        td {
+          &:first-child {
+            position: sticky !important;
+            z-index: 1;
+            left: 0;
+            background: white;
+          }
         }
       }
-      //}
     }
   }
   .is-remote {

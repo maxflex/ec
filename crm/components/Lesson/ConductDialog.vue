@@ -269,7 +269,7 @@ defineExpose({ open })
   &__scores,
   &__score-comments {
     & > div {
-      height: 55px;
+      height: $height;
       &:not(:last-child) {
         border-bottom: thin solid
           rgba(var(--v-border-color), var(--v-border-opacity));

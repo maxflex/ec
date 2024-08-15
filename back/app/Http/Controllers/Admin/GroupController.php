@@ -29,9 +29,8 @@ class GroupController extends Controller
         return $this->handleIndexRequest($request, $query, GroupListResource::class);
     }
 
-    public function show($id)
+    public function show(Group $group)
     {
-        $group = Group::find($id);
         return new GroupResource($group);
     }
 

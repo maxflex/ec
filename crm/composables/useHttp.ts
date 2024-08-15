@@ -27,6 +27,12 @@ export const useHttp: useFetchType = (path: string, options = {}) => {
           window.location.href = '/login'
         }
       }
+      if (status === 404) {
+        showError({
+          statusCode: 404,
+          statusMessage: 'Not found',
+        })
+      }
     },
   })
 }

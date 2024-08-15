@@ -82,7 +82,7 @@ nextTick(loadData)
     <div v-if="selectedTab === 'schedule'">
       <LessonList :id="group.id" entity="group" :group="group" />
     </div>
-    <GroupVisits v-else-if="selectedTab === 'visits'" :id="group.id" />
+    <GroupVisitsTab v-else-if="selectedTab === 'visits'" :id="group.id" />
     <GroupStudentsTab v-else :group="group" />
   </div>
   <GroupDialog
