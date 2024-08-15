@@ -125,10 +125,6 @@ nextTick(loadData)
         border-right: 1px solid #e0e0e0;
         &:first-child {
           width: 130px !important;
-          position: sticky !important;
-          z-index: 2;
-          left: 0;
-          background: white;
         }
         &:last-child {
           width: auto !important;
@@ -137,9 +133,19 @@ nextTick(loadData)
       &:first-child {
         position: sticky;
         top: 0;
-        z-index: 1;
+        z-index: 2;
         td {
           background: white;
+        }
+      }
+      &:not(:first-child) {
+        td {
+          &:first-child {
+            position: sticky !important;
+            z-index: 1;
+            left: 0;
+            background: white;
+          }
         }
       }
     }
