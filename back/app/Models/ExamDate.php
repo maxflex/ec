@@ -15,7 +15,8 @@ class ExamDate extends Model
         if ($value === null) {
             return [];
         }
-        return collect(json_decode($value))->map(fn($e) => "2023-$e")->values();
+        $year = current_academic_year();
+        return collect(json_decode($value))->map(fn($e) => "$year-$e")->values();
     }
 
     public function setDatesAttribute(array $dates)

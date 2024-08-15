@@ -91,3 +91,27 @@ function get_max_pko_number(Company $company)
             ->max('pko_number'),
     ) + 1;
 }
+
+/**
+ * Получить академический год по дате
+ * Новый академический год начинается с 1 сентября
+ *
+ * @param string $date Дата в формате 'Y-m-d'
+ * @return int Академический год
+ */
+function get_academic_year(string $date): int
+{
+    $year = (int)date('Y', strtotime($date));
+    $month = (int)date('m', strtotime($date));
+    return ($month >= 9) ? $year : $year - 1;
+}
+
+/**
+ * Текущий академический год
+ *
+ * @return int Текущий академический год
+ */
+function current_academic_year(): int
+{
+    return get_academic_year(date('Y-m-d'));
+}

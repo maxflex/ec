@@ -74,12 +74,13 @@ export function yesNo(
 export function smoothScroll(
   scroll: 'dialog' | 'main',
   direction: 'top' | 'bottom',
+  behavior: ScrollBehavior = 'smooth',
 ) {
   const querySelector = scroll === 'dialog' ? ' .dialog-body' : '.v-main'
   nextTick(() =>
     document
       .querySelector(querySelector)
-      ?.scrollTo({ top: direction === 'bottom' ? 9999 : 0, behavior: 'smooth' }),
+      ?.scrollTo({ top: direction === 'bottom' ? 9999 : 0, behavior }),
   )
 }
 

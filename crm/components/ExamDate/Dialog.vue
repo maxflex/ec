@@ -11,11 +11,21 @@ const item = ref<ExamDateResource>({
   dates: [],
 })
 const year = currentAcademicYear()
+const months = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6]
 const saving = ref(false)
 
 function edit(ed: ExamDateResource) {
   item.value = clone(ed)
   dialog.value = true
+  setTimeout(() => {
+    const selectedElement = document.querySelector('.calendar--selected-clickable')
+    if (selectedElement) {
+      selectedElement.scrollIntoView({ block: 'center' })
+    }
+    else {
+      smoothScroll('dialog', 'bottom', 'instant')
+    }
+  }, 100)
 }
 
 // отступ первого дня в календаре
@@ -86,7 +96,7 @@ defineExpose({ edit })
       </div>
       <div class="dialog-body pt-4">
         <div class="calendar mt-0">
-          <div v-for="m in 12" :key="m" class="calendar__month">
+          <div v-for="m in months" :key="m" class="calendar__month">
             <div class="calendar__month-label">
               <span class="text-grey-light">
                 {{ MonthLabel[m - 1] }}
