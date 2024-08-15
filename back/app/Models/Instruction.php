@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Observers\InstructionObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
-use Jfcherng\Diff\{DiffHelper, Differ};
+use Jfcherng\Diff\{Differ, DiffHelper};
 
 #[ObservedBy(InstructionObserver::class)]
 class Instruction extends Model
@@ -28,12 +28,16 @@ class Instruction extends Model
         return $this->hasMany(self::class, 'entry_id', 'entry_id');
     }
 
-    public function scopeWithLastVersionsCte($query)
+    public function scopeWithLastVersionsCte($query, bool $onlyPublished = true)
     {
         $lastVersionsCte = self::selectRaw(<<<SQL
             entry_id as max_entry_id,
             MAX(id) as max_id
         SQL)->groupBy('entry_id');
+
+        if ($onlyPublished) {
+            $lastVersionsCte->where('is_published', true);
+        }
 
         $query->withExpression('last_versions', $lastVersionsCte);
     }
@@ -173,5 +177,15 @@ class Instruction extends Model
     public function getSignedAt(int $teacherId)
     {
         return $this->signs()->where('teacher_id', $teacherId)->value('signed_at');
+    }
+
+    /**
+     * Архив если не подписано и не последняя версия
+     * @param int $teacherId
+     * @return bool
+     */
+    public function isArchive(int $teacherId): bool
+    {
+        return !$this->is_last_version && $this->getSignedAt($teacherId) === null;
     }
 }

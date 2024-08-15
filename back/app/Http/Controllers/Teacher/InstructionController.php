@@ -13,7 +13,7 @@ class InstructionController extends Controller
     {
         $request->merge(['teacher_id' => auth()->id()]);
         $query = Instruction::query()
-            ->published()
+            ->lastVersions()
             ->latest();
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, InstructionTeacherListResource::class);
@@ -21,6 +21,9 @@ class InstructionController extends Controller
 
     public function show(Instruction $instruction)
     {
+        if ($instruction->isArchive(auth()->id())) {
+            return response(status: 404);
+        }
         return new InstructionTeacherResource($instruction);
     }
 

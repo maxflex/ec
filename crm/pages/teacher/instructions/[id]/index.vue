@@ -4,12 +4,10 @@ import { mdiCheckAll, mdiContentCopy } from '@mdi/js'
 const loading = ref(false)
 const route = useRoute()
 const instruction = ref<InstructionTeacherResource>()
-const isArchive = ref(false)
 
 async function loadData() {
   const { data } = await useHttp<InstructionTeacherResource>(`instructions/${route.params.id}`)
   instruction.value = data.value as InstructionTeacherResource
-  isArchive.value = !instruction.value.signed_at && !instruction.value.is_last_version
 }
 
 async function sign() {
@@ -29,11 +27,7 @@ nextTick(loadData)
       <h1>
         {{ instruction.title }}
         <div>
-          <v-chip v-if="isArchive" color="gray">
-            архив
-          </v-chip>
           <v-btn
-            v-else
             variant="plain"
             :icon="mdiContentCopy"
             :size="48"
@@ -53,7 +47,7 @@ nextTick(loadData)
           <div v-html="instruction.text" />
         </div>
       </div>
-      <div v-if="!isArchive" class="instruction__sign">
+      <div class="instruction__sign">
         <v-btn v-if="instruction.signed_at" color="success" size="x-large" :width="400" disabled @click="sign()">
           <v-icon :icon="mdiCheckAll" :size="20" class="mr-2" />
           Подписано {{ formatDateTime(instruction.signed_at) }}
@@ -69,7 +63,8 @@ nextTick(loadData)
           v-for="(v, index) in instruction.versions"
           :key="v.id"
           :class="{
-            selected: v.id === instruction.id,
+            'selected': v.id === instruction.id,
+            'no-pointer-events': !v.signed_at && !v.is_last_version,
           }"
           :to="{
             name: 'instructions-id',

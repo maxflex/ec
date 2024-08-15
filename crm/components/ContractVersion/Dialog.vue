@@ -359,9 +359,9 @@ defineExpose({ edit, createContract, addVersion })
             <tbody>
               <tr v-for="p in item.programs" :key="p.id">
                 <td>
-                  <span :class="{ 'text-error': p.is_closed }">
+                  <a :class="{ 'text-error': p.is_closed }" @click="toggleCloseProgram(p)">
                     {{ ProgramLabel[p.program] }}
-                  </span>
+                  </a>
                 </td>
                 <td>
                   <v-text-field
@@ -404,14 +404,6 @@ defineExpose({ edit, createContract, addVersion })
                       />
                     </template>
                     <v-list>
-                      <v-list-item @click="toggleCloseProgram(p)">
-                        <template v-if="p.is_closed">
-                          открыть программу
-                        </template>
-                        <template v-else>
-                          закрыть программу
-                        </template>
-                      </v-list-item>
                       <v-list-item @click="addPrices(p)">
                         добавить цену
                       </v-list-item>
@@ -556,11 +548,24 @@ defineExpose({ edit, createContract, addVersion })
             padding-top: 13px;
           }
         }
+        &:not(:last-child) {
+          td:first-child {
+            padding: 0 !important;
+            a {
+              display: inline-flex;
+              padding: 13px 0 13px 20px;
+              width: 100%;
+              user-select: none;
+              cursor: pointer;
+              &:hover {
+                background: rgb(var(--v-theme-bg));
+              }
+            }
+            //padding-top: 13px;
+          }
+        }
         td {
           vertical-align: top;
-          &:first-child {
-            padding-top: 13px;
-          }
           &:nth-child(3),
           &:nth-child(4) {
             & > div {
