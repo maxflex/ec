@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ContractPaymentController;
 use App\Http\Controllers\Admin\ContractVersionController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\EventParticipantController;
+use App\Http\Controllers\Admin\ExamDateController;
 use App\Http\Controllers\Admin\ExamScoreController;
 use App\Http\Controllers\Admin\GradeController;
 use App\Http\Controllers\Admin\GroupContractController;
@@ -108,6 +109,7 @@ Route::middleware(['auth:crm'])->group(function () {
         'reports' => ReportController::class,
         'events' => EventController::class,
         'grades' => GradeController::class,
+        'exam-dates' => ExamDateController::class,
         'exam-scores' => ExamScoreController::class,
         'telegram-messages' => TelegramMessageController::class,
         'instructions' => InstructionController::class,

@@ -33,7 +33,7 @@ export function formatDateTime(dateTime: string | null): string {
 
 export function formatDateMode(date: string, mode: StatsMode) {
   const dateObj = dayjs(date)
-  const month = MonthLabel[getMonth(date)]
+  const month = MonthLabelShort[getMonth(date)]
   switch (mode) {
     case 'day': return dateObj.format(`D ${month} YYYY`)
     case 'month': return dateObj.format(`${month} YYYY`)
@@ -43,7 +43,7 @@ export function formatDateMode(date: string, mode: StatsMode) {
 
 export function formatTextDate(date: string, year: boolean = false) {
   const month = getMonth(date)
-  return format(date, `d ${MonthLabel[month]}${year ? ' yyyy' : ''}`)
+  return format(date, `d ${MonthLabelShort[month]}${year ? ' yyyy' : ''}`)
 }
 
 export function formatPhone(number: string): string {

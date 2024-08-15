@@ -1,7 +1,7 @@
 type DialogWidth = 'small' | 'default' | 'medium' | 'large' | 'x-large'
 
 const dialogWidths: { [key in DialogWidth]: number } = {
-  'small': 400,
+  'small': 406,
   'default': 500,
   'medium': 800,
   'large': 1000,

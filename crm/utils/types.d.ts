@@ -868,6 +868,12 @@ declare global {
     metric: StatsMetric
     filters: object
   }
+
+  interface ExamDateResource {
+    id: number
+    exam: Exam
+    dates: string[]
+  }
 }
 
 export {}

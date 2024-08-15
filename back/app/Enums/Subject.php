@@ -2,20 +2,20 @@
 
 namespace App\Enums;
 
-enum Subject
+enum Subject: string
 {
-    case math;
-    case phys;
-    case chem;
-    case bio;
-    case inf;
-    case rus;
-    case lit;
-    case soc;
-    case his;
-    case eng;
-    case geo;
-    case soch;
+    case math = 'math';
+    case phys = 'phys';
+    case chem = 'chem';
+    case bio = 'bio';
+    case inf = 'inf';
+    case rus = 'rus';
+    case lit = 'lit';
+    case soc = 'soc';
+    case his = 'his';
+    case eng = 'eng';
+    case geo = 'geo';
+    case soch = 'soch';
 
     public function text(): string
     {

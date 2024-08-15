@@ -321,3 +321,7 @@ a.table-item {
     }
   }
 }
+
+.capitalize::first-letter {
+  text-transform: capitalize;
+}

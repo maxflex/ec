@@ -7,6 +7,7 @@ import {
   mdiBookOpenOutline,
   mdiCalendar,
   mdiCalendarBadge,
+  mdiCalendarEdit,
   mdiCalendarStar,
   mdiCash,
   mdiDotsTriangle,
@@ -117,6 +118,11 @@ const menu: Menu = [
     icon: mdiCalendarBadge,
     title: 'События',
     to: '/events',
+  },
+  {
+    icon: mdiCalendarEdit,
+    title: 'Экзамены',
+    to: '/exam-dates',
   },
   {
     icon: mdiCalendarStar,
