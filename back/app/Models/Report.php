@@ -34,7 +34,7 @@ class Report extends Model
         return $this->belongsTo(Client::class);
     }
 
-    public function getPreviousAttribute(): ?Report
+    public function getPreviousAttribute()
     {
         return Report::query()
             ->where('teacher_id', $this->teacher_id)
@@ -51,7 +51,9 @@ class Report extends Model
         $query = Lesson::query()
             ->join('groups as g', 'g.id', '=', 'lessons.group_id')
             ->join('client_lessons as cl', 'cl.lesson_id', '=', 'lessons.id')
-            ->join('contracts as c', 'c.id', '=', 'cl.contract_id')
+            ->join('contract_version_programs as cvp', 'cvp.id', '=', 'cl.contract_version_program_id')
+            ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
+            ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
             ->where('lessons.status', LessonStatus::conducted->value)
             ->where('conducted_at', '<', $this->created_at)
             ->where('teacher_id', $this->teacher_id)

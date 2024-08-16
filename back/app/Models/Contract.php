@@ -25,7 +25,7 @@ class Contract extends Model
 
     public function versions()
     {
-        return $this->hasMany(ContractVersion::class)->orderBy('version', 'asc');
+        return $this->hasMany(ContractVersion::class)->orderBy('id', 'asc');
     }
 
     public function groups()
@@ -45,11 +45,17 @@ class Contract extends Model
         return $this->hasMany(ContractPayment::class);
     }
 
+    public function getActiveVersion(): ContractVersion
+    {
+        return $this->versions()->active()->first();
+    }
 
     public function getBalance()
     {
+        $programIds = $this->getActiveVersion()->programs()->pluck('id');
+
         $clientLessons = ClientLesson::query()
-            ->where('contract_id', $this->id)
+            ->whereIn('contract_version_program_id', $programIds)
             ->get();
 
         $balanceItems = collect();

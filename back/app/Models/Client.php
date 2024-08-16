@@ -43,32 +43,36 @@ class Client extends Model implements HasTeeth
     }
 
     /**
+     * TODO: remove
      * @return Group[]
      */
     public function getGroupsAttribute()
     {
-        return Group::whereHas(
-            'clientGroups',
-            fn ($q) => $q->whereIn('contract_id', $this->contracts()->pluck('id'))
-        )->get();
+        return [];
+//        return Group::whereHas(
+//            'clientGroups',
+//            fn ($q) => $q->whereIn('contract_id', $this->contracts()->pluck('id'))
+//        )->get();
     }
 
     /**
-     * @return ContractVersionProgram[]
+     * TODO: remove
+     * @return array
      */
-    public function swamps(): Attribute
+    public function getSwampsAttribute()
     {
-        $programs = $this->groups->pluck('program');
-        $result = [];
-
-        foreach ($this->contracts as $contract) {
-            foreach ($contract->versions->last()->programs as $p) {
-                if (!$programs->contains($p->program)) {
-                    $result[] = $p;
-                }
-            }
-        }
-        return Attribute::make(fn () => $result);
+        return [];
+//        $programs = $this->groups->pluck('program');
+//        $result = [];
+//
+//        foreach ($this->contracts as $contract) {
+//            foreach ($contract->versions->last()->programs as $p) {
+//                if (!$programs->contains($p->program)) {
+//                    $result[] = $p;
+//                }
+//            }
+//        }
+//        return Attribute::make(fn () => $result);
     }
 
     public function branches(): Attribute
@@ -105,11 +109,13 @@ class Client extends Model implements HasTeeth
     public function getSchedule(int $year): Collection
     {
         $schedule = collect();
-        $contracts = $this->contracts()->where('year', $year)->get();
 
         // фактически проведённые
         $fact = [];
-        $clientLessons = ClientLesson::whereIn('contract_id', $contracts->pluck('id'))->get();
+        $clientLessons = ClientLesson::query()->whereHas(
+            'contractVersionProgram.contractVersion.contract',
+            fn($q) => $q->where('client_id', $this->id)->where('year', $year)
+        );
         foreach ($clientLessons as $clientLesson) {
             $lesson = $clientLesson->lesson;
             // $lesson->load('clientLessons', fn ($q) => $q->whereId($clientLesson->id));
@@ -118,9 +124,14 @@ class Client extends Model implements HasTeeth
             $fact[$lesson->id] = true;
         }
 
+        $contracts = $this->contracts()->where('year', $year)->get();
         foreach ($contracts as $contract) {
-            foreach ($contract->groups as $group) {
-                foreach ($group->lessons as $lesson) {
+            $programs = $contract->getActiveVersion()
+                ->programs()
+                ->whereHas('clientGroup')
+                ->get();
+            foreach ($programs as $program) {
+                foreach ($program->group->lessons as $lesson) {
                     // пропускаем фактически проведённые
                     if (isset($fact[$lesson->id])) {
                         continue;
@@ -135,9 +146,24 @@ class Client extends Model implements HasTeeth
 
     public function getTeeth(int $year): object
     {
+        $programIds = $this->contracts()
+            ->join('contract_versions as cv', fn($join) => $join
+                ->on('cv.contract_id', '=', 'contracts.id')
+                ->where('cv.is_active', true)
+            )
+            ->join(
+                'contract_version_programs as cvp',
+                'cvp.contract_version_id',
+                '=',
+                'cv.id'
+            )
+            ->pluck('cvp.id');
         $query = Lesson::query()
-            ->join('client_groups as gc', 'gc.group_id', '=', 'lessons.group_id')
-            ->whereIn('gc.contract_id', $this->contracts()->pluck('id'));
+            ->join('client_groups as cg', 'cg.group_id', '=', 'lessons.group_id')
+            ->whereIn(
+                'cg.contract_version_program_id',
+                $programIds
+            );
         return Teeth::get($query, $year);
     }
 

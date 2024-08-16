@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { ExamDateDialog } from '#components'
+
 const { items } = useIndex<ExamDateResource>(`exam-dates`)
-const examDateDialog = ref()
+const examDateDialog = ref<InstanceType<typeof ExamDateDialog>>()
 
 function onSaved(item: ExamDateResource) {
   const index = items.value.findIndex(e => e.id === item.id)

@@ -38,6 +38,7 @@ class TransferContracts extends Command
                 'company' => $c->type === 'ip' ? Company::ip->name : Company::ooo->name
             ]);
             $contractVersions = $allContractVersions->where('contract_id', $c->id);
+            $maxVersion = $contractVersions->max('version');
             $ids = $contractVersions->pluck('id');
             $contractSubjects = DB::connection('egecrm')
                 ->table('contract_subjects')
@@ -48,10 +49,11 @@ class TransferContracts extends Command
                 ->whereIn('contract_version_id', $ids)
                 ->get();
             foreach ($contractVersions as $cv) {
+                $isActive = $cv->version === $maxVersion;
                 $id = DB::table('contract_versions')->insertGetId([
                     'user_id' => $this->getUserId($cv->created_email_id),
                     'contract_id' => $cv->contract_id,
-                    'version' => $cv->version,
+                    'is_active' => $isActive,
                     'date' => $cv->date,
                     'sum' => $cv->sum,
                     'created_at' => $cv->created_at,

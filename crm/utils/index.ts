@@ -80,7 +80,7 @@ export function smoothScroll(
   nextTick(() =>
     document
       .querySelector(querySelector)
-      ?.scrollTo({ top: direction === 'bottom' ? 9999 : 0, behavior }),
+      ?.scrollTo({ top: direction === 'bottom' ? 99999 : 0, behavior }),
   )
 }
 

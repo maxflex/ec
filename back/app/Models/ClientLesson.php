@@ -28,9 +28,9 @@ class ClientLesson extends Model
         return $this->belongsTo(Lesson::class);
     }
 
-    public function contract()
+    public function contractVersionProgram()
     {
-        return $this->belongsTo(Contract::class);
+        return $this->belongsTo(ContractVersionProgram::class);
     }
 
     public function getScoresAttribute($value)

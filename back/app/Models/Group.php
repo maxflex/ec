@@ -24,26 +24,6 @@ class Group extends Model implements HasTeeth
         return $this->belongsTo(Teacher::class);
     }
 
-    public function getZoomAttribute($value)
-    {
-        return json_decode($value) ?? [
-            'id' => '',
-            'password' => ''
-        ];
-    }
-
-    public function contracts()
-    {
-        return $this->hasManyThrough(
-            Contract::class,
-            ClientGroup::class,
-            'group_id',
-            'id',
-            'id',
-            'contract_id'
-        );
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -57,6 +37,15 @@ class Group extends Model implements HasTeeth
     public function lessons()
     {
         return $this->hasMany(Lesson::class);
+    }
+
+
+    public function getZoomAttribute($value)
+    {
+        return json_decode($value) ?? [
+            'id' => '',
+            'password' => ''
+        ];
     }
 
     public function getSchedule(): Collection
@@ -79,8 +68,8 @@ class Group extends Model implements HasTeeth
     public function scopeWhereClient($query, $clientId)
     {
         return $query->whereHas(
-            'contracts',
-            fn ($q) => $q->where('client_id', $clientId)
+            'clientGroups.contractVersionProgram.contractVersion.contract',
+            fn($q) => $q->where('client_id', $clientId)
         );
     }
 
@@ -95,7 +84,7 @@ class Group extends Model implements HasTeeth
             ->whereHas(
                 'contractVersion',
                 fn ($q) => $q
-                    ->lastVersions()
+                    ->active()
                     ->whereHas(
                         'contract',
                         fn ($q) => $q->where('year', $this->year)->whereDoesntHave('groups')

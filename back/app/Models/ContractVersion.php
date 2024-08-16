@@ -10,7 +10,13 @@ class ContractVersion extends Model
     use RelationSyncable;
 
     protected $fillable = [
-        'contract_id', 'date', 'sum'
+        'contract_id', 'date', 'sum',
+        // TODO: remove (is_active should not be fillable)
+        'is_active'
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean'
     ];
 
     public function programs()
@@ -43,19 +49,8 @@ class ContractVersion extends Model
     }
 
     /**
-     * Предыдущая версия договора
-     * учитываем, что версии могут идти так: 1, 3, 4 (удалена в середине)
-     */
-    public function getPreviousAttribute()
-    {
-        return $this->chain()
-            ->where('version', '<', $this->version)
-            ->orderBy('version', 'desc')
-            ->first();
-    }
-
-    /**
      * Последние версии в цепи
+     * TODO: remove @DEPRICATED
      */
     public function scopeLastVersions($query)
     {
@@ -73,10 +68,16 @@ class ContractVersion extends Model
         );
     }
 
-    public static function booted()
+    /**
+     * Номер версии
+     */
+    public function getVersionAttribute()
     {
-        static::creating(function ($contractVersion) {
-            $contractVersion->version = $contractVersion->chain()->max('version') + 1;
-        });
+        return $this->chain()->where('id', '<=', $this->id)->count();
+    }
+
+    public function scopeActive($query)
+    {
+        $query->where('is_active', true);
     }
 }

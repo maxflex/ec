@@ -18,7 +18,7 @@ class BillingController extends Controller
                 'versions',
                 fn ($q) => $q
                     ->with(['payments' => fn ($q) => $q->orderBy('date')])
-                    ->lastVersions()
+                    ->active()
             )
             ->orderBy('id', 'desc')
             ->get();

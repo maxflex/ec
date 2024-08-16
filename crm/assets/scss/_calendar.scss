@@ -31,8 +31,10 @@
   &__month {
     &-label {
       font-weight: bold;
-      padding: 12px;
+      font-size: 22px;
+      padding: 12px 36px 35px 12px;
       color: rgb(var(--v-theme-grey));
+      //text-align: center;
     }
 
     &-days {

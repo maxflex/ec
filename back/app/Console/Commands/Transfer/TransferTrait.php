@@ -75,7 +75,7 @@ trait TransferTrait
         $program = Program::getById($gradeId, $subjectId);
         return ContractVersion::query()
             ->where('contract_id', $contractId)
-            ->lastVersions()
+            ->active()
             ->first()
             ->programs()
             ->where('program', $program)

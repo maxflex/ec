@@ -327,7 +327,7 @@ declare global {
     group: {
       id: number
       program: Program
-      contracts_count: number
+      students_count: number
     }
   }
 
@@ -548,7 +548,7 @@ declare global {
     group: {
       id: number
       program: Program
-      contracts_count: number
+      students_count: number
     }
   }
 
@@ -835,15 +835,14 @@ declare global {
   }
 
   interface SwampListResource {
-    id: string
-    cvp_id: null | number
-    lessons: null | number
+    id: number
+    lessons: number
     client: PersonResource
     program: Program
     year: Year
     contract_id: number
-    group_id: null | number // group_id = null это к исполнению
-    is_closed: null | boolean // null – когда не найдено соответствующей программы
+    is_closed: boolean
+    group_id: null | number // group_id = null – ученик не прикреплён к группе по этой программе
   }
 
   interface Tooth {

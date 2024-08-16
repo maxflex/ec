@@ -1,18 +1,10 @@
 <script setup lang="ts">
-import { getDate, getMonth } from 'date-fns'
-
 const { items } = defineProps<{
   items: ExamDateResource[]
 }>()
 defineEmits<{
   edit: [item: ExamDateResource]
 }>()
-
-function formatExamDate(d: string) {
-  const month = MonthLabelDative[getMonth(d)]
-  const day = getDate(d)
-  return `${day} ${month}`
-}
 </script>
 
 <template>
@@ -26,7 +18,7 @@ function formatExamDate(d: string) {
           не установлено
         </span>
         <span v-else>
-          {{ item.dates.map(formatExamDate).join(', ') }}
+          {{ item.dates.map(formatDate).join(', ') }}
         </span>
       </div>
       <div class="table-actionss">

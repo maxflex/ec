@@ -8,11 +8,11 @@ class ClientGroup extends Model
 {
     public $timestamps = false;
 
-    protected $fillable = ['group_id', 'contract_id'];
+    protected $fillable = ['contract_version_program_id', 'group_id'];
 
-    public function contract()
+    public function contractVersionProgram()
     {
-        return $this->belongsTo(Contract::class);
+        return $this->belongsTo(ContractVersionProgram::class);
     }
 
     public function group()

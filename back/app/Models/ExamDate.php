@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Exam;
 use Illuminate\Database\Eloquent\Model;
 
 class ExamDate extends Model
@@ -10,23 +11,16 @@ class ExamDate extends Model
 
     protected $fillable = ['dates'];
 
+    protected $casts = [
+        'exam' => Exam::class,
+        'dates' => 'array'
+    ];
+
     public function getDatesAttribute($value)
     {
         if ($value === null) {
             return [];
         }
-        $year = current_academic_year();
-        return collect(json_decode($value))->map(fn($e) => "$year-$e")->values();
-    }
-
-    public function setDatesAttribute(array $dates)
-    {
-        $dates = collect($dates)
-            ->sort()
-            ->map(
-                fn($d) => str($d)->after('-')->value()
-            )
-            ->values();
-        $this->attributes['dates'] = json_encode($dates);
+        return json_decode($value);
     }
 }

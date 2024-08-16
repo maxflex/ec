@@ -108,7 +108,7 @@ class Lesson extends Model
             // подразумеваем, что в договоре есть нужная программа
             $contractVersionProgram = ContractVersion::query()
                 ->where('contract_id', $c->id)
-                ->lastVersions()
+                ->active()
                 ->first()
                 ->programs()
                 ->where('program', $this->group->program)

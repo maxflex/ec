@@ -15,6 +15,7 @@ class ContractVersionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return array_merge(parent::toArray($request), [
+            'version' => $this->version,
             'programs' => $this->programs,
             'payments' => $this->payments,
             'user' => new PersonResource($this->user),

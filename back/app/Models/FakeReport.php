@@ -28,7 +28,9 @@ class FakeReport
         $fakeReportsCte = DB::table('lessons as l')
             ->join('groups as g', 'g.id', '=', 'l.group_id')
             ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
-            ->join('contracts as c', 'c.id', '=', 'cl.contract_id')
+            ->join('contract_version_programs as cvp', 'cvp.id', '=', 'cl.contract_version_program_id')
+            ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
+            ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
             ->leftJoinSub(
                 $lastReportsCte,
                 'lr',

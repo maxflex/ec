@@ -424,4 +424,12 @@ enum Program: string
             default => 'неизвестно'
         };
     }
+
+    public function getExam(): Exam
+    {
+        return match ($this) {
+            self::math9 => Exam::ogeMath,
+            default => Exam::egeRus
+        };
+    }
 }

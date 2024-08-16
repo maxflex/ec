@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ContractVersionListResource;
 use App\Http\Resources\ContractVersionResource;
 use App\Models\ContractVersion;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ContractVersionListResource;
 
 class ContractVersionController extends Controller
 {
     protected $filters = [
+        'equals' => ['is_active'],
         'contract' => ['year', 'company'],
-        'version' => ['version']
     ];
 
     public function index(Request $request)
@@ -73,12 +73,5 @@ class ContractVersionController extends Controller
     protected function filterContract(&$query, $value, $field)
     {
         $query->whereHas('contract', fn ($q) => $q->where($field, $value));
-    }
-
-    protected function filterVersion(&$query, $value)
-    {
-        $value === 'first'
-            ? $query->where('version', 1)
-            : $query->lastVersions();
     }
 }

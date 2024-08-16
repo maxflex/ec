@@ -51,9 +51,6 @@ const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
         <v-chip v-else-if="swamp.group_id && swamp.is_closed" color="error">
           в группе с закрытым договором
         </v-chip>
-        <v-chip v-else-if="swamp.group_id && swamp.cvp_id === null" color="error">
-          в группе без договора
-        </v-chip>
       </div>
       <div />
     </div>

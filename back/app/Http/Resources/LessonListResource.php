@@ -28,10 +28,10 @@ class LessonListResource extends JsonResource
             'group' => extract_fields($this->group, [
                 'program'
             ], [
-                'contracts_count' =>
+                'students_count' =>
                 $this->status === LessonStatus::conducted
-                    ? $this->clientLessons->count()
-                    : $this->group->contracts()->count()
+                    ? $this->clientLessons()->count()
+                    : $this->group->clientGroups()->count()
             ]),
             'teacher' =>  new PersonResource($this->teacher),
         ]);

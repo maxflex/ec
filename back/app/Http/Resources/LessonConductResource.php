@@ -21,14 +21,17 @@ class LessonConductResource extends JsonResource
                 fn ($cl) => extract_fields($cl, [
                     'is_remote', 'minutes_late', 'status', 'scores'
                 ], [
-                    'client' => new PersonWithPhotoResource($cl->contract->client)
+                    'client' => new PersonWithPhotoResource(
+                        $cl->contractVersionProgram->contractVersion->contract->client
+                    )
                 ])
             ),
-            default => $this->group->contracts()
-                ->with('client')
+            default => $this->group->clientGroups()
                 ->get()
-                ->map(fn ($c) => extract_fields($c, [], [
-                    'client' => new PersonWithPhotoResource($c->client),
+                ->map(fn($cg) => extract_fields($cg, [], [
+                    'client' => new PersonWithPhotoResource(
+                        $cg->contractVersionProgram->contractVersion->contract->client
+                    ),
                     'status' => ClientLessonStatus::present,
                     'is_remote' => false,
                     'minutes_late' => 10,

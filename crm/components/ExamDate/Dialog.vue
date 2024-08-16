@@ -10,8 +10,10 @@ const item = ref<ExamDateResource>({
   exam: 'egeChem',
   dates: [],
 })
-const year = currentAcademicYear()
-const months = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6]
+
+const years = Object.keys(YearLabel).map(y => Number(y))
+// const months = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6]
+const months = 12
 const saving = ref(false)
 
 function edit(ed: ExamDateResource) {
@@ -19,39 +21,44 @@ function edit(ed: ExamDateResource) {
   dialog.value = true
   setTimeout(() => {
     const selectedElement = document.querySelector('.calendar--selected-clickable')
+    const todayElement = document.querySelector('.calendar--today')
     if (selectedElement) {
       selectedElement.scrollIntoView({ block: 'center' })
     }
-    else {
-      smoothScroll('dialog', 'bottom', 'instant')
+    else if (todayElement) {
+      todayElement.scrollIntoView({ block: 'center' })
     }
   }, 100)
 }
 
 // отступ первого дня в календаре
-function firstDayOfWeek(m: number) {
-  return new Date(year, m - 1, 0).getDay()
+function firstDayOfWeek(y: number, m: number) {
+  return new Date(y, m - 1, 0).getDay()
 }
 
-function daysInMonth(m: number) {
-  return new Date(year, m, 0).getDate()
+function daysInMonth(y: number, m: number) {
+  return new Date(y, m, 0).getDate()
 }
 
 function zeroPad(value: number): string {
   return (`0${value}`).slice(-2)
 }
 
-function getDate(m: number, d: number): string {
-  return [year, zeroPad(m), zeroPad(d)].join('-')
+function getDate(y: number, m: number, d: number): string {
+  return [y, zeroPad(m), zeroPad(d)].join('-')
 }
 
-function isSelected(m: number, d: number) {
-  const date = getDate(m, d)
+function isToday(y: number, m: number, d: number) {
+  return getDate(y, m, d) === today()
+}
+
+function isSelected(y: number, m: number, d: number) {
+  const date = getDate(y, m, d)
   return item.value.dates.includes(date)
 }
 
-function onDateClick(m: number, d: number) {
-  const date = getDate(m, d)
+function onDateClick(y: number, m: number, d: number) {
+  const date = getDate(y, m, d)
   const index = item.value.dates.findIndex(e => e === date)
   index === -1
     ? item.value.dates.push(date)
@@ -94,29 +101,37 @@ defineExpose({ edit })
           @click="save()"
         />
       </div>
-      <div class="dialog-body pt-4">
-        <div class="calendar mt-0">
-          <div v-for="m in months" :key="m" class="calendar__month">
-            <div class="calendar__month-label">
-              <span class="text-grey-light">
-                {{ MonthLabel[m - 1] }}
-              </span>
-            </div>
-            <div class="calendar__month-days">
-              <div
-                v-for="x in firstDayOfWeek(m)"
-                :key="`x${x}`"
-                class="no-pointer-events"
-              />
-              <div
-                v-for="d in daysInMonth(m)"
-                :key="d"
-                :class="{
-                  'calendar--selected-clickable': isSelected(m, d),
-                }"
-                @click="onDateClick(m, d)"
-              >
-                {{ d }}
+      <div class="dialog-body pa-0">
+        <!--        <div class="calendar__header" /> -->
+        <div
+          v-for="y in years"
+          :key="y"
+          class="calendar__year"
+        >
+          <div class="calendar mt-0">
+            <div v-for="m in months" :key="m" class="calendar__month">
+              <div class="calendar__month-label">
+                <span class="text-grey-light">
+                  {{ MonthLabel[m - 1] }} {{ y - 2000 }}
+                </span>
+              </div>
+              <div class="calendar__month-days">
+                <div
+                  v-for="x in firstDayOfWeek(y, m)"
+                  :key="`x${x}`"
+                  class="no-pointer-events"
+                />
+                <div
+                  v-for="d in daysInMonth(y, m)"
+                  :key="d"
+                  :class="{
+                    'calendar--selected-clickable': isSelected(y, m, d),
+                    'calendar--today': isToday(y, m, d),
+                  }"
+                  @click="onDateClick(y, m, d)"
+                >
+                  {{ d }}
+                </div>
               </div>
             </div>
           </div>

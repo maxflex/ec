@@ -16,7 +16,7 @@ class ClientGroupResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $client = $this->contract->client;
+        $client = $this->contractVersionProgram->contractVersion->contract->client;
         return extract_fields($this, ['contract_id'], [
             'teeth' => $client->getTeeth($this->group->year),
             'client' => new PersonWithPhotoResource($client)

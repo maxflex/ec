@@ -64,7 +64,7 @@ const emit = defineEmits<{
     </div>
     <div style="width: 80px; display: flex; align-items: center">
       <v-icon :icon="mdiAccountGroup" class="mr-2 vfn-1" />
-      {{ item.group.contracts_count }}
+      {{ item.group.students_count }}
     </div>
     <div style="width: 140px">
       <LessonStatus2 :status="item.status" />

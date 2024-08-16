@@ -31,6 +31,7 @@ const lessonBatchCreateDialog = ref<InstanceType<typeof LessonBatchCreateDialog>
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 const vacations = ref<Record<string, boolean>>({})
+const examDates = ref<Record<string, boolean>>({})
 const checkboxes = ref<{ [key: number]: boolean }>({})
 const lessonIds = computed((): number[] => {
   const result = []
@@ -136,6 +137,24 @@ async function loadVacations() {
   }
 }
 
+async function loadExamDates() {
+  if (!group || !group.program) {
+    return
+  }
+  examDates.value = {}
+  const { data } = await useHttp<ApiResponse<ExamDateResource[]>>(`exam-dates`, {
+    params: {
+      program: group.program,
+    },
+  })
+  if (data.value && data.value.data.length) {
+    const { dates } = data.value.data[0]
+    for (const date of dates) {
+      examDates.value[date] = true
+    }
+  }
+}
+
 function isEvent(item: LessonListResource | EventListResource): item is EventListResource {
   return 'participants_count' in item
 }
@@ -154,6 +173,7 @@ async function loadData() {
   await loadTeeth()
   await loadLessons()
   await loadEvents()
+  await loadExamDates()
   await loadVacations()
 }
 
@@ -230,6 +250,7 @@ nextTick(loadData)
       :class="{
         'week-separator': !hideEmptyDates && getDay(d) === 0,
         'lesson-list--vacation': vacations[d] === true,
+        'lesson-list--exam': examDates[d] === true,
       }"
     >
       <div>
@@ -362,6 +383,9 @@ nextTick(loadData)
   }
   &--vacation {
     background: rgba(var(--v-theme-red), 0.1);
+  }
+  &--exam {
+    background: rgba(var(--v-theme-orange), 0.1);
   }
 }
 .bottom-bar {

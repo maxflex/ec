@@ -23,6 +23,28 @@ class ContractVersionProgram extends Model
         'prices' => []
     ];
 
+    public function contractVersion()
+    {
+        return $this->belongsTo(ContractVersion::class);
+    }
+
+    public function clientGroup()
+    {
+        return $this->hasOne(ClientGroup::class, 'contract_version_program_id', 'id');
+    }
+
+    public function group()
+    {
+        return $this->hasOneThrough(
+            Group::class,
+            ClientGroup::class,
+            'contract_version_program_id',
+            'id',
+            'id',
+            'group_id',
+        );
+    }
+
     public function scopeActive($query)
     {
         $query->where('is_closed', false);
@@ -33,10 +55,6 @@ class ContractVersionProgram extends Model
         $query->where('is_closed', true);
     }
 
-    public function contractVersion()
-    {
-        return $this->belongsTo(ContractVersion::class);
-    }
 
     public function getNextPrice(): int
     {
