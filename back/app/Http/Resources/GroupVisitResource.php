@@ -14,13 +14,13 @@ class GroupVisitResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $contractLessons = $this->contractLessons()->with('contract.client')->get();
+        $clientLessons = $this->clientLessons()->with('contract.client')->get();
 
         return extract_fields($this, [
             'dateTime', 'status'
         ], [
             'teacher' => new PersonResource($this->teacher),
-            'contractLessons' => $contractLessons->map(fn ($c) => extract_fields($c, [
+            'clientLessons' => $clientLessons->map(fn($c) => extract_fields($c, [
                 'status', 'is_remote', 'minutes_late'
             ], [
                 'client' => new PersonResource($c->contract->client),

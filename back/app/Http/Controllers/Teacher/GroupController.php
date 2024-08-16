@@ -18,7 +18,7 @@ class GroupController extends Controller
     {
         $query = Group::query()
             ->whereTeacher(auth()->id())
-            ->withCount('lessons', 'groupContracts')
+            ->withCount('lessons', 'clientGroups')
             ->orderBy('id', 'desc');
 
         $this->filter($request, $query);

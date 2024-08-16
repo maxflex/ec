@@ -8,8 +8,8 @@ use App\Http\Resources\GroupCandidateResource;
 use App\Http\Resources\GroupListResource;
 use App\Http\Resources\GroupResource;
 use App\Http\Resources\GroupVisitResource;
+use App\Models\ClientGroup;
 use App\Models\Group;
-use App\Models\GroupContract;
 use Illuminate\Http\Request;
 
 class GroupController extends Controller
@@ -23,7 +23,7 @@ class GroupController extends Controller
     public function index(Request $request)
     {
         $query = Group::query()
-            ->withCount('lessons', 'groupContracts')
+            ->withCount('lessons', 'clientGroups')
             ->orderBy('id', 'desc');
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, GroupListResource::class);
@@ -72,7 +72,7 @@ class GroupController extends Controller
     public function bulkStoreCandidates(Group $group, Request $request)
     {
         foreach ($request->ids as $contractId) {
-            GroupContract::create([
+            ClientGroup::create([
                 'group_id' => $group->id,
                 'contract_id' => $contractId
             ]);

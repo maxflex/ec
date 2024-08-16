@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum ContractLessonStatus: string
+enum ClientLessonStatus: string
 {
     case present = 'present';
     case late = 'late';

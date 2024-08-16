@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class GroupContract extends Model
+class ClientGroup extends Model
 {
     public $timestamps = false;
 

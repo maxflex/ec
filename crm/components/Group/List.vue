@@ -48,7 +48,7 @@ function onClick(g: GroupListResource) {
     </div>
     <div style="width: 100px">
       <v-icon :icon="mdiAccountGroup" class="mr-2" style="top: -3px; position: relative;" />
-      {{ item.group_contracts_count }}
+      {{ item.client_groups_count }}
     </div>
     <div>
       <TeethAsText :items="item.teeth" />

@@ -121,7 +121,7 @@ defineExpose({ open })
               <td width="100">
                 <UiToggler
                   v-model="c.status"
-                  :items="selectItems(ContractLessonStatusLabel)"
+                  :items="selectItems(ClientLessonStatusLabel)"
                 />
               </td>
               <td width="80">

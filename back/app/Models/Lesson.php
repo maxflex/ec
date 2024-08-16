@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Cabinet;
-use App\Enums\ContractLessonStatus;
+use App\Enums\ClientLessonStatus;
 use App\Enums\LessonStatus;
 use Carbon\Carbon;
 use Exception;
@@ -50,9 +50,9 @@ class Lesson extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function contractLessons()
+    public function clientLessons()
     {
-        return $this->hasMany(ContractLesson::class);
+        return $this->hasMany(ClientLesson::class);
     }
 
     public function chain()
@@ -118,10 +118,10 @@ class Lesson extends Model
                 throw new Exception('No contract version program found');
             }
 
-            $this->contractLessons()->create([
+            $this->clientLessons()->create([
                 'contract_id' => $c->id,
                 'status' => $c->status,
-                'minutes_late' => $c->status === ContractLessonStatus::late->value
+                'minutes_late' => $c->status === ClientLessonStatus::late->value
                     ? $c->minutes_late
                     : null,
                 'is_remote' => $c->is_remote,

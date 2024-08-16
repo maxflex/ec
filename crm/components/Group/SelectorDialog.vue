@@ -22,7 +22,7 @@ function open(p: Program, y: Year, _contractId: number) {
 function onSelect(g: GroupListResource) {
   dialog.value = false
   emit('select', g, contractId)
-  useHttp(`group-contracts`, {
+  useHttp(`client-groups`, {
     method: 'post',
     params: {
       group_id: g.id,

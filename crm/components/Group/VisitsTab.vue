@@ -9,18 +9,18 @@ const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const clients = computed(() => {
   const result: PersonResource[] = []
   for (const item of items.value) {
-    for (const contractLesson of item.contractLessons) {
-      result.push(contractLesson.client)
+    for (const clientLesson of item.clientLessons) {
+      result.push(clientLesson.client)
     }
   }
   return uniq(result)
 })
 
-const contractLessons = computed(() => {
+const clientLessons = computed(() => {
   const result: {
     [key: number]: {
       [key: number]: {
-        status: ContractLessonStatus
+        status: ClientLessonStatus
         is_remote: boolean
         minutes_late: number
       }
@@ -28,11 +28,11 @@ const contractLessons = computed(() => {
   } = {}
   for (const item of items.value) {
     result[item.id] = {}
-    for (const contractLesson of item.contractLessons) {
-      result[item.id][contractLesson.client.id] = {
-        status: contractLesson.status,
-        is_remote: contractLesson.is_remote,
-        minutes_late: contractLesson.minutes_late,
+    for (const clientLesson of item.clientLessons) {
+      result[item.id][clientLesson.client.id] = {
+        status: clientLesson.status,
+        is_remote: clientLesson.is_remote,
+        minutes_late: clientLesson.minutes_late,
       }
     }
   }
@@ -96,13 +96,13 @@ nextTick(loadData)
             }"
           />
         </td>
-        <td v-for="c in clients" :key="c.id" :class="{ 'is-remote': contractLessons[l.id][c.id] && contractLessons[l.id][c.id].is_remote }">
+        <td v-for="c in clients" :key="c.id" :class="{ 'is-remote': clientLessons[l.id][c.id] && clientLessons[l.id][c.id].is_remote }">
           <UiCircleStatus
-            v-if="contractLessons[l.id][c.id]"
+            v-if="clientLessons[l.id][c.id]"
             :class="{
-              'text-error': contractLessons[l.id][c.id].status === 'absent',
-              'text-warning': contractLessons[l.id][c.id].status === 'late',
-              'text-success': contractLessons[l.id][c.id].status === 'present',
+              'text-error': clientLessons[l.id][c.id].status === 'absent',
+              'text-warning': clientLessons[l.id][c.id].status === 'late',
+              'text-success': clientLessons[l.id][c.id].status === 'present',
             }"
           />
         </td>

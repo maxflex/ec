@@ -10,7 +10,7 @@ enum TelegramTemplate: string
 {
     case reportPublished = 'reportPublished';
     case reportRead = 'reportRead';
-    case contractLessonStatus = 'contractLessonStatus';
+    case clientLessonStatus = 'clientLessonStatus';
 
     public function getText(array $viewVariables = [])
     {

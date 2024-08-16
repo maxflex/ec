@@ -32,7 +32,7 @@ class Contract extends Model
     {
         return $this->hasManyThrough(
             Group::class,
-            GroupContract::class,
+            ClientGroup::class,
             'contract_id',
             'id',
             'id',
@@ -48,17 +48,17 @@ class Contract extends Model
 
     public function getBalance()
     {
-        $contractLessons = ContractLesson::query()
+        $clientLessons = ClientLesson::query()
             ->where('contract_id', $this->id)
             ->get();
 
         $balanceItems = collect();
 
-        foreach ($contractLessons as $contractLesson) {
-            $lesson = $contractLesson->lesson;
+        foreach ($clientLessons as $clientLesson) {
+            $lesson = $clientLesson->lesson;
             $balanceItems->push((object) [
                 'dateTime' => $lesson->conducted_at,
-                'sum' => $contractLesson->price * -1,
+                'sum' => $clientLesson->price * -1,
                 'comment' => sprintf(
                     'занятие %s, группа %d, кабинет %s',
                     Carbon::parse($lesson->dateTime)->format('d.m.y в H:i'),

@@ -36,7 +36,7 @@ class Group extends Model implements HasTeeth
     {
         return $this->hasManyThrough(
             Contract::class,
-            GroupContract::class,
+            ClientGroup::class,
             'group_id',
             'id',
             'id',
@@ -49,9 +49,9 @@ class Group extends Model implements HasTeeth
         return $this->belongsTo(User::class);
     }
 
-    public function groupContracts()
+    public function clientGroups()
     {
-        return $this->hasMany(GroupContract::class);
+        return $this->hasMany(ClientGroup::class);
     }
 
     public function lessons()

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\BalanceController;
 use App\Http\Controllers\Admin\ClientController;
+use App\Http\Controllers\Admin\ClientGroupController;
 use App\Http\Controllers\Admin\ClientPaymentController;
 use App\Http\Controllers\Admin\ClientReviewController;
 use App\Http\Controllers\Admin\ClientTestController;
@@ -14,7 +15,6 @@ use App\Http\Controllers\Admin\EventParticipantController;
 use App\Http\Controllers\Admin\ExamDateController;
 use App\Http\Controllers\Admin\ExamScoreController;
 use App\Http\Controllers\Admin\GradeController;
-use App\Http\Controllers\Admin\GroupContractController;
 use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\InstructionController;
 use App\Http\Controllers\Admin\LessonController;
@@ -89,7 +89,7 @@ Route::middleware(['auth:crm'])->group(function () {
         'requests' => RequestsController::class,
         'clients' => ClientController::class,
         'groups' => GroupController::class,
-        'group-contracts' => GroupContractController::class,
+        'client-groups' => ClientGroupController::class,
         'contracts' => ContractController::class,
         'contract-versions' => ContractVersionController::class,
         'contract-payments' => ContractPaymentController::class,

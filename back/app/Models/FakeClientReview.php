@@ -14,7 +14,7 @@ class FakeClientReview
     {
         $fakeReviewsCte = DB::table('lessons as l')
             ->join('groups as g', 'g.id', '=', 'l.group_id')
-            ->join('contract_lessons as cl', 'cl.lesson_id', '=', 'l.id')
+            ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
             ->join('contracts as c', 'c.id', '=', 'cl.contract_id')
             ->leftJoin(
                 'client_reviews as cr',
