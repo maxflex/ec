@@ -21,7 +21,7 @@ class ContractVersion extends Model
 
     public function programs()
     {
-        return $this->hasMany(ContractVersionProgram::class)->orderBy('is_closed');
+        return $this->hasMany(ContractVersionProgram::class);
     }
 
     /**

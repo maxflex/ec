@@ -105,10 +105,6 @@ async function destroy() {
   }
 }
 
-function toggleCloseProgram(p: ContractVersionProgramResource) {
-  p.is_closed = !p.is_closed
-}
-
 function onProgramsSaved(programs: Program[]) {
   for (const program of programs) {
     const isNewProgram = !item.value.programs.some(
@@ -119,7 +115,7 @@ function onProgramsSaved(programs: Program[]) {
         id: newId(),
         program,
         contract_version_id: item.value.contract.id,
-        prices: [['', '']],
+        prices: [],
         lessons_planned: 0,
         is_closed: false,
       })
@@ -242,7 +238,11 @@ const isPaymentSumValid = computed(() => {
 
 function addPrices(p: ContractVersionProgramResource) {
   const index = item.value.programs.findIndex(e => e.id === p.id)
-  item.value.programs[index].prices.push(['', ''])
+  item.value.programs[index].prices.push({
+    id: newId(),
+    price: 0,
+    lessons: 0,
+  })
   nextTick(() => {
     priceInput.value[priceInput.value.length - 1].focus()
   })
@@ -359,9 +359,7 @@ defineExpose({ edit, createContract, addVersion })
             <tbody>
               <tr v-for="p in item.programs" :key="p.id">
                 <td>
-                  <a :class="{ 'text-error': p.is_closed }" @click="toggleCloseProgram(p)">
-                    {{ ProgramLabel[p.program] }}
-                  </a>
+                  {{ ProgramLabel[p.program] }}
                 </td>
                 <td>
                   <v-text-field
@@ -372,10 +370,10 @@ defineExpose({ edit, createContract, addVersion })
                   />
                 </td>
                 <td>
-                  <div v-for="(prices, index) in p.prices" :key="index">
+                  <div v-for="price in p.prices" :key="price.id">
                     <v-text-field
                       ref="priceInput"
-                      v-model="prices[0]"
+                      v-model="price.price"
                       type="number"
                       hide-spin-buttons
                       density="compact"
@@ -383,9 +381,9 @@ defineExpose({ edit, createContract, addVersion })
                   </div>
                 </td>
                 <td>
-                  <div v-for="(prices, index) in p.prices" :key="index">
+                  <div v-for="price in p.prices" :key="price.id">
                     <v-text-field
-                      v-model="prices[1]"
+                      v-model="price.lessons"
                       type="number"
                       hide-spin-buttons
                       density="compact"
@@ -550,18 +548,7 @@ defineExpose({ edit, createContract, addVersion })
         }
         &:not(:last-child) {
           td:first-child {
-            padding: 0 !important;
-            a {
-              display: inline-flex;
-              padding: 13px 0 13px 20px;
-              width: 100%;
-              user-select: none;
-              cursor: pointer;
-              &:hover {
-                background: rgb(var(--v-theme-bg));
-              }
-            }
-            //padding-top: 13px;
+            padding-top: 13px;
           }
         }
         td {

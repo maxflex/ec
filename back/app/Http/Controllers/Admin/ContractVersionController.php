@@ -19,11 +19,7 @@ class ContractVersionController extends Controller
     {
         $query = ContractVersion::query()
             ->with(['contract', 'contract.client'])
-            ->withCount([
-                'payments',
-                'programs as programs_active_count' => fn ($q) => $q->active(),
-                'programs as programs_closed_count' => fn ($q) => $q->closed(),
-            ])
+            ->withCount(['payments', 'programs'])
             ->latest();
         $this->filter($request, $query);
         return $this->handleIndexRequest(

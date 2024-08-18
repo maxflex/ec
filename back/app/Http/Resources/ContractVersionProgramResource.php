@@ -2,11 +2,12 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Contract;
+use App\Models\ContractVersionProgram;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SwampListResource extends JsonResource
+/** @mixin ContractVersionProgram */
+class ContractVersionProgramResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,8 +16,8 @@ class SwampListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return extract_fields($this, ['*'], [
-            'client' => new PersonResource(Contract::find($this->contract_id)->client)
+        return extract_fields($this, [
+            'program', 'lessons_planned', 'is_closed', 'prices'
         ]);
     }
 }

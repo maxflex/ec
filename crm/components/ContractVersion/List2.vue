@@ -42,21 +42,9 @@ const emit = defineEmits<{
         </template>
       </div>
       <div>
-        <span v-if="version.programs.length === 0" class="text-gray"> нет программ </span>
+        <span v-if="version.programs_count === 0" class="text-gray"> программ нет </span>
         <template v-else>
-          программы:
-          <span class="contract-programs">
-            <span v-if="version.programs.some((e) => !e.is_closed)">
-              {{ version.programs.filter((e) => !e.is_closed).length }}
-            </span>
-
-            <span
-              v-if="version.programs.some((e) => e.is_closed)"
-              class="text-error"
-            >
-              {{ version.programs.filter((e) => e.is_closed).length }}
-            </span>
-          </span>
+          программ: {{ version.programs_count }}
         </template>
       </div>
     </div>

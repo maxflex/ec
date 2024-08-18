@@ -33,7 +33,7 @@ const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
         </NuxtLink>
       </div>
 
-      <div style="width: 120px" :class="{ 'text-error': swamp.is_closed }">
+      <div style="width: 120px">
         {{ ProgramShortLabel[swamp.program] }}
       </div>
       <div style="width: 120px">
@@ -45,12 +45,12 @@ const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
         договор №{{ swamp.contract_id }}
       </div>
       <div>
-        <v-chip v-if="!swamp.group_id && !swamp.is_closed" color="success">
+        <span v-if="swamp.lessons_passed >= swamp.lessons">
+          {{ swamp.group_id ? 'исполнено + в группе' : 'исполнено' }}
+        </span>
+        <span v-else-if="!swamp.group_id">
           к исполнению
-        </v-chip>
-        <v-chip v-else-if="swamp.group_id && swamp.is_closed" color="error">
-          в группе с закрытым договором
-        </v-chip>
+        </span>
       </div>
       <div />
     </div>

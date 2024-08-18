@@ -10,18 +10,23 @@ class ContractVersionProgram extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'program', 'prices', 'lessons_planned', 'is_closed'
+        'program', 'lessons_planned'
     ];
 
     protected $casts = [
         'program' => Program::class,
-        'is_closed' => 'boolean',
-        'prices' => 'array',
     ];
 
-    protected $attributes = [
-        'prices' => []
-    ];
+    public function prices()
+    {
+        return $this->hasMany(ContractVersionProgramPrice::class);
+    }
+
+    public function clientLessons()
+    {
+        return $this->hasMany(ClientLesson::class);
+    }
+
 
     public function contractVersion()
     {
@@ -33,6 +38,11 @@ class ContractVersionProgram extends Model
         return $this->hasOne(ClientGroup::class, 'contract_version_program_id', 'id');
     }
 
+    /**
+     * Есть ли группа по этой программе договора
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
+     */
     public function group()
     {
         return $this->hasOneThrough(
@@ -45,16 +55,13 @@ class ContractVersionProgram extends Model
         );
     }
 
-    public function scopeActive($query)
+    /**
+     * Отзанимался по всем занятиям?
+     */
+    public function getIsClosedAttribute(): bool
     {
-        $query->where('is_closed', false);
+        return $this->clientLessons()->count() >= $this->prices()->sum('lessons');
     }
-
-    public function scopeClosed($query)
-    {
-        $query->where('is_closed', true);
-    }
-
 
     public function getNextPrice(): int
     {

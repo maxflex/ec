@@ -215,7 +215,7 @@ declare global {
     id: number
     program: Program
     lessons_planned: number | string
-    prices: Array<Array<number, number>>
+    prices: ContractVersionProgramPrice[]
     is_closed: boolean
     contract_version_id: number
   }
@@ -225,6 +225,12 @@ declare global {
     sum: number
     date: string
     contract_version_id: number
+  }
+
+  interface ContractVersionProgramPrice {
+    id: number
+    lessons: number | string
+    price: number | string
   }
 
   interface ContractVersionResource {
@@ -250,7 +256,7 @@ declare global {
     version: number
     sum: number
     payments_count: number
-    programs: ContractVersionProgramResource[]
+    programs_count: number
     contract: {
       id: number
       year: Year
@@ -837,11 +843,11 @@ declare global {
   interface SwampListResource {
     id: number
     lessons: number
+    lessons_passed: number
     client: PersonResource
     program: Program
     year: Year
     contract_id: number
-    is_closed: boolean
     group_id: null | number // group_id = null – ученик не прикреплён к группе по этой программе
   }
 

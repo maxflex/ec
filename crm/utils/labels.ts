@@ -559,6 +559,6 @@ export const ClientTestStatusLabel = {
 
 export const SwampFilterStatusLabel = {
   toFulfil: 'к исполнению',
-  closedInGroup: 'в группе с закрытым договором',
-  noContractInGroup: 'в группе без договора',
+  fulfilledInGroup: 'исполнено + в группе',
+  fulfilled: 'исполнено',
 } as const

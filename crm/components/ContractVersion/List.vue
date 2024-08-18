@@ -40,17 +40,9 @@ const emit = defineEmits<{
         {{ YearLabel[item.contract.year] }}
       </div>
       <div style="width: 150px">
-        <span v-if="item.programs.length === 0" class="text-gray"> нет программ </span>
+        <span v-if="item.programs_count === 0" class="text-gray"> программ нет </span>
         <template v-else>
-          программы:
-          <span class="contract-programs">
-            <span v-if="item.programs.some((e) => !e.is_closed)">
-              {{ item.programs.filter((e) => !e.is_closed).length }}
-            </span>
-            <span v-if="item.programs.some((e) => e.is_closed)" class="text-error">
-              {{ item.programs.filter((e) => e.is_closed).length }}
-            </span>
-          </span>
+          программ: {{ item.programs_count }}
         </template>
       </div>
       <div style="width: 150px">

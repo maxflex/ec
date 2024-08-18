@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SwampListResource;
-use App\Models\Contract;
+use App\Utils\Swamp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,32 +18,7 @@ class SwampController extends Controller
 
     public function index(Request $request)
     {
-        /**
-         * Программы последней версии договора
-         */
-        $swampsCte = DB::table('contract_version_programs', 'cvp')
-            ->join('contract_versions as cv', fn($join) => $join
-                ->on('cv.id', '=', 'cvp.contract_version_id')
-                ->where('cv.is_active', true)
-            )
-            ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
-            ->leftJoin(
-                'client_groups as cg',
-                'cg.contract_version_program_id',
-                '=',
-                'cvp.id'
-            )
-            ->selectRaw(<<<SQL
-                cvp.id,
-                cast(prices->>'$[0][0]' as unsigned) as `lessons`,
-                `group_id`,
-                cv.contract_id,
-                c.year,
-                cvp.program,
-                `is_closed`
-            SQL);
-
-        $query = DB::table('swamps')->withExpression('swamps', $swampsCte);
+        $query = Swamp::query();
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, SwampListResource::class);
     }
@@ -52,26 +27,29 @@ class SwampController extends Controller
     {
         switch ($status) {
             case 'toFulfil':
-                $query
-                    ->whereNull('group_id')
-                    ->where('is_closed', false);
+                $query->whereRaw("group_id IS NULL AND lessons_passed < lessons");
                 break;
-            case 'closedInGroup':
-                $query
-                    ->where('is_closed', true)
-                    ->whereNotNull('group_id');
+            case 'fulfilled':
+                $query->whereRaw("group_id IS NULL AND lessons_passed >= lessons");
                 break;
-            case 'noContractInGroup':
-                $query
-                    ->whereNotNull('group_id')
-                    ->whereNull('cvp_id');
+            case 'fulfilledInGroup':
+                $query->whereRaw("group_id IS NOT NULL AND lessons_passed >= lessons");
                 break;
         }
     }
 
     protected function filterClient(&$query, $clientId)
     {
-        $contractIds = Contract::query()->where('client_id', $clientId)->pluck('id');
-        $query->whereIn('contract_id', $contractIds);
+        $programIds = DB::table('contract_version_programs', 'cvp')
+            ->join('contract_versions as cv', fn($join) => $join
+                ->on('cv.contract_version_program', '=', 'cvp.id')
+                ->where('cv.is_active', true)
+            )
+            ->join('contracts as c', fn($join) => $join->on('c.id', '=', 'cv.contract_id'))
+            ->where('c.year', request()->year())
+            ->where('c.client_id', $clientId)
+            ->pluck('cvp.id');
+
+        $query->whereIn('id', $programIds);
     }
 }

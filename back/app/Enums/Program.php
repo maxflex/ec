@@ -252,6 +252,7 @@ enum Program: string
 
             // ошибка в старой системе
             '19-6' => self::rusPracticum,
+            '14-12' => self::rusPracticum,
 
             default => throw new \Error("Grade-subject $gradeSubject not exists!")
         };

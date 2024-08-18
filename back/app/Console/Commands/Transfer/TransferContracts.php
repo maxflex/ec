@@ -62,12 +62,15 @@ class TransferContracts extends Command
                 foreach ($contractSubjects->where('contract_version_id', $cv->id) as $cs) {
                     $lessons = $cs->lessons ?? 0;
                     $price = $cs->price ?? 0;
-                    DB::table('contract_version_programs')->insert([
+                    $cvpId = DB::table('contract_version_programs')->insertGetId([
                         'contract_version_id' => $id,
                         'program' => Program::getById($c->grade_id, $cs->subject_id)->name,
                         'lessons_planned' => $cs->lessons_planned ?? 0,
-                        'prices' => "[[$lessons, $price]]",
-                        'is_closed' => $cs->status === 'terminated',
+                    ]);
+                    DB::table('contract_version_program_prices')->insert([
+                        'contract_version_program_id' => $cvpId,
+                        'lessons' => $lessons,
+                        'price' => $price
                     ]);
                 }
                 foreach ($contractPayments->where('contract_version_id', $cv->id) as $cp) {
