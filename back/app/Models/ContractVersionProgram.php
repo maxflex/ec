@@ -65,11 +65,7 @@ class ContractVersionProgram extends Model
 
     public function getNextPrice(): int
     {
-//        $nextLessonIndex = ClientLesson::query()
-//            ->where('contract_id', $this->contractVersion->contract_id)
-//            ->count();
-//        $nextLessonIndex++;
-        $prices = $this->prices;
-        return intval($prices[count($prices) - 1][1]); // последняя цена
+        $offset = $this->clientLessons()->count();
+        return $this->prices()->offset($offset)->first()->price;
     }
 }
