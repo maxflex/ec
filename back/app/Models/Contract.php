@@ -25,7 +25,7 @@ class Contract extends Model
 
     public function versions()
     {
-        return $this->hasMany(ContractVersion::class)->orderBy('id', 'asc');
+        return $this->hasMany(ContractVersion::class)->oldest();
     }
 
     public function groups()

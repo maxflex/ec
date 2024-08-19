@@ -4,8 +4,7 @@ import { clone } from 'rambda'
 import type { ProgramDialog } from '#build/components'
 
 const emit = defineEmits<{
-  created: [i: ContractResource]
-  updated: [i: ContractVersionListResource]
+  updated: [m: ContractEditMode, c: ContractResource | ContractVersionListResource]
   deleted: [i: ContractVersionResource]
 }>()
 const modelDefaults: ContractVersionResource = {
@@ -21,61 +20,34 @@ const modelDefaults: ContractVersionResource = {
   },
 }
 const item = ref<ContractVersionResource>(modelDefaults)
-const itemId = ref<number>()
 const contractId = ref<number>()
 const version = ref<number>() // для отображения в заголовке
 const { dialog, width } = useDialog('medium')
 const programDialog = ref<InstanceType<typeof ProgramDialog>>()
-const priceInput = ref()
+const pricesInput = ref()
+const programsInput = ref()
 const saving = ref(false)
 const deleting = ref(false)
 const loading = ref(false)
-const isEditMode = computed(() => itemId.value !== undefined)
-const isNewContract = computed(() => contractId.value === undefined)
+const mode = ref<ContractEditMode>('edit')
 
-function createContract() {
-  itemId.value = undefined
+function newContract() {
+  mode.value = 'new-contract'
   contractId.value = undefined
   version.value = undefined
   item.value = clone(modelDefaults)
   dialog.value = true
 }
 
-async function addVersion(c: ContractResource) {
-  itemId.value = undefined
-  contractId.value = c.id
-  version.value = c.versions[0].version + 1
-  loading.value = true
-  dialog.value = true
-  const { id: lastVersionId } = c.versions[0]
-  const { data } = await useHttp<ContractVersionResource>(
-    `contract-versions/${lastVersionId}`,
-  )
-  if (data.value) {
-    const { sum, programs, payments, contract } = data.value
-    item.value = {
-      contract,
-      sum,
-      id: newId(),
-      date: today(),
-      version: version.value,
-      programs: programs.map(e => ({
-        ...e,
-        id: newId(),
-      })),
-      payments: payments.map(e => ({
-        ...e,
-        id: newId(),
-      })),
-    }
-  }
-  loading.value = false
+async function newVersion(c: ContractResource) {
+  const activeVersion = c.versions.find(e => e.is_active)
+  await edit(activeVersion!, 'new-version')
 }
 
-async function edit(cv: ContractVersionListResource) {
-  itemId.value = cv.id
+async function edit(cv: ContractVersionListResource, m: ContractEditMode = 'edit') {
+  mode.value = m
   contractId.value = cv.contract.id
-  version.value = cv.version
+  version.value = cv.version + (m === 'edit' ? 0 : 1)
   dialog.value = true
   loading.value = true
   const { data } = await useHttp<ContractVersionResource>(
@@ -115,11 +87,20 @@ function onProgramsSaved(programs: Program[]) {
         id: newId(),
         program,
         contract_version_id: item.value.contract.id,
-        prices: [],
-        lessons_planned: 0,
+        prices: [
+          {
+            id: newId(),
+            lessons: '',
+            price: '',
+          },
+        ],
+        lessons_planned: '',
         is_closed: false,
       })
     }
+    nextTick(() => {
+      programsInput.value[programsInput.value.length - 1].focus()
+    })
   }
   // Remove programs that are not in the new programs list
   item.value.programs = item.value.programs.filter(({ program }) =>
@@ -151,46 +132,45 @@ function deleteProgram(p: ContractVersionProgramResource) {
 
 async function save() {
   saving.value = true
-  if (isNewContract.value) {
-    const { data } = await useHttp<ContractResource>(`contracts`, {
-      method: 'post',
-      body: {
-        ...item.value,
-        client_id: Number(useRoute().params.id), // допускаем, что client_id хранится в адресной строке
-      },
-    })
-    if (data.value) {
-      emit('created', data.value)
-    }
-  }
-  else if (isEditMode.value) {
-    const { data } = await useHttp<ContractVersionListResource>(
-      `contract-versions/${item.value.id}`,
-      {
-        method: 'put',
-        body: item.value,
-      },
-    )
-
-    if (data.value) {
-      emit('updated', data.value)
-    }
-    // if (data.value) {
-    //   item.value = data.value
-    // }
-  }
-  else {
-    const { data } = await useHttp<ContractVersionListResource>(
-      'contract-versions',
-      {
+  let responseData: ContractResource | ContractVersionListResource | null
+  switch (mode.value) {
+    case 'new-contract': {
+      const { data } = await useHttp<ContractResource>(`contracts`, {
         method: 'post',
-        body: item.value,
-      },
-    )
-    if (data.value) {
-      emit('updated', data.value)
+        body: {
+          ...item.value,
+          client_id: Number(useRoute().params.id), // допускаем, что client_id хранится в адресной строке
+        },
+      })
+      responseData = data.value
+      break
+    }
+
+    case 'new-version': {
+      const { data } = await useHttp<ContractVersionListResource>(
+        'contract-versions',
+        {
+          method: 'post',
+          body: item.value,
+        },
+      )
+      responseData = data.value
+      break
+    }
+
+    case 'edit': {
+      const { data } = await useHttp<ContractVersionListResource>(
+          `contract-versions/${item.value.id}`,
+          {
+            method: 'put',
+            body: item.value,
+          },
+      )
+      responseData = data.value
+      break
     }
   }
+  emit('updated', mode.value, responseData!)
   dialog.value = false
   setTimeout(() => (saving.value = false), 300)
 }
@@ -242,7 +222,7 @@ function addPrices(p: ContractVersionProgramResource) {
     lessons: '',
   })
   nextTick(() => {
-    priceInput.value[priceInput.value.length - 1].focus()
+    pricesInput.value[pricesInput.value.length - 1].focus()
   })
 }
 
@@ -256,8 +236,7 @@ function removePrice(p: ContractVersionProgramResource) {
   item.value.programs[index].prices.splice(pricesLength - 1, 1)
 }
 
-// defineExpose({ create, editVersion, addVersion })
-defineExpose({ edit, createContract, addVersion })
+defineExpose({ edit, newContract, newVersion })
 </script>
 
 <template>
@@ -267,8 +246,8 @@ defineExpose({ edit, createContract, addVersion })
   >
     <div class="dialog-wrapper contract-version-dialog">
       <div class="dialog-header">
-        <span v-if="isNewContract"> Новый договор </span>
-        <div v-else-if="isEditMode">
+        <span v-if="mode === 'new-contract'"> Новый договор </span>
+        <div v-else-if="mode === 'edit'">
           Редактирование договора
           <span>№{{ contractId }}–{{ version }}</span>
           <div class="dialog-subheader">
@@ -284,7 +263,7 @@ defineExpose({ edit, createContract, addVersion })
         </span>
         <div>
           <v-btn
-            v-if="isEditMode"
+            v-if="mode === 'edit'"
             icon="$delete"
             :size="48"
             variant="text"
@@ -311,12 +290,12 @@ defineExpose({ edit, createContract, addVersion })
             v-model="item.contract.year"
             label="Учебный год"
             :items="selectItems(YearLabel)"
-            :disabled="!isNewContract"
+            :disabled="mode !== 'new-contract'"
           />
           <v-select
             v-model="item.contract.company"
             label="Компания"
-            :disabled="!isNewContract"
+            :disabled="mode !== 'new-contract'"
             :items="selectItems(CompanyLabel)"
           />
         </div>
@@ -361,6 +340,7 @@ defineExpose({ edit, createContract, addVersion })
                 </td>
                 <td>
                   <v-text-field
+                    ref="programsInput"
                     v-model="p.lessons_planned"
                     type="number"
                     hide-spin-buttons
@@ -370,7 +350,7 @@ defineExpose({ edit, createContract, addVersion })
                 <td>
                   <div v-for="price in p.prices" :key="price.id">
                     <v-text-field
-                      ref="priceInput"
+                      ref="pricesInput"
                       v-model="price.lessons"
                       type="number"
                       hide-spin-buttons

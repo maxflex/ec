@@ -15,17 +15,19 @@ const modelDefaults: ContractPaymentResource = {
   id: newId(),
   sum: 0,
   date: today(),
-  year: currentAcademicYear(),
   method: 'card',
   is_confirmed: false,
   is_return: false,
+  contract_id: newId(),
+  pko_number: null,
+  card_number: null,
 }
 const item = ref<ContractPaymentResource>(modelDefaults)
 
-function create(year: Year) {
+function create(c: ContractResource) {
   itemId.value = undefined
   item.value = clone(modelDefaults)
-  item.value.year = year
+  item.value.contract_id = c.id
   dialog.value = true
 }
 

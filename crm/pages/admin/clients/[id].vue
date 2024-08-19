@@ -127,15 +127,6 @@ nextTick(loadData)
         </template>
       </UiDataLoader>
       <UiDataLoader
-        v-else-if="selectedTab === 'contracts'"
-        url="contracts"
-        :filters="{ client_id: client.id }"
-      >
-        <template #default="{ items }">
-          <ContractList :items="items" />
-        </template>
-      </UiDataLoader>
-      <UiDataLoader
         v-else-if="selectedTab === 'reports'"
         url="reports"
         :filters="{ client_id: client.id, ...reportFilters }"
@@ -161,6 +152,7 @@ nextTick(loadData)
           <ClientReviewList :items="items" />
         </template>
       </UiDataLoader>
+      <ContractTab v-else-if="selectedTab === 'contracts'" :client-id="client.id" />
       <WebReviewTab v-else-if="selectedTab === 'webReviews'" :client-id="client.id" />
       <ExamScoreTab v-else-if="selectedTab === 'examScores'" :client-id="client.id" />
       <ClientPaymentTab v-else-if="selectedTab === 'payments'" :client-id="client.id" />

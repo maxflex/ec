@@ -24,10 +24,6 @@ class ContractVersion extends Model
         return $this->hasMany(ContractVersionProgram::class);
     }
 
-    /**
-     * TODO: переименовать в payment_schedule
-     * таблица contract_payment_schedule
-     */
     public function payments()
     {
         return $this->hasMany(ContractVersionPayment::class)->orderBy('date');
@@ -69,11 +65,44 @@ class ContractVersion extends Model
     }
 
     /**
+     * Создать архив на основе активной версии
+     */
+    public function createArchive(): self
+    {
+        // Создаём архив на основе активной версии
+        $archiveCv = $this->replicate();
+        $archiveCv->is_active = false;
+        $archiveCv->setCreatedAt($this->created_at);
+        $archiveCv->save();
+
+        // Clone the `programs` relationship with new IDs
+        foreach ($this->programs as $program) {
+            $clonedProgram = $program->replicate();
+            $clonedProgram->contract_version_id = $archiveCv->id;
+            $clonedProgram->save();
+            foreach ($program->prices as $price) {
+                $clonedPrice = $price->replicate();
+                $clonedPrice->contract_version_program_id = $clonedProgram->id;
+                $clonedPrice->save();
+            }
+        }
+
+        // Clone the `payments` relationship with new IDs
+        foreach ($this->payments as $payment) {
+            $clonedPayment = $payment->replicate();
+            $clonedPayment->contract_version_id = $archiveCv->id;
+            $clonedPayment->save();
+        }
+
+        return $archiveCv;
+    }
+
+    /**
      * Номер версии
      */
     public function getVersionAttribute()
     {
-        return $this->chain()->where('id', '<=', $this->id)->count();
+        return $this->chain()->where('created_at', '<=', $this->created_at)->count();
     }
 
     public function scopeActive($query)

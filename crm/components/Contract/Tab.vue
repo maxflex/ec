@@ -1,83 +1,95 @@
 <script setup lang="ts">
 import type { ContractPaymentDialog, ContractVersionDialog } from '#build/components'
 
-const { items } = defineProps<{ items: ContractResource[] }>()
+const { clientId } = defineProps <{ clientId: number }>()
+const items = ref<ContractResource[]>([])
 const contractPaymentDialog = ref<InstanceType<typeof ContractPaymentDialog>>()
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
 const selected = ref(0)
 
-const selectedContract = computed(() => items[selected.value])
+const selectedContract = computed<ContractResource | null>(
+  () => items.value.length ? items.value[selected.value] : null,
+)
 
-function onContractVersionUpdated(cv: ContractVersionListResource) {
-  const contractIndex = items.findIndex(c => c.id === cv.contract.id)
-  if (contractIndex === -1) {
-    return
-  }
-  const index = items[contractIndex].versions.findIndex(e => e.id === cv.id)
-  if (index !== -1) {
-    // eslint-disable-next-line
-    items[contractIndex].versions[index] = cv
-  }
-  else {
-    // eslint-disable-next-line
-    items[contractIndex].versions.unshift(cv)
-  }
-  itemUpdated('contract-version', cv.id)
-}
+async function onContractVersionUpdated(mode: ContractEditMode, c: ContractVersionListResource | ContractResource) {
+  let updatedId: number
+  switch (mode) {
+    case 'new-contract':
+      const newContract = c as ContractResource
+      items.value.unshift(newContract)
+      selected.value = 0
+      updatedId = newContract.versions[0].id
+      break
 
-function onContractCreated(c: ContractResource) {
-  // eslint-disable-next-line
-  items.unshift(c)
-  itemUpdated('contract-version', c.versions[0].id)
+    case 'new-version':
+    case 'edit':
+      updatedId = (c as ContractVersionListResource).id
+      await loadData()
+      break
+  }
+  itemUpdated('contract-version', updatedId!)
 }
 
 function onContractVersionDeleted(cv: ContractVersionResource) {
-  const contractIndex = items.findIndex(c => c.id === cv.contract.id)
+  const contractIndex = items.value.findIndex(c => c.id === cv.contract.id)
   if (contractIndex === -1) {
     return
   }
-  const index = items[contractIndex].versions.findIndex(e => e.id === cv.id)
+  const index = items.value[contractIndex].versions.findIndex(e => e.id === cv.id)
   if (index === -1) {
     return
   }
   // await itemDeleted('contract-version', cv.id)
-  // eslint-disable-next-line
-  items[contractIndex].versions.splice(index, 1)
+
+  items.value[contractIndex].versions.splice(index, 1)
   // сносим весь договор?
-  if (items[contractIndex].versions.length === 0) {
-    // eslint-disable-next-line
-    items.splice(contractIndex, 1)
+  if (items.value[contractIndex].versions.length === 0) {
+    items.value.splice(contractIndex, 1)
   }
 }
 
 function onContractPaymentUpdated(cp: ContractPaymentResource) {
-  const contractIndex = items.findIndex(c => c.id === cp.entity_id)
+  const contractIndex = items.value.findIndex(c => c.id === cp.contract_id)
   if (contractIndex === -1) {
     return
   }
-  const index = items[contractIndex].payments.findIndex(e => e.id === cp.id)
+  const index = items.value[contractIndex].payments.findIndex(e => e.id === cp.id)
   if (index === -1) {
-    // eslint-disable-next-line
-    items[contractIndex].payments.unshift(cp)
+    items.value[contractIndex].payments.unshift(cp)
   }
   else {
-    // eslint-disable-next-line
-    items[contractIndex].payments[index] = cp
+    items.value[contractIndex].payments[index] = cp
   }
   itemUpdated('client-payment', cp.id)
 }
 
 function onContractPaymentDeleted(cp: ContractPaymentResource) {
-  const contractIndex = items.findIndex(c => c.id === cp.entity_id)
+  const contractIndex = items.value.findIndex(c => c.id === cp.contract_id)
   if (contractIndex === -1) {
     return
   }
-  const index = items[contractIndex].payments.findIndex(e => e.id === cp.id)
+  const index = items.value[contractIndex].payments.findIndex(e => e.id === cp.id)
   if (index !== -1) {
-    // eslint-disable-next-line
-    items[contractIndex].payments.splice(index, 1)
+    items.value[contractIndex].payments.splice(index, 1)
   }
 }
+
+async function loadData() {
+  console.log('Loading data...')
+  const { data } = await useHttp<ApiResponse<ContractResource[]>>(
+      `contracts`,
+      {
+        params: {
+          client_id: clientId,
+        },
+      },
+  )
+  if (data.value) {
+    items.value = data.value.data
+  }
+}
+
+nextTick(loadData)
 </script>
 
 <template>
@@ -107,21 +119,25 @@ function onContractPaymentDeleted(cp: ContractPaymentResource) {
         </v-btn>
       </template>
       <v-list>
-        <v-list-item @click="contractVersionDialog?.createContract()">
+        <v-list-item @click="contractVersionDialog?.newContract()">
           новый договор
         </v-list-item>
         <v-list-item
-          @click="() => contractVersionDialog?.addVersion(selectedContract)"
+          v-if="selectedContract"
+          @click="() => contractVersionDialog?.newVersion(selectedContract!)"
         >
           добавить версию
         </v-list-item>
-        <v-list-item @click="() => contractPaymentDialog?.create(selectedContract)">
+        <v-list-item
+          v-if="selectedContract"
+          @click="() => contractPaymentDialog?.create(selectedContract!)"
+        >
           добавить платеж
         </v-list-item>
       </v-list>
     </v-menu>
   </div>
-  <div class="contract-list">
+  <div v-if="selectedContract" class="contract-list">
     <div
       class="contract-list__item"
     >
@@ -140,7 +156,6 @@ function onContractPaymentDeleted(cp: ContractPaymentResource) {
     ref="contractVersionDialog"
     @updated="onContractVersionUpdated"
     @deleted="onContractVersionDeleted"
-    @created="onContractCreated"
   />
   <ContractPaymentDialog
     ref="contractPaymentDialog"

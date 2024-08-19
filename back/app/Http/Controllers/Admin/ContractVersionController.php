@@ -34,16 +34,33 @@ class ContractVersionController extends Controller
         return new ContractVersionResource($contractVersion);
     }
 
+    /**
+     * Новая версия договора
+     * (новая цепь договора в ContractController@store)
+     */
     public function store(Request $request)
     {
         $request->validate([
             'contract.id' => ['required', 'exists:contracts,id']
         ]);
         $request->merge(['contract_id' => $request->contract['id']]);
-        $contractVersion = auth()->user()->entity->contractVersions()->create($request->all());
-        $contractVersion->syncRelation($request->all(), 'programs');
-        $contractVersion->syncRelation($request->all(), 'payments');
-        return new ContractVersionListResource($contractVersion);
+
+        $activeCv = ContractVersion::query()
+            ->where('contract_id', $request->contract_id)
+            ->active()
+            ->first();
+
+        // создаём архив на основе активной версии
+        $activeCv->createArchive();
+
+        // обновляем активную версию
+        $activeCv->fill($request->all());
+        $activeCv->setCreatedAt(now());
+        $activeCv->save();
+        $activeCv->syncRelation($request->all(), 'programs');
+        $activeCv->syncRelation($request->all(), 'payments');
+
+        return new ContractVersionListResource($activeCv);
     }
 
     public function update(ContractVersion $contractVersion, Request $request)

@@ -10,7 +10,7 @@ class ContractVersionProgram extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'program', 'lessons_planned'
+        'program', 'lessons_planned', 'prices'
     ];
 
     protected $casts = [
@@ -53,6 +53,19 @@ class ContractVersionProgram extends Model
             'id',
             'group_id',
         );
+    }
+
+    public function setPricesAttribute($prices)
+    {
+        $actualIds = array_column($prices, 'id');
+        $this->prices()->whereNotIn('id', $actualIds)->each(fn($model) => $model->delete());
+        foreach ($prices as $p) {
+            if (isset($p['id']) && $p['id'] > 0) {
+                $this->prices()->find($p['id'])->update($p);
+            } else {
+                $this->prices()->create($p);
+            }
+        }
     }
 
     /**

@@ -49,6 +49,8 @@ declare global {
 
   type LessonScore = keyof typeof LessonScoreLabel
 
+  type ContractEditMode = 'new-contract' | 'new-version' | 'edit'
+
   interface ClientLessonScore {
     score: LessonScore
     comment: string | null
@@ -257,6 +259,7 @@ declare global {
     sum: number
     payments_count: number
     programs_count: number
+    is_active: boolean
     contract: {
       id: number
       year: Year
@@ -266,6 +269,7 @@ declare global {
 
   interface ContractPaymentResource {
     id: number
+    contract_id: number
     sum: number
     date: string
     method: ClientPaymentMethod

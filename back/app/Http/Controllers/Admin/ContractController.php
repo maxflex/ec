@@ -22,6 +22,9 @@ class ContractController extends Controller
         return $this->handleIndexRequest($request, $query, ContractResource::class);
     }
 
+    /**
+     * Новая цепь договора
+     */
     public function store(Request $request)
     {
         $request->validate([
