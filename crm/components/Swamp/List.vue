@@ -45,10 +45,15 @@ const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
         договор №{{ swamp.contract_id }}
       </div>
       <div>
-        <span v-if="swamp.lessons_passed >= swamp.lessons">
-          {{ swamp.group_id ? 'исполнено + в группе' : 'исполнено' }}
-        </span>
-        <span v-else-if="!swamp.group_id">
+        <template v-if="swamp.lessons_passed >= swamp.lessons">
+          <span v-if="swamp.group_id" class="text-error">
+            исполнено + в группе
+          </span>
+          <span v-else class="text-success">
+            исполнено
+          </span>
+        </template>
+        <span v-else-if="!swamp.group_id" class="text-success">
           к исполнению
         </span>
       </div>

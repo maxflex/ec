@@ -42,11 +42,11 @@ class SwampController extends Controller
     {
         $programIds = DB::table('contract_version_programs', 'cvp')
             ->join('contract_versions as cv', fn($join) => $join
-                ->on('cv.contract_version_program', '=', 'cvp.id')
+                ->on('cv.id', '=', 'cvp.contract_version_id')
                 ->where('cv.is_active', true)
             )
             ->join('contracts as c', fn($join) => $join->on('c.id', '=', 'cv.contract_id'))
-            ->where('c.year', request()->year())
+            ->where('c.year', request()->year)
             ->where('c.client_id', $clientId)
             ->pluck('cvp.id');
 
