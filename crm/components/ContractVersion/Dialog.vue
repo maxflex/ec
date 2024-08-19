@@ -206,9 +206,7 @@ const lessonsPlannedSum = computed(() => {
 const lessonsSum = computed(() => {
   let sum = 0
   for (const p of item.value.programs) {
-    for (const x of p.prices) {
-      sum += asInt(x[0])
-    }
+    sum += p.prices.reduce((carry, x) => asInt(x.lessons) + carry, 0)
   }
   return sum
 })
@@ -221,7 +219,7 @@ const lessonsMultipliedByPriceSum = computed((): number => {
   let sum = 0
   for (const p of item.value.programs) {
     for (const x of p.prices) {
-      sum += asInt(x[1]) * (asInt(x[0]) || 1)
+      sum += asInt(x.lessons) * (asInt(x.price) || 1)
     }
   }
   return sum
@@ -240,8 +238,8 @@ function addPrices(p: ContractVersionProgramResource) {
   const index = item.value.programs.findIndex(e => e.id === p.id)
   item.value.programs[index].prices.push({
     id: newId(),
-    price: 0,
-    lessons: 0,
+    price: '',
+    lessons: '',
   })
   nextTick(() => {
     priceInput.value[priceInput.value.length - 1].focus()
@@ -373,7 +371,7 @@ defineExpose({ edit, createContract, addVersion })
                   <div v-for="price in p.prices" :key="price.id">
                     <v-text-field
                       ref="priceInput"
-                      v-model="price.price"
+                      v-model="price.lessons"
                       type="number"
                       hide-spin-buttons
                       density="compact"
@@ -383,7 +381,7 @@ defineExpose({ edit, createContract, addVersion })
                 <td>
                   <div v-for="price in p.prices" :key="price.id">
                     <v-text-field
-                      v-model="price.lessons"
+                      v-model="price.price"
                       type="number"
                       hide-spin-buttons
                       density="compact"
