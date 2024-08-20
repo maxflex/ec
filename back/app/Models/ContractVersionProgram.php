@@ -81,4 +81,11 @@ class ContractVersionProgram extends Model
         $offset = $this->clientLessons()->count();
         return $this->prices()->offset($offset)->first()->price;
     }
+
+    public static function booted()
+    {
+        static::deleting(function (ContractVersionProgram $contractVersionProgram) {
+            $contractVersionProgram->prices->each->delete();
+        });
+    }
 }

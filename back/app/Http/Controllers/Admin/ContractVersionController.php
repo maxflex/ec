@@ -73,13 +73,7 @@ class ContractVersionController extends Controller
 
     public function destroy(ContractVersion $contractVersion)
     {
-        $contractVersion->programs->each->delete();
-        $contractVersion->payments->each->delete();
         $contractVersion->delete();
-        // если удалили последнюю версию, то сносим весь договор
-        if (!$contractVersion->chain()->exists()) {
-            $contractVersion->contract->delete();
-        }
         return new ContractVersionListResource($contractVersion);
     }
 

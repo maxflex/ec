@@ -9,6 +9,6 @@ class ContractVersionProgramPrice extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'lessons', 'price'
+        'lessons', 'price', 'contract_version_program_id'
     ];
 }

@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Observers\ContractVersionObserver;
 use App\Traits\RelationSyncable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 
+#[ObservedBy(ContractVersionObserver::class)]
 class ContractVersion extends Model
 {
     use RelationSyncable;
