@@ -1,5 +1,5 @@
-import { createVuetify } from 'vuetify'
 import type { ThemeDefinition } from 'vuetify'
+import { createVuetify } from 'vuetify'
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
 import {
   mdiCheckDecagram,
@@ -40,7 +40,7 @@ const colors = {
   error: '#eb4432',
   red: '#eb4432',
   bg: '#fafafa', // очень светлый серый
-  bg2: '#e0e0e0', // просто серый
+  border: '#e0e0e0', // серый бордеры
 }
 
 const myTheme: ThemeDefinition = {

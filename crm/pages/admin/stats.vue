@@ -240,7 +240,7 @@ onUnmounted(() => {
         right: 0;
         top: 0;
         font-size: 20px;
-        color: rgb(var(--v-theme-bg2));
+        color: rgb(var(--v-theme-border));
         opacity: 0;
         &:hover {
           color: rgb(var(--v-theme-error));

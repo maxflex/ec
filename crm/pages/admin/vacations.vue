@@ -164,7 +164,7 @@ nextTick(loadData)
       display: grid;
       $size: 30px;
       grid-template-columns: repeat(7, $size);
-      grid-gap: 3px;
+      grid-row-gap: 3px;
       // grid-gap: 1;
       & > div {
         height: $size;
@@ -193,11 +193,11 @@ nextTick(loadData)
     & > h2 {
       // position: sticky;
       // top: 18px;
-      z-index: 99;
+      //z-index: 99;
       margin-left: 10px;
       display: inline;
       color: black;
-      font-size: 30px;
+      font-size: 36px;
     }
   }
   &__header {

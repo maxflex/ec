@@ -2,7 +2,9 @@
 import type { Filters } from '~/components/Swamp/Filters.vue'
 
 const { items, loading, onFiltersApply } = useIndex<SwampListResource, Filters>(`swamps`, {
-  year: currentAcademicYear(),
+  defaultFilters: {
+    year: currentAcademicYear(),
+  },
 })
 </script>
 

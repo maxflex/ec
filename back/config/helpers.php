@@ -115,3 +115,8 @@ function current_academic_year(): int
 {
     return get_academic_year(date('Y-m-d'));
 }
+
+function json_redecode($object, $assoc = true)
+{
+    return json_decode(json_encode($object), $assoc);
+}

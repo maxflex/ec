@@ -60,7 +60,7 @@ function isCurrent(weekday: Weekday, tooth: Tooth): boolean {
     width: $width;
     height: $height;
     display: inline-block;
-    background: rgb(var(--v-theme-bg2));
+    background: rgb(var(--v-theme-border));
     position: relative;
     border-radius: 2px;
     overflow: hidden;

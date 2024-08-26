@@ -1,10 +1,19 @@
 export default function<T, F extends object | undefined = undefined>(
   apiUrl: string,
-  defaultFilters: F = {} as F,
+  options: {
+    defaultFilters?: F
+    instantLoad?: boolean
+    scrollContainerSelector?: string
+  } = {},
 ) {
+  const {
+    instantLoad = true,
+    defaultFilters = {},
+    scrollContainerSelector = 'main',
+  } = options
   const loading = ref(false)
   const items = ref<T[]>([]) as Ref<T[]>
-  let filters: F = defaultFilters
+  let filters: F = defaultFilters as F
   let scrollContainer: HTMLElement | null = null
   let page = 0
   let isLastPage = false
@@ -27,6 +36,7 @@ export default function<T, F extends object | undefined = undefined>(
       isLastPage = meta.current_page >= meta.last_page
     }
     loading.value = false
+    setScrollContainer()
   }
 
   function onFiltersApply(f: F) {
@@ -56,16 +66,19 @@ export default function<T, F extends object | undefined = undefined>(
     }
   }
 
-  onMounted(() => {
-    scrollContainer = document.documentElement.querySelector('main')
+  function setScrollContainer() {
+    if (scrollContainer !== null) {
+      return
+    }
+    scrollContainer = document.documentElement.querySelector(scrollContainerSelector)
     scrollContainer?.addEventListener('scroll', onScroll)
-  })
+  }
 
   onUnmounted(() => {
     scrollContainer?.removeEventListener('scroll', onScroll)
   })
 
-  nextTick(loadData)
+  instantLoad && nextTick(loadData)
 
   return {
     items,

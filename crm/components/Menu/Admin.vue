@@ -25,6 +25,8 @@ import {
   mdiStarBox,
   mdiStarBoxOutline,
 } from '@mdi/js'
+import CallApp from '~/components/CallApp/CallApp.vue'
+import { callAppDialog } from '~/components/CallApp'
 
 const { logOut } = useAuthStore()
 
@@ -162,6 +164,12 @@ const menu: Menu = [
     nav
     density="compact"
   >
+    <v-list-item :active="false" @click="callAppDialog = true">
+      <template #prepend>
+        <CallAppStateIcon />
+      </template>
+      Звонки
+    </v-list-item>
     <v-list-item
       v-for="{ title, to, icon } in menu"
       :key="title"
@@ -172,6 +180,7 @@ const menu: Menu = [
       </template>
       {{ title }}
     </v-list-item>
+
     <v-list-item @click="logOut()">
       <template #prepend>
         <v-icon :icon="mdiLogout" />
@@ -179,4 +188,5 @@ const menu: Menu = [
       Выход
     </v-list-item>
   </v-list>
+  <CallApp />
 </template>

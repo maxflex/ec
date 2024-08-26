@@ -1,0 +1,69 @@
+// doesnt work on `enter`
+.call-banner-transition {
+  $ms: 0.3s;
+  $move: 49px;
+
+  &-leave-active,
+  &-enter-active {
+    transition: all linear $ms;
+  }
+
+  &-leave-to {
+    opacity: 0;
+    transform: translateY($move);
+  }
+
+  &-enter {
+    opacity: 0;
+    transform: translateY($move);
+  }
+}
+
+.call-title-transition {
+  $ms: 0.3s;
+  $move: 50px;
+
+  &-leave-active,
+  &-enter-active {
+    transition: all linear $ms;
+  }
+
+  &-leave-active {
+    position: absolute;
+    left: 210px;
+  }
+
+  &-leave-to {
+    opacity: 0;
+  }
+
+  &-enter {
+    opacity: 0;
+    transform: translateX(#{$move});
+  }
+
+  &-move {
+    transition: transform $ms;
+  }
+}
+
+@keyframes ring {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  10%, 20% {
+    transform: scale(0.9) rotate(-3deg);
+  }
+  30%, 50%, 70% {
+    transform: scale(1.1) rotate(3deg);
+  }
+  40%, 60% {
+    transform: scale(1.1) rotate(-3deg);
+  }
+  80% {
+    transform: scale(1.1) rotate(3deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}

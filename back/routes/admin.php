@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\BalanceController;
+use App\Http\Controllers\Admin\CallController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\ClientGroupController;
 use App\Http\Controllers\Admin\ClientPaymentController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\InstructionController;
 use App\Http\Controllers\Admin\LessonController;
 use App\Http\Controllers\Admin\MacroController;
+use App\Http\Controllers\Admin\MangoTestController;
 use App\Http\Controllers\Admin\PersonController;
 use App\Http\Controllers\Admin\PhotoController;
 use App\Http\Controllers\Admin\PreviewController;
@@ -33,11 +35,11 @@ use App\Http\Controllers\Admin\TeacherServiceController;
 use App\Http\Controllers\Admin\TeethController;
 use App\Http\Controllers\Admin\TelegramMessageController;
 use App\Http\Controllers\Admin\TestController;
+use App\Http\Controllers\Admin\TopicController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VacationController;
 use App\Http\Controllers\Admin\WebReviewController;
 use App\Http\Controllers\Common\LogController;
-use App\Http\Controllers\TopicController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:crm'])->group(function () {
@@ -59,6 +61,8 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::apiResource('topics', TopicController::class)->only('index');
     Route::get('persons', PersonController::class);
     Route::post('lessons/batch', [LessonController::class, 'batch']);
+
+    Route::post('mango-test/{event}', MangoTestController::class);
 
     // Групповое редактирование уроков
     Route::prefix('lessons/batch')->controller(LessonController::class)->group(function () {
@@ -113,5 +117,6 @@ Route::middleware(['auth:crm'])->group(function () {
         'exam-scores' => ExamScoreController::class,
         'telegram-messages' => TelegramMessageController::class,
         'instructions' => InstructionController::class,
+        'calls' => CallController::class,
     ]);
 });

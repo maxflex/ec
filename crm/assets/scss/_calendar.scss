@@ -31,17 +31,17 @@
   &__month {
     &-label {
       font-weight: bold;
-      font-size: 22px;
-      padding: 12px 36px 35px 12px;
+      padding: 12px;
       color: rgb(var(--v-theme-grey));
       //text-align: center;
     }
 
     &-days {
       display: grid;
-      $size: 48px;
+      $size: 30px;
       grid-template-columns: repeat(7, $size);
-      grid-gap: 3px;
+      grid-row-gap: 24px;
+      grid-column-gap: 24px;
 
       & > div {
         height: $size;
@@ -71,12 +71,14 @@
     margin-left: 20px;
 
     & > h2 {
-      position: sticky;
-      top: 18px;
-      z-index: 99;
+      //position: sticky;
+      //top: 18px;
+      //z-index: 99;
       margin-left: 10px;
-      display: inline;
+      margin-bottom: 30px;
+      display: block;
       color: black;
+      font-size: 36px;
     }
   }
 

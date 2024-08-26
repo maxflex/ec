@@ -15,6 +15,7 @@ export default defineNuxtConfig({
       baseUrl: '',
       pusherAppKey: '',
     },
+    redisHost: '',
   },
 
   modules: [
@@ -48,5 +49,11 @@ export default defineNuxtConfig({
 
   sourcemap: {
     server: true,
+  },
+
+  routeRules: {
+    '/api/**': {
+      cors: true,
+    },
   },
 })

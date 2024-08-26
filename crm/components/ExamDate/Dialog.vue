@@ -89,9 +89,6 @@ defineExpose({ edit })
       <div class="dialog-header">
         <div class="capitalize">
           {{ ExamLabel[item.exam] }}
-          <span v-if="item.dates.length" class="ml-1 text-gray">
-            {{ item.dates.length }}
-          </span>
         </div>
         <v-btn
           :size="48"
@@ -108,11 +105,12 @@ defineExpose({ edit })
           :key="y"
           class="calendar__year"
         >
+          <h2>{{ y }}</h2>
           <div class="calendar mt-0">
             <div v-for="m in months" :key="m" class="calendar__month">
               <div class="calendar__month-label">
                 <span class="text-grey-light">
-                  {{ MonthLabel[m - 1] }} {{ y - 2000 }}
+                  {{ MonthLabel[m - 1] }}
                 </span>
               </div>
               <div class="calendar__month-days">

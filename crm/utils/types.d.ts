@@ -883,6 +883,36 @@ declare global {
     exam: Exam
     dates: string[]
   }
+
+  type CallState = 'Appeared' | 'Connected' | 'Disconnected'
+
+  type CallType = 'incoming' | 'outgoing'
+
+  interface CallEvent {
+    state: CallState
+    type: CallType
+    user?: PersonResource
+    number: string
+  }
+
+  interface CallListResource {
+    id: string
+    user: ?PersonResource
+    type: CallType
+    number: string
+    has_recording: boolean
+    is_missed: boolean
+    is_missed_callback: boolean
+    created_at: string
+    finished_at: string
+    answered_at: ?string
+    phone: null | {
+      id: number
+      comment: ?string
+      entity_type: (typeof EntityType)[keyof typeof EntityType]
+      person: PersonResource
+    }
+  }
 }
 
 export {}

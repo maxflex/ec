@@ -18,7 +18,7 @@ defineEmits<{
           не установлено
         </span>
         <span v-else>
-          {{ item.dates.map(formatDate).join(', ') }}
+          {{ plural(item.dates.length, ['дата', 'даты', 'дат']) }}
         </span>
       </div>
       <div class="table-actionss">
