@@ -18,4 +18,9 @@ class ClientParent extends Model
         'passport_address', 'passport_code', 'passport_issued_date', 'passport_issued_by',
         'fact_address'
     ];
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
 }

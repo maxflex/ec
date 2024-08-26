@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TeacherStatus;
 use App\Utils\Phone as UtilsPhone;
 use App\Utils\Session;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -68,9 +69,45 @@ class Phone extends Model implements Authenticatable
             ])
             ->whereNumber($number)
             ->get();
+
         if ($phones->count() !== 1) {
             return null;
         }
+
+        // кандидаты к логину
+        $candidates = [];
+        foreach ($phones as $phone) {
+            $entity = $phone->entity;
+            switch ($phone->entity_type) {
+                case User::class:
+                    if ($entity->is_active) {
+                        $candidates[] = $phone;
+                    }
+                    break;
+
+                case Teacher::class:
+                    if ($entity->status === TeacherStatus::active) {
+                        $candidates[] = $phone;
+                    }
+                    break;
+
+                // намеренно нет break
+                case ClientParent::class:
+                    $entity = $entity->client;
+
+                case Client::class:
+                    if ($entity->contracts()->where('year', 2024)->exists()) {
+                        $candidates[] = $phone;
+                    }
+            }
+
+            if (count($candidates) !== 1) {
+                return null;
+            }
+
+            return $candidates[0];
+        }
+
         return $phones->first();
     }
 

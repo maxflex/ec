@@ -433,6 +433,7 @@ declare global {
 
   interface UserResource extends PersonResource, HasPhoto {
     is_active: boolean
+    is_call_notifications: boolean
     phones: PhoneListResource[]
     created_at?: string
   }

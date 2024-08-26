@@ -14,11 +14,13 @@ class User extends Authenticatable
     use HasName, HasPhones, HasPhoto, RelationSyncable;
 
     protected $fillable = [
-        'first_name', 'last_name', 'middle_name'
+        'first_name', 'last_name', 'middle_name',
+        'is_active', 'is_call_notifications'
     ];
 
     protected $casts = [
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
+        'is_call_notifications' => 'boolean',
     ];
 
     public function scopeActive($query): void

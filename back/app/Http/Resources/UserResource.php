@@ -16,7 +16,7 @@ class UserResource extends JsonResource
     {
         return extract_fields($this, [
             'first_name', 'last_name', 'middle_name', 'created_at',
-            'photo_url', 'is_active'
+            'photo_url', 'is_active', 'is_call_notifications'
         ], [
             'phones' => PhoneListResource::collection($this->phones)
         ]);
