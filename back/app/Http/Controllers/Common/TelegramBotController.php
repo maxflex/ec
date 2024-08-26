@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Common;
 
 use App\Enums\TelegramTemplate;
-use App\Events\NewTelegramMessage;
 use App\Events\TelegramBotAdded;
 use App\Http\Controllers\Controller;
 use App\Models\Phone;
 use Illuminate\Http\Request;
 use TelegramBot\Api\{Client, Exception};
-use TelegramBot\Api\Types\{CallbackQuery, ReplyKeyboardMarkup, ReplyKeyboardRemove, Update};
+use TelegramBot\Api\Types\{ReplyKeyboardMarkup, ReplyKeyboardRemove, Update};
 
 class TelegramBotController extends Controller
 {
@@ -100,30 +99,23 @@ class TelegramBotController extends Controller
 
                 /**
                  * Произвольное сообщение клиента – в администрацию
+                 * UPD. Отключено
                  */
-                $phone = Phone::where('telegram_id', $telegramId)->first();
-                if ($phone === null) {
-                    return $bot->sendMessage(
-                        $telegramId,
-                        view('bot.unidentified')
-                    );
-                }
-                $telegramMessage = $phone->telegramMessages()->create([
-                    'id' => $message->getMessageId(),
-                    'text' => $message->getText()
-                ]);
-                NewTelegramMessage::dispatch(
-                    $phone,
-                    $telegramMessage
-                );
-                // $bot->sendMessage(
-                //     $telegramId,
-                //     'Вы написали: ' . $message->getText(),
-                //     replyMarkup: new ReplyKeyboardRemove()
-                // );
-                // logger("UPD", json_encode($update->getMe))
-                // $id = $message->getChat()->getId();
-                // $bot->sendMessage($id, 'Your message: ' . $message->getText());
+//                $phone = Phone::where('telegram_id', $telegramId)->first();
+//                if ($phone === null) {
+//                    return $bot->sendMessage(
+//                        $telegramId,
+//                        view('bot.unidentified')
+//                    );
+//                }
+//                $telegramMessage = $phone->telegramMessages()->create([
+//                    'id' => $message->getMessageId(),
+//                    'text' => $message->getText()
+//                ]);
+//                NewTelegramMessage::dispatch(
+//                    $phone,
+//                    $telegramMessage
+//                );
             }, function () {
                 return true;
             });

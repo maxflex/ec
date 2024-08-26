@@ -30,10 +30,6 @@ const { items } = defineProps<{
           {{ TelegramTemplateLabel[m.template] }}
         </v-chip>
       </div>
-      <div v-if="m.user" class="telegram-message-list__avatar-name">
-        <UiAvatar :item="m.user" :size="40" />
-        {{ formatName(m.user) }}
-      </div>
       <div style="flex: initial; width: 140px" class="text-gray">
         {{ formatDateTime(m.created_at) }}
       </div>

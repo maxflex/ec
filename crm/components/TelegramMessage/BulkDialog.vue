@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { mdiSendVariant } from '@mdi/js'
 import { clone } from 'rambda'
 import type { PersonSelectorDialog } from '#build/components'
 
@@ -23,7 +22,7 @@ function open() {
 
 async function send() {
   loading.value = true
-  await useHttp<EventListResource>('telegram-messages/bulk', {
+  await useHttp('telegram-messages', {
     method: 'post',
     body: item.value,
   })

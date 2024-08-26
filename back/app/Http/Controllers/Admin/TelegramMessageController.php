@@ -34,28 +34,9 @@ class TelegramMessageController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Групповая отправка
      */
     public function store(Request $request)
-    {
-        $request->validate([
-            'phone_id' => ['required', 'exists:phones,id'],
-            'text' => ['required', 'string']
-        ]);
-        $phone = Phone::find($request->phone_id);
-        $message = Telegram::sendMessage(
-            $phone->telegram_id,
-            view('admin-message', ['text' => $request->text]),
-            'HTML',
-        );
-        $telegramMessage = auth()->user()->entity->telegramMessages()->create([
-            'id' => $message->getMessageId(),
-            ...$request->all()
-        ]);
-        return new TelegramMessageResource($telegramMessage);
-    }
-
-    public function bulkStore(Request $request)
     {
         $entryId = TelegramMessage::max('entry_id') ?? 0;
         $entryId++;
@@ -78,30 +59,6 @@ class TelegramMessageController extends Controller
                 'text' => $request->text,
             ]);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 
     protected function filterType(&$query, $type)

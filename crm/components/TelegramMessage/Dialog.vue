@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { mdiSendCircle, mdiSendVariant } from '@mdi/js'
+import { mdiSendCircle } from '@mdi/js'
 import type { Channel } from 'pusher-js'
 import Pusher from 'pusher-js'
 
-const emit = defineEmits<{ (e: 'created'): void }>()
 const { public: config } = useRuntimeConfig()
 let pusher: Pusher
 let channel: Channel
@@ -11,7 +10,6 @@ const { dialog, width } = useDialog('default')
 const telegramMessages = ref<TelegramMessageResource[]>([])
 const input = ref()
 const wrapper = ref<HTMLDivElement | null>(null)
-const text = ref('')
 const noScroll = ref(false)
 const loaded = ref(false)
 const phone = ref<PhoneListResource>()
@@ -56,27 +54,6 @@ watch(dialog, (isOpen) => {
     pusher?.unsubscribe('chat')
   }
 })
-
-async function send() {
-  if (!text.value.length) {
-    return
-  }
-  const { data } = await useHttp<TelegramMessageResource>('telegram-messages', {
-    method: 'post',
-    body: {
-      text: text.value,
-      phone_id: phone.value?.id,
-    },
-  })
-  if (data.value) {
-    noScroll.value = true
-    telegramMessages.value.push(data.value)
-    text.value = ''
-    scrollBottom()
-    emit('created')
-    setTimeout(() => (noScroll.value = false), 200)
-  }
-}
 
 async function loadData() {
   const { data } = await useHttp<ApiResponse<TelegramMessageResource[]>>(
@@ -148,31 +125,6 @@ defineExpose({ open })
           </div>
         </div>
       </transition-group>
-      <div class="telegram-messages__input">
-        <v-textarea
-          ref="input"
-          v-model="text"
-          rows="1"
-          placeholder="Введите комментарий..."
-          auto-grow
-          hide-details
-          maxlength="1000"
-          max-height="100"
-          @keydown.enter.exact.prevent
-          @keyup.enter.exact="send()"
-        />
-        <transition name="telegram-btn">
-          <v-btn
-            v-if="text.length > 0"
-            :icon="mdiSendVariant"
-            height="48"
-            width="48"
-            variant="text"
-            color="secondary"
-            @click="send()"
-          />
-        </transition>
-      </div>
     </div>
   </v-dialog>
 </template>
