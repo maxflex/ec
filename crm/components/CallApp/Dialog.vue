@@ -1,23 +1,20 @@
 <script setup lang="ts">
-import { callAppDialog } from '.'
+import { callAppDialog, player } from '.'
 
 const { items, loading, reloadData } = useIndex<CallListResource>('calls', {
   instantLoad: false,
   scrollContainerSelector: '.call-app-dialog .dialog-body',
 })
 
-watch(callAppDialog, isOpen => isOpen && reloadData())
-
-// async function loadData() {
-//   const { data } = await useHttp<ApiResponse<CallListResource[]>>(`calls`, {
-//     params: {
-//       paginate: 30,
-//     },
-//   })
-//   if (data.value)  {
-//     calls.value =
-//   }
-// }
+watch(callAppDialog, (isOpen) => {
+  if (isOpen) {
+    reloadData()
+  }
+  else if (player.playing) {
+    player.audio!.pause()
+    player.playing = false
+  }
+})
 
 const { width } = useDialog('default')
 </script>
