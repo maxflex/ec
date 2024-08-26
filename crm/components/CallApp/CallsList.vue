@@ -95,6 +95,7 @@ function onClick(call: CallListResource) {
           </template>
           {{ formatName(call.user) }}
         </div>
+        <CallAppPlayer v-if="call.has_recording" :item="call" />
       </Vue3SlideUpDown>
     </div>
   </div>

@@ -16,4 +16,9 @@ class CallController extends Controller
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, CallListResource::class);
     }
+
+    public function recording($action, Call $call)
+    {
+        return $call->getRecording($action);
+    }
 }
