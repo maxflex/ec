@@ -5,8 +5,8 @@ self.onconnect = (e) => {
   ports.push(e.ports[0])
 
   if (eventSource === null) {
-    eventSource = new EventSource('http://localhost:3000/api/sse')
-    // eventSource = new EventSource('https://v3-node.ege-centr.ru:4443/sse')
+    // eventSource = new EventSource('http://localhost:3000/api/sse')
+    eventSource = new EventSource('https://v3-node.ege-centr.ru:4443/sse')
   }
 
   eventSource.onmessage = ({ data }) => {
