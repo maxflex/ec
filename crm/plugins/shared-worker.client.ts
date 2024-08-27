@@ -1,5 +1,7 @@
 export default defineNuxtPlugin(() => {
-  const worker = new SharedWorker('/workers/shared-worker.js')
+  const worker = new SharedWorker('/workers/shared-worker.js', {
+    type: 'module',
+  })
 
   const listeners: Record<string, (data: any) => void> = {}
 

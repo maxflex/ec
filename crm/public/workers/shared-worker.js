@@ -1,3 +1,5 @@
+// const isDev = import.meta.env.MODE === 'development'
+const isDev = import.meta.url.indexOf('http://localhost:3000') === 0
 const ports = []
 let eventSource = null
 
@@ -5,8 +7,10 @@ self.onconnect = (e) => {
   ports.push(e.ports[0])
 
   if (eventSource === null) {
-    eventSource = new EventSource('http://localhost:3000/api/sse')
-    // eventSource = new EventSource('https://v3-node.ege-centr.ru:4443/sse')
+    eventSource = new EventSource(isDev
+      ? 'http://localhost:3000/api/sse'
+      : 'https://v3-node.ege-centr.ru:4443/sse',
+    )
   }
 
   eventSource.onmessage = ({ data }) => {
