@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Http\Resources\CallListResource;
 use App\Models\Call;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -20,5 +21,12 @@ class CallSummaryEvent implements ShouldBroadcastNow
     public function broadcastOn()
     {
         return new Channel('sse');
+    }
+
+    public function broadcastWith()
+    {
+        return [
+            'data' => new CallListResource($this->call)
+        ];
     }
 }

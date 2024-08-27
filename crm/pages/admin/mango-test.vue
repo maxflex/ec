@@ -1,24 +1,26 @@
 <script setup lang="ts">
-const callStage = ['appeared', 'connected', 'disconnected'] as const
-type CallStageTest = typeof callStage[number]
+const testEvents = ['appeared', 'connected', 'disconnected', 'summary'] as const
+type TestEvent = typeof testEvents[number]
 
 const index = ref(1)
-const stage = ref<{ [key: number]: CallStageTest | null }>({
+const stage = ref<{ [key: number]: TestEvent | null }>({
   0: null,
   1: null,
 })
 
-function callEvent(e: CallStageTest) {
+function testEvent(e: TestEvent) {
   stage.value[index.value] = e === 'disconnected' ? null : e
-  useHttp(`mango-test/${e}`, {
-    method: 'post',
-    body: {
-      index: index.value,
-    },
-  })
+  setTimeout(() => {
+    useHttp(`mango-test/${e}`, {
+      method: 'post',
+      body: {
+        index: index.value,
+      },
+    })
+  }, e === 'summary' ? 3000 : 0)
 }
 
-function getDisabled(s: CallStageTest) {
+function getDisabled(s: TestEvent) {
   const currentStage = stage.value[index.value]
   switch (currentStage) {
     case null:
@@ -34,7 +36,12 @@ function getDisabled(s: CallStageTest) {
 <template>
   <div class="mango-test">
     <div class="mango-test__buttons">
-      <v-btn v-for="e in callStage" :key="e" color="primary" :disabled="getDisabled(e)" @click="callEvent(e)">
+      <v-btn
+        v-for="e in testEvents"
+        :key="e" color="primary"
+        :disabled="getDisabled(e)"
+        @click="testEvent(e)"
+      >
         {{ e }}
       </v-btn>
     </div>

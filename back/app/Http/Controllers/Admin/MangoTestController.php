@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Common\MangoController;
 use App\Http\Controllers\Controller;
+use App\Models\Call;
 use App\Utils\Mango;
 use Illuminate\Http\Request;
 
@@ -159,6 +160,34 @@ class MangoTestController extends Controller
                 'type' => 0,
             ],
         ]);
+    }
+
+    private function summary()
+    {
+        Call::query()->where('id', 'MjE0NTM3MDU1Mzg=')->delete();
+        $payload = [
+            "entry_id" => "MjE0NTM3MDU1Mzg=",
+            "call_direction" => 1,
+            "from" => [
+                "number" => "79959201122"
+            ],
+            "to" => [
+                "extension" => "140",
+                "number" => "sip:volkova2301@kapralovka.mangosip.ru"
+            ],
+            "line_number" => "74956468592",
+            "create_time" => 1724782003,
+            "forward_time" => 0,
+            "talk_time" => 0,
+            "end_time" => 1724782012,
+            "entry_result" => 0,
+            "disconnect_reason" => 1110
+        ];
+        $controller = new MangoController();
+        $request = new Request([
+            'json' => json_encode($payload)
+        ]);
+        return $controller('summary', $request);
     }
 
     private function callEvent($payload)
