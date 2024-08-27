@@ -17,12 +17,17 @@ class AuthResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return extract_fields($this->entity, [
-            'telegram_id', 'is_call_notifications', 'first_name',
-            'last_name', 'middle_name', 'photo_url', 'number',
-            'entity_type'
-        ], [
+        $entity = $this->entity;
+        return [
             'id' => $this->entity_id,
-        ]);
+            'telegram_id' => $this->telegram_id,
+            'entity_type' => $this->entity_type,
+            'first_name' => $entity->first_name,
+            'last_name' => $entity->last_name,
+            'middle_name' => $entity->middle_name,
+            'is_call_notifications' => $entity->is_call_notifications ?? false,
+            'number' => $this->number,
+            'photo_url' => $entity->photo_url,
+        ];
     }
 }
