@@ -2,19 +2,16 @@
 
 namespace App\Events;
 
-use App\Http\Resources\AuthResource;
 use App\Http\Resources\TelegramMessageResource;
 use App\Models\Phone;
 use App\Models\TelegramMessage;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NewTelegramMessage implements ShouldBroadcast
+class NewTelegramMessage implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
