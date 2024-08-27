@@ -2,10 +2,10 @@ import { defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', () => {
   const forever = { maxAge: 60 * 60 * 24 * 1000 }
-  const user = ref<User>()
+  const user = ref<AuthResource>()
   const token = useCookie('token', forever)
   const previewToken = useCookie('preview-token')
-  const rememberUser = useCookie<User | undefined>('remember-user', forever)
+  const rememberUser = useCookie<AuthResource | undefined>('remember-user', forever)
 
   /**
    *
@@ -13,7 +13,7 @@ export const useAuthStore = defineStore('auth', () => {
    * @param t Токен для сохранения в Cookies
    * @param preview Если true, токен сохранится в Cookies "preview-token". Иначе в "token"
    */
-  function logIn(u: User, t: string, preview: boolean = false) {
+  function logIn(u: AuthResource, t: string, preview: boolean = false) {
     user.value = u
     if (preview) {
       previewToken.value = t
@@ -51,7 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function getLoggedUser() {
-    const { data } = await useHttp<User>('common/auth/user')
+    const { data } = await useHttp<AuthResource>('common/auth/user')
     if (data.value) {
       user.value = data.value
     }

@@ -6,7 +6,7 @@ const { public: config } = useRuntimeConfig()
 const { rememberUser, logIn } = useAuthStore()
 const phone = ref('')
 const phoneMask = { mask: '+7 (###) ###-##-##' }
-const user = ref<User>()
+const user = ref<AuthResource>()
 const loading = ref(false)
 const errors = ref<{
   phone?: ResponseErrors
@@ -37,7 +37,7 @@ const bot = config.env === 'local'
 async function onPhoneEnter() {
   loading.value = true
   errors.value = {}
-  const { data, error } = await useHttp<User>('common/auth/login', {
+  const { data, error } = await useHttp<AuthResource>('common/auth/login', {
     method: 'post',
     body: {
       phone: phone.value,

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { user } = defineProps<{ user: User }>()
+const { user } = defineProps<{ user: AuthResource }>()
 const { logIn } = useAuthStore()
 const loading = ref(false)
 

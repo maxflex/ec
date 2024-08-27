@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { callAppDialog, hasIncoming, isMissed } from '~/components/CallApp/index'
 
+const { user } = useAuthStore()
 const { $addSseListener } = useNuxtApp()
 const activeCalls = ref<CallEvent[]>([])
 const banners = ref<CallEvent[]>([])
@@ -59,7 +60,7 @@ $addSseListener('CallEvent', (ce: CallEvent) => {
 
 <template>
   <CallAppDialog />
-  <div class="call-app__banners">
+  <div v-if="user?.is_call_notifications" class="call-app__banners">
     <v-slide-y-reverse-transition group>
       <CallAppBanner
         v-for="item in banners"

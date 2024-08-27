@@ -12,7 +12,8 @@ class CallController extends Controller
     public function index(Request $request)
     {
 //        return Call::getActive();
-        $query = Call::query();
+        $query = Call::query()
+            ->latest();
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, CallListResource::class);
     }

@@ -121,15 +121,16 @@ declare global {
     phones: PhoneListResource[]
   }
 
-  interface User extends PersonResource, HasPhoto {
+  interface AuthResource extends PersonResource, HasPhoto {
     id: number
     entity_type: typeof EntityType.client | typeof EntityType.user | typeof EntityType.teacher
     telegram_id: string | null
+    is_call_notifications: boolean
     number: string // phone number
   }
 
   interface TokenResponse {
-    user: User
+    user: AuthResource
     token: string
   }
 
