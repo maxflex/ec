@@ -3,19 +3,23 @@ export default defineNuxtPlugin(() => {
     type: 'module',
   })
 
-  const listeners: Record<string, (data: any) => void> = {}
+  const listeners: { [K in SseEvent]?: (data: any) => void } = {}
 
   worker.port.onmessage = (event) => {
     const { data } = event
-    const eventName = data.event?.split('\\').pop() // App\\Events\\CallEvent => CallEvent
-    if (eventName && listeners[eventName]) {
-      listeners[eventName](data.data.data)
+    // App\\Events\\CallEvent => CallEvent
+    const eventName = data.event?.split('\\').pop() as SseEvent
+
+    // Type guard to check if listeners[eventName] is a function
+    const callback = listeners[eventName]
+    if (typeof callback === 'function') {
+      callback(data.data.data)
     }
   }
 
   return {
     provide: {
-      addSseListener(event: string, callback: (data: any) => void) {
+      addSseListener(event: SseEvent, callback: (data: any) => void) {
         listeners[event] = callback
       },
     },

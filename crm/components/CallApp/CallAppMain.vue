@@ -5,9 +5,22 @@ const { $addSseListener } = useNuxtApp()
 const activeCalls = ref<CallEvent[]>([])
 const banners = ref<CallEvent[]>([])
 
-function handleCallEvent(ce: CallEvent) {
-  console.log(ce)
-  console.log(ce.state, ce.type, ce.user)
+function closeBanner(ce: CallEvent) {
+  const index = banners.value.findIndex(e => e.number === ce.number)
+  banners.value.splice(index, 1)
+}
+
+function onBannerClick(ce: CallEvent) {
+  callAppDialog.value = true
+  closeBanner(ce)
+}
+
+watch(activeCalls.value, (newVal) => {
+  hasIncoming.value = false
+  nextTick(() => hasIncoming.value = newVal.some(e => e.state === 'Appeared'))
+})
+
+$addSseListener('CallEvent', (ce: CallEvent) => {
   const index = activeCalls.value.findIndex(e => e.number === ce.number)
   const bannerIndex = banners.value.findIndex(e => e.number === ce.number)
   switch (ce.state) {
@@ -41,25 +54,6 @@ function handleCallEvent(ce: CallEvent) {
         }
       }
   }
-}
-
-function closeBanner(ce: CallEvent) {
-  const index = banners.value.findIndex(e => e.number === ce.number)
-  banners.value.splice(index, 1)
-}
-
-function onBannerClick(ce: CallEvent) {
-  callAppDialog.value = true
-  closeBanner(ce)
-}
-
-watch(activeCalls.value, (newVal) => {
-  hasIncoming.value = false
-  nextTick(() => hasIncoming.value = newVal.some(e => e.state === 'Appeared'))
-})
-
-onMounted(() => {
-  $addSseListener('CallEvent', handleCallEvent)
 })
 </script>
 

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { callAppDialog, player } from '.'
 
+const { $addSseListener } = useNuxtApp()
+const { width } = useDialog('default')
 const { items, loading, reloadData } = useIndex<CallListResource>('calls', {
   instantLoad: false,
   scrollContainerSelector: '.call-app-dialog .dialog-body',
@@ -16,7 +18,12 @@ watch(callAppDialog, (isOpen) => {
   }
 })
 
-const { width } = useDialog('default')
+$addSseListener('CallSummaryEvent', (call: CallListResource) => {
+  if (!callAppDialog.value) {
+    return
+  }
+  items.value.unshift(call)
+})
 </script>
 
 <template>

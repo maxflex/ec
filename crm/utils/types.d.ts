@@ -889,6 +889,8 @@ declare global {
 
   type CallType = 'incoming' | 'outgoing'
 
+  type SseEvent = 'CallEvent' | 'CallSummaryEvent'
+
   interface CallEvent {
     state: CallState
     type: CallType

@@ -5,6 +5,7 @@ namespace App\Utils;
 use App\Enums\CallState;
 use App\Enums\CallType;
 use App\Events\CallEvent;
+use App\Events\CallSummaryEvent;
 use App\Http\Resources\PersonResource;
 use App\Models\Call;
 use App\Models\Phone;
@@ -128,7 +129,7 @@ class Mango
             Call::whereId($data->entry_id)->delete();
         }
 
-        Call::create([
+        $call = Call::create([
             'id' => $data->entry_id,
             'user_id' => $userId,
             'type' => $type->name,
@@ -138,6 +139,8 @@ class Mango
             'answered_at' => $data->talk_time,
             'finished_at' => $data->end_time,
         ]);
+
+        event(new CallSummaryEvent($call));
     }
 
     public static function eventRecordAdded($data)

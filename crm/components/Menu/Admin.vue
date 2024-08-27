@@ -25,7 +25,7 @@ import {
   mdiStarBox,
   mdiStarBoxOutline,
 } from '@mdi/js'
-import CallApp from '~/components/CallApp/CallApp.vue'
+import CallApp from '~/components/CallApp/CallAppMain.vue'
 import { callAppDialog } from '~/components/CallApp'
 
 const { logOut } = useAuthStore()
