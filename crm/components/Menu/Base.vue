@@ -5,7 +5,9 @@ const entityType = user!.entity_type
 
 <template>
   <div class="menu-logo">
-    <img src="/img/logo.svg">
+    <RouterLink to="/mango-test">
+      <img src="/img/logo.svg">
+    </RouterLink>
     <h3>ЕГЭ-Центр</h3>
   </div>
   <MenuAdmin v-if="entityType === EntityType.user" />

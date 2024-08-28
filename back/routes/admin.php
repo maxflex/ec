@@ -87,6 +87,7 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::get('/{event}', 'show');
     });
 
+    Route::get('calls/active', [CallController::class, 'active']);
     Route::get('calls/recording/{action}/{call}', [CallController::class, 'recording']);
 
     Route::apiResources([

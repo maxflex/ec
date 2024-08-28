@@ -16,9 +16,20 @@ function onBannerClick(ce: CallEvent) {
   closeBanner(ce)
 }
 
-watch(activeCalls.value, (newVal) => {
+async function loadActiveCalls() {
+  const { data } = await useHttp<CallEvent[]>(`calls/active`)
+  if (data.value) {
+    activeCalls.value = data.value
+    // можно показать по умолчанию входящие
+    banners.value = data.value.filter(e => e.state === 'Appeared')
+  }
+}
+
+watch(activeCalls, (newVal) => {
   hasIncoming.value = false
   nextTick(() => hasIncoming.value = newVal.some(e => e.state === 'Appeared'))
+}, {
+  deep: true,
 })
 
 $addSseListener('CallEvent', (ce: CallEvent) => {
@@ -56,10 +67,12 @@ $addSseListener('CallEvent', (ce: CallEvent) => {
       }
   }
 })
+
+nextTick(loadActiveCalls)
 </script>
 
 <template>
-  <CallAppDialog />
+  <CallAppDialog :active-calls="activeCalls" />
   <div v-if="user?.is_call_notifications" class="call-app__banners">
     <v-slide-y-reverse-transition group>
       <CallAppBanner

@@ -905,6 +905,7 @@ declare global {
     user?: PersonResource
     phone: ?CallAppPhoneResource
     number: string
+    answered_at?: string
   }
 
   interface CallListResource {

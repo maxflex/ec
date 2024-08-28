@@ -11,11 +11,15 @@ class CallController extends Controller
 {
     public function index(Request $request)
     {
-//        return Call::getActive();
         $query = Call::query()
             ->latest();
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, CallListResource::class);
+    }
+
+    public function active()
+    {
+        return Call::getActive();
     }
 
     public function recording($action, Call $call)

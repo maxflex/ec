@@ -48,7 +48,7 @@ function onClick(call: CallListResource) {
       :class="{
         'calls-list__item--expanded': expanded[call.id],
       }"
-      class="calls-list__item"
+      class="calls-list__item cursor-pointer"
       @click="onClick(call)"
     >
       <div>
@@ -91,58 +91,3 @@ function onClick(call: CallListResource) {
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.calls-list {
-  //font-size: 14px;
-  &__item,
-  .slide-up-down__container {
-    & > div {
-      margin-bottom: 10px;
-    }
-  }
-  &__item {
-    border-bottom: 1px solid rgb(var(--v-theme-border));
-    padding: 16px 16px 6px;
-    color: #9e9e9e;
-    cursor: pointer;
-    transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    user-select: none;
-    &:hover {
-      background: #f5f5f5;
-    }
-    .v-icon {
-      transition: transform linear 0.2s;
-    }
-    & > div {
-      &:first-child {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-    }
-    &--expanded {
-      .calls-list__date {
-        .v-icon {
-          transform: rotate(-180deg);
-        }
-      }
-    }
-  }
-  &__number {
-    display: flex;
-    //align-items: center;
-    gap: 10px;
-    width: 230px;
-    color: black;
-    span {
-      font-weight: 500;
-    }
-  }
-  &__date {
-    align-items: center;
-    display: flex;
-    opacity: 0.5;
-  }
-}
-</style>
