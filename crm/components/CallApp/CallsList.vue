@@ -2,6 +2,7 @@
 import { mdiChevronDown, mdiPhoneIncoming, mdiPhoneMissed, mdiPhoneOutgoing } from '@mdi/js'
 import { differenceInSeconds, differenceInWeeks, format, isSameDay, parse } from 'date-fns'
 import { Vue3SlideUpDown } from 'vue3-slide-up-down'
+import { ru } from 'date-fns/locale'
 
 const { items } = defineProps<{
   items: CallListResource[]
@@ -23,7 +24,7 @@ function formatCallDate(call: CallListResource) {
   }
 
   if (differenceInWeeks(new Date(), date) < 1) {
-    return format(date, 'eee в HH:mm')
+    return format(date, 'eeeeee в HH:mm', { locale: ru })
   }
 
   return format(date, 'dd.MM.yy')
@@ -81,6 +82,17 @@ function onClick(call: CallListResource) {
             {{ formatName(call.phone.person) }}
           </RouterLink>
         </template>
+        <template v-else-if="call.phone.entity_type === EntityType.clientParent">
+          Родитель:
+          <RouterLink :to="{ name: 'clients-id', params: { id: call.phone.person.id } }">
+            {{ formatName(call.phone.person) }}
+          </RouterLink>
+        </template>
+        <template v-else>
+          <RouterLink :to="{ name: 'teachers-id', params: { id: call.phone.person.id } }">
+            {{ formatFullName(call.phone.person) }}
+          </RouterLink>
+        </template>
       </div>
       <Vue3SlideUpDown :model-value="expanded[call.id]" :duration="200">
         <div v-if="call.phone?.comment">
@@ -106,13 +118,13 @@ function onClick(call: CallListResource) {
   //font-size: 14px;
   &__item,
   .slide-up-down__container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    & > div {
+      margin-bottom: 10px;
+    }
   }
   &__item {
     border-bottom: 1px solid rgb(var(--v-theme-border));
-    padding: 16px;
+    padding: 16px 16px 6px;
     color: #9e9e9e;
     cursor: pointer;
     transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
