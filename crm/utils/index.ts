@@ -1,4 +1,5 @@
 import { format, getMonth, getYear } from 'date-fns'
+import { curry } from 'rambda'
 
 export function today(): string {
   return format(new Date(), 'yyyy-MM-dd')
@@ -159,3 +160,13 @@ export async function itemDeleted(entity: string, id: number) {
     setTimeout(resolve, 2000)
   })
 }
+
+export const debounce = curry((delay: number, fn: Function) => {
+  let timeout: ReturnType<typeof setTimeout> | null = null
+  return (...args: any[]) => {
+    if (timeout) {
+      clearTimeout(timeout)
+    }
+    timeout = setTimeout(() => fn(...args), delay)
+  }
+})

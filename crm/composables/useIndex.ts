@@ -18,7 +18,7 @@ export default function<T, F extends object | undefined = undefined>(
   let page = 0
   let isLastPage = false
 
-  async function loadData() {
+  async function loadData(localFilters = {}) {
     if (loading.value || isLastPage) {
       return
     }
@@ -28,6 +28,7 @@ export default function<T, F extends object | undefined = undefined>(
       params: {
         page,
         ...filters,
+        ...localFilters,
       },
     })
     if (data.value) {
@@ -47,10 +48,10 @@ export default function<T, F extends object | undefined = undefined>(
     reloadData()
   }
 
-  function reloadData() {
+  function reloadData(localFilters = {}) {
     page = 0
     isLastPage = false
-    loadData()
+    loadData(localFilters)
   }
 
   function onScroll() {

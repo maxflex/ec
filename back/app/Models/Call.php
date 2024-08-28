@@ -27,6 +27,14 @@ class Call extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * TODO: переделать
+     */
+    public function phonee()
+    {
+        return $this->hasOne(Phone::class, 'number', 'number');
+    }
+
     public function getIsMissedAttribute(): bool
     {
         return $this->type === CallType::incoming && $this->answered_at === null;

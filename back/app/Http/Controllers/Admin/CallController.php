@@ -5,10 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CallListResource;
 use App\Models\Call;
+use App\Models\Client;
+use App\Models\ClientParent;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 
 class CallController extends Controller
 {
+    protected $filters = [
+        'search' => ['q']
+    ];
+
     public function index(Request $request)
     {
         $query = Call::query()
@@ -25,5 +32,25 @@ class CallController extends Controller
     public function recording($action, Call $call)
     {
         return $call->getRecording($action);
+    }
+
+    public function filterSearch(&$query, $value)
+    {
+        if (!$value) {
+            return;
+        }
+        if (is_numeric($value)) {
+            $query->where('number', 'like', '%' . $value . '%');
+        } else {
+            $query->whereHas('phonee', fn($q) => $q
+                ->whereHasMorph('entity', [
+                    Client::class,
+                    ClientParent::class,
+                    Teacher::class
+                ], fn($q) => $q->whereRaw("
+                CONCAT(last_name, first_name) LIKE ?
+            ", ["%$value%"])
+                ));
+        }
     }
 }
