@@ -6,6 +6,7 @@ use App\Enums\CallState;
 use App\Enums\CallType;
 use App\Events\CallEvent;
 use App\Events\CallSummaryEvent;
+use App\Http\Resources\CallAppPhoneResource;
 use App\Http\Resources\PersonResource;
 use App\Models\Call;
 use App\Models\Phone;
@@ -50,13 +51,14 @@ class Mango
             case CallState::appeared:
                 // обрабатываем только входящие, исходящие игнорируем
                 if ($data->location === 'ivr') {
+                    $phone = self::aon($data->from->number);
                     $params = [
                         'state' => $data->call_state,
                         'type' => CallType::incoming->value,
                         'user' => null,
                         'answered_at' => null,
                         'number' => $data->from->number,
-                        'phone' => self::aon($data->from->number),
+                        'phone' => $phone === null ? null : new CallAppPhoneResource($phone),
                     ];
                     CallEvent::dispatch($params);
                     cache()->tags('calls')->put($data->entry_id, $params, now()->addMinutes(10));
@@ -66,12 +68,13 @@ class Mango
             // исходящий
             case CallState::connected:
                 if (isset($data->from->extension)) {
+                    $phone = self::aon($data->to->number);
                     $params = [
                         'state' => $data->call_state,
                         'user' => new PersonResource(User::find($data->from->extension)),
                         'answered_at' => (new Call(['answered_at' => $data->timestamp]))->answered_at,
                         'number' => $data->to->number,
-                        'phone' => self::aon($data->to->number),
+                        'phone' => $phone === null ? null : new CallAppPhoneResource($phone),
                         'type' => CallType::outgoing->name,
                     ];
                 } else {

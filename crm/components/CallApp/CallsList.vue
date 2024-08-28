@@ -72,28 +72,7 @@ function onClick(call: CallListResource) {
           <v-icon :icon="mdiChevronDown" />
         </div>
       </div>
-      <div>
-        <template v-if="call.phone === null">
-          Неизвестный
-        </template>
-        <template v-else-if="call.phone.entity_type === EntityType.client">
-          Клиент:
-          <RouterLink :to="{ name: 'clients-id', params: { id: call.phone.person.id } }">
-            {{ formatName(call.phone.person) }}
-          </RouterLink>
-        </template>
-        <template v-else-if="call.phone.entity_type === EntityType.clientParent">
-          Родитель:
-          <RouterLink :to="{ name: 'clients-id', params: { id: call.phone.person.id } }">
-            {{ formatName(call.phone.person) }}
-          </RouterLink>
-        </template>
-        <template v-else>
-          <RouterLink :to="{ name: 'teachers-id', params: { id: call.phone.person.id } }">
-            {{ formatFullName(call.phone.person) }}
-          </RouterLink>
-        </template>
-      </div>
+      <CallAppPersonLink :phone="call.phone" />
       <Vue3SlideUpDown :model-value="expanded[call.id]" :duration="200">
         <div v-if="call.phone?.comment">
           {{ call.phone.comment }}
@@ -154,7 +133,7 @@ function onClick(call: CallListResource) {
     display: flex;
     //align-items: center;
     gap: 10px;
-    width: 250px;
+    width: 230px;
     color: black;
     span {
       font-weight: 500;

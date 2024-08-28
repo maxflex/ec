@@ -892,10 +892,18 @@ declare global {
 
   type SseEvent = 'CallEvent' | 'CallSummaryEvent'
 
+  interface CallAppPhoneResource {
+    id: number
+    comment: ?string
+    entity_type: (typeof EntityType)[keyof typeof EntityType]
+    person: PersonResource
+  }
+
   interface CallEvent {
     state: CallState
     type: CallType
     user?: PersonResource
+    phone: ?CallAppPhoneResource
     number: string
   }
 
@@ -910,12 +918,7 @@ declare global {
     created_at: string
     finished_at: string
     answered_at: ?string
-    phone: null | {
-      id: number
-      comment: ?string
-      entity_type: (typeof EntityType)[keyof typeof EntityType]
-      person: PersonResource
-    }
+    phone: ?CallAppPhoneResource
   }
 }
 

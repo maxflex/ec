@@ -6,10 +6,6 @@ const { item } = defineProps<{
 }>()
 
 defineEmits(['close'])
-
-function onClick() {
-  console.log('click')
-}
 </script>
 
 <template>
@@ -19,7 +15,6 @@ function onClick() {
       'call-banner--me': item.user?.id === useAuthStore().user?.id,
       'call-banner--missed': isMissed(item),
     }"
-    @click="onClick"
   >
     <div class="call-banner__number">
       <CallAppStateIcon :state="item.state" />
@@ -29,17 +24,17 @@ function onClick() {
       <div v-if="item.user" :key="1">
         принял {{ formatName(item.user) }}
       </div>
-      <!--      <div v-else :key="2" class="call-banner__info"> -->
-      <!--        <div v-if="item.phone?.comment"> -->
-      <!--          {{ item.phone.comment }} -->
-      <!--        </div> -->
-      <!--        <CallTitle :item="item" /> -->
-      <!--        <div v-if="item.phone.responsible_user_id"> -->
-      <!--          Ответственный: {{ users[item.phone.responsible_user_id] }} -->
-      <!--        </div> -->
-      <!--      </div> -->
+      <div v-else :key="2" class="call-banner__info">
+        <div v-if="item.phone?.comment">
+          {{ item.phone.comment }}
+        </div>
+        <CallAppPersonLink :phone="item.phone" />
+        <!--        <div v-if="item.phone.responsible_user_id"> -->
+        <!--          Ответственный: {{ users[item.phone.responsible_user_id] }} -->
+        <!--        </div> -->
+      </div>
     </transition>
-    <v-btn icon="$close" variant="text" :size="38" @click="$emit('close')" />
+    <v-btn icon="$close" variant="text" :size="38" @click.stop="$emit('close')" />
   </div>
 </template>
 
