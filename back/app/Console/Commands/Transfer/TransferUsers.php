@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands\Transfer;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class TransferUsers extends Command
 {
@@ -14,6 +15,7 @@ class TransferUsers extends Command
 
     public function handle()
     {
+        Schema::disableForeignKeyConstraints();
         DB::table('users')->delete();
         $admins = DB::connection('egecrm')
             ->table('admins')
@@ -31,5 +33,11 @@ class TransferUsers extends Command
             $bar->advance();
         }
         $bar->finish();
+        Schema::enableForeignKeyConstraints();
+        // Hardcode: active certain users
+        DB::table('users')->whereIn('id', [1, 5, 12])->update([
+            'is_active' => 1,
+            'is_call_notifications' => 1,
+        ]);
     }
 }
