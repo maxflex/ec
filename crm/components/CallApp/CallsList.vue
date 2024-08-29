@@ -86,12 +86,7 @@ function onDelete(e: MouseEvent, call: CallListResource) {
           {{ call.phone.comment }}
         </div>
         <div v-if="call.user">
-          <template v-if="call.type === 'incoming'">
-            Позвонил
-          </template>
-          <template v-else>
-            Принял
-          </template>
+          {{ call.type === 'incoming' ? 'Принял' : 'Позвонил' }}
           {{ formatName(call.user) }}
         </div>
         <div v-if="call.is_missed && !call.is_missed_callback">
