@@ -1,24 +1,11 @@
 <script setup lang="ts">
-import { callAppDialog, missedCount, player } from '.'
+import { callAppDialog, filters, missedCount, player } from '.'
+import { CallAppStatusFilterLabel } from '~/utils/labels'
 
 const { activeCalls } = defineProps<{
   activeCalls: CallEvent[]
 }>()
 
-const filterStatusLabel = {
-  all: 'все звонки',
-  missed: 'пропущенные',
-  active: 'активные',
-  outgoing: 'исходящие',
-} as const
-
-const filters = ref< {
-  q: string
-  status: keyof typeof filterStatusLabel
-}>({
-  q: '',
-  status: 'all',
-})
 const { $addSseListener } = useNuxtApp()
 const { width } = useDialog('default')
 const { items, loading, reloadData } = useIndex<CallListResource>('calls', {
@@ -27,17 +14,32 @@ const { items, loading, reloadData } = useIndex<CallListResource>('calls', {
 })
 
 // Create a debounced version of the reloadData function
-const debouncedReloadData = debounce(300, () => reloadData(filters.value))
+const debouncedReloadData = debounce(300, reloadWithFilters)
 
-watch(filters, debouncedReloadData, { deep: true })
+// Watcher variable
+let stopFilterWatcher: (() => void) | null = null
+
+function reloadWithFilters() {
+  console.log(reloadWithFilters.name)
+  reloadData(filters.value)
+}
 
 watch(callAppDialog, (isOpen) => {
   if (isOpen) {
-    reloadData()
+    reloadWithFilters()
+    stopFilterWatcher = watch(filters, debouncedReloadData, { deep: true })
   }
-  else if (player.playing) {
-    player.audio!.pause()
-    player.playing = false
+  else {
+    // stop playing audio
+    if (player.playing) {
+      player.audio!.pause()
+      player.playing = false
+    }
+
+    // clear items
+    setTimeout(() => (items.value = []), 300)
+
+    stopFilterWatcher && stopFilterWatcher()
   }
 })
 
@@ -70,7 +72,7 @@ $addSseListener('CallSummaryEvent', (call: CallListResource) => {
             <template #append>
               <UiDropdown
                 v-model="filters.status"
-                :items="selectItems(filterStatusLabel)"
+                :items="selectItems(CallAppStatusFilterLabel)"
               />
             </template>
           </v-text-field>

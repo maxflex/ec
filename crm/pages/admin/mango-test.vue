@@ -52,6 +52,9 @@ function getDisabled(s: TestEvent) {
         { value: 1, title: '+7 (925) 272-72-10' },
       ]"
     />
+    <div>
+      <CallAppSoundWave />
+    </div>
   </div>
 </template>
 

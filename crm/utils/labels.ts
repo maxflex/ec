@@ -555,7 +555,14 @@ export const ClientTestStatusLabel = {
   new: 'не пройден',
   active: 'активен',
   finished: 'завершен',
-}
+} as const
+
+export const CallAppStatusFilterLabel = {
+  all: 'все звонки',
+  missed: 'пропущенные',
+  active: 'активные',
+  outgoing: 'исходящие',
+} as const
 
 export const SwampFilterStatusLabel = {
   toFulfil: 'к исполнению',

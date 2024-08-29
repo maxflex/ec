@@ -22,6 +22,22 @@ export const player = reactive<{
   },
 })
 
+export const filters = ref< {
+  q: string
+  status: CallAppStatusFilter
+}>({
+  q: '',
+  status: 'all',
+})
+
+export const openCallApp = function (number: string = '') {
+  callAppDialog.value = true
+  filters.value = {
+    q: number,
+    status: 'all',
+  }
+}
+
 export const loadMissedCount = async function () {
   const { data } = await useHttp<string>(`calls`, {
     params: {

@@ -325,3 +325,9 @@ a.table-item {
 .capitalize::first-letter {
   text-transform: capitalize;
 }
+
+.opacity-disabled {
+  opacity: 0.3;
+  pointer-events: none;
+  cursor: default !important;
+}

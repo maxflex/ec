@@ -1,6 +1,8 @@
 import type Metrics from '~/components/Stats/Metrics'
 
 declare global {
+  type CallAppStatusFilter = keyof typeof CallAppStatusFilterLabel
+
   type StatsMetric = keyof typeof Metrics
 
   type SwampFilterStatus = keyof typeof SwampFilterStatusLabel

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { mdiSend } from '@mdi/js'
+import { mdiHistory, mdiSend } from '@mdi/js'
 import type { TelegramMessageDialog } from '#build/components'
+import { openCallApp } from '~/components/CallApp'
 
 const { items, person } = defineProps<{
   items: PhoneListResource[]
@@ -24,16 +25,12 @@ const telegramMessageDialog = ref<InstanceType<typeof TelegramMessageDialog>>()
         </a>
       </div>
       <div class="phone-actions__actions">
-        <v-btn
+        <v-icon :icon="mdiHistory" @click="openCallApp(p.number)" />
+        <v-icon
           :icon="mdiSend"
-          :size="28"
-          variant="text"
-          color="secondary"
-          :disabled="!p.telegram_id"
+          :class="{ 'opacity-disabled': !p.telegram_id }"
           @click="telegramMessageDialog?.open(p, person)"
         />
-        <!-- <v-icon :icon="mdiEmailOutline" />
-        <v-icon :icon="mdiHistory" /> -->
       </div>
     </div>
   </div>
@@ -66,7 +63,8 @@ const telegramMessageDialog = ref<InstanceType<typeof TelegramMessageDialog>>()
       // top: -2px;
       left: 1px;
       font-size: 18px;
-      // color: rgb(var(--v-theme-gray));
+      color: rgb(var(--v-theme-secondary));
+      cursor: pointer;
     }
   }
 }

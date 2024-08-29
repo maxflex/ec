@@ -26,7 +26,7 @@ import {
   mdiStarBoxOutline,
 } from '@mdi/js'
 import CallApp from '~/components/CallApp/CallAppMain.vue'
-import { callAppDialog, missedCount } from '~/components/CallApp'
+import { missedCount, openCallApp } from '~/components/CallApp'
 
 const { logOut } = useAuthStore()
 
@@ -164,7 +164,7 @@ const menu: Menu = [
     nav
     density="compact"
   >
-    <v-list-item :active="false" @click="callAppDialog = true">
+    <v-list-item :active="false" @click="openCallApp()">
       <template #prepend>
         <CallAppStateIcon />
       </template>
