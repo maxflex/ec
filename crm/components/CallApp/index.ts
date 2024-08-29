@@ -1,5 +1,6 @@
 export const isMissed = (ce: CallEvent) => ce.state === 'Disconnected' && !ce.user
 
+export const missedCount = ref(0)
 export const hasIncoming = ref(false)
 export const callAppDialog = ref(false)
 
@@ -20,3 +21,15 @@ export const player = reactive<{
     duration: 0,
   },
 })
+
+export const loadMissedCount = async function () {
+  const { data } = await useHttp<string>(`calls`, {
+    params: {
+      count: 1,
+      status: 'missed',
+    },
+  })
+  if (data.value) {
+    missedCount.value = Number.parseInt(data.value)
+  }
+}

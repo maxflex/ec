@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 class CallController extends Controller
 {
     protected $filters = [
+        'status' => ['status'],
         'search' => ['q']
     ];
 
@@ -34,6 +35,13 @@ class CallController extends Controller
         return $call->getRecording($action);
     }
 
+    public function destroy(Call $call)
+    {
+        if ($call->is_missed && !$call->is_missed_callback) {
+            $call->delete();
+        }
+    }
+
     public function filterSearch(&$query, $value)
     {
         if (!$value) {
@@ -51,6 +59,21 @@ class CallController extends Controller
                 CONCAT(last_name, first_name) LIKE ?
             ", ["%$value%"])
                 ));
+        }
+    }
+
+    public function filterStatus(&$query, $status)
+    {
+        switch ($status) {
+            case 'missed':
+                $query->missed();
+                break;
+            case 'active':
+                $query->whereId(-1);
+                break;
+            case 'outgoing':
+                $query->where('type', $status);
+                break;
         }
     }
 }

@@ -26,7 +26,7 @@ import {
   mdiStarBoxOutline,
 } from '@mdi/js'
 import CallApp from '~/components/CallApp/CallAppMain.vue'
-import { callAppDialog } from '~/components/CallApp'
+import { callAppDialog, missedCount } from '~/components/CallApp'
 
 const { logOut } = useAuthStore()
 
@@ -169,6 +169,16 @@ const menu: Menu = [
         <CallAppStateIcon />
       </template>
       Звонки
+      <template #append>
+        <v-fade-transition>
+          <v-badge
+            v-if="missedCount"
+            color="error"
+            inline
+            :content="missedCount"
+          />
+        </v-fade-transition>
+      </template>
     </v-list-item>
     <v-list-item
       v-for="{ title, to, icon } in menu"

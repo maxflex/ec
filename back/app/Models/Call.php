@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Casts\Timestamp;
+use App\Contracts\HasMenuCount;
 use App\Enums\{CallType};
 use App\Utils\Mango;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Call extends Model
+class Call extends Model implements HasMenuCount
 {
     const DISABLE_LOGS = true;
 
@@ -68,16 +69,16 @@ class Call extends Model
     }
 
     /**
-     * входящие звонки без ответа за месяц
+     * Входящие звонки без ответа за месяц
      * + по ним не было перезвона в течение месяца с момента звонка
      */
     public function scopeMissed($query)
     {
-        $keys = cache()->connection()
-            ->zrange(cache()->getPrefix() . "tag:missed:entries", 0, -1);
-        $hiddenIds = collect($keys)->map(fn($key) => collect(explode(":", $key))->last());
+//        $keys = cache()->connection()
+//            ->zrange(cache()->getPrefix() . "tag:missed:entries", 0, -1);
+//        $hiddenIds = collect($keys)->map(fn($key) => collect(explode(":", $key))->last());
         return $query
-            ->whereNotIn('id', $hiddenIds)
+//            ->whereNotIn('id', $hiddenIds)
             ->where('type', CallType::incoming)
             ->whereNull('answered_at')
             ->whereRaw('created_at > NOW() - INTERVAL 1 MONTH')
@@ -121,6 +122,11 @@ class Call extends Model
     public function hide()
     {
         cache()->tags('missed')->put($this->id, 1, now()->addMonth());
+    }
+
+    public static function getMenuCount(): int
+    {
+        return Call::missed()->count();
     }
 
 //    public static function getCounts()

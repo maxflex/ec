@@ -7,6 +7,9 @@ import { ru } from 'date-fns/locale'
 const { items } = defineProps<{
   items: CallListResource[]
 }>()
+const emit = defineEmits<{
+  deleted: [call: CallListResource]
+}>()
 const dateFormat = 'yyyy-MM-dd HH:mm:ss'
 const expanded = ref<{ [key: string]: boolean }>({})
 function getCallDuration(call: CallListResource) {
@@ -37,6 +40,11 @@ function onClick(call: CallListResource) {
   else {
     expanded.value[call.id] = true
   }
+}
+
+function onDelete(e: MouseEvent, call: CallListResource) {
+  e.stopPropagation()
+  emit('deleted', call)
 }
 </script>
 
@@ -85,6 +93,11 @@ function onClick(call: CallListResource) {
             Принял
           </template>
           {{ formatName(call.user) }}
+        </div>
+        <div v-if="call.is_missed && !call.is_missed_callback">
+          <a class="text-error" @click="e => onDelete(e, call)">
+            Удалить
+          </a>
         </div>
         <CallAppPlayer v-if="call.has_recording" :item="call" />
       </Vue3SlideUpDown>

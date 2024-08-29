@@ -1,16 +1,35 @@
 <script setup lang="ts">
-import { callAppDialog, player } from '.'
+import { callAppDialog, missedCount, player } from '.'
 
 const { activeCalls } = defineProps<{
   activeCalls: CallEvent[]
 }>()
-const search = ref('')
+
+const filterStatusLabel = {
+  all: 'все звонки',
+  missed: 'пропущенные',
+  active: 'активные',
+  outgoing: 'исходящие',
+} as const
+
+const filters = ref< {
+  q: string
+  status: keyof typeof filterStatusLabel
+}>({
+  q: '',
+  status: 'all',
+})
 const { $addSseListener } = useNuxtApp()
 const { width } = useDialog('default')
 const { items, loading, reloadData } = useIndex<CallListResource>('calls', {
   instantLoad: false,
   scrollContainerSelector: '.call-app-dialog .dialog-body',
 })
+
+// Create a debounced version of the reloadData function
+const debouncedReloadData = debounce(300, () => reloadData(filters.value))
+
+watch(filters, debouncedReloadData, { deep: true })
 
 watch(callAppDialog, (isOpen) => {
   if (isOpen) {
@@ -22,14 +41,16 @@ watch(callAppDialog, (isOpen) => {
   }
 })
 
-// watch(search, q => reloadData({q})
-
-// Create a debounced version of the reloadData function
-const debouncedReloadData = debounce(300, (q: string) => {
-  reloadData({ q })
-})
-
-watch(search, debouncedReloadData)
+async function onDeleted(call: CallListResource) {
+  if (confirm('Удалить пропущенный звонок?')) {
+    const index = items.value.findIndex(e => e.id === call.id)
+    items.value.splice(index, 1)
+    await useHttp(`calls/${call.id}`, {
+      method: 'delete',
+    })
+    missedCount.value--
+  }
+}
 
 $addSseListener('CallSummaryEvent', (call: CallListResource) => {
   if (!callAppDialog.value) {
@@ -42,16 +63,23 @@ $addSseListener('CallSummaryEvent', (call: CallListResource) => {
 <template>
   <v-dialog v-model="callAppDialog" :width="width">
     <div class="dialog-wrapper call-app-dialog">
-      <!--      <div class="dialog-header"> -->
-      <!--        Call app -->
-      <!--      </div> -->
       <UiLoader3 :loading="loading" />
       <div class="dialog-body pa-0 ga-0">
         <div class="call-app-search">
-          <v-text-field v-model="search" density="comfortable" placeholder="Поиск..." />
+          <v-text-field v-model="filters.q" density="comfortable" placeholder="Поиск...">
+            <template #append>
+              <UiDropdown
+                v-model="filters.status"
+                :items="selectItems(filterStatusLabel)"
+              />
+            </template>
+          </v-text-field>
         </div>
-        <CallAppActiveCallsList v-if="!search" :items="activeCalls" />
-        <CallAppCallsList :items="items" />
+        <CallAppActiveCallsList
+          v-if="!filters.q && ['all', 'active'].includes(filters.status)"
+          :items="activeCalls"
+        />
+        <CallAppCallsList :items="items" @deleted="onDeleted" />
       </div>
     </div>
   </v-dialog>
@@ -60,5 +88,31 @@ $addSseListener('CallSummaryEvent', (call: CallListResource) => {
 <style lang="scss">
 .call-app-search {
   padding: 16px;
+  .v-input {
+    input {
+      width: 75%;
+      flex: none !important;
+    }
+    &__append {
+      position: relative;
+      margin-inline-start: 0 !important;
+    }
+  }
+  .ui-dropdown {
+    position: absolute;
+    white-space: nowrap;
+    right: 10px;
+    color: #9e9e9e !important;
+    &:before {
+      content: '';
+      position: absolute;
+      height: 100%;
+      width: 1px;
+      background: #cecece;
+      top: 0;
+      left: -10px;
+      opacity: 0.5;
+    }
+  }
 }
 </style>
