@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\JsonArrayCast;
 use App\Enums\Cabinet;
 use App\Enums\ClientLessonStatus;
 use App\Enums\LessonStatus;
@@ -14,18 +15,9 @@ use Illuminate\Support\Facades\DB;
 class Lesson extends Model
 {
     protected $fillable = [
-        'teacher_id',
-        'group_id',
-        'price',
-        'cabinet',
-        'date',
-        'time',
-        'status',
-        'topic',
-        'conducted_at',
-        'is_topic_verified',
-        'is_unplanned',
-        'quarter'
+        'teacher_id', 'group_id', 'price', 'cabinet', 'date', 'time',
+        'status', 'topic', 'conducted_at', 'is_topic_verified', 'is_unplanned',
+        'quarter', 'homework', 'files'
     ];
 
     protected $casts = [
@@ -33,6 +25,7 @@ class Lesson extends Model
         'is_unplanned' => 'boolean',
         'status' => LessonStatus::class,
         'cabinet' => Cabinet::class,
+        'files' => JsonArrayCast::class,
     ];
 
     public function teacher()

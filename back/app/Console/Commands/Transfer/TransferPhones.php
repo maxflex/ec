@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands\Transfer;
 
-use App\Models\{User, Request};
-use Illuminate\Support\Facades\DB;
+use App\Models\{Request, User};
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class TransferPhones extends Command
 {

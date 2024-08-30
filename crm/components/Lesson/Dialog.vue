@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
+import { LessonFileTypeLabel } from '~/utils/labels'
 
 const emit = defineEmits<{
   updated: [l: LessonListResource]
@@ -13,7 +14,12 @@ const modelDefaults: LessonResource = {
   is_topic_verified: false,
   is_unplanned: false,
   quarter: null,
+  files: [],
 }
+// тип загружаемого файла
+let selectedFileType: LessonFileType = 'homework'
+
+const fileInput = ref()
 const saving = ref(false)
 const timeMask = { mask: '##:##' }
 const { dialog, width } = useDialog('default')
@@ -74,6 +80,40 @@ async function destroy() {
     emit('destroyed', data.value)
     dialog.value = false
     setTimeout(() => deleting.value = false, 300)
+  }
+}
+
+function selectFile(fileType: LessonFileType) {
+  selectedFileType = fileType
+  fileInput.value.click()
+}
+
+function removeFile(file: LessonFile) {
+  const index = lesson.value.files.findIndex(f => f.url === file.url)
+  lesson.value.files.splice(index, 1)
+}
+
+async function onFileSelected(e: Event) {
+  const target = e.target as HTMLInputElement
+  if (!target.files?.length) {
+    return
+  }
+  const formData = new FormData()
+  const file = target.files[0]
+  formData.append('file', file)
+  const newFile = reactive<LessonFile>({
+    name: file.name,
+    size: file.size,
+    type: selectedFileType,
+  })
+  lesson.value.files.push(newFile)
+  const { data } = await useHttp<string>(`lessons/upload-file`, {
+    method: 'POST',
+    body: formData,
+  })
+  if (data.value) {
+    newFile.url = data.value
+    console.log('uploaded', data.value)
   }
 }
 
@@ -173,6 +213,51 @@ defineExpose({ create, edit })
           />
         </div>
         <div>
+          <v-textarea
+            v-model="lesson.homework"
+            label="Домашнее задание"
+            no-resize
+          />
+        </div>
+        <div>
+          <table v-for="(label, fileType) in LessonFileTypeLabel" :key="fileType" class="dialog-table dialog-table--files">
+            <tbody>
+              <tr
+                v-for="file in lesson.files.filter(e => e.type === fileType)"
+                :key="file.url || file.name"
+                :class="{ 'opacity-disabled': !file.url }"
+              >
+                <td>
+                  <a :href="file.url" target="_blank">
+                    {{ file.name }}
+                  </a>
+                </td>
+                <td>
+                  {{ humanFileSize(file.size) }}
+                </td>
+                <td class="text-right">
+                  <v-btn
+                    :loading="!file.url"
+                    icon="$close"
+                    variant="plain"
+                    :color="file.url ? 'red' : undefined"
+                    :size="48"
+                    :ripple="false"
+                    @click="removeFile(file)"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td colspan="10">
+                  <UiIconLink @click="selectFile(fileType)">
+                    загрузить {{ label }}
+                  </UiIconLink>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
           <v-checkbox
             v-model="lesson.is_topic_verified"
             label="Тема подтверждена"
@@ -182,7 +267,40 @@ defineExpose({ create, edit })
             label="Внеплановое"
           />
         </div>
+        <input
+          ref="fileInput"
+          style="display: none"
+          type="file"
+          @change="onFileSelected"
+        >
       </div>
     </div>
   </v-dialog>
 </template>
+
+<style lang="scss">
+.dialog-table--files {
+  tr:first-child:not(:last-child) td {
+    border-top: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+  }
+  tr:not(:last-child) td {
+    a:not(:hover) {
+      color: black !important;
+    }
+  }
+  td {
+    &:first-child {
+      width: 350px;
+    }
+    &:nth-child(2) {
+      width: 100px;
+      padding-left: 16px;
+    }
+  }
+  // отступ между двумя категориями файлов
+  &:nth-child(2) tr:first-child:not(:last-child) {
+    display: inline-block;
+    margin-top: 50px;
+  }
+}
+</style>

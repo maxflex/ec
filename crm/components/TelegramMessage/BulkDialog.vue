@@ -54,10 +54,9 @@ defineExpose({ open })
           />
         </div>
         <div>
-          <a class="link-icon" @click="personSelectorDialog?.open()">
+          <UiIconLink @click="personSelectorDialog?.open()">
             получатели ({{ item.participants.length }})
-            <v-icon :size="16" icon="$next" />
-          </a>
+          </UiIconLink>
         </div>
         <div class="mt-4">
           <v-btn

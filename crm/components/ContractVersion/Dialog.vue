@@ -397,18 +397,9 @@ defineExpose({ edit, newContract, newVersion })
               </tr>
               <tr>
                 <td>
-                  <a
-                    class="link-icon"
-                    @click="
-                      programDialog?.open(item.programs.map((e) => e.program))
-                    "
-                  >
+                  <UiIconLink @click="() => programDialog?.open(item.programs.map((e) => e.program))">
                     добавить программы
-                    <v-icon
-                      :size="16"
-                      icon="$next"
-                    />
-                  </a>
+                  </UiIconLink>
                 </td>
                 <td class="cursor-default">
                   {{ lessonsPlannedSum || '' }}
@@ -477,16 +468,9 @@ defineExpose({ edit, newContract, newVersion })
               </tr>
               <tr>
                 <td>
-                  <a
-                    class="link-icon"
-                    @click=" addPayment() "
-                  >
+                  <UiIconLink @click=" addPayment() ">
                     добавить платеж
-                    <v-icon
-                      :size="16"
-                      icon="$next"
-                    />
-                  </a>
+                  </UiIconLink>
                 </td>
                 <td />
                 <td>

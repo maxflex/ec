@@ -16,7 +16,8 @@ class LessonResource extends JsonResource
     {
         return extract_fields($this, [
             'status', 'date', 'time', 'cabinet', 'teacher_id', 'price', 'created_at',
-            'conducted_at', 'topic', 'is_topic_verified', 'is_unplanned', 'quarter'
+            'conducted_at', 'topic', 'is_topic_verified', 'is_unplanned', 'quarter',
+            'files', 'homework'
         ], [
             'teacher' => new PersonResource($this->teacher),
             'user' => new PersonResource($this->user),

@@ -12,7 +12,7 @@ class ClientGroup extends Model
 
     public function contractVersionProgram()
     {
-        return $this->belongsTo(ContractVersionProgram::class);
+        return $this->belongsTo(ContractVersionProgram::class, 'contract_version_program_id', 'id');
     }
 
     public function group()

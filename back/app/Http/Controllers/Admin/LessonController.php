@@ -92,6 +92,17 @@ class LessonController extends Controller
         return new LessonListResource($lesson);
     }
 
+    public function uploadFile(Request $request)
+    {
+        $request->validate([
+            'file' => ['file', 'max:10240'], // 10 MB
+        ]);
+        $file = $request->file('file');
+        $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+        $file->storeAs('homework', $fileName);
+        return cdn('homework', $fileName);
+    }
+
     protected function filterGroup(&$query, $value, $field)
     {
         $query->whereHas('group', fn ($q) => $q->where($field, $value));

@@ -100,16 +100,9 @@ nextTick(loadData)
       </div>
     </div>
     <div style="border-bottom: none;">
-      <a
-        class="link-icon"
-        @click="groupAddStudentDialog?.open()"
-      >
+      <UiIconLink @click="groupAddStudentDialog?.open()">
         добавить в текущую группу
-        <v-icon
-          :size="16"
-          icon="$next"
-        />
-      </a>
+      </UiIconLink>
     </div>
   </div>
   <GroupSelectorDialog

@@ -15,17 +15,12 @@ const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
         >
           Группа {{ swamp.group_id }}
         </NuxtLink>
-        <a
+        <UiIconLink
           v-else
-          class="link-icon"
           @click="groupSelectorDialog?.open(swamp.program, swamp.year, swamp.contract_id)"
         >
           прикрепить группу
-          <v-icon
-            :size="16"
-            icon="$next"
-          />
-        </a>
+        </UiIconLink>
       </div>
       <div style="width: 200px">
         <NuxtLink :to="{ name: 'clients-id', params: { id: swamp.client.id } }">

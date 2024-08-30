@@ -181,17 +181,12 @@ defineExpose({ open, create })
           />
         </div>
         <div>
-          <a
-            class="link-icon"
-            @click="() => questionsDialog?.open(item?.questions)"
-          >
+          <UiIconLink @click="() => questionsDialog?.open(item?.questions)">
             редактировать вопросы
-            <template v-if="item.questions?.length">({{ item.questions.length }})</template>
-            <v-icon
-              :size="16"
-              icon="$next"
-            />
-          </a>
+            <template v-if="item.questions?.length">
+              ({{ item.questions.length }})
+            </template>
+          </UiIconLink>
         </div>
         <div>
           <input

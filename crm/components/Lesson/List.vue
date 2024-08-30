@@ -385,7 +385,7 @@ nextTick(loadData)
     background: rgba(var(--v-theme-red), 0.1);
   }
   &--exam {
-    background: rgba(var(--v-theme-orange), 0.1);
+    background: rgba(var(--v-theme-orange), 0.1) !important;
   }
 }
 .bottom-bar {

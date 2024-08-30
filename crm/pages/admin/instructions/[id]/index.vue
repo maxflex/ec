@@ -95,7 +95,7 @@ nextTick(loadData)
         </RouterLink>
         <div>
           <NuxtLink
-            class="link-icon"
+            class="icon-link"
             :to="{
               name: 'instructions-id-new-version',
               params: {

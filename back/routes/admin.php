@@ -64,11 +64,14 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::post('mango-test/{event}', MangoTestController::class);
 
-    // Групповое редактирование уроков
-    Route::prefix('lessons/batch')->controller(LessonController::class)->group(function () {
-        Route::post('/', 'batchStore');
-        Route::put('/', 'batchUpdate');
-        Route::delete('/', 'batchDestroy');
+    Route::prefix('lessons')->controller(LessonController::class)->group(function () {
+        Route::post('upload-file', 'uploadFile');
+        // Групповое редактирование уроков
+        Route::prefix('batch')->group(function () {
+            Route::post('/', 'batchStore');
+            Route::put('/', 'batchUpdate');
+            Route::delete('/', 'batchDestroy');
+        });
     });
 
     Route::post('groups/bulk-store-candidates/{group}', [GroupController::class, 'bulkStoreCandidates']);

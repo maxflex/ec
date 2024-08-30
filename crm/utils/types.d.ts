@@ -344,6 +344,15 @@ declare global {
     }
   }
 
+  type LessonFileType = keyof typeof LessonFileTypeLabel
+
+  interface LessonFile {
+    url?: string
+    name: string
+    size: number
+    type: LessonFileType
+  }
+
   interface LessonResource {
     id: number
     teacher_id?: number | null
@@ -354,7 +363,9 @@ declare global {
     time?: string
     status: LessonStatus
     quarter: Quarter | null
-    topic?: string | null
+    topic?: ?string
+    homework?: ?string
+    files: LessonFile[]
     conducted_at: string | null
     is_topic_verified: boolean
     is_unplanned: boolean

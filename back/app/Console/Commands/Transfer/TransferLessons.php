@@ -3,8 +3,8 @@
 namespace App\Console\Commands\Transfer;
 
 use App\Enums\Cabinet;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class TransferLessons extends Command
 {
@@ -34,6 +34,7 @@ class TransferLessons extends Command
                 'is_unplanned' => $l->is_unplanned,
                 'is_topic_verified' => $l->is_topic_verified,
                 'topic' => $l->topic,
+                'homework' => $l->homework,
                 'user_id' => $this->getUserId($l->created_email_id),
                 'created_at' => $l->created_at,
                 'updated_at' => $l->updated_at,
