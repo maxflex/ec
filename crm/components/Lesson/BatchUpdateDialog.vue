@@ -13,7 +13,7 @@ const saving = ref(false)
 const timeMask = { mask: '##:##' }
 const { dialog, width } = useDialog('default')
 const lesson = ref<BatchItem>({})
-const deleting = ref(false)
+// const deleting = ref(false)
 const ids = ref<number[]>([])
 
 function open(lessonIds: number[]) {
@@ -36,21 +36,21 @@ async function save() {
   setTimeout(() => saving.value = false, 300)
 }
 
-async function destroy() {
-  if (!confirm(`Вы уверены, что хотите удалить ${ids.value.length} уроков?`)) {
-    return
-  }
-  deleting.value = true
-  await useHttp(`lessons/batch`, {
-    method: 'delete',
-    params: {
-      'ids[]': ids.value,
-    },
-  })
-  emit('updated')
-  dialog.value = false
-  setTimeout(() => deleting.value = false, 300)
-}
+// async function destroy() {
+//   if (!confirm(`Вы уверены, что хотите удалить ${ids.value.length} уроков?`)) {
+//     return
+//   }
+//   deleting.value = true
+//   await useHttp(`lessons/batch`, {
+//     method: 'delete',
+//     params: {
+//       'ids[]': ids.value,
+//     },
+//   })
+//   emit('updated')
+//   dialog.value = false
+//   setTimeout(() => deleting.value = false, 300)
+// }
 
 defineExpose({ open })
 </script>
@@ -64,19 +64,16 @@ defineExpose({ open })
       <div class="dialog-header">
         <span>
           Массовое редактирование
-          <span class="ml-1 text-gray">
-            {{ ids.length }}
-          </span>
         </span>
         <div>
-          <v-btn
-            :loading="deleting"
-            :size="48"
-            class="remove-btn"
-            icon="$delete"
-            variant="text"
-            @click="destroy()"
-          />
+          <!--          <v-btn -->
+          <!--            :loading="deleting" -->
+          <!--            :size="48" -->
+          <!--            class="remove-btn" -->
+          <!--            icon="$delete" -->
+          <!--            variant="text" -->
+          <!--            @click="destroy()" -->
+          <!--          /> -->
           <v-btn
             :loading="saving"
             :size="48"
