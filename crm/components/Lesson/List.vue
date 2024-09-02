@@ -98,7 +98,7 @@ async function loadEvents() {
   if (entity === 'group') {
     return
   }
-  const { data } = await useHttp<ApiResponse<EventListResource[]>>(`events`, {
+  const { data } = await useHttp<ApiResponse<EventListResource[]>>(`common/events`, {
     params: {
       year: year.value,
       [`${entity}_id`]: id,
@@ -127,9 +127,12 @@ async function loadTeeth() {
 
 async function loadVacations() {
   vacations.value = {}
-  const { data } = await useHttp<ApiResponse<VacationResource[]>>(`vacations`, {
-    params: { year: year.value },
-  })
+  const { data } = await useHttp<ApiResponse<VacationResource[]>>(
+      `common/vacations`,
+      {
+        params: { year: year.value },
+      },
+  )
   if (data.value) {
     for (const { date } of data.value.data) {
       vacations.value[date] = true
@@ -142,11 +145,14 @@ async function loadExamDates() {
     return
   }
   examDates.value = {}
-  const { data } = await useHttp<ApiResponse<ExamDateResource[]>>(`exam-dates`, {
-    params: {
-      program: group.program,
-    },
-  })
+  const { data } = await useHttp<ApiResponse<ExamDateResource[]>>(
+      `common/exam-dates`,
+      {
+        params: {
+          program: group.program,
+        },
+      },
+  )
   if (data.value && data.value.data.length) {
     const { dates } = data.value.data[0]
     for (const date of dates) {

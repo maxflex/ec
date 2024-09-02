@@ -92,6 +92,16 @@ const menu: Menu = [
     to: '/teacher-payments',
   },
   {
+    icon: mdiCash,
+    title: 'Балансы препод',
+    to: '/teacher-balances',
+  },
+  {
+    icon: mdiCash,
+    title: 'Допуслуги',
+    to: '/teacher-services',
+  },
+  {
     icon: mdiFinance,
     title: 'Итоги',
     to: '/stats',

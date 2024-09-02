@@ -86,6 +86,9 @@ export function formatFullName(person: PersonResource) {
 }
 
 export function formatPrice(price: number) {
+  if (price === 0) {
+    return ''
+  }
   return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
 }
 

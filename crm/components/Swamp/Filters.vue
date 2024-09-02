@@ -9,9 +9,9 @@ export interface Filters {
   status?: SwampFilterStatus
 }
 
-const filters = ref(loadFilters<Filters>({
+const filters = ref<Filters>({
   year: currentAcademicYear(),
-}))
+})
 
 watch(filters.value, () => {
   emit('apply', filters.value)

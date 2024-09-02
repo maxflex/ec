@@ -100,7 +100,8 @@ export function getAcademicYear(d: string): Year {
  * Текущий академический год
  */
 export function currentAcademicYear(): Year {
-  return getAcademicYear(today())
+  return 2023
+  // return getAcademicYear(today())
 }
 
 function getFiltersKey() {

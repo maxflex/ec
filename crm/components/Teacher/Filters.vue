@@ -5,12 +5,11 @@ export interface Filters {
   subjects: Subject[]
 }
 const emit = defineEmits<{ (e: 'apply', filters: Filters): void }>()
-const filters = ref(loadFilters<Filters>({ subjects: [] }))
+const filters = ref<Filters>({ subjects: [] })
 const q = ref('')
 const input = ref()
 
 watch(filters.value, () => {
-  saveFilters(filters.value)
   emit('apply', filters.value)
 })
 

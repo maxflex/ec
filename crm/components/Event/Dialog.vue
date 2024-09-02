@@ -34,7 +34,7 @@ async function edit(e: EventListResource) {
   itemId.value = id
   loading.value = true
   dialog.value = true
-  const { data } = await useHttp<EventResource>(`events/${id}`)
+  const { data } = await useHttp<EventResource>(`common/events/${id}`)
   if (data.value) {
     item.value = data.value
   }
@@ -44,7 +44,7 @@ async function edit(e: EventListResource) {
 async function save() {
   saving.value = true
   const method = itemId.value ? `put` : `post`
-  const url = itemId.value ? `events/${itemId.value}` : `events`
+  const url = itemId.value ? `common/events/${itemId.value}` : `common/events`
   const { data } = await useHttp<EventListResource>(url, {
     method,
     body: item.value,
@@ -61,7 +61,7 @@ async function destroy() {
     return
   }
   deleting.value = true
-  const { data, status } = await useHttp(`events/${item.value.id}`, {
+  const { data, status } = await useHttp(`common/events/${item.value.id}`, {
     method: 'delete',
   })
   if (status.value === 'error') {

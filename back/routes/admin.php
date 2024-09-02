@@ -1,44 +1,42 @@
 <?php
 
-use App\Http\Controllers\Admin\BalanceController;
-use App\Http\Controllers\Admin\CallController;
-use App\Http\Controllers\Admin\ClientController;
-use App\Http\Controllers\Admin\ClientGroupController;
-use App\Http\Controllers\Admin\ClientPaymentController;
-use App\Http\Controllers\Admin\ClientReviewController;
-use App\Http\Controllers\Admin\ClientTestController;
-use App\Http\Controllers\Admin\CommentController;
-use App\Http\Controllers\Admin\ContractController;
-use App\Http\Controllers\Admin\ContractPaymentController;
-use App\Http\Controllers\Admin\ContractVersionController;
-use App\Http\Controllers\Admin\EventController;
-use App\Http\Controllers\Admin\EventParticipantController;
-use App\Http\Controllers\Admin\ExamDateController;
-use App\Http\Controllers\Admin\ExamScoreController;
-use App\Http\Controllers\Admin\GradeController;
-use App\Http\Controllers\Admin\GroupController;
-use App\Http\Controllers\Admin\InstructionController;
-use App\Http\Controllers\Admin\LessonController;
-use App\Http\Controllers\Admin\MacroController;
-use App\Http\Controllers\Admin\MangoTestController;
-use App\Http\Controllers\Admin\PersonController;
-use App\Http\Controllers\Admin\PhotoController;
-use App\Http\Controllers\Admin\PreviewController;
-use App\Http\Controllers\Admin\ReportController;
-use App\Http\Controllers\Admin\RequestsController;
-use App\Http\Controllers\Admin\ScheduleController;
-use App\Http\Controllers\Admin\StatsController;
-use App\Http\Controllers\Admin\SwampController;
-use App\Http\Controllers\Admin\TeacherController;
-use App\Http\Controllers\Admin\TeacherPaymentController;
-use App\Http\Controllers\Admin\TeacherServiceController;
-use App\Http\Controllers\Admin\TeethController;
-use App\Http\Controllers\Admin\TelegramMessageController;
-use App\Http\Controllers\Admin\TestController;
-use App\Http\Controllers\Admin\TopicController;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\VacationController;
-use App\Http\Controllers\Admin\WebReviewController;
+use App\Http\Controllers\Admin\{BalanceController,
+    CallController,
+    ClientController,
+    ClientGroupController,
+    ClientPaymentController,
+    ClientReviewController,
+    ClientTestController,
+    CommentController,
+    ContractController,
+    ContractPaymentController,
+    ContractVersionController,
+    EventParticipantController,
+    ExamScoreController,
+    GradeController,
+    GroupController,
+    InstructionController,
+    LessonController,
+    MacroController,
+    MangoTestController,
+    PersonController,
+    PhotoController,
+    PreviewController,
+    ReportController,
+    RequestsController,
+    ScheduleController,
+    StatsController,
+    SwampController,
+    TeacherBalanceController,
+    TeacherController,
+    TeacherPaymentController,
+    TeacherServiceController,
+    TeethController,
+    TelegramMessageController,
+    TestController,
+    TopicController,
+    UserController,
+    WebReviewController};
 use App\Http\Controllers\Common\LogController;
 use Illuminate\Support\Facades\Route;
 
@@ -48,15 +46,18 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::post('photos/upload', [PhotoController::class, 'upload']);
     Route::apiResource('photos', PhotoController::class)->only('store');
     Route::post('stats', StatsController::class);
-    Route::controller(BalanceController::class)->prefix('balance')->group(function () {
+
+    Route::prefix('balance')->controller(BalanceController::class)->group(function () {
         Route::get('contract/{contract}', 'contract');
         Route::get('teacher/{teacher}', 'teacher');
     });
-    Route::controller(ScheduleController::class)->prefix('schedule')->group(function () {
+
+    Route::prefix('schedule')->controller(ScheduleController::class)->group(function () {
         Route::get('client/{client}', 'client');
         Route::get('teacher/{teacher}', 'teacher');
         Route::get('group/{group}', 'group');
     });
+
     Route::apiResource('logs', LogController::class)->only('index');
     Route::apiResource('topics', TopicController::class)->only('index');
     Route::get('persons', PersonController::class);
@@ -74,9 +75,11 @@ Route::middleware(['auth:crm'])->group(function () {
         });
     });
 
-    Route::post('groups/bulk-store-candidates/{group}', [GroupController::class, 'bulkStoreCandidates']);
-    Route::get('groups/candidates/{group}', [GroupController::class, 'candidates']);
-    Route::get('groups/visits/{group}', [GroupController::class, 'visits']);
+    Route::prefix('groups')->controller(GroupController::class)->group(function () {
+        Route::post('bulk-store-candidates/{group}', 'bulkStoreCandidates');
+        Route::get('candidates/{group}', 'candidates');
+        Route::get('visits/{group}', 'visits');
+    });
 
     Route::get('instructions/diff/{instruction}', [InstructionController::class, 'diff']);
 
@@ -90,8 +93,13 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::get('/{event}', 'show');
     });
 
-    Route::get('calls/active', [CallController::class, 'active']);
-    Route::get('calls/recording/{action}/{call}', [CallController::class, 'recording']);
+    Route::get('teacher-balances', TeacherBalanceController::class);
+
+    Route::prefix('calls')->controller(CallController::class)->group(function () {
+        Route::get('active', 'active');
+        Route::get('recording/{action}/{call}', 'recording');
+    });
+
 
     Route::apiResources([
         'requests' => RequestsController::class,
@@ -101,7 +109,6 @@ Route::middleware(['auth:crm'])->group(function () {
         'contracts' => ContractController::class,
         'contract-versions' => ContractVersionController::class,
         'contract-payments' => ContractPaymentController::class,
-        'vacations' => VacationController::class,
         'macros' => MacroController::class,
         'tests' => TestController::class,
         'client-tests' => ClientTestController::class,
@@ -115,9 +122,7 @@ Route::middleware(['auth:crm'])->group(function () {
         'client-payments' => ClientPaymentController::class,
         'web-reviews' => WebReviewController::class,
         'reports' => ReportController::class,
-        'events' => EventController::class,
         'grades' => GradeController::class,
-        'exam-dates' => ExamDateController::class,
         'exam-scores' => ExamScoreController::class,
         'telegram-messages' => TelegramMessageController::class,
         'instructions' => InstructionController::class,

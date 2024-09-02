@@ -67,12 +67,15 @@ function onDateClick(y: number, m: number, d: number) {
 
 async function save() {
   saving.value = true
-  const { data } = await useHttp<ExamDateResource>(`exam-dates/${item.value.id}`, {
-    method: 'put',
-    body: {
-      dates: item.value.dates,
-    },
-  })
+  const { data } = await useHttp<ExamDateResource>(
+      `common/exam-dates/${item.value.id}`,
+      {
+        method: 'put',
+        body: {
+          dates: item.value.dates,
+        },
+      },
+  )
   if (data.value) {
     emit('saved', data.value)
   }

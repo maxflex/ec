@@ -12,12 +12,11 @@ const emit = defineEmits<{
 }>()
 
 // const filters = ref<Filters>({})
-const filters = ref(loadFilters<Filters>({
+const filters = ref<Filters>({
   year: currentAcademicYear(),
-}))
+})
 
 watch(filters.value, () => {
-  saveFilters(filters.value)
   emit('apply', filters.value)
 })
 </script>

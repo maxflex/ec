@@ -4,12 +4,11 @@ export interface Filters {
   method?: TeacherPaymentMethod
 }
 const emit = defineEmits<{ (e: 'apply', filters: Filters): void }>()
-const filters = ref(loadFilters<Filters>({
+const filters = ref<Filters>({
   year: currentAcademicYear(),
-}))
+})
 
 watch(filters.value, () => {
-  saveFilters(filters.value)
   emit('apply', filters.value)
 })
 </script>

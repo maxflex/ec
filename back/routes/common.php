@@ -1,7 +1,12 @@
 <?php
 
-use App\Http\Controllers\Common\{AuthController, LogController, TelegramBotController};
-use App\Http\Controllers\Common\MangoController;
+use App\Http\Controllers\Common\{AuthController,
+    EventController,
+    ExamDateController,
+    LogController,
+    MangoController,
+    TelegramBotController,
+    VacationController};
 use Illuminate\Support\Facades\Route;
 
 Route::post('telegram', TelegramBotController::class);
@@ -21,4 +26,9 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::get('logout', 'logout');
     });
     Route::apiResource('logs', LogController::class)->only('store');
+    Route::apiResources([
+        'exam-dates' => ExamDateController::class,
+        'vacations' => VacationController::class,
+        'events' => EventController::class,
+    ]);
 });

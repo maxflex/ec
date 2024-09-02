@@ -59,13 +59,13 @@ class Call extends Model implements HasMenuCount
     // перезвоны
     public function callbacks()
     {
-        // mega hack
-        $createdAt = $this->created_at ? "'" . $this->created_at . "'" : 'calls.created_at';
-
         return $this->hasMany(Call::class, 'number', 'number')
             ->where('type', CallType::outgoing)
-            ->whereRaw("created_at > $createdAt")
-            ->whereRaw("created_at < $createdAt + INTERVAL 1 MONTH");
+            ->whereRaw(<<<SQL
+                created_at > calls.created_at
+                AND created_at < calls.created_at + INTERVAL 1 MONTH
+            SQL
+            );
     }
 
     /**

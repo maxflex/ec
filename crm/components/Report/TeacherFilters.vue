@@ -13,7 +13,6 @@ const filters = ref<Filters>({
 })
 
 watch(filters.value, () => {
-  // saveFilters(filters.value)
   emit('apply', filters.value)
 })
 </script>

@@ -47,7 +47,7 @@ async function loadLessons() {
 
 async function loadVacations() {
   vacations.value = {}
-  const { data } = await useHttp<ApiResponse<VacationResource[]>>(`vacations`, {
+  const { data } = await useHttp<ApiResponse<VacationResource[]>>(`common/vacations`, {
     params: { year: year.value },
   })
   if (data.value) {

@@ -35,6 +35,17 @@ h3 {
   display: none !important;
 }
 
+.v-table {
+  font-size: 1rem !important;
+
+  thead {
+    th {
+      font-weight: normal !important;
+      color: rgb(var(--v-theme-gray));
+    }
+  }
+}
+
 // TODO:
 // main {
 //   display: flex;
