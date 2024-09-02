@@ -83,7 +83,7 @@ nextTick(loadData)
         добавить тест
       </v-btn>
     </div>
-    <UiLoader v-if="loading" />
+    <UiLoaderr v-if="loading" />
     <ClientTestList v-else :items="items" @destroy="onDestroy" />
   </div>
   <TestSelectorDialog

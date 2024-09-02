@@ -85,22 +85,8 @@ declare global {
 
   type ResponseErrors = string[]
 
-  interface Paginator {
-    page: number
-    loading: boolean
-    isLastPage: boolean
-  }
-
   // type Date = `${Year}-${number}${number}-${number}${number}`
   // type Time = `${number}${number}:${number}${number}:${number}${number}`
-
-  type InfiniteScrollSide = 'start' | 'end' | 'both'
-  type InfiniteScrollStatus = 'ok' | 'empty' | 'loading' | 'error'
-
-  interface InfiniteScrollCallback {
-    side: InfiniteScrollSide
-    status: InfiniteScrollStatus
-  }
 
   interface MenuItem {
     to: string

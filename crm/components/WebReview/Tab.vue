@@ -47,7 +47,7 @@ nextTick(loadData)
       добавить
     </v-btn>
   </div>
-  <UiLoader v-if="loading" />
+  <UiLoaderr v-if="loading" />
   <WebReviewList v-else :items="items" @edit="webReviewDialog?.edit" />
   <WebReviewDialog ref="webReviewDialog" @updated="onUpdated" />
 </template>
