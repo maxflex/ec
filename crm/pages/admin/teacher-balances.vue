@@ -24,6 +24,10 @@ async function loadData() {
   }
 }
 
+function getTotal(field: keyof TeacherBalance) {
+  return items.value.reduce((carry, x) => carry + (x[field] as number), 0)
+}
+
 watch(year, loadData)
 
 nextTick(loadData)
@@ -100,6 +104,33 @@ nextTick(loadData)
         </td>
       </tr>
     </tbody>
+    <tfoot>
+      <tr>
+        <td />
+        <td>
+          {{ formatPrice(getTotal('lessons')) }}
+        </td>
+        <td>
+          {{ formatPrice(getTotal('reports')) }}
+        </td>
+        <td>
+          {{ formatPrice(getTotal('teacher_services')) }}
+        </td>
+        <td>
+          {{ formatPrice(getTotal('lessons') + getTotal('reports') + getTotal('teacher_services')) }}
+        </td>
+        <td>
+          {{ formatPrice(getTotal('teacher_payments')) }}
+        </td>
+        <td>
+          {{ formatPrice(getTotal('lessons')
+            + getTotal('reports')
+            + getTotal('teacher_services')
+            - getTotal('teacher_payments'),
+          ) }}
+        </td>
+      </tr>
+    </tfoot>
   </v-table>
 </template>
 
@@ -121,6 +152,9 @@ nextTick(loadData)
         font-weight: bold !important;
       }
     }
+  }
+  tfoot td {
+    border-top-width: 2px !important;
   }
 }
 </style>
