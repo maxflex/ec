@@ -9,9 +9,9 @@ const { items, loading, onFiltersApply } = useIndex<SwampListResource, Filters>(
 </script>
 
 <template>
-  <div class="filters">
+  <UiFilters>
     <SwampFilters @apply="onFiltersApply" />
-  </div>
+  </UiFilters>
   <div>
     <UiLoader3 :loading="loading" />
     <SwampList :items="items" />

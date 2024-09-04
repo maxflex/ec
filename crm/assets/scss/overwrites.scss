@@ -47,13 +47,14 @@ h3 {
 }
 
 // TODO:
-// main {
-//   display: flex;
-//   flex-direction: column;
-//   & > div {
-//     &:last-child {
-//       flex: 1;
-//       position: relative;
-//     }
-//   }
-// }
+main {
+  display: flex;
+  flex-direction: column;
+
+  & > div {
+    &:last-child {
+      flex: 1;
+      position: relative;
+    }
+  }
+}

@@ -10,12 +10,14 @@ const { items, loading, onFiltersApply } = useIndex<TeacherListResource, Filters
 </script>
 
 <template>
-  <div class="filters">
+  <UiFilters>
     <TeacherFilters @apply="onFiltersApply" />
-    <v-btn color="primary" @click="teacherDialog?.create()">
-      добавить преподавателя
-    </v-btn>
-  </div>
+    <template #buttons>
+      <v-btn color="primary" @click="teacherDialog?.create()">
+        добавить преподавателя
+      </v-btn>
+    </template>
+  </UiFilters>
   <div>
     <UiLoader3 :loading="loading" />
     <TeacherList :items="items" />

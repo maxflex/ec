@@ -12,9 +12,9 @@ const { items, loading, onFiltersApply } = useIndex<TeacherPaymentResource, Filt
 </script>
 
 <template>
-  <div class="filters">
+  <UiFilters>
     <TeacherPaymentFilters @apply="onFiltersApply" />
-  </div>
+  </UiFilters>
   <UiLoader3 :loading="loading" />
   <TeacherPaymentList :items="items" />
 </template>

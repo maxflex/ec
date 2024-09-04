@@ -64,9 +64,9 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div class="filters">
+  <UiFilters>
     <ClientReviewFilters @apply="onFiltersApply" />
-  </div>
+  </UiFilters>
   <div>
     <UiLoader3 :loading="loading" />
     <ClientReviewList :items="items" />

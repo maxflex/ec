@@ -5,7 +5,7 @@ const { clientId } = defineProps<{
   clientId: number
 }>()
 const items = ref<WebReviewResource[]>([])
-const loading = ref(false)
+const loading = ref(true)
 const webReviewDialog = ref<InstanceType<typeof WebReviewDialog>>()
 
 async function loadData() {
@@ -37,17 +37,19 @@ function onUpdated(item: WebReviewResource, deleted: boolean) {
   itemUpdated('web-review', item.id)
 }
 
+const noData = computed(() => !loading.value && items.value.length === 0)
+
 nextTick(loadData)
 </script>
 
 <template>
-  <div class="filters">
-    <div class="filters-inputs" />
-    <v-btn color="primary" @click="() => webReviewDialog?.create(clientId)">
-      добавить
-    </v-btn>
-  </div>
-  <UiLoaderr v-if="loading" />
-  <WebReviewList v-else :items="items" @edit="webReviewDialog?.edit" />
+  <UiIndexPage :data="{ loading, noData }">
+    <template #buttons>
+      <v-btn color="primary" @click="() => webReviewDialog?.create(clientId)">
+        добавить
+      </v-btn>
+    </template>
+    <WebReviewList :items="items" @edit="webReviewDialog?.edit" />
+  </UiIndexPage>
   <WebReviewDialog ref="webReviewDialog" @updated="onUpdated" />
 </template>

@@ -5,9 +5,9 @@ const { items, loading, onFiltersApply } = useIndex<GradeListResource, Filters>(
 </script>
 
 <template>
-  <div class="filters">
+  <UiFilters>
     <GradeFilters @apply="onFiltersApply" />
-  </div>
+  </UiFilters>
   <div>
     <UiLoader3 :loading="loading" />
     <GradeList :items="items" />

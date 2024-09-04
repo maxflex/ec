@@ -6,6 +6,7 @@ const items = ref<ContractResource[]>([])
 const contractPaymentDialog = ref<InstanceType<typeof ContractPaymentDialog>>()
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
 const selected = ref(0)
+const loading = ref(true)
 
 const selectedContract = computed<ContractResource | null>(
   () => items.value.length ? items.value[selected.value] : null,
@@ -75,7 +76,7 @@ function onContractPaymentDeleted(cp: ContractPaymentResource) {
 }
 
 async function loadData() {
-  console.log('Loading data...')
+  loading.value = true
   const { data } = await useHttp<ApiResponse<ContractResource[]>>(
       `contracts`,
       {
@@ -87,14 +88,17 @@ async function loadData() {
   if (data.value) {
     items.value = data.value.data
   }
+  loading.value = false
 }
+
+const noData = computed(() => !loading.value && items.value.length === 0)
 
 nextTick(loadData)
 </script>
 
 <template>
-  <div class="filters">
-    <div>
+  <UiIndexPage :data="{ loading, noData }">
+    <template #filters>
       <v-btn
         v-for="(contract, i) in items"
         :key="contract.id"
@@ -111,47 +115,50 @@ nextTick(loadData)
           на {{ formatYear(contract.year) }}
         </div>
       </v-btn>
+    </template>
+    <template #buttons>
+      <v-menu>
+        <template #activator="{ props }">
+          <v-btn color="primary" v-bind="props">
+            действия
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item @click="contractVersionDialog?.newContract()">
+            новый договор
+          </v-list-item>
+          <v-list-item
+            v-if="selectedContract"
+            @click="() => contractVersionDialog?.newVersion(selectedContract!)"
+          >
+            добавить версию
+          </v-list-item>
+          <v-list-item
+            v-if="selectedContract"
+            @click="() => contractPaymentDialog?.create(selectedContract!)"
+          >
+            добавить платеж
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </template>
+    <div v-if="selectedContract" class="contract-list">
+      <div
+        class="contract-list__item"
+      >
+        <ContractVersionList2
+          :items="selectedContract.versions"
+          @edit="contractVersionDialog?.edit"
+        />
+        <ContractPaymentList
+          :items="selectedContract.payments"
+          @open="contractPaymentDialog?.edit"
+        />
+        <Balance :contract-id="selectedContract.id" />
+      </div>
     </div>
-    <v-menu>
-      <template #activator="{ props }">
-        <v-btn color="primary" v-bind="props">
-          действия
-        </v-btn>
-      </template>
-      <v-list>
-        <v-list-item @click="contractVersionDialog?.newContract()">
-          новый договор
-        </v-list-item>
-        <v-list-item
-          v-if="selectedContract"
-          @click="() => contractVersionDialog?.newVersion(selectedContract!)"
-        >
-          добавить версию
-        </v-list-item>
-        <v-list-item
-          v-if="selectedContract"
-          @click="() => contractPaymentDialog?.create(selectedContract!)"
-        >
-          добавить платеж
-        </v-list-item>
-      </v-list>
-    </v-menu>
-  </div>
-  <div v-if="selectedContract" class="contract-list">
-    <div
-      class="contract-list__item"
-    >
-      <ContractVersionList2
-        :items="selectedContract.versions"
-        @edit="contractVersionDialog?.edit"
-      />
-      <ContractPaymentList
-        :items="selectedContract.payments"
-        @open="contractPaymentDialog?.edit"
-      />
-      <BalanceList :id="selectedContract.id" entity="contract" />
-    </div>
-  </div>
+  </UiIndexPage>
+
   <ContractVersionDialog
     ref="contractVersionDialog"
     @updated="onContractVersionUpdated"

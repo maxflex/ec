@@ -69,6 +69,11 @@ declare global {
     meta: Meta
   }
 
+  interface IndexPageData {
+    loading: boolean
+    noData: boolean
+  }
+
   interface PersonResource {
     id: number
     first_name: string | null

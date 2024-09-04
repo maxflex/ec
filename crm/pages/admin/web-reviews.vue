@@ -21,9 +21,9 @@ function onUpdated(item: WebReviewResource, deleted: boolean) {
 </script>
 
 <template>
-  <div class="filters">
+  <UiFilters>
     <WebReviewFilters @apply="onFiltersApply" />
-  </div>
+  </UiFilters>
 
   <div>
     <UiLoader3 :loading="loading" />

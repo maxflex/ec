@@ -36,7 +36,7 @@ nextTick(loadData)
 </script>
 
 <template>
-  <UiLoaderr v-if="item === undefined" />
+  <UiLoader v-if="item === undefined" />
   <div v-else class="macro">
     <div class="macro__title">
       <div>

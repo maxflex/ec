@@ -8,9 +8,9 @@ const { items, loading, onFiltersApply } = useIndex<ClientPaymentResource, Filte
 </script>
 
 <template>
-  <div class="filters">
+  <UiFilters>
     <ClientPaymentFilters @apply="onFiltersApply" />
-  </div>
+  </UiFilters>
   <div>
     <UiLoader3 :loading="loading" />
     <ClientPaymentList :items="items" @open="clientPaymentDialog?.edit" />

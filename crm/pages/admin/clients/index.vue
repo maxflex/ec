@@ -5,9 +5,9 @@ const { items, onFiltersApply, loading } = useIndex<ClientListResource, Filters>
 </script>
 
 <template>
-  <div class="filters">
+  <UiFilters>
     <ClientFilters @apply="onFiltersApply" />
-  </div>
+  </UiFilters>
   <UiLoader3 :loading="loading" />
   <ClientList :items="items" />
 </template>

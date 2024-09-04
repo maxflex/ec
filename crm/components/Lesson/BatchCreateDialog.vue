@@ -101,7 +101,7 @@ defineExpose({ create })
           @click="save()"
         />
       </div>
-      <UiLoaderr v-if="loading" />
+      <UiLoader v-if="loading" />
       <div
         v-else
         class="dialog-body pt-0"

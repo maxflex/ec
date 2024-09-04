@@ -17,15 +17,17 @@ function onGroupCreated(g: GroupListResource) {
 </script>
 
 <template>
-  <div class="filters">
+  <UiFilters>
     <GroupFilters @apply="onFiltersApply" />
-    <v-btn
-      color="primary"
-      @click="groupDialog?.create()"
-    >
-      добавить группу
-    </v-btn>
-  </div>
+    <template #buttons>
+      <v-btn
+        color="primary"
+        @click="groupDialog?.create()"
+      >
+        добавить группу
+      </v-btn>
+    </template>
+  </UiFilters>
   <UiLoader3 :loading="loading" />
   <div class="groups table table--padding">
     <GroupList :items="items" />

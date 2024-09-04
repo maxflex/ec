@@ -3,5 +3,5 @@ const { user } = useAuthStore()
 </script>
 
 <template>
-  <BalanceList :id="user?.id!" entity="teacher" />
+  <Balance :teacher-id="user?.id!" />
 </template>

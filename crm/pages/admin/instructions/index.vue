@@ -1,24 +1,22 @@
 <script setup lang="ts">
-import type { Filters } from '~/components/Instruction/Filters.vue'
-
-const { items, loading } = useIndex<InstructionListResource, Filters>(`instructions`)
+const { items, loading } = useIndex<InstructionListResource>(`instructions`)
 </script>
 
 <template>
-  <div class="filters">
-    <!-- <InstructionFilters @apply="onFiltersApply" /> -->
-    <div />
-    <v-btn
-      append-icon="$next"
-      color="primary"
-      :ripple="false"
-      :to="{
-        name: 'instructions-create',
-      }"
-    >
-      добавить инструкцию
-    </v-btn>
-  </div>
+  <UiFilters>
+    <template #buttons>
+      <v-btn
+        append-icon="$next"
+        color="primary"
+        :ripple="false"
+        :to="{
+          name: 'instructions-create',
+        }"
+      >
+        добавить инструкцию
+      </v-btn>
+    </template>
+  </UiFilters>
   <div>
     <UiLoader3 :loading="loading" />
     <InstructionList :items="items" />

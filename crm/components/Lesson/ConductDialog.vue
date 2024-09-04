@@ -110,7 +110,7 @@ defineExpose({ open })
           </div>
         </template>
       </div>
-      <UiLoaderr v-if="loading" />
+      <UiLoader v-if="loading" />
       <div v-else-if="item" class="dialog-body pt-0 conduct-dialog">
         <table class="dialog-table">
           <tbody>

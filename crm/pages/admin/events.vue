@@ -17,7 +17,7 @@ async function loadData() {
   }
   loading.value = true
   const { data } = await useHttp<ApiResponse<EventListResource[]>>(
-    'events',
+    `common/events`,
     {
       params: {
         ...filters,
@@ -65,16 +65,18 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div class="filters">
+  <UiFilters>
     <EventFilters :filters="filters" @apply="onFiltersApply" />
-    <v-btn
-      append-icon="$next"
-      color="primary"
-      @click="eventDialog?.create(filters.year)"
-    >
-      добавить событие
-    </v-btn>
-  </div>
+    <template #buttons>
+      <v-btn
+        append-icon="$next"
+        color="primary"
+        @click="eventDialog?.create(filters.year)"
+      >
+        добавить событие
+      </v-btn>
+    </template>
+  </UiFilters>
   <div>
     <UiLoader3 :loading="loading" />
     <EventList

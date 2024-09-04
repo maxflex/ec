@@ -51,20 +51,22 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div class="filters">
-    <div class="filters-inputs">
-      <v-select
-        v-model="filters.year" :items="selectItems(YearLabel)" label="Год"
-        density="comfortable"
-      />
-    </div>
-    <v-btn
-      color="primary"
-      @click="teacherPaymentDialog?.create(teacherId, filters.year)"
-    >
-      добавить платеж
-    </v-btn>
-  </div>
+  <UiFilters>
+    <v-select
+      v-model="filters.year"
+      :items="selectItems(YearLabel)"
+      label="Год"
+      density="comfortable"
+    />
+    <template #buttons>
+      <v-btn
+        color="primary"
+        @click="teacherPaymentDialog?.create(teacherId, filters.year)"
+      >
+        добавить платеж
+      </v-btn>
+    </template>
+  </UiFilters>
   <div>
     <UiLoader3 :loading="loading" />
     <TeacherPaymentList :items="items" @open="teacherPaymentDialog?.edit" />

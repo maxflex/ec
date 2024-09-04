@@ -3,7 +3,7 @@ const { clientId } = defineProps<{
   clientId: number
 }>()
 
-const loading = ref(false)
+const loading = ref(true)
 const year = ref<Year>(currentAcademicYear())
 const groups = ref<GroupListResource[]>([])
 const swamps = ref<SwampListResource[]>([])
@@ -48,23 +48,20 @@ watch(year, (newVal) => {
   loadData()
 })
 
+const noData = computed(() => !loading.value && groups.value.length === 0 && swamps.value.length === 0)
+
 nextTick(loadData)
 </script>
 
 <template>
-  <div class="filters">
-    <div class="filters-inputs">
+  <UiIndexPage :data="{ loading, noData }">
+    <template #filters>
       <v-select v-model="year" :items="selectItems(YearLabel)" label="Учебный год" density="comfortable" />
-    </div>
-  </div>
-  <template v-if="!loading">
+    </template>
+
     <div class="table table--padding">
       <GroupList :items="groups" />
     </div>
     <SwampList :items="swamps" @select="onSelected" />
-  </template>
+  </UiIndexPage>
 </template>
-
-<style scoped lang="scss">
-
-</style>

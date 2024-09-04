@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\{RequestResource, RequestListResource};
+use App\Http\Resources\{RequestListResource, RequestResource};
 use App\Models\Request as ClientRequest;
 use Illuminate\Http\Request;
 

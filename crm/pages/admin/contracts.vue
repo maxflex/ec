@@ -78,7 +78,7 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div class="filters">
+  <UiFilters>
     <ContractVersionFilters @apply="onFiltersApply" />
     <v-fade-transition>
       <div v-if="total !== undefined" style="flex: 1" class="text-gray">
@@ -86,7 +86,7 @@ nextTick(loadData)
         {{ formatPrice(total) }}
       </div>
     </v-fade-transition>
-  </div>
+  </UiFilters>
   <div>
     <UiLoader3 :loading="loading" />
     <ContractVersionList

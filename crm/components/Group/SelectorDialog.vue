@@ -59,22 +59,20 @@ defineExpose({ open })
         <!--                <v-btn icon="$close" :size="48" variant="text" @click="dialog = false" /> -->
       </div>
       <div class="dialog-body pt-0">
-        <div class="filters">
-          <div class="filters-inputs">
-            <v-select
-              v-model="filters.year"
-              label="Учебный год"
-              :items="selectItems(YearLabel)"
-              density="comfortable"
-            />
-            <UiClearableSelect
-              v-model="filters.program"
-              label="Программа"
-              :items="selectItems(ProgramLabel)"
-              density="comfortable"
-            />
-          </div>
-        </div>
+        <UiFilters>
+          <v-select
+            v-model="filters.year"
+            label="Учебный год"
+            :items="selectItems(YearLabel)"
+            density="comfortable"
+          />
+          <UiClearableSelect
+            v-model="filters.program"
+            label="Программа"
+            :items="selectItems(ProgramLabel)"
+            density="comfortable"
+          />
+        </UiFilters>
         <div class="table table--hover table--padding">
           <GroupList
             :items="groups"

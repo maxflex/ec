@@ -84,7 +84,7 @@ defineExpose({ open })
       }"
     >
       <v-fade-transition>
-        <UiLoaderr v-if="!loaded" />
+        <UiLoader v-if="!loaded" />
       </v-fade-transition>
       <transition-group
         name="new-comment"

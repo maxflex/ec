@@ -2,19 +2,16 @@
 
 namespace App\Models;
 
-use App\Contracts\HasTeeth;
+use App\Contracts\{HasBalance, HasTeeth};
 use App\Enums\TeacherStatus;
-use App\Traits\HasName;
-use App\Traits\HasPhones;
-use App\Traits\HasPhoto;
-use App\Traits\RelationSyncable;
+use App\Traits\{HasName, HasPhones, HasPhoto, RelationSyncable};
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
-class Teacher extends Model implements HasTeeth
+class Teacher extends Model implements HasTeeth, HasBalance
 {
     use HasName, HasPhones, HasPhoto, RelationSyncable;
 
@@ -66,7 +63,7 @@ class Teacher extends Model implements HasTeeth
         );
     }
 
-    public function getBalance(int $year)
+    public function getBalance(?int $year): array
     {
         $balanceItems = collect();
 

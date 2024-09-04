@@ -16,11 +16,9 @@ watch(filters.value, onFiltersApply)
 </script>
 
 <template>
-  <div class="filters">
-    <div class="filters-inputs">
-      <v-select v-model="filters.year" :items="selectItems(YearLabel)" label="Учебный год" density="comfortable" />
-    </div>
-  </div>
+  <UiFilters>
+    <v-select v-model="filters.year" :items="selectItems(YearLabel)" label="Учебный год" density="comfortable" />
+  </UiFilters>
   <UiLoader3 :loading="loading" />
   <TeacherServiceList :items="items" />
 </template>

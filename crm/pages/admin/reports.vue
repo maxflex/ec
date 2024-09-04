@@ -66,9 +66,9 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div class="filters">
+  <UiFilters>
     <ReportFilters @apply="onFiltersApply" />
-  </div>
+  </UiFilters>
   <div>
     <UiLoader3 :loading="loading" />
     <ReportList :items="items" />

@@ -5,9 +5,9 @@ const { items, loading, onFiltersApply } = useIndex<GroupListResource, Filters>(
 </script>
 
 <template>
-  <div class="filters">
+  <UiFilters>
     <GroupFilters @apply="onFiltersApply" />
-  </div>
+  </UiFilters>
   <div>
     <UiLoader3 :loading="loading" />
     <div class="table table--padding">

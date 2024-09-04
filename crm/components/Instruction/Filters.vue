@@ -13,14 +13,12 @@ watch(filters.value, () => emit('apply', filters.value))
 </script>
 
 <template>
-  <div class="filters-inputs">
-    <div>
-      <UiClearableSelect
-        v-model="filters.signed"
-        label="Статус"
-        :items="yesNo('подписанные', 'неподписанные')"
-        density="comfortable"
-      />
-    </div>
+  <div>
+    <UiClearableSelect
+      v-model="filters.signed"
+      label="Статус"
+      :items="yesNo('подписанные', 'неподписанные')"
+      density="comfortable"
+    />
   </div>
 </template>

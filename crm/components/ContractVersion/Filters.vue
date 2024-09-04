@@ -19,30 +19,28 @@ watch(filters.value, () => emit('apply', filters.value))
 </script>
 
 <template>
-  <div class="filters-inputs">
-    <div>
-      <v-select
-        v-model="filters.year"
-        label="Учебный год"
-        :items="selectItems(YearLabel)"
-        density="comfortable"
-      />
-    </div>
-    <div>
-      <UiClearableSelect
-        v-model="filters.company"
-        :items="selectItems(CompanyLabel)"
-        density="comfortable"
-        label="Тип"
-      />
-    </div>
-    <div>
-      <UiClearableSelect
-        v-model="filters.version"
-        :items="selectItems(VersionFilterLabel)"
-        density="comfortable"
-        label="Версия"
-      />
-    </div>
+  <div>
+    <v-select
+      v-model="filters.year"
+      label="Учебный год"
+      :items="selectItems(YearLabel)"
+      density="comfortable"
+    />
+  </div>
+  <div>
+    <UiClearableSelect
+      v-model="filters.company"
+      :items="selectItems(CompanyLabel)"
+      density="comfortable"
+      label="Тип"
+    />
+  </div>
+  <div>
+    <UiClearableSelect
+      v-model="filters.version"
+      :items="selectItems(VersionFilterLabel)"
+      density="comfortable"
+      label="Версия"
+    />
   </div>
 </template>

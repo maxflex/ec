@@ -9,14 +9,11 @@ const filters = ref<{
 }>({
   year: currentAcademicYear(),
 })
-const loading = ref(false)
+const loading = ref(true)
 const items = ref<ClientPaymentResource[]>([])
 const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()
 
 async function loadData() {
-  if (loading.value) {
-    return
-  }
   loading.value = true
   const { data } = await useHttp<ApiResponse<ClientPaymentResource[]>>(
     'client-payments',
@@ -54,28 +51,29 @@ function onDeleted(p: ClientPaymentResource) {
   }
 }
 
+const noData = computed(() => !loading.value && items.value.length === 0)
+
 nextTick(loadData)
 </script>
 
 <template>
-  <div class="filters">
-    <div class="filters-inputs">
+  <UiIndexPage :data="{ loading, noData }">
+    <template #filters>
       <v-select
         v-model="filters.year" :items="selectItems(YearLabel)" label="Год"
         density="comfortable"
       />
-    </div>
-    <v-btn
-      color="primary"
-      @click="clientPaymentDialog?.create(clientId, filters.year)"
-    >
-      добавить платеж
-    </v-btn>
-  </div>
-  <div>
-    <UiLoader3 :loading="loading" />
+    </template>
+    <template #buttons>
+      <v-btn
+        color="primary"
+        @click="clientPaymentDialog?.create(clientId, filters.year)"
+      >
+        добавить платеж
+      </v-btn>
+    </template>
     <ClientPaymentList :items="items" @open="clientPaymentDialog?.edit" />
-  </div>
+  </UiIndexPage>
   <ClientPaymentDialog
     ref="clientPaymentDialog"
     @updated="onUpdated"

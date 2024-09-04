@@ -68,19 +68,15 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div class="filters">
-    <div class="filters-inputs" style="justify-content: space-between; align-items: center; width: 100%">
-      <div>
-        <v-select
-          v-model="year"
-          label="Учебный год"
-          :items="selectItems(YearLabel)"
-          density="comfortable"
-        />
-      </div>
-    </div>
-  </div>
-  <UiLoaderr v-if="loading" />
+  <UiFilters>
+    <v-select
+      v-model="year"
+      label="Учебный год"
+      :items="selectItems(YearLabel)"
+      density="comfortable"
+    />
+  </UiFilters>
+  <UiLoader v-if="loading" />
   <div v-else class="all-lesson-list">
     <div
       v-for="d in dates"

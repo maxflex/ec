@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import type { TeacherDialog } from '#build/components'
-import type { Filters } from '~/components/Report/TeacherFilters.vue'
-import type { Filters as InstructionFilters } from '~/components/Instruction/Filters.vue'
 
 const route = useRoute()
 const teacher = ref<TeacherResource>()
@@ -23,10 +21,6 @@ const selectedTab = ref<keyof typeof tabs>('groups')
 const groupFilters = ref<{ year: Year }>({
   year: currentAcademicYear(),
 })
-const reportFilters = ref<Filters>({
-  year: currentAcademicYear(),
-})
-const instructionFilters = ref<InstructionFilters>({})
 const reviewFilters = ref<{ type?: number }>({})
 
 async function loadData() {
@@ -44,10 +38,7 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div
-    v-if="teacher"
-    class="teacher"
-  >
+  <template v-if="teacher">
     <div class="panel">
       <div class="panel-info">
         <div>
@@ -109,18 +100,16 @@ nextTick(loadData)
       }"
     >
       <template #filters>
-        <div class="filters">
-          <div class="filters-inputs">
-            <div>
-              <v-select
-                v-model="groupFilters.year"
-                label="Учебный год"
-                :items="selectItems(YearLabel)"
-                density="comfortable"
-              />
-            </div>
+        <UiFilters>
+          <div>
+            <v-select
+              v-model="groupFilters.year"
+              label="Учебный год"
+              :items="selectItems(YearLabel)"
+              density="comfortable"
+            />
           </div>
-        </div>
+        </UiFilters>
       </template>
       <template #default="{ items }">
         <div class="table table--padding">
@@ -137,24 +126,6 @@ nextTick(loadData)
       show-teeth
     />
     <UiDataLoader
-      v-else-if="selectedTab === 'reports'"
-      url="reports"
-      :filters="{
-        teacher_id: teacher.id,
-        ...reportFilters,
-      }"
-    >
-      <template #filters>
-        <div class="filters">
-          <ReportTeacherFilters @apply="f => (reportFilters = f)" />
-        </div>
-      </template>
-      <template #default="{ items }">
-        <ReportList :items="items" />
-      </template>
-    </UiDataLoader>
-
-    <UiDataLoader
       v-else-if="selectedTab === 'reviews'"
       url="client-reviews"
       :filters="{
@@ -164,8 +135,8 @@ nextTick(loadData)
       }"
     >
       <template #filters>
-        <div class="filters">
-          <div class="filters-inputs">
+        <UiFilters>
+          <div>
             <UiClearableSelect
               v-model="reviewFilters.type"
               label="Тип"
@@ -173,7 +144,7 @@ nextTick(loadData)
               density="comfortable"
             />
           </div>
-        </div>
+        </UiFilters>
       </template>
       <template #default="{ items }">
         <ClientReviewList
@@ -183,56 +154,12 @@ nextTick(loadData)
         />
       </template>
     </UiDataLoader>
-    <UiDataLoader
-      v-else-if="selectedTab === 'instructions'"
-      url="instructions"
-      :filters="{
-        teacher_id: teacher.id,
-        ...instructionFilters,
-      }"
-    >
-      <template #filters>
-        <div class="filters">
-          <div class="filters-inputs">
-            <div>
-              <InstructionFilters @apply="f => (instructionFilters = f)" />
-            </div>
-          </div>
-        </div>
-      </template>
-      <template #default="{ items }">
-        <InstructionTeacherList :items="items" />
-      </template>
-    </UiDataLoader>
+    <InstructionTab v-else-if="selectedTab === 'instructions'" :teacher-id="teacher.id" />
+    <ReportTab v-else-if="selectedTab === 'reports'" :teacher-id="teacher.id" />
     <TeacherPaymentTab v-else-if="selectedTab === 'payments'" :teacher-id="teacher.id" />
     <TeacherServiceTab v-else-if="selectedTab === 'services'" :teacher-id="teacher.id" />
-    <BalanceList
-      v-else
-      :id="teacher.id"
-      entity="teacher"
-    />
-  </div>
-  <TeacherDialog
-    ref="teacherDialog"
-    @updated="onUpdated"
-  />
-</template>
+    <Balance v-else :teacher-id="teacher.id" />
+  </template>
 
-<style lang="scss">
-.teacher {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  h3 {
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    .v-btn {
-      margin-left: 2px;
-    }
-    .v-icon {
-      font-size: calc(var(--v-icon-size-multiplier) * 1.5rem) !important;
-    }
-  }
-}
-</style>
+  <TeacherDialog ref="teacherDialog" @updated="onUpdated" />
+</template>

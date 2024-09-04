@@ -30,26 +30,24 @@ const filteredItems = computed(() => selectedProgram.value
 </script>
 
 <template>
-  <div class="filters">
-    <div class="filters-inputs">
-      <div>
-        <v-select
-          v-model="filters.year"
-          label="Учебный год"
-          :items="selectItems(YearLabel)"
-          density="comfortable"
-        />
-      </div>
-      <div>
-        <UiClearableSelect
-          v-model="selectedProgram"
-          label="Программа"
-          :items="availablePrograms"
-          density="comfortable"
-        />
-      </div>
+  <UiFilters>
+    <div>
+      <v-select
+        v-model="filters.year"
+        label="Учебный год"
+        :items="selectItems(YearLabel)"
+        density="comfortable"
+      />
     </div>
-  </div>
+    <div>
+      <UiClearableSelect
+        v-model="selectedProgram"
+        label="Программа"
+        :items="availablePrograms"
+        density="comfortable"
+      />
+    </div>
+  </UiFilters>
   <div>
     <UiLoader3 :loading="loading" />
     <div class="table table--padding">

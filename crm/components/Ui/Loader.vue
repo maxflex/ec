@@ -1,25 +1,26 @@
 <template>
-  <div class="loaderr">
+  <div class="loader">
     <span> загрузка... </span>
   </div>
 </template>
 
 <style lang="scss">
-.loaderr {
+.loader {
   background: white;
   height: 100%;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: absolute;
   span {
     color: rgb(var(--v-theme-gray));
-    animation-name: loaderr;
+    animation-name: loader;
     animation-duration: 2s;
     animation-timing-function: linear;
   }
 }
-@keyframes loaderr {
+@keyframes loader {
   from {
     opacity: 0;
   }

@@ -145,7 +145,7 @@ defineExpose({ edit, create })
           />
         </div>
       </div>
-      <UiLoaderr v-if="loading" />
+      <UiLoader v-if="loading" />
       <div v-else class="dialog-body">
         <div class="text-center pb-2">
           <v-rating

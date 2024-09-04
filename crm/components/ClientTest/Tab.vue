@@ -8,7 +8,7 @@ const { clientId } = defineProps<{
 const items = ref<ClientTestResource[]>([])
 const testSelectorDialog = ref<InstanceType<typeof TestSelectorDialog>>()
 const year = ref<Year>(currentAcademicYear())
-const loading = ref(false)
+const loading = ref(true)
 
 async function loadData() {
   loading.value = true
@@ -60,32 +60,34 @@ function onDestroy(clientTest: ClientTestResource) {
   }
 }
 
+const noData = computed(() => !loading.value && items.value.length === 0)
+
 watch(year, loadData)
 
 nextTick(loadData)
 </script>
 
 <template>
-  <div class="client-test-tab">
-    <div class="filters">
-      <div class="filters-inputs">
-        <v-select
-          v-model="year"
-          label="Учебный год"
-          :items="selectItems(YearLabel)"
-          density="comfortable"
-        />
-      </div>
+  <UiIndexPage :data="{ loading, noData }">
+    <template #filters>
+      <v-select
+        v-model="year"
+        label="Учебный год"
+        :items="selectItems(YearLabel)"
+        density="comfortable"
+      />
+    </template>
+    <template #buttons>
       <v-btn
         color="primary"
         @click="() => testSelectorDialog?.open()"
       >
         добавить тест
       </v-btn>
-    </div>
-    <UiLoaderr v-if="loading" />
-    <ClientTestList v-else :items="items" @destroy="onDestroy" />
-  </div>
+    </template>
+    <ClientTestList :items="items" @destroy="onDestroy" />
+  </UiIndexPage>
+
   <TestSelectorDialog
     ref="testSelectorDialog"
     @selected="onTestsSelected"

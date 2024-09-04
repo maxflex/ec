@@ -280,7 +280,7 @@ defineExpose({ edit, newContract, newVersion })
           />
         </div>
       </div>
-      <UiLoaderr v-if="loading" />
+      <UiLoader v-if="loading" />
       <div
         v-else
         class="dialog-body"

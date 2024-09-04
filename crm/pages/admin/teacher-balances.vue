@@ -30,11 +30,14 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div class="filters">
-    <div class="filters-inputs">
-      <v-select v-model="year" :items="selectItems(YearLabel)" label="Учебный год" density="comfortable" />
-    </div>
-  </div>
+  <UiFilters>
+    <v-select
+      v-model="year"
+      :items="selectItems(YearLabel)"
+      label="Учебный год"
+      density="comfortable"
+    />
+  </UiFilters>
   <v-table fixed-header height="calc(100vh - 81px)" class="teacher-balances-table">
     <thead>
       <tr>
@@ -108,13 +111,14 @@ nextTick(loadData)
       &:not(:first-child) {
         width: 150px;
       }
-      &:nth-child(5) {
-        font-weight: 500 !important;
-      }
       &:nth-child(6),
       &:nth-child(7) {
-        font-weight: 500 !important;
         border-left: 1px solid rgb(var(--v-theme-border));
+      }
+    }
+    td {
+      &:nth-child(5) {
+        font-weight: bold !important;
       }
     }
   }

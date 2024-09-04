@@ -213,42 +213,42 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div class="filters">
-    <div class="filters-inputs">
-      <v-select
-        v-model="year"
-        :disabled="group !== undefined"
-        label="Учебный год"
-        :items="selectItems(YearLabel)"
-        density="comfortable"
-      />
-      <v-select
-        v-model="hideEmptyDates"
-        label="Даты"
-        :items="yesNo('скрыть пустые', 'показывать все', true)"
-        density="comfortable"
-      />
-    </div>
-    <v-menu v-if="editable && group">
-      <template #activator="{ props }">
-        <v-btn color="primary" v-bind="props">
-          добавить занятия
-        </v-btn>
-      </template>
-      <v-list>
-        <v-list-item @click="lessonDialog?.create(id, group?.year!)">
-          добавить одно занятие
-        </v-list-item>
-        <v-list-item @click="lessonBatchCreateDialog?.create(id, group?.year!)">
-          добавить несколько занятий
-        </v-list-item>
-      </v-list>
-    </v-menu>
-    <v-fade-transition v-else>
-      <TeethBar v-if="teeth" :items="teeth" />
-    </v-fade-transition>
-  </div>
-  <UiLoaderr v-if="loading" />
+  <UiFilters>
+    <v-select
+      v-model="year"
+      :disabled="group !== undefined"
+      label="Учебный год"
+      :items="selectItems(YearLabel)"
+      density="comfortable"
+    />
+    <v-select
+      v-model="hideEmptyDates"
+      label="Даты"
+      :items="yesNo('скрыть пустые', 'показывать все', true)"
+      density="comfortable"
+    />
+    <template #buttons>
+      <v-menu v-if="editable && group">
+        <template #activator="{ props }">
+          <v-btn color="primary" v-bind="props">
+            добавить занятия
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item @click="lessonDialog?.create(id, group?.year!)">
+            добавить одно занятие
+          </v-list-item>
+          <v-list-item @click="lessonBatchCreateDialog?.create(id, group?.year!)">
+            добавить несколько занятий
+          </v-list-item>
+        </v-list>
+      </v-menu>
+      <v-fade-transition v-else>
+        <TeethBar v-if="teeth" :items="teeth" />
+      </v-fade-transition>
+    </template>
+  </UiFilters>
+  <UiLoader v-if="loading" />
   <div v-else class="lesson-list">
     <div
       v-for="d in dates"

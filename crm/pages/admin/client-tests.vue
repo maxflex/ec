@@ -18,9 +18,9 @@ function onDestroy(clientTest: ClientTestResource) {
 </script>
 
 <template>
-  <div class="filters">
+  <UiFilters>
     <ClientTestFilters @apply="onFiltersApply" />
-  </div>
+  </UiFilters>
   <div>
     <UiLoader3 :loading="loading" />
     <ClientTestList :items="items" @destroy="onDestroy" />

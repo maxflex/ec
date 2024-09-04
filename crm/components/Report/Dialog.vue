@@ -126,7 +126,7 @@ defineExpose({ edit, create })
           />
         </div>
       </div>
-      <UiLoaderr v-if="loading" />
+      <UiLoader v-if="loading" />
       <div v-else class="dialog-body">
         <div class="double-input">
           <div v-if="item.teacher">

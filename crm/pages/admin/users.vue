@@ -82,16 +82,18 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div class="filters">
+  <UiFilters>
     <UserFilters @apply="onFiltersApply" />
-    <v-btn
-      append-icon="$next"
-      color="primary"
-      @click="userDialog?.create()"
-    >
-      добавить
-    </v-btn>
-  </div>
+    <template #buttons>
+      <v-btn
+        append-icon="$next"
+        color="primary"
+        @click="userDialog?.create()"
+      >
+        добавить
+      </v-btn>
+    </template>
+  </UiFilters>
   <div>
     <UiLoader3 :loading="loading" />
     <UserList

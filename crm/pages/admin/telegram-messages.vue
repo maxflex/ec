@@ -8,17 +8,18 @@ const { items, loading, onFiltersApply, reloadData } = useIndex<GradeListResourc
 </script>
 
 <template>
-  <div class="filters">
+  <UiFilters>
     <TelegramMessageFilters @apply="onFiltersApply" />
-    <v-spacer />
-    <v-btn
-      append-icon="$next"
-      color="primary"
-      @click="telegramMessageBulkDialog?.open()"
-    >
-      групповая отправка
-    </v-btn>
-  </div>
+    <template #buttons>
+      <v-btn
+        append-icon="$next"
+        color="primary"
+        @click="telegramMessageBulkDialog?.open()"
+      >
+        групповая отправка
+      </v-btn>
+    </template>
+  </UiFilters>
   <div>
     <UiLoader3 :loading="loading" />
     <TelegramMessageList :items="items" />

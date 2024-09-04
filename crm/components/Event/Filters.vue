@@ -17,14 +17,12 @@ watch(filters.value, () => {
 </script>
 
 <template>
-  <div class="filters-inputs">
-    <div>
-      <v-select
-        v-model="filters.year"
-        label="Учебный год"
-        :items="selectItems(YearLabel)"
-        density="comfortable"
-      />
-    </div>
+  <div>
+    <v-select
+      v-model="filters.year"
+      label="Учебный год"
+      :items="selectItems(YearLabel)"
+      density="comfortable"
+    />
   </div>
 </template>

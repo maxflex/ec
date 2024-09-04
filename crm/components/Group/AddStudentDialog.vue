@@ -72,7 +72,7 @@ defineExpose({ open })
           @click="save()"
         />
       </div>
-      <UiLoaderr v-if="loading" />
+      <UiLoader v-if="loading" />
       <div v-else class="dialog-body pt-0">
         <div class="table table--hover">
           <div v-for="candidate in candidates" :key="candidate.id" class="cursor-pointer" @click="onSelect(candidate)">

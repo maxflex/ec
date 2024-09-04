@@ -89,7 +89,7 @@ defineExpose({ open })
       }"
     >
       <v-fade-transition>
-        <UiLoaderr v-if="!loaded" />
+        <UiLoader v-if="!loaded" />
       </v-fade-transition>
 
       <div v-if="person && phone" class="telegram-messages__header">

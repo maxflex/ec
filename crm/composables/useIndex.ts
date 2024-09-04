@@ -11,7 +11,16 @@ export default function<T, F extends object | undefined = undefined>(
     defaultFilters = {},
     scrollContainerSelector = 'main',
   } = options
+
+  // данные для компонента UiIndexPage
+  const indexPageData = ref<IndexPageData>({
+    loading: false,
+    noData: false,
+  })
+
+  // любая загрузка
   const loading = ref(false)
+
   const items = ref<T[]>([]) as Ref<T[]>
   let filters: F = defaultFilters as F
   let scrollContainer: HTMLElement | null = null
@@ -24,6 +33,12 @@ export default function<T, F extends object | undefined = undefined>(
     }
     page++
     loading.value = true
+    if (page === 1) {
+      indexPageData.value = {
+        loading: true,
+        noData: false,
+      }
+    }
     const { data } = await useHttp<ApiResponse<T[]>>(apiUrl, {
       params: {
         page,
@@ -33,7 +48,16 @@ export default function<T, F extends object | undefined = undefined>(
     })
     if (data.value) {
       const { meta, data: newItems } = data.value
-      items.value = page === 1 ? newItems : items.value.concat(newItems)
+      if (page === 1) {
+        items.value = newItems
+        indexPageData.value = {
+          loading: false,
+          noData: newItems.length === 0,
+        }
+      }
+      else {
+        items.value = items.value.concat(newItems)
+      }
       isLastPage = meta.current_page >= meta.last_page
     }
     loading.value = false
@@ -84,6 +108,7 @@ export default function<T, F extends object | undefined = undefined>(
   return {
     items,
     loading,
+    indexPageData,
     onFiltersApply,
     reloadData,
   }

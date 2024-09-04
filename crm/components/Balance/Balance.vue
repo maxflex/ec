@@ -1,19 +1,20 @@
 <script setup lang="ts">
-const { id, entity } = defineProps<{
-  entity: Extract<EntityString, 'contract' | 'teacher'>
-  id: number
+const { contractId, teacherId } = defineProps<{
+  contractId?: number
+  teacherId?: number
 }>()
-// const year = ref<Year>(currentAcademicYear())
-const year = ref<Year>(2023)
+
+const year = ref<Year>(currentAcademicYear())
 const balance = ref<Balance[]>([])
 const loading = ref(true)
+const entity = contractId ? 'contract' : 'teacher'
 
 async function loadData() {
   loading.value = true
   const params = entity === 'teacher'
     ? { year: year.value }
     : undefined
-  const { data } = await useHttp<Balance[]>(`balance/${entity}/${id}`, {
+  const { data } = await useHttp<Balance[]>(`balance/${entity}/${contractId || teacherId}`, {
     params,
   })
   if (data.value) {
@@ -22,31 +23,24 @@ async function loadData() {
   loading.value = false
 }
 
+const noData = computed(() => !loading.value && balance.value.length === 0)
+
 watch(year, loadData)
 
 nextTick(loadData)
 </script>
 
 <template>
-  <div class="balance">
-    <div
-      v-if="entity === 'teacher'"
-      class="filters"
-    >
-      <div class="filters-inputs">
-        <v-select
-          v-model="year"
-          label="Учебный год"
-          :items="selectItems(YearLabel)"
-          density="comfortable"
-        />
-      </div>
-    </div>
-    <UiLoaderr v-if="loading" />
-    <div
-      v-else-if="balance.length"
-      class="table"
-    >
+  <UiIndexPage :data="{ loading, noData }">
+    <template v-if="teacherId" #filters>
+      <v-select
+        v-model="year"
+        label="Учебный год"
+        :items="selectItems(YearLabel)"
+        density="comfortable"
+      />
+    </template>
+    <div class="table balance-table">
       <div
         v-for="b in balance"
         :key="b.date"
@@ -93,48 +87,23 @@ nextTick(loadData)
         </div>
       </div>
     </div>
-    <div
-      v-else
-      class="balance-empty"
-    >
-      нет данных
-    </div>
-  </div>
+  </UiIndexPage>
 </template>
 
 <style lang="scss">
 .balance {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  & > div {
-    &:last-child {
-      flex: 1;
-    }
-  }
-  &-empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgb(var(--v-theme-gray));
-  }
   &-items {
     flex: 1;
     table {
       border-collapse: collapse;
-      tr {
-        td {
-        }
-      }
     }
   }
-  .table {
+  &-table {
     font-size: 14px;
     & > div {
       padding: 12px 20px !important;
       align-items: flex-end !important;
     }
   }
-  // padding: 40px 20px;
 }
 </style>

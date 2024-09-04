@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Contracts\HasBalance;
 use App\Enums\Company;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
-class Contract extends Model
+class Contract extends Model implements HasBalance
 {
     public $timestamps = false;
 
@@ -50,7 +51,7 @@ class Contract extends Model
         return $this->versions()->active()->first();
     }
 
-    public function getBalance()
+    public function getBalance(?int $year = null): array
     {
         $programIds = $this->getActiveVersion()->programs()->pluck('id');
 

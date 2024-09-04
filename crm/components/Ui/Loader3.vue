@@ -6,7 +6,7 @@ const { loading } = defineProps<{
 
 <template>
   <v-fade-transition>
-    <UiLoaderr v-if="loading" class="loader-3" />
+    <UiLoader v-if="loading" class="loader-3" />
   </v-fade-transition>
 </template>
 

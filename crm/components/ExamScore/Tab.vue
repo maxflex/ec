@@ -9,14 +9,11 @@ const filters = ref<{
 }>({
   year: currentAcademicYear(),
 })
-const loading = ref(false)
+const loading = ref(true)
 const items = ref<ExamScoreResource[]>([])
 const examScoreDialog = ref<InstanceType<typeof ExamScoreDialog>>()
 
 async function loadData() {
-  if (loading.value) {
-    return
-  }
   loading.value = true
   const { data } = await useHttp<ApiResponse<ExamScoreResource[]>>(
     'exam-scores',
@@ -47,27 +44,31 @@ function onUpdated(es: ExamScoreResource) {
   itemUpdated('exam-score', es.id)
 }
 
+const noData = computed(() => !loading.value && items.value.length === 0)
+
 nextTick(loadData)
 </script>
 
 <template>
-  <div class="filters">
-    <div class="filters-inputs">
+  <UiIndexPage :data="{ loading, noData }">
+    <template #filters>
       <v-select
-        v-model="filters.year" :items="selectItems(YearLabel)" label="Год"
+        v-model="filters.year"
+        :items="selectItems(YearLabel)"
+        label="Год"
         density="comfortable"
       />
-    </div>
-    <v-btn
-      color="primary"
-      @click="examScoreDialog?.create(clientId, filters.year)"
-    >
-      добавить баллы
-    </v-btn>
-  </div>
-  <div>
-    <UiLoader3 :loading="loading" />
+    </template>
+    <template #buttons>
+      <v-btn
+        color="primary"
+        @click="examScoreDialog?.create(clientId, filters.year)"
+      >
+        добавить баллы
+      </v-btn>
+    </template>
     <ExamScoreList :items="items" @edit="({ id }) => examScoreDialog?.edit(id)" />
-  </div>
+  </UiIndexPage>
+
   <ExamScoreDialog ref="examScoreDialog" @updated="onUpdated" />
 </template>

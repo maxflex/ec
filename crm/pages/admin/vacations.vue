@@ -29,7 +29,7 @@ onMounted(async () => {
 })
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<VacationResource[]>>('vacations')
+  const { data } = await useHttp<ApiResponse<VacationResource[]>>(`common/vacations`)
   if (data.value) {
     // vacations.value = data.value.data
     for (const { date } of data.value.data) {
@@ -84,7 +84,7 @@ nextTick(loadData)
 </script>
 
 <template>
-  <UiLoaderr :loading="loading" />
+  <UiLoader :loading="loading" />
   <v-card class="vcalendar-card">
     <div class="vcalendar__header">
       <!-- <v-btn icon @click="dialog = false" variant="flat" :size="48">
