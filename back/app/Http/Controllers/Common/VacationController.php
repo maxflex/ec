@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Common;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\Vacation;
 use Illuminate\Http\Request;
 
@@ -21,6 +22,8 @@ class VacationController extends Controller
 
     public function store(Request $request)
     {
+        abort_if(auth()->user()->entity_type !== User::class, 401);
+
         $vacation = Vacation::where('date', $request->date)->first();
         if ($vacation === null) {
             return Vacation::create($request->all());

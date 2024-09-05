@@ -70,7 +70,7 @@ function onClick(year: number, month: number, day: number) {
   else {
     dates.value[date] = true
   }
-  useHttp('vacations', {
+  useHttp(`common/vacations`, {
     method: 'post',
     body: { date },
   })
