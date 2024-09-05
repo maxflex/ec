@@ -15,13 +15,9 @@ class GroupController extends Controller
 
     public function index(Request $request)
     {
-        $query = Group::query()
-            ->whereHas(
-                'contracts',
-                fn ($q) => $q->where('client_id', auth()->id())
-            )
+        $query = Group::whereClient(auth()->id())
             ->withCount('lessons', 'clientGroups')
-            ->orderBy('id', 'desc');
+            ->latest('id');
 
         $this->filter($request, $query);
 

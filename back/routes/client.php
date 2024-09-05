@@ -1,13 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Client\{
-    BillingController,
+use App\Http\Controllers\Client\{BillingController,
     ClientTestController,
     GroupController,
-    ReportController,
-    ScheduleController
-};
+    LessonController,
+    ReportController};
+use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:crm'])->group(function () {
     Route::controller(ClientTestController::class)->prefix('client-tests')->group(function () {
@@ -15,8 +13,8 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::post('start/{clientTest}', 'start');
         Route::post('finish', 'finish');
     });
+    Route::get('lessons', LessonController::class);
     Route::get('billing', BillingController::class);
-    Route::get('schedule/client/{client}', [ScheduleController::class, 'client']);
     Route::apiResource('groups', GroupController::class)->only('index');
     Route::apiResource('reports', ReportController::class)->only(['index', 'show']);
     Route::apiResource('client-tests', ClientTestController::class)->only('index', 'show');

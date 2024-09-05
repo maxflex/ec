@@ -20,7 +20,9 @@ class LessonController extends Controller
     {
         if ($request->has('client_id')) {
             $client = Client::find($request->client_id);
-            return LessonListResource::collection($client->getSchedule($request->year));
+            return [
+                'data' => LessonListResource::collection($client->getSchedule($request->year))
+            ];
         }
 
         $query = Lesson::query()

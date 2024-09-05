@@ -1,17 +1,50 @@
 <script setup lang="ts">
-import type { Filters } from '~/components/Group/Filters.vue'
+const filters = ref({
+  year: currentAcademicYear(),
+})
 
-const { items, loading, onFiltersApply } = useIndex<GroupListResource, Filters>(`groups`)
+const selectedProgram = ref<Program>()
+
+const { items, indexPageData, onFiltersApply } = useIndex<GroupListResource>(`groups`, {
+  defaultFilters: filters.value,
+})
+
+watch(filters.value, (filters) => {
+  selectedProgram.value = undefined
+  onFiltersApply(filters)
+})
+
+const availablePrograms = computed(() => {
+  return [...new Set(items.value.map(e => e.program))].map(p => ({
+    value: p,
+    title: ProgramLabel[p],
+  }))
+})
+
+const filteredItems = computed(() => selectedProgram.value
+  ? items.value.filter(e => e.program === selectedProgram.value)
+  : items.value,
+)
 </script>
 
 <template>
-  <UiFilters>
-    <GroupFilters @apply="onFiltersApply" />
-  </UiFilters>
-  <div>
-    <UiLoader3 :loading="loading" />
+  <UiIndexPage :data="indexPageData">
+    <template #filters>
+      <v-select
+        v-model="filters.year"
+        label="Учебный год"
+        :items="selectItems(YearLabel)"
+        density="comfortable"
+      />
+      <UiClearableSelect
+        v-model="selectedProgram"
+        label="Программа"
+        :items="availablePrograms"
+        density="comfortable"
+      />
+    </template>
     <div class="table table--padding">
-      <GroupList :items="items" />
+      <GroupList :items="filteredItems" />
     </div>
-  </div>
+  </UiIndexPage>
 </template>

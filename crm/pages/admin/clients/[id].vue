@@ -107,7 +107,7 @@ nextTick(loadData)
       </div>
     </div>
 
-    <RequestList v-if="selectedTab === 'requests'" :client-id="client.id" />
+    <RequestTab v-if="selectedTab === 'requests'" :client-id="client.id" />
     <ReportTab v-else-if="selectedTab === 'reports'" :client-id="client.id" />
     <ClientReviewTab v-else-if="selectedTab === 'clientReviews'" :client-id="client.id" />
     <ContractTab v-else-if="selectedTab === 'contracts'" :client-id="client.id" />

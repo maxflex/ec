@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ClientTestResource;
-use Illuminate\Http\Request;
 use App\Models\ClientTest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 class ClientTestController extends Controller
@@ -40,7 +40,7 @@ class ClientTestController extends Controller
             ->first();
 
         if ($activeTest === null) {
-            return response(null, 404);
+            return response(null);
         }
 
         return [
@@ -55,9 +55,12 @@ class ClientTestController extends Controller
 
     public function finish(Request $request)
     {
-        $activeTest = ClientTest::active(auth()->id())->first();
+        $activeTest = ClientTest::query()
+            ->where('client_id', auth()->id())
+            ->active()
+            ->first();
         if ($activeTest === null) {
-            return response(null, 404);
+            return response(null);
         }
         $activeTest->finish($request->answers);
     }

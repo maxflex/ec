@@ -16,10 +16,8 @@ class TeethController extends Controller
             'group_id' => ['sometimes', 'numeric', 'exists:groups,id'],
             'client_id' => ['sometimes', 'numeric', 'exists:clients,id'],
             'teacher_id' => ['sometimes', 'numeric', 'exists:teachers,id'],
-            'year' => ['required', 'numeric'],
+            'year' => ['sometimes', 'required', 'numeric', 'min:2015'],
         ]);
-
-        logger('here');
 
         $entity = match (true) {
             $request->has('teacher_id') => Teacher::find($request->teacher_id),

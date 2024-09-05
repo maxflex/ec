@@ -22,6 +22,7 @@ class BillingController extends Controller
             )
             ->orderBy('id', 'desc')
             ->get();
-        return BillingResource::collection($contracts);
+
+        return paginate(BillingResource::collection($contracts));
     }
 }

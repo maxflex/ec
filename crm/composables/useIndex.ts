@@ -1,4 +1,4 @@
-export default function<T, F extends object | undefined = undefined>(
+export default function<T, F extends object = object>(
   apiUrl: string,
   options: {
     defaultFilters?: F
@@ -14,7 +14,7 @@ export default function<T, F extends object | undefined = undefined>(
 
   // данные для компонента UiIndexPage
   const indexPageData = ref<IndexPageData>({
-    loading: false,
+    loading: true,
     noData: false,
   })
 

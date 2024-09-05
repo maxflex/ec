@@ -24,7 +24,6 @@ use App\Http\Controllers\Admin\{BalanceController,
     PreviewController,
     ReportController,
     RequestsController,
-    ScheduleController,
     StatsController,
     SwampController,
     TeacherBalanceController,
@@ -48,12 +47,6 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::post('stats', StatsController::class);
 
     Route::get('balance', BalanceController::class);
-
-    Route::prefix('schedule')->controller(ScheduleController::class)->group(function () {
-        Route::get('client/{client}', 'client');
-        Route::get('teacher/{teacher}', 'teacher');
-        Route::get('group/{group}', 'group');
-    });
 
     Route::apiResource('logs', LogController::class)->only('index');
     Route::apiResource('topics', TopicController::class)->only('index');

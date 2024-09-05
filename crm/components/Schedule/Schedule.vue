@@ -26,8 +26,7 @@ const editable = user?.entity_type === EntityType.user
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const year = ref<Year>(properties.year || currentAcademicYear())
 const params = {
-  year: year.value,
-  // только один из них НЕ undefined
+// только один из них НЕ undefined
   teacher_id: teacherId,
   client_id: clientId,
   group_id: groupId,
@@ -95,7 +94,15 @@ const itemsByDate = computed((): {
 
 async function loadLessons() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<LessonListResource[]>>(`lessons`, { params })
+  const { data } = await useHttp<ApiResponse<LessonListResource[]>>(
+      `lessons`,
+      {
+        params: {
+          ...params,
+          year: groupId ? undefined : year.value,
+        },
+      },
+  )
   if (data.value) {
     lessons.value = data.value.data
   }
@@ -107,7 +114,15 @@ async function loadEvents() {
   if (groupId) {
     return
   }
-  const { data } = await useHttp<ApiResponse<EventListResource[]>>(`common/events`, { params })
+  const { data } = await useHttp<ApiResponse<EventListResource[]>>(
+      `common/events`,
+      {
+        params: {
+          ...params,
+          year: year.value,
+        },
+      },
+  )
   if (data.value) {
     events.value = data.value.data
   }
@@ -117,7 +132,15 @@ async function loadTeeth() {
   if (!showTeeth) {
     return
   }
-  const { data } = await useHttp<Teeth>(`teeth`, { params })
+  const { data } = await useHttp<Teeth>(
+      `teeth`,
+      {
+        params: {
+          ...params,
+          year: year.value,
+        },
+      },
+  )
   if (data.value) {
     teeth.value = data.value
   }

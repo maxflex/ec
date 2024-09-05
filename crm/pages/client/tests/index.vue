@@ -4,28 +4,20 @@ import type { TestDialog } from '#build/components'
 definePageMeta({ middleware: ['check-active-test'] })
 
 const testDialog = ref<InstanceType<typeof TestDialog>>()
-const items = ref<ClientTestResource[]>()
 
-async function loadData() {
-  const { data } = await useHttp<ApiResponse<ClientTestResource[]>>(`client-tests`)
-  if (data.value) {
-    items.value = data.value.data
-  }
-}
-
-nextTick(loadData)
+const { items, indexPageData, reloadData } = useIndex<ClientTestResource>(`client-tests`)
 </script>
 
 <template>
-  <div class="tests">
+  <UiIndexPage :data="indexPageData">
     <ClientTestList
       v-if="items"
       :items="items"
       @open="testDialog?.open"
     />
-  </div>
+  </UiIndexPage>
   <TestDialog
     ref="testDialog"
-    @updated="loadData()"
+    @updated="reloadData"
   />
 </template>

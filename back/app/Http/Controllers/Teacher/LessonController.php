@@ -11,7 +11,8 @@ use Illuminate\Http\Request;
 class LessonController extends Controller
 {
     protected $filters = [
-        'equals' => ['group_id']
+        'equals' => ['group_id', 'teacher_id'],
+        'group' => ['year'],
     ];
 
     public function index(Request $request)
@@ -47,5 +48,10 @@ class LessonController extends Controller
     {
         $lesson->conduct($request->contracts);
         return new LessonListResource($lesson);
+    }
+
+    protected function filterGroup($query, $value, $field)
+    {
+        $query->whereHas('group', fn($q) => $q->where($field, $value));
     }
 }

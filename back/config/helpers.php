@@ -120,3 +120,15 @@ function json_redecode($object, $assoc = true)
 {
     return json_decode(json_encode($object), $assoc);
 }
+
+function paginate($data)
+{
+    return [
+        'data' => $data,
+        'meta' => [
+            'current_page' => 1,
+            'last_page' => 1,
+            'total' => count($data)
+        ]
+    ];
+}
