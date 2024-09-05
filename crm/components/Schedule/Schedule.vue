@@ -3,31 +3,43 @@ import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'dat
 import { groupBy } from 'rambda'
 import type {
   EventDialog,
-  LessonBatchCreateDialog,
-  LessonBatchUpdateDialog,
+  LessonBulkCreateDialog,
+  LessonBulkUpdateDialog,
   LessonConductDialog,
   LessonDialog,
 } from '#build/components'
 
-const { entity, id, group, showTeeth } = defineProps<{
-  entity: Extract<EntityString, 'client' | 'teacher' | 'group'>
-  id: number
-  group?: GroupResource
+// потому что props ещё есть ниже
+const properties = defineProps<{
+  groupId?: number
+  teacherId?: number
+  clientId?: number
+  year?: Year
+  program?: Program
   showTeeth?: boolean
 }>()
+
+const { groupId, teacherId, clientId, program, showTeeth } = properties
 
 const { user } = useAuthStore()
 const editable = user?.entity_type === EntityType.user
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
-const year = ref<Year>(group === undefined ? currentAcademicYear() : group.year)
+const year = ref<Year>(properties.year || currentAcademicYear())
+const params = {
+  year: year.value,
+  // только один из них НЕ undefined
+  teacher_id: teacherId,
+  client_id: clientId,
+  group_id: groupId,
+}
 const loading = ref(false)
 const hideEmptyDates = ref(0)
 const teeth = ref<Teeth>()
 const lessons = ref<LessonListResource[]>([])
 const events = ref<EventListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
-const lessonBatchUpdateDialog = ref<InstanceType<typeof LessonBatchUpdateDialog>>()
-const lessonBatchCreateDialog = ref<InstanceType<typeof LessonBatchCreateDialog>>()
+const lessonBulkUpdateDialog = ref<InstanceType<typeof LessonBulkUpdateDialog>>()
+const lessonBulkCreateDialog = ref<InstanceType<typeof LessonBulkCreateDialog>>()
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 const vacations = ref<Record<string, boolean>>({})
@@ -83,27 +95,19 @@ const itemsByDate = computed((): {
 
 async function loadLessons() {
   loading.value = true
-  const { data } = await useHttp<LessonListResource[]>(`schedule/${entity}/${id}`, {
-    params: {
-      year: year.value,
-    },
-  })
+  const { data } = await useHttp<ApiResponse<LessonListResource[]>>(`lessons`, { params })
   if (data.value) {
-    lessons.value = data.value
+    lessons.value = data.value.data
   }
   loading.value = false
 }
 
 async function loadEvents() {
-  if (entity === 'group') {
+  // в группе не может быть событий
+  if (groupId) {
     return
   }
-  const { data } = await useHttp<ApiResponse<EventListResource[]>>(`common/events`, {
-    params: {
-      year: year.value,
-      [`${entity}_id`]: id,
-    },
-  })
+  const { data } = await useHttp<ApiResponse<EventListResource[]>>(`common/events`, { params })
   if (data.value) {
     events.value = data.value.data
   }
@@ -113,13 +117,7 @@ async function loadTeeth() {
   if (!showTeeth) {
     return
   }
-  const { data } = await useHttp<Teeth>(`teeth`, {
-    params: {
-      year: year.value,
-      entity_type: EntityType[entity],
-      entity_id: id,
-    },
-  })
+  const { data } = await useHttp<Teeth>(`teeth`, { params })
   if (data.value) {
     teeth.value = data.value
   }
@@ -141,16 +139,14 @@ async function loadVacations() {
 }
 
 async function loadExamDates() {
-  if (!group || !group.program) {
+  if (!program) {
     return
   }
   examDates.value = {}
   const { data } = await useHttp<ApiResponse<ExamDateResource[]>>(
       `common/exam-dates`,
       {
-        params: {
-          program: group.program,
-        },
+        params: { program },
       },
   )
   if (data.value && data.value.data.length) {
@@ -183,29 +179,10 @@ async function loadData() {
   await loadVacations()
 }
 
-function onBatchUpdated() {
+function onBulkUpdated() {
   loadLessons()
   checkboxes.value = {}
 }
-
-// function onLessonUpdated(l: LessonListResource) {
-//   for (const d in schedule.value) {
-//     const index = schedule.value[d].findIndex(e => e.id === l.id)
-//     if (index !== -1) {
-//       schedule.value[d][index] = l as ScheduleItem
-//     }
-//     else {
-//       schedule.value[d].push(l)
-//     }
-//   }
-// }
-
-// function onLessonDestroyed(l: LessonListResource) {
-//   const index = lessons.value.findIndex(e => e.id === l.id)
-//   if (index !== -1) {
-//     lessons.value.splice(index, 1)
-//   }
-// }
 
 watch(year, loadData)
 
@@ -216,7 +193,7 @@ nextTick(loadData)
   <UiFilters>
     <v-select
       v-model="year"
-      :disabled="group !== undefined"
+      :disabled="!!groupId"
       label="Учебный год"
       :items="selectItems(YearLabel)"
       density="comfortable"
@@ -228,17 +205,17 @@ nextTick(loadData)
       density="comfortable"
     />
     <template #buttons>
-      <v-menu v-if="editable && group">
+      <v-menu v-if="editable && groupId">
         <template #activator="{ props }">
           <v-btn color="primary" v-bind="props">
             добавить занятия
           </v-btn>
         </template>
         <v-list>
-          <v-list-item @click="lessonDialog?.create(id, group?.year!)">
+          <v-list-item @click="lessonDialog?.create(groupId, year)">
             добавить одно занятие
           </v-list-item>
-          <v-list-item @click="lessonBatchCreateDialog?.create(id, group?.year!)">
+          <v-list-item @click="lessonBulkCreateDialog?.create(groupId, year)">
             добавить несколько занятий
           </v-list-item>
         </v-list>
@@ -249,14 +226,14 @@ nextTick(loadData)
     </template>
   </UiFilters>
   <UiLoader v-if="loading" />
-  <div v-else class="lesson-list">
+  <div v-else class="schedule">
     <div
       v-for="d in dates"
       :key="d"
       :class="{
         'week-separator': !hideEmptyDates && getDay(d) === 0,
-        'lesson-list--vacation': vacations[d] === true,
-        'lesson-list--exam': examDates[d] === true,
+        'schedule--vacation': vacations[d] === true,
+        'schedule--exam': examDates[d] === true,
       }"
     >
       <div>
@@ -304,7 +281,7 @@ nextTick(loadData)
         <v-btn
           v-if="editable"
           color="primary"
-          @click="lessonBatchUpdateDialog?.open(lessonIds)"
+          @click="lessonBulkUpdateDialog?.open(lessonIds)"
         >
           редактировать
         </v-btn>
@@ -315,12 +292,12 @@ nextTick(loadData)
     <LessonDialog
       ref="lessonDialog"
     />
-    <LessonBatchUpdateDialog
-      ref="lessonBatchUpdateDialog"
-      @updated="onBatchUpdated"
+    <LessonBulkUpdateDialog
+      ref="lessonBulkUpdateDialog"
+      @updated="onBulkUpdated"
     />
-    <LessonBatchCreateDialog
-      ref="lessonBatchCreateDialog"
+    <LessonBulkCreateDialog
+      ref="lessonBulkCreateDialog"
       @updated="loadLessons"
     />
   </template>
@@ -332,7 +309,7 @@ nextTick(loadData)
 </template>
 
 <style lang="scss">
-.lesson-list {
+.schedule {
   & > div {
     --height: 57px;
     overflow: hidden;
@@ -395,7 +372,7 @@ nextTick(loadData)
   }
 }
 .bottom-bar {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 255px;
   padding: 0 20px;
@@ -406,7 +383,7 @@ nextTick(loadData)
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-top: thin solid rgb(var(--v-theme-border));
   // border-top: 2px solid rgb(var(--v-theme-gray));
 }
 </style>

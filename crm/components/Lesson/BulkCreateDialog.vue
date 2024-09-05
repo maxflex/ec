@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
 
-interface BatchItem {
+interface BulkItem {
   weekdays: { [key in Weekday]: string }
   cabinets: { [key in Weekday]: Cabinet | null }
   start_date: string
@@ -19,7 +19,7 @@ const modelDefaults = {
   price: null,
   group_id: 0,
 }
-const batchDefaults: BatchItem = {
+const bulkDefaults: BulkItem = {
   weekdays: {
     0: '',
     1: '',
@@ -49,28 +49,28 @@ const lesson = ref(clone(modelDefaults))
 const year = ref<Year>()
 
 // групповое добавление
-const batch = ref(clone(batchDefaults))
+const bulk = ref(clone(bulkDefaults))
 
-const isBatchAdd = computed(() => Object.values(batch.value.weekdays).some(e => !!e))
+const isBulkAdd = computed(() => Object.values(bulk.value.weekdays).some(e => !!e))
 
 function create(groupId: number, y: Year) {
   year.value = y
   lesson.value = clone(modelDefaults)
   lesson.value.group_id = groupId
-  batch.value = clone(batchDefaults)
+  bulk.value = clone(bulkDefaults)
   dialog.value = true
 }
 
 async function save() {
-  if (!isBatchAdd.value) {
+  if (!isBulkAdd.value) {
     return
   }
   const { data } = await useHttp<LessonListResource[]>(
-    `lessons/batch`,
+    `lessons/bulk`,
     {
       method: 'post',
       body: {
-        batch: batch.value,
+        bulk: bulk.value,
         lesson: lesson.value,
       },
     },
@@ -111,14 +111,14 @@ defineExpose({ create })
             <div
               class="text-uppercase font-weight-medium" style="width: 50px"
               :class="{
-                'opacity-2': !batch.weekdays[index],
+                'opacity-2': !bulk.weekdays[index],
               }"
             >
               {{ label }}
             </div>
             <div style="width: 100px">
               <v-text-field
-                v-model="batch.weekdays[index]"
+                v-model="bulk.weekdays[index]"
                 v-maska:[timeMask]
                 density="compact"
               />
@@ -130,19 +130,19 @@ defineExpose({ create })
         <table class="dialog-table weekdays-dialog-table">
           <tbody>
             <tr v-for="(label, i) in WeekdayLabel" :key="i">
-              <td :class="{ 'weekdays-dialog-table--empty': !(batch.weekdays[i] || batch.cabinets[i]) }">
+              <td :class="{ 'weekdays-dialog-table--empty': !(bulk.weekdays[i] || bulk.cabinets[i]) }">
                 {{ label.toUpperCase() }}
               </td>
               <td width="180">
                 <v-text-field
-                  v-model="batch.weekdays[i]"
+                  v-model="bulk.weekdays[i]"
                   v-maska:[timeMask]
                   placeholder="Время"
                 />
               </td>
               <td width="180">
                 <UiClearableSelect
-                  v-model="batch.cabinets[i]"
+                  v-model="bulk.cabinets[i]"
                   :items="selectItems(CabinetLabel)"
                   placeholder="Кабинет"
                 />
@@ -154,8 +154,8 @@ defineExpose({ create })
           </tbody>
         </table>
         <div class="double-input">
-          <UiDateInput v-model="batch.start_date" :year="year" label="Дата от" />
-          <UiDateInput v-model="batch.end_date" :year="year" label="до" />
+          <UiDateInput v-model="bulk.start_date" :year="year" label="Дата от" />
+          <UiDateInput v-model="bulk.end_date" :year="year" label="до" />
         </div>
         <div class="double-input">
           <v-text-field

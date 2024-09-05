@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
-use App\Contracts\HasBalance;
 use App\Enums\Company;
+use App\Traits\HasBalance;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
-class Contract extends Model implements HasBalance
+class Contract extends Model
 {
+    use HasBalance;
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -41,7 +44,7 @@ class Contract extends Model implements HasBalance
         );
     }
 
-    public function payments()
+    public function payments(): HasMany
     {
         return $this->hasMany(ContractPayment::class);
     }
@@ -51,7 +54,7 @@ class Contract extends Model implements HasBalance
         return $this->versions()->active()->first();
     }
 
-    public function getBalance(?int $year = null): array
+    protected function getBalanceItems(): array
     {
         $programIds = $this->getActiveVersion()->programs()->pluck('id');
 
@@ -59,11 +62,11 @@ class Contract extends Model implements HasBalance
             ->whereIn('contract_version_program_id', $programIds)
             ->get();
 
-        $balanceItems = collect();
+        $balanceItems = [];
 
         foreach ($clientLessons as $clientLesson) {
             $lesson = $clientLesson->lesson;
-            $balanceItems->push((object) [
+            $balanceItems[] = (object)[
                 'dateTime' => $lesson->conducted_at,
                 'sum' => $clientLesson->price * -1,
                 'comment' => sprintf(
@@ -72,38 +75,20 @@ class Contract extends Model implements HasBalance
                     $lesson->group_id,
                     $lesson->cabinet->value
                 )
-            ]);
+            ];
         }
 
         foreach ($this->payments as $payment) {
-            $balanceItems->push((object) [
+            $balanceItems[] = [
                 'dateTime' => $payment->created_at->format('Y-m-d H:i:s'),
                 'sum' => $payment->sum * ($payment->is_return ? -1 : 1),
                 'comment' => sprintf(
                     '%s (обучение)',
                     $payment->method->getTitle()
                 )
-            ]);
-        }
-
-        $balanceItemsGroupped = $balanceItems
-            ->sort(fn ($a, $b) => $a->dateTime > $b->dateTime)
-            ->groupBy(fn ($item) => str($item->dateTime)->before(' '));
-
-        $data = [];
-        $balance = 0;
-        foreach ($balanceItemsGroupped as $date => $balanceItems) {
-            $balance += $balanceItems->sum(fn ($e) => $e->sum);
-            $data[] = (object) [
-                'date' => $date,
-                'balance' => $balance,
-                'items' => $balanceItems->map(fn ($e) => (object) [
-                    'sum' => $e->sum,
-                    'comment' => $e->comment,
-                ])->all()
             ];
         }
 
-        return array_reverse($data);
+        return $balanceItems;
     }
 }

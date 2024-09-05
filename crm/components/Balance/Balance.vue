@@ -7,15 +7,15 @@ const { contractId, teacherId } = defineProps<{
 const year = ref<Year>(currentAcademicYear())
 const balance = ref<Balance[]>([])
 const loading = ref(true)
-const entity = contractId ? 'contract' : 'teacher'
 
 async function loadData() {
   loading.value = true
-  const params = entity === 'teacher'
-    ? { year: year.value }
-    : undefined
-  const { data } = await useHttp<Balance[]>(`balance/${entity}/${contractId || teacherId}`, {
-    params,
+  const { data } = await useHttp<Balance[]>(`balance`, {
+    params: {
+      year: teacherId ? year.value : undefined,
+      teacher_id: teacherId,
+      contract_id: contractId,
+    },
   })
   if (data.value) {
     balance.value = data.value

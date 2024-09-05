@@ -117,13 +117,7 @@ nextTick(loadData)
     <GradeTab v-else-if="selectedTab === 'grades'" :client-id="client.id" />
     <ClientGroupsTab v-else-if="selectedTab === 'groups'" :client-id="client.id" />
     <ClientTestTab v-else-if="selectedTab === 'tests'" :client-id="client.id" />
-    <LessonList
-      v-else
-      :id="client.id"
-      entity="client"
-      show-teeth
-    />
-
+    <Schedule v-else :client-id="client.id" show-teeth />
     <ClientDialog
       ref="clientDialog"
       @updated="onClientUpdated"

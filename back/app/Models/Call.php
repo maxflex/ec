@@ -3,13 +3,12 @@
 namespace App\Models;
 
 use App\Casts\Timestamp;
-use App\Contracts\HasMenuCount;
 use App\Enums\{CallType};
 use App\Utils\Mango;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Call extends Model implements HasMenuCount
+class Call extends Model
 {
     const DISABLE_LOGS = true;
 
@@ -122,11 +121,6 @@ class Call extends Model implements HasMenuCount
     public function hide()
     {
         cache()->tags('missed')->put($this->id, 1, now()->addMonth());
-    }
-
-    public static function getMenuCount(): int
-    {
-        return Call::missed()->count();
     }
 
 //    public static function getCounts()

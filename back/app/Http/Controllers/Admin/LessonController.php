@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\{LessonConductResource, LessonListResource, LessonResource};
+use App\Models\Client;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -13,11 +14,15 @@ class LessonController extends Controller
     protected $filters = [
         'equals' => ['group_id', 'teacher_id'],
         'group' => ['year'],
-        'client' => ['client_id']
     ];
 
     public function index(Request $request)
     {
+        if ($request->has('client_id')) {
+            $client = Client::find($request->client_id);
+            return LessonListResource::collection($client->getSchedule($request->year));
+        }
+
         $query = Lesson::query()
             ->with(['teacher', 'group', 'clientLessons'])
             ->orderByRaw('date, time');
@@ -47,20 +52,20 @@ class LessonController extends Controller
 
     /**
      * Групповое добавление
-     * @method POST
+     * POST
      */
-    public function batchStore(Request $request)
+    public function bulkStore(Request $request)
     {
-        $from = Carbon::parse($request->batch['start_date']);
-        $to = Carbon::parse($request->batch['end_date']);
+        $from = Carbon::parse($request->bulk['start_date']);
+        $to = Carbon::parse($request->bulk['end_date']);
         $data = $request->lesson;
         $lessons = [];
 
         while ($from->lessThanOrEqualTo($to)) {
             $dayOfWeek = ($from->dayOfWeek + 6) % 7;
-            $time = $request->batch['weekdays'][$dayOfWeek];
+            $time = $request->bulk['weekdays'][$dayOfWeek];
             if ($time) {
-                $cabinet = $request->batch['cabinets'][$dayOfWeek];
+                $cabinet = $request->bulk['cabinets'][$dayOfWeek];
                 $data['date'] = $from->format('Y-m-d');
                 $data['time'] = $time;
                 $data['cabinet'] = $cabinet ?: null;
@@ -72,7 +77,7 @@ class LessonController extends Controller
         return LessonListResource::collection($lessons);
     }
 
-    public function batchUpdate(Request $request)
+    public function bulkUpdate(Request $request)
     {
         $lessons = Lesson::whereIn('id', $request->ids)->get();
         $data = array_filter($request->lesson);
@@ -81,7 +86,7 @@ class LessonController extends Controller
         }
     }
 
-    public function batchDestroy(Request $request)
+    public function bulkDestroy(Request $request)
     {
         Lesson::whereIn('id', $request->ids)->get()->each->delete();
     }
@@ -103,21 +108,8 @@ class LessonController extends Controller
         return cdn('homework', $fileName);
     }
 
-    protected function filterGroup(&$query, $value, $field)
+    protected function filterGroup($query, $value, $field)
     {
         $query->whereHas('group', fn ($q) => $q->where($field, $value));
-    }
-
-    protected function filterClient(&$query, $clientId)
-    {
-        $query->whereHas(
-            'group',
-            fn ($q) => $q->whereHas(
-                'contracts',
-                fn ($z) => $z
-                    ->where('year', request()->year)
-                    ->where('client_id', $clientId)
-            )
-        );
     }
 }

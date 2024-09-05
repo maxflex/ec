@@ -61,8 +61,13 @@ nextTick(loadData)
         </div>
       </div>
     </div>
-    <div v-if="selectedTab === 'schedule'">
-      <LessonList :id="group.id" entity="group" :group="group" />
+    <div>
+      <Schedule
+        v-if="selectedTab === 'schedule'"
+        :group-id="group.id"
+        :year="group.year"
+        :program="group.program"
+      />
     </div>
   </div>
 </template>

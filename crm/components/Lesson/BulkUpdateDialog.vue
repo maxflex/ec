@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const emit = defineEmits<{ (e: 'updated'): void }>()
 
-interface BatchItem {
+interface BulkItem {
   cabinet?: Cabinet
   quarter?: Quarter
   time?: string
@@ -12,7 +12,7 @@ interface BatchItem {
 const saving = ref(false)
 const timeMask = { mask: '##:##' }
 const { dialog, width } = useDialog('default')
-const lesson = ref<BatchItem>({})
+const lesson = ref<BulkItem>({})
 // const deleting = ref(false)
 const ids = ref<number[]>([])
 
@@ -24,7 +24,7 @@ function open(lessonIds: number[]) {
 
 async function save() {
   saving.value = true
-  await useHttp(`lessons/batch`, {
+  await useHttp(`lessons/bulk`, {
     method: 'put',
     body: {
       ids: ids.value,
@@ -41,7 +41,7 @@ async function save() {
 //     return
 //   }
 //   deleting.value = true
-//   await useHttp(`lessons/batch`, {
+//   await useHttp(`lessons/bulk`, {
 //     method: 'delete',
 //     params: {
 //       'ids[]': ids.value,

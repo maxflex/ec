@@ -4,6 +4,7 @@ import { uniq } from 'rambda'
 
 const { id } = defineProps<{ id: number }>()
 const items = ref<GroupVisitResource[]>([])
+const loading = ref(true)
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 
 const clients = computed(() => {
@@ -48,68 +49,73 @@ const teachers = computed(() => {
 })
 
 async function loadData() {
+  loading.value = true
   const { data } = await useHttp<GroupVisitResource[]>(`groups/visits/${id}`)
   if (data.value) {
-    console.log('data', data.value)
     items.value = data.value
   }
+  loading.value = false
 }
+
+const noData = computed(() => !loading.value && items.value.length === 0)
 
 nextTick(loadData)
 </script>
 
 <template>
-  <v-table class="group-visits" hover>
-    <colgroup>
-      <col class="group-visits__col--date">
-      <col v-for="t in teachers" :key="t.id" class="group-visits__col--teacher">
-      <col v-for="c in clients" :key="c.id" class="group-visits__col--client">
-    </colgroup>
-    <tbody>
-      <tr>
-        <td />
-        <td v-for="t in teachers" :key="t.id" class="group-visits__col--teacher">
-          {{ t.last_name }} <br>
-          {{ t.first_name![0] }}. {{ t.middle_name![0] }}.
-        </td>
-        <td v-for="c in clients" :key="c.id">
-          {{ c.last_name }} <br>
-          {{ c.first_name }}
-        </td>
-        <td />
-      </tr>
-      <tr v-for="l in items" :key="l.id">
-        <td>
-          {{ formatTextDate(l.dateTime) }}
-          <span class="text-gray ml-1">
-            {{ dayLabels[getDay(l.dateTime)] }}
-          </span>
-        </td>
-        <td v-for="t in teachers" :key="t.id">
-          <UiCircleStatus
-            v-if="l.teacher.id === t.id"
-            class="group-visits__teacher-status"
-            :class="{
-              'text-success': l.status === 'conducted',
-              'text-error': l.status === 'cancelled',
-              'text-gray': l.status === 'planned',
-            }"
-          />
-        </td>
-        <td v-for="c in clients" :key="c.id" :class="{ 'is-remote': clientLessons[l.id][c.id] && clientLessons[l.id][c.id].is_remote }">
-          <UiCircleStatus
-            v-if="clientLessons[l.id][c.id]"
-            :class="{
-              'text-error': clientLessons[l.id][c.id].status === 'absent',
-              'text-warning': clientLessons[l.id][c.id].status === 'late',
-              'text-success': clientLessons[l.id][c.id].status === 'present',
-            }"
-          />
-        </td>
-        <td />
-      </tr>
-    </tbody>
-  </v-table>
+  <UiIndexPage :data="{ loading, noData }">
+    <v-table class="group-visits" hover>
+      <colgroup>
+        <col class="group-visits__col--date">
+        <col v-for="t in teachers" :key="t.id" class="group-visits__col--teacher">
+        <col v-for="c in clients" :key="c.id" class="group-visits__col--client">
+      </colgroup>
+      <tbody>
+        <tr>
+          <td />
+          <td v-for="t in teachers" :key="t.id" class="group-visits__col--teacher">
+            {{ t.last_name }} <br>
+            {{ t.first_name![0] }}. {{ t.middle_name![0] }}.
+          </td>
+          <td v-for="c in clients" :key="c.id">
+            {{ c.last_name }} <br>
+            {{ c.first_name }}
+          </td>
+          <td />
+        </tr>
+        <tr v-for="l in items" :key="l.id">
+          <td>
+            {{ formatTextDate(l.dateTime) }}
+            <span class="text-gray ml-1">
+              {{ dayLabels[getDay(l.dateTime)] }}
+            </span>
+          </td>
+          <td v-for="t in teachers" :key="t.id">
+            <UiCircleStatus
+              v-if="l.teacher.id === t.id"
+              class="group-visits__teacher-status"
+              :class="{
+                'text-success': l.status === 'conducted',
+                'text-error': l.status === 'cancelled',
+                'text-gray': l.status === 'planned',
+              }"
+            />
+          </td>
+          <td v-for="c in clients" :key="c.id" :class="{ 'is-remote': clientLessons[l.id][c.id] && clientLessons[l.id][c.id].is_remote }">
+            <UiCircleStatus
+              v-if="clientLessons[l.id][c.id]"
+              :class="{
+                'text-error': clientLessons[l.id][c.id].status === 'absent',
+                'text-warning': clientLessons[l.id][c.id].status === 'late',
+                'text-success': clientLessons[l.id][c.id].status === 'present',
+              }"
+            />
+          </td>
+          <td />
+        </tr>
+      </tbody>
+    </v-table>
+  </UiIndexPage>
 </template>
 
 <style lang="scss">

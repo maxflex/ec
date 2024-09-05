@@ -47,10 +47,7 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::apiResource('photos', PhotoController::class)->only('store');
     Route::post('stats', StatsController::class);
 
-    Route::prefix('balance')->controller(BalanceController::class)->group(function () {
-        Route::get('contract/{contract}', 'contract');
-        Route::get('teacher/{teacher}', 'teacher');
-    });
+    Route::get('balance', BalanceController::class);
 
     Route::prefix('schedule')->controller(ScheduleController::class)->group(function () {
         Route::get('client/{client}', 'client');
@@ -61,17 +58,17 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::apiResource('logs', LogController::class)->only('index');
     Route::apiResource('topics', TopicController::class)->only('index');
     Route::get('persons', PersonController::class);
-    Route::post('lessons/batch', [LessonController::class, 'batch']);
+    Route::post('lessons/bulk', [LessonController::class, 'bulk']);
 
     Route::post('mango-test/{event}', MangoTestController::class);
 
     Route::prefix('lessons')->controller(LessonController::class)->group(function () {
         Route::post('upload-file', 'uploadFile');
         // Групповое редактирование уроков
-        Route::prefix('batch')->group(function () {
-            Route::post('/', 'batchStore');
-            Route::put('/', 'batchUpdate');
-            Route::delete('/', 'batchDestroy');
+        Route::prefix('bulk')->group(function () {
+            Route::post('/', 'bulkStore');
+            Route::put('/', 'bulkUpdate');
+            Route::delete('/', 'bulkDestroy');
         });
     });
 

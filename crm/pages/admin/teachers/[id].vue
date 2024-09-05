@@ -119,10 +119,9 @@ nextTick(loadData)
         </div>
       </template>
     </UiDataLoader>
-    <LessonList
+    <Schedule
       v-else-if="selectedTab === 'schedule'"
-      :id="teacher.id"
-      entity="teacher"
+      :teacher-id="teacher.id"
       show-teeth
     />
     <UiDataLoader

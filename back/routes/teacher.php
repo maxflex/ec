@@ -1,22 +1,20 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Teacher\{
-    BalanceController,
+use App\Http\Controllers\Teacher\{BalanceController,
     GradeController,
     GroupController,
     InstructionController,
     LessonController,
     ReportController,
-    ScheduleController,
-};
+    ScheduleController,};
+use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:crm'])->group(function () {
     Route::controller(ScheduleController::class)->prefix('schedule')->group(function () {
         Route::get('teacher/{teacher}', 'teacher');
         Route::get('group/{group}', 'group');
     });
-    Route::get('balance/teacher/{teacher}', [BalanceController::class, 'teacher']);
+    Route::get('balance', BalanceController::class);
     Route::apiResource('groups', GroupController::class);
     Route::post('lessons/conduct/{lesson}', [LessonController::class, 'conduct']);
     Route::apiResource('lessons', LessonController::class)->only([

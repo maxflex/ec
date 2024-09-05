@@ -16,7 +16,7 @@ class LessonListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'status', 'date', 'time', 'time_end',
+            'status', 'date', 'time', 'time_end', 'index',
             'cabinet', 'is_unplanned', 'is_first',
         ], [
             'clientLesson' => $this->when(

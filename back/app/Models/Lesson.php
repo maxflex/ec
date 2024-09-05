@@ -10,6 +10,8 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
 class Lesson extends Model
@@ -28,27 +30,27 @@ class Lesson extends Model
         'files' => JsonArrayCast::class,
     ];
 
-    public function teacher()
+    public function teacher(): BelongsTo
     {
         return $this->belongsTo(Teacher::class);
     }
 
-    public function group()
+    public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function clientLessons()
+    public function clientLessons(): HasMany
     {
         return $this->hasMany(ClientLesson::class);
     }
 
-    public function chain()
+    public function chain(): HasMany
     {
         return $this->hasMany(Lesson::class, 'group_id', 'group_id');
     }
@@ -58,11 +60,9 @@ class Lesson extends Model
         return $query->where('status', LessonStatus::conducted);
     }
 
-    public function dateTime(): Attribute
+    public function getDateTimeAttribute()
     {
-        return Attribute::make(
-            fn () => join(' ', [$this->date, $this->time])
-        );
+        return join(' ', [$this->date, $this->time]);
     }
 
     /**

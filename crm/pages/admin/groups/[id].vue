@@ -26,10 +26,7 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div
-    v-if="group"
-    class="group"
-  >
+  <template v-if="group">
     <div class="panel">
       <div class="panel-info">
         <div>
@@ -79,12 +76,15 @@ nextTick(loadData)
         </div>
       </div>
     </div>
-    <div v-if="selectedTab === 'schedule'">
-      <LessonList :id="group.id" entity="group" :group="group" />
-    </div>
+    <Schedule
+      v-if="selectedTab === 'schedule'"
+      :group-id="group.id"
+      :year="group.year"
+      :program="group.program"
+    />
     <GroupVisitsTab v-else-if="selectedTab === 'visits'" :id="group.id" />
     <GroupStudentsTab v-else :group="group" />
-  </div>
+  </template>
   <GroupDialog
     ref="groupDialog"
     @updated="g => (group = g)"

@@ -7,6 +7,7 @@ use App\Utils\Phone as UtilsPhone;
 use App\Utils\Session;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Phone extends Model implements Authenticatable
 {
@@ -22,23 +23,31 @@ class Phone extends Model implements Authenticatable
     {
         return $this->entity_id;
     }
+
+    // @phpstan-ignore return.missing
     public function getAuthIdentifierName()
     {
     }
+
+    // @phpstan-ignore return.missing
     public function getAuthPassword()
     {
     }
+
+    // @phpstan-ignore return.missing
     public function getRememberToken()
     {
     }
     public function setRememberToken($value)
     {
     }
+
+    // @phpstan-ignore return.missing
     public function getRememberTokenName()
     {
     }
 
-    public function entity()
+    public function entity(): MorphTo
     {
         return $this->morphTo();
     }

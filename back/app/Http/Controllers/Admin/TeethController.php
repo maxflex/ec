@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Contracts\HasTeeth;
 use App\Http\Controllers\Controller;
-use Exception;
+use App\Models\Client;
+use App\Models\Group;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 
 class TeethController extends Controller
@@ -12,15 +13,20 @@ class TeethController extends Controller
     public function __invoke(Request $request)
     {
         $request->validate([
-            'entity_type' => ['required', 'string'],
-            'entity_id' => ['required', 'min:0'],
-            'year' => ['required', 'min:0'],
+            'group_id' => ['sometimes', 'numeric', 'exists:groups,id'],
+            'client_id' => ['sometimes', 'numeric', 'exists:clients,id'],
+            'teacher_id' => ['sometimes', 'numeric', 'exists:teachers,id'],
+            'year' => ['required', 'numeric'],
         ]);
-        $entityClass = $request->entity_type;
-        $entity = $entityClass::findOrFail($request->entity_id);
-        if (!$entity instanceof HasTeeth) {
-            throw new Exception("$entityClass does not implement HasTeeth");
-        }
+
+        logger('here');
+
+        $entity = match (true) {
+            $request->has('teacher_id') => Teacher::find($request->teacher_id),
+            $request->has('client_id') => Client::find($request->client_id),
+            $request->has('group_id') => Group::find($request->group_id)
+        };
+
         return $entity->getTeeth(intval($request->year));
     }
 }

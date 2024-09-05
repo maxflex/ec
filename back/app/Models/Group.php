@@ -6,7 +6,6 @@ use App\Contracts\HasTeeth;
 use App\Enums\Program;
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 
 class Group extends Model implements HasTeeth
 {
@@ -46,15 +45,6 @@ class Group extends Model implements HasTeeth
             'id' => '',
             'password' => ''
         ];
-    }
-
-    public function getSchedule(): Collection
-    {
-        $schedule = Lesson::query()
-            ->where('group_id', $this->id)
-            ->get();
-
-        return $schedule->unique(fn ($l) => $l->id);
     }
 
     public function scopeWhereTeacher($query, $teacherId)

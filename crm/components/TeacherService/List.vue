@@ -58,9 +58,6 @@ function onTeacherServiceDeleted(tp: TeacherServiceResource) {
         {{ formatDate(payment.date) }}
       </div>
       <div style="width: 180px">
-        {{ YearLabel[payment.year] }}
-      </div>
-      <div style="width: 180px">
         {{ formatPrice(payment.sum) }} руб.
       </div>
       <div

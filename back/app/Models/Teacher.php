@@ -2,18 +2,17 @@
 
 namespace App\Models;
 
-use App\Contracts\{HasBalance, HasTeeth};
+use App\Contracts\{HasTeeth};
 use App\Enums\TeacherStatus;
-use App\Traits\{HasName, HasPhones, HasPhoto, RelationSyncable};
+use App\Traits\{HasBalance, HasName, HasPhones, HasPhoto, RelationSyncable};
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
 
-class Teacher extends Model implements HasTeeth, HasBalance
+class Teacher extends Model implements HasTeeth
 {
-    use HasName, HasPhones, HasPhoto, RelationSyncable;
+    use HasName, HasPhones, HasPhoto, HasBalance, RelationSyncable;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'status', 'subjects',
@@ -63,85 +62,63 @@ class Teacher extends Model implements HasTeeth, HasBalance
         );
     }
 
-    public function getBalance(?int $year): array
+    protected function getBalanceItems($year): array
     {
-        $balanceItems = collect();
+        $balanceItems = [];
 
         $lessons = Lesson::query()
             ->conducted()
-            ->whereRaw(<<<SQL
-            (
-                select `year` from `groups` g
-                where g.id = lessons.group_id
-            ) = $year
-            SQL)
+            ->whereHas('group', fn($q) => $q->where('year', $year))
             ->where('teacher_id', $this->id)
             ->get();
+
         foreach ($lessons as $lesson) {
-            $balanceItems->push((object) [
+            $balanceItems[] = (object)[
                 'dateTime' => $lesson->conducted_at,
                 'sum' => $lesson->price,
                 'comment' => sprintf(
                     'занятие %s, группа %d, кабинет %s',
-                    Carbon::parse($this->dateTime)->format('d.m.y в H:i'),
+                    Carbon::parse($lesson->dateTime)->format('d.m.y в H:i'),
                     $lesson->group_id,
                     $lesson->cabinet->value
                 )
-            ]);
+            ];
         }
 
         $payments = $this->payments()->where('year', $year)->get();
         foreach ($payments as $payment) {
-            $balanceItems->push((object) [
+            $balanceItems[] = (object)[
                 'dateTime' => $payment->created_at->format('Y-m-d H:i:s'),
                 'sum' => $payment->sum * ($payment->is_return ? 1 : -1),
                 'comment' => sprintf(
                     '%s (обучение)',
                     $payment->method->getTitle()
                 )
-            ]);
+            ];
         }
 
         $services = $this->services()->where('year', $year)->get();
         foreach ($services as $service) {
-            $balanceItems->push((object) [
+            $balanceItems[] = (object)[
                 'dateTime' => $service->created_at->format('Y-m-d H:i:s'),
                 'sum' => $service->sum,
                 'comment' => $service->purpose,
-            ]);
+            ];
         }
 
         $reports = $this->reports()->where('year', $year)->where('price', '>', 0)->get();
         foreach ($reports as $report) {
-            $balanceItems->push((object) [
+            $balanceItems[] = (object)[
                 'dateTime' => $report->created_at->format('Y-m-d H:i:s'),
                 'sum' => $report->price,
                 'comment' => sprintf(
                     'отчет по ученику %s',
                     $report->client->formatName()
                 )
-            ]);
-        }
-
-        $balanceItemsGrouped = $balanceItems
-            ->sort(fn ($a, $b) => $a->dateTime > $b->dateTime)
-            ->groupBy(fn ($item) => str($item->dateTime)->before(' '));
-
-        $data = [];
-        $balance = 0;
-        foreach ($balanceItemsGrouped as $date => $balanceItems) {
-            $balance += $balanceItems->sum(fn ($e) => $e->sum);
-            $data[] = (object) [
-                'date' => $date,
-                'balance' => $balance,
-                'items' => $balanceItems->map(fn ($e) => (object) [
-                    'sum' => $e->sum,
-                    'comment' => $e->comment,
-                ])->all()
             ];
         }
 
-        return array_reverse($data);
+        return $balanceItems;
     }
 
     public function scopeActive($query): void
@@ -149,19 +126,9 @@ class Teacher extends Model implements HasTeeth, HasBalance
         $query->where('status', TeacherStatus::active);
     }
 
-    public function getSchedule(int $year): Collection
-    {
-        $schedule = Lesson::query()
-            ->whereHas('group', fn ($q) => $q->where('year', $year))
-            ->where('teacher_id', $this->id)
-            ->get();
-
-        return $schedule->unique(fn ($l) => $l->id);
-    }
-
     public function getTeeth(int $year): object
     {
-        $query = Lesson::where('teacher_id', $this->id);
+        $query = Lesson::query()->where('teacher_id', $this->id);
         return Teeth::get($query, $year);
     }
 }

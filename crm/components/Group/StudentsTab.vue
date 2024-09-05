@@ -3,7 +3,7 @@ import { mdiSwapHorizontal } from '@mdi/js'
 import type { GroupAddStudentDialog, GroupSelectorDialog } from '#build/components'
 
 const { group } = defineProps<{ group: GroupResource }>()
-const loading = ref(false)
+const loading = ref(true)
 const items = ref<ClientGroupResource[]>([])
 const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
 const groupAddStudentDialog = ref<InstanceType<typeof GroupAddStudentDialog>>()
@@ -52,59 +52,60 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div
-    class="table table--actions-on-hover"
-  >
-    <div v-for="item in items" :key="item.id">
-      <div style="width: 280px">
-        <UiAvatar :item="item.client" :size="38" class="mr-4" />
-        <NuxtLink
-          class="vf-1"
-          :to="{
-            name: 'clients-id',
-            params: { id: item.client.id },
-          }"
-        >
-          {{ formatName(item.client) }}
-        </NuxtLink>
+  <UiIndexPage :data="{ loading, noData: false }">
+    <div class="table table--actions-on-hover">
+      <div v-for="item in items" :key="item.id">
+        <div style="width: 280px">
+          <UiAvatar :item="item.client" :size="38" class="mr-4" />
+          <NuxtLink
+            class="vf-1"
+            :to="{
+              name: 'clients-id',
+              params: { id: item.client.id },
+            }"
+          >
+            {{ formatName(item.client) }}
+          </NuxtLink>
+        </div>
+        <div>
+          <TeethBar :items="item.teeth" :current="group.teeth!" />
+        </div>
+        <div class="text-left table-actions">
+          <v-menu>
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                icon="$more"
+                variant="plain"
+                :size="48"
+                :ripple="false"
+              />
+            </template>
+            <v-list>
+              <v-list-item @click="groupSelectorDialog?.open(group.program!, group.year, item.contract_id)">
+                <template #prepend>
+                  <v-icon :icon="mdiSwapHorizontal" />
+                </template>
+                переместить в группу
+              </v-list-item>
+              <v-list-item @click="destroy(item)">
+                <template #prepend>
+                  <v-icon icon="$close" />
+                </template>
+                удалить из группы
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
       </div>
-      <div>
-        <TeethBar :items="item.teeth" :current="group.teeth!" />
-      </div>
-      <div class="text-left table-actions">
-        <v-menu>
-          <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              icon="$more"
-              variant="plain"
-              :size="48"
-              :ripple="false"
-            />
-          </template>
-          <v-list>
-            <v-list-item @click="groupSelectorDialog?.open(group.program!, group.year, item.contract_id)">
-              <template #prepend>
-                <v-icon :icon="mdiSwapHorizontal" />
-              </template>
-              переместить в группу
-            </v-list-item>
-            <v-list-item @click="destroy(item)">
-              <template #prepend>
-                <v-icon icon="$close" />
-              </template>
-              удалить из группы
-            </v-list-item>
-          </v-list>
-        </v-menu>
+      <div style="border-bottom: none;">
+        <UiIconLink @click="groupAddStudentDialog?.open()">
+          добавить в текущую группу
+        </UiIconLink>
       </div>
     </div>
-    <div style="border-bottom: none;">
-      <UiIconLink @click="groupAddStudentDialog?.open()">
-        добавить в текущую группу
-      </UiIconLink>
-    </div>
-  </div>
+  </UiIndexPage>
+
   <GroupSelectorDialog
     ref="groupSelectorDialog"
     @select="onGroupSelected"

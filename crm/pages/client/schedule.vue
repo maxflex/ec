@@ -3,5 +3,5 @@ const { user } = useAuthStore()
 </script>
 
 <template>
-  <LessonList :id="user?.id!" entity="client" />
+  <Schedule :client-id="user?.id!" />
 </template>
