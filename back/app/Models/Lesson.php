@@ -6,14 +6,19 @@ use App\Casts\JsonArrayCast;
 use App\Enums\Cabinet;
 use App\Enums\ClientLessonStatus;
 use App\Enums\LessonStatus;
+use App\Http\Resources\LessonListResource;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @property ?object $clientLesson проведённое занятия в расписании клиента
+ */
 class Lesson extends Model
 {
     protected $fillable = [
@@ -127,5 +132,22 @@ class Lesson extends Model
             'conducted_at' => now(),
             'status' => LessonStatus::conducted
         ]);
+    }
+
+    /**
+     * @param Collection<int, Lesson> $lessons
+     */
+    public static function withSequenceNumber(Collection $lessons)
+    {
+        $seq = 1;
+        $lessons = $lessons->sortBy(['date', 'time'])->values();
+        foreach ($lessons->all() as $lesson) {
+            if ($lesson->status === LessonStatus::cancelled) {
+                continue;
+            }
+            $lesson->setAttribute('seq', $seq);
+            $seq++;
+        }
+        return paginate(LessonListResource::collection($lessons));
     }
 }

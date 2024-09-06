@@ -6,6 +6,8 @@ use App\Contracts\HasTeeth;
 use App\Enums\Program;
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Group extends Model implements HasTeeth
 {
@@ -18,22 +20,22 @@ class Group extends Model implements HasTeeth
         'zoom' => 'array',
     ];
 
-    public function teacher()
+    public function teacher(): BelongsTo
     {
         return $this->belongsTo(Teacher::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function clientGroups()
+    public function clientGroups(): HasMany
     {
         return $this->hasMany(ClientGroup::class);
     }
 
-    public function lessons()
+    public function lessons(): HasMany
     {
         return $this->hasMany(Lesson::class);
     }

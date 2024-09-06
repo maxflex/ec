@@ -45,7 +45,7 @@ async function create(g: FakeGradeItem) {
 }
 
 async function destroy() {
-  if (!confirm('Вы уверены, что хотите удалить отчёт?')) {
+  if (!confirm('Вы уверены, что хотите удалить оценку?')) {
     return
   }
   deleting.value = true

@@ -16,7 +16,8 @@ const emit = defineEmits<{
 <template>
   <div
     :id="`lesson-${item.id}`"
-    :class="`lesson-list__status--${item.status}`"
+    :class="`lesson-item--${item.status}`"
+    class="lesson-item"
   >
     <div v-if="editable || conductable" class="table-actionss">
       <v-btn
@@ -40,6 +41,9 @@ const emit = defineEmits<{
       <div v-if="editable" style="position: absolute; left: 90px; top: -25px">
         <slot name="checkbox" />
       </div>
+    </div>
+    <div style="width: 14px" class="text-gray opacity-5">
+      {{ item.seq }}
     </div>
     <div style="width: 120px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
@@ -77,12 +81,12 @@ const emit = defineEmits<{
         внеплановое
       </v-chip>
     </div>
-    <div v-if="item.clientLesson" class="lesson-list__contract-lesson">
+    <div v-if="item.clientLesson" class="lesson-item__contract-lesson">
       <!-- <div style="width: 240px">
         {{ item.clientLesson.is_remote ? 'удалённо' : 'очно' }}
       </div> -->
       <div style="width: 110px" />
-      <div class="lesson-list__scores" style="width: 500px">
+      <div class="lesson-item__scores" style="width: 500px">
         <div v-for="(score, i) in item.clientLesson.scores" :key="i">
           <span :class="`score score--${score.score}`" class="mr-3">
             {{ score.score }}
@@ -114,7 +118,8 @@ const emit = defineEmits<{
 </template>
 
 <style lang="scss">
-.lesson-list {
+.lesson-item {
+  position: relative;
   &__contract-lesson {
     flex: auto !important;
     display: flex;
@@ -128,6 +133,9 @@ const emit = defineEmits<{
     & > div {
       display: flex;
     }
+  }
+  &--cancelled {
+    opacity: 0.4;
   }
 }
 </style>

@@ -314,6 +314,7 @@ declare global {
 
   interface LessonListResource {
     id: number
+    seq?: number // номер урока по порядку
     teacher: PersonResource
     status: LessonStatus
     date: string

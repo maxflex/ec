@@ -2,9 +2,11 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Lesson;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/** @mixin Lesson */
 class GroupVisitResource extends JsonResource
 {
     /**
@@ -25,7 +27,7 @@ class GroupVisitResource extends JsonResource
             'clientLessons' => $clientLessons->map(fn($c) => extract_fields($c, [
                 'status', 'is_remote', 'minutes_late'
             ], [
-                'client' => new PersonResource($c->contractVersionProgram->contractVersion->contract->client),
+                'client' => new PersonResource($c->contractVersionProgram),
             ]))
         ]);
     }

@@ -6,7 +6,7 @@ defineEmits<{
   edit: [e: EventListResource]
   participants: [e: EventListResource]
 }>()
-
+const isEditable = useAuthStore().user?.entity_type === EntityType.user
 const isConfirmed = ref<boolean>(!!item.participant?.is_confirmed)
 
 function confirmParticipant() {
@@ -25,7 +25,7 @@ function confirmParticipant() {
 
 <template>
   <div :id="`event-${item.id}`" class="event-item" :class="{ 'event-item--study': !item.is_afterclass }">
-    <div class="table-actionss">
+    <div v-if="isEditable" class="table-actionss">
       <v-btn
         :icon="mdiAccountGroup"
         :size="48"
@@ -41,7 +41,7 @@ function confirmParticipant() {
         @click="$emit('edit', item)"
       />
     </div>
-    <div style="width: 90px" />
+    <div style="width: 124px" />
     <div style="width: 120px">
       {{ formatTime(item.time!) }}
       <template v-if="item.time_end">

@@ -11,6 +11,9 @@ use App\Traits\RelationSyncable;
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
 
 class Client extends Model implements HasTeeth
@@ -22,22 +25,22 @@ class Client extends Model implements HasTeeth
         'head_teacher_id'
     ];
 
-    public function tests()
+    public function tests(): HasMany
     {
         return $this->hasMany(ClientTest::class);
     }
 
-    public function contracts()
+    public function contracts(): HasMany
     {
         return $this->hasMany(Contract::class)->orderBy('id', 'desc');
     }
 
-    public function payments()
+    public function payments(): MorphMany
     {
         return $this->morphMany(ClientPayment::class, 'entity');
     }
 
-    public function parent()
+    public function parent(): HasOne
     {
         return $this->hasOne(ClientParent::class);
     }
@@ -88,16 +91,10 @@ class Client extends Model implements HasTeeth
         return $this->belongsTo(Teacher::class, 'head_teacher_id');
     }
 
-    /**
-     * @return array<Request>
-     */
-    public function requests(): Attribute
+    public function getRequestsAttribute()
     {
         $numbers = $this->phones->pluck('number')->unique();
-        $requests = Request::whereHas('phones', fn ($q) => $q->whereIn('number', $numbers))->get()->all();
-        return Attribute::make(
-            fn () => $requests
-        );
+        return Request::whereHas('phones', fn($q) => $q->whereIn('number', $numbers))->get()->all();
     }
 
     /**
@@ -115,11 +112,11 @@ class Client extends Model implements HasTeeth
         $clientLessons = ClientLesson::query()->whereHas(
             'contractVersionProgram.contractVersion.contract',
             fn($q) => $q->where('client_id', $this->id)->where('year', $year)
-        );
+        )->get();
         foreach ($clientLessons as $clientLesson) {
             $lesson = $clientLesson->lesson;
             // $lesson->load('clientLessons', fn ($q) => $q->whereId($clientLesson->id));
-            $lesson->clientLesson = $clientLesson;
+            $lesson->setAttribute('client_lesson', $clientLesson);
             $schedule->push($lesson);
             $fact[$lesson->id] = true;
         }

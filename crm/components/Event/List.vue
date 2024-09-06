@@ -104,10 +104,5 @@ const eventsByDate = computed(() => groupBy(x => x.date, items.value))
       }
     }
   }
-  &__status {
-    &--cancelled {
-      opacity: 0.4;
-    }
-  }
 }
 </style>

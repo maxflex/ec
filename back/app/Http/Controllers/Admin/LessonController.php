@@ -20,16 +20,14 @@ class LessonController extends Controller
     {
         if ($request->has('client_id')) {
             $client = Client::find($request->client_id);
-            return [
-                'data' => LessonListResource::collection($client->getSchedule($request->year))
-            ];
+            $lessons = $client->getSchedule($request->year);
+        } else {
+            $query = Lesson::with(['teacher', 'group', 'clientLessons']);
+            $this->filter($request, $query);
+            $lessons = $query->get();
         }
 
-        $query = Lesson::query()
-            ->with(['teacher', 'group', 'clientLessons'])
-            ->orderByRaw('date, time');
-        $this->filter($request, $query);
-        return $this->handleIndexRequest($request, $query, LessonListResource::class);
+        return Lesson::withSequenceNumber($lessons);
     }
 
     public function show(Lesson $lesson, Request $request)

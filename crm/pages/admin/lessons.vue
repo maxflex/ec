@@ -152,11 +152,6 @@ nextTick(loadData)
       }
     }
   }
-  &__status {
-    &--cancelled {
-      opacity: 0.4;
-    }
-  }
   &--vacation {
     background: rgba(var(--v-theme-red), 0.1);
   }

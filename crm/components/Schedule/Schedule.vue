@@ -382,11 +382,6 @@ nextTick(loadData)
       }
     }
   }
-  &__status {
-    &--cancelled {
-      opacity: 0.4;
-    }
-  }
   &--vacation {
     background: rgba(var(--v-theme-red), 0.1);
   }
@@ -395,13 +390,13 @@ nextTick(loadData)
   }
 }
 .bottom-bar {
-  position: fixed;
+  position: fixed !important;
   bottom: 0;
   left: 255px;
   padding: 0 20px;
   height: 57px;
   z-index: 3;
-  background: #fafafa;
+  background: rgb(var(--v-theme-bg));
   width: calc(100vw - 255px);
   display: flex;
   align-items: center;

@@ -9,6 +9,8 @@ use App\Observers\ReportObserver;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Collection;
 
 #[ObservedBy(ReportObserver::class)]
 class Report extends Model
@@ -24,17 +26,17 @@ class Report extends Model
         'program' => Program::class,
     ];
 
-    public function teacher()
+    public function teacher(): BelongsTo
     {
         return $this->belongsTo(Teacher::class);
     }
 
-    public function client()
+    public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
     }
 
-    public function getPreviousAttribute()
+    public function getPreviousAttribute(): ?Report
     {
         return Report::query()
             ->where('teacher_id', $this->teacher_id)
@@ -69,7 +71,7 @@ class Report extends Model
         return $query;
     }
 
-    public function getClientLessonsAttribute()
+    public function getClientLessonsAttribute(): Collection
     {
         return ClientLesson::whereIn('id', $this->lessons->pluck('cl.id'))->with('lesson')->get();
     }
@@ -77,7 +79,7 @@ class Report extends Model
     /**
      * Прочитать отчёт
      */
-    public function read()
+    public function read(): void
     {
         TelegramMessage::sendTemplate(
             TelegramTemplate::reportRead,

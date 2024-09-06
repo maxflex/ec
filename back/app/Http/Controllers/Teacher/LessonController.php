@@ -17,11 +17,10 @@ class LessonController extends Controller
 
     public function index(Request $request)
     {
-        $query = Lesson::query()
-            ->with(['teacher', 'group', 'clientLessons'])
-            ->orderByRaw('date, time');
+        $query = Lesson::with(['teacher', 'group', 'clientLessons']);
         $this->filter($request, $query);
-        return $this->handleIndexRequest($request, $query, LessonListResource::class);
+        $lessons = $query->get();
+        return Lesson::withSequenceNumber($lessons);
     }
 
     public function show(Lesson $lesson)

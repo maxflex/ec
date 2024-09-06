@@ -15,8 +15,7 @@ class ClientLesson extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'contract_id', 'price', 'status',
-        'minutes_late', 'is_remote', 'scores'
+        'price', 'status', 'minutes_late', 'is_remote', 'scores'
     ];
 
     protected $casts = [
