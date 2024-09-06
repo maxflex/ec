@@ -12,6 +12,14 @@ class TeacherBalance
     {
         $queries = [
             (object)[
+                'name' => 'lessons_planned',
+                'query' => Lesson::query()
+                    ->where('status', LessonStatus::planned)
+                    ->join('groups as g', 'g.id', '=', 'lessons.group_id'),
+                'sum' => 'price',
+            ],
+            (object)[
+                'name' => 'lessons_conducted',
                 'query' => Lesson::query()
                     ->where('status', LessonStatus::conducted)
                     ->join('groups as g', 'g.id', '=', 'lessons.group_id'),
@@ -38,7 +46,7 @@ class TeacherBalance
             ];
             foreach ($queries as $q) {
                 if (!isset($q->table)) {
-                    $q->table = $q->query->getModel()->getTable();
+                    $q->table = $q->name ?? $q->query->getModel()->getTable();
                 }
 
                 $value = $q->query
@@ -62,7 +70,6 @@ class TeacherBalance
     /**
      * Получить преподов, у которых есть хоть какие-то платежи
      *
-     * @return Teacher[]
      */
     private static function getTeachers($year)
     {

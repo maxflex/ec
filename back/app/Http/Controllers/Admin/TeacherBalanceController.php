@@ -18,6 +18,6 @@ class TeacherBalanceController extends Controller
             'year' => ['required', 'numeric', 'min:2015']
         ]);
 
-        return TeacherBalance::getData($request->year);
+        return paginate(TeacherBalance::getData($request->year));
     }
 }

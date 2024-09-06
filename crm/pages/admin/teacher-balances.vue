@@ -1,137 +1,146 @@
 <script setup lang="ts">
 interface TeacherBalance {
   teacher: PersonResource
-  lessons: number
+  lessons_planned: number
+  lessons_conducted: number
   reports: number
   teacher_payments: number
   teacher_services: number
 }
 
-const year = ref<Year>(currentAcademicYear())
-const items = ref<TeacherBalance[]>([])
+const filters = ref({
+  year: currentAcademicYear(),
+})
 
-async function loadData() {
-  const { data } = await useHttp<TeacherBalance[]>(
-      `teacher-balances`,
-      {
-        params: {
-          year: year.value,
-        },
-      },
-  )
-  if (data.value) {
-    items.value = data.value
-  }
-}
+const { items, reloadData, indexPageData } = useIndex<TeacherBalance>(
+    `teacher-balances`,
+    {
+      defaultFilters: filters.value,
+    },
+)
 
 function getTotal(field: keyof TeacherBalance) {
   return items.value.reduce((carry, x) => carry + (x[field] as number), 0)
 }
 
-watch(year, loadData)
-
-nextTick(loadData)
+watch(filters.value, reloadData)
 </script>
 
 <template>
-  <UiFilters>
-    <v-select
-      v-model="year"
-      :items="selectItems(YearLabel)"
-      label="Учебный год"
-      density="comfortable"
-    />
-  </UiFilters>
-  <v-table fixed-header height="calc(100vh - 81px)" class="teacher-balances-table">
-    <thead>
-      <tr>
-        <th />
-        <th>
-          начислено <br>
-          (занятия)
-        </th>
-        <th>
-          начислено <br>
-          (отчеты)
-        </th>
-        <th>
-          начислено <br>
-          (допуслуги)
-        </th>
-        <th>
-          начислено <br>
-          (итого)
-        </th>
-        <th>
-          выплачено
-        </th>
-        <th>
-          к выплате
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="item in items" :key="item.teacher.id">
-        <td>
-          <RouterLink
-            :to="{
-              name: 'teachers-id',
-              params: {
-                id: item.teacher.id,
-              },
-            }"
-          >
-            {{ formatNameInitials(item.teacher) }}
-          </RouterLink>
-        </td>
-        <td>
-          {{ formatPrice(item.lessons) }}
-        </td>
-        <td>
-          {{ formatPrice(item.reports) }}
-        </td>
-        <td>
-          {{ formatPrice(item.teacher_services) }}
-        </td>
-        <td>
-          {{ formatPrice(item.lessons + item.reports + item.teacher_services) }}
-        </td>
-        <td>
-          {{ formatPrice(item.teacher_payments) }}
-        </td>
-        <td>
-          {{ formatPrice(item.lessons + item.reports + item.teacher_services - item.teacher_payments) }}
-        </td>
-      </tr>
-    </tbody>
-    <tfoot>
-      <tr>
-        <td />
-        <td>
-          {{ formatPrice(getTotal('lessons')) }}
-        </td>
-        <td>
-          {{ formatPrice(getTotal('reports')) }}
-        </td>
-        <td>
-          {{ formatPrice(getTotal('teacher_services')) }}
-        </td>
-        <td>
-          {{ formatPrice(getTotal('lessons') + getTotal('reports') + getTotal('teacher_services')) }}
-        </td>
-        <td>
-          {{ formatPrice(getTotal('teacher_payments')) }}
-        </td>
-        <td>
-          {{ formatPrice(getTotal('lessons')
-            + getTotal('reports')
-            + getTotal('teacher_services')
-            - getTotal('teacher_payments'),
-          ) }}
-        </td>
-      </tr>
-    </tfoot>
-  </v-table>
+  <UiIndexPage :data="indexPageData">
+    <template #filters>
+      <v-select
+        v-model="filters.year"
+        :items="selectItems(YearLabel)"
+        label="Учебный год"
+        density="comfortable"
+      />
+    </template>
+    <v-table fixed-header height="calc(100vh - 81px)" class="teacher-balances-table">
+      <thead>
+        <tr>
+          <th />
+          <th>
+            проект <br>
+            (занятия)
+          </th>
+          <th>
+            начислено <br>
+            (занятия)
+          </th>
+          <th>
+            начислено <br>
+            (отчеты)
+          </th>
+          <th>
+            начислено <br>
+            (допуслуги)
+          </th>
+          <th>
+            начислено <br>
+            (итого)
+          </th>
+          <th>
+            выплачено
+          </th>
+          <th>
+            к выплате
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in items" :key="item.teacher.id">
+          <td>
+            <RouterLink
+              :to="{
+                name: 'teachers-id',
+                params: {
+                  id: item.teacher.id,
+                },
+              }"
+            >
+              {{ formatNameInitials(item.teacher) }}
+            </RouterLink>
+          </td>
+          <td>
+            <span class="text-gray">
+              {{ formatPrice(item.lessons_planned) }}
+            </span>
+          </td>
+          <td>
+            {{ formatPrice(item.lessons_conducted) }}
+          </td>
+          <td>
+            {{ formatPrice(item.reports) }}
+          </td>
+          <td>
+            {{ formatPrice(item.teacher_services) }}
+          </td>
+          <td>
+            {{ formatPrice(item.lessons_conducted + item.reports + item.teacher_services) }}
+          </td>
+          <td>
+            {{ formatPrice(item.teacher_payments) }}
+          </td>
+          <td>
+            {{ formatPrice(item.lessons_conducted + item.reports + item.teacher_services - item.teacher_payments) }}
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td />
+          <td>
+            <span class="text-gray">
+              {{ formatPrice(getTotal('lessons_planned')) }}
+            </span>
+          </td>
+          <td>
+            {{ formatPrice(getTotal('lessons_conducted')) }}
+          </td>
+          <td>
+            {{ formatPrice(getTotal('reports')) }}
+          </td>
+          <td>
+            {{ formatPrice(getTotal('teacher_services')) }}
+          </td>
+          <td>
+            {{ formatPrice(getTotal('lessons_conducted') + getTotal('reports') + getTotal('teacher_services')) }}
+          </td>
+          <td>
+            {{ formatPrice(getTotal('teacher_payments')) }}
+          </td>
+          <td>
+            {{ formatPrice(getTotal('lessons_conducted')
+              + getTotal('reports')
+              + getTotal('teacher_services')
+              - getTotal('teacher_payments'),
+            ) }}
+          </td>
+        </tr>
+      </tfoot>
+    </v-table>
+  </UiIndexPage>
 </template>
 
 <style lang="scss">
