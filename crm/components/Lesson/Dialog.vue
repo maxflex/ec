@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
+import { mdiDownload, mdiFilePdfBox, mdiFileTableBox, mdiImage } from '@mdi/js'
 import { LessonFileTypeLabel } from '~/utils/labels'
 
 const emit = defineEmits<{
@@ -91,6 +92,30 @@ function selectFile(fileType: LessonFileType) {
 function removeFile(file: LessonFile) {
   const index = lesson.value.files.findIndex(f => f.url === file.url)
   lesson.value.files.splice(index, 1)
+}
+
+function getIcon(file: LessonFile): LessonFileIcon {
+  const index = file.name.lastIndexOf('.')
+  const extension = file.name.slice(index + 1)
+  switch (extension) {
+    case 'pdf':
+      return {
+        icon: mdiFilePdfBox,
+        color: '#e75a5a',
+      }
+    case 'png':
+    case 'jpg':
+    case 'jpeg':
+      return {
+        icon: mdiImage,
+        color: '#BEAC83',
+      }
+    default:
+      return {
+        icon: mdiFileTableBox,
+        color: '#6caf57',
+      }
+  }
 }
 
 async function onFileSelected(e: Event) {
@@ -220,42 +245,41 @@ defineExpose({ create, edit })
           />
         </div>
         <div>
-          <table v-for="(label, fileType) in LessonFileTypeLabel" :key="fileType" class="dialog-table dialog-table--files">
-            <tbody>
-              <tr
-                v-for="file in lesson.files.filter(e => e.type === fileType)"
-                :key="file.url || file.name"
-                :class="{ 'opacity-disabled': !file.url }"
-              >
-                <td>
-                  <a :href="file.url" target="_blank">
-                    {{ file.name }}
-                  </a>
-                </td>
-                <td>
-                  {{ humanFileSize(file.size) }}
-                </td>
-                <td class="text-right">
-                  <v-btn
-                    :loading="!file.url"
-                    icon="$close"
-                    variant="plain"
-                    :color="file.url ? 'red' : undefined"
-                    :size="48"
-                    :ripple="false"
-                    @click="removeFile(file)"
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td colspan="10">
-                  <UiIconLink @click="selectFile(fileType)">
-                    загрузить {{ label }}
-                  </UiIconLink>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div v-for="(label, fileType) in LessonFileTypeLabel" :key="fileType" class="lesson-files">
+            <v-menu
+              v-for="file in lesson.files.filter(e => e.type === fileType)"
+              :key="file.url || file.name"
+            >
+              <template #activator="{ props }">
+                <div v-bind="props" class="lesson-files__file" :class="{ 'opacity-disabled': !file.url }">
+                  <v-icon :icon="getIcon(file).icon" :color="getIcon(file).color" />
+                  <span>
+                    {{ filterTruncate(file.name, 40) }}
+                  </span>
+                </div>
+              </template>
+              <v-list>
+                <v-list-item :href="file.url" target="_blank">
+                  <template #prepend>
+                    <v-icon :icon="mdiDownload" />
+                  </template>
+                  скачать
+                </v-list-item>
+                <v-list-item @click="removeFile(file)">
+                  <template #prepend>
+                    <v-icon icon="$delete" />
+                  </template>
+                  удалить
+                </v-list-item>
+              </v-list>
+            </v-menu>
+
+            <div>
+              <UiIconLink @click="selectFile(fileType)">
+                загрузить {{ label }}
+              </UiIconLink>
+            </div>
+          </div>
         </div>
         <div>
           <v-checkbox
@@ -279,26 +303,24 @@ defineExpose({ create, edit })
 </template>
 
 <style lang="scss">
-.dialog-table--files {
-  tr:first-child:not(:last-child) td {
-    border-top: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
-  }
-  tr:not(:last-child) td {
-    a:not(:hover) {
-      color: black !important;
-    }
-  }
-  td {
-    &:first-child {
-      width: 350px;
-    }
-    &:nth-child(2) {
-      width: 100px;
-      padding-left: 16px;
+.lesson-files {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  &__file {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    width: fit-content;
+    left: -5px;
+    .v-icon {
+      font-size: 44px;
+      margin-right: 8px;
     }
   }
   // отступ между двумя категориями файлов
-  &:nth-child(2) tr:first-child:not(:last-child) {
+  &:nth-child(2) .lesson-files__file {
     display: inline-block;
     margin-top: 50px;
   }

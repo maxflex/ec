@@ -1,47 +1,36 @@
 <script lang="ts" setup>
-const emit = defineEmits<{
-  apply: [f: Filters]
-}>()
-
 export interface Filters {
   year: Year
   program?: Program
   status?: SwampFilterStatus
 }
-
-const filters = ref<Filters>({
-  year: currentAcademicYear(),
-})
-
-watch(filters.value, () => {
-  emit('apply', filters.value)
-})
+const { disabled } = defineProps<{
+  disabled?: boolean
+}>()
+const model = defineModel<Filters>({ required: true })
 </script>
 
 <template>
-  <div>
-    <v-select
-      v-model="filters.year"
-      label="Учебный год"
-      :items="selectItems(YearLabel)"
-      density="comfortable"
-    />
-  </div>
-  <div>
-    <UiClearableSelect
-      v-model="filters.program"
-      label="Программа"
-      :items="selectItems(ProgramLabel)"
-      density="comfortable"
-    />
-  </div>
-  <div>
-    <UiClearableSelect
-      v-model="filters.status"
-      label="Статус"
-      :items="selectItems(SwampFilterStatusLabel)"
-      density="comfortable"
-      expand
-    />
-  </div>
+  <v-select
+    v-model="model.year"
+    label="Учебный год"
+    :items="selectItems(YearLabel)"
+    density="comfortable"
+    :disabled="disabled"
+  />
+  <UiClearableSelect
+    v-model="model.program"
+    label="Программа"
+    :items="selectItems(ProgramLabel)"
+    density="comfortable"
+    :disabled="disabled"
+  />
+  <UiClearableSelect
+    v-model="model.status"
+    label="Статус"
+    :items="selectItems(SwampFilterStatusLabel)"
+    :disabled="disabled"
+    density="comfortable"
+    expand
+  />
 </template>

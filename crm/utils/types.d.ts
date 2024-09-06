@@ -344,6 +344,11 @@ declare global {
     type: LessonFileType
   }
 
+  interface LessonFileIcon {
+    icon: string
+    color: string
+  }
+
   interface LessonResource {
     id: number
     teacher_id?: number | null
@@ -770,14 +775,6 @@ declare global {
       entity: PersonWithPhotoResource
     }
     created_at: string
-  }
-
-  interface GroupCandidateResource {
-    id: number
-    contract_id: number
-    is_closed: boolean
-    program: Program
-    client: PersonResource
   }
 
   interface InstructionBaseResource {

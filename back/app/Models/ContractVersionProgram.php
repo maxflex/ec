@@ -4,6 +4,10 @@ namespace App\Models;
 
 use App\Enums\Program;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class ContractVersionProgram extends Model
 {
@@ -17,23 +21,23 @@ class ContractVersionProgram extends Model
         'program' => Program::class,
     ];
 
-    public function prices()
+    public function prices(): HasMany
     {
         return $this->hasMany(ContractVersionProgramPrice::class);
     }
 
-    public function clientLessons()
+    public function clientLessons(): HasMany
     {
         return $this->hasMany(ClientLesson::class);
     }
 
 
-    public function contractVersion()
+    public function contractVersion(): BelongsTo
     {
         return $this->belongsTo(ContractVersion::class);
     }
 
-    public function clientGroup()
+    public function clientGroup(): HasOne
     {
         return $this->hasOne(ClientGroup::class, 'contract_version_program_id', 'id');
     }
@@ -41,9 +45,8 @@ class ContractVersionProgram extends Model
     /**
      * Есть ли группа по этой программе договора
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
      */
-    public function group()
+    public function group(): HasOneThrough
     {
         return $this->hasOneThrough(
             Group::class,

@@ -9,13 +9,20 @@ const { data } = defineProps<{ data: IndexPageData }>()
       <slot name="buttons" />
     </template>
   </UiFilters>
-  <div v-bind="$attrs">
+  <div class="index-page" v-bind="$attrs">
     <v-fade-transition>
       <UiLoader v-if="data.loading" />
       <UiNoData v-else-if="data.noData" />
-      <div v-else class="content">
+      <div v-else class="index-page__content">
         <slot />
       </div>
     </v-fade-transition>
   </div>
 </template>
+
+<style lang="scss">
+.index-page {
+  flex: 1;
+  position: relative;
+}
+</style>

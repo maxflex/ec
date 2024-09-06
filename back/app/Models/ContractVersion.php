@@ -6,6 +6,8 @@ use App\Observers\ContractVersionObserver;
 use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[ObservedBy(ContractVersionObserver::class)]
 class ContractVersion extends Model
@@ -22,27 +24,27 @@ class ContractVersion extends Model
         'is_active' => 'boolean'
     ];
 
-    public function programs()
+    public function programs(): HasMany
     {
         return $this->hasMany(ContractVersionProgram::class);
     }
 
-    public function payments()
+    public function payments(): HasMany
     {
         return $this->hasMany(ContractVersionPayment::class)->orderBy('date');
     }
 
-    public function contract()
+    public function contract(): BelongsTo
     {
         return $this->belongsTo(Contract::class);
     }
 
-    public function chain()
+    public function chain(): HasMany
     {
         return $this->hasMany(ContractVersion::class, 'contract_id', 'contract_id');
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

@@ -52,8 +52,22 @@ function getDisabled(s: TestEvent) {
         { value: 1, title: '+7 (925) 272-72-10' },
       ]"
     />
-    <div>
-      <CallAppSoundWave />
+    <div class="mt-12">
+      <v-menu contained target="cursor">
+        <template #activator="{ props }">
+          <v-chip v-bind="props">
+            very long text and i want it to be short
+          </v-chip>
+        </template>
+        <v-list width="150">
+          <v-list-item>
+            sment
+          </v-list-item>
+          <v-list-item>
+            sment2
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </div>
   </div>
 </template>

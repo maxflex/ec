@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiSwapHorizontal } from '@mdi/js'
+import { mdiShuffleVariant } from '@mdi/js'
 import type { GroupAddStudentDialog, GroupSelectorDialog } from '#build/components'
 
 const { group } = defineProps<{ group: GroupResource }>()
@@ -8,7 +8,8 @@ const items = ref<ClientGroupResource[]>([])
 const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
 const groupAddStudentDialog = ref<InstanceType<typeof GroupAddStudentDialog>>()
 
-async function destroy(gc: ClientGroupResource) {
+// удалить из группы
+async function removeFromGroup(gc: ClientGroupResource) {
   const index = items.value.findIndex(i => i.id === gc.id)
   if (index === -1) {
     return
@@ -19,8 +20,9 @@ async function destroy(gc: ClientGroupResource) {
   })
 }
 
-async function onGroupSelected(g: GroupListResource, contractId: number) {
-  await destroy(
+// переместить в другую группу
+async function moveToAnotherGroup(g: GroupListResource, contractId: number) {
+  await removeFromGroup(
     items.value.find(i => i.contract_id === contractId)!,
   )
   await useHttp(`client-groups`, {
@@ -84,15 +86,15 @@ nextTick(loadData)
             <v-list>
               <v-list-item @click="groupSelectorDialog?.open(group.program!, group.year, item.contract_id)">
                 <template #prepend>
-                  <v-icon :icon="mdiSwapHorizontal" />
+                  <v-icon :icon="mdiShuffleVariant" />
                 </template>
-                переместить в группу
+                переместить в другую группу
               </v-list-item>
-              <v-list-item @click="destroy(item)">
+              <v-list-item @click="removeFromGroup(item)">
                 <template #prepend>
-                  <v-icon icon="$close" />
+                  <v-icon icon="$delete" />
                 </template>
-                удалить из группы
+                удалить из этой группы
               </v-list-item>
             </v-list>
           </v-menu>
@@ -108,11 +110,11 @@ nextTick(loadData)
 
   <GroupSelectorDialog
     ref="groupSelectorDialog"
-    @select="onGroupSelected"
+    @select="moveToAnotherGroup"
   />
   <GroupAddStudentDialog
     ref="groupAddStudentDialog"
     :group="group"
-    @updated="loadData"
+    @added="loadData"
   />
 </template>

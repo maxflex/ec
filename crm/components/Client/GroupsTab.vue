@@ -62,7 +62,7 @@ nextTick(loadData)
 <style lang="scss">
 .groups-tab {
   background: rgb(var(--v-theme-bg));
-  .content {
+  .index-page__content {
     display: flex;
     flex-direction: column;
     gap: 57px;

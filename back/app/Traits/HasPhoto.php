@@ -3,10 +3,11 @@
 namespace App\Traits;
 
 use App\Models\Photo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 trait HasPhoto
 {
-    public function photo()
+    public function photo(): MorphOne
     {
         return $this->morphOne(Photo::class, 'entity');
     }

@@ -5,7 +5,9 @@ namespace App\Models;
 use App\Enums\Company;
 use App\Traits\HasBalance;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Carbon;
 
 class Contract extends Model
@@ -22,17 +24,17 @@ class Contract extends Model
         'company' => Company::class,
     ];
 
-    public function client()
+    public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
     }
 
-    public function versions()
+    public function versions(): HasMany
     {
         return $this->hasMany(ContractVersion::class)->oldest();
     }
 
-    public function groups()
+    public function groups(): HasManyThrough
     {
         return $this->hasManyThrough(
             Group::class,

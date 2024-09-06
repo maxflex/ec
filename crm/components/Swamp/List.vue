@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import type { GroupSelectorDialog } from '#build/components'
 
-const { items } = defineProps<{ items: SwampListResource[] }>()
+const { items, selectable } = defineProps<{
+  items: SwampListResource[]
+  selectable?: boolean
+}>()
+const emit = defineEmits<{
+  select: [swamp: SwampListResource]
+}>()
 const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
 </script>
 
 <template>
-  <div class="table swamp-list">
-    <div v-for="swamp in items" :key="swamp.id" class="swamp-item">
+  <div class="table swamp-list" :class="{ 'table--hover': selectable }">
+    <div v-for="swamp in items" :key="swamp.id" class="swamp-item" @click="emit('select', swamp)">
       <div style="width: 150px">
         <NuxtLink
           v-if="swamp.group_id"
@@ -39,7 +45,7 @@ const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
       <div style="width: 150px">
         {{ swamp.total_price_passed }} / {{ swamp.total_price }}
       </div>
-      <div style="width: 180px">
+      <div style="width: 170px">
         договор №{{ swamp.contract_id }}
       </div>
       <div>
@@ -49,3 +55,16 @@ const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
   </div>
   <GroupSelectorDialog ref="groupSelectorDialog" />
 </template>
+
+<style lang="scss">
+.swamp-list {
+  &.table--hover {
+    .swamp-item {
+      cursor: pointer;
+      & > div:first-child {
+        display: none;
+      }
+    }
+  }
+}
+</style>

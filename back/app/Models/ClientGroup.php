@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ClientGroup extends Model
 {
@@ -10,12 +11,12 @@ class ClientGroup extends Model
 
     protected $fillable = ['contract_version_program_id', 'group_id'];
 
-    public function contractVersionProgram()
+    public function contractVersionProgram(): BelongsTo
     {
         return $this->belongsTo(ContractVersionProgram::class, 'contract_version_program_id', 'id');
     }
 
-    public function group()
+    public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
     }
