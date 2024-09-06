@@ -38,6 +38,7 @@ class Phone extends Model implements Authenticatable
     public function getRememberToken()
     {
     }
+
     public function setRememberToken($value)
     {
     }

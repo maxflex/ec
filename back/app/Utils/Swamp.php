@@ -8,6 +8,23 @@ class Swamp
 {
     public static function query()
     {
+        $t = DB::table('contract_version_program_prices')
+            ->selectRaw(<<<SQL
+                contract_version_program_id,
+                CAST(SUM(`lessons`) AS UNSIGNED) AS total_lessons,
+                CAST(SUM(`price` * `lessons`) AS UNSIGNED) AS total_price
+            SQL
+            )
+            ->groupBy('contract_version_program_id');
+
+        $tp = DB::table('client_lessons')
+            ->selectRaw(<<<SQL
+                contract_version_program_id,
+                CAST(SUM(`price`) AS UNSIGNED) AS total_price_passed
+            SQL
+            )
+            ->groupBy('contract_version_program_id');
+
         /**
          * Программы последней версии договора
          */
@@ -17,6 +34,8 @@ class Swamp
                 ->where('cv.is_active', true)
             )
             ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
+            ->joinSub($t, 't', 't.contract_version_program_id', '=', 'cvp.id')
+            ->joinSub($tp, 'tp', 'tp.contract_version_program_id', '=', 'cvp.id')
             ->leftJoin(
                 'client_groups as cg',
                 'cg.contract_version_program_id',
@@ -25,18 +44,13 @@ class Swamp
             )
             ->selectRaw(<<<SQL
                 cvp.id,
-                (
-                    select cast(sum(`lessons`) as unsigned)
-                    from contract_version_program_prices 
-                    where contract_version_program_id = cvp.id
-                ) as `lessons`,
-                (
-                    select count(*) from `client_lessons` 
-                    where contract_version_program_id = cvp.id
-                ) as `lessons_passed`,
+                t.total_lessons,
+                t.total_price,
+                tp.total_price_passed,
                 `group_id`,
                 cv.contract_id,
                 c.year,
+                c.client_id,
                 cvp.program
             SQL
             );

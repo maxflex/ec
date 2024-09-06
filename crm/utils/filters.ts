@@ -85,9 +85,9 @@ export function formatFullName(person: PersonResource) {
   return [person.last_name, person.first_name, person.middle_name].join(' ')
 }
 
-export function formatPrice(price: number) {
+export function formatPrice(price: number, showZero: boolean = false) {
   if (price === 0) {
-    return ''
+    return showZero ? 0 : ''
   }
   return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
 }

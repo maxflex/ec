@@ -571,6 +571,9 @@ export const LessonFileTypeLabel = {
 
 export const SwampFilterStatusLabel = {
   toFulfil: 'к исполнению',
-  fulfilledInGroup: 'исполнено + в группе',
-  fulfilled: 'исполнено',
+  exceedNoGroup: 'избыток по услугам + не в группе',
+  completeNoGroup: 'исполнено + не в группе',
+  inProcess: 'исполняется',
+  exceedInGroup: 'избыток по услугам + в группе',
+  completeInGroup: 'исполнено + в группе',
 } as const

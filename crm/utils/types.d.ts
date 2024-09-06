@@ -852,8 +852,9 @@ declare global {
 
   interface SwampListResource {
     id: number
-    lessons: number
-    lessons_passed: number
+    total_lessons: number
+    total_price: number
+    total_price_passed: number
     client: PersonResource
     program: Program
     year: Year

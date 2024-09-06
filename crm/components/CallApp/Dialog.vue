@@ -24,6 +24,8 @@ function reloadWithFilters() {
   reloadData(filters.value)
 }
 
+const showActiveCalls = computed(() => !filters.value.q && ['all', 'active'].includes(filters.value.status))
+
 watch(callAppDialog, (isOpen) => {
   if (isOpen) {
     reloadWithFilters()
@@ -77,11 +79,9 @@ $addSseListener('CallSummaryEvent', (call: CallListResource) => {
             </template>
           </v-text-field>
         </div>
-        <CallAppActiveCallsList
-          v-if="!filters.q && ['all', 'active'].includes(filters.status)"
-          :items="activeCalls"
-        />
+        <CallAppActiveCallsList v-if="showActiveCalls" :items="activeCalls" />
         <CallAppCallsList :items="items" @deleted="onDeleted" />
+        <UiNoData v-if="(!loading && items.length === 0) && (!showActiveCalls || activeCalls.length === 0)" />
       </div>
     </div>
   </v-dialog>

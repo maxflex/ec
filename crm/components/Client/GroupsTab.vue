@@ -31,13 +31,7 @@ function onSelected() {
 }
 
 async function loadSwamps() {
-  const status: SwampFilterStatus = 'toFulfil'
-  const { data } = await useHttp<ApiResponse<SwampListResource[]>>(`swamps`, {
-    params: {
-      ...params,
-      status,
-    },
-  })
+  const { data } = await useHttp<ApiResponse<SwampListResource[]>>(`swamps`, { params })
   if (data.value) {
     swamps.value = data.value.data
   }
@@ -54,14 +48,31 @@ nextTick(loadData)
 </script>
 
 <template>
-  <UiIndexPage :data="{ loading, noData }">
+  <UiIndexPage :data="{ loading, noData }" class="groups-tab">
     <template #filters>
       <v-select v-model="year" :items="selectItems(YearLabel)" label="Учебный год" density="comfortable" />
     </template>
-
     <div class="table table--padding">
       <GroupList :items="groups" />
     </div>
     <SwampList :items="swamps" @select="onSelected" />
   </UiIndexPage>
 </template>
+
+<style lang="scss">
+.groups-tab {
+  background: rgb(var(--v-theme-bg));
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 57px;
+    & > div:not(:first-child) {
+      border-top: 1px solid rgb(var(--v-theme-border));
+    }
+  }
+  .group-item,
+  .swamp-item {
+    background: white;
+  }
+}
+</style>

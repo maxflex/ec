@@ -6,14 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\SwampListResource;
 use App\Utils\Swamp;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class SwampController extends Controller
 {
     protected $filters = [
-        'equals' => ['year', 'program'],
+        'equals' => ['year', 'program', 'client_id'],
         'status' => ['status'],
-        'client' => ['client_id'],
     ];
 
     public function index(Request $request)
@@ -27,29 +25,28 @@ class SwampController extends Controller
     {
         switch ($status) {
             case 'toFulfil':
-                $query->whereRaw("group_id IS NULL AND lessons_passed < lessons");
+                $query->whereRaw("group_id IS NULL AND total_price_passed < total_price");
                 break;
-            case 'fulfilled':
-                $query->whereRaw("group_id IS NULL AND lessons_passed >= lessons");
+
+            case 'exceedNoGroup':
+                $query->whereRaw("group_id IS NULL AND total_price_passed > total_price");
                 break;
-            case 'fulfilledInGroup':
-                $query->whereRaw("group_id IS NOT NULL AND lessons_passed >= lessons");
+
+            case 'completeNoGroup':
+                $query->whereRaw("group_id IS NULL AND total_price_passed = total_price");
+                break;
+
+            case 'inProcess':
+                $query->whereRaw("group_id IS NOT NULL AND total_price_passed < total_price");
+                break;
+
+            case 'exceedInGroup':
+                $query->whereRaw("group_id IS NOT NULL AND total_price_passed > total_price");
+                break;
+
+            case 'completeInGroup':
+                $query->whereRaw("group_id IS NOT NULL AND total_price_passed = total_price");
                 break;
         }
-    }
-
-    protected function filterClient(&$query, $clientId)
-    {
-        $programIds = DB::table('contract_version_programs', 'cvp')
-            ->join('contract_versions as cv', fn($join) => $join
-                ->on('cv.id', '=', 'cvp.contract_version_id')
-                ->where('cv.is_active', true)
-            )
-            ->join('contracts as c', fn($join) => $join->on('c.id', '=', 'cv.contract_id'))
-            ->where('c.year', request()->year)
-            ->where('c.client_id', $clientId)
-            ->pluck('cvp.id');
-
-        $query->whereIn('id', $programIds);
     }
 }

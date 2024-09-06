@@ -26,7 +26,7 @@ function onClick(g: GroupListResource) {
     :class="{ 'group-item--selectable': selectable }"
     @click="onClick(item)"
   >
-    <div style="width: 200px">
+    <div style="width: 150px">
       <NuxtLink :to="{ name: 'groups-id', params: { id: item.id } }">
         Группа {{ item.id }}
       </NuxtLink>

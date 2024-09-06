@@ -79,7 +79,7 @@ class Contract extends Model
         }
 
         foreach ($this->payments as $payment) {
-            $balanceItems[] = [
+            $balanceItems[] = (object)[
                 'dateTime' => $payment->created_at->format('Y-m-d H:i:s'),
                 'sum' => $payment->sum * ($payment->is_return ? -1 : 1),
                 'comment' => sprintf(

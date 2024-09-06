@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import type { Filters } from '~/components/Swamp/Filters.vue'
 
-const { items, loading, onFiltersApply } = useIndex<SwampListResource, Filters>(`swamps`, {
-  defaultFilters: {
-    year: currentAcademicYear(),
-  },
-})
+const { items, onFiltersApply, indexPageData } = useIndex<SwampListResource, Filters>(
+    `swamps`,
+    {
+      defaultFilters: {
+        year: currentAcademicYear(),
+      },
+    },
+)
 </script>
 
 <template>
-  <UiFilters>
-    <SwampFilters @apply="onFiltersApply" />
-  </UiFilters>
-  <div>
-    <UiLoader3 :loading="loading" />
+  <UiIndexPage :data="indexPageData">
+    <template #filters>
+      <SwampFilters @apply="onFiltersApply" />
+    </template>
     <SwampList :items="items" />
-  </div>
+  </UiIndexPage>
 </template>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-const { items } = defineProps<{
+const { items, expand } = defineProps<{
   label: string
   density?: 'comfortable'
+  expand?: boolean
   items: {
     value: string | number
     title: string
@@ -26,6 +27,8 @@ function clear() {
     :density="density"
     :menu-props="{
       closeOnContentClick: true,
+      minHeight: expand ? 'auto' : 350,
+      maxHeight: expand ? 'auto' : 350,
     }"
   >
     <template #prepend-item>

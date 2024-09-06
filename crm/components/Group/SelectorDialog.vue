@@ -58,7 +58,7 @@ defineExpose({ open })
         Выберите группу
         <!--                <v-btn icon="$close" :size="48" variant="text" @click="dialog = false" /> -->
       </div>
-      <div class="dialog-body pt-0">
+      <div class="dialog-body pt-0 ga-0">
         <UiFilters>
           <v-select
             v-model="filters.year"

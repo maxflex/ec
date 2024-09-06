@@ -9,11 +9,11 @@ const { data } = defineProps<{ data: IndexPageData }>()
       <slot name="buttons" />
     </template>
   </UiFilters>
-  <div>
+  <div v-bind="$attrs">
     <v-fade-transition>
       <UiLoader v-if="data.loading" />
       <UiNoData v-else-if="data.noData" />
-      <div v-else>
+      <div v-else class="content">
         <slot />
       </div>
     </v-fade-transition>

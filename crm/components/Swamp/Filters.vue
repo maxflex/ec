@@ -41,6 +41,7 @@ watch(filters.value, () => {
       label="Статус"
       :items="selectItems(SwampFilterStatusLabel)"
       density="comfortable"
+      expand
     />
   </div>
 </template>
