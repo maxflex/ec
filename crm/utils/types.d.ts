@@ -336,13 +336,10 @@ declare global {
     }
   }
 
-  type LessonFileType = keyof typeof LessonFileTypeLabel
-
   interface LessonFile {
     url?: string
     name: string
     size: number
-    type: LessonFileType
   }
 
   interface LessonFileIcon {

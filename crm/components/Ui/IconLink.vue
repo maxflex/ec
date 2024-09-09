@@ -1,10 +1,16 @@
+<script lang="ts" setup>
+const { icon, prepend } = withDefaults(defineProps<{
+  icon: string
+  prepend?: boolean
+}>(), {
+  icon: '$next',
+})
+</script>
+
 <template>
-  <a class="icon-link">
+  <a class="icon-link" :class="{ 'icon-link--prepend': prepend }">
     <slot />
-    <v-icon
-      :size="16"
-      icon="$next"
-    />
+    <v-icon :size="16" :icon="icon" />
   </a>
 </template>
 
@@ -26,6 +32,10 @@
   }
   &:active {
     gap: var(--gap);
+  }
+  &--prepend {
+    flex-direction: row-reverse;
+    gap: 4px !important;
   }
 }
 </style>

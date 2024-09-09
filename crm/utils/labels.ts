@@ -564,11 +564,6 @@ export const CallAppStatusFilterLabel = {
   outgoing: 'исходящие',
 } as const
 
-export const LessonFileTypeLabel = {
-  homework: 'домашнее задание',
-  materials: 'раздаточные материалы',
-}
-
 export const SwampFilterStatusLabel = {
   toFulfil: 'к исполнению',
   exceedNoGroup: 'избыток по услугам + не в группе',

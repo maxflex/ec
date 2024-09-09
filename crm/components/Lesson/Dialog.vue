@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
 import { mdiDownload, mdiFilePdfBox, mdiFileTableBox, mdiImage } from '@mdi/js'
-import { LessonFileTypeLabel } from '~/utils/labels'
 
 const emit = defineEmits<{
   updated: [l: LessonListResource]
@@ -17,8 +16,6 @@ const modelDefaults: LessonResource = {
   quarter: null,
   files: [],
 }
-// тип загружаемого файла
-let selectedFileType: LessonFileType = 'homework'
 
 const fileInput = ref()
 const saving = ref(false)
@@ -84,8 +81,7 @@ async function destroy() {
   }
 }
 
-function selectFile(fileType: LessonFileType) {
-  selectedFileType = fileType
+function selectFile() {
   fileInput.value.click()
 }
 
@@ -103,6 +99,8 @@ function getIcon(file: LessonFile): LessonFileIcon {
         icon: mdiFilePdfBox,
         color: '#e75a5a',
       }
+    case 'gif':
+    case 'svg':
     case 'png':
     case 'jpg':
     case 'jpeg':
@@ -129,7 +127,6 @@ async function onFileSelected(e: Event) {
   const newFile = reactive<LessonFile>({
     name: file.name,
     size: file.size,
-    type: selectedFileType,
   })
   lesson.value.files.push(newFile)
   const { data } = await useHttp<string>(`lessons/upload-file`, {
@@ -138,7 +135,6 @@ async function onFileSelected(e: Event) {
   })
   if (data.value) {
     newFile.url = data.value
-    console.log('uploaded', data.value)
   }
 }
 
@@ -245,9 +241,9 @@ defineExpose({ create, edit })
           />
         </div>
         <div>
-          <div v-for="(label, fileType) in LessonFileTypeLabel" :key="fileType" class="lesson-files">
+          <div class="lesson-files">
             <v-menu
-              v-for="file in lesson.files.filter(e => e.type === fileType)"
+              v-for="file in lesson.files"
               :key="file.url || file.name"
             >
               <template #activator="{ props }">
@@ -273,10 +269,9 @@ defineExpose({ create, edit })
                 </v-list-item>
               </v-list>
             </v-menu>
-
-            <div>
-              <UiIconLink @click="selectFile(fileType)">
-                загрузить {{ label }}
+            <div class="mt-2">
+              <UiIconLink icon="$file" prepend @click="selectFile()">
+                прикрепить файл
               </UiIconLink>
             </div>
           </div>
@@ -318,11 +313,6 @@ defineExpose({ create, edit })
       font-size: 44px;
       margin-right: 8px;
     }
-  }
-  // отступ между двумя категориями файлов
-  &:nth-child(2) .lesson-files__file {
-    display: inline-block;
-    margin-top: 50px;
   }
 }
 </style>

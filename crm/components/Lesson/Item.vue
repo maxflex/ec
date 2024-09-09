@@ -137,5 +137,8 @@ const emit = defineEmits<{
   &--cancelled {
     opacity: 0.4;
   }
+  .table-actionss {
+    top: -16px;
+  }
 }
 </style>
