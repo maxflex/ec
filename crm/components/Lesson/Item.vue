@@ -1,16 +1,30 @@
 <script setup lang="ts">
-import { mdiAccountEdit, mdiAccountGroup } from '@mdi/js'
+import { mdiAccountEdit, mdiAccountGroup, mdiEyeOutline } from '@mdi/js'
 
-const { item, editable, conductable } = defineProps<{
+const { item, editable } = defineProps<{
   item: LessonListResource
   editable?: boolean
-  conductable?: boolean
 }>()
 
 const emit = defineEmits<{
   edit: [id: number]
+  view: [id: number]
   conduct: [id: number, status: LessonStatus]
 }>()
+
+const { user } = useAuthStore()
+
+const isConductable = computed(() => {
+  if (user?.entity_type === EntityType.teacher) {
+    return true
+  }
+  if (user?.entity_type === EntityType.client) {
+    return false
+  }
+  return item.status === 'conducted'
+})
+
+const isClient = user?.entity_type === EntityType.client
 </script>
 
 <template>
@@ -19,9 +33,9 @@ const emit = defineEmits<{
     :class="`lesson-item--${item.status}`"
     class="lesson-item"
   >
-    <div v-if="editable || conductable" class="table-actionss">
+    <div class="table-actionss">
       <v-btn
-        v-if="conductable"
+        v-if="isConductable"
         :icon="mdiAccountEdit"
         :size="48"
         variant="text"
@@ -35,6 +49,14 @@ const emit = defineEmits<{
         variant="text"
         color="gray"
         @click="emit('edit', item.id)"
+      />
+      <v-btn
+        v-if="isClient"
+        :icon="mdiEyeOutline"
+        :size="48"
+        variant="text"
+        color="gray"
+        @click="emit('view', item.id)"
       />
     </div>
     <div style="width: 110px; position: relative;">
@@ -139,6 +161,7 @@ const emit = defineEmits<{
   }
   .table-actionss {
     top: -16px;
+    right: -1 0px;
   }
 }
 </style>

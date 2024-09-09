@@ -336,13 +336,13 @@ declare global {
     }
   }
 
-  interface LessonFile {
+  interface UploadedFile {
     url?: string
     name: string
     size: number
   }
 
-  interface LessonFileIcon {
+  interface UploadedFileIcon {
     icon: string
     color: string
   }
@@ -353,16 +353,18 @@ declare global {
     group_id?: number
     price?: number
     cabinet?: Cabinet
+    // TODO: date и time разве могут быть null?
     date?: string
     time?: string
     status: LessonStatus
     quarter: Quarter | null
     topic?: ?string
     homework?: ?string
-    files: LessonFile[]
+    files: UploadedFile[]
     conducted_at: string | null
     is_topic_verified: boolean
     is_unplanned: boolean
+    teacher?: PersonResource
     user?: PersonResource
     created_at?: string
   }

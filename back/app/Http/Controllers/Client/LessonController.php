@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\LessonResource;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,7 @@ class LessonController extends Controller
         'group' => ['year'],
     ];
 
-    public function __invoke(Request $request)
+    public function index(Request $request)
     {
         if ($request->has('client_id')) {
             $lessons = auth()->user()->entity->getSchedule($request->year);
@@ -24,6 +25,11 @@ class LessonController extends Controller
         }
 
         return Lesson::withSequenceNumber($lessons);
+    }
+
+    public function show(Lesson $lesson)
+    {
+        return new LessonResource($lesson);
     }
 
 

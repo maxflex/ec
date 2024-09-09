@@ -7,6 +7,7 @@ import type {
   LessonBulkUpdateDialog,
   LessonConductDialog,
   LessonDialog,
+  LessonViewDialog,
 } from '#build/components'
 
 // потому что props ещё есть ниже
@@ -39,6 +40,7 @@ const events = ref<EventListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
 const lessonBulkUpdateDialog = ref<InstanceType<typeof LessonBulkUpdateDialog>>()
 const lessonBulkCreateDialog = ref<InstanceType<typeof LessonBulkCreateDialog>>()
+const lessonViewDialog = ref<InstanceType<typeof LessonViewDialog>>()
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 const vacations = ref<Record<string, boolean>>({})
@@ -184,16 +186,6 @@ function isEvent(item: LessonListResource | EventListResource): item is EventLis
   return 'participants_count' in item
 }
 
-function isConductable(item: LessonListResource) {
-  if (user?.entity_type === EntityType.teacher) {
-    return true
-  }
-  if (user?.entity_type === EntityType.client) {
-    return false
-  }
-  return item.status === 'conducted'
-}
-
 async function loadData() {
   await loadTeeth()
   await loadLessons()
@@ -276,10 +268,10 @@ nextTick(loadData)
           v-else
           :key="`l-${item.id}`"
           :item="item"
-          :conductable="isConductable(item)"
           :editable="editable"
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
+          @view="lessonViewDialog?.open"
         >
           <template #checkbox>
             <v-checkbox v-model="checkboxes[item.id]" />
@@ -324,6 +316,7 @@ nextTick(loadData)
       @updated="loadLessons"
     />
   </template>
+  <LessonViewDialog ref="lessonViewDialog" />
   <LessonConductDialog
     ref="conductDialog"
     @updated="loadLessons"

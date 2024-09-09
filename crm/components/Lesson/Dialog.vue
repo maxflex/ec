@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
-import { mdiDownload, mdiFilePdfBox, mdiFileTableBox, mdiImage } from '@mdi/js'
 
 const emit = defineEmits<{
   updated: [l: LessonListResource]
@@ -17,7 +16,6 @@ const modelDefaults: LessonResource = {
   files: [],
 }
 
-const fileInput = ref()
 const saving = ref(false)
 const timeMask = { mask: '##:##' }
 const { dialog, width } = useDialog('default')
@@ -78,63 +76,6 @@ async function destroy() {
     emit('destroyed', data.value)
     dialog.value = false
     setTimeout(() => deleting.value = false, 300)
-  }
-}
-
-function selectFile() {
-  fileInput.value.click()
-}
-
-function removeFile(file: LessonFile) {
-  const index = lesson.value.files.findIndex(f => f.url === file.url)
-  lesson.value.files.splice(index, 1)
-}
-
-function getIcon(file: LessonFile): LessonFileIcon {
-  const index = file.name.lastIndexOf('.')
-  const extension = file.name.slice(index + 1)
-  switch (extension) {
-    case 'pdf':
-      return {
-        icon: mdiFilePdfBox,
-        color: '#e75a5a',
-      }
-    case 'gif':
-    case 'svg':
-    case 'png':
-    case 'jpg':
-    case 'jpeg':
-      return {
-        icon: mdiImage,
-        color: '#BEAC83',
-      }
-    default:
-      return {
-        icon: mdiFileTableBox,
-        color: '#6caf57',
-      }
-  }
-}
-
-async function onFileSelected(e: Event) {
-  const target = e.target as HTMLInputElement
-  if (!target.files?.length) {
-    return
-  }
-  const formData = new FormData()
-  const file = target.files[0]
-  formData.append('file', file)
-  const newFile = reactive<LessonFile>({
-    name: file.name,
-    size: file.size,
-  })
-  lesson.value.files.push(newFile)
-  const { data } = await useHttp<string>(`lessons/upload-file`, {
-    method: 'POST',
-    body: formData,
-  })
-  if (data.value) {
-    newFile.url = data.value
   }
 }
 
@@ -241,40 +182,7 @@ defineExpose({ create, edit })
           />
         </div>
         <div>
-          <div class="lesson-files">
-            <v-menu
-              v-for="file in lesson.files"
-              :key="file.url || file.name"
-            >
-              <template #activator="{ props }">
-                <div v-bind="props" class="lesson-files__file" :class="{ 'opacity-disabled': !file.url }">
-                  <v-icon :icon="getIcon(file).icon" :color="getIcon(file).color" />
-                  <span>
-                    {{ filterTruncate(file.name, 40) }}
-                  </span>
-                </div>
-              </template>
-              <v-list>
-                <v-list-item :href="file.url" target="_blank">
-                  <template #prepend>
-                    <v-icon :icon="mdiDownload" />
-                  </template>
-                  скачать
-                </v-list-item>
-                <v-list-item @click="removeFile(file)">
-                  <template #prepend>
-                    <v-icon icon="$delete" />
-                  </template>
-                  удалить
-                </v-list-item>
-              </v-list>
-            </v-menu>
-            <div class="mt-2">
-              <UiIconLink icon="$file" prepend @click="selectFile()">
-                прикрепить файл
-              </UiIconLink>
-            </div>
-          </div>
+          <FileUploader v-model="lesson.files" />
         </div>
         <div>
           <v-checkbox
@@ -286,33 +194,7 @@ defineExpose({ create, edit })
             label="Внеплановое"
           />
         </div>
-        <input
-          ref="fileInput"
-          style="display: none"
-          type="file"
-          @change="onFileSelected"
-        >
       </div>
     </div>
   </v-dialog>
 </template>
-
-<style lang="scss">
-.lesson-files {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  &__file {
-    display: inline-flex;
-    align-items: center;
-    position: relative;
-    cursor: pointer;
-    width: fit-content;
-    left: -5px;
-    .v-icon {
-      font-size: 44px;
-      margin-right: 8px;
-    }
-  }
-}
-</style>
