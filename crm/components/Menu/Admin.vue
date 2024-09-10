@@ -4,6 +4,7 @@ import {
   mdiAccountGroup,
   mdiAccountMultiple,
   mdiAccountMultipleOutline,
+  mdiAlertCircleOutline,
   mdiBookOpenOutline,
   mdiCalendar,
   mdiCalendarBadge,
@@ -25,7 +26,6 @@ import {
   mdiStarBox,
   mdiStarBoxOutline,
 } from '@mdi/js'
-import CallApp from '~/components/CallApp/CallAppMain.vue'
 import { missedCount, openCallApp } from '~/components/CallApp'
 
 const { logOut } = useAuthStore()
@@ -166,6 +166,11 @@ const menu: Menu = [
     title: 'Логи',
     to: '/logs',
   },
+  {
+    icon: mdiAlertCircleOutline,
+    title: 'Ошибки',
+    to: '/errors',
+  },
 ]
 </script>
 
@@ -208,5 +213,5 @@ const menu: Menu = [
       Выход
     </v-list-item>
   </v-list>
-  <CallApp />
+  <CallAppMain />
 </template>

@@ -572,3 +572,5 @@ export const SwampFilterStatusLabel = {
   exceedInGroup: 'избыток по услугам + в группе',
   completeInGroup: 'исполнено + в группе',
 } as const
+
+export const ErrorCodeLabel = [1000] as const

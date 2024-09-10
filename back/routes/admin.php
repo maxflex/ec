@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\{BalanceController,
     ContractController,
     ContractPaymentController,
     ContractVersionController,
+    ErrorController,
     EventParticipantController,
     ExamScoreController,
     GradeController,
@@ -90,6 +91,10 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::get('recording/{action}/{call}', 'recording');
     });
 
+    Route::prefix('errors')->controller(ErrorController::class)->group(function () {
+        Route::get('/', 'index');
+        Route::post('/check', 'check');
+    });
 
     Route::apiResources([
         'requests' => RequestsController::class,

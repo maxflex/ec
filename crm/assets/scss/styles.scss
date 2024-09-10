@@ -281,3 +281,9 @@ a.table-item {
   pointer-events: none;
   cursor: default !important;
 }
+
+code {
+  background: rgb(var(--v-theme-bg));
+  padding: 4px 8px;
+  border-radius: 4px;
+}

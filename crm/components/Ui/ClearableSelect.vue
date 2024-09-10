@@ -27,8 +27,8 @@ function clear() {
     :density="density"
     :menu-props="{
       closeOnContentClick: true,
-      minHeight: expand ? 'auto' : 350,
-      maxHeight: expand ? 'auto' : 350,
+      minHeight: expand ? 'auto' : undefined,
+      maxHeight: expand ? 'auto' : undefined,
     }"
   >
     <template #prepend-item>

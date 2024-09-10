@@ -1,6 +1,9 @@
 import type Metrics from '~/components/Stats/Metrics'
+import type { EntityTypeLabel } from '~/utils/labels'
 
 declare global {
+  type ErrorCode = typeof ErrorCodeLabel[number]
+
   type CallAppStatusFilter = keyof typeof CallAppStatusFilterLabel
 
   type StatsMetric = keyof typeof Metrics
@@ -941,6 +944,15 @@ declare global {
     finished_at: string
     answered_at: ?string
     phone: ?CallAppPhoneResource
+  }
+
+  interface ErrorResource {
+    id: number
+    code: ErrorCode
+    entity_id: number
+    entity_type: keyof typeof EntityTypeLabel
+    number?: string
+    person?: PersonResource
   }
 }
 
