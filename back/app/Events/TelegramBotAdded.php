@@ -14,33 +14,19 @@ class TelegramBotAdded implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * Create a new event instance.
-     */
     public function __construct(public Phone $phone)
     {
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
     public function broadcastOn(): Channel
     {
-        return new Channel('auth.' . $this->phone->entity_id);
+        return new Channel('sse');
     }
 
-    /**
-     * Get the data to broadcast.
-     *
-     * @return array<string, mixed>
-     */
     public function broadcastWith(): array
     {
         return [
-            'user' => new AuthResource($this->phone),
-            'token' => $this->phone->createSessionToken(),
+            'data' => new AuthResource($this->phone),
         ];
     }
 }

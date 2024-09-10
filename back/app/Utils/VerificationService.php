@@ -2,23 +2,24 @@
 
 namespace App\Utils;
 
-use Illuminate\Support\Facades\Redis;
 use App\Facades\Telegram;
 use App\Models\Phone;
+use Illuminate\Support\Facades\Redis;
 
 class VerificationService
 {
     public static function sendCode(Phone $phone)
     {
-        // если код уже отправлен – ничо не делаем
+        // если код уже отправлен – ничего не делаем
         // if (Redis::get(self::cacheKey($phone)) !== null) {
         //     return;
         // }
         $code = self::generateCode();
         self::storeCode($phone, $code);
-        if (!is_localhost()) {
-            Telegram::sendMessage($phone->telegram_id, "*{$code}* – код для авторизации в ЛК", 'MarkdownV2');
+        if (is_localhost()) {
+            return;
         }
+        Telegram::sendMessage($phone->telegram_id, "*$code* – код для авторизации в ЛК", 'MarkdownV2');
     }
 
     public static function verifyCode(Phone $phone, $code)

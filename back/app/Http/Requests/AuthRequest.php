@@ -38,7 +38,7 @@ class AuthRequest extends FormRequest
             function (Validator $validator) {
                 $phone = Phone::auth($this->phone);
                 if ($phone === null) {
-                    $validator->errors()->add('phone', 'телефон не единственный');
+                    $validator->errors()->add('phone', 'кандидаты <> 1');
                 }
                 if ($this->has('code')) {
                     $verified = VerificationService::verifyCode(

@@ -157,7 +157,7 @@ watch(filters.value, reloadData)
       }
     }
     td {
-      &:nth-child(5) {
+      &:nth-child(6) {
         font-weight: bold !important;
       }
     }

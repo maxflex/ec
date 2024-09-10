@@ -135,9 +135,11 @@ defineExpose({ open })
             Файлы:
           </div>
           <div class="mt-1">
-            <a v-for="file in item.files" :key="file.url" target="_blank" :href="file.url">
-              <FileItem :item="file" />
-            </a>
+            <div v-for="file in item.files" :key="file.url">
+              <a target="_blank" :href="file.url">
+                <FileItem :item="file" />
+              </a>
+            </div>
           </div>
         </div>
       </div>

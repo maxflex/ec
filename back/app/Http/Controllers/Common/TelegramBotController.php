@@ -101,21 +101,6 @@ class TelegramBotController extends Controller
                  * Произвольное сообщение клиента – в администрацию
                  * UPD. Отключено
                  */
-//                $phone = Phone::where('telegram_id', $telegramId)->first();
-//                if ($phone === null) {
-//                    return $bot->sendMessage(
-//                        $telegramId,
-//                        view('bot.unidentified')
-//                    );
-//                }
-//                $telegramMessage = $phone->telegramMessages()->create([
-//                    'id' => $message->getMessageId(),
-//                    'text' => $message->getText()
-//                ]);
-//                NewTelegramMessage::dispatch(
-//                    $phone,
-//                    $telegramMessage
-//                );
             }, function () {
                 return true;
             });

@@ -22,6 +22,9 @@ export default defineNuxtPlugin(() => {
       addSseListener(event: SseEvent, callback: (data: any) => void) {
         listeners[event] = callback
       },
+      removeSseListener(event: SseEvent) {
+        delete listeners[event]
+      },
     },
   }
 })

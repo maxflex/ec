@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { mdiSendCircle } from '@mdi/js'
-import type { Channel } from 'pusher-js'
-import Pusher from 'pusher-js'
 
-const { public: config } = useRuntimeConfig()
-let pusher: Pusher
-let channel: Channel
 const { dialog, width } = useDialog('default')
 const telegramMessages = ref<TelegramMessageResource[]>([])
 const input = ref()
@@ -26,34 +21,12 @@ function scrollBottom() {
   })
 }
 
-function open(p: PhoneListResource, prsn: PersonResource) {
+function open(p: PhoneListResource, _person: PersonResource) {
   phone.value = p
-  person.value = prsn
+  person.value = _person
   dialog.value = true
   loadData()
-  initPusher()
 }
-
-function initPusher() {
-  pusher = new Pusher(config.pusherAppKey, { cluster: 'eu' })
-  channel = pusher.subscribe(`chat.${phone.value?.id}`)
-  channel.bind(
-    'App\\Events\\NewTelegramMessage',
-    ({ message }: { message: TelegramMessageResource }) => {
-      noScroll.value = true
-      telegramMessages.value.push(message)
-      scrollBottom()
-      setTimeout(() => (noScroll.value = false), 200)
-    },
-  )
-}
-
-watch(dialog, (isOpen) => {
-  if (!isOpen) {
-    channel?.unbind()
-    pusher?.unsubscribe('chat')
-  }
-})
 
 async function loadData() {
   const { data } = await useHttp<ApiResponse<TelegramMessageResource[]>>(

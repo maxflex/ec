@@ -13,7 +13,6 @@ export default defineNuxtConfig({
     public: {
       env: '',
       baseUrl: '',
-      pusherAppKey: '',
     },
     redisHost: '',
   },
