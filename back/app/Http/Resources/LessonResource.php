@@ -21,6 +21,7 @@ class LessonResource extends JsonResource
             'conducted_at', 'topic', 'is_topic_verified', 'is_unplanned', 'quarter',
             'files', 'homework', 'group_id'
         ], [
+            'group' => extract_fields($this->group, ['program']),
             'teacher' => new PersonResource($this->teacher),
             'user' => new PersonResource($this->user),
         ]);

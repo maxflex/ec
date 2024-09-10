@@ -141,12 +141,16 @@ class Client extends Model implements HasTeeth
         return $schedule;
     }
 
-    public function getTeeth(int $year): object
+    /**
+     * Получить все активные contract_version_program_id
+     */
+    public function getContractVersionProgramIds()
     {
-        $programIds = $this->contracts()
-            ->join('contract_versions as cv', fn($join) => $join
-                ->on('cv.contract_id', '=', 'contracts.id')
-                ->where('cv.is_active', true)
+        return $this->contracts()
+            ->join('contract_versions as cv',
+                fn($join) => $join
+                    ->on('cv.contract_id', '=', 'contracts.id')
+                    ->where('cv.is_active', true)
             )
             ->join(
                 'contract_version_programs as cvp',
@@ -155,11 +159,15 @@ class Client extends Model implements HasTeeth
                 'cv.id'
             )
             ->pluck('cvp.id');
+    }
+
+    public function getTeeth(int $year): object
+    {
         $query = Lesson::query()
             ->join('client_groups as cg', 'cg.group_id', '=', 'lessons.group_id')
             ->whereIn(
                 'cg.contract_version_program_id',
-                $programIds
+                $this->getContractVersionProgramIds(),
             );
         return Teeth::get($query, $year);
     }

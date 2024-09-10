@@ -81,8 +81,10 @@ class ContractVersionProgram extends Model
 
     public function getNextPrice(): int
     {
-        $offset = $this->clientLessons()->count();
-        return $this->prices()->offset($offset)->first()->price;
+        return $this->prices()->latest('id')->first()->price;
+//        TODO: для того, чтоб это работало, нужна правильная миграция contract_version_program_prices
+//        $offset = $this->clientLessons()->count();
+//        return $this->prices()->offset($offset)->first()->price;
     }
 
     public static function booted()

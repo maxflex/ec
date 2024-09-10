@@ -312,6 +312,43 @@ declare global {
     user?: PersonResource
   }
 
+  interface UploadedFile {
+    url?: string
+    name: string
+    size: number
+  }
+
+  interface UploadedFileIcon {
+    icon: string
+    color: string
+  }
+
+  interface LessonResource {
+    id: number
+    teacher_id?: number | null
+    group_id?: number
+    group?: {
+      id: number
+      program: Program
+    }
+    price?: number
+    cabinet?: Cabinet
+    // TODO: date и time разве могут быть null?
+    date?: string
+    time?: string
+    status: LessonStatus
+    quarter: Quarter | null
+    topic?: ?string
+    homework?: ?string
+    files: UploadedFile[]
+    conducted_at: string | null
+    is_topic_verified: boolean
+    is_unplanned: boolean
+    teacher?: PersonResource
+    user?: PersonResource
+    created_at?: string
+  }
+
   interface LessonListResource {
     id: number
     seq?: number // номер урока по порядку
@@ -336,51 +373,22 @@ declare global {
     }
   }
 
-  interface UploadedFile {
-    url?: string
-    name: string
-    size: number
-  }
-
-  interface UploadedFileIcon {
-    icon: string
-    color: string
-  }
-
-  interface LessonResource {
+  interface ClientLessonResource {
     id: number
-    teacher_id?: number | null
-    group_id?: number
-    price?: number
-    cabinet?: Cabinet
-    // TODO: date и time разве могут быть null?
-    date?: string
-    time?: string
-    status: LessonStatus
-    quarter: Quarter | null
-    topic?: ?string
-    homework?: ?string
-    files: UploadedFile[]
-    conducted_at: string | null
-    is_topic_verified: boolean
-    is_unplanned: boolean
-    teacher?: PersonResource
-    user?: PersonResource
-    created_at?: string
+    contract_version_program_id: number
+    client: PersonWithPhotoResource
+    status: ClientLessonStatus
+    is_remote: boolean
+    minutes_late: number | null
+    scores: ClientLessonScore[]
   }
 
   interface LessonConductResource {
     id: number
     status: LessonStatus
     conducted_at: string | null
-    contracts: Array<{
-      id: number
-      client: PersonWithPhotoResource
-      status: ClientLessonStatus
-      is_remote: boolean
-      minutes_late: number | null
-      scores: ClientLessonScore[]
-    }>
+    // внимание: client_lesson или client_group, но структура одинаковая
+    students: ClientLessonResource[]
   }
 
   interface TeacherListResource extends PersonResource {

@@ -103,6 +103,7 @@ const isClient = user?.entity_type === EntityType.client
         внеплановое
       </v-chip>
     </div>
+    <!--    TODO: удалить? -->
     <div v-if="item.clientLesson" class="lesson-item__contract-lesson">
       <!-- <div style="width: 240px">
         {{ item.clientLesson.is_remote ? 'удалённо' : 'очно' }}

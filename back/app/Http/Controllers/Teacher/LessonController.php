@@ -45,7 +45,7 @@ class LessonController extends Controller
      */
     public function conduct(Lesson $lesson, Request $request)
     {
-        $lesson->conduct($request->contracts);
+        $lesson->conduct($request->students);
         return new LessonListResource($lesson);
     }
 

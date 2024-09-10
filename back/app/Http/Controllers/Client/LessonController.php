@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ClientLessonResource;
 use App\Http\Resources\LessonResource;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
@@ -29,7 +30,17 @@ class LessonController extends Controller
 
     public function show(Lesson $lesson)
     {
-        return new LessonResource($lesson);
+        $clientLesson = $lesson->clientLessons()
+            ->whereIn(
+                'contract_version_program_id',
+                auth()->user()->entity->getContractVersionProgramIds(),
+            )
+            ->first();
+
+        return [
+            'lesson' => new LessonResource($lesson),
+            'clientLesson' => $clientLesson ? new ClientLessonResource($clientLesson) : null,
+        ];
     }
 
 

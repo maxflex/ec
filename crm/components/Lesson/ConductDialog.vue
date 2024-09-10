@@ -114,20 +114,20 @@ defineExpose({ open })
       <div v-else-if="item" class="dialog-body pt-0 conduct-dialog">
         <table class="dialog-table">
           <tbody>
-            <tr v-for="c in item?.contracts" :key="c.id">
+            <tr v-for="s in item?.students" :key="s.id">
               <td width="290">
-                {{ formatName(c.client) }}
+                {{ formatName(s.client) }}
               </td>
               <td width="100">
                 <UiToggler
-                  v-model="c.status"
+                  v-model="s.status"
                   :items="selectItems(ClientLessonStatusLabel)"
                 />
               </td>
               <td width="80">
                 <v-text-field
-                  v-if="c.status === 'late' "
-                  v-model="c.minutes_late"
+                  v-if="s.status === 'late' "
+                  v-model="s.minutes_late"
                   v-maska:[minutesLateMask]
                   type="number"
                   hide-spin-buttons
@@ -136,8 +136,8 @@ defineExpose({ open })
               </td>
               <td width="120">
                 <UiToggler
-                  v-if="c.status !== 'absent'"
-                  v-model="c.is_remote"
+                  v-if="s.status !== 'absent'"
+                  v-model="s.is_remote"
                   :items="[
                     { value: false, title: 'очно' },
                     { value: true, title: 'удалённо' },
@@ -146,30 +146,30 @@ defineExpose({ open })
               </td>
               <td width="57" class="conduct-dialog__scores">
                 <div
-                  v-for="(score, index) in c.scores" :key="index"
+                  v-for="(score, index) in s.scores" :key="index"
                   :class="`conduct-dialog__score conduct-dialog__score--${score.score}`"
                 >
                   <UiToggler
-                    v-model="c.scores[index].score"
+                    v-model="s.scores[index].score"
                     :items="scores.map(e => ({ value: e, title: e.toString() }))"
                   />
                 </div>
               </td>
               <td class="conduct-dialog__score-comments">
-                <div v-for="(score, index) in c.scores" :key="index">
+                <div v-for="(score, index) in s.scores" :key="index">
                   <v-text-field
-                    v-model="c.scores[index].comment"
+                    v-model="s.scores[index].comment"
                     density="compact"
                     placeholder="комментарий"
                   />
                   <v-icon
                     icon="$close"
-                    @click="c.scores.splice(index, 1)"
+                    @click="s.scores.splice(index, 1)"
                   />
                 </div>
               </td>
               <td width="20">
-                <a v-if="c.scores.length < 3" @click="c.scores.push({ score: 5, comment: null })">
+                <a v-if="s.scores.length < 3" @click="s.scores.push({ score: 5, comment: null })">
                   <v-icon icon="$plus" />
                 </a>
               </td>

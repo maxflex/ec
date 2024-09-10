@@ -8,7 +8,6 @@ use App\Enums\ClientLessonStatus;
 use App\Enums\LessonStatus;
 use App\Http\Resources\LessonListResource;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -98,33 +97,22 @@ class Lesson extends Model
     /**
      * Проводка занятия
      */
-    public function conduct($contracts)
+    public function conduct($students)
     {
-        foreach ($contracts as $c) {
-            $c = (object) $c;
+        foreach ($students as $s) {
+            $s = (object)$s;
 
-            // подразумеваем, что в договоре есть нужная программа
-            $contractVersionProgram = ContractVersion::query()
-                ->where('contract_id', $c->id)
-                ->active()
-                ->first()
-                ->programs()
-                ->where('program', $this->group->program)
-                ->first();
-
-            if ($contractVersionProgram === null) {
-                throw new Exception('No contract version program found');
-            }
+            $contractVersionProgram = ContractVersionProgram::find($s->contract_version_program_id);
 
             $this->clientLessons()->create([
-                'contract_id' => $c->id,
-                'status' => $c->status,
-                'minutes_late' => $c->status === ClientLessonStatus::late->value
-                    ? $c->minutes_late
+                'contract_version_program_id' => $contractVersionProgram->id,
+                'status' => $s->status,
+                'minutes_late' => $s->status === ClientLessonStatus::late->value
+                    ? $s->minutes_late
                     : null,
-                'is_remote' => $c->is_remote,
+                'is_remote' => $s->is_remote,
                 'price' => $contractVersionProgram->getNextPrice(),
-                'scores' => count($c->scores) ? $c->scores : null
+                'scores' => count($s->scores) ? $s->scores : null
             ]);
         }
 
