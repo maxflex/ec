@@ -247,8 +247,6 @@ nextTick(loadData)
       :key="d"
       :class="{
         'week-separator': !hideEmptyDates && getDay(d) === 0,
-        'schedule--vacation': vacations[d] === true,
-        'schedule--exam': examDates[d] === true,
       }"
     >
       <div>
@@ -278,6 +276,12 @@ nextTick(loadData)
           </template>
         </LessonItem>
       </template>
+      <div v-if="vacations[d]" class="schedule-event schedule-event--vacation">
+        праздник
+      </div>
+      <div v-if="examDates[d]" class="schedule-event schedule-event--exam">
+        экзамен
+      </div>
     </div>
   </div>
   <v-slide-y-reverse-transition>
@@ -375,11 +379,30 @@ nextTick(loadData)
       }
     }
   }
-  &--vacation {
-    background: rgba(var(--v-theme-red), 0.1);
-  }
-  &--exam {
-    background: rgba(var(--v-theme-orange), 0.1) !important;
+  &-event {
+    padding: 20px;
+    padding-left: 164px;
+    position: relative;
+    &:after {
+      content: '';
+      width: calc(100% - 110px);
+      height: 100%;
+      position: absolute;
+      left: 110px;
+      top: 0;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+    &--vacation {
+      &:after {
+        background: rgba(var(--v-theme-red), 0.08);
+      }
+    }
+    &--exam {
+      &:after {
+        background: rgba(var(--v-theme-success), 0.08);
+      }
+    }
   }
 }
 .bottom-bar {
