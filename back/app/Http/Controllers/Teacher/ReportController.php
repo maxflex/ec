@@ -62,6 +62,7 @@ class ReportController extends Controller
      */
     public function show(Report $report)
     {
+        abort_if($report->teacher_id !== auth()->id(), 404);
         return new ReportResource($report);
     }
 
@@ -70,6 +71,7 @@ class ReportController extends Controller
      */
     public function update(Request $request, Report $report)
     {
+        abort_if($report->teacher_id !== auth()->id(), 401);
         $report->update($request->all());
         return new ReportListResource($report);
     }
@@ -79,6 +81,7 @@ class ReportController extends Controller
      */
     public function destroy(Report $report)
     {
+        abort_if($report->teacher_id !== auth()->id(), 401);
         $report->delete();
     }
 

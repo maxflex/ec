@@ -62,6 +62,13 @@ function onDeleted(r: ReportResource) {
       <template v-if="isRealReport(r)">
         <div class="table-actionss">
           <v-btn
+            icon="$eye"
+            :size="48"
+            variant="plain"
+            color="gray"
+            :to="{ name: 'reports-id', params: { id: r.id } }"
+          />
+          <v-btn
             icon="$edit"
             :size="48"
             variant="plain"

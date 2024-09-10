@@ -8,6 +8,7 @@ import {
   mdiDelete,
   mdiDotsHorizontal,
   mdiEyeArrowRightOutline,
+  mdiEyeOutline,
   mdiTuneVertical,
 } from '@mdi/js'
 
@@ -22,6 +23,7 @@ const icons = {
     delete: mdiDelete,
     preview: mdiEyeArrowRightOutline,
     filters: mdiTuneVertical,
+    eye: mdiEyeOutline,
   },
   sets: {
     mdi,

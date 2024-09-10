@@ -13,6 +13,7 @@ const modelDefaults: ReportResource = {
   is_published: false,
   homework_comment: null,
   price: null,
+  client_lessons: [],
 }
 const { dialog, width } = useDialog('default')
 const itemId = ref<number>()

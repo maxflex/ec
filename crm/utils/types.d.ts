@@ -641,6 +641,17 @@ declare global {
     client?: PersonResource
     program?: Program
     created_at?: string
+    client_lessons: Array<{
+      id: number
+      status: ClientLessonStatus
+      minutes_late: number
+      is_remote: boolean
+      lesson: {
+        id: number
+        date: string
+        topic: string
+      }
+    }>
   }
 
   interface BillingResource {
