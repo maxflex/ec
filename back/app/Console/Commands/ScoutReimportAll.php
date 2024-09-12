@@ -30,16 +30,20 @@ class ScoutReimportAll extends Command
     public function handle()
     {
         $models = [
+            Teacher::class,
             Client::class,
             ClientParent::class,
-            Teacher::class
         ];
         // Это снесёт весь persons индекс, т.к. у всех он одинаковый
         Artisan::call('scout:flush', [
             'model' => Client::class
         ]);
+        $this->info('Index has been flushed');
         foreach ($models as $model) {
+            $this->line(PHP_EOL);
+            $this->info('Importing ' . $model);
             Artisan::call('scout:import', ['model' => $model]);
+            $this->line(Artisan::output());
         }
     }
 }

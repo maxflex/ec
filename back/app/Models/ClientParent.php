@@ -33,13 +33,15 @@ class ClientParent extends Model
     public function toSearchableArray()
     {
         $class = class_basename(self::class);
+        $array = $this->client->toSearchableArray();
 
         return [
+            ...$array,
             'id' => implode('-', [$class, $this->id]),
             'first_name' => $this->first_name ?? '',
             'last_name' => $this->last_name ?? '',
             'middle_name' => $this->middle_name ?? '',
-            'type' => strtolower($class),
+            'type' => 2,
             'phones' => $this->phones()->pluck('number'),
         ];
     }

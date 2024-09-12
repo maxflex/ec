@@ -37,18 +37,4 @@ trait IsPerson
             $this->middle_name,
         ]);
     }
-
-//    public function searchableAs(): string
-//    {
-//        return 'people_index';
-//    }
-//
-//    public function getScoutKey(): mixed
-//    {
-//        return implode('-', [
-//            strtolower(class_basename(self::class)),
-//            $this->id,
-//        ]);
-//    }
-
 }

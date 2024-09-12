@@ -20,6 +20,7 @@ class SearchController extends Controller
                 'include_fields' => 'id',
                 'query_by' => 'last_name,first_name,middle_name,phones',
                 'infix' => 'off,off,off,fallback',
+                'sort_by' => 'is_active:desc,max_contract_year:desc,_text_match:desc',
                 'enable_highlight_v1' => false,
                 'per_page' => 30,
             ])

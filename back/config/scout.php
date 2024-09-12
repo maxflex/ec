@@ -22,10 +22,20 @@ $schema = [
                 'type' => 'string[]',
                 'infix' => true,
             ],
+            [
+                'name' => 'max_contract_year',
+                'type' => 'int32',
+                'optional' => true,
+            ],
+            [
+                'name' => 'is_active',
+                'type' => 'bool'
+            ],
+            [
+                'name' => 'type',
+                'type' => 'int32'
+            ]
         ],
-    ],
-    'search-parameters' => [
-        'query_by' => 'last_name,first_name,middle_name,phones',
     ],
 ];
 
