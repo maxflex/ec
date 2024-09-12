@@ -9,6 +9,7 @@ import {
   mdiDotsHorizontal,
   mdiEyeArrowRightOutline,
   mdiEyeOutline,
+  mdiInformationOutline,
   mdiMagnify,
   mdiTuneVertical,
 } from '@mdi/js'
@@ -26,6 +27,7 @@ const icons = {
     filters: mdiTuneVertical,
     eye: mdiEyeOutline,
     search: mdiMagnify,
+    info: mdiInformationOutline,
   },
   sets: {
     mdi,

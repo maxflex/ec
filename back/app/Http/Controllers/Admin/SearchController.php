@@ -26,14 +26,6 @@ class SearchController extends Controller
             ])
             ->raw();
 
-//        $data = [];
-//        foreach ($result['hits'] as $r) {
-//            $document = (object)$r['document'];
-//            [$class, $id] = explode('-', $document->id);
-//            $model = "App\\Models\\$class";
-//            $data[] = $model::find($id);
-//        }
-
         return [
             'data' => SearchResultResource::collection($result['hits']),
             'meta' => [

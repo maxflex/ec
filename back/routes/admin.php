@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\{BalanceController,
     ClientReviewController,
     ClientTestController,
     CommentController,
+    ContractBalanceController,
     ContractController,
     ContractPaymentController,
     ContractVersionController,
@@ -86,6 +87,7 @@ Route::middleware(['auth:crm'])->group(function () {
     });
 
     Route::get('teacher-balances', TeacherBalanceController::class);
+    Route::get('contract-balances', ContractBalanceController::class);
 
     Route::prefix('calls')->controller(CallController::class)->group(function () {
         Route::get('active', 'active');

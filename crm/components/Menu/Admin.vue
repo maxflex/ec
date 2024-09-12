@@ -98,6 +98,11 @@ const menu: Menu = [
   },
   {
     icon: mdiCash,
+    title: 'Балансы договоров',
+    to: '/contract-balances',
+  },
+  {
+    icon: mdiCash,
     title: 'Допуслуги',
     to: '/teacher-services',
   },

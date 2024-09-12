@@ -31,7 +31,7 @@ class SearchResultResource extends JsonResource
                 $extra = [
                     ...$extra,
                     // Дубль из Phone::auth
-                    'is_active' => $contracts->where('year', 2024)->count() > 0,
+                    'is_active' => $contracts->where('year', current_academic_year())->count() > 0,
                     'contract_versions' => ContractVersionResource::collection(
                         $contracts->sortByDesc('id')->values()->map(fn($c) => $c->getActiveVersion())
                     ),

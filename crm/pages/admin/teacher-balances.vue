@@ -163,7 +163,8 @@ watch(filters.value, reloadData)
     }
   }
   tfoot td {
-    border-top-width: 2px !important;
+    font-weight: 500;
+    border-top-width: 1px !important;
   }
 }
 </style>
