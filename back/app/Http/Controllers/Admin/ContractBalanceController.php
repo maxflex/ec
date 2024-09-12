@@ -20,6 +20,7 @@ class ContractBalanceController extends Controller
         ]);
 
         $contracts = Contract::query()
+            ->with(['client', 'payments'])
             ->where('year', $request->year)
             ->get();
 

@@ -28,6 +28,11 @@ class ContractPayment extends Model
         return $this->belongsTo(Contract::class);
     }
 
+    public function getRealSumAttribute(): int
+    {
+        return $this->is_return ? $this->sum * -1 : $this->sum;
+    }
+
     public static function booted()
     {
         static::creating(function ($payment) {

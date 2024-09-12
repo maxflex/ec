@@ -4,7 +4,6 @@ namespace App\Http\Resources;
 
 use App\Models\ClientLesson;
 use App\Models\Contract;
-use DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,9 +13,7 @@ class ContractBalanceResource extends JsonResource
     public function toArray(Request $request): array
     {
         $activeVersion = $this->getActiveVersion();
-        $contractPayments = intval(
-            $this->payments()->sum(DB::raw('if(is_return, -sum, sum)')
-        ));
+        $contractPayments = $this->payments->reduce(fn($carry, $p) => $carry + $p->realSum, 0);
         $clientLessons = intval(
             ClientLesson::query()
                 ->whereIn('contract_version_program_id', $activeVersion->programs()->pluck('id'))
@@ -36,7 +33,7 @@ class ContractBalanceResource extends JsonResource
             'client_lessons' => $clientLessons,
             'remainder' => $remainder,
             'to_pay' => $toPay,
-            'latest_payment_date' => $this->payments()->where('is_return', false)->max('date')
+            'latest_payment_date' => $this->payments->max('date')
         ]);
     }
 }
