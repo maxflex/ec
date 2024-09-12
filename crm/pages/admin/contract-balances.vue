@@ -49,7 +49,7 @@ watch(filters.value, reloadData)
             в договоре
           </th>
           <th>
-            оплачено <br>
+            платежи <br>
             по договору
           </th>
           <th>
@@ -67,7 +67,7 @@ watch(filters.value, reloadData)
               <template #activator="{ props }">
                 <v-icon icon="$info" v-bind="props" />
               </template>
-              сумма в договоре – оплачено по договору
+              сумма в договоре – платежи по договору
             </v-tooltip>
           </th>
           <th>
@@ -77,7 +77,7 @@ watch(filters.value, reloadData)
               <template #activator="{ props }">
                 <v-icon icon="$info" v-bind="props" />
               </template>
-              оплачено по договору – начислено за занятия
+              платежи по договору – начислено за занятия
             </v-tooltip>
           </th>
         </tr>
