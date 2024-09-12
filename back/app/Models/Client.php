@@ -3,22 +3,15 @@
 namespace App\Models;
 
 use App\Contracts\HasTeeth;
-use App\Traits\HasName;
-use App\Traits\HasPhones;
-use App\Traits\HasPhoto;
-use App\Traits\HasTelegramMessages;
-use App\Traits\RelationSyncable;
+use App\Traits\{HasPhones, HasPhoto, HasTelegramMessages, IsPerson, RelationSyncable};
 use App\Utils\Teeth;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\{Casts\Attribute, Model, Relations\HasMany, Relations\HasOne, Relations\MorphMany};
 use Illuminate\Support\Collection;
+use Laravel\Scout\Searchable;
 
 class Client extends Model implements HasTeeth
 {
-    use HasName, HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable;
+    use HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable, Searchable, IsPerson;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'branches',
@@ -175,5 +168,24 @@ class Client extends Model implements HasTeeth
     public function scopeActive($query): void
     {
         $query->whereHas('contracts');
+    }
+
+    public function searchableAs()
+    {
+        return 'people';
+    }
+
+    public function toSearchableArray()
+    {
+        $class = class_basename(self::class);
+
+        return [
+            'id' => implode('-', [$class, $this->id]),
+            'first_name' => $this->first_name ?? '',
+            'last_name' => $this->last_name ?? '',
+            'middle_name' => $this->middle_name ?? '',
+            'type' => strtolower($class),
+            'phones' => $this->phones()->pluck('number'),
+        ];
     }
 }

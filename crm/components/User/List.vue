@@ -26,7 +26,7 @@ const emit = defineEmits<{ (e: 'edit', u: UserResource): void }>()
       </div>
 
       <div style="flex: 1">
-        <PhoneActions
+        <PhoneList
           :person="item"
           :items="item.phones"
           style="width: 250px"

@@ -4,15 +4,16 @@ namespace App\Models;
 
 use App\Contracts\{HasTeeth};
 use App\Enums\TeacherStatus;
-use App\Traits\{HasBalance, HasName, HasPhones, HasPhoto, RelationSyncable};
+use App\Traits\{HasPhones, HasPhoto, HasTelegramMessages, IsPerson, RelationSyncable};
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Laravel\Scout\Searchable;
 
 class Teacher extends Model implements HasTeeth
 {
-    use HasName, HasPhones, HasPhoto, HasBalance, RelationSyncable;
+    use HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable, Searchable, IsPerson;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'status', 'subjects',
@@ -130,5 +131,24 @@ class Teacher extends Model implements HasTeeth
     {
         $query = Lesson::query()->where('teacher_id', $this->id);
         return Teeth::get($query, $year);
+    }
+
+    public function searchableAs()
+    {
+        return 'people';
+    }
+
+    public function toSearchableArray()
+    {
+        $class = class_basename(self::class);
+
+        return [
+            'id' => implode('-', [$class, $this->id]),
+            'first_name' => $this->first_name ?? '',
+            'last_name' => $this->last_name ?? '',
+            'middle_name' => $this->middle_name ?? '',
+            'type' => strtolower($class),
+            'phones' => $this->phones()->pluck('number'),
+        ];
     }
 }

@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\Client;
+use App\Models\ClientParent;
+use App\Models\Teacher;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
+
+class ScoutReimportAll extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'scout:reimport-all';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Reimport all searchable models';
+
+    /**
+     * Execute the console command.
+     */
+    public function handle()
+    {
+        $models = [
+            Client::class,
+            ClientParent::class,
+            Teacher::class
+        ];
+        // Это снесёт весь persons индекс, т.к. у всех он одинаковый
+        Artisan::call('scout:flush', [
+            'model' => Client::class
+        ]);
+        foreach ($models as $model) {
+            Artisan::call('scout:import', ['model' => $model]);
+        }
+    }
+}

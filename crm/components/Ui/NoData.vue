@@ -4,9 +4,11 @@ import { mdiBookOpenBlankVariantOutline } from '@mdi/js'
 const { label } = withDefaults(
   defineProps<{
     label?: string
+    icon?: string
   }>(),
   {
     label: 'нет данных',
+    icon: mdiBookOpenBlankVariantOutline,
   },
 )
 </script>
@@ -14,7 +16,7 @@ const { label } = withDefaults(
 <template>
   <div class="no-data">
     <div>
-      <v-icon :icon="mdiBookOpenBlankVariantOutline" />
+      <v-icon :icon="icon" />
       <div>{{ label }}</div>
     </div>
   </div>

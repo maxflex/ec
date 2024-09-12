@@ -2,7 +2,7 @@
 
 namespace App\Traits;
 
-trait HasName
+trait IsPerson
 {
     public function formatName()
     {
@@ -37,4 +37,18 @@ trait HasName
             $this->middle_name,
         ]);
     }
+
+//    public function searchableAs(): string
+//    {
+//        return 'people_index';
+//    }
+//
+//    public function getScoutKey(): mixed
+//    {
+//        return implode('-', [
+//            strtolower(class_basename(self::class)),
+//            $this->id,
+//        ]);
+//    }
+
 }

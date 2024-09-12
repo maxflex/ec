@@ -48,7 +48,9 @@ nextTick(loadData)
           <div>преподаватель</div>
           <div>
             {{ formatFullName(teacher) }}
-            <PhoneActions :items="teacher.phones" :person="teacher" />
+            <div v-if="teacher.phones">
+              <PhoneList :items="teacher.phones" :person="teacher" />
+            </div>
           </div>
         </div>
         <div>

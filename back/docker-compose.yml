@@ -24,6 +24,7 @@ services:
         depends_on:
             - mysql
             - redis
+            - typesense  # Added Typesense dependency
     mysql:
         image: "mysql/mysql-server:8.0"
         ports:
@@ -64,6 +65,35 @@ services:
                 - ping
             retries: 3
             timeout: 5s
+
+    typesense:  # Added Typesense service
+        image: typesense/typesense:27.0
+        restart: on-failure
+        ports:
+            - "8108:8108"
+        environment:
+            TYPESENSE_API_KEY: "${TYPESENSE_API_KEY}"  # Ensure this matches your .env file
+            TYPESENSE_DATA_DIR: "/data"
+        volumes:
+            - sail-typesense:/data
+        networks:
+            - sail
+        healthcheck:
+            test:
+                - CMD
+                - curl
+                - --fail
+                - http://localhost:8108/health
+            retries: 3
+            timeout: 5s
+
+    typesense-dashboard:
+        image: ghcr.io/bfritscher/typesense-dashboard:latest
+        ports:
+            - "8109:80"  # Expose the dashboard on port 8109
+        depends_on:
+            - typesense
+
 networks:
     sail:
         driver: bridge
@@ -71,4 +101,6 @@ volumes:
     sail-mysql:
         driver: local
     sail-redis:
+        driver: local
+    sail-typesense:  # Added Typesense data volume
         driver: local

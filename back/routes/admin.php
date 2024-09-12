@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\{BalanceController,
     PreviewController,
     ReportController,
     RequestsController,
+    SearchController,
     StatsController,
     SwampController,
     TeacherBalanceController,
@@ -95,6 +96,8 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::get('/', 'index');
         Route::post('/check', 'check');
     });
+
+    Route::get('search', SearchController::class);
 
     Route::apiResources([
         'requests' => RequestsController::class,

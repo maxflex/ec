@@ -14,7 +14,7 @@ function extract_fields($object, $fields, $merge = []): ?array
     $return = ['id' => $object->id];
     foreach ($fields as $field) {
         if ($field === '*') {
-            $object = $object->resource;
+            $object = $object->resource ?? $object;
             if (method_exists($object, 'toArray')) {
                 $object = $object->toArray();
             }

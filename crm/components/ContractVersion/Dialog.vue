@@ -95,7 +95,6 @@ function onProgramsSaved(programs: Program[]) {
           },
         ],
         lessons_planned: '',
-        is_closed: false,
       })
     }
     nextTick(() => {

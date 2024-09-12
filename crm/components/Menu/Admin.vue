@@ -179,6 +179,12 @@ const menu: Menu = [
     nav
     density="compact"
   >
+    <v-list-item :to="{ name: 'search' }">
+      <template #prepend>
+        <v-icon icon="$search" />
+      </template>
+      Поиск
+    </v-list-item>
     <v-list-item :active="false" @click="openCallApp()">
       <template #prepend>
         <CallAppStateIcon />

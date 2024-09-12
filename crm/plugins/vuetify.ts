@@ -9,6 +9,7 @@ import {
   mdiDotsHorizontal,
   mdiEyeArrowRightOutline,
   mdiEyeOutline,
+  mdiMagnify,
   mdiTuneVertical,
 } from '@mdi/js'
 
@@ -24,6 +25,7 @@ const icons = {
     preview: mdiEyeArrowRightOutline,
     filters: mdiTuneVertical,
     eye: mdiEyeOutline,
+    search: mdiMagnify,
   },
   sets: {
     mdi,
@@ -43,6 +45,7 @@ const colors = {
   red: '#eb4432',
   bg: '#fafafa', // очень светлый серый
   border: '#e0e0e0', // серый бордеры
+  placeholder: '#a7a7a7',
 }
 
 const myTheme: ThemeDefinition = {

@@ -215,7 +215,6 @@ declare global {
     program: Program
     lessons_planned: number | string
     prices: ContractVersionProgramPrice[]
-    is_closed: boolean
     contract_version_id: number
   }
 
@@ -953,6 +952,16 @@ declare global {
     entity_type: keyof typeof EntityTypeLabel
     number?: string
     person?: PersonResource
+  }
+
+  interface SearchResultResource extends PersonResource, HasPhoto, HasPhones {
+    entity_type: keyof typeof EntityTypeLabel
+    contract_versions?: ContractVersionResource[]
+    client_id?: number
+    status?: TeacherStatus
+    subjects?: Subject[]
+    // активный клиент?
+    is_active?: boolean
   }
 }
 

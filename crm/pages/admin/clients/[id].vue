@@ -43,14 +43,18 @@ nextTick(loadData)
           <div>ученик</div>
           <div class="text-truncate">
             {{ formatFullName(client) }}
-            <PhoneActions :items="client.phones" :person="client" />
+            <div v-if="client.phones">
+              <PhoneList :items="client.phones" :person="client" />
+            </div>
           </div>
         </div>
         <div>
           <div>представитель</div>
           <div class="text-truncate">
             {{ formatFullName(client.parent) }}
-            <PhoneActions :items="client.parent.phones" :person="client.parent" />
+            <div v-if="client.parent.phones">
+              <PhoneList :items="client.parent.phones" :person="client.parent" />
+            </div>
           </div>
         </div>
         <div>
