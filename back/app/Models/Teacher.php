@@ -147,9 +147,9 @@ class Teacher extends Model implements HasTeeth
             'first_name' => $this->first_name ?? '',
             'last_name' => $this->last_name ?? '',
             'middle_name' => $this->middle_name ?? '',
-            'type' => 3,
             'phones' => $this->phones()->pluck('number'),
             'is_active' => $this->status === TeacherStatus::active,
+            'weight' => 499 + intval($this->lessons()->count() / 3),
         ];
     }
 }

@@ -23,16 +23,11 @@ $schema = [
                 'infix' => true,
             ],
             [
-                'name' => 'max_contract_year',
-                'type' => 'int32',
-                'optional' => true,
-            ],
-            [
                 'name' => 'is_active',
                 'type' => 'bool'
             ],
             [
-                'name' => 'type',
+                'name' => 'weight',
                 'type' => 'int32'
             ]
         ],

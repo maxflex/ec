@@ -108,7 +108,7 @@ function highlight(text: string) {
     }
   }
   .highlight {
-    background: rgba(var(--v-theme-orange), 0.2);
+    //background: rgba(var(--v-theme-orange), 0.1);
   }
 }
 </style>

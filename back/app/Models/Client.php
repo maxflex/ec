@@ -178,17 +178,16 @@ class Client extends Model implements HasTeeth
     public function toSearchableArray()
     {
         $class = class_basename(self::class);
-        $maxContractYear = intval($this->contracts()->max('year'));
+        $maxContractYear = intval($this->contracts()->max('year') ?? 1000);
 
         return [
             'id' => implode('-', [$class, $this->id]),
             'first_name' => $this->first_name ?? '',
             'last_name' => $this->last_name ?? '',
             'middle_name' => $this->middle_name ?? '',
-            'type' => 1,
             'phones' => $this->phones()->pluck('number'),
             'is_active' => $maxContractYear === current_academic_year(),
-            'max_contract_year' => $maxContractYear,
+            'weight' => $maxContractYear,
         ];
     }
 }
