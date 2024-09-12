@@ -14,12 +14,14 @@ class ContractBalanceResource extends JsonResource
     public function toArray(Request $request): array
     {
         $activeVersion = $this->getActiveVersion();
-        $contractPayments = intval($this->payments()->sum(
-            DB::raw('if(is_return, -sum, sum)')
+        $contractPayments = intval(
+            $this->payments()->sum(DB::raw('if(is_return, -sum, sum)')
         ));
-        $clientLessons = intval(ClientLesson::query()
-            ->whereIn('contract_version_program_id', $activeVersion->programs()->pluck('id'))
-            ->sum('price'));
+        $clientLessons = intval(
+            ClientLesson::query()
+                ->whereIn('contract_version_program_id', $activeVersion->programs()->pluck('id'))
+                ->sum('price')
+        );
 
         $remainder = $contractPayments - $clientLessons;
         $toPay = $activeVersion->sum - $contractPayments;
