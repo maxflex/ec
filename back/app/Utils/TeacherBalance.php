@@ -67,9 +67,7 @@ class TeacherBalance
         }
 
         return $result->sortBy([
-            ['teacher.last_name', 'asc'],
-            ['teacher.first_name', 'asc'],
-            ['teacher.middle_name', 'asc'],
+            'teacher.last_name', 'teacher.first_name', 'teacher.middle_name'
         ])->values()->all();
     }
 

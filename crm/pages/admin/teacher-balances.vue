@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { descend, prop, sortBy } from 'rambda'
-
 interface TeacherBalance {
   teacher: PersonResource
   lessons_planned: number
@@ -18,7 +16,7 @@ const filters = ref({
   year: currentAcademicYear(),
 })
 
-const tableHeader: Array<{
+const tableFields: Array<{
   title: string
   field: TeacherBalanceField
 }> = [
@@ -69,14 +67,35 @@ const sortedItems = computed(() => {
 
   const { field, direction } = sort.value
 
-  // @ts-expect-error
-  const sortFn = direction === 'asc' ? prop(field) : descend(prop(field))
+  return [...items.value].sort((a, b) => {
+    const fieldA = a[field]
+    const fieldB = b[field]
 
-  // @ts-expect-error
-  return sortBy(sortFn, items.value)
+    // Handle cases where field values might be non-truthy
+    if (!fieldA && fieldB) {
+      return 1 // Non-truthy values go last
+    }
+    if (fieldA && !fieldB) {
+      return -1 // Non-truthy values go last
+    }
+    if (!fieldA && !fieldB) {
+      return 0 // Both are non-truthy, consider them equal
+    }
+
+    // Ascending or descending order
+    if (direction === 'asc') {
+      return fieldA > fieldB ? 1 : fieldA < fieldB ? -1 : 0
+    }
+    else {
+      return fieldA < fieldB ? 1 : fieldA > fieldB ? -1 : 0
+    }
+  })
 })
 
-watch(filters.value, reloadData)
+watch(filters.value, () => {
+  reloadData()
+  sort.value = undefined
+})
 </script>
 
 <template>
@@ -94,7 +113,7 @@ watch(filters.value, reloadData)
         <tr>
           <th />
           <th
-            v-for="h in tableHeader"
+            v-for="h in tableFields"
             :key="h.field"
             class="sortable"
             :class="{
@@ -110,67 +129,20 @@ watch(filters.value, reloadData)
       <tbody>
         <tr v-for="item in sortedItems" :key="item.teacher.id">
           <td>
-            <RouterLink
-              :to="{
-                name: 'teachers-id',
-                params: {
-                  id: item.teacher.id,
-                },
-              }"
-            >
+            <RouterLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }">
               {{ formatNameInitials(item.teacher) }}
             </RouterLink>
           </td>
-          <td>
-            <span class="text-gray">
-              {{ formatPrice(item.lessons_planned) }}
-            </span>
-          </td>
-          <td>
-            {{ formatPrice(item.lessons_conducted) }}
-          </td>
-          <td>
-            {{ formatPrice(item.reports) }}
-          </td>
-          <td>
-            {{ formatPrice(item.teacher_services) }}
-          </td>
-          <td>
-            {{ formatPrice(item.total) }}
-          </td>
-          <td>
-            {{ formatPrice(item.teacher_payments) }}
-          </td>
-          <td>
-            {{ formatPrice(item.to_pay) }}
+          <td v-for="{ field } in tableFields" :key="field">
+            {{ formatPrice(item[field] as number) }}
           </td>
         </tr>
       </tbody>
       <tfoot>
         <tr>
           <td />
-          <td>
-            <span class="text-gray">
-              {{ formatPrice(getTotal('lessons_planned')) }}
-            </span>
-          </td>
-          <td>
-            {{ formatPrice(getTotal('lessons_conducted')) }}
-          </td>
-          <td>
-            {{ formatPrice(getTotal('reports')) }}
-          </td>
-          <td>
-            {{ formatPrice(getTotal('teacher_services')) }}
-          </td>
-          <td>
-            {{ formatPrice(getTotal('total')) }}
-          </td>
-          <td>
-            {{ formatPrice(getTotal('teacher_payments')) }}
-          </td>
-          <td>
-            {{ formatPrice(getTotal('to_pay')) }}
+          <td v-for="{ field } in tableFields" :key="field">
+            {{ formatPrice(getTotal(field)) }}
           </td>
         </tr>
       </tfoot>
@@ -192,6 +164,9 @@ watch(filters.value, reloadData)
       }
     }
     td {
+      &:nth-child(2) {
+        color: rgb(var(--v-theme-gray));
+      }
       &:nth-child(6) {
         font-weight: bold !important;
       }

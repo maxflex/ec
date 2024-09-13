@@ -20,6 +20,9 @@ export function plural(
 }
 
 export function formatDate(dateTime: string | null): string {
+  if (!dateTime) {
+    return ''
+  }
   return dayjs(dateTime).format('DD.MM.YYYY')
 }
 

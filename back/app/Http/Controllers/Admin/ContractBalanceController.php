@@ -22,7 +22,10 @@ class ContractBalanceController extends Controller
         $contracts = Contract::query()
             ->with(['client', 'payments'])
             ->where('year', $request->year)
-            ->get();
+            ->get()
+            ->sortBy(['client.last_name', 'client.first_name', 'client.middle_name'])
+            ->values()
+            ->all();
 
         return paginate(ContractBalanceResource::collection($contracts));
     }

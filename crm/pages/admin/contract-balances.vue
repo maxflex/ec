@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { descend, prop, sortBy } from 'rambda'
-
 interface ContractBalance {
   id: number
   client: PersonResource
@@ -31,7 +29,7 @@ const { items, reloadData, indexPageData } = useIndex<ContractBalance>(
     },
 )
 
-const tableHeader: Array<{
+const tableFields: Array<{
   title: string
   field: ContractBalanceField
 }> = [
@@ -69,14 +67,35 @@ const sortedItems = computed(() => {
 
   const { field, direction } = sort.value
 
-  // @ts-expect-error
-  const sortFn = direction === 'asc' ? prop(field) : descend(prop(field))
+  return [...items.value].sort((a, b) => {
+    const fieldA = a[field] as number | string
+    const fieldB = b[field] as number | string
 
-  // @ts-expect-error
-  return sortBy(sortFn, items.value)
+    // Handle cases where field values might be non-truthy
+    if (!fieldA && fieldB) {
+      return 1 // Non-truthy values go last
+    }
+    if (fieldA && !fieldB) {
+      return -1 // Non-truthy values go last
+    }
+    if (!fieldA && !fieldB) {
+      return 0 // Both are non-truthy, consider them equal
+    }
+
+    // Ascending or descending order
+    if (direction === 'asc') {
+      return fieldA > fieldB ? 1 : fieldA < fieldB ? -1 : 0
+    }
+    else {
+      return fieldA < fieldB ? 1 : fieldA > fieldB ? -1 : 0
+    }
+  })
 })
 
-watch(filters.value, reloadData)
+watch(filters.value, () => {
+  reloadData()
+  sort.value = undefined
+})
 </script>
 
 <template>
@@ -95,7 +114,7 @@ watch(filters.value, reloadData)
           <th />
           <th />
           <th
-            v-for="h in tableHeader"
+            v-for="h in tableFields"
             :key="h.field"
             class="sortable"
             :class="{
@@ -114,34 +133,15 @@ watch(filters.value, reloadData)
             №{{ item.id }}
           </td>
           <td>
-            <RouterLink
-              :to="{
-                name: 'clients-id',
-                params: { id: item.client.id },
-              }"
-            >
+            <RouterLink :to="{ name: 'clients-id', params: { id: item.client.id } }">
               {{ formatName(item.client) }}
             </RouterLink>
           </td>
-          <td>
-            {{ formatPrice(item.active_version_sum) }}
-          </td>
-          <td>
-            {{ formatPrice(item.contract_payments) }}
-          </td>
-          <td>
-            {{ formatPrice(item.client_lessons) }}
-          </td>
-          <td>
-            <span v-if="item.latest_payment_date">
-              {{ formatDate(item.latest_payment_date) }}
-            </span>
-          </td>
-          <td>
-            {{ formatPrice(item.remainder) }}
-          </td>
-          <td>
-            {{ formatPrice(item.to_pay) }}
+          <td v-for="{ field } in tableFields" :key="field">
+            {{ field === 'latest_payment_date'
+              ? formatDate(item.latest_payment_date)
+              : formatPrice(item[field] as number)
+            }}
           </td>
         </tr>
       </tbody>
@@ -149,21 +149,8 @@ watch(filters.value, reloadData)
         <tr>
           <td />
           <td />
-          <td>
-            {{ formatPrice(getTotal('active_version_sum')) }}
-          </td>
-          <td>
-            {{ formatPrice(getTotal('contract_payments')) }}
-          </td>
-          <td>
-            {{ formatPrice(getTotal('client_lessons')) }}
-          </td>
-          <td />
-          <td>
-            {{ formatPrice(getTotal('remainder')) }}
-          </td>
-          <td>
-            {{ formatPrice(getTotal('to_pay')) }}
+          <td v-for="{ field } in tableFields" :key="field">
+            {{ field === 'latest_payment_date' ? '' : formatPrice(getTotal(field)) }}
           </td>
         </tr>
       </tfoot>
