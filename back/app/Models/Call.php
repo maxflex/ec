@@ -58,13 +58,13 @@ class Call extends Model
     // перезвоны
     public function callbacks()
     {
+        // mega hack
+        $createdAt = $this->created_at ? "'" . $this->created_at . "'" : 'laravel_reserved_0.created_at';
+
         return $this->hasMany(Call::class, 'number', 'number')
-            ->where('type', CallType::outgoing)
-            ->whereRaw(<<<SQL
-                created_at > calls.created_at
-                AND created_at < calls.created_at + INTERVAL 1 MONTH
-            SQL
-            );
+            ->where('type', CallType::outgoing->name)
+            ->whereRaw("calls.created_at > $createdAt")
+            ->whereRaw("calls.created_at < $createdAt + INTERVAL 1 MONTH");
     }
 
     /**
