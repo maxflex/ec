@@ -287,3 +287,22 @@ code {
   padding: 4px 8px;
   border-radius: 4px;
 }
+
+.sortable {
+  cursor: pointer;
+
+  &:hover {
+    color: rgb(var(--v-theme-secondary));
+  }
+
+  .v-icon {
+    transition: all ease-in-out 0.2s;
+    font-size: 18px;
+  }
+
+  &--desc {
+    .v-icon {
+      transform: rotate(180deg);
+    }
+  }
+}

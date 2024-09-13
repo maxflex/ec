@@ -1,0 +1,25 @@
+.only-fade-in {
+  &-enter-active {
+    transition: opacity 0.5s ease;
+  }
+
+  &-enter-from {
+    opacity: 0;
+  }
+
+  &-enter-to {
+    opacity: 1;
+  }
+
+  &-leave-active {
+    transition: none !important; // No transition for fade-out
+  }
+
+  &-leave-from {
+    opacity: 1;
+  }
+
+  &-leave-to {
+    opacity: 0;
+  }
+}

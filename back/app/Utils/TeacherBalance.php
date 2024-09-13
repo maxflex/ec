@@ -57,6 +57,12 @@ class TeacherBalance
 
                 $resultItem[$q->table] = intval($value);
             }
+            $total = $resultItem['lessons_conducted'] + $resultItem['reports'] + $resultItem['teacher_services'];
+            $resultItem = [
+                ...$resultItem,
+                'total' => $total,
+                'to_pay' => $total - $resultItem['teacher_payments']
+            ];
             $result->push($resultItem);
         }
 

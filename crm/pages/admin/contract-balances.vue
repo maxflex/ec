@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { descend, prop, sortBy } from 'rambda'
+
 interface ContractBalance {
   id: number
   client: PersonResource
@@ -11,9 +13,16 @@ interface ContractBalance {
   to_pay: number
 }
 
+type ContractBalanceField = keyof ContractBalance
+
 const filters = ref({
   year: currentAcademicYear(),
 })
+
+const sort = ref<{
+  field: keyof ContractBalance
+  direction: 'asc' | 'desc'
+}>()
 
 const { items, reloadData, indexPageData } = useIndex<ContractBalance>(
     `contract-balances`,
@@ -22,9 +31,50 @@ const { items, reloadData, indexPageData } = useIndex<ContractBalance>(
     },
 )
 
-function getTotal(field: keyof ContractBalance) {
+const tableHeader: Array<{
+  title: string
+  field: ContractBalanceField
+}> = [
+  { title: 'сумма в<br>договоре', field: 'active_version_sum' },
+  { title: 'оплачено <br>по договору', field: 'contract_payments' },
+  { title: 'начислено <br>за занятия', field: 'client_lessons' },
+  { title: 'последний<br>платеж', field: 'latest_payment_date' },
+  { title: 'остаток по<br>договору', field: 'remainder' },
+  { title: 'неосвоенный<br>остаток', field: 'to_pay' },
+]
+
+function toggleSort(field: ContractBalanceField) {
+  if (!sort.value || sort.value.field !== field) {
+    sort.value = {
+      field,
+      direction: 'asc',
+    }
+  }
+  else if (sort.value.direction === 'asc') {
+    sort.value.direction = 'desc'
+  }
+  else {
+    sort.value = undefined
+  }
+}
+
+function getTotal(field: ContractBalanceField) {
   return items.value.reduce((carry, x) => carry + (x[field] as number), 0)
 }
+
+const sortedItems = computed(() => {
+  if (!sort.value) {
+    return items.value
+  }
+
+  const { field, direction } = sort.value
+
+  // @ts-expect-error
+  const sortFn = direction === 'asc' ? prop(field) : descend(prop(field))
+
+  // @ts-expect-error
+  return sortBy(sortFn, items.value)
+})
 
 watch(filters.value, reloadData)
 </script>
@@ -44,49 +94,24 @@ watch(filters.value, reloadData)
         <tr>
           <th />
           <th />
-          <th>
-            сумма <br>
-            в договоре
-          </th>
-          <th>
-            оплачено <br>
-            по договору
-          </th>
-          <th>
-            начислено <br>
-            за занятия
-          </th>
-          <th>
-            последний<br>
-            платеж
-          </th>
-          <th>
-            остаток по<br>
-            договору
-            <v-tooltip location="bottom">
-              <template #activator="{ props }">
-                <v-icon icon="$info" v-bind="props" />
-              </template>
-              сумма в договоре – оплачено по договору
-            </v-tooltip>
-          </th>
-          <th>
-            неосвоенный<br>
-            остаток
-            <v-tooltip location="bottom">
-              <template #activator="{ props }">
-                <v-icon icon="$info" v-bind="props" />
-              </template>
-              оплачено по договору – начислено за занятия
-            </v-tooltip>
+          <th
+            v-for="h in tableHeader"
+            :key="h.field"
+            class="sortable"
+            :class="{
+              'sortable--desc': sort?.direction === 'desc',
+            }"
+            @click="toggleSort(h.field)"
+          >
+            <span v-html="h.title" />
+            <v-icon v-if="sort?.field === h.field" icon="$collapse" />
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in items" :key="item.id">
+        <tr v-for="item in sortedItems" :key="item.id">
           <td>
             №{{ item.id }}
-            <!--              {{ CompanyLabel[item.company] }} -->
           </td>
           <td>
             <RouterLink
@@ -181,15 +206,6 @@ watch(filters.value, reloadData)
   tfoot td {
     font-weight: 500;
     border-top-width: 1px !important;
-  }
-  thead {
-    .v-icon {
-      font-size: 18px;
-      opacity: 0.5;
-      &:hover {
-        opacity: 1;
-      }
-    }
   }
 }
 </style>
