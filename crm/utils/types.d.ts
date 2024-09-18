@@ -963,6 +963,11 @@ declare global {
     // активный клиент?
     is_active?: boolean
   }
+
+  interface PrintOption {
+    id: number
+    label: string
+  }
 }
 
 export {}

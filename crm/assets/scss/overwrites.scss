@@ -6,15 +6,6 @@
   display: none !important;
 }
 
-.v-infinite-scroll {
-  &__side {
-    opacity: 0;
-    &:first-child {
-      display: none;
-    }
-  }
-}
-
 h3 {
   font-size: 24px;
   font-weight: 500;

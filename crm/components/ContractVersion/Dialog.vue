@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiCheckAll } from '@mdi/js'
+import { mdiCheckAll, mdiPrinter } from '@mdi/js'
 import { clone } from 'rambda'
 import type { ProgramDialog } from '#build/components'
 
@@ -30,6 +30,15 @@ const saving = ref(false)
 const deleting = ref(false)
 const loading = ref(false)
 const mode = ref<ContractEditMode>('edit')
+
+const printOptions: PrintOption[] = [
+  { id: 1, label: 'договор' },
+  { id: 2, label: 'договор школа-родитель' },
+  { id: 3, label: 'допсоглашение' },
+  { id: 4, label: 'допсоглашение на маткапитал' },
+  { id: 5, label: 'акт оказанных услуг' },
+  { id: 6, label: 'согласие на обработку данных' },
+]
 
 function newContract() {
   mode.value = 'new-contract'
@@ -261,15 +270,34 @@ defineExpose({ edit, newContract, newVersion })
           <span>№{{ contractId }}–{{ version }}</span>
         </span>
         <div>
-          <v-btn
-            v-if="mode === 'edit'"
-            icon="$delete"
-            :size="48"
-            variant="text"
-            :loading="deleting"
-            class="remove-btn"
-            @click="destroy()"
-          />
+          <template v-if="mode === 'edit'">
+            <v-btn
+              icon="$delete"
+              :size="48"
+              variant="text"
+              :loading="deleting"
+              class="remove-btn"
+              @click="destroy()"
+            />
+            <v-menu>
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  :icon="mdiPrinter"
+                  :size="48"
+                  variant="text"
+                />
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="p in printOptions" :key="p.id"
+                  @click="print(p, { contract_version_id: item.id })"
+                >
+                  {{ p.label }}
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </template>
           <v-btn
             icon="$save"
             :size="48"
@@ -280,10 +308,7 @@ defineExpose({ edit, newContract, newVersion })
         </div>
       </div>
       <UiLoader v-if="loading" />
-      <div
-        v-else
-        class="dialog-body"
-      >
+      <div v-else class="dialog-body">
         <div class="double-input">
           <v-select
             v-model="item.contract.year"

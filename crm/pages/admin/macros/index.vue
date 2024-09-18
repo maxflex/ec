@@ -18,6 +18,7 @@ nextTick(loadData)
       <NuxtLink
         v-for="m in macros"
         :key="m.id"
+        class="table--item"
         :to="{ name: 'macros-id', params: { id: m.id } }"
       >
         <div>

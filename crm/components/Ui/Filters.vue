@@ -1,5 +1,5 @@
 <template>
-  <div class="filters">
+  <div class="filters" :class="$props.class">
     <div class="filters__inputs">
       <slot />
     </div>
@@ -17,6 +17,10 @@
   // justify-content: flex-end;
   border-bottom: 1px solid rgb(var(--v-theme-border));
   gap: 40px;
+  $height: 81px;
+  min-height: $height;
+  max-height: $height;
+  height: $height;
   &__inputs {
     display: flex;
     align-items: center;

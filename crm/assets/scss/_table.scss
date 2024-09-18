@@ -55,10 +55,8 @@
     //   }
     // }
   }
-  & > .v-infinite-scroll__side:first-child {
-    display: none;
-  }
-  & > div:not(.v-infinite-scroll__side),
+
+  & > div,
   & > a {
     border-bottom: thin solid
       rgba(var(--v-border-color), var(--v-border-opacity));

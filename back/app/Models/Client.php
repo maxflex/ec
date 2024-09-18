@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\HasTeeth;
-use App\Traits\{HasPhones, HasPhoto, HasTelegramMessages, IsPerson, RelationSyncable};
+use App\Traits\{HasName, HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable};
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\{Casts\Attribute, Model, Relations\HasMany, Relations\HasOne, Relations\MorphMany};
 use Illuminate\Support\Collection;
@@ -11,7 +11,7 @@ use Laravel\Scout\Searchable;
 
 class Client extends Model implements HasTeeth
 {
-    use HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable, Searchable, IsPerson;
+    use HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable, Searchable, HasName;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'branches',

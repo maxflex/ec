@@ -97,7 +97,7 @@ nextTick(loadData)
 </script>
 
 <template>
-  <UiIndexPage :data="{ loading, noData }">
+  <UiIndexPage :data="{ loading, noData }" class="contract-tab">
     <template #filters>
       <v-btn
         v-for="(contract, i) in items"
@@ -211,6 +211,13 @@ nextTick(loadData)
   }
   &__add {
     padding: 20px;
+  }
+}
+.contract-tab {
+  &__filters {
+    .filters__inputs {
+      flex-direction: row-reverse;
+    }
   }
 }
 </style>

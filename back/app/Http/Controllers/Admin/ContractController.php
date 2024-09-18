@@ -15,9 +15,7 @@ class ContractController extends Controller
 
     public function index(Request $request)
     {
-        $query = Contract::query()
-            ->with('client')
-            ->orderBy('id', 'desc');
+        $query = Contract::with('client')->latest('id');
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, ContractResource::class);
     }

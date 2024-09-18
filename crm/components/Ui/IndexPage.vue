@@ -3,7 +3,10 @@ const { data } = defineProps<{ data: IndexPageData }>()
 </script>
 
 <template>
-  <UiFilters v-if="$slots.filters || $slots.buttons">
+  <UiFilters
+    v-if="$slots.filters || $slots.buttons"
+    :class="$attrs.class ? `${$attrs.class}__filters` : undefined"
+  >
     <slot name="filters" />
     <template #buttons>
       <slot name="buttons" />

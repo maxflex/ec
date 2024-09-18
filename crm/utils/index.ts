@@ -293,3 +293,55 @@ export function filterTruncate(text: string, stop: number, clamp = '...') {
 export function isDefined<T>(value: T | undefined | null): value is T {
   return value !== undefined && value !== null
 }
+
+export async function print(p: PrintOption, params: object = {}) {
+  setTimeout(async () => {
+    const { data } = await useHttp<{ text: string }>(`print/${p.id}`, { params })
+
+    if (data.value) {
+      // Create an invisible iframe
+      const iframe = document.createElement('iframe')
+      iframe.style.position = 'absolute'
+      iframe.style.width = '0'
+      iframe.style.height = '0'
+      iframe.style.border = 'none'
+
+      document.body.appendChild(iframe)
+
+      // Get the iframe's document for injecting HTML content
+      const iframeDocument = iframe.contentWindow?.document
+
+      if (iframeDocument) {
+        iframeDocument.open()
+        iframeDocument.write(`
+        <html>
+          <head>
+            <title>ЕГЭ-Центр</title>
+            <style>
+              /* Add custom styles here if necessary */
+              body { font-family: Arial, sans-serif; margin: 20px; }
+              .print__contract h4 {text-align: center}
+            </style>
+          </head>
+          <body>
+            ${data.value.text}
+          </body>
+        </html>
+      `)
+        iframeDocument.close()
+
+        // Wait for the content to load before printing
+        iframe.onload = function () {
+          iframe.contentWindow?.focus()
+          iframe.contentWindow?.print()
+
+          // Clean up by removing the iframe after printing
+          document.body.removeChild(iframe)
+        }
+      }
+      else {
+        console.error('Failed to access iframe document.')
+      }
+    }
+  }, 300)
+}

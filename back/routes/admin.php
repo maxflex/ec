@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\{BalanceController,
     PersonController,
     PhotoController,
     PreviewController,
+    PrintController,
     ReportController,
     RequestsController,
     SearchController,
@@ -100,6 +101,7 @@ Route::middleware(['auth:crm'])->group(function () {
     });
 
     Route::get('search', SearchController::class);
+    Route::apiResource('print', PrintController::class)->only('show');
 
     Route::apiResources([
         'requests' => RequestsController::class,

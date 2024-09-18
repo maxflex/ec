@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Contracts\{HasTeeth};
 use App\Enums\TeacherStatus;
-use App\Traits\{HasPhones, HasPhoto, HasTelegramMessages, IsPerson, RelationSyncable};
+use App\Traits\{HasName, HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable};
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +13,7 @@ use Laravel\Scout\Searchable;
 
 class Teacher extends Model implements HasTeeth
 {
-    use HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable, Searchable, IsPerson;
+    use HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable, Searchable, HasName;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'status', 'subjects',
