@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import type { RequestDialog } from '#build/components'
-import type { Filters } from '~/components/Request/Filters.vue'
 
-const { items, indexPageData, onFiltersApply } = useIndex<RequestListResource, Filters>(`requests`)
+const filters = ref<RequestFilters>({})
+const { items, indexPageData } = useIndex<RequestListResource, RequestFilters>(
+    `requests`,
+    filters,
+)
 
 const requestDialog = ref<InstanceType<typeof RequestDialog>>()
 
@@ -21,7 +24,7 @@ function onRequestUpdated(r: RequestListResource) {
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <RequestFilters @apply="onFiltersApply" />
+      <RequestFilters v-model="filters" />
     </template>
     <template #buttons>
       <v-btn color="primary" @click="requestDialog?.create()">

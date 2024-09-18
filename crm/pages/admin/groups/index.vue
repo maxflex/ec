@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type { GroupDialog } from '#build/components'
-import type { Filters } from '~/components/Group/Filters.vue'
 
-const { items, loading, onFiltersApply } = useIndex<GroupListResource, Filters>('groups', {
-  defaultFilters: {
-    year: currentAcademicYear(),
-  },
+const filters = ref<GroupFilters>({
+  year: currentAcademicYear(),
 })
+const { items, indexPageData } = useIndex<GroupListResource, GroupFilters>(
+    `groups`,
+    filters,
+)
 
 const groupDialog = ref<null | InstanceType<typeof GroupDialog>>()
 
@@ -17,8 +18,10 @@ function onGroupCreated(g: GroupListResource) {
 </script>
 
 <template>
-  <UiFilters>
-    <GroupFilters @apply="onFiltersApply" />
+  <UiIndexPage :data="indexPageData">
+    <template #filters>
+      <GroupFilters v-model="filters" />
+    </template>
     <template #buttons>
       <v-btn
         color="primary"
@@ -27,11 +30,11 @@ function onGroupCreated(g: GroupListResource) {
         добавить группу
       </v-btn>
     </template>
-  </UiFilters>
-  <UiLoader3 :loading="loading" />
-  <div class="groups table table--padding">
-    <GroupList :items="items" />
-  </div>
+
+    <div class="groups table table--padding">
+      <GroupList :items="items" />
+    </div>
+  </UiIndexPage>
   <GroupDialog
     ref="groupDialog"
     @created="onGroupCreated"

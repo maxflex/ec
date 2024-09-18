@@ -1,20 +1,18 @@
 <script setup lang="ts">
-import type { Filters } from '~/components/TeacherPayment/Filters.vue'
-
-const { items, loading, onFiltersApply } = useIndex<TeacherPaymentResource, Filters>(
+const filters = ref<TeacherPaymentFilters>({
+  year: currentAcademicYear(),
+})
+const { items, indexPageData } = useIndex<TeacherPaymentResource, TeacherPaymentFilters>(
     `teacher-payments`,
-    {
-      defaultFilters: {
-        year: currentAcademicYear(),
-      },
-    },
+    filters,
 )
 </script>
 
 <template>
-  <UiFilters>
-    <TeacherPaymentFilters @apply="onFiltersApply" />
-  </UiFilters>
-  <UiLoader3 :loading="loading" />
-  <TeacherPaymentList :items="items" />
+  <UiIndexPage :data="indexPageData">
+    <template #filters>
+      <TeacherPaymentFilters v-model="filters" />
+    </template>
+    <TeacherPaymentList :items="items" />
+  </UiIndexPage>
 </template>

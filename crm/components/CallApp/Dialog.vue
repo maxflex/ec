@@ -6,30 +6,24 @@ const { activeCalls } = defineProps<{
   activeCalls: CallEvent[]
 }>()
 
+const q = ref('')
+
 const { $addSseListener } = useNuxtApp()
 const { width } = useDialog('default')
-const { items, loading, reloadData } = useIndex<CallListResource>('calls', {
+const { items, loading } = useIndex<CallListResource>('calls', filters, {
   instantLoad: false,
   scrollContainerSelector: '.call-app-dialog .dialog-body',
 })
 
-// Create a debounced version of the reloadData function
-const debouncedReloadData = debounce(300, reloadWithFilters)
-
-// Watcher variable
-let stopFilterWatcher: (() => void) | null = null
-
-function reloadWithFilters() {
-  console.log(reloadWithFilters.name)
-  reloadData(filters.value)
-}
-
 const showActiveCalls = computed(() => !filters.value.q && ['all', 'active'].includes(filters.value.status))
+
+const debounceSearch = debounce(300, () => (filters.value.q = q.value))
+
+watch(q, debounceSearch)
 
 watch(callAppDialog, (isOpen) => {
   if (isOpen) {
-    reloadWithFilters()
-    stopFilterWatcher = watch(filters, debouncedReloadData, { deep: true })
+    q.value = filters.value.q
   }
   else {
     // stop playing audio
@@ -40,8 +34,6 @@ watch(callAppDialog, (isOpen) => {
 
     // clear items
     setTimeout(() => (items.value = []), 300)
-
-    stopFilterWatcher && stopFilterWatcher()
   }
 })
 
@@ -70,7 +62,7 @@ $addSseListener('CallSummaryEvent', (call: CallListResource) => {
       <UiLoader3 :loading="loading" />
       <div class="dialog-body pa-0 ga-0">
         <div class="call-app-search">
-          <v-text-field v-model="filters.q" density="comfortable" placeholder="Поиск...">
+          <v-text-field v-model="q" density="comfortable" placeholder="Поиск...">
             <template #append>
               <UiDropdown
                 v-model="filters.status"

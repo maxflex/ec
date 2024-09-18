@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import type { Filters } from '~/components/Report/Filters.vue'
+const filters = ref<GradeFilters>({
+  year: currentAcademicYear(),
+})
 
-const { items, indexPageData, onFiltersApply } = useIndex<GradeListResource, Filters>(`grades`)
+const { items, indexPageData } = useIndex<GradeListResource, GradeFilters>(
+    `grades`,
+    filters,
+)
 </script>
 
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <GradeFilters @apply="onFiltersApply" />
+      <GradeFilters v-model="filters" />
     </template>
     <GradeList :items="items" />
   </UiIndexPage>

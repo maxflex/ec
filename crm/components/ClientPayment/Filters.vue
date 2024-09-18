@@ -1,22 +1,11 @@
 <script lang="ts" setup>
-export interface Filters {
-  year: Year
-  method?: ClientPaymentMethod
-}
-const emit = defineEmits<{ (e: 'apply', filters: Filters): void }>()
-const filters = ref<Filters>({
-  year: currentAcademicYear(),
-})
-
-watch(filters.value, () => {
-  emit('apply', filters.value)
-})
+const model = defineModel<ClientPaymentFilters>({ required: true })
 </script>
 
 <template>
   <div>
     <v-select
-      v-model="filters.year"
+      v-model="model.year"
       label="Учебный год"
       :items="selectItems(YearLabel)"
       density="comfortable"
@@ -24,7 +13,7 @@ watch(filters.value, () => {
   </div>
   <div>
     <UiClearableSelect
-      v-model="filters.method"
+      v-model="model.method"
       label="Метод"
       :items="selectItems(ClientPaymentMethodLabel)"
       density="comfortable"

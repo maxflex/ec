@@ -22,11 +22,9 @@ const sort = ref<{
   direction: 'asc' | 'desc'
 }>()
 
-const { items, reloadData, indexPageData } = useIndex<ContractBalance>(
+const { items, indexPageData } = useIndex<ContractBalance>(
     `contract-balances`,
-    {
-      defaultFilters: filters.value,
-    },
+    filters,
 )
 
 const tableFields: Array<{
@@ -92,10 +90,7 @@ const sortedItems = computed(() => {
   })
 })
 
-watch(filters.value, () => {
-  reloadData()
-  sort.value = undefined
-})
+watch(filters.value, () => (sort.value = undefined))
 </script>
 
 <template>

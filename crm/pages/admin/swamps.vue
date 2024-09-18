@@ -1,18 +1,12 @@
 <script setup lang="ts">
-import type { Filters } from '~/components/Swamp/Filters.vue'
-
-const filters = ref<Filters>({
+const filters = ref<SwampFilters>({
   year: currentAcademicYear(),
 })
 
-const { items, reloadData, indexPageData } = useIndex<SwampListResource, Filters>(
+const { items, indexPageData } = useIndex<SwampListResource, SwampFilters>(
     `swamps`,
-    {
-      defaultFilters: filters.value,
-    },
+    filters,
 )
-
-watch(filters, reloadData, { deep: true })
 </script>
 
 <template>

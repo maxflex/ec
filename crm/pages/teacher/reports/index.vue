@@ -5,11 +5,10 @@ const filters = ref<{
 }>({
   year: currentAcademicYear(),
 })
-const { items, indexPageData, reloadData } = useIndex<ReportListResource>(`reports`, {
-  defaultFilters: filters.value,
-})
-
-watch(filters.value, reloadData)
+const { items, indexPageData } = useIndex<ReportListResource>(
+    `reports`,
+    filters,
+)
 </script>
 
 <template>

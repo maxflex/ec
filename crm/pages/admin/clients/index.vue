@@ -1,13 +1,20 @@
 <script setup lang="ts">
-import type { Filters } from '~/components/Client/Filters.vue'
+const filters = ref<ClientFilters>({
+  q: '',
+  year: currentAcademicYear(),
+})
 
-const { items, onFiltersApply, loading } = useIndex<ClientListResource, Filters>(`clients`)
+const { items, indexPageData } = useIndex<ClientListResource, ClientFilters>(
+    `clients`,
+    filters,
+)
 </script>
 
 <template>
-  <UiFilters>
-    <ClientFilters @apply="onFiltersApply" />
-  </UiFilters>
-  <UiLoader3 :loading="loading" />
-  <ClientList :items="items" />
+  <UiIndexPage :data="indexPageData">
+    <template #filters>
+      <ClientFilters v-model="filters" />
+    </template>
+    <ClientList :items="items" />
+  </UiIndexPage>
 </template>

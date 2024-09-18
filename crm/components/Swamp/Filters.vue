@@ -1,13 +1,8 @@
 <script lang="ts" setup>
-export interface Filters {
-  year: Year
-  program?: Program
-  status?: SwampFilterStatus
-}
 const { disabled } = defineProps<{
   disabled?: boolean
 }>()
-const model = defineModel<Filters>({ required: true })
+const model = defineModel<SwampFilters>({ required: true })
 </script>
 
 <template>

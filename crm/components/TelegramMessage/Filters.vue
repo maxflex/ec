@@ -1,33 +1,18 @@
 <script lang="ts" setup>
-export interface Filters {
-  template?: TelegramTemplate
-  type?: number
-}
-
-const emit = defineEmits<{
-  apply: [f: Filters]
-}>()
-
-const filters = ref<Filters>({})
-
-watch(filters.value, () => emit('apply', filters.value))
+const model = defineModel<TelegramMessageFilters>({ required: true })
 </script>
 
 <template>
-  <div>
-    <UiClearableSelect
-      v-model="filters.template"
-      label="Шаблон"
-      :items="selectItems(TelegramTemplateLabel)"
-      density="comfortable"
-    />
-  </div>
-  <div>
-    <UiClearableSelect
-      v-model="filters.type"
-      label="Тип"
-      :items="yesNo('групповые', 'личные')"
-      density="comfortable"
-    />
-  </div>
+  <UiClearableSelect
+    v-model="model.template"
+    label="Шаблон"
+    :items="selectItems(TelegramTemplateLabel)"
+    density="comfortable"
+  />
+  <UiClearableSelect
+    v-model="model.type"
+    label="Тип"
+    :items="yesNo('групповые', 'личные')"
+    density="comfortable"
+  />
 </template>

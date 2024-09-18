@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import type { Filters } from '~/components/ClientTest/Filters.vue'
+const filters = ref<ClientTestFilters>({
+  year: currentAcademicYear(),
+})
 
-const { items, loading, onFiltersApply } = useIndex<ClientTestResource, Filters>(`client-tests`)
+const { items, indexPageData } = useIndex<ClientTestResource, ClientTestFilters>(
+    `client-tests`,
+    filters,
+)
 
 function onDestroy(clientTest: ClientTestResource) {
   if (!confirm(`Вы уверены, что хотите удалить тест ${clientTest.name}?`)) {
@@ -18,11 +23,10 @@ function onDestroy(clientTest: ClientTestResource) {
 </script>
 
 <template>
-  <UiFilters>
-    <ClientTestFilters @apply="onFiltersApply" />
-  </UiFilters>
-  <div>
-    <UiLoader3 :loading="loading" />
+  <UiIndexPage :data="indexPageData">
+    <template #filters>
+      <ClientTestFilters v-model="filters" />
+    </template>
     <ClientTestList :items="items" @destroy="onDestroy" />
-  </div>
+  </UiIndexPage>
 </template>

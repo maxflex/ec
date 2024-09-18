@@ -5,7 +5,7 @@ const filters = ref<{
 
 const loading = ref(false)
 
-const { items, reloadData, indexPageData } = useIndex<ErrorResource>(`errors`)
+const { items, reloadData, indexPageData } = useIndex<ErrorResource>(`errors`, filters)
 
 async function check() {
   loading.value = true
@@ -13,8 +13,6 @@ async function check() {
   loading.value = false
   reloadData()
 }
-
-watch(filters, reloadData, { deep: true })
 </script>
 
 <template>

@@ -1,25 +1,19 @@
 <script setup lang="ts">
-import type { Filters } from '~/components/Swamp/Filters.vue'
-
-const { group } = defineProps<{
-  group: GroupResource
-}>()
+const { group } = defineProps<{ group: GroupResource }>()
 
 const emit = defineEmits(['added'])
 
 const { dialog, width } = useDialog('large')
 
-const filters = ref<Filters>({
+const filters = ref<SwampFilters>({
   year: group.year,
   program: group.program,
   status: 'toFulfil',
 })
 
-const { items, indexPageData } = useIndex<SwampListResource, Filters>(
+const { items, indexPageData } = useIndex<SwampListResource, SwampFilters>(
     `swamps`,
-    {
-      defaultFilters: filters.value,
-    },
+    filters,
 )
 
 function open() {
@@ -37,8 +31,6 @@ async function onSelect(item: SwampListResource) {
   })
   emit('added')
 }
-
-// watch(filters, reloadData, { deep: true })
 
 defineExpose({ open })
 </script>

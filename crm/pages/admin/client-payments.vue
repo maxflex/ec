@@ -1,19 +1,23 @@
 <script setup lang="ts">
 import type { ClientPaymentDialog } from '#build/components'
-import type { Filters } from '~/components/ClientPayment/Filters.vue'
 
 const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()
+const filters = ref<ClientPaymentFilters>({
+  year: currentAcademicYear(),
+})
 
-const { items, loading, onFiltersApply } = useIndex<ClientPaymentResource, Filters>(`client-payments`)
+const { items, indexPageData } = useIndex<ClientPaymentResource, ClientPaymentFilters>(
+    `client-payments`,
+    filters,
+)
 </script>
 
 <template>
-  <UiFilters>
-    <ClientPaymentFilters @apply="onFiltersApply" />
-  </UiFilters>
-  <div>
-    <UiLoader3 :loading="loading" />
+  <UiIndexPage :data="indexPageData">
+    <template #filters>
+      <ClientPaymentFilters v-model="filters" />
+    </template>
     <ClientPaymentList :items="items" @open="clientPaymentDialog?.edit" />
-  </div>
+  </UiIndexPage>
   <ClientPaymentDialog ref="clientPaymentDialog" />
 </template>

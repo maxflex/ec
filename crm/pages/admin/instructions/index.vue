@@ -1,9 +1,9 @@
 <script setup lang="ts">
-const { items, loading } = useIndex<InstructionListResource>(`instructions`)
+const { items, indexPageData } = useIndex<InstructionListResource>(`instructions`)
 </script>
 
 <template>
-  <UiFilters>
+  <UiIndexPage :data="indexPageData">
     <template #buttons>
       <v-btn
         append-icon="$next"
@@ -16,9 +16,6 @@ const { items, loading } = useIndex<InstructionListResource>(`instructions`)
         добавить инструкцию
       </v-btn>
     </template>
-  </UiFilters>
-  <div>
-    <UiLoader3 :loading="loading" />
     <InstructionList :items="items" />
-  </div>
+  </UiIndexPage>
 </template>

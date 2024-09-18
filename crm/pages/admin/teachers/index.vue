@@ -1,26 +1,29 @@
 <script setup lang="ts">
 import type { TeacherDialog } from '#components'
-import type { Filters } from '~/components/Teacher/Filters.vue'
 
+const filters = ref<TeacherFilters>({
+  year: currentAcademicYear(),
+})
 const teacherDialog = ref<InstanceType<typeof TeacherDialog>>()
 
-const { items, loading, onFiltersApply } = useIndex<TeacherListResource, Filters>(
+const { items, indexPageData } = useIndex<TeacherListResource, TeacherFilters>(
     `teachers`,
+    filters,
 )
 </script>
 
 <template>
-  <UiFilters>
-    <TeacherFilters @apply="onFiltersApply" />
+  <UiIndexPage :data="indexPageData">
+    <template #filters>
+      <TeacherFilters v-model="filters" />
+    </template>
     <template #buttons>
       <v-btn color="primary" @click="teacherDialog?.create()">
         добавить преподавателя
       </v-btn>
     </template>
-  </UiFilters>
-  <div>
-    <UiLoader3 :loading="loading" />
+
     <TeacherList :items="items" />
-  </div>
+  </UiIndexPage>
   <TeacherDialog ref="teacherDialog" />
 </template>

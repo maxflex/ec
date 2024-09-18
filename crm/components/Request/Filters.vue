@@ -1,33 +1,18 @@
 <script lang="ts" setup>
-export interface Filters {
-  status?: RequestStatus
-  program?: Program
-}
-
-const emit = defineEmits<{
-  (e: 'apply', filters: Filters): void
-}>()
-
-const filters = ref<Filters>({})
-
-watch(filters.value, () => emit('apply', filters.value))
+const model = defineModel<RequestFilters>({ required: true })
 </script>
 
 <template>
-  <div>
-    <UiClearableSelect
-      v-model="filters.status"
-      label="Статус"
-      :items="selectItems(RequestStatusLabel)"
-      density="comfortable"
-    />
-  </div>
-  <div>
-    <UiClearableSelect
-      v-model="filters.program"
-      label="Программа"
-      :items="selectItems(ProgramLabel)"
-      density="comfortable"
-    />
-  </div>
+  <UiClearableSelect
+    v-model="model.status"
+    label="Статус"
+    :items="selectItems(RequestStatusLabel)"
+    density="comfortable"
+  />
+  <UiClearableSelect
+    v-model="model.program"
+    label="Программа"
+    :items="selectItems(ProgramLabel)"
+    density="comfortable"
+  />
 </template>

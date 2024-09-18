@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { WebReviewDialog } from '#components'
-import type { Filters } from '~/components/WebReview/Filters.vue'
-
-const { items, loading, onFiltersApply } = useIndex<WebReviewResource, Filters>(`web-reviews`)
 
 const webReviewDialog = ref<InstanceType<typeof WebReviewDialog>>()
+const filters = ref<WebReviewFilters>({})
+const { items, indexPageData } = useIndex<WebReviewResource, WebReviewFilters>(
+    `web-reviews`,
+    filters,
+)
 
 function onUpdated(item: WebReviewResource, deleted: boolean) {
   const index = items.value.findIndex(e => e.id === item.id)
@@ -21,13 +23,11 @@ function onUpdated(item: WebReviewResource, deleted: boolean) {
 </script>
 
 <template>
-  <UiFilters>
-    <WebReviewFilters @apply="onFiltersApply" />
-  </UiFilters>
-
-  <div>
-    <UiLoader3 :loading="loading" />
+  <UiIndexPage :data="indexPageData">
+    <template #filters>
+      <WebReviewFilters v-model="filters" />
+    </template>
     <WebReviewList :items="items" @edit="webReviewDialog?.edit" />
-  </div>
+  </UiIndexPage>
   <WebReviewDialog ref="webReviewDialog" @updated="onUpdated" />
 </template>

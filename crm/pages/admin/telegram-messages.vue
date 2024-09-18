@@ -1,15 +1,20 @@
 <script setup lang="ts">
 import type { TelegramMessageBulkDialog } from '#build/components'
-import type { Filters } from '~/components/TelegramMessage/Filters.vue'
 
+const filters = ref<TelegramMessageFilters>({})
 const telegramMessageBulkDialog = ref<InstanceType<typeof TelegramMessageBulkDialog>>()
 
-const { items, loading, onFiltersApply, reloadData } = useIndex<GradeListResource, Filters>(`telegram-messages`)
+const { items, indexPageData, reloadData } = useIndex<TelegramMessageResource, TelegramMessageFilters>(
+    `telegram-messages`,
+    filters,
+)
 </script>
 
 <template>
-  <UiFilters>
-    <TelegramMessageFilters @apply="onFiltersApply" />
+  <UiIndexPage :data="indexPageData">
+    <template #filters>
+      <TelegramMessageFilters v-model="filters" />
+    </template>
     <template #buttons>
       <v-btn
         append-icon="$next"
@@ -19,10 +24,7 @@ const { items, loading, onFiltersApply, reloadData } = useIndex<GradeListResourc
         групповая отправка
       </v-btn>
     </template>
-  </UiFilters>
-  <div>
-    <UiLoader3 :loading="loading" />
     <TelegramMessageList :items="items" />
-  </div>
+  </UiIndexPage>
   <TelegramMessageBulkDialog ref="telegramMessageBulkDialog" @updated="reloadData" />
 </template>

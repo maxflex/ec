@@ -5,14 +5,9 @@ const filters = ref({
 
 const selectedProgram = ref<Program>()
 
-const { items, indexPageData, onFiltersApply } = useIndex<GroupListResource>(`groups`, {
-  defaultFilters: filters.value,
-})
+const { items, indexPageData } = useIndex<GroupListResource>(`groups`, filters)
 
-watch(filters.value, (filters) => {
-  selectedProgram.value = undefined
-  onFiltersApply(filters)
-})
+watch(filters.value, () => (selectedProgram.value = undefined))
 
 const availablePrograms = computed(() => {
   return [...new Set(items.value.map(e => e.program))].map(p => ({

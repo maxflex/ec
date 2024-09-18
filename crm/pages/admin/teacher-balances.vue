@@ -16,6 +16,11 @@ const filters = ref({
   year: currentAcademicYear(),
 })
 
+const { items, indexPageData } = useIndex<TeacherBalance>(
+    `teacher-balances`,
+    filters,
+)
+
 const tableFields: Array<{
   title: string
   field: TeacherBalanceField
@@ -33,13 +38,6 @@ const sort = ref<{
   field: keyof TeacherBalance
   direction: 'asc' | 'desc'
 }>()
-
-const { items, reloadData, indexPageData } = useIndex<TeacherBalance>(
-    `teacher-balances`,
-    {
-      defaultFilters: filters.value,
-    },
-)
 
 function toggleSort(field: TeacherBalanceField) {
   if (!sort.value || sort.value.field !== field) {
@@ -92,10 +90,7 @@ const sortedItems = computed(() => {
   })
 })
 
-watch(filters.value, () => {
-  reloadData()
-  sort.value = undefined
-})
+watch(filters.value, () => (sort.value = undefined))
 </script>
 
 <template>

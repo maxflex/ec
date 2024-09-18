@@ -1,14 +1,13 @@
 export default function<T, F extends object = object>(
   apiUrl: string,
+  filters: Ref<F> = ref({}) as Ref<F>,
   options: {
-    defaultFilters?: F
     instantLoad?: boolean
     scrollContainerSelector?: string
   } = {},
 ) {
   const {
     instantLoad = true,
-    defaultFilters = {},
     scrollContainerSelector = 'main',
   } = options
 
@@ -22,12 +21,11 @@ export default function<T, F extends object = object>(
   const loading = ref(false)
 
   const items = ref<T[]>([]) as Ref<T[]>
-  let filters: F = defaultFilters as F
   let scrollContainer: HTMLElement | null = null
   let page = 0
   let isLastPage = false
 
-  async function loadData(localFilters = {}) {
+  async function loadData() {
     if (loading.value || isLastPage) {
       return
     }
@@ -42,8 +40,7 @@ export default function<T, F extends object = object>(
     const { data } = await useHttp<ApiResponse<T[]>>(apiUrl, {
       params: {
         page,
-        ...filters,
-        ...localFilters,
+        ...filters.value,
       },
     })
     if (data.value) {
@@ -53,6 +50,9 @@ export default function<T, F extends object = object>(
         indexPageData.value = {
           loading: false,
           noData: newItems.length === 0,
+        }
+        if (scrollContainer) {
+          scrollContainer.scrollTop = 0
         }
       }
       else {
@@ -64,19 +64,13 @@ export default function<T, F extends object = object>(
     setScrollContainer()
   }
 
-  function onFiltersApply(f: F) {
-    filters = f
-    if (scrollContainer) {
-      scrollContainer.scrollTop = 0
-    }
-    reloadData()
-  }
-
-  function reloadData(localFilters = {}) {
+  function reloadData() {
     page = 0
     isLastPage = false
-    loadData(localFilters)
+    loadData()
   }
+
+  watch(filters, reloadData, { deep: true })
 
   function onScroll() {
     if (!scrollContainer || loading.value) {
@@ -109,7 +103,6 @@ export default function<T, F extends object = object>(
     items,
     loading,
     indexPageData,
-    onFiltersApply,
     reloadData,
   }
 }

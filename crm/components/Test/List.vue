@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { plural } from '~/utils/filters'
-
 const { tests } = defineProps<{ tests: TestResource[] }>()
 const emit = defineEmits<{
   open: [t: TestResource]
