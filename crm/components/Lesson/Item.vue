@@ -64,9 +64,6 @@ const isClient = user?.entity_type === EntityType.client
         <slot name="checkbox" />
       </div>
     </div>
-    <div style="width: 14px" class="text-gray opacity-5">
-      {{ item.seq }}
-    </div>
     <div style="width: 120px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>

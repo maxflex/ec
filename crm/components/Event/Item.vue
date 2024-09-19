@@ -41,7 +41,7 @@ function confirmParticipant() {
         @click="$emit('edit', item)"
       />
     </div>
-    <div style="width: 124px" />
+    <div style="width: 90px" />
     <div style="width: 120px">
       {{ formatTime(item.time!) }}
       <template v-if="item.time_end">
@@ -50,10 +50,10 @@ function confirmParticipant() {
     </div>
     <div style="width: 500px">
       {{ item.name }}
-      <div v-if="item.description" class="mt-2 pr-10">
+      <div v-if="item.description" class="mt-4 pr-10">
         {{ filterTruncate(item.description, 100) }}
       </div>
-      <div v-if="item.participant" class="mt-2">
+      <div v-if="item.participant" class="mt-4">
         <span v-if="isConfirmed" class="text-gray">
           <v-icon :icon="mdiCheckAll" size="16" class="vfn-1 mr-1" />
           Вы подтвердили участие
@@ -71,16 +71,9 @@ function confirmParticipant() {
     <div style="width: 140px">
       <div class="event-status">
         <div class="event-status__circle" />
+        {{ item.is_afterclass ? 'внеклассное' : 'учебное' }}
         событие
       </div>
-    </div>
-    <div>
-      <v-chip v-if="item.is_afterclass" class="text-purple">
-        внеклассное
-      </v-chip>
-      <v-chip v-else class="text-deepOrange">
-        учебное
-      </v-chip>
     </div>
   </div>
 </template>
@@ -108,7 +101,7 @@ function confirmParticipant() {
     position: absolute;
     left: 110px;
     top: 0;
-    border-radius: 4px;
+    border-radius: 8px;
     pointer-events: none;
   }
   &--study {

@@ -299,3 +299,23 @@ code {
     }
   }
 }
+
+// контент разделённый серой строкой
+.separate-content {
+
+  .index-page__content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 57px;
+    background: rgb(var(--v-theme-bg));
+
+    & > div {
+      background: white;
+
+      &:not(:first-child) {
+        border-top: 1px solid rgb(var(--v-theme-border));
+      }
+    }
+  }
+}

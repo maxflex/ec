@@ -31,7 +31,7 @@ nextTick(loadData)
 </script>
 
 <template>
-  <UiIndexPage :data="{ loading, noData }">
+  <UiIndexPage :data="{ loading, noData }" :testy="true" class="balance">
     <template v-if="teacherId" #filters>
       <v-select
         v-model="year"

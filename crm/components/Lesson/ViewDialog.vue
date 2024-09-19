@@ -27,14 +27,6 @@ defineExpose({ open })
         <template v-if="clientLesson">
           <div>
             <div>
-              Ученик:
-            </div>
-            <div>
-              {{ formatName(clientLesson.client) }}
-            </div>
-          </div>
-          <div>
-            <div>
               Статус посещения:
             </div>
             <div
@@ -66,54 +58,14 @@ defineExpose({ open })
             </div>
           </div>
         </template>
-        <div>
-          <div>
-            Дата и время занятия:
-          </div>
-          <div>
-            {{ formatDate(item.date!) }}
-            в
-            {{ formatTime(item.time!) }}
-          </div>
-        </div>
+
         <div v-if="item.quarter">
           <div>Четверть:</div>
           <div>
             {{ QuarterLabel[item.quarter] }}
           </div>
         </div>
-        <div>
-          <div>Статус занятия:</div>
-          <LessonStatus2 :status="item.status" />
-        </div>
-        <div>
-          <div>Группа:</div>
-          <div>
-            <RouterLink :to="{ name: 'groups-id', params: { id: item.group_id } }">
-              ГР-{{ item.group_id }}
-            </RouterLink>
-          </div>
-        </div>
-        <div v-if="item.cabinet">
-          <div>Кабинет:</div>
-          <div>
-            {{ CabinetLabel[item.cabinet] }}
-          </div>
-        </div>
-        <div>
-          <div>Программа:</div>
-          <div>
-            {{ ProgramLabel[item.group!.program] }}
-          </div>
-        </div>
-        <div>
-          <div>Преподаватель:</div>
-          <div>
-            <RouterLink :to="{ name: 'teachers-id', params: { id: item.teacher_id } }">
-              {{ formatFullName(item.teacher!) }}
-            </RouterLink>
-          </div>
-        </div>
+
         <div v-if="item.topic">
           <div>
             Тема урока:

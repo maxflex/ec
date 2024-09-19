@@ -48,7 +48,7 @@ nextTick(loadData)
 </script>
 
 <template>
-  <UiIndexPage :data="{ loading, noData }" class="groups-tab">
+  <UiIndexPage :data="{ loading, noData }" class="separate-content">
     <template #filters>
       <v-select v-model="year" :items="selectItems(YearLabel)" label="Учебный год" density="comfortable" />
     </template>
@@ -58,21 +58,3 @@ nextTick(loadData)
     <SwampList :items="swamps" @select="onSelected" />
   </UiIndexPage>
 </template>
-
-<style lang="scss">
-.groups-tab {
-  background: rgb(var(--v-theme-bg));
-  .index-page__content {
-    display: flex;
-    flex-direction: column;
-    gap: 57px;
-    & > div:not(:first-child) {
-      border-top: 1px solid rgb(var(--v-theme-border));
-    }
-  }
-  .group-item,
-  .swamp-item {
-    background: white;
-  }
-}
-</style>

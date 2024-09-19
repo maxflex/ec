@@ -23,7 +23,7 @@ const properties = defineProps<{
 const { groupId, teacherId, clientId, program, showTeeth } = properties
 
 const { user } = useAuthStore()
-const editable = user?.entity_type === EntityType.user
+const editable = user?.entity_type === EntityType.user && groupId
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const year = ref<Year>(properties.year || currentAcademicYear())
 const params = {
@@ -277,7 +277,7 @@ nextTick(loadData)
         </LessonItem>
       </template>
       <div v-if="vacations[d]" class="schedule-event schedule-event--vacation">
-        праздник
+        Государственный праздник
       </div>
       <div v-if="examDates[d]" class="schedule-event schedule-event--exam">
         экзамен
@@ -381,7 +381,7 @@ nextTick(loadData)
   }
   &-event {
     padding: 20px;
-    padding-left: 164px;
+    padding-left: 130px;
     position: relative;
     &:after {
       content: '';
@@ -390,7 +390,7 @@ nextTick(loadData)
       position: absolute;
       left: 110px;
       top: 0;
-      border-radius: 4px;
+      border-radius: 8px;
       pointer-events: none;
     }
     &--vacation {

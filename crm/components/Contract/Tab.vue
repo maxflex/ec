@@ -7,6 +7,7 @@ const contractPaymentDialog = ref<InstanceType<typeof ContractPaymentDialog>>()
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
 const selected = ref(0)
 const loading = ref(true)
+const showBalance = ref(false)
 
 const selectedContract = computed<ContractResource | null>(
   () => items.value.length ? items.value[selected.value] : null,
@@ -91,13 +92,18 @@ async function loadData() {
   loading.value = false
 }
 
+function selectTab(i: number) {
+  selected.value = i
+  showBalance.value = false
+}
+
 const noData = computed(() => !loading.value && items.value.length === 0)
 
 nextTick(loadData)
 </script>
 
 <template>
-  <UiIndexPage :data="{ loading, noData }" class="contract-tab">
+  <UiIndexPage :data="{ loading, noData }" class="contract-tab separate-content">
     <template #filters>
       <v-btn
         v-for="(contract, i) in items"
@@ -106,7 +112,7 @@ nextTick(loadData)
         :class="{ 'tab-btn--active': selected === i }"
         variant="plain"
         :ripple="false"
-        @click="selected = i"
+        @click="selectTab(i)"
       >
         <div>
           Договор №{{ contract.id }}
@@ -127,36 +133,34 @@ nextTick(loadData)
           <v-list-item @click="contractVersionDialog?.newContract()">
             новый договор
           </v-list-item>
-          <v-list-item
-            v-if="selectedContract"
-            @click="() => contractVersionDialog?.newVersion(selectedContract!)"
-          >
-            добавить версию
-          </v-list-item>
-          <v-list-item
-            v-if="selectedContract"
-            @click="() => contractPaymentDialog?.create(selectedContract!)"
-          >
-            добавить платеж
-          </v-list-item>
+          <template v-if="selectedContract">
+            <v-list-item @click="() => contractVersionDialog?.newVersion(selectedContract!)">
+              добавить версию
+            </v-list-item>
+            <v-list-item @click="() => contractPaymentDialog?.create(selectedContract!)">
+              добавить платеж
+            </v-list-item>
+            <v-list-item @click="showBalance = !showBalance">
+              {{ showBalance ? 'скрыть баланс' : 'показать баланс' }}
+            </v-list-item>
+          </template>
         </v-list>
       </v-menu>
     </template>
-    <div v-if="selectedContract" class="contract-list">
-      <div
-        class="contract-list__item"
-      >
+    <template v-if="selectedContract">
+      <Balance v-if="showBalance" :contract-id="selectedContract.id" />
+      <template v-else>
         <ContractVersionList2
           :items="selectedContract.versions"
           @edit="contractVersionDialog?.edit"
         />
         <ContractPaymentList
+          v-if="selectedContract.payments.length"
           :items="selectedContract.payments"
           @open="contractPaymentDialog?.edit"
         />
-        <Balance :contract-id="selectedContract.id" />
-      </div>
-    </div>
+      </template>
+    </template>
   </UiIndexPage>
 
   <ContractVersionDialog
@@ -172,52 +176,9 @@ nextTick(loadData)
 </template>
 
 <style lang="scss">
-.contract-list {
-  h3 {
-    margin-bottom: 20px;
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-  }
-  &__actions {
-    display: flex;
-    align-items: center;
-    margin-left: 6px;
-    .v-icon {
-      font-size: calc(var(--v-icon-size-multiplier) * 1.5rem) !important;
-    }
-    & > .v-btn:nth-child(2) {
-      position: relative;
-      left: -10px;
-    }
-  }
-  &__item {
-    display: flex;
-    flex-direction: column;
-    gap: 57px;
-    & > * {
-      position: relative;
-      &:before {
-        content: '';
-        bottom: -57px;
-        left: 0;
-        width: 100%;
-        height: 57px;
-        background: #fafafa;
-        position: absolute;
-        border-bottom: 1px solid #e0e0e0;
-      }
-    }
-  }
-  &__add {
-    padding: 20px;
-  }
-}
 .contract-tab {
-  &__filters {
-    .filters__inputs {
-      flex-direction: row-reverse;
-    }
+  .filters__inputs {
+    flex-direction: row-reverse;
   }
 }
 </style>
