@@ -53,9 +53,7 @@ nextTick(loadData)
       <div>
         <div>Посещаемость и пройденные темы:</div>
         <div>
-          <div
-            v-for="cl in item.client_lessons" :key="cl.id"
-          >
+          <div v-for="cl in item.client_lessons" :key="cl.id">
             {{ formatDate(cl.lesson.date) }} –
             <span :class="{ 'text-error': cl.status === 'absent' }">
               {{ ClientLessonStatusLabel[cl.status] }}

@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use App\Enums\LessonStatus;
-use App\Enums\Quarter;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
 class Grade extends Model
@@ -14,121 +13,39 @@ class Grade extends Model
         'grade', 'client_id', 'program', 'year', 'quarter'
     ];
 
-    public function client()
+    public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
     }
 
+    /**
+     * Получаем все комбинации ученик-программа-год,
+     * в группах, где установлена хотя бы одна четверть
+     *
+     */
     public static function fakeQuery(?Teacher $teacher = null): Builder
     {
-        /**
-         * Группа-четверть, в которой прошли все занятия (нет запланированных)
-         * Только по этим группа-четвертям смотреть нужна ли оценка
-         */
-        $groupQuarterSub = DB::table('lessons')
-            ->selectRaw(<<<SQL
-              `group_id`, `quarter`, sum(`status` = ?) as planned
-            SQL, [
-                LessonStatus::planned->value
-            ])
+        $cte = DB::table('lessons', 'l')
             ->whereNotNull('quarter')
-            ->when(
-                $teacher,
-                fn ($q) =>
-                $q->whereIn('group_id', $teacher->lessons()->pluck('group_id')->unique())
-            )
-            ->groupBy('group_id', 'quarter')
-            ->having('planned', '=', 0);
-
-        $fakeGrades = DB::table('lessons as l')
-            ->join('groups as g', 'g.id', '=', 'l.group_id')
             ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
             ->join('contract_version_programs as cvp', 'cvp.id', '=', 'cl.contract_version_program_id')
             ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
             ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
-            ->joinSub(
-                $groupQuarterSub,
-                'gq',
-                fn ($join) =>
-                $join->on('gq.group_id', '=', 'l.group_id')
-                    ->on('gq.quarter', '=', 'l.quarter')
-            )
-            ->leftJoin(
-                'grades as gr',
-                fn ($join) =>
-                $join->on('gr.client_id', '=', 'c.client_id')
-                    ->on('gr.program', '=', 'g.program')
-                    ->on('gr.year', '=', 'g.year')
-                    ->on('gr.quarter', '=', 'l.quarter')
-            )
+            ->join('groups as g', 'g.id', '=', 'l.group_id')
             ->selectRaw(<<<SQL
-                NULL AS id,
-                c.client_id,
-                g.program,
-                g.year,
-                l.quarter,
-                NULL AS `grade`,
-                NULL AS `created_at`
-            SQL)
-            ->where('l.status', LessonStatus::conducted->value)
-            ->whereNotNull('l.quarter')
-            ->whereNull('gr.id')
-            ->groupBy('c.client_id', 'g.program', 'g.year', 'l.quarter');
+                CONCAT(c.client_id, '-',  g.`year`, '-', cvp.program) AS `id`,
+                c.client_id, cvp.program, cl.contract_version_program_id, g.year,
+                CAST(sum(if(`quarter` = 'q1', 1, 0)) AS UNSIGNED) AS `q1_cnt`,
+                CAST(sum(if(`quarter` = 'q2', 1, 0)) AS UNSIGNED) AS `q2_cnt`,
+                CAST(sum(if(`quarter` = 'q3', 1, 0)) AS UNSIGNED) AS `q3_cnt`,
+                CAST(sum(if(`quarter` = 'q4', 1, 0)) AS UNSIGNED) AS `q4_cnt`
+                SQL
+            )
+            ->groupByRaw('c.client_id, cvp.program, cl.contract_version_program_id, g.year');
 
         return DB::table('fake_grades')
-            ->withExpression('fake_grades', $fakeGrades)
-            ->select('*');
-    }
-
-    public static function fakeQueryFinal(): Builder
-    {
-        /**
-         * Итоговая оценка нужна только в тех группах, где прошли все занятия
-         */
-        $finalSub = DB::table('lessons')
-            ->selectRaw(<<<SQL
-              `group_id`, sum(`status` = ?) as planned
-            SQL, [
-                LessonStatus::planned->value
-            ])
-            ->whereNotNull('quarter')
-            ->groupBy('group_id')
-            ->having('planned', '=', 0);
-
-        $finalGrades = DB::table('lessons as l')
-            ->join('groups as g', 'g.id', '=', 'l.group_id')
-            ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
-            ->join('contract_version_programs as cvp', 'cvp.id', '=', 'cl.contract_version_program_id')
-            ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
-            ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
-            ->joinSub($finalSub, 'f', 'f.group_id', '=', 'g.id')
-            ->leftJoin(
-                'grades as gr',
-                fn ($join) =>
-                $join->on('gr.client_id', '=', 'c.client_id')
-                    ->on('gr.program', '=', 'g.program')
-                    ->on('gr.year', '=', 'g.year')
-                    ->where('gr.quarter', Quarter::final->value)
-            )
-            ->selectRaw(<<<SQL
-                NULL AS id,
-                c.client_id,
-                g.program,
-                g.year,
-                ? AS `quarter`,
-                NULL AS `grade`,
-                NULL AS `created_at`
-            SQL, [
-                Quarter::final->value
-            ])
-            ->where('l.status', LessonStatus::conducted->value)
-            ->whereNotNull('l.quarter')
-            ->whereNull('gr.id')
-            ->groupBy('c.client_id', 'g.program', 'g.year');
-
-        return DB::table('final_grades')
-            ->withExpression('final_grades', $finalGrades)
-            ->select('*');
+            ->withExpression('fake_grades', $cte)
+            ->selectRaw('*');
     }
 
     public function scopePrepareForUnion($query)

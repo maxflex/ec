@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const model = defineModel({ required: true })
+const model = defineModel<GradeFilters>({ required: true })
 </script>
 
 <template>
@@ -10,21 +10,9 @@ const model = defineModel({ required: true })
     density="comfortable"
   />
   <UiClearableSelect
-    v-model="model.quarter"
-    label="Четверть"
-    :items="selectItems(QuarterLabel)"
-    density="comfortable"
-  />
-  <UiClearableSelect
     v-model="model.program"
     label="Программа"
     :items="selectItems(ProgramLabel)"
-    density="comfortable"
-  />
-  <UiClearableSelect
-    v-model="model.type"
-    label="Тип"
-    :items="yesNo('созданные', 'требуется оценка')"
     density="comfortable"
   />
 </template>

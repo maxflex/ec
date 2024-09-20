@@ -742,34 +742,39 @@ declare global {
     }>
   }
 
-  interface RealGradeItem {
-    id: number
-    client: PersonResource
-    program: Program
-    year: Year
-    quarter: Quarter
-    grade: LessonScore
-  }
-
-  interface FakeGradeItem {
+  interface GradeListResource {
     id: string
     client: PersonResource
     program: Program
-    quarter: Quarter
-    year: Year
+    quarters: { [key in Quarter]: {
+      conducted: number
+      total: number
+      grade: ?LessonScore
+    } }
   }
 
-  type GradeListResource = RealGradeItem | FakeGradeItem
-
   interface GradeResource {
-    id: number
-    program?: Program
-    quarter?: Quarter
-    year?: Year
-    teacher?: PersonResource
-    client?: PersonResource
-    created_at?: string
-    grade: LessonScore | null
+    id: string
+    client: PersonResource
+    program: Program
+    quarters: { [key in Quarter]: {
+      conducted: number
+      total: number
+      grade: ?LessonScore
+      client_lessons: Array<{
+        id: number
+        is_remote: boolean
+        minutes_late: ?number
+        status: ClientLessonStatus
+        scores: ClientLessonScore[]
+        lesson: {
+          id: number
+          date: string
+          teacher: PersonResource
+          topic: string
+        }
+      }>
+    } }
   }
 
   interface ExamScoreResource {

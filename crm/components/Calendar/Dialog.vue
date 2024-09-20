@@ -84,7 +84,6 @@ defineExpose({ open })
         :key="y"
         class="calendar__year"
       >
-        <h2>{{ y }}</h2>
         <div class="calendar">
           <div
             v-for="m in iterateMonths(y)"
@@ -94,6 +93,7 @@ defineExpose({ open })
             <div class="calendar__month-label">
               <span class="text-grey-light">
                 {{ MonthLabel[m - 1] }}
+                '{{ y - 2000 }}
               </span>
             </div>
             <div class="calendar__month-days">

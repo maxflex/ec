@@ -1,99 +1,77 @@
 <script setup lang="ts">
-import type { GradeDialog } from '#build/components'
-
-const props = defineProps<{
+const { items } = defineProps<{
   items: GradeListResource[]
 }>()
-const { items } = toRefs(props)
-const gradeDialog = ref<InstanceType<typeof GradeDialog>>()
-
-function isRealGrade(g: GradeListResource): g is RealGradeItem {
-  return 'grade' in g
-}
-
-function onUpdated(g: RealGradeItem) {
-  const index = items.value.findIndex(e => e.id === g.id)
-  if (index === -1) {
-    return
-  }
-  items.value[index] = g
-  itemUpdated('grade', g.id)
-}
-
-function onCreated(g: RealGradeItem, fakeItemId: string) {
-  const index = items.value.findIndex(e => e.id === fakeItemId)
-  if (index === -1) {
-    return
-  }
-  items.value[index] = g
-  itemUpdated('grade', g.id)
-}
-
-function onDeleted(g: GradeResource) {
-  const index = items.value.findIndex(e => e.id === g.id)
-  if (index !== -1) {
-    items.value.splice(index, 1)
-  }
-}
+const router = useRouter()
 </script>
 
 <template>
-  <div class="table">
-    <div v-for="g in items" :id="`grade-${g.id}`" :key="g.id">
-      <div style="width: 210px">
-        <NuxtLink
-          :to="{ name: 'clients-id', params: { id: g.client.id } }"
-        >
-          {{ formatName(g.client) }}
-        </NuxtLink>
-      </div>
-      <div style="width: 150px">
-        {{ ProgramShortLabel[g.program] }}
-      </div>
-      <div style="width: 180px">
-        {{ YearLabel[g.year] }}
-      </div>
-      <div style="width: 150px">
-        {{ QuarterLabel[g.quarter] }}
-      </div>
-      <div style="flex: 1" />
-      <template v-if="isRealGrade(g)">
-        <div class="table-actionss">
-          <v-btn
-            icon="$edit"
-            :size="48"
-            variant="plain"
-            @click="gradeDialog?.edit(g.id)"
-          />
-        </div>
-        <div style="width: 140px; flex: initial">
-          <span :class="`score score--${g.grade}`" class="mr-2">
-            {{ g.grade }}
-          </span>
-          {{ LessonScoreLabel[g.grade] }}
-        </div>
-      </template>
-      <template v-else>
-        <div class="table-actionss">
-          <v-btn
-            icon="$edit"
-            :size="48"
-            variant="plain"
-            @click="gradeDialog?.create(g)"
-          />
-        </div>
-        <div style="width: 140px; flex: initial">
-          <span class="text-error">
-            требуется оценка
-          </span>
-        </div>
-      </template>
-    </div>
-  </div>
-  <GradeDialog
-    ref="gradeDialog"
-    @updated="onUpdated"
-    @created="onCreated"
-    @deleted="onDeleted"
-  />
+  <v-table fixed-header height="calc(100vh - 81px)" hover class="grades-table">
+    <thead>
+      <tr>
+        <th />
+        <th />
+        <th v-for="(q, key) in QuarterLabel" :key="key">
+          {{ q }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        v-for="g in items"
+        :key="g.id"
+        class="cursor-pointer"
+        @click="() => router.push({ name: 'grades-id', params: { id: g.id } })"
+      >
+        <td>
+          <NuxtLink
+            :to="{ name: 'clients-id', params: { id: g.client.id } }"
+            @click.stop
+          >
+            {{ formatName(g.client) }}
+          </NuxtLink>
+        </td>
+        <td width="200">
+          {{ ProgramShortLabel[g.program] }}
+        </td>
+        <td v-for="(q, key) in g.quarters" :key="key" width="160">
+          <div class="d-flex ga-1">
+            <v-tooltip location="bottom">
+              <template #activator="{ props }">
+                <v-progress-circular
+                  v-if="key !== 'final'"
+                  v-bind="props"
+                  :model-value="q.total ? (q.conducted / q.total * 100) : 0"
+                  :width="3"
+                  :size="30"
+                  color="secondary"
+                >
+                  <!--              <template #default> -->
+                  <!--                {{ key.replaceAll(/\D/g, '') }} -->
+                  <!--              </template> -->
+                </v-progress-circular>
+              </template>
+              {{ q.conducted }} / {{ q.total }} занятий проведено
+            </v-tooltip>
+            <span v-if="q.grade" :class="`score score--${q.grade}`">
+              {{ q.grade }}
+            </span>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </v-table>
 </template>
+
+<style lang="scss">
+.grades-table {
+  tr {
+    td,
+    th {
+      &:nth-child(7) {
+        border-left: 1px solid rgb(var(--v-theme-border));
+      }
+    }
+  }
+}
+</style>

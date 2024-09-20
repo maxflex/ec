@@ -29,8 +29,6 @@ declare global {
   interface GradeFilters {
     year: Year
     program?: Program
-    quarter?: Quarter
-    type?: number
   }
 
   interface GroupFilters {
