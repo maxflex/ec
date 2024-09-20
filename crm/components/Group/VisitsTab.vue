@@ -74,12 +74,20 @@ nextTick(loadData)
         <tr>
           <td />
           <td v-for="t in teachers" :key="t.id" class="group-visits__col--teacher">
-            {{ t.last_name }} <br>
-            {{ t.first_name![0] }}. {{ t.middle_name![0] }}.
+            <div>
+              {{ t.last_name }}
+            </div>
+            <div>
+              {{ t.first_name![0] }}. {{ t.middle_name![0] }}.
+            </div>
           </td>
           <td v-for="c in clients" :key="c.id">
-            {{ c.last_name }} <br>
-            {{ c.first_name }}
+            <div>
+              {{ c.last_name }}
+            </div>
+            <div>
+              {{ c.first_name }}
+            </div>
           </td>
           <td />
         </tr>
@@ -120,7 +128,7 @@ nextTick(loadData)
 
 <style lang="scss">
 .group-visits {
-  height: calc(100vh - 118px);
+  height: calc(100vh - 142px);
   position: relative;
   table {
     table-layout: fixed;
@@ -144,8 +152,15 @@ nextTick(loadData)
         position: sticky;
         top: 0;
         z-index: 2;
+        line-height: 22px;
         td {
+          padding: 0 12px !important;
           background: white;
+          & > div {
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+          }
         }
       }
     }
