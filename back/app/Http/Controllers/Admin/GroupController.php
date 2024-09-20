@@ -54,7 +54,7 @@ class GroupController extends Controller
     public function visits(Group $group)
     {
         return GroupVisitResource::collection(
-            $group->lessons
+            $group->lessons()->orderByRaw('date, time')->get()
         );
     }
 

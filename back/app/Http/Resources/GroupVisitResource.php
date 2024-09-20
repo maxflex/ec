@@ -24,10 +24,10 @@ class GroupVisitResource extends JsonResource
             'dateTime', 'status'
         ], [
             'teacher' => new PersonResource($this->teacher),
-            'clientLessons' => $clientLessons->map(fn($c) => extract_fields($c, [
+            'clientLessons' => $clientLessons->map(fn($cl) => extract_fields($cl, [
                 'status', 'is_remote', 'minutes_late'
             ], [
-                'client' => new PersonResource($c->contractVersionProgram),
+                'client' => new PersonResource($cl->contractVersionProgram->contractVersion->contract->client),
             ]))
         ]);
     }
