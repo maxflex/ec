@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TelegramMessageBulkDialog } from '#build/components'
 
-const filters = ref<TelegramMessageFilters>({})
+const filters = ref<TelegramMessageFilters>(loadFilters({}))
 const telegramMessageBulkDialog = ref<InstanceType<typeof TelegramMessageBulkDialog>>()
 
 const { items, indexPageData, reloadData } = useIndex<TelegramMessageResource, TelegramMessageFilters>(

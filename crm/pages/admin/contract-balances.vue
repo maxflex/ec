@@ -13,9 +13,9 @@ interface ContractBalance {
 
 type ContractBalanceField = keyof ContractBalance
 
-const filters = ref({
+const filters = ref(loadFilters({
   year: currentAcademicYear(),
-})
+}))
 
 const sort = ref<{
   field: keyof ContractBalance

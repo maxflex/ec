@@ -3,12 +3,15 @@ const { clientId } = defineProps<{
   clientId: number
 }>()
 
+const filters = ref(loadFilters({
+  year: currentAcademicYear(),
+}, 'GroupsTab'))
+
 const loading = ref(true)
-const year = ref<Year>(currentAcademicYear())
 const groups = ref<GroupListResource[]>([])
 const swamps = ref<SwampListResource[]>([])
 const params = {
-  year: year.value,
+  ...filters.value,
   client_id: clientId,
 }
 
@@ -37,10 +40,10 @@ async function loadSwamps() {
   }
 }
 
-watch(year, (newVal) => {
-  params.year = newVal
+watch(filters, (newVal) => {
   loadData()
-})
+  saveFilters(newVal, 'GroupsTab')
+}, { deep: true })
 
 const noData = computed(() => !loading.value && groups.value.length === 0 && swamps.value.length === 0)
 
@@ -50,7 +53,12 @@ nextTick(loadData)
 <template>
   <UiIndexPage :data="{ loading, noData }" class="separate-content">
     <template #filters>
-      <v-select v-model="year" :items="selectItems(YearLabel)" label="Учебный год" density="comfortable" />
+      <v-select
+        v-model="filters.year"
+        :items="selectItems(YearLabel)"
+        label="Учебный год"
+        density="comfortable"
+      />
     </template>
     <div class="table table--padding">
       <GroupList :items="groups" />

@@ -12,9 +12,9 @@ interface TeacherBalance {
 
 type TeacherBalanceField = keyof TeacherBalance
 
-const filters = ref({
+const filters = ref(loadFilters({
   year: currentAcademicYear(),
-})
+}))
 
 const { items, indexPageData } = useIndex<TeacherBalance>(
     `teacher-balances`,

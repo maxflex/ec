@@ -1,7 +1,7 @@
 <script setup lang="ts">
-const filters = ref<TeacherPaymentFilters>({
+const filters = ref<TeacherPaymentFilters>(loadFilters({
   year: currentAcademicYear(),
-})
+}))
 const { items, indexPageData } = useIndex<TeacherPaymentResource, TeacherPaymentFilters>(
     `teacher-payments`,
     filters,

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-const filters = ref<ClientFilters>({
+const filters = ref<ClientFilters>(loadFilters({
   q: '',
   year: currentAcademicYear(),
-})
+}))
 
 const { items, indexPageData } = useIndex<ClientListResource, ClientFilters>(
     `clients`,

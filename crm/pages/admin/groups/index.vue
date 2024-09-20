@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { GroupDialog } from '#build/components'
 
-const filters = ref<GroupFilters>({
+const filters = ref<GroupFilters>(loadFilters({
   year: currentAcademicYear(),
-})
+}))
 const { items, indexPageData } = useIndex<GroupListResource, GroupFilters>(
     `groups`,
     filters,

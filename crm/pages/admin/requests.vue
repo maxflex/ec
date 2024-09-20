@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { RequestDialog } from '#build/components'
 
-const filters = ref<RequestFilters>({})
+const filters = ref<RequestFilters>(loadFilters({}))
 const { items, indexPageData } = useIndex<RequestListResource, RequestFilters>(
     `requests`,
     filters,

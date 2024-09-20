@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const model = defineModel<TeacherFilters>({ required: true })
+const model = defineModel<ReportTeacherFilters>({ required: true })
 </script>
 
 <template>

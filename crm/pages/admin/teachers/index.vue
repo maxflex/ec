@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { TeacherDialog } from '#components'
 
-const filters = ref<TeacherFilters>({
-  year: currentAcademicYear(),
-})
+const filters = ref<TeacherFilters>(loadFilters({
+  subjects: [],
+}))
 const teacherDialog = ref<InstanceType<typeof TeacherDialog>>()
 
 const { items, indexPageData } = useIndex<TeacherListResource, TeacherFilters>(

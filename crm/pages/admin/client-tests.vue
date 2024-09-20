@@ -1,7 +1,7 @@
 <script setup lang="ts">
-const filters = ref<ClientTestFilters>({
+const filters = ref<ClientTestFilters>(loadFilters({
   year: currentAcademicYear(),
-})
+}))
 
 const { items, indexPageData } = useIndex<ClientTestResource, ClientTestFilters>(
     `client-tests`,

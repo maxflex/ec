@@ -70,7 +70,10 @@ export default function<T, F extends object = object>(
     loadData()
   }
 
-  watch(filters, reloadData, { deep: true })
+  watch(filters, (newVal) => {
+    reloadData()
+    saveFilters(newVal)
+  }, { deep: true })
 
   function onScroll() {
     if (!scrollContainer || loading.value) {

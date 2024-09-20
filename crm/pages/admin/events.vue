@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import type { EventDialog, EventParticipantsDialog } from '#components'
-import type { Filters } from '~/components/Event/Filters.vue'
+
+interface Filters {
+  year: Year
+}
 
 const loading = ref(false)
 const items = ref<EventListResource[]>([])
-let filters: Filters = {
+const filters = ref<Filters>(loadFilters({
   year: currentAcademicYear(),
-}
+}))
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
 const eventParticipantsDialog = ref<InstanceType<typeof EventParticipantsDialog>>()
 let scrollContainer: HTMLElement | null = null
@@ -20,7 +23,7 @@ async function loadData() {
     `common/events`,
     {
       params: {
-        ...filters,
+        ...filters.value,
       },
     },
   )
@@ -32,12 +35,17 @@ async function loadData() {
 }
 
 function onFiltersApply(f: Filters) {
-  filters = f
+  filters.value = f
   if (scrollContainer) {
     scrollContainer.scrollTop = 0
   }
   loadData()
 }
+
+watch(filters, (newVal) => {
+  saveFilters(newVal)
+  onFiltersApply(newVal)
+}, { deep: true })
 
 function onUpdated(e: EventListResource) {
   const index = items.value.findIndex(x => x.id === e.id)
@@ -66,7 +74,12 @@ nextTick(loadData)
 
 <template>
   <UiFilters>
-    <EventFilters :filters="filters" @apply="onFiltersApply" />
+    <v-select
+      v-model="filters.year"
+      label="Учебный год"
+      :items="selectItems(YearLabel)"
+      density="comfortable"
+    />
     <template #buttons>
       <v-btn
         append-icon="$next"

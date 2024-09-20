@@ -42,6 +42,32 @@ declare global {
   }
 
   interface TeacherFilters {
+    q?: string
+    status?: TeacherStatus
+    subjects: Subject[]
+  }
+
+  interface ReportFilters {
+    year: Year
+    program?: Program
+    is_moderated?: number
+    is_published?: number
+    type?: number
+  }
+
+  interface TopicFilters {
+    year: Year
+    is_topic_verified?: boolean
+  }
+
+  interface ClientReviewFilters {
+    type?: number
+    program?: Program
+    teacher_id?: number
+    rating?: number
+  }
+
+  interface ReportTeacherFilters {
     year: Year
     type?: number
   }
@@ -59,6 +85,17 @@ declare global {
   interface WebReviewFilters {
     is_published?: number
     has_exam_score?: number
+  }
+
+  interface ContractVersionFilters {
+    year: Year
+    company?: Company
+    version?: number
+  }
+
+  interface UserFilters {
+    q?: string
+    is_active?: number
   }
 }
 

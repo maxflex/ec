@@ -1,7 +1,7 @@
 <script setup lang="ts">
-const filters = ref<SwampFilters>({
+const filters = ref<SwampFilters>(loadFilters({
   year: currentAcademicYear(),
-})
+}))
 
 const { items, indexPageData } = useIndex<SwampListResource, SwampFilters>(
     `swamps`,

@@ -2,9 +2,9 @@
 import type { ClientPaymentDialog } from '#build/components'
 
 const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()
-const filters = ref<ClientPaymentFilters>({
+const filters = ref<ClientPaymentFilters>(loadFilters({
   year: currentAcademicYear(),
-})
+}))
 
 const { items, indexPageData } = useIndex<ClientPaymentResource, ClientPaymentFilters>(
     `client-payments`,

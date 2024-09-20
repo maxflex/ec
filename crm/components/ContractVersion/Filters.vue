@@ -1,27 +1,11 @@
 <script lang="ts" setup>
-const emit = defineEmits<{
-  (e: 'apply', filters: Filters): void
-}>()
-
-const VersionFilterLabel = {
-  first: 'первая',
-  last: 'последняя',
-}
-
-export interface Filters {
-  year: Year
-  company?: Company
-  version?: keyof typeof VersionFilterLabel
-}
-const filters = ref<Filters>({ year: currentAcademicYear() })
-
-watch(filters.value, () => emit('apply', filters.value))
+const model = defineModel<ContractVersionFilters>({ required: true })
 </script>
 
 <template>
   <div>
     <v-select
-      v-model="filters.year"
+      v-model="model.year"
       label="Учебный год"
       :items="selectItems(YearLabel)"
       density="comfortable"
@@ -29,7 +13,7 @@ watch(filters.value, () => emit('apply', filters.value))
   </div>
   <div>
     <UiClearableSelect
-      v-model="filters.company"
+      v-model="model.company"
       :items="selectItems(CompanyLabel)"
       density="comfortable"
       label="Тип"
@@ -37,8 +21,8 @@ watch(filters.value, () => emit('apply', filters.value))
   </div>
   <div>
     <UiClearableSelect
-      v-model="filters.version"
-      :items="selectItems(VersionFilterLabel)"
+      v-model="model.version"
+      :items="yesNo('первая', 'последняя')"
       density="comfortable"
       label="Версия"
     />

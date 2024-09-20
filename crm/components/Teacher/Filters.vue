@@ -1,23 +1,6 @@
 <script lang="ts" setup>
-export interface Filters {
-  q?: string
-  status?: TeacherStatus
-  subjects: Subject[]
-}
-const emit = defineEmits<{ (e: 'apply', filters: Filters): void }>()
-const filters = ref<Filters>({ subjects: [] })
-const q = ref('')
-const input = ref()
-
-watch(filters.value, () => {
-  emit('apply', filters.value)
-})
-
-function onSearch() {
-  input.value.blur()
-  q.value = q.value.trim()
-  filters.value.q = q.value ?? undefined
-}
+const model = defineModel<TeacherFilters>({ required: true })
+const q = ref(model.value.q)
 </script>
 
 <template>
@@ -27,12 +10,12 @@ function onSearch() {
       v-model="q"
       label="Имя"
       density="comfortable"
-      @keydown.enter="onSearch"
+      @keydown.enter="model.q = q"
     />
   </div>
   <div>
     <UiClearableSelect
-      v-model="filters.status"
+      v-model="model.status"
       label="Статус"
       :items="selectItems(TeacherStatusLabel)"
       density="comfortable"
@@ -40,7 +23,7 @@ function onSearch() {
   </div>
   <div>
     <v-select
-      v-model="filters.subjects"
+      v-model="model.subjects"
       label="Предметы"
       :items="selectItems(SubjectLabel)"
       density="comfortable"

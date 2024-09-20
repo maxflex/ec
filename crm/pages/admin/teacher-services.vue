@@ -1,7 +1,7 @@
 <script setup lang="ts">
-const filters = ref<{ year: Year }>({
+const filters = ref<{ year: Year }>(loadFilters({
   year: currentAcademicYear(),
-})
+}))
 
 const { items, indexPageData } = useIndex<TeacherServiceResource>(
     `teacher-services`,

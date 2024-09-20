@@ -104,29 +104,30 @@ export function currentAcademicYear(): Year {
   return getAcademicYear(today())
 }
 
-function getFiltersKey() {
-  const { name } = useRoute()
-  return `filters-${String(name)}`
+function getFiltersKey(tabName: string | null = null) {
+  const route = useRoute()
+  return `filters-${tabName || ''}${String(route.name)}`
 }
 
 /**
  * Сохранение и загрузка фильтров работает только у админа
  */
-export function saveFilters<T>(filters: T): void {
-  if (getEntityString() !== 'user') {
+export function saveFilters(filters: object, tabName: string | null = null): void {
+  console.log('entity', getEntityString())
+  if (getEntityString() !== 'admin') {
     return
   }
-  localStorage.setItem(getFiltersKey(), JSON.stringify(filters))
+  localStorage.setItem(getFiltersKey(tabName), JSON.stringify(filters))
 }
 
 /**
  * Сохранение и загрузка фильтров работает только у админа
  */
-export function loadFilters<T>(defaultFilters: T): T {
-  if (getEntityString() !== 'user') {
+export function loadFilters<T>(defaultFilters: T, tabName: string | null = null): T {
+  if (getEntityString() !== 'admin') {
     return defaultFilters
   }
-  const filters = localStorage.getItem(getFiltersKey())
+  const filters = localStorage.getItem(getFiltersKey(tabName))
   return filters === null ? defaultFilters : JSON.parse(filters)
 }
 
