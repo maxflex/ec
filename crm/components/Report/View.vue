@@ -70,14 +70,38 @@ nextTick(loadData)
           </div>
         </div>
       </div>
-      <div>
+      <div v-if="item.homework_comment">
         <div>
-          Отчёт:
+          Выполнение домашнего задания:
         </div>
         <div>
           {{ item.homework_comment }}
         </div>
       </div>
+      <div v-if="item.cognitive_ability_comment">
+        <div>
+          Способность усваивать новый материал:
+        </div>
+        <div>
+          {{ item.cognitive_ability_comment }}
+        </div>
+      </div>
+      <div v-if="item.knowledge_level_comment">
+        <div>
+          Текущий уровень знаний:
+        </div>
+        <div>
+          {{ item.knowledge_level_comment }}
+        </div>
+      </div>
+    </div>
+    <div v-if="item.grade" class="report-view__final">
+      <div class="report-view__final-title">
+        Оценка:
+      </div>
+      <span :class="`score score--${item.grade}`">
+        {{ item.grade }}
+      </span>
     </div>
   </div>
 </template>
@@ -98,6 +122,19 @@ nextTick(loadData)
           font-weight: bold;
         }
       }
+    }
+  }
+  &__final {
+    border-top: 1px solid rgb(var(--v-theme-border));
+    margin-top: 20px;
+    padding-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-left: 20px;
+    &-title {
+      font-weight: bold;
+      font-size: 20px;
     }
   }
 }

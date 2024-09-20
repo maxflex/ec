@@ -159,7 +159,30 @@ defineExpose({ edit, create })
             disabled
           />
         </div>
-        <div>
+        <div class="double-input">
+          <v-select v-model="item.grade" label="Оценка" :items="selectItems(LessonScoreLabel)">
+            <template #selection="{ item }">
+              <span :class="`score score--${item.raw.value}`" style="position: absolute;">
+                {{ item.raw.value }}
+              </span>
+              <span class="ml-10">
+                {{ LessonScoreLabel[item.raw.value] }}
+              </span>
+            </template>
+            <template #item="{ props, item }">
+              <v-list-item v-bind="props">
+                <template #title>
+                  <span :class="`score score--${item.raw.value}`" class="mr-2">
+                    {{ item.raw.value }}
+                  </span>
+                  {{ LessonScoreLabel[item.raw.value] }}
+                </template>
+                <template #prepend>
+                  <v-spacer />
+                </template>
+              </v-list-item>
+            </template>
+          </v-select>
           <v-text-field
             v-model="item.price"
             label="Цена"
@@ -174,7 +197,34 @@ defineExpose({ edit, create })
             rows="3"
             no-resize
             auto-grow
-            label="Текст отчета"
+            label="Выполнение домашнего задания"
+          />
+        </div>
+        <div>
+          <v-textarea
+            v-model="item.cognitive_ability_comment"
+            rows="3"
+            no-resize
+            auto-grow
+            label="Способность усваивать новый материал"
+          />
+        </div>
+        <div>
+          <v-textarea
+            v-model="item.knowledge_level_comment"
+            rows="3"
+            no-resize
+            auto-grow
+            label="Текущий уровень знаний"
+          />
+        </div>
+        <div>
+          <v-textarea
+            v-model="item.recommendation_comment"
+            rows="3"
+            no-resize
+            auto-grow
+            label="Рекомендации родителям"
           />
         </div>
         <div>

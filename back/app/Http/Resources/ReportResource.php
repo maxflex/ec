@@ -18,7 +18,8 @@ class ReportResource extends JsonResource
     {
         return extract_fields($this, [
             'year', 'program', 'is_published', 'is_moderated',
-            'created_at', 'homework_comment', 'price'
+            'created_at', 'homework_comment', 'price', 'recommendation_comment',
+            'knowledge_level_comment', 'cognitive_ability_comment', 'grade'
         ], [
             'client_lessons' => $this->clientLessons->map(fn($cl) => extract_fields($cl, [
                 'status', 'minutes_late', 'is_remote'
