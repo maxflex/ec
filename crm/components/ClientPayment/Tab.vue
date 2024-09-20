@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import type { ClientPaymentDialog } from '#build/components'
 
-const { clientId } = defineProps<{
-  clientId: number
-}>()
-const filters = ref<{
-  year: Year
-}>({
+const { clientId } = defineProps<{ clientId: number }>()
+
+const tabName = 'ClientPaymentTab'
+
+const filters = ref<YearFilters>(loadFilters({
   year: currentAcademicYear(),
-})
+}, tabName))
+
 const loading = ref(true)
 const items = ref<ClientPaymentResource[]>([])
 const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()
@@ -31,7 +31,10 @@ async function loadData() {
   loading.value = false
 }
 
-watch(filters.value, () => loadData())
+watch(filters, (newVal) => {
+  saveFilters(newVal, tabName)
+  loadData()
+}, { deep: true })
 
 function onUpdated(p: ClientPaymentResource) {
   const index = items.value.findIndex(e => e.id === p.id)

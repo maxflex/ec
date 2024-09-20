@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { TestSelectorDialog } from '#build/components'
 
-const { clientId } = defineProps<{
-  clientId: number
-}>()
-
+const { clientId } = defineProps<{ clientId: number }>()
+const tabName = 'ClientTestTab'
 const items = ref<ClientTestResource[]>([])
 const testSelectorDialog = ref<InstanceType<typeof TestSelectorDialog>>()
-const year = ref<Year>(currentAcademicYear())
+const filters = ref<YearFilters>(loadFilters({
+  year: currentAcademicYear(),
+}, tabName))
 const loading = ref(true)
 
 async function loadData() {
@@ -16,7 +16,7 @@ async function loadData() {
     `client-tests`,
     {
       params: {
-        year: year.value,
+        year: filters.value.year,
         client_id: clientId,
       },
     },
@@ -34,7 +34,7 @@ async function onTestsSelected(tests: TestResource[]) {
       method: 'post',
       body: {
         ids: tests.map(t => t.id),
-        year: year.value,
+        year: filters.value.year,
         client_id: clientId,
       },
     },
@@ -62,7 +62,10 @@ function onDestroy(clientTest: ClientTestResource) {
 
 const noData = computed(() => !loading.value && items.value.length === 0)
 
-watch(year, loadData)
+watch(filters, (newVal) => {
+  saveFilters(newVal, tabName)
+  loadData()
+}, { deep: true })
 
 nextTick(loadData)
 </script>
@@ -71,7 +74,7 @@ nextTick(loadData)
   <UiIndexPage :data="{ loading, noData }">
     <template #filters>
       <v-select
-        v-model="year"
+        v-model="filters.year"
         label="Учебный год"
         :items="selectItems(YearLabel)"
         density="comfortable"

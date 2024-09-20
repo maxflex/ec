@@ -97,6 +97,16 @@ declare global {
     q?: string
     is_active?: number
   }
+
+  interface YearFilters {
+    year: Year
+  }
+
+  interface LogFilters {
+    type?: LogType
+    table?: LogTable
+    row_id?: string
+  }
 }
 
 export {}

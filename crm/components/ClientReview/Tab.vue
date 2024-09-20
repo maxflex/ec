@@ -1,8 +1,9 @@
 <script setup lang="ts">
 const { clientId } = defineProps<{ clientId: number }>()
-const filters = ref<{ year: Year }>({
+const tabName = 'ClientReviewTab'
+const filters = ref<YearFilters>(loadFilters({
   year: currentAcademicYear(),
-})
+}, tabName))
 const loading = ref(true)
 const items = ref<ClientReviewListResource[]>([])
 
@@ -24,7 +25,10 @@ async function loadData() {
   loading.value = false
 }
 
-watch(filters.value, loadData)
+watch(filters, (newVal) => {
+  saveFilters(newVal, tabName)
+  loadData()
+}, { deep: true })
 
 const noData = computed(() => !loading.value && items.value.length === 0)
 

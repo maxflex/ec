@@ -1,9 +1,7 @@
 <script lang="ts" setup>
 import type { WebReviewDialog } from '#components'
 
-const { clientId } = defineProps<{
-  clientId: number
-}>()
+const { clientId } = defineProps<{ clientId: number }>()
 const items = ref<WebReviewResource[]>([])
 const loading = ref(true)
 const webReviewDialog = ref<InstanceType<typeof WebReviewDialog>>()

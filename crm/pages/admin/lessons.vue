@@ -4,7 +4,9 @@ import { groupBy } from 'rambda'
 import type { LessonDialog } from '#build/components'
 
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
-const year = ref<Year>(currentAcademicYear())
+const filters = ref<YearFilters>(loadFilters({
+  year: currentAcademicYear(),
+}))
 const loading = ref(false)
 const lessons = ref<LessonListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
@@ -15,8 +17,8 @@ const dates = computed(() => {
   const endMonth = 4 // May (0-indexed)
 
   // Define start and end dates for the academic year
-  const startDate = startOfMonth(new Date(year.value, startMonth, 1)) // September 1st
-  const endDate = endOfMonth(new Date(year.value + 1, endMonth, 31)) // May 31st
+  const startDate = startOfMonth(new Date(filters.value.year, startMonth, 1)) // September 1st
+  const endDate = endOfMonth(new Date(filters.value.year + 1, endMonth, 31)) // May 31st
 
   // Generate array of all dates between startDate and endDate
   const allDates = eachDayOfInterval({ start: startDate, end: endDate })
@@ -36,7 +38,7 @@ async function loadLessons() {
   loading.value = true
   const { data } = await useHttp<ApiResponse<LessonListResource[]>>(`lessons`, {
     params: {
-      year: year.value,
+      year: filters.value.year,
     },
   })
   if (data.value) {
@@ -48,7 +50,7 @@ async function loadLessons() {
 async function loadVacations() {
   vacations.value = {}
   const { data } = await useHttp<ApiResponse<VacationResource[]>>(`common/vacations`, {
-    params: { year: year.value },
+    params: { year: filters.value.year },
   })
   if (data.value) {
     for (const { date } of data.value.data) {
@@ -62,7 +64,10 @@ async function loadData() {
   await loadVacations()
 }
 
-watch(year, loadData)
+watch(filters, (newVal) => {
+  loadData()
+  saveFilters(newVal)
+}, { deep: true })
 
 nextTick(loadData)
 </script>
@@ -70,7 +75,7 @@ nextTick(loadData)
 <template>
   <UiFilters>
     <v-select
-      v-model="year"
+      v-model="filters.year"
       label="Учебный год"
       :items="selectItems(YearLabel)"
       density="comfortable"

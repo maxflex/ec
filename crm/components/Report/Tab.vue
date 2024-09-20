@@ -3,12 +3,13 @@ const { clientId, teacherId } = defineProps<{
   clientId?: number
   teacherId?: number
 }>()
+const tabName = clientId ? 'ClientReportTab' : 'TeacherReportTab'
 const filters = ref<{
   year: Year
   type?: number
-}>({
+}>(loadFilters({
   year: currentAcademicYear(),
-})
+}, tabName))
 const loading = ref(true)
 const items = ref<ReportListResource[]>([])
 
@@ -30,7 +31,10 @@ async function loadData() {
   loading.value = false
 }
 
-watch(filters.value, loadData)
+watch(filters, (newVal) => {
+  saveFilters(newVal, tabName)
+  loadData()
+}, { deep: true })
 
 const noData = computed(() => !loading.value && items.value.length === 0)
 

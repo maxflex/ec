@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import type { ExamScoreDialog } from '#build/components'
 
-const { clientId } = defineProps<{
-  clientId: number
-}>()
-const filters = ref<{
-  year: Year
-}>({
+const { clientId } = defineProps<{ clientId: number }>()
+const tabName = 'ExamScoreTab'
+const filters = ref<YearFilters>(loadFilters({
   year: currentAcademicYear(),
-})
+}, tabName))
 const loading = ref(true)
 const items = ref<ExamScoreResource[]>([])
 const examScoreDialog = ref<InstanceType<typeof ExamScoreDialog>>()
@@ -31,7 +28,10 @@ async function loadData() {
   loading.value = false
 }
 
-watch(filters.value, () => loadData())
+watch(filters, (newVal) => {
+  saveFilters(newVal, tabName)
+  loadData()
+}, { deep: true })
 
 function onUpdated(es: ExamScoreResource) {
   const index = items.value.findIndex(e => e.id === es.id)
