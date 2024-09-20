@@ -3,9 +3,11 @@ const { clientId } = defineProps<{
   clientId: number
 }>()
 
+const tabName = 'GroupsTab'
+
 const filters = ref(loadFilters({
   year: currentAcademicYear(),
-}, 'GroupsTab'))
+}, tabName))
 
 const loading = ref(true)
 const groups = ref<GroupListResource[]>([])
@@ -42,7 +44,7 @@ async function loadSwamps() {
 
 watch(filters, (newVal) => {
   loadData()
-  saveFilters(newVal, 'GroupsTab')
+  saveFilters(newVal, tabName)
 }, { deep: true })
 
 const noData = computed(() => !loading.value && groups.value.length === 0 && swamps.value.length === 0)

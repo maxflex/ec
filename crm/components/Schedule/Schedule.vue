@@ -20,20 +20,29 @@ const properties = defineProps<{
   showTeeth?: boolean
 }>()
 
-const { groupId, teacherId, clientId, program, showTeeth } = properties
+const { groupId, teacherId, clientId, program, showTeeth, year } = properties
+const tabName = teacherId ? 'TeacherSchedule' : (groupId ? 'GroupSchedule' : 'ClientSchedule')
+
+const loadedFilters = loadFilters({
+  year: currentAcademicYear(),
+  hideEmptyDates: 0,
+}, tabName)
+
+const filters = ref({
+  ...loadedFilters,
+  year: year || loadedFilters.year,
+})
 
 const { user } = useAuthStore()
 const editable = user?.entity_type === EntityType.user && groupId
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
-const year = ref<Year>(properties.year || currentAcademicYear())
 const params = {
-// только один из них НЕ undefined
+  // только один из них НЕ undefined
   teacher_id: teacherId,
   client_id: clientId,
   group_id: groupId,
 }
 const loading = ref(false)
-const hideEmptyDates = ref(0)
 const teeth = ref<Teeth>()
 const lessons = ref<LessonListResource[]>([])
 const events = ref<EventListResource[]>([])
@@ -61,8 +70,8 @@ const dates = computed(() => {
   const endMonth = 4 // May (0-indexed)
 
   // Define start and end dates for the academic year
-  const startDate = startOfMonth(new Date(year.value, startMonth, 1)) // September 1st
-  const endDate = endOfMonth(new Date(year.value + 1, endMonth, 31)) // May 31st
+  const startDate = startOfMonth(new Date(filters.value.year, startMonth, 1)) // September 1st
+  const endDate = endOfMonth(new Date(filters.value.year + 1, endMonth, 31)) // May 31st
 
   // Generate array of all dates between startDate and endDate
   const allDates = eachDayOfInterval({ start: startDate, end: endDate })
@@ -70,7 +79,7 @@ const dates = computed(() => {
   const result = []
   for (const d of allDates) {
     const dateString = format(d, 'yyyy-MM-dd')
-    if (hideEmptyDates.value) {
+    if (filters.value.hideEmptyDates) {
       if (
         lessons.value.some(e => e.date === dateString)
         || events.value.some(e => e.date === dateString)
@@ -101,7 +110,7 @@ async function loadLessons() {
       {
         params: {
           ...params,
-          year: groupId ? undefined : year.value,
+          year: groupId ? undefined : filters.value.year,
         },
       },
   )
@@ -121,7 +130,7 @@ async function loadEvents() {
       {
         params: {
           ...params,
-          year: year.value,
+          year: filters.value.year,
         },
       },
   )
@@ -139,7 +148,7 @@ async function loadTeeth() {
       {
         params: {
           ...params,
-          year: year.value,
+          year: filters.value.year,
         },
       },
   )
@@ -153,7 +162,7 @@ async function loadVacations() {
   const { data } = await useHttp<ApiResponse<VacationResource[]>>(
       `common/vacations`,
       {
-        params: { year: year.value },
+        params: { year: filters.value.year },
       },
   )
   if (data.value) {
@@ -199,7 +208,11 @@ function onBulkUpdated() {
   checkboxes.value = {}
 }
 
-watch(year, loadData)
+watch(() => filters.value.year, loadData)
+
+watch(filters, (newVal) => {
+  saveFilters(newVal, tabName)
+}, { deep: true })
 
 nextTick(loadData)
 </script>
@@ -207,14 +220,14 @@ nextTick(loadData)
 <template>
   <UiFilters>
     <v-select
-      v-model="year"
+      v-model="filters.year"
       :disabled="!!groupId"
       label="Учебный год"
       :items="selectItems(YearLabel)"
       density="comfortable"
     />
     <v-select
-      v-model="hideEmptyDates"
+      v-model="filters.hideEmptyDates"
       label="Даты"
       :items="yesNo('скрыть пустые', 'показывать все', true)"
       density="comfortable"
@@ -246,7 +259,7 @@ nextTick(loadData)
       v-for="d in dates"
       :key="d"
       :class="{
-        'week-separator': !hideEmptyDates && getDay(d) === 0,
+        'week-separator': !filters.hideEmptyDates && getDay(d) === 0,
       }"
     >
       <div>
