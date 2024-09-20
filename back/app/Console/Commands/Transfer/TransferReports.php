@@ -3,8 +3,8 @@
 namespace App\Console\Commands\Transfer;
 
 use App\Enums\Program;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class TransferReports extends Command
 {
@@ -48,6 +48,10 @@ class TransferReports extends Command
                     ? Program::getById($result[0]->grade_id, $r->subject_id)
                     : Program::getBySubjectId($r->subject_id),
                 'homework_comment' => $r->homework_comment,
+                'cognitive_ability_comment' => $r->learning_ability_comment,
+                'knowledge_level_comment' => $r->knowledge_comment,
+                'recommendation_comment' => $r->recommendation,
+                'grade' => $r->homework_score ? $r->homework_score : null,
                 // 'user_id' => $this->getUserId($r->created_email_id),
                 'is_moderated' => ($r->is_not_moderated + 1) % 2,
                 'is_published' => $r->is_available_for_parents,

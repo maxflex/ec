@@ -17,7 +17,9 @@ class Report extends Model
 {
     protected $fillable = [
         'year', 'program', 'price', 'homework_comment',
-        'is_moderated', 'is_published', 'client_id'
+        'is_moderated', 'is_published', 'client_id',
+        'recommendation_comment', 'knowledge_level_comment',
+        'cognitive_ability_comment', 'grade'
     ];
 
     protected $casts = [

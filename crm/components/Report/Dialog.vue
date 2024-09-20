@@ -11,8 +11,8 @@ const modelDefaults: ReportResource = {
   year: currentAcademicYear(),
   is_moderated: false,
   is_published: false,
-  homework_comment: null,
   price: null,
+  grade: null,
   client_lessons: [],
 }
 const { dialog, width } = useDialog('default')

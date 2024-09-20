@@ -637,7 +637,11 @@ declare global {
     year: Year
     is_published: boolean
     is_moderated: boolean
-    homework_comment: string | null
+    homework_comment?: string
+    cognitive_ability_comment?: string
+    knowledge_level_comment?: string
+    recommendation_comment?: string
+    grade: ?LessonScore
     price: number | null
     teacher?: PersonResource
     client?: PersonResource
