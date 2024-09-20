@@ -4,7 +4,11 @@ const { contractId, teacherId } = defineProps<{
   teacherId?: number
 }>()
 
-const year = ref<Year>(currentAcademicYear())
+const tabName = contractId ? 'ContractBalance' : 'TeacherBalance'
+
+const filters = ref<YearFilters>(loadFilters({
+  year: currentAcademicYear(),
+}, tabName))
 const balance = ref<Balance[]>([])
 const loading = ref(true)
 
@@ -12,7 +16,7 @@ async function loadData() {
   loading.value = true
   const { data } = await useHttp<Balance[]>(`balance`, {
     params: {
-      year: teacherId ? year.value : undefined,
+      year: teacherId ? filters.value.year : undefined,
       teacher_id: teacherId,
       contract_id: contractId,
     },
@@ -25,7 +29,10 @@ async function loadData() {
 
 const noData = computed(() => !loading.value && balance.value.length === 0)
 
-watch(year, loadData)
+watch(filters, (newVal) => {
+  loadData()
+  saveFilters(newVal, tabName)
+}, { deep: true })
 
 nextTick(loadData)
 </script>
@@ -34,7 +41,7 @@ nextTick(loadData)
   <UiIndexPage :data="{ loading, noData }" :testy="true" class="balance">
     <template v-if="teacherId" #filters>
       <v-select
-        v-model="year"
+        v-model="filters.year"
         label="Учебный год"
         :items="selectItems(YearLabel)"
         density="comfortable"

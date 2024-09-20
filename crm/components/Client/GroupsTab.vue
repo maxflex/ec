@@ -1,7 +1,5 @@
 <script setup lang="ts">
-const { clientId } = defineProps<{
-  clientId: number
-}>()
+const { clientId } = defineProps<{ clientId: number }>()
 
 const tabName = 'GroupsTab'
 

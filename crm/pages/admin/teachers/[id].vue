@@ -11,17 +11,12 @@ const tabs = {
   payments: 'платежи',
   balance: 'баланс',
   reports: 'отчеты',
-  reviews: 'отзывы',
+  clientReviews: 'отзывы',
   services: 'допуслуги',
   instructions: 'инструкции',
 } as const
 
 const selectedTab = ref<keyof typeof tabs>('groups')
-
-const groupFilters = ref<{ year: Year }>({
-  year: currentAcademicYear(),
-})
-const reviewFilters = ref<{ type?: number }>({})
 
 async function loadData() {
   const { data } = await useHttp<TeacherResource>(`teachers/${route.params.id}`)
@@ -92,69 +87,13 @@ nextTick(loadData)
         </div>
       </div>
     </div>
-    <UiDataLoader
-      v-if="selectedTab === 'groups'"
-      :key="`groups${groupFilters.year}`"
-      url="groups"
-      :filters="{
-        teacher_id: teacher.id,
-        ...groupFilters,
-      }"
-    >
-      <template #filters>
-        <UiFilters>
-          <div>
-            <v-select
-              v-model="groupFilters.year"
-              label="Учебный год"
-              :items="selectItems(YearLabel)"
-              density="comfortable"
-            />
-          </div>
-        </UiFilters>
-      </template>
-      <template #default="{ items }">
-        <div class="table table--padding">
-          <GroupList
-            :items="items"
-          />
-        </div>
-      </template>
-    </UiDataLoader>
+    <TeacherGroupsTab v-if="selectedTab === 'groups'" :teacher-id="teacher.id" />
     <Schedule
       v-else-if="selectedTab === 'schedule'"
       :teacher-id="teacher.id"
       show-teeth
     />
-    <UiDataLoader
-      v-else-if="selectedTab === 'reviews'"
-      url="client-reviews"
-      :filters="{
-        teacher_id: teacher.id,
-        with: 'teacher',
-        ...reviewFilters,
-      }"
-    >
-      <template #filters>
-        <UiFilters>
-          <div>
-            <UiClearableSelect
-              v-model="reviewFilters.type"
-              label="Тип"
-              :items="yesNo('созданные', 'требуется создание')"
-              density="comfortable"
-            />
-          </div>
-        </UiFilters>
-      </template>
-      <template #default="{ items }">
-        <ClientReviewList
-          no-teacher
-          style="top: -20px"
-          :items="items"
-        />
-      </template>
-    </UiDataLoader>
+    <ClientReviewTab v-else-if="selectedTab === 'clientReviews'" :teacher-id="teacher.id" />
     <InstructionTab v-else-if="selectedTab === 'instructions'" :teacher-id="teacher.id" />
     <ReportTab v-else-if="selectedTab === 'reports'" :teacher-id="teacher.id" />
     <TeacherPaymentTab v-else-if="selectedTab === 'payments'" :teacher-id="teacher.id" />

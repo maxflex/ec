@@ -1,40 +1,22 @@
 <script setup lang="ts">
 import type { TeacherServiceDialog } from '#build/components'
 
-const { teacherId } = defineProps<{
-  teacherId: number
-}>()
-const filters = ref<{
-  year: Year
-}>({
-  year: currentAcademicYear(),
-})
-const loading = ref(false)
-const items = ref<TeacherServiceResource[]>([])
+const { teacherId } = defineProps<{ teacherId: number }>()
 const teacherServiceDialog = ref<InstanceType<typeof TeacherServiceDialog>>()
-
-async function loadData() {
-  if (loading.value) {
-    return
-  }
-  loading.value = true
-  const { data } = await useHttp<ApiResponse<TeacherServiceResource[]>>(
-    'teacher-services',
+const tabName = 'TeacherServiceTab'
+const filters = ref<YearFilters>(loadFilters({
+  year: currentAcademicYear(),
+}, tabName))
+const { items, indexPageData } = useIndex<TeacherServiceResource, YearFilters>(
+    `teacher-services`,
+    filters,
     {
-      params: {
-        ...filters.value,
+      tabName,
+      staticFilters: {
         teacher_id: teacherId,
       },
     },
-  )
-  if (data.value) {
-    const { data: newItems } = data.value
-    items.value = newItems
-  }
-  loading.value = false
-}
-
-watch(filters.value, () => loadData())
+)
 
 function onUpdated(p: TeacherServiceResource) {
   const index = items.value.findIndex(e => e.id === p.id)
@@ -46,16 +28,16 @@ function onUpdated(p: TeacherServiceResource) {
   }
   itemUpdated('teacher-services', p.id)
 }
-
-nextTick(loadData)
 </script>
 
 <template>
-  <UiFilters>
-    <v-select
-      v-model="filters.year" :items="selectItems(YearLabel)" label="Год"
-      density="comfortable"
-    />
+  <UiIndexPage :data="indexPageData">
+    <template #filters>
+      <v-select
+        v-model="filters.year" :items="selectItems(YearLabel)" label="Год"
+        density="comfortable"
+      />
+    </template>
     <template #buttons>
       <v-btn
         color="primary"
@@ -64,10 +46,7 @@ nextTick(loadData)
         добавить платеж
       </v-btn>
     </template>
-  </UiFilters>
-  <div>
-    <UiLoader3 :loading="loading" />
     <TeacherServiceList :items="items" @open="teacherServiceDialog?.edit" />
-  </div>
+  </UiIndexPage>
   <TeacherServiceDialog ref="teacherServiceDialog" @updated="onUpdated" />
 </template>

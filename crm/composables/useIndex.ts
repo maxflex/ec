@@ -4,11 +4,15 @@ export default function<T, F extends object = object>(
   options: {
     instantLoad?: boolean
     scrollContainerSelector?: string
+    staticFilters?: object
+    tabName?: string | null
   } = {},
 ) {
   const {
     instantLoad = true,
     scrollContainerSelector = 'main',
+    staticFilters = {},
+    tabName = null,
   } = options
 
   // данные для компонента UiIndexPage
@@ -40,6 +44,7 @@ export default function<T, F extends object = object>(
     const { data } = await useHttp<ApiResponse<T[]>>(apiUrl, {
       params: {
         page,
+        ...staticFilters,
         ...filters.value,
       },
     })
@@ -72,7 +77,7 @@ export default function<T, F extends object = object>(
 
   watch(filters, (newVal) => {
     reloadData()
-    saveFilters(newVal)
+    saveFilters(newVal, tabName)
   }, { deep: true })
 
   function onScroll() {

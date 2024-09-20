@@ -1,40 +1,25 @@
 <script setup lang="ts">
 import type { TeacherPaymentDialog } from '#build/components'
 
-const { teacherId } = defineProps<{
-  teacherId: number
-}>()
-const filters = ref<{
-  year: Year
-}>({
+const { teacherId } = defineProps<{ teacherId: number }>()
+
+const tabName = 'TeacherPaymentTab'
+
+const filters = ref<YearFilters>(loadFilters({
   year: currentAcademicYear(),
-})
-const loading = ref(false)
-const items = ref<TeacherPaymentResource[]>([])
+}, tabName))
 const teacherPaymentDialog = ref<InstanceType<typeof TeacherPaymentDialog>>()
 
-async function loadData() {
-  if (loading.value) {
-    return
-  }
-  loading.value = true
-  const { data } = await useHttp<ApiResponse<TeacherPaymentResource[]>>(
-    'teacher-payments',
+const { items, indexPageData } = useIndex<TeacherPaymentResource, YearFilters>(
+    `teacher-payments`,
+    filters,
     {
-      params: {
-        ...filters.value,
+      tabName,
+      staticFilters: {
         teacher_id: teacherId,
       },
     },
-  )
-  if (data.value) {
-    const { data: newItems } = data.value
-    items.value = newItems
-  }
-  loading.value = false
-}
-
-watch(filters.value, () => loadData())
+)
 
 function onUpdated(p: TeacherPaymentResource) {
   const index = items.value.findIndex(e => e.id === p.id)
@@ -46,18 +31,18 @@ function onUpdated(p: TeacherPaymentResource) {
   }
   itemUpdated('teacher-payments', p.id)
 }
-
-nextTick(loadData)
 </script>
 
 <template>
-  <UiFilters>
-    <v-select
-      v-model="filters.year"
-      :items="selectItems(YearLabel)"
-      label="Год"
-      density="comfortable"
-    />
+  <UiIndexPage :data="indexPageData">
+    <template #filters>
+      <v-select
+        v-model="filters.year"
+        :items="selectItems(YearLabel)"
+        label="Год"
+        density="comfortable"
+      />
+    </template>
     <template #buttons>
       <v-btn
         color="primary"
@@ -66,10 +51,7 @@ nextTick(loadData)
         добавить платеж
       </v-btn>
     </template>
-  </UiFilters>
-  <div>
-    <UiLoader3 :loading="loading" />
     <TeacherPaymentList :items="items" @open="teacherPaymentDialog?.edit" />
-  </div>
+  </UiIndexPage>
   <TeacherPaymentDialog ref="teacherPaymentDialog" @updated="onUpdated" />
 </template>
