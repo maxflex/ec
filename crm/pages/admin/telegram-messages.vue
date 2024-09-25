@@ -17,9 +17,9 @@ const { items, indexPageData, reloadData } = useIndex<TelegramMessageResource, T
     </template>
     <template #buttons>
       <v-btn
+        :to="{ name: 'people-selector' }"
         append-icon="$next"
         color="primary"
-        @click="telegramMessageBulkDialog?.open()"
       >
         групповая отправка
       </v-btn>

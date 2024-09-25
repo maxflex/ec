@@ -1,4 +1,4 @@
-export default function<T, F extends object = object>(
+export default function<T, F extends object = object, E extends object = object>(
   apiUrl: string,
   filters: Ref<F> = ref({}) as Ref<F>,
   options: {
@@ -20,6 +20,8 @@ export default function<T, F extends object = object>(
     loading: true,
     noData: false,
   })
+
+  const extra = ref({}) as Ref<E>
 
   // любая загрузка
   const loading = ref(false)
@@ -49,7 +51,10 @@ export default function<T, F extends object = object>(
       },
     })
     if (data.value) {
-      const { meta, data: newItems } = data.value
+      const { extra: e, meta, data: newItems } = data.value
+      if (e) {
+        extra.value = e as E
+      }
       if (page === 1) {
         items.value = newItems
         indexPageData.value = {
@@ -109,6 +114,7 @@ export default function<T, F extends object = object>(
 
   return {
     items,
+    extra,
     loading,
     indexPageData,
     reloadData,

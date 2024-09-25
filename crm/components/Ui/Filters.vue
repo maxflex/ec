@@ -17,10 +17,10 @@
   // justify-content: flex-end;
   border-bottom: 1px solid rgb(var(--v-theme-border));
   gap: 40px;
-  $height: 81px;
-  min-height: $height;
-  max-height: $height;
-  height: $height;
+  --height: 81px;
+  min-height: var(--height);
+  max-height: var(--height);
+  height: var(--height);
   &__inputs {
     display: flex;
     align-items: center;

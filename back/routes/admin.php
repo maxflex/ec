@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\{BalanceController,
     LessonController,
     MacroController,
     MangoTestController,
+    PeopleSelectorController,
     PersonController,
     PhotoController,
     PreviewController,
@@ -102,6 +103,8 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::get('search', SearchController::class);
     Route::apiResource('print', PrintController::class)->only('show');
+
+    Route::get('people-selector', PeopleSelectorController::class);
 
     Route::apiResources([
         'requests' => RequestsController::class,

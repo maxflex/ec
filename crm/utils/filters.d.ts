@@ -107,6 +107,14 @@ declare global {
     table?: LogTable
     row_id?: string
   }
+
+  interface PeopleSelectorFilters {
+    mode: 'clients' | 'teachers'
+    year: Year
+    program: Program[]
+    status: SwampFilterStatus[]
+    group_id?: number
+  }
 }
 
 export {}

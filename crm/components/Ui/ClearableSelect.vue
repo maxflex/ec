@@ -1,14 +1,6 @@
 <script setup lang="ts">
-const { items, expand } = defineProps<{
-  label: string
-  density?: 'comfortable'
-  expand?: boolean
-  items: {
-    value: string | number
-    title: string
-  }[]
-}>()
-const model = defineModel<string | number >()
+const { expand } = defineProps<{ expand?: boolean }>()
+const model = defineModel<any>({ required: true })
 const input = ref()
 
 function clear() {
@@ -22,9 +14,6 @@ function clear() {
     v-bind="$attrs"
     ref="input"
     v-model="model"
-    :label="label"
-    :items="items"
-    :density="density"
     :menu-props="{
       closeOnContentClick: true,
       minHeight: expand ? 'auto' : undefined,

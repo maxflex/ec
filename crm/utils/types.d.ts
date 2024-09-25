@@ -70,6 +70,7 @@ declare global {
   interface ApiResponse<T> {
     data: T
     meta: Meta
+    extra?: object
   }
 
   interface IndexPageData {

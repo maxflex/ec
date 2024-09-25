@@ -57,4 +57,33 @@ class Swamp
 
         return DB::table('swamps')->withExpression('swamps', $swampsCte);
     }
+
+    public static function filterStatus($query, string $status)
+    {
+        switch ($status) {
+            case 'toFulfil':
+                $query->whereRaw("group_id IS NULL AND total_price_passed < total_price");
+                break;
+
+            case 'exceedNoGroup':
+                $query->whereRaw("group_id IS NULL AND total_price_passed > total_price");
+                break;
+
+            case 'completeNoGroup':
+                $query->whereRaw("group_id IS NULL AND total_price_passed = total_price");
+                break;
+
+            case 'inProcess':
+                $query->whereRaw("group_id IS NOT NULL AND total_price_passed < total_price");
+                break;
+
+            case 'exceedInGroup':
+                $query->whereRaw("group_id IS NOT NULL AND total_price_passed > total_price");
+                break;
+
+            case 'completeInGroup':
+                $query->whereRaw("group_id IS NOT NULL AND total_price_passed = total_price");
+                break;
+        }
+    }
 }
