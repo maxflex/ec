@@ -4,6 +4,7 @@ import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
 import {
   mdiCheckDecagram,
   mdiChevronDown,
+  mdiClockOutline,
   mdiContentSaveCheckOutline,
   mdiDelete,
   mdiDotsHorizontal,
@@ -11,6 +12,7 @@ import {
   mdiEyeOutline,
   mdiInformationOutline,
   mdiMagnify,
+  mdiSend,
   mdiTuneVertical,
 } from '@mdi/js'
 
@@ -28,6 +30,8 @@ const icons = {
     eye: mdiEyeOutline,
     search: mdiMagnify,
     info: mdiInformationOutline,
+    send: mdiSend,
+    time: mdiClockOutline,
   },
   sets: {
     mdi,

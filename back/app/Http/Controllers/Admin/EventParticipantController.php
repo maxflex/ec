@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EventWithParticipantsResource;
+use App\Models\Client;
 use App\Models\Event;
 use App\Models\EventParticipant;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 
 class EventParticipantController extends Controller
@@ -30,9 +32,18 @@ class EventParticipantController extends Controller
     {
         $request->validate([
             'id' => ['required', 'exists:events,id'],
-            'participants' => ['required', 'array'],
+            'selected' => ['required'],
         ]);
         $event = Event::find($request->id);
-        $event->syncRelation($request->all(), 'participants');
+        $event->participants()->delete();
+        foreach ($request->input('selected') as $key => $ids) {
+            $class = $key === 'clients' ? Client::class : Teacher::class;
+            foreach ($ids as $id) {
+                $event->participants()->create([
+                    'entity_type' => $class,
+                    'entity_id' => $id,
+                ]);
+            }
+        }
     }
 }

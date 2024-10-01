@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EventParticipantConfirmation;
 use Illuminate\Database\Eloquent\Model;
 
 class EventParticipant extends Model
@@ -9,11 +10,11 @@ class EventParticipant extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'entity_type', 'entity_id', 'is_confirmed'
+        'entity_type', 'entity_id', 'confirmation'
     ];
 
     protected $casts = [
-        'is_confirmed' => 'boolean'
+        'confirmation' => EventParticipantConfirmation::class,
     ];
 
     public function event()

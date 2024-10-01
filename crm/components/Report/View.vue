@@ -95,14 +95,14 @@ nextTick(loadData)
         </div>
       </div>
     </div>
-    <div v-if="item.grade" class="report-view__final">
-      <div class="report-view__final-title">
-        Оценка:
-      </div>
-      <span :class="`score score--${item.grade}`">
-        {{ item.grade }}
-      </span>
+  </div>
+  <div v-if="item && item.grade" class="report-view__final">
+    <div class="report-view__final-title">
+      Оценка:
     </div>
+    <span :class="`score score--${item.grade}`">
+      {{ item.grade }}
+    </span>
   </div>
 </template>
 
@@ -128,6 +128,7 @@ nextTick(loadData)
     border-top: 1px solid rgb(var(--v-theme-border));
     margin-top: 20px;
     padding-top: 20px;
+    padding-bottom: 20px;
     display: flex;
     align-items: center;
     gap: 10px;

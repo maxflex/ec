@@ -2,9 +2,13 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Client;
+use App\Models\Event;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/** @mixin Event */
 class EventResource extends JsonResource
 {
     /**
@@ -14,8 +18,26 @@ class EventResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $recipients = [];
+        foreach (['clients', 'teachers'] as $key) {
+            $recipients[$key] = $this->participants()
+                ->with('entity')
+                ->where('entity_type', $key === 'clients' ? Client::class : Teacher::class)
+                ->get()
+                ->sortBy([
+                    ['entity.last_name', 'asc'],
+                    ['entity.first_name', 'asc']
+                ])
+                ->values()
+                ->map(fn($p) => extract_fields($p, [
+                    'is_confirmed'
+                ], [
+                    'entity' => new PersonResource($p->entity)
+                ]));
+        }
         return extract_fields($this, ['*'], [
             'user' => new PersonResource($this->user),
+            'recipients' => $recipients,
         ]);
     }
 }

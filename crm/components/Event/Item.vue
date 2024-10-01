@@ -2,12 +2,16 @@
 import { mdiAccountGroup, mdiCheckAll } from '@mdi/js'
 
 const { item } = defineProps<{ item: EventListResource }>()
+
 defineEmits<{
   edit: [e: EventListResource]
   participants: [e: EventListResource]
 }>()
+
+const router = useRouter()
+
 const isEditable = useAuthStore().user?.entity_type === EntityType.user
-const isConfirmed = ref<boolean>(!!item.participant?.is_confirmed)
+const isConfirmed = ref<boolean>(item.participant?.confirmation === 'confirmed')
 
 function confirmParticipant() {
   if (!confirm(`Вы подтверждаете участие в событии ${item.name}?`)) {
@@ -17,28 +21,35 @@ function confirmParticipant() {
   useHttp(`event-participants/${item.participant!.id}`, {
     method: 'put',
     body: {
-      is_confirmed: true,
+      confirmation: 'confirmed',
+    },
+  })
+}
+
+function onClick(e: EventListResource) {
+  router.push({
+    name: 'events-id',
+    params: {
+      id: e.id,
     },
   })
 }
 </script>
 
 <template>
-  <div :id="`event-${item.id}`" class="event-item" :class="{ 'event-item--study': !item.is_afterclass }">
+  <div
+    :id="`event-${item.id}`"
+    :class="{ 'event-item--study': !item.is_afterclass }"
+    class="event-item"
+    @click="onClick(item)"
+  >
     <div v-if="isEditable" class="table-actionss">
-      <v-btn
-        :icon="mdiAccountGroup"
-        :size="48"
-        variant="text"
-        color="gray"
-        @click="$emit('participants', item)"
-      />
       <v-btn
         icon="$edit"
         :size="48"
         variant="text"
         color="gray"
-        @click="$emit('edit', item)"
+        @click.stop="$emit('edit', item)"
       />
     </div>
     <div style="width: 90px" />
@@ -69,11 +80,7 @@ function confirmParticipant() {
       {{ item.participants_count }}
     </div>
     <div style="width: 140px">
-      <div class="event-status">
-        <div class="event-status__circle" />
-        {{ item.is_afterclass ? 'внеклассное' : 'учебное' }}
-        событие
-      </div>
+      <EventStatus :item="item" />
     </div>
   </div>
 </template>
@@ -84,6 +91,7 @@ function confirmParticipant() {
   align-items: flex-start !important;
   // background: rgba(#9c27b0, 0.05);
   padding: 20px;
+  cursor: pointer;
   .table-actionss {
     right: -10px !important;
     // top: -16px !important;
@@ -103,28 +111,22 @@ function confirmParticipant() {
     top: 0;
     border-radius: 8px;
     pointer-events: none;
+    transition: background-color linear 0.2s;
   }
   &--study {
     &:after {
       background: rgba(#fe8a1e, 0.05);
     }
+    &:hover {
+      &:after {
+        background: rgba(#fe8a1e, 0.1) !important;
+      }
+    }
   }
-}
-
-.event-status {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  --color: #9c27b0;
-  color: var(--color);
-  &__circle {
-    --size: 8px;
-    height: var(--size);
-    width: var(--size);
-    border-radius: 50%;
-    background-color: var(--color);
-    top: 1px;
-    position: relative;
+  &:hover {
+    &:after {
+      background: rgba(#9c27b0, 0.1);
+    }
   }
 }
 </style>

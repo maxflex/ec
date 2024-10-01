@@ -1,4 +1,7 @@
 <script setup lang="ts">
+const { groupIds } = defineProps<{
+  groupIds: number[]
+}>()
 const model = defineModel<PeopleSelectorFilters>({ required: true })
 
 const modeLabel = {
@@ -24,10 +27,10 @@ const programPresets: Array<{
 
 const statusPresets: Array<{
   label: string
-  status: SwampFilterStatus[]
+  statuses: SwampFilterStatus[]
 }> = [
-  { label: 'активные', status: ['toFulfil', 'inProcess'] },
-  { label: 'закрытые', status: ['exceedNoGroup', 'completeNoGroup', 'exceedInGroup', 'completeInGroup'] },
+  { label: 'активные', statuses: ['toFulfil', 'inProcess'] },
+  { label: 'архив', statuses: ['exceedNoGroup', 'completeNoGroup', 'exceedInGroup', 'completeInGroup'] },
 ]
 </script>
 
@@ -44,39 +47,60 @@ const statusPresets: Array<{
     :items="selectItems(modeLabel)"
     density="comfortable"
   />
-  <UiMultipleSelect
-    v-model="model.program"
-    label="Программа"
-    :items="selectItems(ProgramLabel)"
-    density="comfortable"
-  >
-    <template #presets>
-      <a
-        v-for="(preset, i) in programPresets" :key="i"
-        @click="model.program = preset.programs"
-      >
-        {{ preset.label }}
-      </a>
-    </template>
-  </UiMultipleSelect>
-  <UiMultipleSelect
-    v-model="model.status"
-    label="Статус"
-    :items="selectItems(SwampFilterStatusLabel)"
-    density="comfortable"
-  >
-    <template #presets>
-      <a
-        v-for="(preset, i) in statusPresets" :key="i"
-        @click="model.status = preset.status"
-      >
-        {{ preset.label }}
-      </a>
-    </template>
-  </UiMultipleSelect>
-  <UiClearableSelect
-    v-model="model.group_id"
-    label="Группа"
-    density="comfortable"
-  />
+  <template v-if="model.mode === 'clients'">
+    <UiMultipleSelect
+      v-model="model.programs"
+      label="Программа"
+      :items="selectItems(ProgramLabel)"
+      density="comfortable"
+    >
+      <template #presets>
+        <a
+          v-for="(preset, i) in programPresets" :key="i"
+          @click="model.programs = preset.programs"
+        >
+          {{ preset.label }}
+        </a>
+      </template>
+    </UiMultipleSelect>
+    <UiMultipleSelect
+      v-model="model.statuses"
+      label="Статус"
+      :items="selectItems(SwampFilterStatusLabel)"
+      density="comfortable"
+    >
+      <template #presets>
+        <a
+          v-for="(preset, i) in statusPresets" :key="i"
+          @click="model.statuses = preset.statuses"
+        >
+          {{ preset.label }}
+        </a>
+      </template>
+    </UiMultipleSelect>
+    <UiClearableSelect
+      v-model="model.group_id"
+      :items="groupIds.map(value => ({
+        value,
+        title: `Группа ${value}`,
+      }))"
+      label="Группа"
+      density="comfortable"
+    />
+  </template>
+  <template v-else>
+    <UiClearableSelect
+      v-model="model.status"
+      label="Статус"
+      :items="selectItems(TeacherStatusLabel)"
+      density="comfortable"
+    />
+    <UiMultipleSelect
+      v-model="model.subjects"
+      label="Предметы"
+      :items="selectItems(SubjectLabel)"
+      density="comfortable"
+    />
+    <v-spacer />
+  </template>
 </template>

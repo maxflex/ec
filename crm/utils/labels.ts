@@ -446,7 +446,7 @@ export const UserStatusLabel: { [key: number]: string } = {
 export const SubjectLabel = {
   math: 'математика',
   phys: 'физика',
-  chem: 'химимя',
+  chem: 'химия',
   bio: 'биология',
   inf: 'информатика',
   rus: 'русский язык',
@@ -571,6 +571,18 @@ export const SwampFilterStatusLabel = {
   inProcess: 'исполняется',
   exceedInGroup: 'избыток по услугам + в группе',
   completeInGroup: 'исполнено + в группе',
+} as const
+
+export const SendToLabel = {
+  studentsAndParents: 'ученикам и родителям',
+  students: 'только ученикам',
+  parents: 'только родителям',
+} as const
+
+export const EventParticipantConfirmationLabel = {
+  pending: 'не подтвердил участие',
+  confirmed: 'подтвердил участие',
+  rejected: 'отказался',
 } as const
 
 export const ErrorCodeLabel = [1000] as const

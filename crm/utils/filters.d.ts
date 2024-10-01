@@ -111,9 +111,15 @@ declare global {
   interface PeopleSelectorFilters {
     mode: 'clients' | 'teachers'
     year: Year
-    program: Program[]
-    status: SwampFilterStatus[]
+    programs: Program[]
+    statuses: SwampFilterStatus[]
     group_id?: number
+    status?: TeacherStatus
+    subjects: Subject[]
+  }
+
+  interface TelegramListFilters {
+    is_sent?: boolean
   }
 }
 

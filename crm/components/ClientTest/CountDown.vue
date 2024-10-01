@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { mdiClockOutline } from '@mdi/js'
-
 const { item } = defineProps<{ item: ClientTestResource }>()
 const seconds = ref(item.seconds_left || 0)
 const { $dayjs } = useNuxtApp()
@@ -22,15 +20,15 @@ defineExpose({ seconds })
 
 <template>
   <span v-if="item.is_active" class="client-test-countdown">
-    <v-icon :icon="mdiClockOutline" class="vfn-1" />
+    <v-icon icon="$time" class="vfn-1" />
     {{ $dayjs.duration(seconds, "second").format("mm:ss") }}
   </span>
 </template>
 
 <style lang="scss">
 .client-test-countdown {
-	display: flex;
-	align-items: center;
-	gap: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 </style>

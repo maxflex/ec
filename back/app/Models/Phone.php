@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\Enums\TeacherStatus;
+use App\Facades\Telegram;
 use App\Utils\Phone as UtilsPhone;
 use App\Utils\Session;
+use Exception;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Phone extends Model implements Authenticatable
@@ -53,7 +56,7 @@ class Phone extends Model implements Authenticatable
         return $this->morphTo();
     }
 
-    public function telegramMessages()
+    public function telegramMessages(): HasMany
     {
         return $this->hasMany(TelegramMessage::class);
     }
@@ -136,6 +139,25 @@ class Phone extends Model implements Authenticatable
         return in_array($this->entity_type, [
             Client::class,
             ClientParent::class
+        ]);
+    }
+
+    public function sendTelegram(TelegramList $list)
+    {
+        if ($this->telegram_id === null) {
+            throw new Exception('no telegram for phone id: ' . $this->id);
+        }
+
+        $message = Telegram::sendMessage(
+            $this->telegram_id,
+            $list->text,
+            'HTML',
+        );
+
+        $this->telegramMessages()->create([
+            'id' => $message->getMessageId(),
+            'text' => $list->text,
+            'list_id' => $list->id,
         ]);
     }
 

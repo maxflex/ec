@@ -1,7 +1,10 @@
 import type Metrics from '~/components/Stats/Metrics'
-import type { EntityTypeLabel } from '~/utils/labels'
 
 declare global {
+  type EventParticipantConfirmation = keyof typeof EventParticipantConfirmationLabel
+
+  type SendTo = keyof typeof SendToLabel
+
   type ErrorCode = typeof ErrorCodeLabel[number]
 
   type CallAppStatusFilter = keyof typeof CallAppStatusFilterLabel
@@ -509,7 +512,7 @@ declare global {
   // утилита извлекает тип из emit-функции
   // (извлекает тип второго параметра из emit-функции)
   // TODO: delete?
-  type EmitType<T> = T extends (e: any, p: infer P) => any ? P : never
+  // type EmitType<T> = T extends (e: any, p: infer P) => any ? P : never
 
   interface ClientTestResource {
     id: number
@@ -566,28 +569,6 @@ declare global {
     id: number
     date: string
   }
-
-  interface ScheduleItem {
-    id: number
-    date: string
-    time: string
-    time_end: string
-    status: LessonStatus
-    cabinet: Cabinet
-    is_unplanned: boolean
-    is_first: boolean
-    teacher?: PersonResource
-    group: {
-      id: number
-      program: Program
-      students_count: number
-    }
-  }
-
-  interface Schedule {
-    [key: string]: ScheduleItem[]
-  }
-
   interface LogResource {
     id: number
     type: LogType
@@ -694,7 +675,7 @@ declare global {
     time_end?: string
     participant?: {
       id: number
-      is_confirmed: boolean
+      confirmation: EventParticipantConfirmation
     }
   }
 
@@ -709,11 +690,23 @@ declare global {
     is_afterclass: boolean
     user?: PersonResource
     created_at?: string
+    recipients?: {
+      clients: Array<{
+        id: number
+        confirmation: EventParticipantConfirmation
+        entity: PersonResource
+      }>
+      teachers: Array<{
+        id: number
+        confirmation: EventParticipantConfirmation
+        entity: PersonResource
+      }>
+    }
   }
 
   interface EventParticipant {
     id: number
-    is_confirmed: boolean
+    confirmation: EventParticipantConfirmation
     entity_id: number
     entity_type: typeof EntityType.client | typeof EntityType.teacher
     entity: PersonWithPhotoResource
@@ -977,6 +970,34 @@ declare global {
   interface PrintOption {
     id: number
     label: string
+  }
+
+  interface PeopleSelectorExtra {
+    ids: number[]
+    group_ids: number[]
+  }
+
+  interface SelectedPeople {
+    clients: number[]
+    teachers: number[]
+  }
+
+  interface PeopleResource {
+    clients: PersonResource[]
+    teachers: PersonResource[]
+  }
+
+  interface TelegramListResource {
+    id: number
+    send_to: SendTo
+    is_sent: boolean
+    is_confirmable: boolean
+    recipients: PeopleResource
+    scheduled_at?: string
+    created_at?: string
+    event_id?: number
+    text: string
+    results?: Record<string, string[]>
   }
 }
 

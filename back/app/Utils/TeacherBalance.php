@@ -40,7 +40,7 @@ class TeacherBalance
         ];
 
         $result = collect();
-        foreach (self::getTeachers($year) as $teacher) {
+        foreach (Teacher::withPayments($year)->get() as $teacher) {
             $resultItem = [
                 'teacher' => new PersonResource($teacher)
             ];
@@ -70,28 +70,4 @@ class TeacherBalance
             'teacher.last_name', 'teacher.first_name', 'teacher.middle_name'
         ])->values()->all();
     }
-
-    /**
-     * Получить преподов, у которых есть хоть какие-то платежи
-     *
-     */
-    private static function getTeachers($year)
-    {
-        $queries = [
-            Lesson::join('groups', 'groups.id', '=', 'lessons.group_id'),
-            Report::query(),
-            TeacherPayment::query(),
-            TeacherService::query()
-        ];
-
-        $teacherIds = collect();
-        foreach ($queries as $q) {
-            $teacherIds = $teacherIds->merge(
-                $q->where('year', $year)->pluck('teacher_id')
-            );
-        }
-
-        return Teacher::whereIn('id', $teacherIds->unique())->get();
-    }
-
 }

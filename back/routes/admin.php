@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\{BalanceController,
     TeacherPaymentController,
     TeacherServiceController,
     TeethController,
+    TelegramListController,
     TelegramMessageController,
     TestController,
     TopicController,
@@ -106,7 +107,10 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::get('people-selector', PeopleSelectorController::class);
 
+    Route::post('telegram-lists/load-people', [TelegramListController::class, 'loadPeople']);
+
     Route::apiResources([
+        'telegram-lists' => TelegramListController::class,
         'requests' => RequestsController::class,
         'clients' => ClientController::class,
         'groups' => GroupController::class,

@@ -112,4 +112,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Teacher::class);
     }
+
+    public function telegramLists(): HasMany
+    {
+        return $this->hasMany(TelegramList::class);
+    }
 }

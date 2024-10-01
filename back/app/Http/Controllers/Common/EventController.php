@@ -24,7 +24,7 @@ class EventController extends Controller
         $request->validate([
             'year' => ['required']
         ]);
-        $query = Event::withCount('participants');
+        $query = Event::withCount('participants')->latest();
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, EventListResource::class);
     }

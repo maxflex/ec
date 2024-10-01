@@ -1,5 +1,4 @@
 <script setup lang="ts">
-const { expand } = defineProps<{ expand?: boolean }>()
 const model = defineModel<any>({ required: true })
 const input = ref()
 
@@ -16,8 +15,6 @@ function clear() {
     v-model="model"
     :menu-props="{
       closeOnContentClick: true,
-      minHeight: expand ? 'auto' : undefined,
-      maxHeight: expand ? 'auto' : undefined,
     }"
   >
     <template #prepend-item>
@@ -33,5 +30,6 @@ function clear() {
         </template>
       </v-list-item>
     </template>
+    <template #no-data />
   </v-select>
 </template>

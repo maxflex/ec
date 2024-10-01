@@ -3,6 +3,7 @@ import {
   mdiAccount,
   mdiAccountGroup,
   mdiAccountMultiple,
+  mdiAccountMultipleCheck,
   mdiAccountMultipleOutline,
   mdiAlertCircleOutline,
   mdiBookOpenOutline,
@@ -19,6 +20,7 @@ import {
   mdiHistory,
   mdiHumanMaleBoard,
   mdiInbox,
+  mdiInvoiceTextSend,
   mdiLogout,
   mdiNumeric5BoxMultiple,
   mdiPrinter,
@@ -117,8 +119,18 @@ const menu: Menu = [
     to: '/grades',
   },
   {
+    icon: mdiAccountMultipleCheck,
+    title: 'Выбрать людей',
+    to: '/people-selector',
+  },
+  {
+    icon: mdiInvoiceTextSend,
+    title: 'Проекты отправок',
+    to: '/telegram-lists',
+  },
+  {
     icon: mdiSendCircle,
-    title: 'Телеграм',
+    title: 'Сообщения',
     to: '/telegram-messages',
   },
   {

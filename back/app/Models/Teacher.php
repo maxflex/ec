@@ -152,4 +152,28 @@ class Teacher extends Model implements HasTeeth
             'weight' => 499 + intval($this->lessons()->count() / 3),
         ];
     }
+
+
+    /**
+     * Получить преподов, у которых есть хоть какие-то платежи
+     *
+     */
+    public function scopeWithPayments($query, int $year)
+    {
+        $queries = [
+            Lesson::join('groups', 'groups.id', '=', 'lessons.group_id'),
+            Report::query(),
+            TeacherPayment::query(),
+            TeacherService::query()
+        ];
+
+        $teacherIds = collect();
+        foreach ($queries as $q) {
+            $teacherIds = $teacherIds->merge(
+                $q->where('year', $year)->pluck('teacher_id')
+            );
+        }
+
+        $query->whereIn('id', $teacherIds->unique());
+    }
 }

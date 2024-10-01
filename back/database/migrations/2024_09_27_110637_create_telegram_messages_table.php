@@ -1,7 +1,7 @@
 <?php
 
+use App\Enums\TelegramTemplate;
 use App\Models\Phone;
-use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,13 +13,17 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('telegram_messages');
         Schema::create('telegram_messages', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
             $table->mediumText('text');
-            // $table->morphs('entity');
             $table->foreignIdFor(Phone::class)->constrained();
-            $table->unsignedInteger('entry_id')->nullable();
-            $table->foreignIdFor(User::class)->nullable()->constrained()->default(null);
+            $table->foreignId('list_id')->nullable();
+            $table->foreign('list_id')->references('id')->on('telegram_lists');
+            $table->enum(
+                'template',
+                collect(TelegramTemplate::cases())->map(fn($e) => $e->name)->all()
+            )->nullable()->default(null);
             $table->timestamps();
         });
     }

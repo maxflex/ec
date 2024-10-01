@@ -31,6 +31,25 @@
         flex: 1;
       }
     }
+
+    &--bottom {
+      padding-bottom: 0 !important;
+
+      & > div {
+        &:last-child {
+          padding: 0 $paddingX 20px;
+          background: white;
+          box-shadow: 0 0 10px 10px white;
+          margin-left: #{-$paddingX};
+          width: calc(100% + #{$paddingX * 2});
+          position: sticky;
+          bottom: 0;
+          flex: 1;
+          display: flex;
+          align-items: flex-end;
+        }
+      }
+    }
   }
 
   &-header {
@@ -93,40 +112,17 @@
     justify-content: center;
   }
 
-  &-bottomm {
-    text-align: center;
-  }
-
-  &-bottom {
-    // padding-top: 10px;
-    text-align: right;
-    // left: #{-$paddingX};
-    // position: relative;
-    // width: calc(100% + #{$paddingX * 2});
-    // padding-right: 9px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    position: relative;
-    bottom: -10px;
-    flex: 1;
-
-    & > span {
-      font-size: 14px;
-      color: rgb(var(--v-theme-gray));
-    }
-
-    & > .v-btn {
-      right: -17px;
-      bottom: -14px;
-    }
-  }
-
+  .v-table,
   .table,
   .filters {
     left: #{-$paddingX};
     position: relative;
     width: calc(100% + #{$paddingX * 2});
+    min-width: calc(100% + #{$paddingX * 2});
+
+    td:first-child {
+      padding-left: $paddingX !important;
+    }
   }
 
   .table {

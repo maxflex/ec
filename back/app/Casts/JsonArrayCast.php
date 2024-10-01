@@ -14,10 +14,12 @@ class JsonArrayCast implements CastsAttributes
 
     public function set(Model $model, string $key, mixed $value, array $attributes): mixed
     {
-        if (is_array($value) && count($value)) {
-            // Default behavior: Encode the array to JSON
-            return json_encode($value);
+        // If the value is an empty array, store `null` in the database
+        if (is_array($value) && empty($value)) {
+            return null;
         }
-        return null;
+
+        // Otherwise, store the value as a JSON-encoded string
+        return json_encode($value);
     }
 }

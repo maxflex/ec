@@ -4,16 +4,22 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PersonResource;
+use App\Models\Teacher;
 use App\Utils\Swamp;
 use Illuminate\Http\Request;
 
 class PeopleSelectorController extends Controller
 {
-    protected $filters = [
+    protected $clientFilters = [
         'equals' => [
             'year', 'program', 'client_id', 'group_id'
         ],
-        'status' => ['status'],
+        'statuses' => ['statuses'],
+    ];
+
+    protected $teacherFilters = [
+        'equals' => ['status'],
+        'findInSet' => ['subjects'],
     ];
 
     public function __invoke(Request $request)
@@ -26,7 +32,15 @@ class PeopleSelectorController extends Controller
     private function clients(Request $request)
     {
         $query = Swamp::query();
-        $this->filter($request, $query);
+
+        $groupsQ = (clone $query)
+            ->whereNotNull('group_id')
+            ->orderBy('group_id')
+            ->groupBy('group_id');
+
+        $this->filter($request, $query, $this->clientFilters);
+
+        $this->filter(new Request($request->except('group_id')), $groupsQ, $this->clientFilters);
 
         $clientsQ = (clone $query)
             ->selectRaw("c.id, c.last_name, c.first_name, c.middle_name")
@@ -40,12 +54,7 @@ class PeopleSelectorController extends Controller
             $result->additional([
                 'extra' => [
                     'ids' => $clientsQ->pluck('c.id')->all(),
-                    'group_ids' => $query
-                        ->whereNotNull('group_id')
-                        ->groupBy('group_id')
-                        ->select('group_id')
-                        ->pluck('group_id')
-                        ->all(),
+                    'group_ids' => $groupsQ->pluck('group_id')->all(),
                 ]
             ]);
         }
@@ -55,13 +64,28 @@ class PeopleSelectorController extends Controller
 
     private function teachers(Request $request)
     {
-        $query = Swamp::query();
-        $this->filter($request, $query);
-        return 123;
+        $query = Teacher::query()
+            ->withPayments($request->year)
+            ->orderByRaw("last_name, first_name, middle_name");
+
+        $this->filter($request, $query, $this->teacherFilters);
+
+        $result = PersonResource::collection((clone $query)->paginate(30));
+
+        if (intval($request->page) === 1) {
+            $result->additional([
+                'extra' => [
+                    'ids' => $query->pluck('teachers.id')->all(),
+//                    'group_ids' => $groupsQ->pluck('group_id')->all(),
+                ]
+            ]);
+        }
+
+        return $result;
     }
 
 
-    protected function filterStatus($query, $statuses)
+    protected function filterStatuses($query, $statuses)
     {
         $query->where(function ($q) use ($statuses) {
             foreach ($statuses as $status) {

@@ -248,8 +248,25 @@ export function formatYear(year: Year): string {
   return `${year}-${year + 1} уч. г.`
 }
 
-export function formatName(person: PersonResource) {
-  return [person.last_name, person.first_name].join(' ')
+export function formatName(
+  person: PersonResource,
+  type: 'last-first' | 'full' | 'initials' = 'last-first',
+): string {
+  let name = []
+  switch (type) {
+    case 'full':
+      name = [person.last_name, person.first_name, person.middle_name]
+      break
+
+    case 'initials':
+      name = [person.last_name, `${person.first_name![0]}.`, `${person.middle_name![0]}.`]
+      break
+
+    default:
+      name = [person.last_name, person.first_name]
+  }
+
+  return name.join(' ')
 }
 
 export function formatNameInitials(person: PersonResource) {
@@ -345,4 +362,25 @@ export async function print(p: PrintOption, params: object = {}) {
       }
     }
   }, 300)
+}
+
+/**
+ * Превращает ключи с массивами в key[]
+ * для правильной интерпретации массивов PHP-бэком
+ */
+export function transformArrayKeys(obj: Record<string, any>): Record<string, any> {
+  const transformed: Record<string, any> = {}
+
+  for (const key in obj) {
+    const value = obj[key]
+
+    if (Array.isArray(value)) {
+      transformed[`${key}[]`] = value
+    }
+    else {
+      transformed[key] = value
+    }
+  }
+
+  return transformed
 }

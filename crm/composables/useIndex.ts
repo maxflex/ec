@@ -1,3 +1,5 @@
+import { transformArrayKeys } from '~/utils'
+
 export default function<T, F extends object = object, E extends object = object>(
   apiUrl: string,
   filters: Ref<F> = ref({}) as Ref<F>,
@@ -43,13 +45,14 @@ export default function<T, F extends object = object, E extends object = object>
         noData: false,
       }
     }
-    const { data } = await useHttp<ApiResponse<T[]>>(apiUrl, {
-      params: {
-        page,
-        ...staticFilters,
-        ...filters.value,
-      },
+
+    const params = transformArrayKeys({
+      page,
+      ...staticFilters,
+      ...filters.value,
     })
+
+    const { data } = await useHttp<ApiResponse<T[]>>(apiUrl, { params })
     if (data.value) {
       const { extra: e, meta, data: newItems } = data.value
       if (e) {

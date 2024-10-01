@@ -35,6 +35,7 @@ class TelegramMessageController extends Controller
 
     /**
      * Групповая отправка
+     * @TODO: снести
      */
     public function store(Request $request)
     {
