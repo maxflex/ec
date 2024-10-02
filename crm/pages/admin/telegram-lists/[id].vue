@@ -54,9 +54,25 @@ nextTick(loadData)
           <div> Отправить </div>
           <div> {{ SendToLabel[item.send_to] }} </div>
         </div>
+        <div v-if="item.event">
+          <div>Событие</div>
+          <div>
+            <RouterLink :to="`/events/${item.event.id}`">
+              {{ item.event.name }}
+            </RouterLink>
+          </div>
+        </div>
         <div>
           <div>Сообщение</div>
           <div>{{ item.text }}</div>
+          <div v-if="item.event && item.is_confirmable" class="d-flex ga-2 mt-1">
+            <v-btn variant="tonal" size="small" :rounded="false">
+              подтвердить участие
+            </v-btn>
+            <v-btn variant="tonal" size="small" :rounded="false">
+              отказаться
+            </v-btn>
+          </div>
         </div>
         <template v-for="(people, key) in item.recipients">
           <div v-if="people.length" :key="key">

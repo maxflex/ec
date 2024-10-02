@@ -42,6 +42,6 @@ enum TelegramTemplate: string
                 $report = Report::find($callbackData->id);
                 $report->read();
                 break;
-        };
+        }
     }
 }

@@ -15,7 +15,9 @@ class TelegramListController extends Controller
 
     public function index(Request $request)
     {
-        $query = TelegramList::latest();
+        $query = TelegramList::query()
+            ->with('event')
+            ->latest();
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, TelegramListResource::class);
     }

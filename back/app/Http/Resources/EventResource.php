@@ -30,7 +30,7 @@ class EventResource extends JsonResource
                 ])
                 ->values()
                 ->map(fn($p) => extract_fields($p, [
-                    'is_confirmed'
+                    'confirmation'
                 ], [
                     'entity' => new PersonResource($p->entity)
                 ]));

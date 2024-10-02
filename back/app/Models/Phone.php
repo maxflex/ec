@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EventParticipantConfirmation;
 use App\Enums\TeacherStatus;
 use App\Facades\Telegram;
 use App\Utils\Phone as UtilsPhone;
@@ -11,6 +12,8 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
+use TelegramBot\Api\Types\ReplyKeyboardRemove;
 
 class Phone extends Model implements Authenticatable
 {
@@ -148,10 +151,32 @@ class Phone extends Model implements Authenticatable
             throw new Exception('no telegram for phone id: ' . $this->id);
         }
 
+        if ($list->event_id && $list->is_confirmable) {
+            $replyMarkup = new InlineKeyboardMarkup([
+                [[
+                    'text' => '✅ подтвердить участие',
+                    'callback_data' => json_encode([
+                        'event_id' => $list->event_id,
+                        'phone_id' => $this->id,
+                        'confirmation' => EventParticipantConfirmation::confirmed->value,
+                    ])
+                ]], [[
+                    'text' => 'отказаться',
+                    'callback_data' => json_encode([
+                        'event_id' => $list->event_id,
+                        'phone_id' => $this->id,
+                        'confirmation' => EventParticipantConfirmation::rejected->value,
+                    ])
+                ]]]);
+        } else {
+            $replyMarkup = new ReplyKeyboardRemove();
+        }
+
         $message = Telegram::sendMessage(
             $this->telegram_id,
             $list->text,
             'HTML',
+            replyMarkup: $replyMarkup,
         );
 
         $this->telegramMessages()->create([

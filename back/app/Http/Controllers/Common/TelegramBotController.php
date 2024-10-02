@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Common;
 use App\Enums\TelegramTemplate;
 use App\Events\TelegramBotAdded;
 use App\Http\Controllers\Controller;
+use App\Models\EventParticipant;
 use App\Models\Phone;
 use Illuminate\Http\Request;
 use TelegramBot\Api\{Client, Exception};
@@ -45,24 +46,43 @@ class TelegramBotController extends Controller
 
             //Handle text messages
             $bot->on(function (Update $update) use ($bot) {
-                /**
-                 * Обработка шаблонов
-                 */
                 $callback = $update->getCallbackQuery();
+                /**
+                 * Обработка кнопок
+                 */
                 if ($callback !== null) {
                     $message = $callback->getMessage();
+                    $chatId = $message->getChat()->getId();
                     $bot->deleteMessage(
-                        $message->getChat()->getId(),
+                        $chatId,
                         $message->getMessageId(),
                     );
                     $data = json_decode($callback->getData());
-                    $template = TelegramTemplate::from($data->template);
-                    $template->callback($data);
-                    logger("Callback data:", $data);
+                    logger("Callback data:", (array)$data);
+                    /**
+                     * Обработка шаблонов
+                     */
+                    if (isset($data->template)) {
+                        $template = TelegramTemplate::from($data->template);
+                        $template->callback($data);
+                        return;
+                    }
+                    /**
+                     * Подтверждение событий
+                     */
+                    if (isset($data->event_id)) {
+                        EventParticipant::confirm($data);
+                        $bot->sendMessage(
+                            $chatId,
+                            view('bot.event-confirmation-result', (array)$data)
+                        );
+                        return;
+                    }
+
                     // logger("answerCallbackQuery");
                     // $bot->answerCallbackQuery(
                     //     $callbackQuery->getId(),
-                    //     'Catched the callback query!',
+                    //     'Caught the callback query!',
                     //     true,
                     // );
                     return;

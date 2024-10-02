@@ -996,6 +996,10 @@ declare global {
     scheduled_at?: string
     created_at?: string
     event_id?: number
+    event?: {
+      id: number
+      name: string
+    }
     text: string
     results?: Record<string, string[]>
   }

@@ -76,6 +76,10 @@ nextTick(loadData)
                     <v-icon :icon="mdiCheckAll" size="16" class="vfn-1 mr-1" />
                     подтвердил участие
                   </span>
+                  <span v-else-if="p.confirmation === 'rejected'" class="text-error">
+                    <v-icon icon="$close" size="16" class="vfn-1 mr-1" />
+                    отказался от участия
+                  </span>
                   <span v-else class="text-gray">
                     <v-icon icon="$complete" size="16" class="vfn-1 mr-1" />
                     не подтвердил участие
