@@ -2,6 +2,7 @@
 import { mdiCheckAll } from '@mdi/js'
 import type { TelegramListDialog } from '#components'
 
+const { $addSseListener, $removeSseListener } = useNuxtApp()
 const telegramListDialog = shallowRef<InstanceType<typeof TelegramListDialog>>()
 const route = useRoute()
 
@@ -26,6 +27,13 @@ function sendMessage() {
     teachers: teachers.map(e => e.entity.id),
   }, item.value)
 }
+
+$addSseListener('ParticipantConfirmationEvent', (data: any) => {
+  console.log('ParticipantConfirmationEvent', data)
+  loadData()
+})
+
+onUnmounted(() => $removeSseListener('ParticipantConfirmationEvent'))
 
 nextTick(loadData)
 </script>

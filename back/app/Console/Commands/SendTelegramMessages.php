@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Enums\SendTo;
+use App\Events\TelegramListSentEvent;
 use App\Models\{Client, Teacher, TelegramList};
 use DB;
 use Illuminate\Console\Command;
@@ -28,7 +29,9 @@ class SendTelegramMessages extends Command
      */
     public function handle()
     {
-        DB::table('telegram_lists')->whereId(6)->update(['is_sent' => 0]);
+        if (is_localhost()) {
+            DB::table('telegram_lists')->whereId(6)->update(['is_sent' => 0]);
+        }
         $sent = 0;
         $lists = TelegramList::query()
             ->where('is_sent', false)
@@ -63,6 +66,7 @@ class SendTelegramMessages extends Command
             }
             $list->is_sent = true;
             $list->save();
+            event(new TelegramListSentEvent($list));
         }
 
         $this->info("Sent: $sent");

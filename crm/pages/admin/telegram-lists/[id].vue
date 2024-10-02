@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
 
+const { $addSseListener, $removeSseListener } = useNuxtApp()
 const item = ref<TelegramListResource>()
 const deleting = ref(false)
 const router = useRouter()
@@ -21,6 +22,13 @@ async function destroy() {
   })
   await router.push({ name: 'telegram-lists' })
 }
+
+$addSseListener('TelegramListSentEvent', (data: any) => {
+  console.log('TelegramListSentEvent', data)
+  loadData()
+})
+
+onUnmounted(() => $removeSseListener('TelegramListSentEvent'))
 
 nextTick(loadData)
 </script>

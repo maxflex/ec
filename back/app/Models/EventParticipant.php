@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\EventParticipantConfirmation;
+use App\Events\ParticipantConfirmationEvent;
 use Illuminate\Database\Eloquent\Model;
 
 class EventParticipant extends Model
@@ -48,5 +49,7 @@ class EventParticipant extends Model
         $participant->update([
             'confirmation' => EventParticipantConfirmation::from($data->confirmation)
         ]);
+
+        event(new ParticipantConfirmationEvent($participant));
     }
 }

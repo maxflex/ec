@@ -903,7 +903,11 @@ declare global {
 
   type CallType = 'incoming' | 'outgoing'
 
-  type SseEvent = 'CallEvent' | 'CallSummaryEvent' | 'TelegramBotAdded'
+  type SseEvent = 'CallEvent'
+    | 'CallSummaryEvent'
+    | 'TelegramBotAdded'
+    | 'ParticipantConfirmationEvent'
+    | 'TelegramListSentEvent'
 
   interface CallAppPhoneResource {
     id: number

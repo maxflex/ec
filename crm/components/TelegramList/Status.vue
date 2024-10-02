@@ -12,6 +12,6 @@ const { item } = defineProps<{
     запланирована на {{ formatDateTime(item.scheduled_at) }}
   </span>
   <span v-else>
-    отправляется
+    отправляется...
   </span>
 </template>
