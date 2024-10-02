@@ -30,7 +30,7 @@ async function open(sp: SelectedPeople, year: Year) {
 
 async function select(e: EventListResource) {
   if (!confirm(`Установить участников для события ${e.name}?`)) {
-    console.log(e)
+    return
   }
   await useHttp(`event-participants`, {
     method: 'post',
