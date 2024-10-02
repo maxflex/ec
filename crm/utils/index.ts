@@ -106,17 +106,17 @@ export function currentAcademicYear(): Year {
 
 function getFiltersKey(tabName: string | null = null) {
   const route = useRoute()
-  return `filters-${tabName || ''}${String(route.name)}`
+  return [
+    'filters',
+    getEntityString(),
+   `${tabName || ''}${String(route.name)}`,
+  ].join('-')
 }
 
 /**
  * Сохранение и загрузка фильтров работает только у админа
  */
 export function saveFilters(filters: object, tabName: string | null = null): void {
-  console.log('entity', getEntityString())
-  if (getEntityString() !== 'admin') {
-    return
-  }
   localStorage.setItem(getFiltersKey(tabName), JSON.stringify(filters))
 }
 
@@ -124,9 +124,6 @@ export function saveFilters(filters: object, tabName: string | null = null): voi
  * Сохранение и загрузка фильтров работает только у админа
  */
 export function loadFilters<T>(defaultFilters: T, tabName: string | null = null): T {
-  if (getEntityString() !== 'admin') {
-    return defaultFilters
-  }
   const filters = localStorage.getItem(getFiltersKey(tabName))
   return filters === null ? defaultFilters : JSON.parse(filters)
 }

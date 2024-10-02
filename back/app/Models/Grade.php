@@ -23,7 +23,7 @@ class Grade extends Model
      * в группах, где установлена хотя бы одна четверть
      *
      */
-    public static function fakeQuery(?Teacher $teacher = null): Builder
+    public static function fakeQuery(int $teacherId = null): Builder
     {
         $cte = DB::table('lessons', 'l')
             ->whereNotNull('quarter')
@@ -43,21 +43,12 @@ class Grade extends Model
             )
             ->groupByRaw('c.client_id, cvp.program, cl.contract_version_program_id, g.year');
 
+        if ($teacherId) {
+            $cte->where('l.teacher_id', $teacherId);
+        }
+
         return DB::table('fake_grades')
             ->withExpression('fake_grades', $cte)
             ->selectRaw('*');
-    }
-
-    public function scopePrepareForUnion($query)
-    {
-        return $query->selectRaw(<<<SQL
-            id,
-            client_id,
-            program,
-            `year`,
-            `quarter`,
-            `grade`,
-            created_at
-        SQL);
     }
 }

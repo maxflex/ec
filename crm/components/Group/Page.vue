@@ -1,11 +1,11 @@
 <script setup lang="ts">
-const filters = ref({
+const filters = ref<YearFilters>(loadFilters({
   year: currentAcademicYear(),
-})
+}))
 
 const selectedProgram = ref<Program>()
 
-const { items, indexPageData } = useIndex<GroupListResource>(`groups`, filters)
+const { items, indexPageData } = useIndex<GroupListResource, YearFilters>(`groups`, filters)
 
 watch(filters.value, () => (selectedProgram.value = undefined))
 

@@ -1,5 +1,3 @@
-import { transformArrayKeys } from '~/utils'
-
 export default function<T, F extends object = object, E extends object = object>(
   apiUrl: string,
   filters: Ref<F> = ref({}) as Ref<F>,

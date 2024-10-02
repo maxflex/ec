@@ -1,11 +1,12 @@
 <script setup lang="ts">
-const filters = ref<{
+interface Filters {
   year: Year
   type?: number
-}>({
+}
+const filters = ref<Filters>(loadFilters({
   year: currentAcademicYear(),
-})
-const { items, indexPageData } = useIndex<ReportListResource>(
+}))
+const { items, indexPageData } = useIndex<ReportListResource, Filters>(
     `reports`,
     filters,
 )

@@ -11,6 +11,9 @@ use App\Models\Lesson;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin Grade
+ */
 class GradeListResource extends JsonResource
 {
     /**

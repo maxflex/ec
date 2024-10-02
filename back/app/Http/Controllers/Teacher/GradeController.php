@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Teacher;
 
-use App\Enums\Program;
 use App\Enums\Quarter;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\GradeListResource;
@@ -14,25 +13,13 @@ use Illuminate\Validation\Rule;
 class GradeController extends Controller
 {
     protected $filters = [
-        'equals' => [
-            'year', 'program', 'client_id', 'quarter'
-        ],
-        'type' => ['type']
+        'equals' => ['year', 'program', 'client_id'],
     ];
 
     public function index(Request $request)
     {
-        $query = Grade::query()
-            ->latest()
-            ->prepareForUnion()
-            ->with(['client']);
-
-        $fakeQuery = Grade::fakeQuery(auth()->user()->entity);
-
+        $query = Grade::fakeQuery(auth()->id());
         $this->filter($request, $query);
-        $this->filter($request, $fakeQuery);
-
-        $query->union($fakeQuery);
 
         return $this->handleIndexRequest($request, $query, GradeListResource::class);
     }
@@ -43,13 +30,18 @@ class GradeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'client_id' => ['required', 'exists:clients,id'],
-            'program' => [Rule::enum(Program::class)],
+            'id' => ['required'],
             'quarter' => [Rule::enum(Quarter::class)],
-            'year' => ['required', 'numeric', 'gt:0'],
             'grade' => ['required', 'numeric', 'gt:0']
         ]);
-        $grade = Grade::create($request->all());
+        [$clientId, $year, $program] = explode('-', $request->id);
+        $grade = Grade::create([
+            'client_id' => $clientId,
+            'year' => $year,
+            'program' => $program,
+            'quarter' => $request->quarter,
+            'grade' => $request->grade,
+        ]);
         return new GradeListResource($grade);
     }
 
@@ -59,18 +51,15 @@ class GradeController extends Controller
         return new GradeListResource($grade);
     }
 
-    public function show(Grade $grade)
+    public function show($id)
     {
+        $grade = Grade::fakeQuery(auth()->id())->whereId($id)->first();
+        abort_if($grade === null, 404);
         return new GradeResource($grade);
     }
 
     public function destroy(Grade $grade)
     {
         $grade->delete();
-    }
-
-    protected function filterType(&$query, $type)
-    {
-        $type ? $query->whereNotNull('id') : $query->whereNull('id');
     }
 }
