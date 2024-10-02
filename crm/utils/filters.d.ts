@@ -79,7 +79,6 @@ declare global {
 
   interface TelegramMessageFilters {
     template?: TelegramTemplate
-    type?: number
   }
 
   interface WebReviewFilters {

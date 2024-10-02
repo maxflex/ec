@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { EventDialog, EventParticipantsDialog } from '#components'
+import type { EventDialog } from '#components'
 
 interface Filters {
   year: Year
@@ -11,7 +11,6 @@ const filters = ref<Filters>(loadFilters({
   year: currentAcademicYear(),
 }))
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
-const eventParticipantsDialog = ref<InstanceType<typeof EventParticipantsDialog>>()
 let scrollContainer: HTMLElement | null = null
 
 async function loadData() {
@@ -96,9 +95,7 @@ nextTick(loadData)
       :items="items"
       :year="filters.year"
       @edit="eventDialog?.edit"
-      @participants="eventParticipantsDialog?.open"
     />
   </div>
   <EventDialog ref="eventDialog" @updated="onUpdated" @deleted="onDeleted" />
-  <EventParticipantsDialog ref="eventParticipantsDialog" />
 </template>

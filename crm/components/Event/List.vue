@@ -8,7 +8,6 @@ const props = defineProps<{
 }>()
 defineEmits<{
   edit: [e: EventListResource]
-  participants: [e: EventListResource]
 }>()
 const { items, year } = toRefs(props)
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
@@ -49,7 +48,6 @@ const eventsByDate = computed(() => groupBy(x => x.date, items.value))
         :key="e.id"
         :item="e"
         @edit="x => $emit('edit', x)"
-        @participants="x => $emit('participants', x)"
       />
     </div>
   </div>

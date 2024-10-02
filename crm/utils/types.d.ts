@@ -704,19 +704,6 @@ declare global {
     }
   }
 
-  interface EventParticipant {
-    id: number
-    confirmation: EventParticipantConfirmation
-    entity_id: number
-    entity_type: typeof EntityType.client | typeof EntityType.teacher
-    entity: PersonWithPhotoResource
-  }
-
-  interface EventWithParticipantsResource {
-    id: number
-    participants: EventParticipant[]
-  }
-
   interface TopicListResource {
     id: number
     teacher: PersonResource

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\TelegramTemplate;
 use App\Facades\Telegram;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TelegramMessage extends Model
 {
@@ -14,14 +15,9 @@ class TelegramMessage extends Model
         'id', 'text', 'phone_id', 'list_id', 'template',
     ];
 
-    public function phone()
+    public function phone(): BelongsTo
     {
         return $this->belongsTo(Phone::class);
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
     }
 
     /**

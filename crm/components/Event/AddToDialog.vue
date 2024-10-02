@@ -32,13 +32,16 @@ async function select(e: EventListResource) {
   if (!confirm(`Установить участников для события ${e.name}?`)) {
     return
   }
-  await useHttp(`event-participants`, {
-    method: 'post',
-    body: {
-      id: e.id,
-      selected: selected.value,
-    },
-  })
+  await useHttp(
+      `event-participants`,
+      {
+        method: 'post',
+        body: {
+          id: e.id,
+          selected: selected.value,
+        },
+      },
+  )
   await router.push({ name: 'events-id', params: { id: e.id } })
   dialog.value = false
 }
