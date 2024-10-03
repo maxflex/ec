@@ -776,14 +776,14 @@ declare global {
 
   interface TelegramMessageResource {
     id: number
-    entry_id: number
+    list_id: number
     text: string
-    user: PersonWithPhotoResource | null
     template: TelegramTemplate | null
     phone: {
       id: number
       number: string
-      entity: PersonWithPhotoResource
+      entity_type: string
+      entity: PersonResource
     }
     created_at: string
   }

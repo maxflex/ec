@@ -104,7 +104,7 @@ defineExpose({ open })
       <UiLoader v-if="loading" />
       <div v-else class="dialog-body dialog-body--bottom">
         <div v-if="event">
-          <v-select label="Событие" :model-value="event.name" readonly />
+          <v-select label="Событие" :model-value="event.name" disabled />
           <v-checkbox
             v-model="item.is_confirmable"
             label="Запросить подтверждение"

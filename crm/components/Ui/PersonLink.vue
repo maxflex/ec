@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { item, type } = defineProps<{
-  type: 'teachers' | 'clients'
+  type: string
   item: PersonResource
 }>()
 </script>

@@ -7,12 +7,8 @@ const { items } = defineProps<{
 <template>
   <div class="table telegram-message-list">
     <div v-for="m in items" :key="m.id">
-      <!-- <div style="width: 30px">
-        {{ m.id }}
-      </div> -->
       <div class="telegram-message-list__avatar-name">
-        <UiAvatar :item="m.phone.entity" :size="40" />
-        {{ formatName(m.phone.entity) }}
+        <UiPersonLink :item="m.phone.entity" :type="m.phone.entity_type" />
       </div>
       <div style="width: 170px">
         {{ formatPhone(m.phone.number) }}
@@ -20,9 +16,9 @@ const { items } = defineProps<{
       <div style="flex: 1" class="text-truncate">
         {{ m.text }}
       </div>
-      <div v-if="m.entry_id" style="width: 100px">
+      <div v-if="m.list_id" style="width: 100px">
         <v-chip class="text-purple">
-          группа {{ m.entry_id }}
+          группа {{ m.list_id }}
         </v-chip>
       </div>
       <div v-if="m.template">

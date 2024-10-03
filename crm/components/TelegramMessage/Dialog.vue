@@ -84,11 +84,11 @@ defineExpose({ open })
         tag="div"
       >
         <div v-for="m in telegramMessages" :key="m.id" class="telegram-message">
-          <UiAvatar :item="m.user || m.phone.entity" :size="46" />
+          <UiEcAvatar :size="46" />
           <div>
             <div class="telegram-message__title">
               <span>
-                {{ formatName(m.user || m.phone.entity) }}
+                {{ formatName(m.phone.entity) }}
               </span>
               <span v-if="m.created_at">
                 {{ formatDateTime(m.created_at) }}
@@ -231,20 +231,6 @@ defineExpose({ open })
         opacity: 1;
       }
     }
-  }
-}
-.telegram-btn {
-  &-enter-active {
-    transition: all 0.3s linear;
-    transform-origin: center center;
-  }
-  &-leave-active {
-    transition: none !important;
-  }
-  &-enter-from {
-    opacity: 0;
-    // transform: scale(0.5);
-    transform: translateX(-10px);
   }
 }
 </style>

@@ -32,6 +32,14 @@ const { items } = defineProps<{
           </span>
         </template>
       </div>
+      <div style="width: 300px">
+        <span v-if="item.scheduled_at">
+          запланирована на {{ formatDateTime(item.scheduled_at) }}
+        </span>
+        <span v-else>
+          мгновенная отправка
+        </span>
+      </div>
       <div>
         <TelegramListStatus :item="item" />
       </div>
