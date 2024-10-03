@@ -137,7 +137,6 @@ function onDragging(evt: DragEvent) {
   }
 
   const distanceDragged = clientY - dragStartY
-  console.log(distanceDragged)
   isOverDeleteThreshold.value = distanceDragged > dragThreshold
 }
 
@@ -157,7 +156,7 @@ function onDragEnd() {
       </div>
       <VueDraggableNext
         v-model="metrics"
-        :delay="0"
+        :remove-clone-on-hide="true"
         :animation="200"
         :class="{
           'table-stats__header-metrics--dragging': isDragging,
@@ -272,17 +271,6 @@ function onDragEnd() {
       &--will-be-deleted {
         background: rgb(var(--v-theme-error)) !important;
         color: white;
-      }
-      .v-icon {
-        position: absolute;
-        right: 0;
-        top: 0;
-        font-size: 20px;
-        color: rgb(var(--v-theme-border));
-        opacity: 0;
-        &:hover {
-          color: rgb(var(--v-theme-error));
-        }
       }
     }
     &-add,
