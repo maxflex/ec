@@ -12,15 +12,17 @@ class PeopleSelectorController extends Controller
 {
     protected $clientFilters = [
         'equals' => [
-            'year', 'program', 'client_id', 'group_id'
+            'year', 'client_id', 'group_id'
         ],
         'statuses' => ['statuses'],
+        'findInSet' => ['program'],
     ];
 
     protected $teacherFilters = [
         'equals' => ['status'],
         'findInSet' => ['subjects'],
     ];
+
 
     public function __invoke(Request $request)
     {

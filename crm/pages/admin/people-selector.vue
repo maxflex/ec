@@ -6,7 +6,7 @@ const eventAddToDialog = shallowRef<InstanceType<typeof EventAddToDialog>>()
 const filters = ref<PeopleSelectorFilters>({
   mode: 'clients',
   year: 2023,
-  programs: [],
+  program: [],
   statuses: [],
   subjects: [],
 })

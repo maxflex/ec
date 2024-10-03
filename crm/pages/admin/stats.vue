@@ -19,6 +19,10 @@ const items = ref<StatsListResource[]>([])
 const page = ref<number>(0)
 
 const isDragging = ref(false)
+const isOverDeleteThreshold = ref(false)
+const draggedIndex = ref(0)
+let dragStartY: number = 0
+const dragThreshold = 300
 
 let scrollContainer: HTMLElement | null = null
 
@@ -31,8 +35,7 @@ function onMetricsSelected(items: StatsMetric[]) {
   }
 }
 
-function deleteMetric(index: number, event: MouseEvent) {
-  event.stopPropagation()
+function deleteMetric(index: number) {
   metrics.value.splice(index, 1)
 }
 
@@ -112,6 +115,35 @@ onMounted(() => {
 onUnmounted(() => {
   scrollContainer?.removeEventListener('scroll', onScroll)
 })
+
+// Methods
+function onDragStart(evt: any) {
+  isDragging.value = true
+  dragStartY = (evt.originalEvent as DragEvent).clientY
+  draggedIndex.value = evt.oldIndex
+  isOverDeleteThreshold.value = false
+}
+
+function onDragging(evt: DragEvent) {
+  const { x, y, clientX, clientY } = evt
+
+  // Это dragEnd
+  if (x === 0 && y === 0 && clientX === 0 && clientY === 0) {
+    if (isOverDeleteThreshold.value) {
+      deleteMetric(draggedIndex.value)
+    }
+    isOverDeleteThreshold.value = false
+    return
+  }
+
+  const distanceDragged = clientY - dragStartY
+  console.log(distanceDragged)
+  isOverDeleteThreshold.value = distanceDragged > dragThreshold
+}
+
+function onDragEnd() {
+  isDragging.value = false
+}
 </script>
 
 <template>
@@ -125,20 +157,23 @@ onUnmounted(() => {
       </div>
       <VueDraggableNext
         v-model="metrics"
+        :delay="0"
         :animation="200"
         :class="{
           'table-stats__header-metrics--dragging': isDragging,
         }"
         class="table-stats__header-metrics"
         direction="horizontal"
-        @end="() => (isDragging = false)"
-        @start="() => (isDragging = true)"
+        @start="onDragStart"
+        @end="onDragEnd"
+        @drag="onDragging"
       >
         <div
           v-for="(metric, index) in metrics"
           :key="index"
           :class="{
             'table-stats__header-metric--has-items': hasFilters(metric),
+            'table-stats__header-metric--will-be-deleted': isOverDeleteThreshold && draggedIndex === index,
           }"
           :style="getWidth(metric)"
           class="table-stats__header-metric"
@@ -147,7 +182,6 @@ onUnmounted(() => {
           <span>
             {{ Metrics[metric.metric].label }}
           </span>
-          <v-icon icon="$close" @click="deleteMetric(index, $event)" />
         </div>
       </VueDraggableNext>
       <div class="table-stats__header-add" @click="metricSelectorDialog?.open()">
@@ -234,6 +268,10 @@ onUnmounted(() => {
             background: rgb(var(--v-theme-error));
           }
         }
+      }
+      &--will-be-deleted {
+        background: rgb(var(--v-theme-error)) !important;
+        color: white;
       }
       .v-icon {
         position: absolute;

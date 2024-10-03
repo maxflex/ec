@@ -110,7 +110,7 @@ declare global {
   interface PeopleSelectorFilters {
     mode: 'clients' | 'teachers'
     year: Year
-    programs: Program[]
+    program: Program[]
     statuses: SwampFilterStatus[]
     group_id?: number
     status?: TeacherStatus
