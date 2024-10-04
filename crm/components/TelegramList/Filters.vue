@@ -4,9 +4,9 @@ const model = defineModel<TelegramListFilters>({ required: true })
 
 <template>
   <UiClearableSelect
-    v-model="model.is_sent"
-    :items="yesNo('да', 'нет')"
-    label="Отправлено"
+    v-model="model.status"
+    :items="selectItems(TelegramListStatusLabel)"
+    label="Статус"
     density="comfortable"
   />
 </template>

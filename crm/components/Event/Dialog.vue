@@ -29,8 +29,7 @@ function create(year: Year) {
   dialog.value = true
 }
 
-async function edit(e: EventListResource) {
-  const { id } = e
+async function edit(id: number) {
   itemId.value = id
   loading.value = true
   dialog.value = true

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiHistory, mdiSend } from '@mdi/js'
+import { mdiHistory, mdiPhone } from '@mdi/js'
 import type { TelegramMessageDialog } from '#build/components'
 import { openCallApp } from '~/components/CallApp'
 
@@ -56,10 +56,9 @@ function highlight(text: string, _q: string) {
         />
       </div>
       <div class="phone-list__actions">
-        <v-icon :icon="mdiHistory" @click.stop="openCallApp(p.number)" />
+        <v-icon :icon="mdiPhone" @click.stop="openCallApp(p.number)" />
         <v-icon
-          :icon="mdiSend"
-          :class="{ 'opacity-disabled': !p.telegram_id }"
+          :icon="mdiHistory"
           @click.stop="telegramMessageDialog?.open(p, person)"
         />
       </div>

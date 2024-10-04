@@ -35,12 +35,6 @@ class EventController extends Controller
     public function store(Request $request)
     {
         $event = auth()->user()->entity->events()->create($request->all());
-        foreach ($request->participants as $p) {
-            $event->participants()->create([
-                'entity_id' => $p['id'],
-                'entity_type' => $p['entity_type']
-            ]);
-        }
         $event->loadCount('participants');
         return new EventListResource($event);
     }
@@ -60,13 +54,6 @@ class EventController extends Controller
     public function update(Request $request, Event $event)
     {
         $event->update($request->all());
-        $event->participants()->delete();
-        foreach ($request->participants as $p) {
-            $event->participants()->create([
-                'entity_id' => $p['id'],
-                'entity_type' => $p['entity_type']
-            ]);
-        }
         $event->loadCount('participants');
         return new EventListResource($event);
     }

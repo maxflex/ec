@@ -57,10 +57,11 @@ const statusPresets: Array<{
       <template #presets>
         <a
           v-for="(preset, i) in programPresets" :key="i"
-          @click="model.programs = preset.program"
+          @click="model.program = preset.program"
         >
           {{ preset.label }}
         </a>
+        <a @click="model.program = []">очистить</a>
       </template>
     </UiMultipleSelect>
     <UiMultipleSelect
@@ -76,6 +77,7 @@ const statusPresets: Array<{
         >
           {{ preset.label }}
         </a>
+        <a @click="model.statuses = []">очистить</a>
       </template>
     </UiMultipleSelect>
     <UiClearableSelect

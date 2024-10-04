@@ -582,7 +582,13 @@ export const SendToLabel = {
 export const EventParticipantConfirmationLabel = {
   pending: 'не подтвердил участие',
   confirmed: 'подтвердил участие',
-  rejected: 'отказался',
+  rejected: 'отказался от участия',
 } as const
+
+export const TelegramListStatusLabel = {
+  scheduled: 'запланировано',
+  sending: 'отправляется',
+  sent: 'отправлено',
+}
 
 export const ErrorCodeLabel = [1000] as const

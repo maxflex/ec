@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class TelegramListController extends Controller
 {
     protected $filters = [
-        'equals' => ['is_sent']
+        'equals' => ['status']
     ];
 
     public function index(Request $request)

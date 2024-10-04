@@ -26,7 +26,7 @@ class EventParticipantController extends Controller
     }
 
     /**
-     * Сохранить участников в EventParticipantsDialog
+     * Сохранить участников из people-selector
      */
     public function store(Request $request)
     {

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { mdiCheckAll } from '@mdi/js'
-import type { TelegramListDialog } from '#components'
+import type { EventDialog } from '#components'
 
+const eventDialog = ref<InstanceType<typeof EventDialog>>()
 const { $addSseListener, $removeSseListener } = useNuxtApp()
-const telegramListDialog = shallowRef<InstanceType<typeof TelegramListDialog>>()
 const route = useRoute()
 
 const item = ref<EventResource>()
@@ -17,15 +17,12 @@ async function loadData() {
   }
 }
 
-function sendMessage() {
-  if (!item.value) {
-    return
-  }
-  const { clients, teachers } = item.value.recipients!
-  telegramListDialog.value?.open({
-    clients: clients.map(e => e.entity.id),
-    teachers: teachers.map(e => e.entity.id),
-  }, item.value)
+function setParticipantConfirmation(p: EventParticipant, confirmation: EventParticipantConfirmation) {
+  p.confirmation = confirmation
+  useHttp(`event-participants/${p.id}`, {
+    method: 'put',
+    body: { confirmation },
+  })
 }
 
 $addSseListener('ParticipantConfirmationEvent', (data: any) => {
@@ -42,9 +39,17 @@ nextTick(loadData)
   <v-fade-transition>
     <UiLoader v-if="item === undefined" />
     <div v-else class="show">
-      <h2>
-        {{ item.name }}
-      </h2>
+      <div class="show__title">
+        <h2>
+          {{ item.name }}
+        </h2>
+        <v-btn
+          variant="plain"
+          icon="$edit"
+          :size="48"
+          @click="eventDialog?.edit(item.id)"
+        />
+      </div>
       <div class="show__content">
         <div>
           <div>
@@ -69,42 +74,72 @@ nextTick(loadData)
             {{ item.is_afterclass ? 'внеклассное' : 'учебное' }} событие
           </div>
         </div>
-        <template v-for="(people, key) in item.recipients">
-          <div v-if="people.length" :key="key">
-            <div>
+        <template v-for="(participants, key) in item.participants">
+          <div v-if="participants.length" :key="key">
+            <div class="mb-1">
               {{ key === 'clients' ? 'Клиенты' : 'Преподаватели' }}
             </div>
-            <div class="table table--padding">
-              <div v-for="p in people" :key="p.id">
-                <div style="width: 380px">
-                  <UiPersonLink :item="p.entity" :type="key" />
-                </div>
-                <div>
-                  <span v-if="p.confirmation === 'confirmed'" class="text-success">
-                    <v-icon :icon="mdiCheckAll" size="16" class="vfn-1 mr-1" />
-                    подтвердил участие
-                  </span>
-                  <span v-else-if="p.confirmation === 'rejected'" class="text-error">
-                    <v-icon icon="$close" size="16" class="vfn-1 mr-1" />
-                    отказался от участия
-                  </span>
-                  <span v-else class="text-gray">
-                    <v-icon icon="$complete" size="16" class="vfn-1 mr-1" />
-                    не подтвердил участие
-                  </span>
-                </div>
-              </div>
-            </div>
+            <v-table>
+              <tbody>
+                <tr v-for="p in participants" :key="p.id">
+                  <td style="width: 400px" class="pl-5">
+                    <UiPersonLink :item="p.entity" :type="key" />
+                  </td>
+                  <td>
+                    <v-menu>
+                      <template #activator="{ props }">
+                        <span v-bind="props" class="cursor-pointer">
+                          <span
+                            :class="{
+                              'text-success': p.confirmation === 'confirmed',
+                              'text-error': p.confirmation === 'rejected',
+                              'text-gray': p.confirmation === 'pending',
+                            }"
+                          >
+                            <v-icon
+                              :icon="p.confirmation === 'confirmed' ? mdiCheckAll : (p.confirmation === 'rejected' ? '$close' : '$complete')"
+                              size="16"
+                              class="vfn-1 mr-1"
+                            />
+                            {{ EventParticipantConfirmationLabel[p.confirmation] }}
+                          </span>
+                        </span>
+                      </template>
+                      <v-list>
+                        <v-list-item
+                          v-for="(label, confirmation) in EventParticipantConfirmationLabel"
+                          :key="confirmation"
+                          :class="{ 'text-gray': confirmation === 'pending' }"
+                          @click="setParticipantConfirmation(p, confirmation)"
+                        >
+                          {{ label }}
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </td>
+                </tr>
+              </tbody>
+            </v-table>
           </div>
         </template>
       </div>
-      <v-btn color="secondary" class="mt-8" @click="sendMessage()">
+      <v-btn
+        v-if="item?.participants?.clients.length || item?.participants?.teachers.length"
+        color="secondary"
+        class="mt-8"
+        :to="{
+          name: 'people-selector-send',
+          query: {
+            event_id: item.id,
+          },
+        }"
+      >
         сообщение участникам
         <template #append>
-          <v-icon icon="$send" />
+          <v-icon icon="$next" />
         </template>
       </v-btn>
     </div>
   </v-fade-transition>
-  <TelegramListDialog ref="telegramListDialog" />
+  <EventDialog ref="eventDialog" @updated="loadData()" />
 </template>

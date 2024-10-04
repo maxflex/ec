@@ -9,7 +9,7 @@ const modelDefaults: TelegramListResource = {
   send_to: 'studentsAndParents',
   is_confirmable: false,
   text: '',
-  is_sent: false,
+  status: 'scheduled',
   recipients: {
     clients: [],
     teachers: [],

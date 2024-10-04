@@ -42,7 +42,7 @@ nextTick(loadData)
           Отправка от {{ formatDateTime(item.created_at!) }}
         </h2>
         <v-btn
-          v-if="!item.is_sent"
+          v-if="item.status === 'scheduled'"
           icon="$delete"
           :size="48"
           :loading="deleting"
@@ -59,7 +59,18 @@ nextTick(loadData)
           </div>
         </div>
         <div>
-          <div> Отправить </div>
+          <div>Время</div>
+          <div>
+            <template v-if="item.scheduled_at">
+              запланирована на {{ formatDateTime(item.scheduled_at) }}
+            </template>
+            <template v-else>
+              мгновенная отправка
+            </template>
+          </div>
+        </div>
+        <div>
+          <div> Отправка клиенту </div>
           <div> {{ SendToLabel[item.send_to] }} </div>
         </div>
         <div v-if="item.event">
@@ -92,21 +103,56 @@ nextTick(loadData)
                 <div style="width: 380px">
                   <UiPersonLink :item="p" :type="key" />
                 </div>
-                <div style="width: 200px">
-                  <template v-if="item?.results">
-                    <span v-if="item.results[`${key}-${p.id}`].length === 0" class="text-error">
-                      не доставлено
-                    </span>
-                    <div class="telegram-list__numbers">
-                      <div v-for="number in item.results[`${key}-${p.id}`]" :key="number">
-                        <span>доставлено</span>
-                        <a :href="`tel:${number}`">
-                          {{ formatPhone(number as string) }}
-                        </a>
-                      </div>
+                <template v-if="item?.results">
+                  <div style="width: 250px">
+                    <div
+                      v-if="key === 'clients' && item.send_to === 'parents'"
+                      :class="{
+                        'opacity-5': item.status !== 'sent',
+                      }"
+                      class="text-gray"
+                    >
+                      не отправлялось
                     </div>
-                  </template>
-                </div>
+                    <template v-else>
+                      <div
+                        v-for="r in item.results[`${key}-${p.id}`].filter(e => !e.is_parent)"
+                        :key="r.id"
+                        :class="{
+                          'opacity-5': item.status !== 'sent',
+                          'text-success': r.is_sent,
+                          'text-error': !r.is_sent,
+                        }"
+                      >
+                        {{ formatPhone(r.number) }}
+                      </div>
+                    </template>
+                  </div>
+                  <div v-if="key === 'clients'">
+                    <div
+                      v-if="item.send_to === 'students'"
+                      class="text-gray"
+                      :class="{
+                        'opacity-5': item.status !== 'sent',
+                      }"
+                    >
+                      не отправлялось
+                    </div>
+                    <template v-else>
+                      <div
+                        v-for="r in item.results[`${key}-${p.id}`].filter(e => e.is_parent)"
+                        :key="r.id"
+                        :class="{
+                          'opacity-5': item.status !== 'sent',
+                          'text-success': r.is_sent,
+                          'text-error': !r.is_sent,
+                        }"
+                      >
+                        {{ formatPhone(r.number) }}
+                      </div>
+                    </template>
+                  </div>
+                </template>
               </div>
             </div>
           </div>

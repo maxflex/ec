@@ -18,9 +18,9 @@ class EventResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $recipients = [];
+        $participants = [];
         foreach (['clients', 'teachers'] as $key) {
-            $recipients[$key] = $this->participants()
+            $participants[$key] = $this->participants()
                 ->with('entity')
                 ->where('entity_type', $key === 'clients' ? Client::class : Teacher::class)
                 ->get()
@@ -37,7 +37,7 @@ class EventResource extends JsonResource
         }
         return extract_fields($this, ['*'], [
             'user' => new PersonResource($this->user),
-            'recipients' => $recipients,
+            'participants' => $participants,
         ]);
     }
 }

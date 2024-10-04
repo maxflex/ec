@@ -118,7 +118,7 @@ declare global {
   }
 
   interface TelegramListFilters {
-    is_sent?: boolean
+    status?: TelegramListStatus
   }
 }
 

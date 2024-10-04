@@ -8,6 +8,7 @@ function addPhone() {
     number: '',
     comment: '',
     is_verified: false,
+    telegram_id: null,
   })
 }
 

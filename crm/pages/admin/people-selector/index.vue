@@ -20,30 +20,48 @@ const { items, extra, indexPageData } = useIndex<
     filters,
 )
 
-const selected = reactive<SelectedPeople>({
+const selected = ref<SelectedPeople>({
   clients: [],
   teachers: [],
 })
 
-const selectedTotal = computed(() => selected.clients.length + selected.teachers.length)
+const selectedTotal = computed(() => {
+  const { clients, teachers } = selected.value
+  return clients.length + teachers.length
+})
 
-const isSelectedAll = computed(() => selected[filters.value.mode].length === extra.value.ids.length)
+const isSelectedAll = computed(() => selected.value[filters.value.mode].length === extra.value.ids.length)
 
 function select(item: PersonResource) {
-  const index = selected[filters.value.mode].findIndex(id => id === item.id)
+  const index = selected.value[filters.value.mode].findIndex(id => id === item.id)
   index === -1
-    ? selected[filters.value.mode].push(item.id)
-    : selected[filters.value.mode].splice(index, 1)
+    ? selected.value[filters.value.mode].push(item.id)
+    : selected.value[filters.value.mode].splice(index, 1)
 }
 
 function selectAll() {
-  selected[filters.value.mode] = isSelectedAll.value ? [] : [...extra.value.ids]
+  selected.value[filters.value.mode] = isSelectedAll.value ? [] : [...extra.value.ids]
 }
 
 function clearSelection() {
-  selected.clients = []
-  selected.teachers = []
+  selected.value = {
+    clients: [],
+    teachers: [],
+  }
 }
+
+watch(selected, (newVal) => {
+  selectedTotal.value === 0
+    ? localStorage.removeItem('selected-people')
+    : localStorage.setItem('selected-people', JSON.stringify(newVal))
+}, { deep: true })
+
+nextTick(() => {
+  const selectedPeople = localStorage.getItem('selected-people')
+  if (selectedPeople) {
+    selected.value = JSON.parse(selectedPeople) as SelectedPeople
+  }
+})
 </script>
 
 <template>
@@ -95,14 +113,13 @@ function clearSelection() {
         выбрано: {{ selectedTotal }}
       </div>
       <div>
-        <!--        <v-btn variant="text" icon="$close" :size="44" @click="clearSelection()" /> -->
         <v-btn variant="text" @click="eventAddToDialog?.open(selected, filters.year)">
           добавить к событию
         </v-btn>
-        <v-btn color="secondary" @click="() => telegramListDialog?.open(selected)">
+        <v-btn color="secondary" :to="{ name: 'people-selector-send' }">
           отправить
           <template #append>
-            <v-icon icon="$send" />
+            <v-icon icon="$next" />
           </template>
         </v-btn>
       </div>

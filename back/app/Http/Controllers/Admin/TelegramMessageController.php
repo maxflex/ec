@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class TelegramMessageController extends Controller
 {
     protected $filters = [
-        'equals' => ['phone_id', 'template'],
+        'equals' => ['number', 'template'],
     ];
 
     /**
@@ -18,10 +18,7 @@ class TelegramMessageController extends Controller
      */
     public function index(Request $request)
     {
-        $query = TelegramMessage::with(['phone', 'phone.entity']);
-        if (!$request->has('phone_id')) {
-            $query->latest();
-        }
+        $query = TelegramMessage::with(['entity']);
         $this->filter($request, $query);
         return $this->handleIndexRequest(
             $request,

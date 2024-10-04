@@ -1,6 +1,8 @@
 import type Metrics from '~/components/Stats/Metrics'
 
 declare global {
+  type TelegramListStatus = keyof typeof TelegramListStatusLabel
+
   type EventParticipantConfirmation = keyof typeof EventParticipantConfirmationLabel
 
   type SendTo = keyof typeof SendToLabel
@@ -679,6 +681,12 @@ declare global {
     }
   }
 
+  interface EventParticipant {
+    id: number
+    confirmation: EventParticipantConfirmation
+    entity: PersonResource
+  }
+
   interface EventResource {
     id: number
     name: string
@@ -690,17 +698,9 @@ declare global {
     is_afterclass: boolean
     user?: PersonResource
     created_at?: string
-    recipients?: {
-      clients: Array<{
-        id: number
-        confirmation: EventParticipantConfirmation
-        entity: PersonResource
-      }>
-      teachers: Array<{
-        id: number
-        confirmation: EventParticipantConfirmation
-        entity: PersonResource
-      }>
+    participants?: {
+      clients: EventParticipant[]
+      teachers: EventParticipant[]
     }
   }
 
@@ -779,12 +779,10 @@ declare global {
     list_id: number
     text: string
     template: TelegramTemplate | null
-    phone: {
-      id: number
-      number: string
-      entity_type: string
-      entity: PersonResource
-    }
+    entity: PersonResource
+    entity_type: string
+    number: string
+    telegram_id: ?number
     created_at: string
   }
 
@@ -978,10 +976,17 @@ declare global {
     teachers: PersonResource[]
   }
 
+  interface TelegramListResult {
+    id: number
+    is_sent: boolean
+    is_parent: boolean
+    number: string
+  }
+
   interface TelegramListResource {
     id: number
     send_to: SendTo
-    is_sent: boolean
+    status: TelegramListStatus
     is_confirmable: boolean
     recipients: PeopleResource
     scheduled_at?: string
@@ -992,7 +997,7 @@ declare global {
       name: string
     }
     text: string
-    results?: Record<string, string[]>
+    results?: { [key: string]: TelegramListResult[] }
   }
 }
 

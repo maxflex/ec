@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { mdiSendCircle } from '@mdi/js'
+import { mdiAlertCircleOutline, mdiCheckAll, mdiSendCircle } from '@mdi/js'
 
 const { dialog, width } = useDialog('default')
 const telegramMessages = ref<TelegramMessageResource[]>([])
-const input = ref()
 const wrapper = ref<HTMLDivElement | null>(null)
 const noScroll = ref(false)
 const loaded = ref(false)
@@ -17,7 +16,6 @@ function scrollBottom() {
       top: 99999,
       behavior: noScroll.value ? 'instant' : 'smooth',
     })
-    input.value.focus()
   })
 }
 
@@ -33,7 +31,7 @@ async function loadData() {
     'telegram-messages',
     {
       params: {
-        phone_id: phone.value?.id,
+        number: phone.value!.number,
       },
     },
   )
@@ -78,6 +76,8 @@ defineExpose({ open })
         </span>
       </div>
 
+      <UiNoData v-if="loaded && telegramMessages.length === 0" />
+
       <transition-group
         name="new-telegram"
         class="telegram-messages__items"
@@ -88,11 +88,13 @@ defineExpose({ open })
           <div>
             <div class="telegram-message__title">
               <span>
-                {{ formatName(m.phone.entity) }}
+                {{ formatName(m.entity) }}
               </span>
               <span v-if="m.created_at">
                 {{ formatDateTime(m.created_at) }}
               </span>
+              <v-icon v-if="m.telegram_id" color="success" :icon="mdiCheckAll" :size="14" />
+              <v-icon v-else color="error" :icon="mdiAlertCircleOutline" :size="14" />
             </div>
             {{ m.text }}
           </div>
@@ -136,41 +138,6 @@ defineExpose({ open })
     padding: $padding;
     & > div {
       margin-bottom: 16px;
-    }
-  }
-  &__input {
-    display: flex;
-    z-index: 1;
-    border-top: 1px solid #e0e0e0;
-    padding: $padding;
-    // min-height: 65px;
-    // height: 65px;
-    // max-height: 65px;
-    position: sticky;
-    bottom: 0;
-    background: white;
-    .v-btn {
-      position: relative;
-      top: 4px;
-    }
-    & textarea {
-      max-height: 100px;
-      // transition: all linear 0.075s;
-      overflow-y: auto;
-      scrollbar-width: none; /** ff */
-      -ms-overflow-style: none; /** ie */
-      font-weight: 400;
-      line-height: 18px !important;
-      top: 2px;
-      position: relative;
-      padding: 15px 8px 0 !important;
-      &::-webkit-scrollbar {
-        width: 0; /** webkit */
-      }
-    }
-
-    .v-field__outline {
-      display: none !important;
     }
   }
   &-wrapper {

@@ -2,6 +2,9 @@
 
 namespace App\Traits;
 
+/**
+ * TODO: переделать
+ */
 trait RelationSyncable
 {
     public function syncRelation($data, string $relation)

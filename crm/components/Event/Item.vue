@@ -4,7 +4,7 @@ import { mdiAccountGroup, mdiCheckAll } from '@mdi/js'
 const { item } = defineProps<{ item: EventListResource }>()
 
 defineEmits<{
-  edit: [e: EventListResource]
+  edit: [id: number]
   participants: [e: EventListResource]
 }>()
 
@@ -49,7 +49,7 @@ function onClick(e: EventListResource) {
         :size="48"
         variant="text"
         color="gray"
-        @click.stop="$emit('edit', item)"
+        @click.stop="$emit('edit', item.id)"
       />
     </div>
     <div style="width: 90px" />

@@ -2,16 +2,14 @@
 
 namespace App\Models;
 
-use App\Traits\HasName;
-use App\Traits\HasPhones;
-use App\Traits\RelationSyncable;
+use App\Traits\{HasName, HasPhones, HasTelegramMessages, RelationSyncable};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Scout\Searchable;
 
 class ClientParent extends Model
 {
-    use HasName, HasPhones, RelationSyncable, Searchable;
+    use HasName, HasPhones, RelationSyncable, Searchable, HasTelegramMessages;
 
     public $timestamps = false;
 
