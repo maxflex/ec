@@ -27,7 +27,7 @@ class TelegramMessage extends Model
      *
      * @param InlineKeyboardMarkup|ReplyKeyboardMarkup|ReplyKeyboardRemove|ForceReply|null $replyMarkup
      */
-    public static function send(Phone $phone, string|TelegramList $where, $replyMarkup = null)
+    public static function send(Phone $phone, string|TelegramList $where, $replyMarkup = null): bool
     {
         if ($where instanceof TelegramList) {
             $listId = $where->id;
@@ -36,6 +36,12 @@ class TelegramMessage extends Model
             $listId = null;
             $text = $where;
         }
+        $phone->entity->telegramMessages()->create([
+            'list_id' => $listId,
+            'telegram_id' => $phone->telegram_id,
+            'number' => $phone->number,
+            'text' => $text,
+        ]);
         if ($phone->telegram_id) {
             Telegram::sendMessage(
                 $phone->telegram_id,
@@ -43,13 +49,9 @@ class TelegramMessage extends Model
                 'HTML',
                 replyMarkup: $replyMarkup
             );
+            return true;
         }
-        $phone->entity->telegramMessages()->create([
-            'list_id' => $listId,
-            'telegram_id' => $phone->telegram_id,
-            'number' => $phone->number,
-            'text' => $text,
-        ]);
+        return false;
     }
 
     /**

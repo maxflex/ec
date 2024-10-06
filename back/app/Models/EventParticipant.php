@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\EventParticipantConfirmation;
 use Illuminate\Database\Eloquent\Model;
+use TelegramBot\Api\Types\CallbackQuery;
 
 class EventParticipant extends Model
 {
@@ -27,8 +28,29 @@ class EventParticipant extends Model
         return $this->morphTo('entity');
     }
 
-    public static function confirm($data)
+    public static function confirm($data, \TelegramBot\Api\Client $bot, CallbackQuery $callback)
     {
+        $confirmation = EventParticipantConfirmation::from($data->confirmation);
+        $message = $callback->getMessage();
+
+        $answerText = $confirmation === EventParticipantConfirmation::confirmed
+            ? '✅ Вы подтвердили участие'
+            : '❌ Вы отказались от участия';
+
+
+        $bot->answerCallbackQuery(
+            $callback->getId(),
+            $answerText,
+        );
+
+        $bot->editMessageText(
+            $message->getChat()->getId(),
+            $message->getMessageId(),
+            $message->getText() . PHP_EOL . PHP_EOL . "<b>{$answerText}</b>",
+            'HTML'
+        );
+
+
         $phone = Phone::find($data->phone_id);
         $query = EventParticipant::where('event_id', $data->event_id);
 
@@ -45,8 +67,8 @@ class EventParticipant extends Model
         }
 
         $participant = $query->first();
-        $participant->update([
-            'confirmation' => EventParticipantConfirmation::from($data->confirmation)
+        $participant?->update([
+            'confirmation' => $confirmation,
         ]);
     }
 }

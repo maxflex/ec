@@ -53,16 +53,17 @@ class TelegramBotController extends Controller
                 if ($callback !== null) {
                     $message = $callback->getMessage();
                     $chatId = $message->getChat()->getId();
-                    $bot->deleteMessage(
-                        $chatId,
-                        $message->getMessageId(),
-                    );
                     $data = json_decode($callback->getData());
                     logger("Callback data:", (array)$data);
                     /**
                      * Обработка шаблонов
                      */
                     if (isset($data->template)) {
+                        $bot->deleteMessage(
+                            $chatId,
+                            $message->getMessageId(),
+                        );
+
                         $template = TelegramTemplate::from($data->template);
                         $template->callback($data);
                         return;
@@ -71,11 +72,7 @@ class TelegramBotController extends Controller
                      * Подтверждение событий
                      */
                     if (isset($data->event_id)) {
-                        EventParticipant::confirm($data);
-                        $bot->sendMessage(
-                            $chatId,
-                            view('bot.event-confirmation-result', (array)$data)
-                        );
+                        EventParticipant::confirm($data, $bot, $callback);
                         return;
                     }
 

@@ -50,12 +50,12 @@ class SendTelegramMessages extends Command
             $clients = Client::whereIn('id', $list->recipients->clients)->get();
             $teachers = Teacher::whereIn('id', $list->recipients->teachers)->get();
             foreach ($clients as $client) {
-                if ($list->send_to === SendTo::students || $list->send_to === SendTo::studentsAndParents) {
+                if ($list->send_to !== SendTo::parents) {
                     $toSend = $toSend->merge(
                         $client->phones()->get()
                     );
                 }
-                if ($list->send_to === SendTo::parents || $list->send_to === SendTo::studentsAndParents) {
+                if ($list->send_to !== SendTo::students) {
                     $toSend = $toSend->merge(
                         $client->parent->phones()->get()
                     );
@@ -87,9 +87,11 @@ class SendTelegramMessages extends Command
                 } else {
                     $replyMarkup = new ReplyKeyboardRemove();
                 }
-                TelegramMessage::send($phone, $list, $replyMarkup);
-                $sent++;
-                sleep(1);
+                $wasSent = TelegramMessage::send($phone, $list, $replyMarkup);
+                if ($wasSent) {
+                    $sent++;
+                    sleep(1);
+                }
             }
             $list->update(['status' => TelegramListStatus::sent]);
         }
