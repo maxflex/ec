@@ -38,8 +38,6 @@ const filteredItems = computed(() => selectedProgram.value
         density="comfortable"
       />
     </template>
-    <div class="table table--padding">
-      <GroupList :items="filteredItems" />
-    </div>
+    <GroupList :items="filteredItems" />
   </UiIndexPage>
 </template>

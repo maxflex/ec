@@ -1,34 +1,32 @@
 <script setup lang="ts">
-const emit = defineEmits<{
-  select: [g: GroupListResource, contractId: number]
-}>()
+const emit = defineEmits(['select'])
 const { dialog, width } = useDialog('large')
-let contractId: number
 const groups = ref<GroupListResource[]>([])
+const swamp = ref<SwampListResource>()
 const filters = ref<{
   year?: Year
   program?: Program
 }>({})
 
-function open(p: Program, y: Year, _contractId: number) {
+function open(s: SwampListResource) {
+  swamp.value = s
   dialog.value = true
-  contractId = _contractId
   filters.value = {
-    year: y,
-    program: p,
+    year: s.year,
+    program: s.program,
   }
 }
 
-function onSelect(g: GroupListResource) {
+async function onSelect(g: GroupListResource) {
   dialog.value = false
-  emit('select', g, contractId)
-  useHttp(`client-groups`, {
+  await useHttp(`client-groups`, {
     method: 'post',
     params: {
       group_id: g.id,
-      contract_id: contractId,
+      contract_version_program_id: swamp.value!.id,
     },
   })
+  emit('select')
 }
 
 async function loadData() {
@@ -73,13 +71,11 @@ defineExpose({ open })
             density="comfortable"
           />
         </UiFilters>
-        <div class="table table--hover table--padding">
-          <GroupList
-            :items="groups"
-            selectable
-            @select="onSelect"
-          />
-        </div>
+        <GroupList
+          :items="groups"
+          selectable
+          @select="onSelect"
+        />
       </div>
     </div>
   </v-dialog>

@@ -26,12 +26,6 @@ const { items, indexPageData } = useIndex<GroupListResource, YearFilters>(
         density="comfortable"
       />
     </template>
-    <div class="table table--padding">
-      <GroupList :items="items" />
-    </div>
+    <GroupList :items="items" />
   </UiIndexPage>
 </template>
-
-<style scoped lang="scss">
-
-</style>

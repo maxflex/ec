@@ -30,10 +30,7 @@ function onGroupCreated(g: GroupListResource) {
         добавить группу
       </v-btn>
     </template>
-
-    <div class="groups table table--padding">
-      <GroupList :items="items" />
-    </div>
+    <GroupList :items="items" />
   </UiIndexPage>
   <GroupDialog
     ref="groupDialog"

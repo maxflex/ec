@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 const { icon, prepend } = withDefaults(defineProps<{
-  icon: string
+  icon?: string
   prepend?: boolean
 }>(), {
   icon: '$next',

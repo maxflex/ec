@@ -3,17 +3,14 @@ const { clientId } = defineProps<{ clientId: number }>()
 
 const tabName = 'GroupsTab'
 
-const filters = ref(loadFilters({
+const filters = ref<YearFilters>(loadFilters({
   year: currentAcademicYear(),
 }, tabName))
 
 const loading = ref(true)
 const groups = ref<GroupListResource[]>([])
 const swamps = ref<SwampListResource[]>([])
-const params = {
-  ...filters.value,
-  client_id: clientId,
-}
+const noData = computed(() => !loading.value && groups.value.length === 0 && swamps.value.length === 0)
 
 async function loadData() {
   loading.value = true
@@ -23,17 +20,20 @@ async function loadData() {
 }
 
 async function loadGroups() {
+  const params = {
+    ...filters.value,
+    client_id: clientId,
+  }
   const { data } = await useHttp<ApiResponse<GroupListResource[]>>(`groups`, { params })
   if (data.value) {
     groups.value = data.value.data
   }
 }
-
-function onSelected() {
-  console.log('here')
-}
-
 async function loadSwamps() {
+  const params = {
+    ...filters.value,
+    client_id: clientId,
+  }
   const { data } = await useHttp<ApiResponse<SwampListResource[]>>(`swamps`, { params })
   if (data.value) {
     swamps.value = data.value.data
@@ -44,8 +44,6 @@ watch(filters, (newVal) => {
   loadData()
   saveFilters(newVal, tabName)
 }, { deep: true })
-
-const noData = computed(() => !loading.value && groups.value.length === 0 && swamps.value.length === 0)
 
 nextTick(loadData)
 </script>
@@ -60,9 +58,7 @@ nextTick(loadData)
         density="comfortable"
       />
     </template>
-    <div class="table table--padding">
-      <GroupList :items="groups" />
-    </div>
-    <SwampList :items="swamps" @select="onSelected" />
+    <GroupList :items="groups" />
+    <SwampList :items="swamps" @add="loadData()" />
   </UiIndexPage>
 </template>

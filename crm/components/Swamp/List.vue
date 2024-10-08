@@ -7,6 +7,7 @@ const { items, selectable } = defineProps<{
 }>()
 const emit = defineEmits<{
   select: [swamp: SwampListResource]
+  add: []
 }>()
 const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
 </script>
@@ -23,7 +24,7 @@ const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
         </NuxtLink>
         <UiIconLink
           v-else
-          @click="groupSelectorDialog?.open(swamp.program, swamp.year, swamp.contract_id)"
+          @click="groupSelectorDialog?.open(swamp)"
         >
           Прикрепить
         </UiIconLink>
@@ -53,7 +54,7 @@ const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
       </div>
     </div>
   </div>
-  <GroupSelectorDialog ref="groupSelectorDialog" />
+  <GroupSelectorDialog ref="groupSelectorDialog" @select="emit('add')" />
 </template>
 
 <style lang="scss">
