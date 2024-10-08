@@ -422,16 +422,14 @@ enum Program: string
 
             self::mathBase => 'математика база',
             self::mathProf => 'математика профиль',
-
-            default => 'неизвестно'
         };
     }
 
     public function getExam(): Exam
     {
         return match ($this) {
-            self::math9 => Exam::ogeMath,
-            default => Exam::egeRus
+            self::mathSchool9, self::math9 => Exam::ogeMath,
+            default => Exam::egeRus,
         };
     }
 }

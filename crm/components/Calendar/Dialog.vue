@@ -2,8 +2,9 @@
 const { year } = defineProps<{
   year?: Year
 }>()
+const emit = defineEmits(['close'])
 const { dialog, width, transition } = useDialog('small')
-const model = defineModel<string>()
+const model = defineModel<string | string[]>({ required: true })
 
 const years = year === undefined
   ? Object.keys(YearLabel).map(y => Number(y))
@@ -46,23 +47,36 @@ function isToday(y: number, m: number, d: number) {
 }
 
 function isSelected(y: number, m: number, d: number) {
-  return getDate(y, m, d) === model.value
+  const date = getDate(y, m, d)
+  return Array.isArray(model.value)
+    ? model.value.includes(date)
+    : model.value === date
 }
 
 function onClick(y: number, m: number, d: number) {
-  console.log('onClick', y, m, d)
-  model.value = getDate(y, m, d)
-  dialog.value = false
+  const date = getDate(y, m, d)
+  if (Array.isArray(model.value)) {
+    const index = model.value.findIndex(d => d === date)
+    index === -1
+      ? model.value.push(date)
+      : model.value.splice(index, 1)
+  }
+  else {
+    model.value = date
+    dialog.value = false
+  }
 }
 
-function iterateMonths(y: number) {
+function iterateMonths(y: number): number[] {
   if (year === undefined) {
-    return 12
+    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   }
   return y === year
     ? [9, 10, 11, 12]
     : [1, 2, 3, 4, 5, 6, 7, 8]
 }
+
+watch(dialog, isOpen => !isOpen && emit('close'))
 
 defineExpose({ open })
 </script>

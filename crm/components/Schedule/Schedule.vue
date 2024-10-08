@@ -34,7 +34,7 @@ const filters = ref({
 })
 
 const { user } = useAuthStore()
-const editable = user?.entity_type === EntityType.user && groupId
+const isMassEditable = user?.entity_type === EntityType.user && !!groupId
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const params = {
   // только один из них НЕ undefined
@@ -67,7 +67,7 @@ const lessonIds = computed((): number[] => {
 const dates = computed(() => {
   // Define the start and end months for the academic year
   const startMonth = 8 // September (0-indexed)
-  const endMonth = 4 // May (0-indexed)
+  const endMonth = 5 // June (0-indexed)
 
   // Define start and end dates for the academic year
   const startDate = startOfMonth(new Date(filters.value.year, startMonth, 1)) // September 1st
@@ -233,17 +233,17 @@ nextTick(loadData)
       density="comfortable"
     />
     <template #buttons>
-      <v-menu v-if="editable && groupId">
+      <v-menu v-if="isMassEditable">
         <template #activator="{ props }">
           <v-btn color="primary" v-bind="props">
             добавить занятия
           </v-btn>
         </template>
         <v-list>
-          <v-list-item @click="lessonDialog?.create(groupId, year)">
+          <v-list-item @click="lessonDialog?.create(groupId!, year!)">
             добавить одно занятие
           </v-list-item>
-          <v-list-item @click="lessonBulkCreateDialog?.create(groupId, year)">
+          <v-list-item @click="lessonBulkCreateDialog?.create(groupId!, year!)">
             добавить несколько занятий
           </v-list-item>
         </v-list>
@@ -279,7 +279,7 @@ nextTick(loadData)
           v-else
           :key="`l-${item.id}`"
           :item="item"
-          :editable="editable"
+          :mass-editable="isMassEditable"
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
           @view="lessonViewDialog?.open"
@@ -297,33 +297,29 @@ nextTick(loadData)
       </div>
     </div>
   </div>
-  <v-slide-y-reverse-transition>
-    <div v-if="lessonIds.length" class="bottom-bar">
-      <div>
-        выбрано:
-        <span class="text-gray">
-          {{ lessons.length }} /
-        </span>
-        {{ lessonIds.length }}
+  <template v-if="isMassEditable">
+    <v-slide-y-reverse-transition>
+      <div v-if="lessonIds.length" class="bottom-bar">
+        <div>
+          выбрано:
+          <span class="text-gray">
+            {{ lessons.length }} /
+          </span>
+          {{ lessonIds.length }}
+        </div>
+        <div class="d-flex ga-4">
+          <v-btn variant="text" @click="checkboxes = {}">
+            отмена
+          </v-btn>
+          <v-btn
+            color="primary"
+            @click="lessonBulkUpdateDialog?.open(lessonIds)"
+          >
+            редактировать
+          </v-btn>
+        </div>
       </div>
-      <div class="d-flex ga-4">
-        <v-btn variant="text" @click="checkboxes = {}">
-          отмена
-        </v-btn>
-        <v-btn
-          v-if="editable"
-          color="primary"
-          @click="lessonBulkUpdateDialog?.open(lessonIds)"
-        >
-          редактировать
-        </v-btn>
-      </div>
-    </div>
-  </v-slide-y-reverse-transition>
-  <template v-if="editable">
-    <LessonDialog
-      ref="lessonDialog"
-    />
+    </v-slide-y-reverse-transition>
     <LessonBulkUpdateDialog
       ref="lessonBulkUpdateDialog"
       @updated="onBulkUpdated"
@@ -334,11 +330,12 @@ nextTick(loadData)
     />
   </template>
   <LessonViewDialog ref="lessonViewDialog" />
+  <LessonDialog ref="lessonDialog" />
+  <EventDialog ref="eventDialog" />
   <LessonConductDialog
     ref="conductDialog"
     @updated="loadLessons"
   />
-  <EventDialog ref="eventDialog" />
 </template>
 
 <style lang="scss">
@@ -393,8 +390,7 @@ nextTick(loadData)
     }
   }
   &-event {
-    padding: 20px;
-    padding-left: 130px;
+    padding: 20px 20px 20px 130px;
     position: relative;
     &:after {
       content: '';

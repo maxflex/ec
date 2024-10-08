@@ -894,6 +894,7 @@ declare global {
   interface ExamDateResource {
     id: number
     exam: Exam
+    programs: Program[]
     dates: string[]
   }
 

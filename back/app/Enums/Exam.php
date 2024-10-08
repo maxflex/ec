@@ -25,4 +25,15 @@ enum Exam: string
     case egeGeo = 'egeGeo';
     case egeHis = 'egeHis';
     case egeSoc = 'egeSoc';
+
+    /**
+     * @return Program[]
+     */
+    public function getPrograms()
+    {
+        return match ($this) {
+            self::ogeMath => [Program::math9, Program::mathSchool9],
+            default => []
+        };
+    }
 }

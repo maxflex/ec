@@ -6,8 +6,10 @@ const examDateDialog = ref<InstanceType<typeof ExamDateDialog>>()
 
 function onSaved(item: ExamDateResource) {
   const index = items.value.findIndex(e => e.id === item.id)
+  if (item.dates.length !== items.value[index].dates.length) {
+    itemUpdated('exam-date', item.id)
+  }
   items.value.splice(index, 1, item)
-  itemUpdated('exam-date', item.id)
 }
 </script>
 

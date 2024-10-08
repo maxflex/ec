@@ -10,10 +10,9 @@
   }
 
   &--selected {
-    background: rgb(var(--v-theme-primary));
+    background: rgb(var(--v-theme-primary)) !important;
     border-color: rgb(var(--v-theme-primary)) !important;
     // color: white !important;
-    pointer-events: none;
   }
 
   &--selected-clickable {

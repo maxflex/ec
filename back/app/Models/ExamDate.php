@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\JsonArrayCast;
 use App\Enums\Exam;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,14 +14,13 @@ class ExamDate extends Model
 
     protected $casts = [
         'exam' => Exam::class,
-        'dates' => 'array'
+        'dates' => JsonArrayCast::class
     ];
 
-    public function getDatesAttribute($value)
+    protected $appends = ['programs'];
+
+    public function getProgramsAttribute()
     {
-        if ($value === null) {
-            return [];
-        }
-        return json_decode($value);
+        return $this->exam->getPrograms();
     }
 }

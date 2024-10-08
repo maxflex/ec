@@ -8,10 +8,19 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="table">
-    <div v-for="item in items" :id="`exam-date-${item.id}`" :key="item.id">
+  <div class="table table--hover">
+    <div
+      v-for="item in items"
+      :id="`exam-date-${item.id}`"
+      :key="item.id"
+      class="cursor-pointer"
+      @click="$emit('edit', item)"
+    >
       <div style="width: 300px">
         {{ ExamLabel[item.exam] }}
+      </div>
+      <div style="width: 300px">
+        {{ item.programs.map(e => ProgramShortLabel[e]).join(', ') }}
       </div>
       <div>
         <span v-if="item.dates.length === 0" class="text-gray">
@@ -20,14 +29,6 @@ defineEmits<{
         <span v-else>
           {{ plural(item.dates.length, ['дата', 'даты', 'дат']) }}
         </span>
-      </div>
-      <div class="table-actionss">
-        <v-btn
-          icon="$edit"
-          :size="48"
-          variant="plain"
-          @click="$emit('edit', item)"
-        />
       </div>
     </div>
   </div>

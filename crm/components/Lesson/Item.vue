@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { mdiAccountEdit, mdiAccountGroup, mdiEyeOutline } from '@mdi/js'
 
-const { item, editable } = defineProps<{
+const { item, massEditable } = defineProps<{
+  massEditable?: boolean
   item: LessonListResource
-  editable?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -14,15 +14,18 @@ const emit = defineEmits<{
 
 const { user } = useAuthStore()
 
-const isConductable = computed(() => {
-  if (user?.entity_type === EntityType.teacher) {
-    return true
+const isConductable = (function () {
+  switch (user?.entity_type) {
+    case EntityType.teacher:
+      return true
+    case EntityType.client:
+      return false
+    default:
+      return item.status === 'conducted'
   }
-  if (user?.entity_type === EntityType.client) {
-    return false
-  }
-  return item.status === 'conducted'
-})
+})()
+
+const isEditable = user?.entity_type === EntityType.user
 
 const isClient = user?.entity_type === EntityType.client
 </script>
@@ -43,7 +46,7 @@ const isClient = user?.entity_type === EntityType.client
         @click="emit('conduct', item.id, item.status)"
       />
       <v-btn
-        v-if="editable"
+        v-if="isEditable"
         icon="$edit"
         :size="48"
         variant="text"
@@ -60,7 +63,7 @@ const isClient = user?.entity_type === EntityType.client
       />
     </div>
     <div style="width: 110px; position: relative;">
-      <div v-if="editable" style="position: absolute; left: 90px; top: -25px">
+      <div v-if="massEditable" style="position: absolute; left: 90px; top: -25px">
         <slot name="checkbox" />
       </div>
     </div>
