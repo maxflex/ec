@@ -8,27 +8,15 @@ const filters = ref<YearFilters>(loadFilters({
 }, tabName))
 
 const loading = ref(true)
-const groups = ref<GroupListResource[]>([])
 const swamps = ref<SwampListResource[]>([])
-const noData = computed(() => !loading.value && groups.value.length === 0 && swamps.value.length === 0)
+const noData = computed(() => !loading.value && swamps.value.length === 0)
 
 async function loadData() {
   loading.value = true
-  await loadGroups()
   await loadSwamps()
   loading.value = false
 }
 
-async function loadGroups() {
-  const params = {
-    ...filters.value,
-    client_id: clientId,
-  }
-  const { data } = await useHttp<ApiResponse<GroupListResource[]>>(`groups`, { params })
-  if (data.value) {
-    groups.value = data.value.data
-  }
-}
 async function loadSwamps() {
   const params = {
     ...filters.value,
@@ -49,7 +37,7 @@ nextTick(loadData)
 </script>
 
 <template>
-  <UiIndexPage :data="{ loading, noData }" class="separate-content">
+  <UiIndexPage :data="{ loading, noData }">
     <template #filters>
       <v-select
         v-model="filters.year"
@@ -58,7 +46,6 @@ nextTick(loadData)
         density="comfortable"
       />
     </template>
-    <GroupList :items="groups" />
     <SwampList :items="swamps" @add="loadData()" />
   </UiIndexPage>
 </template>
