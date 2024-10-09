@@ -16,7 +16,7 @@ class Request extends Model
     ];
 
     protected $fillable = [
-        'responsible_user_id', 'program', 'comment', 'status'
+        'responsible_user_id', 'program', 'comment', 'status', 'client_id'
     ];
 
     public function responsibleUser()

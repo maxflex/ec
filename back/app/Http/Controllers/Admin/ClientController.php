@@ -28,6 +28,20 @@ class ClientController extends Controller
         return new ClientResource($client);
     }
 
+    public function store(Request $request)
+    {
+        $client = auth()->user()->entity->clients()->create($request->all());
+        $client->syncRelation($request->all(), 'phones');
+        $parent = $client->parent()->create($request->parent);
+        $parent->syncRelation($request->parent, 'phones');
+        if ($request->has('request_id')) {
+            \App\Models\Request::find($request->request_id)->update([
+                'client_id' => $client->id,
+            ]);
+        }
+        return new ClientListResource($client);
+    }
+
     public function update(Client $client, Request $request)
     {
         $client->update($request->all());

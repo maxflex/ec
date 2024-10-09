@@ -184,8 +184,8 @@ declare global {
 
   interface ClientResource extends PersonResource, HasPhoto, HasPhones {
     branches: Branch[]
-    birthdate: string | null
-    head_teacher_id: number | null
+    birthdate?: string
+    head_teacher_id?: number
     parent: ParentResource
     user?: PersonResource
     created_at?: string

@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import type { RequestDialog } from '#build/components'
+import type { ClientDialog, RequestDialog } from '#build/components'
 
+const route = useRoute()
 const model = defineModel<RequestListResource[]>({ default: () => [] })
 const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()
+const clientDialog = ref<InstanceType<typeof ClientDialog>>()
+const showClient = route.name !== 'clients-id'
 
 function onRequestUpdated(r: RequestListResource) {
   const index = model.value.findIndex(e => e.id === r.id)
@@ -20,6 +23,17 @@ function onRequestDeleted(r: RequestResource) {
   if (index !== -1) {
     model.value.splice(index, 1)
   }
+}
+
+function onClientCreated(c: ClientResource, requestId?: number) {
+  if (!requestId) {
+    return
+  }
+  const index = model.value.findIndex(e => e.id === requestId)
+  if (index !== -1) {
+    model.value[index].client = c
+  }
+  itemUpdated('request', requestId)
 }
 </script>
 
@@ -73,15 +87,17 @@ function onRequestDeleted(r: RequestResource) {
             </td>
           </tr>
         </table>
-        <div v-if="r.client">
-          Клиент:
-          <NuxtLink :to="{ name: 'clients-id', params: { id: r.client.id } }">
-            {{ formatName(r.client) }}
-          </NuxtLink>
-        </div>
-        <div v-else>
-          <a href="#">добавить клиента</a>
-        </div>
+        <template v-if="showClient">
+          <div v-if="r.client">
+            Клиент:
+            <NuxtLink :to="{ name: 'clients-id', params: { id: r.client.id } }">
+              {{ formatName(r.client) }}
+            </NuxtLink>
+          </div>
+          <div v-else>
+            <a class="cursor-pointer" @click="clientDialog?.create(r.id)">добавить клиента</a>
+          </div>
+        </template>
       </div>
       <div class="request__right">
         <div>{{ formatDateTime(r.created_at) }}</div>
@@ -106,6 +122,7 @@ function onRequestDeleted(r: RequestResource) {
     @updated="onRequestUpdated"
     @deleted="onRequestDeleted"
   />
+  <ClientDialog ref="clientDialog" @created="onClientCreated" />
 </template>
 
 <style lang="scss">

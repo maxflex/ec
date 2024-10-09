@@ -11,6 +11,7 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
   <div class="table">
     <div
       v-for="item in items"
+      :id="`clients-${item.id}`"
       :key="item.id"
     >
       <div class="table-actionss">
@@ -18,10 +19,10 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
           icon="$edit"
           :size="48"
           variant="plain"
-          @click="clientDialog?.edit(item)"
+          @click="clientDialog?.edit(item.id)"
         />
       </div>
-      <div width="50">
+      <div>
         {{ item.id }}
       </div>
       <div>

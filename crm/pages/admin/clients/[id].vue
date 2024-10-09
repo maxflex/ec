@@ -94,7 +94,7 @@ nextTick(loadData)
             icon="$edit"
             :size="48"
             variant="plain"
-            @click="clientDialog?.edit(client!)"
+            @click="clientDialog?.edit(client.id)"
           />
         </div>
       </div>

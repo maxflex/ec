@@ -2,21 +2,20 @@
 import { clone } from 'rambda'
 
 const emit = defineEmits<{
-  (e: 'created' | 'updated', c: ClientResource): void
+  created: [c: ClientListResource, requestId?: number]
+  updated: [c: ClientResource]
 }>()
 
 const modelDefaults: ClientResource = {
-  id: -1,
+  id: newId(),
   first_name: null,
   last_name: null,
   middle_name: null,
   branches: [],
-  birthdate: null,
-  head_teacher_id: null,
   phones: [],
   photo_url: null,
   parent: {
-    id: -1,
+    id: newId(),
     first_name: null,
     last_name: null,
     middle_name: null,
@@ -35,21 +34,24 @@ const { dialog, width } = useDialog('medium')
 const client = ref<ClientResource>(clone(modelDefaults))
 const loading = ref(false)
 const itemId = ref<number>()
+const requestId = ref<number>()
 
 function open(c: ClientResource) {
   client.value = clone(c)
   dialog.value = true
 }
 
-function create() {
+function create(reqId?: number) {
   itemId.value = undefined
+  requestId.value = reqId
   open(modelDefaults)
 }
-async function edit(c: ClientResource) {
-  itemId.value = c.id
+
+async function edit(id: number) {
+  itemId.value = id
   loading.value = true
   dialog.value = true
-  const { data } = await useHttp<ClientResource>(`clients/${c.id}`)
+  const { data } = await useHttp<ClientResource>(`clients/${id}`)
   if (data.value) {
     open(data.value)
   }
@@ -68,12 +70,15 @@ async function save() {
     }
   }
   else {
-    const { data } = await useHttp<ClientResource>('clients', {
+    const { data } = await useHttp<ClientListResource>('clients', {
       method: 'post',
-      body: client.value,
+      body: {
+        ...client.value,
+        request_id: requestId.value,
+      },
     })
     if (data.value) {
-      emit('created', data.value)
+      emit('created', data.value, requestId.value)
     }
   }
 
@@ -102,7 +107,11 @@ defineExpose({ create, edit })
             </template>
           </div>
         </div>
-        <span v-else> Добавить платеж </span>
+        <span v-else>Добавить клиента
+          <template v-if="requestId">
+            к заявке {{ requestId }}
+          </template>
+        </span>
         <v-btn
           icon="$save"
           :size="48"
