@@ -25,7 +25,7 @@ function onRequestDeleted(r: RequestResource) {
   }
 }
 
-function onClientCreated(c: ClientResource, requestId?: number) {
+function onClientCreated(c: ClientListResource, requestId?: number) {
   if (!requestId) {
     return
   }
