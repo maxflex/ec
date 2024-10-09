@@ -3,15 +3,13 @@
 namespace App\Models;
 
 use App\Casts\JsonArrayCast;
-use App\Enums\Cabinet;
-use App\Enums\ClientLessonStatus;
-use App\Enums\LessonStatus;
+use App\Enums\{Cabinet, ClientLessonStatus, LessonStatus};
 use App\Http\Resources\LessonListResource;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\{Eloquent\Casts\Attribute,
+    Eloquent\Model,
+    Eloquent\Relations\BelongsTo,
+    Eloquent\Relations\HasMany};
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -23,12 +21,13 @@ class Lesson extends Model
     protected $fillable = [
         'teacher_id', 'group_id', 'price', 'cabinet', 'date', 'time',
         'status', 'topic', 'conducted_at', 'is_topic_verified', 'is_unplanned',
-        'quarter', 'homework', 'files'
+        'quarter', 'homework', 'files', 'is_free'
     ];
 
     protected $casts = [
         'is_topic_verified' => 'boolean',
         'is_unplanned' => 'boolean',
+        'is_free' => 'boolean',
         'status' => LessonStatus::class,
         'cabinet' => Cabinet::class,
         'files' => JsonArrayCast::class,
@@ -111,7 +110,7 @@ class Lesson extends Model
                     ? $s->minutes_late
                     : null,
                 'is_remote' => $s->is_remote,
-                'price' => $contractVersionProgram->getNextPrice(),
+                'price' => $this->is_free ? 0 : $contractVersionProgram->getNextPrice(),
                 'scores' => count($s->scores) ? $s->scores : null
             ]);
         }

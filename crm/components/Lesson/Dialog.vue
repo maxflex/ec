@@ -12,6 +12,7 @@ const modelDefaults: LessonResource = {
   conducted_at: null,
   is_topic_verified: false,
   is_unplanned: false,
+  is_free: false,
   quarter: null,
   files: [],
 }
@@ -192,6 +193,10 @@ defineExpose({ create, edit })
           <v-checkbox
             v-model="lesson.is_unplanned"
             label="Внеплановое"
+          />
+          <v-checkbox
+            v-model="lesson.is_free"
+            label="Бесплатное для детей"
           />
         </div>
       </div>

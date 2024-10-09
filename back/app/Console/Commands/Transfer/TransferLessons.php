@@ -31,6 +31,7 @@ class TransferLessons extends Command
                 'date' => $l->date,
                 'time' => $l->time,
                 'conducted_at' => $l->conducted_at,
+                'is_free' => $l->is_free,
                 'is_unplanned' => $l->is_unplanned,
                 'is_topic_verified' => $l->is_topic_verified,
                 'topic' => $l->topic,

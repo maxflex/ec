@@ -333,7 +333,7 @@ declare global {
 
   interface LessonResource {
     id: number
-    teacher_id?: number | null
+    teacher_id?: number
     group_id?: number
     group?: {
       id: number
@@ -352,6 +352,7 @@ declare global {
     conducted_at: string | null
     is_topic_verified: boolean
     is_unplanned: boolean
+    is_free: boolean
     teacher?: PersonResource
     user?: PersonResource
     created_at?: string
