@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { mdiAccountEdit, mdiAccountGroup, mdiEyeOutline } from '@mdi/js'
 
-const { item, massEditable } = defineProps<{
-  massEditable?: boolean
+const { item, checkboxes } = defineProps<{
   item: LessonListResource
+  checkboxes: { [key: number]: boolean }
 }>()
 
 const emit = defineEmits<{
@@ -36,14 +36,26 @@ const isClient = user?.entity_type === EntityType.client
     :class="`lesson-item--${item.status}`"
     class="lesson-item"
   >
-    <div class="table-actionss">
+    <div v-if="Object.keys(checkboxes).length" class="lesson-item__checkbox">
+      <v-icon
+        v-if="checkboxes[item.id]"
+        color="secondary"
+        icon="$checkboxOn"
+      />
+      <v-icon
+        v-else
+        icon="$checkboxOff"
+        class="opacity-6"
+      />
+    </div>
+    <div v-else class="table-actionss">
       <v-btn
         v-if="isConductable"
         :icon="mdiAccountEdit"
         :size="48"
         variant="text"
         color="gray"
-        @click="emit('conduct', item.id, item.status)"
+        @click.stop="emit('conduct', item.id, item.status)"
       />
       <v-btn
         v-if="isEditable"
@@ -51,7 +63,7 @@ const isClient = user?.entity_type === EntityType.client
         :size="48"
         variant="text"
         color="gray"
-        @click="emit('edit', item.id)"
+        @click.stop="emit('edit', item.id)"
       />
       <v-btn
         v-if="isClient"
@@ -62,11 +74,7 @@ const isClient = user?.entity_type === EntityType.client
         @click="emit('view', item.id)"
       />
     </div>
-    <div style="width: 110px; position: relative;">
-      <div v-if="massEditable" style="position: absolute; left: 90px; top: -25px">
-        <slot name="checkbox" />
-      </div>
-    </div>
+    <div style="width: 110px; position: relative;" />
     <div style="width: 120px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
@@ -76,12 +84,12 @@ const isClient = user?.entity_type === EntityType.client
       </template>
     </div>
     <div v-if="item.teacher" style="width: 150px">
-      <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }">
+      <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }" @click.stop>
         {{ formatNameInitials(item.teacher) }}
       </NuxtLink>
     </div>
     <div style="width: 90px">
-      <NuxtLink :to="{ name: 'groups-id', params: { id: item.group.id } }">
+      <NuxtLink :to="{ name: 'groups-id', params: { id: item.group.id } }" @click.stop>
         ГР-{{ item.group.id }}
       </NuxtLink>
     </div>
@@ -163,6 +171,10 @@ const isClient = user?.entity_type === EntityType.client
   .table-actionss {
     top: -16px;
     right: -1 0px;
+  }
+  &__checkbox {
+    position: absolute;
+    right: 0;
   }
 }
 </style>

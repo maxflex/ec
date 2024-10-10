@@ -208,6 +208,18 @@ function onBulkUpdated() {
   checkboxes.value = {}
 }
 
+function onLessonClick(item: LessonListResource) {
+  if (!isMassEditable || item.status === 'cancelled') {
+    return
+  }
+  if (checkboxes.value[item.id]) {
+    delete checkboxes.value[item.id]
+  }
+  else {
+    checkboxes.value[item.id] = true
+  }
+}
+
 watch(() => filters.value.year, loadData)
 
 watch(filters, (newVal) => {
@@ -233,9 +245,21 @@ nextTick(loadData)
       density="comfortable"
     />
     <template #buttons>
-      <v-menu v-if="isMassEditable">
+      <div v-if="Object.keys(checkboxes).length" class="d-flex ga-4">
+        <v-btn variant="text" @click="checkboxes = {}">
+          отмена
+        </v-btn>
+        <v-btn
+          color="primary" :width="216"
+          @click="lessonBulkUpdateDialog?.open(lessonIds)"
+        >
+          редактировать
+          {{ lessonIds.length }}/{{ lessons.length }}
+        </v-btn>
+      </div>
+      <v-menu v-else-if="isMassEditable">
         <template #activator="{ props }">
-          <v-btn color="primary" v-bind="props">
+          <v-btn color="primary" v-bind="props" :width="216">
             добавить занятия
           </v-btn>
         </template>
@@ -279,15 +303,12 @@ nextTick(loadData)
           v-else
           :key="`l-${item.id}`"
           :item="item"
-          :mass-editable="isMassEditable"
+          :checkboxes="checkboxes"
+          @click="onLessonClick(item)"
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
           @view="lessonViewDialog?.open"
-        >
-          <template #checkbox>
-            <v-checkbox v-model="checkboxes[item.id]" />
-          </template>
-        </LessonItem>
+        />
       </template>
       <div v-if="vacations[d]" class="schedule-event schedule-event--vacation">
         Государственный праздник
@@ -297,29 +318,14 @@ nextTick(loadData)
       </div>
     </div>
   </div>
+  <LessonViewDialog ref="lessonViewDialog" />
+  <LessonDialog ref="lessonDialog" />
+  <EventDialog ref="eventDialog" />
+  <LessonConductDialog
+    ref="conductDialog"
+    @updated="loadLessons"
+  />
   <template v-if="isMassEditable">
-    <v-slide-y-reverse-transition>
-      <div v-if="lessonIds.length" class="bottom-bar">
-        <div>
-          выбрано:
-          <span class="text-gray">
-            {{ lessons.length }} /
-          </span>
-          {{ lessonIds.length }}
-        </div>
-        <div class="d-flex ga-4">
-          <v-btn variant="text" @click="checkboxes = {}">
-            отмена
-          </v-btn>
-          <v-btn
-            color="primary"
-            @click="lessonBulkUpdateDialog?.open(lessonIds)"
-          >
-            редактировать
-          </v-btn>
-        </div>
-      </div>
-    </v-slide-y-reverse-transition>
     <LessonBulkUpdateDialog
       ref="lessonBulkUpdateDialog"
       @updated="onBulkUpdated"
@@ -329,13 +335,6 @@ nextTick(loadData)
       @updated="loadLessons"
     />
   </template>
-  <LessonViewDialog ref="lessonViewDialog" />
-  <LessonDialog ref="lessonDialog" />
-  <EventDialog ref="eventDialog" />
-  <LessonConductDialog
-    ref="conductDialog"
-    @updated="loadLessons"
-  />
 </template>
 
 <style lang="scss">

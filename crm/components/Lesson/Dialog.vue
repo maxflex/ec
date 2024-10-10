@@ -152,7 +152,7 @@ defineExpose({ create, edit })
         <div>
           <v-select
             v-model="lesson.status"
-            :items="selectItems(LessonStatusLabel).filter(e => e.value !== 'conducted')"
+            :items="selectItems(LessonStatusLabel).filter(e => isConducted ? true : e.value !== 'conducted')"
             label="Статус"
             :disabled="isConducted"
           />
