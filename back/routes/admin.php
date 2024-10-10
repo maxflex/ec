@@ -35,7 +35,6 @@ use App\Http\Controllers\Admin\{BalanceController,
     TeacherController,
     TeacherPaymentController,
     TeacherServiceController,
-    TeethController,
     TelegramListController,
     TelegramMessageController,
     TestController,
@@ -78,8 +77,6 @@ Route::middleware(['auth:crm'])->group(function () {
     });
 
     Route::get('instructions/diff/{instruction}', [InstructionController::class, 'diff']);
-
-    Route::get('teeth', TeethController::class);
 
     Route::apiResource('swamps', SwampController::class)->only('index');
 

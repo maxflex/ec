@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const tabs = {
   schedule: 'расписание',
+  visits: 'посещаемость',
+  students: 'ученики',
 } as const
 
 const selectedTab = ref<keyof typeof tabs>('schedule')
@@ -68,6 +70,8 @@ nextTick(loadData)
         :year="group.year"
         :program="group.program"
       />
+      <GroupVisitsTab v-else-if="selectedTab === 'visits'" :id="group.id" />
+      <GroupStudentsTab v-else :group="group" />
     </div>
   </div>
 </template>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Teacher\{BalanceController,
+    ClientGroupController,
     GradeController,
     GroupController,
     InstructionController,
@@ -15,6 +16,8 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::apiResource('lessons', LessonController::class)->only([
         'index', 'update', 'show'
     ]);
+    Route::get('groups/visits/{group}', [GroupController::class, 'visits']);
+    Route::apiResource('client-groups', ClientGroupController::class)->only('index');
     Route::get('instructions/diff/{instruction}', [InstructionController::class, 'diff']);
     Route::post('instructions/sign/{instruction}', [InstructionController::class, 'sign']);
     Route::apiResource('instructions', InstructionController::class)->only('index', 'show');

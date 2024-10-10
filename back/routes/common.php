@@ -5,6 +5,7 @@ use App\Http\Controllers\Common\{AuthController,
     ExamDateController,
     LogController,
     MangoController,
+    TeethController,
     TelegramBotController,
     VacationController};
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,7 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::get('user', 'user');
         Route::get('logout', 'logout');
     });
+    Route::get('teeth', TeethController::class);
     Route::apiResource('logs', LogController::class)->only('store');
     Route::apiResources([
         'exam-dates' => ExamDateController::class,

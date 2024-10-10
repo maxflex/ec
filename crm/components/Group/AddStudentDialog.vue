@@ -11,13 +11,17 @@ const filters = ref<SwampFilters>({
   status: 'toFulfil',
 })
 
-const { items, indexPageData } = useIndex<SwampListResource, SwampFilters>(
-    `swamps`,
-    filters,
-)
+const items = ref<SwampListResource[]>([])
+const indexPageData = ref<IndexPageData>()
 
 function open() {
   dialog.value = true
+  const data = useIndex<SwampListResource, SwampFilters>(
+      `swamps`,
+      filters,
+  )
+  items.value = data.items.value
+  indexPageData.value = data.indexPageData.value
 }
 
 async function onSelect(item: SwampListResource) {
@@ -49,7 +53,7 @@ defineExpose({ open })
           @click="dialog = false"
         />
       </div>
-      <div class="dialog-body py-0 ga-0">
+      <div v-if="indexPageData" class="dialog-body py-0 ga-0">
         <UiIndexPage :data="indexPageData">
           <template #filters>
             <SwampFilters v-model="filters" disabled />

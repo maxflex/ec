@@ -7,6 +7,7 @@ const loading = ref(true)
 const items = ref<ClientGroupResource[]>([])
 const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
 const groupAddStudentDialog = ref<InstanceType<typeof GroupAddStudentDialog>>()
+const isEditable = useAuthStore().user?.entity_type === EntityType.user
 
 // удалить из группы
 async function removeFromGroup(gc: ClientGroupResource) {
@@ -72,7 +73,7 @@ nextTick(loadData)
         <div>
           <TeethBar :items="item.teeth" :current="group.teeth!" />
         </div>
-        <div class="text-left table-actions">
+        <div v-if="isEditable" class="text-left table-actions">
           <v-menu>
             <template #activator="{ props }">
               <v-btn
@@ -100,7 +101,7 @@ nextTick(loadData)
           </v-menu>
         </div>
       </div>
-      <div style="border-bottom: none;">
+      <div v-if="isEditable" style="border-bottom: none;">
         <UiIconLink @click="groupAddStudentDialog?.open()">
           добавить в текущую группу
         </UiIconLink>

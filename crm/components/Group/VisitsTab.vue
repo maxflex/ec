@@ -5,7 +5,6 @@ import { uniq } from 'rambda'
 const { id } = defineProps<{ id: number }>()
 const items = ref<GroupVisitResource[]>([])
 const loading = ref(true)
-const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 
 const clients = computed(() => {
   const result: PersonResource[] = []
@@ -75,18 +74,22 @@ nextTick(loadData)
           <td />
           <td v-for="t in teachers" :key="t.id" class="group-visits__col--teacher">
             <div>
-              {{ t.last_name }}
-            </div>
-            <div>
-              {{ t.first_name![0] }}. {{ t.middle_name![0] }}.
+              <div>
+                {{ t.last_name }}
+              </div>
+              <div>
+                {{ t.first_name }} {{ t.middle_name![0] }}.
+              </div>
             </div>
           </td>
           <td v-for="c in clients" :key="c.id">
             <div>
-              {{ c.last_name }}
-            </div>
-            <div>
-              {{ c.first_name }}
+              <div>
+                {{ c.last_name }}
+              </div>
+              <div>
+                {{ c.first_name }}
+              </div>
             </div>
           </td>
           <td />
@@ -95,7 +98,7 @@ nextTick(loadData)
           <td>
             {{ formatTextDate(l.dateTime) }}
             <span class="text-gray ml-1">
-              {{ dayLabels[getDay(l.dateTime)] }}
+              {{ WeekdayLabel[getDay(l.dateTime) as Weekday] }}
             </span>
           </td>
           <td v-for="t in teachers" :key="t.id">
@@ -128,13 +131,13 @@ nextTick(loadData)
 
 <style lang="scss">
 .group-visits {
-  height: calc(100vh - 142px);
+  height: calc(100vh - 118px);
   position: relative;
   table {
     table-layout: fixed;
     tr {
       td {
-        width: 100px;
+        width: 60px;
         border-bottom: 1px solid #e0e0e0 !important;
         border-right: 1px solid #e0e0e0;
         &:first-child {
@@ -154,12 +157,23 @@ nextTick(loadData)
         z-index: 2;
         line-height: 22px;
         td {
-          padding: 0 12px !important;
+          padding: 8px 12px !important;
           background: white;
+          vertical-align: bottom;
+          font-size: 14px;
           & > div {
-            white-space: nowrap !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
+            display: flex;
+            line-height: 16px;
+            //letter-spacing: -2px;
+            & > div {
+              cursor: default;
+              writing-mode: vertical-rl;
+              transform: rotate(180deg);
+              max-height: 100px;
+              white-space: nowrap !important;
+              overflow: hidden !important;
+              text-overflow: ellipsis !important;
+            }
           }
         }
       }
@@ -177,6 +191,9 @@ nextTick(loadData)
     &--teacher {
       background: #f6f8fb !important;
     }
+  }
+  .circle-status {
+    justify-content: center;
   }
 }
 </style>

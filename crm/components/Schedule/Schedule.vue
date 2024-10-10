@@ -144,7 +144,7 @@ async function loadTeeth() {
     return
   }
   const { data } = await useHttp<Teeth>(
-      `teeth`,
+      `common/teeth`,
       {
         params: {
           ...params,

@@ -75,10 +75,6 @@ class Phone extends Model implements Authenticatable
             ->whereNumber($number)
             ->get();
 
-        if ($phones->count() !== 1) {
-            return null;
-        }
-
         // кандидаты к логину
         $candidates = [];
         foreach ($phones as $phone) {
@@ -105,15 +101,10 @@ class Phone extends Model implements Authenticatable
                         $candidates[] = $phone;
                     }
             }
-
-            if (count($candidates) !== 1) {
-                return null;
-            }
-
-            return $candidates[0];
         }
 
-        return $phones->first();
+        // должен быть в итоге единственный кандидат к логину
+        return count($candidates) !== 1 ? null : $candidates[0];
     }
 
     public function isAdmin(): bool
