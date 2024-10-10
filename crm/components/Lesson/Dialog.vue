@@ -25,6 +25,8 @@ const itemId = ref<number | undefined>()
 const lesson = ref<LessonResource>(clone(modelDefaults))
 const deleting = ref(false)
 const year = ref<Year>()
+// если занятие проведено, нельзя менять статус на "отмена"
+const isConducted = ref(false)
 
 function create(groupId: number, y: Year) {
   itemId.value = undefined
@@ -42,6 +44,7 @@ async function edit(lessonId: number) {
   if (data.value) {
     lesson.value = data.value
     year.value = getAcademicYear(lesson.value.date!)
+    isConducted.value = lesson.value.status === 'conducted'
   }
   loading.value = false
 }
@@ -144,6 +147,14 @@ defineExpose({ create, edit })
             v-model="lesson.quarter"
             :items="selectItems(QuarterLabel, ['final' as Quarter])"
             label="Четверть"
+          />
+        </div>
+        <div>
+          <v-select
+            v-model="lesson.status"
+            :items="selectItems(LessonStatusLabel).filter(e => e.value !== 'conducted')"
+            label="Статус"
+            :disabled="isConducted"
           />
         </div>
         <div>
