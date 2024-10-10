@@ -44,35 +44,44 @@ class ContractVersionController extends Controller
             'contract.id' => ['required', 'exists:contracts,id']
         ]);
         $request->merge(['contract_id' => $request->contract['id']]);
+        $contractVersion = auth()->user()->entity->contractVersions()->create($request->all());
+        $contractVersion->syncRelation($request->all(), 'programs');
+        foreach ($contractVersion->programs as $index => $program) {
+            $program->syncRelation($request->programs[$index], 'prices');
+        }
 
-        $activeCv = ContractVersion::query()
-            ->where('contract_id', $request->contract_id)
-            ->active()
-            ->first();
+        $isRelinked = $contractVersion->relinkIds(
+            $contractVersion->prev
+        );
 
-        // создаём архив на основе активной версии
-        $activeCv->createArchive();
+        if (!$isRelinked) {
+            $contractVersion->programs->each->delete();
+            $contractVersion->delete();
+            abort(422);
+        }
 
-        // обновляем активную версию
-        $activeCv->fill($request->all());
-        $activeCv->setCreatedAt(now());
-        $activeCv->save();
-        $activeCv->syncRelation($request->all(), 'programs');
-        $activeCv->syncRelation($request->all(), 'payments');
-
-        return new ContractVersionListResource($activeCv);
+        $contractVersion->syncRelation($request->all(), 'payments');
+        return new ContractVersionListResource($contractVersion);
     }
 
     public function update(ContractVersion $contractVersion, Request $request)
     {
         $contractVersion->update($request->all());
         $contractVersion->syncRelation($request->all(), 'programs');
+        foreach ($contractVersion->programs as $index => $program) {
+            $program->syncRelation($request->programs[$index], 'prices');
+        }
         $contractVersion->syncRelation($request->all(), 'payments');
         return new ContractVersionListResource($contractVersion);
     }
 
     public function destroy(ContractVersion $contractVersion)
     {
+        // если сносим активную и она не последняя
+        if ($contractVersion->is_active && $contractVersion->prev) {
+            $isRelinked = $contractVersion->prev->relinkIds($contractVersion);
+            abort_if(!$isRelinked, 422);
+        }
         $contractVersion->delete();
         return new ContractVersionListResource($contractVersion);
     }

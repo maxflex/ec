@@ -31,7 +31,7 @@ const emit = defineEmits<{
         </router-link>
       </div>
       <div style="width: 130px">
-        №{{ item.contract.id }}-{{ item.version }}
+        №{{ item.contract.id }}-{{ item.seq }}
       </div>
       <div style="width: 140px">
         от {{ formatDate(item.date) }}

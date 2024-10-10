@@ -21,8 +21,10 @@ const model = defineModel<ContractVersionFilters>({ required: true })
   </div>
   <div>
     <UiClearableSelect
-      v-model="model.version"
-      :items="yesNo('первая', 'последняя')"
+      v-model="model.is_active"
+      :items="[
+        { value: 1, title: 'активная' },
+      ]"
       density="comfortable"
       label="Версия"
     />

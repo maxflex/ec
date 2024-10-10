@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Program;
+use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,10 +12,12 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class ContractVersionProgram extends Model
 {
+    use RelationSyncable;
+
     public $timestamps = false;
 
     protected $fillable = [
-        'program', 'lessons_planned', 'prices'
+        'program', 'lessons_planned'
     ];
 
     protected $casts = [
@@ -56,19 +59,6 @@ class ContractVersionProgram extends Model
             'id',
             'group_id',
         );
-    }
-
-    public function setPricesAttribute($prices)
-    {
-        $actualIds = array_column($prices, 'id');
-        $this->prices()->whereNotIn('id', $actualIds)->each(fn($model) => $model->delete());
-        foreach ($prices as $p) {
-            if (isset($p['id']) && $p['id'] > 0) {
-                $this->prices()->find($p['id'])->update($p);
-            } else {
-                $this->prices()->create($p);
-            }
-        }
     }
 
     /**

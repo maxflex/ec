@@ -22,7 +22,7 @@ const emit = defineEmits<{
         />
       </div>
       <div width="150">
-        версия {{ version.version }}
+        версия {{ version.seq }}
       </div>
       <div width="220">
         от {{ formatDate(version.date) }}

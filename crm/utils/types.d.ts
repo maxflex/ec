@@ -239,7 +239,7 @@ declare global {
 
   interface ContractVersionResource {
     id: number
-    version: number
+    seq: number
     sum?: number
     date: string
     programs: ContractVersionProgramResource[]
@@ -257,7 +257,7 @@ declare global {
   interface ContractVersionListResource {
     id: number
     date: string
-    version: number
+    seq: number
     sum: number
     payments_count: number
     programs_count: number

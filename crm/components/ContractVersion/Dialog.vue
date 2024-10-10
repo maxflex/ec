@@ -9,7 +9,7 @@ const emit = defineEmits<{
 }>()
 const modelDefaults: ContractVersionResource = {
   id: newId(),
-  version: 1,
+  seq: 1,
   date: today(),
   programs: [],
   payments: [],
@@ -21,7 +21,8 @@ const modelDefaults: ContractVersionResource = {
 }
 const item = ref<ContractVersionResource>(modelDefaults)
 const contractId = ref<number>()
-const version = ref<number>() // для отображения в заголовке
+// только для отображения в заголовке
+const seq = ref<number>()
 const { dialog, width } = useDialog('medium')
 const programDialog = ref<InstanceType<typeof ProgramDialog>>()
 const pricesInput = ref()
@@ -43,27 +44,49 @@ const printOptions: PrintOption[] = [
 function newContract() {
   mode.value = 'new-contract'
   contractId.value = undefined
-  version.value = undefined
+  seq.value = undefined
   item.value = clone(modelDefaults)
   dialog.value = true
 }
 
 async function newVersion(c: ContractResource) {
-  const activeVersion = c.versions.find(e => e.is_active)
-  await edit(activeVersion!, 'new-version')
+  const activeVersion = c.versions.find(e => e.is_active)!
+  await edit(activeVersion, 'new-version')
 }
 
 async function edit(cv: ContractVersionListResource, m: ContractEditMode = 'edit') {
   mode.value = m
   contractId.value = cv.contract.id
-  version.value = cv.version + (m === 'edit' ? 0 : 1)
+  seq.value = cv.seq + (m === 'edit' ? 0 : 1)
   dialog.value = true
   loading.value = true
   const { data } = await useHttp<ContractVersionResource>(
     `contract-versions/${cv.id}`,
   )
   if (data.value) {
-    item.value = data.value
+    if (m === 'edit') {
+      item.value = data.value
+    }
+    else {
+      const { programs, payments } = data.value
+      item.value = {
+        ...data.value,
+        id: newId(),
+        date: today(),
+        programs: programs.map(p => ({
+          ...p,
+          id: newId(),
+          prices: p.prices.map(e => ({
+            ...e,
+            id: newId(),
+          })),
+        })),
+        payments: payments.map(p => ({
+          ...p,
+          id: newId(),
+        })),
+      }
+    }
   }
   loading.value = false
 }
@@ -257,7 +280,7 @@ defineExpose({ edit, newContract, newVersion })
         <span v-if="mode === 'new-contract'"> Новый договор </span>
         <div v-else-if="mode === 'edit'">
           Редактирование договора
-          <span>№{{ contractId }}–{{ version }}</span>
+          <span>№{{ contractId }}–{{ seq }}</span>
           <div class="dialog-subheader">
             <template v-if="item.user && item.created_at">
               {{ formatName(item.user) }}
@@ -267,7 +290,7 @@ defineExpose({ edit, newContract, newVersion })
         </div>
         <span v-else>
           Новая версия договора
-          <span>№{{ contractId }}–{{ version }}</span>
+          <span>№{{ contractId }}–{{ seq }}</span>
         </span>
         <div>
           <template v-if="mode === 'edit'">

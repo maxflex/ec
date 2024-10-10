@@ -89,7 +89,7 @@ declare global {
   interface ContractVersionFilters {
     year: Year
     company?: Company
-    version?: number
+    is_active?: number
   }
 
   interface UserFilters {

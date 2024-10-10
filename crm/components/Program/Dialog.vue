@@ -56,7 +56,7 @@ defineExpose({ open })
           <div
             v-for="p in programs"
             :key="p"
-            class="cursor-pointer unselectable"
+            class="unselectable"
             :class="{ 'program-selector--disabled': preSelected.includes(p) }"
             @click="select(p)"
           >

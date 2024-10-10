@@ -15,9 +15,7 @@ class ContractVersion extends Model
     use RelationSyncable;
 
     protected $fillable = [
-        'contract_id', 'date', 'sum',
-        // TODO: remove (is_active should not be fillable)
-        'is_active'
+        'contract_id', 'date', 'sum', 'is_active'
     ];
 
     protected $casts = [
@@ -70,48 +68,67 @@ class ContractVersion extends Model
     }
 
     /**
-     * Создать архив на основе активной версии
+     * Номер по порядку
      */
-    public function createArchive(): self
+    public function getSeqAttribute()
     {
-        // Создаём архив на основе активной версии
-        $archiveCv = $this->replicate();
-        $archiveCv->is_active = false;
-        $archiveCv->setCreatedAt($this->created_at);
-        $archiveCv->save();
-
-        // Clone the `programs` relationship with new IDs
-        foreach ($this->programs as $program) {
-            $clonedProgram = $program->replicate();
-            $clonedProgram->contract_version_id = $archiveCv->id;
-            $clonedProgram->save();
-            foreach ($program->prices as $price) {
-                $clonedPrice = $price->replicate();
-                $clonedPrice->contract_version_program_id = $clonedProgram->id;
-                $clonedPrice->save();
-            }
-        }
-
-        // Clone the `payments` relationship with new IDs
-        foreach ($this->payments as $payment) {
-            $clonedPayment = $payment->replicate();
-            $clonedPayment->contract_version_id = $archiveCv->id;
-            $clonedPayment->save();
-        }
-
-        return $archiveCv;
+        return $this->chain()
+            ->where('created_at', '<=', $this->created_at)
+            ->count();
     }
 
     /**
-     * Номер версии
+     * Пред версия
      */
-    public function getVersionAttribute()
+    public function getPrevAttribute(): ?self
     {
-        return $this->chain()->where('created_at', '<=', $this->created_at)->count();
+        return $this->chain()
+            ->where('created_at', '<', $this->created_at)
+            ->latest()
+            ->first();
+    }
+
+    /**
+     * Обновляем связи contract_version_program_id
+     * новая версия – $this, старая $old
+     *
+     * @return bool успешно/не успешно
+     */
+    public function relinkIds(ContractVersion $old): bool
+    {
+        $result = [];
+        foreach ($old->programs as $program) {
+            $newProgram = $this->programs->where('program', $program->program)->first();
+
+            foreach ([ClientGroup::class, ClientLesson::class] as $class) {
+                $query = $class::where('contract_version_program_id', $program->id);
+                // есть что обновлять
+                if ($query->exists()) {
+                    // ... но нет нужной программы в новой версии
+                    if (!$newProgram) {
+                        return false;
+                    }
+                    $result[] = [$query, $newProgram->id];
+                }
+            }
+        }
+
+        foreach ($result as $r) {
+            [$query, $newProgramId] = $r;
+            $query->update(['contract_version_program_id' => $newProgramId]);
+        }
+
+        return true;
     }
 
     public function scopeActive($query)
     {
         $query->where('is_active', true);
+    }
+
+    public function setActiveVersion()
+    {
+        $this->chain()->update(['is_active' => false]);
+        $this->chain()->latest()->first()->update(['is_active' => true]);
     }
 }
