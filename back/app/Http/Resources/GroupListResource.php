@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use App\Models\Group;
-use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,10 +19,7 @@ class GroupListResource extends JsonResource
         return extract_fields($this, [
             'program', 'zoom', 'lessons_count', 'client_groups_count'
         ], [
-            'teachers' => $this->getTeachers()->map(
-                fn ($id) =>
-                new PersonResource(Teacher::find($id))
-            ),
+            'teachers' => PersonResource::collection($this->teachers),
             'teeth' => $this->getTeeth($this->year)
         ]);
     }

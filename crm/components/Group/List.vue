@@ -36,9 +36,7 @@ function onClick(g: GroupListResource) {
       </div>
       <div style="width: 200px">
         <div v-for="t in item.teachers" :key="t.id">
-          <RouterLink :to="{ name: 'teachers-id', params: { id: t.id } }">
-            {{ formatNameInitials(t) }}
-          </RouterLink>
+          <UiPerson :item="t" no-link />
         </div>
       </div>
       <div style="width: 120px">

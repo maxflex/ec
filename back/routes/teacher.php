@@ -7,7 +7,8 @@ use App\Http\Controllers\Teacher\{BalanceController,
     GroupController,
     InstructionController,
     LessonController,
-    ReportController};
+    ReportController,
+    TeacherPaymentController};
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:crm'])->group(function () {
@@ -19,8 +20,11 @@ Route::middleware(['auth:crm'])->group(function () {
     ]);
     Route::get('groups/visits/{group}', [GroupController::class, 'visits']);
     Route::apiResource('client-groups', ClientGroupController::class)->only('index');
-    Route::get('instructions/diff/{instruction}', [InstructionController::class, 'diff']);
-    Route::post('instructions/sign/{instruction}', [InstructionController::class, 'sign']);
+    Route::apiResource('teacher-payments', TeacherPaymentController::class)->only('index');
+    Route::prefix('instructions')->controller(InstructionController::class)->group(function () {
+        Route::get('diff/{instruction}', 'diff');
+        Route::post('sign/{instruction}', 'sign');
+    });
     Route::apiResource('instructions', InstructionController::class)->only('index', 'show');
     Route::apiResources([
         'reports' => ReportController::class,

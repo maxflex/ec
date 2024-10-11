@@ -2,6 +2,7 @@
 import {
   mdiAccountGroup,
   mdiCalendar,
+  mdiCash,
   mdiCurrencyRub,
   mdiFileDocumentEditOutline,
   mdiFileSign,
@@ -41,6 +42,11 @@ const menu: Menu = [
     icon: mdiCurrencyRub,
     title: 'Баланс',
     to: '/balance',
+  },
+  {
+    icon: mdiCash,
+    title: 'Платежи',
+    to: '/payments',
   },
   {
     icon: mdiFileSign,

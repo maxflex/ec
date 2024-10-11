@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { TeacherPaymentDialog } from '#build/components'
 
-const { items, teacherId } = defineProps<{
+const { items } = defineProps<{
   items: TeacherPaymentResource[]
-  teacherId?: number
 }>()
+const { isAdmin } = useAuthStore()
 const teacherPaymentDialog = ref<InstanceType<typeof TeacherPaymentDialog>>()
 
-function onTeacherPaymentUpdated(tp: TeacherPaymentResource) {
+function onUpdated(tp: TeacherPaymentResource) {
   const index = items.findIndex(e => e.id === tp.id)
   if (index !== -1) {
     // eslint-disable-next-line
@@ -20,7 +20,7 @@ function onTeacherPaymentUpdated(tp: TeacherPaymentResource) {
   }
 }
 
-function onTeacherPaymentDestroyed(tp: TeacherPaymentResource) {
+function onDeleted(tp: TeacherPaymentResource) {
   const index = items.findIndex(e => e.id === tp.id)
   if (index !== -1) {
     // eslint-disable-next-line
@@ -33,11 +33,8 @@ function onTeacherPaymentDestroyed(tp: TeacherPaymentResource) {
   <div
     class="table"
   >
-    <div
-      v-for="payment in items"
-      :key="payment.id"
-    >
-      <div class="table-actionss">
+    <div v-for="payment in items" :key="payment.id">
+      <div v-if="isAdmin" class="table-actionss">
         <v-btn
           icon="$edit"
           :size="48"
@@ -46,50 +43,31 @@ function onTeacherPaymentDestroyed(tp: TeacherPaymentResource) {
           @click="() => teacherPaymentDialog?.edit(payment)"
         />
       </div>
-      <div
-        v-if="!teacherId"
-        style="width: 330px"
-      >
-        <NuxtLink :to="{ name: 'teachers-id', params: { id: payment.teacher_id } }">
-          {{ formatFullName(payment.teacher!) }}
-        </NuxtLink>
-      </div>
-      <div style="width: 150px">
-        {{ formatDate(payment.date) }}
-      </div>
-      <div style="width: 180px">
-        {{ TeacherPaymentMethodLabel[payment.method] }}
+      <div v-if="isAdmin" style="width: 200px">
+        <UiPerson :item="payment.teacher!" />
       </div>
       <div style="width: 180px">
         {{ formatPrice(payment.sum) }} руб.
       </div>
+      <div style="width: 180px">
+        {{ TeacherPaymentMethodLabel[payment.method] }}
+      </div>
+      <div style="width: 150px">
+        {{ formatDate(payment.date) }}
+      </div>
+
       <div
         style="flex: 1"
         class="text-truncate"
       >
-        {{ payment.purpose }}
+        {{ filterTruncate(payment.purpose!, 20) }}
       </div>
-      <div
-        v-if="teacherId"
-        class="text-gray"
-        style="width: 150px; flex: initial"
-      >
-        {{ formatDateTime(payment.created_at!) }}
-      </div>
-    </div>
-    <div
-      v-if="teacherId"
-      style="border: none"
-    >
-      <a
-        class="cursor-pointer"
-        @click="teacherPaymentDialog?.create(teacherId!)"
-      >добавить платеж</a>
     </div>
     <TeacherPaymentDialog
+      v-if="isAdmin"
       ref="teacherPaymentDialog"
-      @updated="onTeacherPaymentUpdated"
-      @destroyed="onTeacherPaymentDestroyed"
+      @updated="onUpdated"
+      @destroyed="onDeleted"
     />
   </div>
 </template>

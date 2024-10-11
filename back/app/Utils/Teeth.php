@@ -1,11 +1,8 @@
 <?php
 
-/**
- * т.н. Зубы
- */
-
 namespace App\Utils;
 
+use App\Enums\LessonStatus;
 use Illuminate\Database\Eloquent\Builder;
 
 class Teeth
@@ -16,7 +13,7 @@ class Teeth
     public static function get(Builder $lessonsQuery, int $year): object
     {
         $lessons = $lessonsQuery
-//            ->where('status', LessonStatus::planned)
+            ->where('status', LessonStatus::planned)
             ->where('is_unplanned', 0)
             ->where('g.year', $year)
             ->join('groups as g', 'g.id', '=', 'lessons.group_id')

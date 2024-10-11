@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
 
-const emit = defineEmits<{ (e: 'updated' | 'destroyed', c: TeacherPaymentResource): void }>()
+const emit = defineEmits<{
+  updated: [item: TeacherPaymentResource]
+  deleted: [item: TeacherPaymentResource]
+}>()
 
 const modelDefaults: TeacherPaymentResource = {
   id: newId(),
@@ -17,8 +20,7 @@ const item = ref<TeacherPaymentResource>(modelDefaults)
 const loading = ref(false)
 const itemId = ref<number>()
 const sumInput = ref()
-const isEditMode = computed(() => item.value.id > 0)
-const destroying = ref(false)
+const deleting = ref(false)
 function open(c: TeacherPaymentResource) {
   item.value = clone(c)
   dialog.value = true
@@ -73,17 +75,17 @@ async function destroy() {
   if (!confirm('Вы уверены, что хотите удалить платеж?')) {
     return
   }
-  destroying.value = true
+  deleting.value = true
   const { status } = await useHttp(`teacher-payments/${item.value.id}`, {
     method: 'delete',
   })
   if (status.value === 'error') {
-    destroying.value = false
+    deleting.value = false
   }
   else {
-    emit('destroyed', item.value)
+    emit('deleted', item.value)
     dialog.value = false
-    setTimeout(() => destroying.value = false, 300)
+    setTimeout(() => deleting.value = false, 300)
   }
 }
 
@@ -117,7 +119,7 @@ defineExpose({ create, edit })
             :size="48"
             class="remove-btn"
             variant="text"
-            :loading="destroying"
+            :loading="deleting"
             @click="destroy()"
           />
           <v-btn

@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use App\Models\Group;
-use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,10 +18,7 @@ class GroupResource extends JsonResource
     {
         return extract_fields($this, ['*'], [
             'user' => new PersonResource($this->user),
-            'teachers' => $this->getTeachers()->map(
-                fn ($id) =>
-                new PersonResource(Teacher::find($id))
-            ),
+            'teachers' => PersonResource::collection($this->teachers),
             'teeth' => $this->getTeeth($this->year)
         ]);
     }

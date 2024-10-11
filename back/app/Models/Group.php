@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\HasTeeth;
+use App\Enums\LessonStatus;
 use App\Enums\Program;
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Model;
@@ -93,12 +94,25 @@ class Group extends Model implements HasTeeth
         return Teeth::get($this->lessons()->getQuery(), $year);
     }
 
-    public function getTeachers()
+    /**
+     * @return Teacher[]
+     */
+    public function getTeachersAttribute(): array
     {
-        return $this->lessons()
-            // ->where('status', LessonStatus::planned)
+        $ids = $this->lessons()
+            ->where('status', LessonStatus::planned)
             ->where('is_unplanned', 0)
             ->groupBy('teacher_id')
             ->pluck('teacher_id');
+
+        // если запланированных занятий нет, берём из последнего
+        // https://doc.ege-centr.ru/doc/49
+        if ($ids->count() === 0) {
+            $ids = [
+                $this->lessons()->latest('date')->value('teacher_id')
+            ];
+        }
+
+        return Teacher::whereIn('id', $ids)->get()->all();
     }
 }

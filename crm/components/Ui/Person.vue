@@ -1,11 +1,12 @@
 <script setup lang="ts">
-const { item, teacherFormat } = defineProps<{
+const { item, teacherFormat, noLink } = defineProps<{
   item: PersonResource
   teacherFormat?: NameFormat
+  noLink?: boolean
 }>()
 
 const { user } = useAuthStore()
-const noLink = user?.entity_type !== EntityTypeValue.user
+const isNoLink = noLink ?? user?.entity_type !== EntityTypeValue.user
 let to: string
 let format: NameFormat
 
@@ -29,7 +30,7 @@ const name = formatName(item, format)
 </script>
 
 <template>
-  <span v-if="noLink">{{ name }}</span>
+  <span v-if="isNoLink">{{ name }}</span>
   <RouterLink v-else :to="{ name: to, params: { id: item.id } }">
     {{ name }}
   </RouterLink>
