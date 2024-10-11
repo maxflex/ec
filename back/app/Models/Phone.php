@@ -97,7 +97,12 @@ class Phone extends Model implements Authenticatable
                     $entity = $entity->client;
 
                 case Client::class:
-                    if ($entity->contracts()->where('year', current_academic_year())->exists()) {
+                    // https://doc.ege-centr.ru/doc/50
+                    [$year, $month] = str(now()->format("Y-m-d"))
+                        ->explode("-")
+                        ->map(fn($x) => intval($x));
+                    $years = $month >= 8 ? [$year + 1] : [$year, $year + 1];
+                    if ($entity->contracts()->whereIn('year', $years)->exists()) {
                         $candidates[] = $phone;
                     }
             }
