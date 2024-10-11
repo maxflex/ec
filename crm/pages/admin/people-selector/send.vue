@@ -135,16 +135,7 @@ nextTick(async () => {
                 >
                   <td>
                     <div class="d-flex ga-3">
-                      <v-icon
-                        v-if="selected[key].some(id => id === p.id)"
-                        color="secondary"
-                        icon="$checkboxOn"
-                      />
-                      <v-icon
-                        v-else
-                        icon="$checkboxOff"
-                        class="opacity-6"
-                      />
+                      <UiCheckbox :value="selected[key].some(id => id === p.id)" />
                       <UiPerson :item="p" />
                     </div>
                   </td>

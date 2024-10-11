@@ -12,7 +12,7 @@ const filters = ref<PeopleSelectorFilters>({
 })
 
 const { items, extra, indexPageData } = useIndex<
-    PersonListResource,
+    PersonResource,
     PeopleSelectorFilters,
     PeopleSelectorExtra
 >(
@@ -73,33 +73,13 @@ nextTick(() => {
       <tbody>
         <tr @click="selectAll()">
           <td colspan="100">
-            <v-icon
-              v-if="isSelectedAll"
-              color="secondary"
-              icon="$checkboxOn"
-            />
-            <v-icon
-              v-else
-              icon="$checkboxOff"
-              class="opacity-6"
-            />
-            <span>
-              всего: {{ extra.ids.length }}
-            </span>
+            <UiCheckbox :value="isSelectedAll" />
+            <span> всего: {{ extra.ids.length }} </span>
           </td>
         </tr>
         <tr v-for="item in items" :key="item.id" @click="select(item)">
           <td>
-            <v-icon
-              v-if="isSelectedAll || selected[filters.mode].some(id => id === item.id)"
-              color="secondary"
-              icon="$checkboxOn"
-            />
-            <v-icon
-              v-else
-              icon="$checkboxOff"
-              class="opacity-6"
-            />
+            <UiCheckbox :value="isSelectedAll || selected[filters.mode].some(id => id === item.id)" />
             <UiPerson :item="item" teacher-format="full" />
           </td>
         </tr>

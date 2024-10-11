@@ -60,15 +60,7 @@ defineExpose({ open })
             :class="{ 'program-selector--disabled': preSelected.includes(p) }"
             @click="select(p)"
           >
-            <v-icon
-              v-if="selected.includes(p)"
-              color="secondary"
-              icon="$checkboxOn"
-            />
-            <v-icon
-              v-else
-              icon="$checkboxOff"
-            />
+            <UiCheckbox :value="selected.includes(p)" />
             <span>
               {{ ProgramLabel[p] }}
             </span>

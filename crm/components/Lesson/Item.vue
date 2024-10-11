@@ -37,16 +37,7 @@ const isClient = user?.entity_type === EntityTypeValue.client
     class="lesson-item"
   >
     <div v-if="Object.keys(checkboxes).length" class="lesson-item__checkbox">
-      <v-icon
-        v-if="checkboxes[item.id]"
-        color="secondary"
-        icon="$checkboxOn"
-      />
-      <v-icon
-        v-else
-        icon="$checkboxOff"
-        class="opacity-6"
-      />
+      <UiCheckbox :value="checkboxes[item.id]" />
     </div>
     <div v-else class="table-actionss">
       <v-btn

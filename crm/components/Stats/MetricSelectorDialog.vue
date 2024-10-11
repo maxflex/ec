@@ -40,16 +40,7 @@ defineExpose({ open })
           <div v-for="(metric, key) in Metrics" :key="key" @click="onSelect(key)">
             <div>
               <div class="vfn-1" style="width: 20px">
-                <v-icon
-                  v-if="selected.includes(key)"
-                  color="secondary"
-                  icon="$checkboxOn"
-                />
-                <v-icon
-                  v-else
-                  color="gray"
-                  icon="$checkboxOff"
-                />
+                <UiCheckbox :value="selected.includes(key)" />
               </div>
               {{ metric.label }}
             </div>

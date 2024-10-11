@@ -150,16 +150,7 @@ defineExpose({ open })
               <tbody>
                 <tr v-for="p in people" :key="p.id" @click="select(key, p)">
                   <td style="margin-left: -2px">
-                    <v-icon
-                      v-if="selected[key].some(id => id === p.id)"
-                      color="secondary"
-                      icon="$checkboxOn"
-                    />
-                    <v-icon
-                      v-else
-                      icon="$checkboxOff"
-                      class="opacity-6"
-                    />
+                    <UiCheckbox :value="selected[key].some(id => id === p.id)" />
                     <UiPerson :item="p" />
                   </td>
                 </tr>

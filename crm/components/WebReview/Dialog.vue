@@ -195,16 +195,7 @@ defineExpose({ edit, create })
             @click="selectExamScore(examScore)"
           >
             <div class="vfn-1" style="width: 20px">
-              <v-icon
-                v-if="examScore.web_review_id || item.exam_scores.includes(examScore.id)"
-                color="secondary"
-                icon="$checkboxOn"
-              />
-              <v-icon
-                v-else
-                class="opacity-6"
-                icon="$checkboxOff"
-              />
+              <UiCheckbox :value="!!examScore.web_review_id || item.exam_scores.includes(examScore.id)" />
             </div>
             <div style="width: 320px">
               {{ ExamLabel[examScore.exam!] }}

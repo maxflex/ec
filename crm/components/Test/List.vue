@@ -16,7 +16,7 @@ function select(t: TestResource) {
 </script>
 
 <template>
-  <div class="table table--hover">
+  <div class="table">
     <div
       v-for="t in tests"
       :key="t.id"
@@ -24,15 +24,7 @@ function select(t: TestResource) {
       @click="select(t)"
     >
       <div v-if="selected">
-        <v-icon
-          v-if="selected.some(({ id }) => id === t.id)"
-          color="secondary"
-          icon="$checkboxOn"
-        />
-        <v-icon
-          v-else
-          icon="$checkboxOff"
-        />
+        <UiCheckbox :value="selected.some(({ id }) => id === t.id)" />
       </div>
       <div style="width: 220px">
         {{ t.name }}
@@ -56,14 +48,11 @@ function select(t: TestResource) {
         <template v-if="t.questions?.length">
           {{ plural(t.questions.length, ["вопрос", "вопроса", "вопросов"]) }}
         </template>
-        <span
-          v-else
-          class="text-gray"
-        > нет вопросов </span>
+        <span v-else class="text-gray"> нет вопросов </span>
       </div>
       <div
         v-if="!selectable"
-        class="table-actions"
+        class="table-actionss"
       >
         <v-btn
           variant="plain"
