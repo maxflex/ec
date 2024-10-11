@@ -5,15 +5,25 @@ import type { ReportDialog } from '#build/components'
 const props = defineProps<{
   items: ReportListResource[]
 }>()
-const { user } = useAuthStore()
+const { isAdmin, isTeacher, isClient } = useAuthStore()
 const { items } = toRefs(props)
 const reportDialog = ref<InstanceType<typeof ReportDialog>>()
 
-function isRealReport(r: ReportListResource): r is RealReportItem {
+function isRealReport(r: ReportListResource): r is RealReport {
   return 'created_at' in r
 }
 
-function onUpdated(r: RealReportItem) {
+function isEditable(r: RealReport): boolean {
+  if (isTeacher) {
+    return !r.is_moderated
+  }
+  else if (isAdmin) {
+    return true
+  }
+  return false
+}
+
+function onUpdated(r: RealReport) {
   const index = items.value.findIndex(e => e.id === r.id)
   if (index === -1) {
     return
@@ -22,7 +32,7 @@ function onUpdated(r: RealReportItem) {
   itemUpdated('report', r.id)
 }
 
-function onCreated(r: RealReportItem, fakeItemId: string) {
+function onCreated(r: RealReport, fakeItemId: string) {
   const index = items.value.findIndex(e => e.id === fakeItemId)
   if (index === -1) {
     return
@@ -42,19 +52,11 @@ function onDeleted(r: ReportResource) {
 <template>
   <div class="table">
     <div v-for="r in items" :id="`report-${r.id}`" :key="r.id">
-      <div style="width: 170px">
-        <NuxtLink
-          :to="{ name: 'teachers-id', params: { id: r.teacher.id } }"
-        >
-          {{ formatNameInitials(r.teacher) }}
-        </NuxtLink>
+      <div v-if="!isTeacher" style="width: 170px">
+        <UiPerson :item="r.teacher" />
       </div>
-      <div style="width: 210px">
-        <NuxtLink
-          :to="{ name: 'clients-id', params: { id: r.client.id } }"
-        >
-          {{ formatName(r.client) }}
-        </NuxtLink>
+      <div v-if="!isClient" style="width: 220px">
+        <UiPerson :item="r.client" />
       </div>
       <div style="width: 140px">
         {{ ProgramShortLabel[r.program] }}
@@ -69,6 +71,7 @@ function onDeleted(r: ReportResource) {
             :to="{ name: 'reports-id', params: { id: r.id } }"
           />
           <v-btn
+            v-if="isEditable(r)"
             icon="$edit"
             :size="48"
             variant="plain"
@@ -78,7 +81,7 @@ function onDeleted(r: ReportResource) {
         <div style="width: 200px">
           прошло занятий: {{ r.lessons_count }}
         </div>
-        <div style="width: 110px">
+        <div v-if="!isClient" style="width: 110px">
           <span v-if="r.price">
             {{ formatPrice(r.price) }} руб.
           </span>
@@ -107,7 +110,7 @@ function onDeleted(r: ReportResource) {
         </div>
       </template>
       <template v-else>
-        <div v-if="user?.entity_type === EntityType.teacher" class="table-actionss">
+        <div v-if="isTeacher" class="table-actionss">
           <v-btn
             icon="$edit"
             :size="48"

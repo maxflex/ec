@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ClientListResource;
 use App\Http\Resources\ClientResource;
+use App\Http\Resources\PersonResource;
 use App\Models\Client;
+use App\Models\ClientParent;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -26,6 +28,16 @@ class ClientController extends Controller
     public function show(Client $client)
     {
         return new ClientResource($client);
+    }
+
+    /**
+     * Нужно для редиректа на страницу клиента по ID родителя
+     *
+     * GET parents/{clientParent}
+     */
+    public function clientParent(ClientParent $clientParent)
+    {
+        return new PersonResource($clientParent->client);
     }
 
     public function store(Request $request)

@@ -100,7 +100,7 @@ nextTick(() => {
               icon="$checkboxOff"
               class="opacity-6"
             />
-            <UiPersonLink :item="item" :type="filters.mode" />
+            <UiPerson :item="item" teacher-format="full" />
           </td>
         </tr>
       </tbody>

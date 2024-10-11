@@ -3,8 +3,8 @@ import { clone } from 'rambda'
 
 const emit = defineEmits<{
   deleted: [r: ReportResource]
-  updated: [r: RealReportItem]
-  created: [r: RealReportItem, fakeItemId: string]
+  updated: [r: RealReport]
+  created: [r: RealReport, fakeItemId: string]
 }>()
 const modelDefaults: ReportResource = {
   id: newId(),
@@ -15,7 +15,7 @@ const modelDefaults: ReportResource = {
   grade: null,
   client_lessons: [],
 }
-const { dialog, width } = useDialog('large')
+const { dialog, width } = useDialog('default')
 const itemId = ref<number>()
 let fakeItemId: string = ''
 const item = ref<ReportResource>(modelDefaults)
@@ -27,7 +27,7 @@ async function edit(reportId: number) {
   dialog.value = true
   loading.value = true
   const { data } = await useHttp<ReportResource>(
-    `reports/${reportId}`,
+      `reports/${reportId}`,
   )
   if (data.value) {
     item.value = data.value
@@ -35,7 +35,7 @@ async function edit(reportId: number) {
   loading.value = false
 }
 
-async function create(r: FakeReportItem) {
+async function create(r: FakeReport) {
   itemId.value = undefined
   fakeItemId = r.id
   item.value = clone({
@@ -69,7 +69,7 @@ async function destroy() {
 async function save() {
   dialog.value = false
   if (itemId.value) {
-    const { data } = await useHttp<RealReportItem>(`reports/${itemId.value}`, {
+    const { data } = await useHttp<RealReport>(`reports/${itemId.value}`, {
       method: 'put',
       body: item.value,
     })
@@ -78,7 +78,7 @@ async function save() {
     }
   }
   else {
-    const { data } = await useHttp<RealReportItem>('reports', {
+    const { data } = await useHttp<RealReport>('reports', {
       method: 'post',
       body: {
         ...item.value,
@@ -194,7 +194,7 @@ defineExpose({ edit, create })
         <div>
           <v-textarea
             v-model="item.homework_comment"
-            rows="5"
+            rows="3"
             no-resize
             auto-grow
             label="Выполнение домашнего задания"
@@ -203,7 +203,7 @@ defineExpose({ edit, create })
         <div>
           <v-textarea
             v-model="item.cognitive_ability_comment"
-            rows="5"
+            rows="3"
             no-resize
             auto-grow
             label="Способность усваивать новый материал"
@@ -212,7 +212,7 @@ defineExpose({ edit, create })
         <div>
           <v-textarea
             v-model="item.knowledge_level_comment"
-            rows="5"
+            rows="3"
             no-resize
             auto-grow
             label="Текущий уровень знаний"
@@ -221,7 +221,7 @@ defineExpose({ edit, create })
         <div>
           <v-textarea
             v-model="item.recommendation_comment"
-            rows="5"
+            rows="3"
             no-resize
             auto-grow
             label="Рекомендации родителям"

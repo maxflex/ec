@@ -23,7 +23,7 @@ async function loadData() {
     params: {
       count: 1,
       entity_id: entityId,
-      entity_type: EntityType[entityType],
+      entity_type: EntityTypeValue[entityType],
     },
   })
   localCount.value = data.value || 0

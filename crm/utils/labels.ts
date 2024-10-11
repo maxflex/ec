@@ -350,7 +350,7 @@ export const MonthLabelShort = [
   'дек', // декабрь
 ] as const
 
-export const EntityType = {
+export const EntityTypeValue = {
   request: 'App\\Models\\Request',
   client: 'App\\Models\\Client',
   clientParent: 'App\\Models\\ClientParent',

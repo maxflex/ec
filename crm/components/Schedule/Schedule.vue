@@ -34,7 +34,7 @@ const filters = ref({
 })
 
 const { user } = useAuthStore()
-const isMassEditable = user?.entity_type === EntityType.user && !!groupId
+const isMassEditable = user?.entity_type === EntityTypeValue.user && !!groupId
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const params = {
   // только один из них НЕ undefined

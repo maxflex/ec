@@ -22,7 +22,6 @@ use App\Http\Controllers\Admin\{BalanceController,
     MacroController,
     MangoTestController,
     PeopleSelectorController,
-    PersonController,
     PhotoController,
     PreviewController,
     PrintController,
@@ -55,7 +54,6 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::apiResource('logs', LogController::class)->only('index');
     Route::apiResource('topics', TopicController::class)->only('index');
-    Route::get('persons', PersonController::class);
     Route::post('lessons/bulk', [LessonController::class, 'bulk']);
 
     Route::post('mango-test/{event}', MangoTestController::class);
@@ -69,6 +67,8 @@ Route::middleware(['auth:crm'])->group(function () {
             Route::delete('/', 'bulkDestroy');
         });
     });
+
+    Route::get('parents/{clientParent}', [ClientController::class, 'clientParent']);
 
     Route::prefix('groups')->controller(GroupController::class)->group(function () {
         Route::post('bulk-store-candidates/{group}', 'bulkStoreCandidates');

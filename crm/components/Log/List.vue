@@ -8,7 +8,7 @@ const { items } = defineProps<{
 const userDialog = ref<InstanceType<typeof UserDialog>>()
 
 function getRouteName(log: LogResource) {
-  if (log.entity_type === EntityType.client) {
+  if (log.entity_type === EntityTypeValue.client) {
     return 'clients-id'
   }
   return 'teachers-id'
@@ -24,7 +24,7 @@ function getRouteName(log: LogResource) {
       <div style="width: 180px">
         <template v-if="log.entity">
           <a
-            v-if="log.entity_type === EntityType.user"
+            v-if="log.entity_type === EntityTypeValue.user"
             class="cursor-pointer"
             @click="userDialog?.edit(log.entity as UserResource)"
           >

@@ -83,7 +83,7 @@ nextTick(loadData)
               <tbody>
                 <tr v-for="p in participants" :key="p.id">
                   <td style="width: 400px" class="pl-5">
-                    <UiPersonLink :item="p.entity" :type="key" />
+                    <UiPerson :item="p.entity" />
                   </td>
                   <td>
                     <v-menu>

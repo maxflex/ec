@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PersonResource;
+use App\Models\Client;
 use App\Models\Teacher;
 use App\Utils\Swamp;
 use Illuminate\Http\Request;
@@ -45,7 +46,9 @@ class PeopleSelectorController extends Controller
         $this->filter(new Request($request->except('group_id')), $groupsQ, $this->clientFilters);
 
         $clientsQ = (clone $query)
-            ->selectRaw("c.id, c.last_name, c.first_name, c.middle_name")
+            ->selectRaw("c.id, c.last_name, c.first_name, c.middle_name, ? as entity_type", [
+                Client::class
+            ])
             ->join('clients as c', 'c.id', '=', 'client_id')
             ->groupBy('c.id')
             ->orderByRaw("c.last_name, c.first_name, c.middle_name");

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Teacher\{BalanceController,
     ClientGroupController,
+    ClientReviewController,
     GradeController,
     GroupController,
     InstructionController,
@@ -24,5 +25,6 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::apiResources([
         'reports' => ReportController::class,
         'grades' => GradeController::class,
+        'client-reviews' => ClientReviewController::class,
     ]);
 });

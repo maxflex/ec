@@ -16,18 +16,18 @@ const { user } = useAuthStore()
 
 const isConductable = (function () {
   switch (user?.entity_type) {
-    case EntityType.teacher:
+    case EntityTypeValue.teacher:
       return true
-    case EntityType.client:
+    case EntityTypeValue.client:
       return false
     default:
       return item.status === 'conducted'
   }
 })()
 
-const isEditable = user?.entity_type === EntityType.user
+const isEditable = user?.entity_type === EntityTypeValue.user
 
-const isClient = user?.entity_type === EntityType.client
+const isClient = user?.entity_type === EntityTypeValue.client
 </script>
 
 <template>

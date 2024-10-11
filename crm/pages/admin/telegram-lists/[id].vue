@@ -101,7 +101,7 @@ nextTick(loadData)
             <div class="table table--padding">
               <div v-for="p in people" :key="p.id">
                 <div style="width: 380px">
-                  <UiPersonLink :item="p" :type="key" />
+                  <UiPerson :item="p" />
                 </div>
                 <template v-if="item?.results">
                   <div style="width: 250px">

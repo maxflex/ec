@@ -247,10 +247,10 @@ export function formatYear(year: Year): string {
 
 export function formatName(
   person: PersonResource,
-  type: 'last-first' | 'full' | 'initials' = 'last-first',
+  format: NameFormat = 'last-first',
 ): string {
   let name = []
-  switch (type) {
+  switch (format) {
     case 'full':
       name = [person.last_name, person.first_name, person.middle_name]
       break

@@ -13,13 +13,13 @@ function stopPropagation(e: MouseEvent) {
     <template v-if="phone === null">
       Неизвестный
     </template>
-    <template v-else-if="phone.entity_type === EntityType.client">
+    <template v-else-if="phone.entity_type === EntityTypeValue.client">
       Клиент:
       <RouterLink :to="{ name: 'clients-id', params: { id: phone.person.id } }" @click="stopPropagation">
         {{ formatName(phone.person) }}
       </RouterLink>
     </template>
-    <template v-else-if="phone.entity_type === EntityType.clientParent">
+    <template v-else-if="phone.entity_type === EntityTypeValue.clientParent">
       Родитель:
       <RouterLink :to="{ name: 'clients-id', params: { id: phone.person.id } }" @click="stopPropagation">
         {{ formatName(phone.person) }}

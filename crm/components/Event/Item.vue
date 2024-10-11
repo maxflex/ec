@@ -10,7 +10,7 @@ defineEmits<{
 
 const router = useRouter()
 
-const isEditable = useAuthStore().user?.entity_type === EntityType.user
+const isEditable = useAuthStore().user?.entity_type === EntityTypeValue.user
 const isConfirmed = ref<boolean>(item.participant?.confirmation === 'confirmed')
 
 function confirmParticipant() {

@@ -3,20 +3,23 @@ import { clone } from 'rambda'
 
 const emit = defineEmits<{
   deleted: [r: ClientReviewResource]
-  updated: [r: RealClientReviewItem]
-  created: [r: RealClientReviewItem, fakeItemId: string]
+  updated: [r: RealClientReview]
+  created: [r: RealClientReview, fakeItemId: string]
 }>()
 const modelDefaults: ClientReviewResource = {
   id: newId(),
   text: '',
   rating: 0,
 }
+const { isTeacher } = useAuthStore()
 const { dialog, width } = useDialog('default')
 const itemId = ref<number>()
 let fakeItemId: string = ''
 const item = ref<ClientReviewResource>(modelDefaults)
 const loading = ref(false)
 const deleting = ref(false)
+// созданные отзывы препод может только просматривать
+const isEditable = computed(() => isTeacher ? itemId.value === undefined : true)
 
 async function edit(clientReviewId: number) {
   itemId.value = clientReviewId
@@ -31,7 +34,7 @@ async function edit(clientReviewId: number) {
   loading.value = false
 }
 
-async function create(r: FakeClientReviewItem) {
+async function create(r: FakeClientReview) {
   itemId.value = undefined
   fakeItemId = r.id
   item.value = clone({
@@ -64,7 +67,7 @@ async function destroy() {
 async function save() {
   dialog.value = false
   if (itemId.value) {
-    const { data } = await useHttp<RealClientReviewItem>(`reports/${itemId.value}`, {
+    const { data } = await useHttp<RealClientReview>(`reports/${itemId.value}`, {
       method: 'put',
       body: item.value,
     })
@@ -73,7 +76,7 @@ async function save() {
     }
   }
   else {
-    const { data } = await useHttp<RealClientReviewItem>('reports', {
+    const { data } = await useHttp<RealClientReview>('reports', {
       method: 'post',
       body: {
         ...item.value,
@@ -94,7 +97,13 @@ defineExpose({ edit, create })
     <div class="dialog-wrapper">
       <div class="dialog-header">
         <div v-if="itemId">
-          Редактирование отзыва
+          <template v-if="isEditable">
+            Редактирование
+          </template>
+          <template v-else>
+            Просмотр
+          </template>
+          отзыва
           <div class="dialog-subheader">
             <template v-if="item.created_at && item.user">
               {{ formatName(item.user) }}
@@ -105,7 +114,7 @@ defineExpose({ edit, create })
         <template v-else>
           Новый отзыв
         </template>
-        <div>
+        <div v-if="isEditable">
           <v-btn
             v-if="itemId"
             icon="$delete"
@@ -131,6 +140,7 @@ defineExpose({ edit, create })
             hover
             active-color="orange"
             color="orange"
+            :readonly="!isEditable"
           />
         </div>
         <div class="double-input">
@@ -163,6 +173,7 @@ defineExpose({ edit, create })
             rows="3"
             no-resize
             auto-grow
+            :disabled="!isEditable"
             label="Текст отзыва"
           />
         </div>

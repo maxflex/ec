@@ -2,9 +2,13 @@
 
 namespace App\Http\Resources;
 
+use App\Models\ClientReview;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin ClientReview
+ */
 class ClientReviewListResource extends JsonResource
 {
     /**
@@ -17,7 +21,8 @@ class ClientReviewListResource extends JsonResource
         // real
         if ($this->id) {
             return extract_fields($this, [
-                'program', 'rating', 'created_at'
+                'program', 'rating', 'created_at', 'lessons_count',
+                'text'
             ], [
                 'teacher' => new PersonResource($this->teacher),
                 'client' => new PersonResource($this->client),
@@ -25,7 +30,7 @@ class ClientReviewListResource extends JsonResource
         }
         // fake
         return extract_fields($this, [
-            'program'
+            'program', 'lessons_count',
         ], [
             'id' => uniqid(),
             'teacher' => new PersonResource($this->teacher),

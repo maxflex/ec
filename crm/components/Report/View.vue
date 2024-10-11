@@ -41,7 +41,7 @@ nextTick(loadData)
         <div>Ученик:</div>
         <div>
           <RouterLink
-            v-if="user?.entity_type === EntityType.user"
+            v-if="user?.entity_type === EntityTypeValue.user"
             :to="{ name: 'clients-id', params: { id: item.client!.id } }"
           >
             {{ formatName(item.client!) }}

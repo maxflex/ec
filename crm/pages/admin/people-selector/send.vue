@@ -145,7 +145,7 @@ nextTick(async () => {
                         icon="$checkboxOff"
                         class="opacity-6"
                       />
-                      <UiPersonLink :item="p" :type="key" />
+                      <UiPerson :item="p" />
                     </div>
                   </td>
                 </tr>

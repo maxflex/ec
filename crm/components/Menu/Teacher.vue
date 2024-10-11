@@ -6,6 +6,7 @@ import {
   mdiFileDocumentEditOutline,
   mdiFileSign,
   mdiNumeric5BoxMultiple,
+  mdiStarBoxOutline,
 } from '@mdi/js'
 
 const { user } = useAuthStore()
@@ -25,6 +26,11 @@ const menu: Menu = [
     icon: mdiFileDocumentEditOutline,
     title: 'Отчёты',
     to: '/reports',
+  },
+  {
+    icon: mdiStarBoxOutline,
+    title: 'Отзывы',
+    to: '/client-reviews',
   },
   {
     icon: mdiNumeric5BoxMultiple,

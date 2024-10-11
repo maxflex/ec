@@ -64,7 +64,7 @@ nextTick(loadData)
           <PreviewModeBtn
             :user="{
               id: teacher.id,
-              entity_type: EntityType.teacher,
+              entity_type: EntityTypeValue.teacher,
             }"
           />
           <v-btn

@@ -10,8 +10,8 @@ const entityType = user!.entity_type
     </RouterLink>
     <h3>ЕГЭ-Центр</h3>
   </div>
-  <MenuAdmin v-if="entityType === EntityType.user" />
-  <MenuTeacher v-else-if="entityType === EntityType.teacher" />
+  <MenuAdmin v-if="entityType === EntityTypeValue.user" />
+  <MenuTeacher v-else-if="entityType === EntityTypeValue.teacher" />
   <MenuClient v-else />
 </template>
 

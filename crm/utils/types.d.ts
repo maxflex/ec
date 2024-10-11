@@ -51,7 +51,9 @@ declare global {
 
   type Year = keyof typeof YearLabel
 
-  type EntityString = keyof typeof EntityType
+  type EntityString = keyof typeof EntityTypeValue
+
+  type EntityType = keyof typeof EntityTypeLabel
 
   type LessonStatus = keyof typeof LessonStatusLabel
 
@@ -83,19 +85,18 @@ declare global {
     noData: boolean
   }
 
+  type NameFormat = 'last-first' | 'full' | 'initials'
+
   interface PersonResource {
     id: number
     first_name: string | null
     last_name: string | null
     middle_name: string | null
+    entity_type: EntityType
   }
 
   type PersonWithPhonesResource = PersonResource & HasPhones
   type PersonWithPhotoResource = PersonResource & HasPhoto
-  type PersonListResource = PersonWithPhotoResource & {
-    entity_id: number
-    entity_type: typeof EntityType.teacher | typeof EntityType.client
-  }
 
   type ResponseErrors = string[]
 
@@ -124,8 +125,6 @@ declare global {
   }
 
   interface AuthResource extends PersonResource, HasPhoto {
-    id: number
-    entity_type: typeof EntityType.client | typeof EntityType.user | typeof EntityType.teacher
     telegram_id: string | null
     is_call_notifications: boolean
     number: string // phone number
@@ -142,7 +141,7 @@ declare global {
     comment: string | null
     is_verified: boolean
     telegram_id: number | null
-    entity_type: typeof EntityType.client | typeof EntityType.teacher | typeof EntityType.clientParent | typeof EntityType.user
+    entity_type: EntityType
   }
 
   interface RequestResource {
@@ -465,23 +464,26 @@ declare global {
     created_at?: string
   }
 
-  interface RealClientReviewItem {
+  interface RealClientReview {
     id: number
     rating: number
+    lessons_count: number
+    text: string
     program: Program
     teacher: PersonResource
     client: PersonResource
     created_at: string
   }
 
-  interface FakeClientReviewItem {
+  interface FakeClientReview {
     id: string
+    lessons_count: number
     program: Program
     teacher: PersonResource
     client: PersonResource
   }
 
-  type ClientReviewListResource = RealClientReviewItem | FakeClientReviewItem
+  type ClientReviewListResource = RealClientReview | FakeClientReview
 
   interface ClientReviewResource {
     id: number
@@ -580,11 +582,7 @@ declare global {
     entity: PersonResource | null
     row_id: number | null
     ip: string
-    entity_type:
-      | typeof EntityType.client
-      | typeof EntityType.teacher
-      | typeof EntityType.user
-      | null
+    entity_type: ?EntityType
     data: any
   }
 
@@ -593,7 +591,7 @@ declare global {
     value: string | number | boolean
   }>
 
-  interface RealReportItem {
+  interface RealReport {
     id: number
     year: Year
     is_published: boolean
@@ -606,7 +604,7 @@ declare global {
     price: number | null
   }
 
-  interface FakeReportItem {
+  interface FakeReport {
     id: string
     year: Year
     teacher: PersonResource
@@ -615,7 +613,7 @@ declare global {
     lessons_count: number
   }
 
-  type ReportListResource = RealReportItem | FakeReportItem
+  type ReportListResource = RealReport | FakeReport
 
   interface ReportResource {
     id: number
@@ -912,7 +910,7 @@ declare global {
   interface CallAppPhoneResource {
     id: number
     comment: ?string
-    entity_type: (typeof EntityType)[keyof typeof EntityType]
+    entity_type: EntityType
     person: PersonResource
   }
 

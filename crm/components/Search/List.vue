@@ -8,9 +8,9 @@ const qWords = q.split(' ').filter(Boolean)
 
 function getLink(item: SearchResultResource): string {
   switch (item.entity_type) {
-    case EntityType.teacher:
+    case EntityTypeValue.teacher:
       return `teachers/${item.id}`
-    case EntityType.clientParent:
+    case EntityTypeValue.clientParent:
       return `clients/${item.client_id}`
   }
   return `clients/${item.id}`

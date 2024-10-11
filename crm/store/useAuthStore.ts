@@ -6,6 +6,9 @@ export const useAuthStore = defineStore('auth', () => {
   const token = useCookie('token', forever)
   const previewToken = useCookie('preview-token')
   const rememberUser = useCookie<AuthResource | undefined>('remember-user', forever)
+  const isAdmin = ref(false)
+  const isClient = ref(false)
+  const isTeacher = ref(false)
 
   /**
    *
@@ -27,7 +30,7 @@ export const useAuthStore = defineStore('auth', () => {
       previewToken.value = undefined
       token.value = t
       // если не учитель, сохраняем в remember me
-      if (u.entity_type !== EntityType.teacher) {
+      if (u.entity_type !== EntityTypeValue.teacher) {
         rememberUser.value = u
       }
       setTimeout(() => window.location.href = sessionStorage.getItem('redirect') || '/')
@@ -53,6 +56,10 @@ export const useAuthStore = defineStore('auth', () => {
   async function getLoggedUser() {
     const { data } = await useHttp<AuthResource>('common/auth/user')
     if (data.value) {
+      const entityType = data.value.entity_type
+      isAdmin.value = entityType === EntityTypeValue.user
+      isClient.value = entityType === EntityTypeValue.client
+      isTeacher.value = entityType === EntityTypeValue.teacher
       user.value = data.value
     }
   }
@@ -60,6 +67,9 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     user,
     rememberUser,
+    isAdmin,
+    isClient,
+    isTeacher,
     logIn,
     logOut,
     getCurrentToken,

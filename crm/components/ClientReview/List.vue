@@ -6,12 +6,13 @@ const props = defineProps<{
 }>()
 const { items } = toRefs(props)
 const clientReviewDialog = ref<InstanceType<typeof ClientReviewDialog>>()
+const { isTeacher } = useAuthStore()
 
-function isRealClientReview(r: ClientReviewListResource): r is RealClientReviewItem {
+function isRealClientReview(r: ClientReviewListResource): r is RealClientReview {
   return 'rating' in r
 }
 
-function onUpdated(r: RealClientReviewItem) {
+function onUpdated(r: RealClientReview) {
   const index = items.value.findIndex(e => e.id === r.id)
   if (index === -1) {
     return
@@ -20,7 +21,7 @@ function onUpdated(r: RealClientReviewItem) {
   itemUpdated('clientReview', r.id)
 }
 
-function onCreated(r: RealClientReviewItem, fakeItemId: string) {
+function onCreated(r: RealClientReview, fakeItemId: string) {
   const index = items.value.findIndex(e => e.id === fakeItemId)
   if (index === -1) {
     return
@@ -40,22 +41,17 @@ function onDeleted(r: ClientReviewResource) {
 <template>
   <div class="table">
     <div v-for="r in items" :id="`client-review-${r.id}`" :key="r.id">
-      <div style="width: 170px">
-        <NuxtLink
-          :to="{ name: 'teachers-id', params: { id: r.teacher.id } }"
-        >
-          {{ formatNameInitials(r.teacher) }}
-        </NuxtLink>
+      <div v-if="!isTeacher" style="width: 170px">
+        <UiPerson :item="r.teacher" />
       </div>
       <div style="width: 210px">
-        <NuxtLink
-          :to="{ name: 'clients-id', params: { id: r.client.id } }"
-        >
-          {{ formatName(r.client) }}
-        </NuxtLink>
+        <UiPerson :item="r.client" />
       </div>
-      <div style="width: 140px">
+      <div style="width: 100px">
         {{ ProgramShortLabel[r.program] }}
+      </div>
+      <div style="width: 180px">
+        прошло занятий: {{ r.lessons_count }}
       </div>
       <template v-if="isRealClientReview(r)">
         <div class="table-actionss">
@@ -66,8 +62,11 @@ function onDeleted(r: ClientReviewResource) {
             @click="clientReviewDialog?.edit(r.id)"
           />
         </div>
-        <div class="text-gray" style="width: 200px">
-          отзыв от {{ formatDate(r.created_at) }}
+        <div style="width: 220px">
+          {{ filterTruncate(r.text, 20) }}
+        </div>
+        <div class="text-gray" style="width: 100px">
+          {{ formatDate(r.created_at) }}
         </div>
         <div style="justify-content: flex-end;" class="d-flex">
           <UiRating v-model="r.rating" />

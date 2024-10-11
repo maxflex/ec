@@ -8,7 +8,7 @@ const { items } = defineProps<{
   <div class="table telegram-message-list">
     <div v-for="m in items" :key="m.id">
       <div class="telegram-message-list__avatar-name">
-        <UiPersonLink :item="m.entity" :type="m.entity_type" />
+        <UiPerson :item="m.entity" />
       </div>
       <div style="width: 170px">
         <span :class="m.telegram_id ? 'text-success' : 'text-error'">

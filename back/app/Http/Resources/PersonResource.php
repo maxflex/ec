@@ -16,6 +16,8 @@ class PersonResource extends JsonResource
     {
         return extract_fields($this, [
             'first_name', 'last_name', 'middle_name'
+        ], [
+            'entity_type' => $this->entity_type ?? get_class($this->resource),
         ]);
     }
 }

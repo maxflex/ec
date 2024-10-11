@@ -112,17 +112,17 @@ class Phone extends Model implements Authenticatable
         return count($candidates) !== 1 ? null : $candidates[0];
     }
 
-    public function isAdmin(): bool
+    public function getIsAdminAttribute(): bool
     {
         return $this->entity_type === User::class;
     }
 
-    public function isTeacher(): bool
+    public function getIsTeacherAttribute(): bool
     {
         return $this->entity_type === Teacher::class;
     }
 
-    public function isClient(): bool
+    public function getIsClientAttribute(): bool
     {
         return in_array($this->entity_type, [
             Client::class,

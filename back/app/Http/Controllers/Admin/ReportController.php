@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReportListResource;
 use App\Http\Resources\ReportResource;
-use App\Models\FakeReport;
 use App\Models\Report;
 use Illuminate\Http\Request;
 
@@ -28,10 +27,10 @@ class ReportController extends Controller
         ]);
 
         $query = Report::query()
-            ->prepareForUnion()
+            ->selectForUnion()
             ->with(['teacher', 'client']);
 
-        $fakeQuery = FakeReport::query();
+        $fakeQuery = Report::fakeQuery();
 
         $this->filter($request, $query);
         $this->filter($request, $fakeQuery);

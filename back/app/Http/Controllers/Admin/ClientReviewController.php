@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ClientReviewListResource;
-use App\Http\Resources\ClientReviewResource;
-use App\Models\{ClientReview, FakeClientReview};
+use App\Http\Resources\{ClientReviewListResource, ClientReviewResource};
+use App\Models\ClientReview;
 use Illuminate\Http\Request;
 
 class ClientReviewController extends Controller
@@ -19,10 +18,10 @@ class ClientReviewController extends Controller
     {
         $query = ClientReview::query()
             ->latest()
-            ->prepareForUnion()
+            ->selectForUnion()
             ->with(['teacher', 'client']);
 
-        $fakeQuery = FakeClientReview::query();
+        $fakeQuery = ClientReview::fakeQuery();
 
         $this->filter($request, $query);
         $this->filter($request, $fakeQuery);

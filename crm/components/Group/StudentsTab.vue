@@ -7,7 +7,7 @@ const loading = ref(true)
 const items = ref<ClientGroupResource[]>([])
 const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
 const groupAddStudentDialog = ref<InstanceType<typeof GroupAddStudentDialog>>()
-const isEditable = useAuthStore().user?.entity_type === EntityType.user
+const isEditable = useAuthStore().user?.entity_type === EntityTypeValue.user
 
 // удалить из группы
 async function removeFromGroup(gc: ClientGroupResource) {

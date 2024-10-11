@@ -36,7 +36,7 @@ async function send() {
     body: {
       text: text.value,
       entity_id: entityId,
-      entity_type: EntityType[entityType],
+      entity_type: EntityTypeValue[entityType],
     },
   })
   if (data.value) {
@@ -53,7 +53,7 @@ async function loadData() {
   const { data } = await useHttp<ApiResponse<CommentResource[]>>('comments', {
     params: {
       entity_id: entityId,
-      entity_type: EntityType[entityType],
+      entity_type: EntityTypeValue[entityType],
     },
   })
   if (data.value) {

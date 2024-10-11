@@ -67,7 +67,7 @@ const { user } = useAuthStore()
         <ClientTestCountDown v-else-if="t.is_active" :item="t" />
       </div>
       <!-- ADMIN -->
-      <template v-if="user?.entity_type === EntityType.user">
+      <template v-if="user?.entity_type === EntityTypeValue.user">
         <div v-if="!t.is_active && !t.is_finished" class="table-actionss" style="top: 12px">
           <v-btn
             icon="$close"
