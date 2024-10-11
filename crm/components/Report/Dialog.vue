@@ -15,7 +15,7 @@ const modelDefaults: ReportResource = {
   grade: null,
   client_lessons: [],
 }
-const { dialog, width } = useDialog('default')
+const { dialog, width } = useDialog('large')
 const itemId = ref<number>()
 let fakeItemId: string = ''
 const item = ref<ReportResource>(modelDefaults)
@@ -194,7 +194,7 @@ defineExpose({ edit, create })
         <div>
           <v-textarea
             v-model="item.homework_comment"
-            rows="3"
+            rows="5"
             no-resize
             auto-grow
             label="Выполнение домашнего задания"
@@ -203,7 +203,7 @@ defineExpose({ edit, create })
         <div>
           <v-textarea
             v-model="item.cognitive_ability_comment"
-            rows="3"
+            rows="5"
             no-resize
             auto-grow
             label="Способность усваивать новый материал"
@@ -212,7 +212,7 @@ defineExpose({ edit, create })
         <div>
           <v-textarea
             v-model="item.knowledge_level_comment"
-            rows="3"
+            rows="5"
             no-resize
             auto-grow
             label="Текущий уровень знаний"
@@ -221,7 +221,7 @@ defineExpose({ edit, create })
         <div>
           <v-textarea
             v-model="item.recommendation_comment"
-            rows="3"
+            rows="5"
             no-resize
             auto-grow
             label="Рекомендации родителям"

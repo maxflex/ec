@@ -1,3 +1,5 @@
+<!-- Добавить ученика в текущую группу -->
+
 <script setup lang="ts">
 const { group } = defineProps<{ group: GroupResource }>()
 
@@ -11,17 +13,17 @@ const filters = ref<SwampFilters>({
   status: 'toFulfil',
 })
 
-const items = ref<SwampListResource[]>([])
-const indexPageData = ref<IndexPageData>()
+const { items, indexPageData, reloadData } = useIndex<SwampListResource, SwampFilters>(
+    `swamps`,
+    filters,
+    {
+      instantLoad: false,
+    },
+)
 
 function open() {
   dialog.value = true
-  const data = useIndex<SwampListResource, SwampFilters>(
-      `swamps`,
-      filters,
-  )
-  items.value = data.items.value
-  indexPageData.value = data.indexPageData.value
+  reloadData()
 }
 
 async function onSelect(item: SwampListResource) {

@@ -21,6 +21,7 @@ class ReportController extends Controller
      */
     public function show(Report $report)
     {
+        abort_if(!$report->is_published, 404);
         abort_if($report->client_id !== auth()->id(), 404);
         return new ReportResource($report);
     }

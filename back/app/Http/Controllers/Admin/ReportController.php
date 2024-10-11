@@ -44,8 +44,9 @@ class ReportController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Report $report)
+    public function show(Report $report, Request $request)
     {
+        abort_if(!$report->is_published && $request->has('is_published'), 404);
         return new ReportResource($report);
     }
 
