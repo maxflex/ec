@@ -70,7 +70,7 @@ function key_by($data, string $field, string $field2 = null, $value = null): arr
 
 function cdn(string $folder, string $file)
 {
-    return "https://cdn.ege-centr.ru/{$folder}/{$file}";
+    return "https://cdn.ege-centr.ru/crm/{$folder}/{$file}";
 }
 
 function is_localhost()

@@ -6,10 +6,10 @@
         autoplay
         loop
         muted
-        poster="https://cdn.ege-centr.ru/videos/first-frame.webp"
+        poster="https://cdn.ege-centr.ru/cdn/videos/first-frame.webp"
       >
         <source
-          src="https://cdn.ege-centr.ru/videos/loop.mp4"
+          src="https://cdn.ege-centr.ru/cdn/videos/loop.mp4"
           type="video/mp4"
         >
         Your browser does not support the video tag.

@@ -5,7 +5,12 @@ namespace App\Models;
 use App\Contracts\HasTeeth;
 use App\Traits\{HasName, HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable};
 use App\Utils\Teeth;
-use Illuminate\Database\Eloquent\{Casts\Attribute, Model, Relations\HasMany, Relations\HasOne, Relations\MorphMany};
+use Illuminate\Database\Eloquent\{Casts\Attribute,
+    Model,
+    Relations\BelongsTo,
+    Relations\HasMany,
+    Relations\HasOne,
+    Relations\MorphMany};
 use Illuminate\Support\Collection;
 use Laravel\Scout\Searchable;
 
@@ -36,6 +41,11 @@ class Client extends Model implements HasTeeth
     public function parent(): HasOne
     {
         return $this->hasOne(ClientParent::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**

@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\Program;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,6 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('tests');
         Schema::create('tests', function (Blueprint $table) {
             $table->id();
             $table->enum(
@@ -19,10 +21,10 @@ return new class extends Migration
                 collect(Program::cases())->map(fn ($e) => $e->name)->all()
             )->nullable();
             $table->string('name');
-            $table->string('file')->nullable();
+            $table->json('file')->nullable();
             $table->integer('minutes');
             $table->json('questions')->nullable();
-            $table->json('results')->nullable();
+            $table->foreignIdFor(User::class)->constrained();
             $table->timestamps();
         });
     }

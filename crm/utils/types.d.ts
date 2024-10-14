@@ -87,15 +87,17 @@ declare global {
 
   type NameFormat = 'last-first' | 'full' | 'initials'
 
-  interface PersonResource {
+  interface HasName {
     id: number
     first_name: string | null
     last_name: string | null
     middle_name: string | null
+  }
+
+  interface PersonResource extends HasName {
     entity_type: EntityType
   }
 
-  type PersonWithPhonesResource = PersonResource & HasPhones
   type PersonWithPhotoResource = PersonResource & HasPhoto
 
   type ResponseErrors = string[]
@@ -167,7 +169,7 @@ declare global {
     comments_count: number
   }
 
-  interface ParentResource extends PersonResource, HasPhones {
+  interface ParentResource extends HasName, HasPhones {
     passport_series: string | null
     passport_number: string | null
     passport_address: string | null
@@ -181,7 +183,7 @@ declare global {
     created_at: string
   }
 
-  interface ClientResource extends PersonResource, HasPhoto, HasPhones {
+  interface ClientResource extends HasName, HasPhoto, HasPhones {
     branches: Branch[]
     birthdate?: string
     head_teacher_id?: number
@@ -524,10 +526,10 @@ declare global {
     client_id: number
     program: Program
     name: string
-    file: string
+    file: UploadedFile
     minutes: number
     seconds_left?: number
-    questions: TestQuestions
+    questions: TestQuestion[]
     answers: TestAnswers | null
     started_at: string | null
     finished_at: string | null
@@ -538,24 +540,22 @@ declare global {
     created_at: string
   }
 
-  interface TestResource {
-    id: number
-    program: Program | null
-    name: string
-    file: string | null
-    minutes: number
-    questions: TestQuestions | null
-    created_at: string | null
-    updated_at: string | null
-    user?: PersonResource
-  }
-
   interface TestQuestion {
     answer: number | null
     score: number | null
   }
 
-  type TestQuestions = TestQuestion[]
+  interface TestResource {
+    id: number
+    program: Program | null
+    name: string
+    file: ?UploadedFile
+    minutes: number
+    questions: TestQuestion[]
+    created_at?: string
+    updated_at?: string
+    user?: PersonResource
+  }
 
   type TestAnswers = Array<number | undefined | null>
 

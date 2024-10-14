@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\JsonArrayCast;
 use App\Enums\Program;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -15,8 +16,9 @@ class ClientTest extends Model
 
     protected $casts = [
         'program' => Program::class,
-        'questions' => 'array',
-        'answers' => 'array',
+        'questions' => JsonArrayCast::class,
+        'answers' => JsonArrayCast::class,
+        'file' => 'array',
     ];
 
     public function client()
@@ -93,11 +95,6 @@ class ClientTest extends Model
     public function getQuestionsCountAttribute(): int
     {
         return count($this->questions);
-    }
-
-    public function getFileAttribute($file): string
-    {
-        return cdn('tests', $file);
     }
 
     public function start()

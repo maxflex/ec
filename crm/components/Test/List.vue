@@ -16,11 +16,13 @@ function select(t: TestResource) {
 </script>
 
 <template>
-  <div class="table">
+  <div
+    class="table"
+    :class="{ 'table--hover': selectable }"
+  >
     <div
       v-for="t in tests"
       :key="t.id"
-      :class="{ 'cursor-pointer': selectable }"
       @click="select(t)"
     >
       <div v-if="selected">

@@ -194,7 +194,7 @@ defineExpose({ create, edit })
           />
         </div>
         <div>
-          <FileUploader v-model="lesson.files" />
+          <FileUploader v-model="lesson.files" folder="lessons" />
         </div>
         <div>
           <v-checkbox

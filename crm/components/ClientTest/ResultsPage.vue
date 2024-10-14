@@ -23,7 +23,7 @@ nextTick(loadData)
     v-if="test && test.is_finished"
     class="test"
   >
-    <iframe :src="test.file" />
+    <iframe :src="test.file.url" />
     <div>
       <div class="test__questions">
         <div

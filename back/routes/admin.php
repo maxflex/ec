@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\{BalanceController,
     ErrorController,
     EventParticipantController,
     ExamScoreController,
+    FileController,
     GradeController,
     GroupController,
     InstructionController,
@@ -59,7 +60,6 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::post('mango-test/{event}', MangoTestController::class);
 
     Route::prefix('lessons')->controller(LessonController::class)->group(function () {
-        Route::post('upload-file', 'uploadFile');
         // Групповое редактирование уроков
         Route::prefix('bulk')->group(function () {
             Route::post('/', 'bulkStore');
@@ -105,6 +105,8 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::get('people-selector', PeopleSelectorController::class);
 
     Route::post('telegram-lists/load-people', [TelegramListController::class, 'loadPeople']);
+
+    Route::post('files', FileController::class);
 
     Route::apiResources([
         'telegram-lists' => TelegramListController::class,

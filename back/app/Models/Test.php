@@ -2,30 +2,24 @@
 
 namespace App\Models;
 
+use App\Casts\JsonArrayCast;
 use App\Enums\Program;
 use Illuminate\Database\Eloquent\Model;
 
 class Test extends Model
 {
     protected $fillable = [
-        'name', 'minutes', 'program', 'questions'
+        'name', 'minutes', 'program', 'questions', 'file'
     ];
 
     protected $casts = [
         'program' => Program::class,
-        'questions' => 'array',
+        'questions' => JsonArrayCast::class,
+        'file' => 'array',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function getFileAttribute($file): ?string
-    {
-        if (!$file) {
-            return null;
-        }
-        return cdn('tests', $file);
     }
 }

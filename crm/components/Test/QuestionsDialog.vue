@@ -1,13 +1,13 @@
 <script setup lang="ts">
 const emit = defineEmits<{
-  (e: 'saved', questions: TestQuestions): void
+  (e: 'saved', questions: TestQuestion[]): void
 }>()
 
-const questions = ref<TestQuestions>([])
+const questions = ref<TestQuestion[]>([])
 
 const { dialog, width, transition } = useDialog('default')
 
-function open(preSelect: TestQuestions) {
+function open(preSelect: TestQuestion[]) {
   dialog.value = true
   questions.value = [...preSelect]
 }

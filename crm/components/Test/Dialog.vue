@@ -5,32 +5,28 @@ import type { TestQuestionsDialog } from '#build/components'
 const emit = defineEmits<{
   (e: 'updated'): void
 }>()
+const modelDefaults: TestResource = {
+  id: newId(),
+  minutes: 30,
+  name: '',
+  file: null,
+  program: null,
+  questions: [],
+}
 const { dialog, width } = useDialog('default')
-const item = ref<TestResource>()
+const item = ref<TestResource>({ ...modelDefaults })
 const input = ref()
-const fileInput = ref()
-const pdf = ref()
 const loading = ref(false)
 const deleting = ref(false)
 const questionsDialog = ref<InstanceType<typeof TestQuestionsDialog>>()
+
 function open(t: TestResource) {
-  pdf.value = null
   item.value = clone(t)
   dialog.value = true
 }
 
 function create() {
-  item.value = {
-    id: 0,
-    minutes: 30,
-    name: '',
-    file: '',
-    program: null,
-    questions: null,
-    results: null,
-    created_at: null,
-    updated_at: null,
-  }
+  item.value = { ...modelDefaults }
   dialog.value = true
   nextTick(() => {
     input.value.reset()
@@ -38,9 +34,9 @@ function create() {
   })
 }
 
-async function storeOrUpdate() {
+async function save() {
   loading.value = true
-  const { data } = item.value?.id
+  const { data } = item.value.id > 0
     ? await useHttp(`tests/${item.value.id}`, {
       method: 'PUT',
       body: item.value,
@@ -50,45 +46,16 @@ async function storeOrUpdate() {
       body: item.value,
     })
   item.value = data.value as TestResource
-  await uploadPdf()
   dialog.value = false
   loading.value = false
   emit('updated')
 }
 
-async function uploadPdf() {
-  if (!pdf.value || !item.value?.id) {
-    return
-  }
-  const formData = new FormData()
-  formData.append('pdf', pdf.value)
-  await useHttp(`tests/upload-pdf/${item.value.id}`, {
-    method: 'POST',
-    body: formData,
-  })
-}
-
-function onQuestionsSaved(questions: TestQuestions) {
+function onQuestionsSaved(questions: TestQuestion[]) {
   if (!item.value) {
     return
   }
   item.value.questions = questions
-}
-
-function selectFile() {
-  fileInput.value.click()
-}
-
-function onFileSelected(e: Event) {
-  const target = e.target as HTMLInputElement
-  if (target.files?.length) {
-    pdf.value = target.files[0]
-  }
-}
-
-function getFileName(f: string) {
-  const parts = f.split('/')
-  return parts[parts.length - 1]
 }
 
 async function destroy() {
@@ -96,7 +63,7 @@ async function destroy() {
     return
   }
   deleting.value = true
-  const { status } = await useHttp(`tests/${item.value?.id}`, {
+  const { status } = await useHttp(`tests/${item.value.id}`, {
     method: 'delete',
   })
   if (status.value === 'error') {
@@ -143,17 +110,11 @@ defineExpose({ open, create })
             @click="destroy()"
           />
           <v-btn
-            icon="$file"
-            :size="48"
-            variant="text"
-            @click="selectFile()"
-          />
-          <v-btn
             icon="$save"
             :size="48"
             :loading="loading"
             variant="text"
-            @click="storeOrUpdate()"
+            @click="save()"
           />
         </div>
       </div>
@@ -181,54 +142,15 @@ defineExpose({ open, create })
           />
         </div>
         <div>
-          <UiIconLink @click="() => questionsDialog?.open(item?.questions)">
+          <FileUploader v-model="item.file" folder="tests" />
+        </div>
+        <div>
+          <UiIconLink @click="() => questionsDialog?.open(item.questions)">
             редактировать вопросы
             <template v-if="item.questions?.length">
               ({{ item.questions.length }})
             </template>
           </UiIconLink>
-        </div>
-        <div>
-          <input
-            ref="fileInput"
-            style="display: none"
-            type="file"
-            accept="application/pdf"
-            @change="onFileSelected"
-          >
-          <v-slide-y-transition>
-            <div
-              v-if="pdf"
-              class="pdf-file"
-            >
-              <img src="/img/pdf.svg">
-              <div>
-                <div class="text-gray">
-                  {{ pdf.name }}
-                </div>
-                <div class="text-gray">
-                  {{ humanFileSize(pdf.size) }}
-                </div>
-              </div>
-            </div>
-            <div
-              v-else-if="item.file"
-              class="pdf-file"
-            >
-              <img src="/img/pdf.svg">
-              <div>
-                <a
-                  :href="item.file"
-                  target="_blank"
-                >{{
-                  getFileName(item.file)
-                }}</a>
-                <div class="text-gray">
-                  1.2 Мб
-                </div>
-              </div>
-            </div>
-          </v-slide-y-transition>
         </div>
       </div>
     </div>
@@ -238,29 +160,3 @@ defineExpose({ open, create })
     @saved="onQuestionsSaved"
   />
 </template>
-
-<style lang="scss">
-.pdf-file {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  margin-top: 30px;
-  img {
-    width: 50px;
-  }
-  & > div {
-    flex: 1;
-    overflow: hidden;
-    top: 4px;
-    position: relative;
-    line-height: 20px;
-    & > div {
-      width: 100%;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      display: inline-block;
-      white-space: nowrap;
-    }
-  }
-}
-</style>

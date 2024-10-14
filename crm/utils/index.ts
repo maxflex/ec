@@ -231,16 +231,6 @@ export function formatPhone(number: string): string {
   ].join('')
 }
 
-export function humanFileSize(size: number) {
-  const i = size === 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024))
-  const humanFileSize = Number.parseInt((size / 1024 ** i).toFixed(2))
-  return (
-    `${humanFileSize
-    } ${
-      ['байт', 'Кб', 'Мб', 'Гб', 'Тб'][i]}`
-  )
-}
-
 export function formatYear(year: Year): string {
   return `${year}-${year + 1} уч. г.`
 }
