@@ -3,7 +3,7 @@ const isDev = import.meta.url.indexOf('http://localhost:3000') === 0
 const ports = []
 let eventSource = null
 
-self.onconnect = (e) => {
+globalThis.onconnect = (e) => {
   ports.push(e.ports[0])
 
   if (eventSource === null) {

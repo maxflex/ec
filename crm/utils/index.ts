@@ -196,7 +196,7 @@ export function formatDate(dateTime: string | null): string {
 }
 
 export function formatTime(time: string): string {
-  return time.substr(0, 5)
+  return time.substring(0, 5)
 }
 
 export function formatDateTime(dateTime: string | null): string {
@@ -239,7 +239,7 @@ export function formatName(
   person: PersonResource,
   format: NameFormat = 'last-first',
 ): string {
-  let name = []
+  let name: any[]
   switch (format) {
     case 'full':
       name = [person.last_name, person.first_name, person.middle_name]
@@ -319,7 +319,7 @@ export async function print(p: PrintOption, params: object = {}) {
       if (iframeDocument) {
         iframeDocument.open()
         iframeDocument.write(`
-        <html>
+        <html lang="ru">
           <head>
             <title>ЕГЭ-Центр</title>
             <style>

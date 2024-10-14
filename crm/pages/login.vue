@@ -142,12 +142,7 @@ definePageMeta({ layout: 'login' })
         </v-btn>
       </v-window-item>
       <v-window-item eager>
-        <v-card
-          v-if="rememberUser"
-          title="Card title"
-          subtitle="Subtitle"
-          variant="tonal"
-        >
+        <v-card v-if="rememberUser" variant="tonal">
           <template #title>
             {{ formatName(rememberUser) }}
           </template>

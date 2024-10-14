@@ -1,20 +1,20 @@
 <template>
   <v-app class="login-layout">
-    <div class="video-background">
-      <video
-        id="background-video"
-        autoplay
-        loop
-        muted
-        poster="https://cdn.ege-centr.ru/cdn/videos/first-frame.webp"
-      >
-        <source
-          src="https://cdn.ege-centr.ru/cdn/videos/loop.mp4"
-          type="video/mp4"
-        >
-        Your browser does not support the video tag.
-      </video>
-    </div>
+    <!--    <div class="video-background"> -->
+    <!--      <video -->
+    <!--        id="background-video" -->
+    <!--        autoplay -->
+    <!--        loop -->
+    <!--        muted -->
+    <!--        poster="https://cdn.ege-centr.ru/crm/videos/first-frame.webp" -->
+    <!--      > -->
+    <!--        <source -->
+    <!--          src="https://cdn.ege-centr.ru/crm/videos/loop.mp4" -->
+    <!--          type="video/mp4" -->
+    <!--        > -->
+    <!--        Your browser does not support the video tag. -->
+    <!--      </video> -->
+    <!--    </div> -->
     <div>
       <ClientOnly>
         <slot />
@@ -26,9 +26,9 @@
 <style lang="scss">
 .login-layout > div > div:last-child {
   // background: linear-gradient(to bottom, #f1e4a5 0%, rgba(255, 196, 35, 0.15));
-  // background-image: url("/img/sky-blurred.jpg");
-  // background-size: cover;
-  background: linear-gradient(45deg, #5a2d22, #c7784f);
+  background-image: url('/img/bg.jpg');
+  background-size: cover;
+  //background: linear-gradient(45deg, #5a2d22, #c7784f);
   height: 100vh;
   width: 100vw;
   overflow: hidden;

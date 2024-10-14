@@ -28,6 +28,14 @@ const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
         >
           Прикрепить
         </UiIconLink>
+        <!--        <v-btn -->
+        <!--          v-else color="secondary" -->
+        <!--          density="compact" -->
+        <!--          variant="tonal" -->
+        <!--          @click="groupSelectorDialog?.open(swamp)" -->
+        <!--        > -->
+        <!--          Добавить -->
+        <!--        </v-btn> -->
       </div>
       <div style="width: 200px">
         <NuxtLink :to="{ name: 'clients-id', params: { id: swamp.client.id } }">

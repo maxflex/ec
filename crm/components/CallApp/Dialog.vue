@@ -71,9 +71,11 @@ $addSseListener('CallSummaryEvent', (call: CallListResource) => {
             </template>
           </v-text-field>
         </div>
-        <CallAppActiveCallsList v-if="showActiveCalls" :items="activeCalls" />
-        <CallAppCallsList :items="items" @deleted="onDeleted" />
-        <UiNoData v-if="(!loading && items.length === 0) && (!showActiveCalls || activeCalls.length === 0)" />
+        <div>
+          <CallAppActiveCallsList v-if="showActiveCalls" :items="activeCalls" />
+          <CallAppCallsList v-if="items.length" :items="items" @deleted="onDeleted" />
+          <UiNoData v-else-if="!loading && (!showActiveCalls || activeCalls.length === 0)" />
+        </div>
       </div>
     </div>
   </v-dialog>
