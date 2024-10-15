@@ -26,7 +26,7 @@
 <style lang="scss">
 .login-layout > div > div:last-child {
   // background: linear-gradient(to bottom, #f1e4a5 0%, rgba(255, 196, 35, 0.15));
-  background-image: url('/img/bg.jpg');
+  background-image: url('/img/bg.webp');
   background-size: cover;
   //background: linear-gradient(45deg, #5a2d22, #c7784f);
   height: 100vh;
@@ -35,15 +35,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  // &:after {
-  //   content: '';
-  //   background: rgba(black, 0.5);
-  //   left: 0;
-  //   top: 0;
-  //   position: absolute;
-  //   width: 100%;
-  //   height: 100%;
-  // }
+  &:after {
+    //content: '';
+    background: rgba(black, 0.4);
+    left: 0;
+    top: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
 }
 .video-background {
   position: fixed;

@@ -33,12 +33,15 @@ const bot = config.env === 'local'
 async function onPhoneEnter() {
   loading.value = true
   errors.value = {}
-  const { data, error } = await useHttp<AuthResource>('common/auth/login', {
-    method: 'post',
-    body: {
-      phone: phone.value,
-    },
-  })
+  const { data, error } = await useHttp<AuthResource>(
+      `common/auth/login`,
+      {
+        method: 'post',
+        body: {
+          phone: phone.value,
+        },
+      },
+  )
   setTimeout(() => (loading.value = false), 300)
   if (error.value) {
     errors.value = error.value.data.errors
@@ -119,7 +122,7 @@ definePageMeta({ layout: 'login' })
 <template>
   <form class="login">
     <div class="login__logo">
-      <img src="/img/logo.svg">
+      <img src="/img/app.svg">
     </div>
     <v-window v-model="window">
       <v-window-item>
@@ -252,7 +255,7 @@ definePageMeta({ layout: 'login' })
     text-align: center;
     padding: 30px 0;
     img {
-      width: 80px;
+      width: 90px;
     }
   }
   &__qr {
