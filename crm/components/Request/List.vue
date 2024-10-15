@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiAccount, mdiCar } from '@mdi/js'
+import { mdiCar } from '@mdi/js'
 import type { ClientDialog, PassDialog, RequestDialog } from '#build/components'
 
 const route = useRoute()
@@ -62,108 +62,75 @@ function onPassDeleted(pass: PassResource) {
 </script>
 
 <template>
-  <div class="request-list">
+  <div class="table request-list">
     <div
-      v-for="r in model"
-      :id="`request-${r.id}`"
-      :key="r.id"
-      class="request"
+      v-for="item in model"
+      :id="`request-${item.id}`"
+      :key="item.id"
     >
-      <div class="request__left">
-        <div class="request__title">
-          <div @click="requestDialog?.edit(r)">
-            <RequestStatus :status="r.status" />
-            Заявка {{ r.id }}
-          </div>
-          <div v-if="r.program">
-            {{ ProgramLabel[r.program] }}
-          </div>
-          <div>
-            ответственный
-            {{
-              r.responsible_user
-                ? formatName(r.responsible_user)
-                : "не установлен"
-            }}
-          </div>
-        </div>
-        <div v-if="r.comment">
-          {{ r.comment }}
-        </div>
-        <table class="request__phones">
-          <tr
-            v-for="phone in r.phones"
-            :key="phone.id"
-          >
-            <td>
-              <a :href="`tel:${phone.number}`">
-                {{ formatPhone(phone.number as string) }}
-              </a>
-              <v-icon
-                v-if="phone.is_verified"
-                :size="16"
-                color="secondary"
-                icon="$verified"
-              />
-            </td>
-            <td>
-              {{ phone.comment }}
-            </td>
-          </tr>
-        </table>
-        <template v-if="showClient">
-          <div v-if="r.client">
-            Клиент:
-            <NuxtLink :to="{ name: 'clients-id', params: { id: r.client.id } }">
-              {{ formatName(r.client) }}
-            </NuxtLink>
-          </div>
-          <!--          <div v-else>
-            <a class="cursor-pointer" >добавить клиента</a>
-          </div> -->
-        </template>
-        <PassList2 v-if="r.passes.length" :items="r.passes" @edit="passDialog?.edit" />
+      <div class="table-actionss">
+        <v-btn
+          icon="$edit"
+          :size="48"
+          variant="plain"
+          @click="requestDialog?.edit(item)"
+        />
       </div>
-      <div class="request__right">
-        <div>{{ formatDateTime(r.created_at) }}</div>
-        <div class="request__actions">
-          <CommentBtn
-            :count="r.comments_count"
-            :entity-id="r.id"
-            entity-type="request"
-          />
-
-          <v-menu>
-            <template #activator="{ props }">
-              <v-btn
-                v-bind="props"
-                icon="$more"
-                :size="48"
-                variant="plain"
-              />
-            </template>
-            <v-list>
-              <v-list-item @click="requestDialog?.edit(r)">
-                <template #prepend>
-                  <v-icon icon="$edit" />
-                </template>
-                редактировать заявку
-              </v-list-item>
-              <v-list-item @click="clientDialog?.create(r.id)">
-                <template #prepend>
-                  <v-icon :icon="mdiAccount" />
-                </template>
-                добавить клиента
-              </v-list-item>
-              <v-list-item @click="passDialog?.create(r.id)">
-                <template #prepend>
-                  <v-icon :icon="mdiCar" />
-                </template>
-                добавить пропуск
-              </v-list-item>
-            </v-list>
-          </v-menu>
+      <div style="width: 100px">
+        <div class="d-flex align-center ga-2">
+          <RequestStatus :status="item.status" />
+          {{ item.id }}
         </div>
+      </div>
+      <div style="width: 210px">
+        <template v-if="item.responsible_user">
+          {{ formatName(item.responsible_user) }}
+        </template>
+        <span v-else class="text-gray">
+          нет ответственного
+        </span>
+      </div>
+      <div style="width: 160px">
+        <span v-if="item.program">
+          {{ ProgramShortLabel[item.program] }}
+        </span>
+        <span v-else class="text-gray">
+          не установлено
+        </span>
+      </div>
+      <div style="width: 230px">
+        <PhoneList :items="item.phones" />
+      </div>
+      <div v-if="showClient" style="width: 180px">
+        <UiPerson v-if="item.client" :item="item.client" />
+        <a v-else class="cursor-pointer" @click="clientDialog?.create(item.id)">добавить клиента</a>
+      </div>
+      <div class="request-list__actions">
+        <CommentBtn
+          :class="{ 'no-items': item.comments_count === 0 }"
+          :count="item.comments_count"
+          :entity-id="item.id"
+          entity-type="request"
+        />
+        <div
+          class="request-list__passes"
+          @click="passDialog?.create(item.id)"
+        >
+          <v-btn
+            :size="48"
+            variant="plain"
+            :icon="mdiCar"
+            :class="{ 'no-items': item.passes.length === 0 }"
+          />
+          <v-badge
+            v-if="item.passes.length > 0"
+            floating
+            :content="item.passes.length"
+          />
+        </div>
+      </div>
+      <div class="text-gray" style="flex: initial; width: 80px">
+        {{ formatDate(item.created_at!) }}
       </div>
     </div>
   </div>
@@ -181,79 +148,28 @@ function onPassDeleted(pass: PassResource) {
 </template>
 
 <style lang="scss">
-.request {
-  background: #fff;
-  border-bottom: 1px solid #e0e0e0;
-  border-left: none;
-  border-right: none;
-  padding: 20px;
-  display: flex;
-  position: relative;
-  &__left,
-  &__right {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  &__left {
-    width: 80%;
-  }
-  &__right {
+.request-list {
+  &__actions {
     flex: 1;
-    text-align: right;
-    display: flex;
-    justify-content: space-between;
     color: rgb(var(--v-theme-gray));
-  }
-  &__title {
+    width: 150px;
     display: flex;
     align-items: center;
-    width: 100%;
-    gap: 18px;
-    & > div {
-      &:first-child {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        cursor: pointer;
-        &:hover {
-          color: black;
-        }
-      }
-      &:not(:first-child) {
-        color: rgb(var(--v-theme-gray));
+    gap: 6px;
+    .no-items {
+      &:not(:hover) {
+        opacity: 0.2 !important;
       }
     }
   }
-  &__phones {
-    width: fit-content;
-    .v-icon {
-      top: -2px;
-      position: relative;
-      margin-left: 4px;
-    }
-    tr {
-      td {
-        &:first-child {
-          padding-right: 10px;
-        }
-        &:last-child {
-          color: rgb(var(--v-theme-gray));
-        }
-      }
-    }
-  }
-  &__actions {
-    display: flex;
-    flex: 1;
-    justify-content: flex-end;
-    align-items: flex-end;
+  &__passes {
     position: relative;
-    right: -10px;
-    bottom: -10px;
+    .v-badge {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      cursor: pointer;
+    }
   }
-}
-.request-list {
-  background: #fafafa;
 }
 </style>

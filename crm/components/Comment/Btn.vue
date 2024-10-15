@@ -19,13 +19,16 @@ async function loadData() {
     localCount.value = count
     return
   }
-  const { data } = await useHttp<number>('comments', {
-    params: {
-      count: 1,
-      entity_id: entityId,
-      entity_type: EntityTypeValue[entityType],
-    },
-  })
+  const { data } = await useHttp<number>(
+      `comments`,
+      {
+        params: {
+          count: 1,
+          entity_id: entityId,
+          entity_type: EntityTypeValue[entityType],
+        },
+      },
+  )
   localCount.value = data.value || 0
 }
 </script>
@@ -36,6 +39,7 @@ async function loadData() {
     @click="commentDialog?.open()"
   >
     <v-btn
+      v-bind="$attrs"
       :icon="mdiComment"
       :size="48"
       variant="plain"

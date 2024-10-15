@@ -18,7 +18,8 @@ class RequestListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'status', 'created_at', 'comment', 'comments_count', 'used_at'
+            'status', 'created_at', 'comment', 'comments_count',
+            'program'
         ], [
             'phones' => PhoneListResource::collection($this->phones),
             'responsible_user' => new PersonResource($this->responsibleUser),

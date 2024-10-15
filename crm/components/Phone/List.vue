@@ -5,7 +5,7 @@ import { openCallApp } from '~/components/CallApp'
 
 const { items, person, q } = defineProps<{
   items: PhoneListResource[]
-  person: PersonResource
+  person?: PersonResource
   q?: string
 }>()
 const telegramMessageDialog = ref<InstanceType<typeof TelegramMessageDialog>>()
@@ -54,12 +54,19 @@ function highlight(text: string, _q: string) {
           @click.stop
           v-html="q ? highlightPhone(p.number) : formatPhone(p.number)"
         />
+        <v-icon
+          v-if="p.is_verified"
+          :size="16"
+          color="secondary"
+          icon="$verified"
+        />
       </div>
       <div class="phone-list__actions">
         <v-icon :icon="mdiPhone" @click.stop="openCallApp(p.number)" />
         <v-icon
           :icon="mdiHistory"
-          @click.stop="telegramMessageDialog?.open(p, person)"
+          :disabled="!person"
+          @click.stop="telegramMessageDialog?.open(p, person!)"
         />
       </div>
     </div>
@@ -84,6 +91,15 @@ function highlight(text: string, _q: string) {
   }
   &__number {
     min-width: 170px;
+    a {
+      display: inline-block;
+      width: 144px;
+    }
+    .v-icon {
+      top: -2px;
+      position: relative;
+      margin-left: 4px;
+    }
   }
   &__actions {
     display: flex;
