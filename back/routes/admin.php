@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\{BalanceController,
     LessonController,
     MacroController,
     MangoTestController,
+    PassController,
     PeopleSelectorController,
     PhotoController,
     PreviewController,
@@ -135,5 +136,6 @@ Route::middleware(['auth:crm'])->group(function () {
         'telegram-messages' => TelegramMessageController::class,
         'instructions' => InstructionController::class,
         'calls' => CallController::class,
+        'passes' => PassController::class,
     ]);
 });

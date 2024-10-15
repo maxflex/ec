@@ -28,6 +28,11 @@ class User extends Authenticatable
         $query->where('is_active', true);
     }
 
+    public function passes(): HasMany
+    {
+        return $this->hasMany(Pass::class);
+    }
+
     public function clientTests(): HasMany
     {
         return $this->hasMany(ClientTest::class);

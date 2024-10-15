@@ -592,3 +592,8 @@ export const TelegramListStatusLabel = {
 }
 
 export const ErrorCodeLabel = [1000] as const
+
+export const PassTypeLabel = {
+  person: 'на человека',
+  car: 'на машину',
+}

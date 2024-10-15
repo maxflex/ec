@@ -1,6 +1,8 @@
 import type Metrics from '~/components/Stats/Metrics'
 
 declare global {
+  type PassType = keyof typeof PassTypeLabel
+
   type TelegramListStatus = keyof typeof TelegramListStatusLabel
 
   type EventParticipantConfirmation = keyof typeof EventParticipantConfirmationLabel
@@ -167,6 +169,7 @@ declare global {
     phones: PhoneListResource[]
     created_at: string
     comments_count: number
+    passes: PassResource[]
   }
 
   interface ParentResource extends HasName, HasPhones {
@@ -998,6 +1001,17 @@ declare global {
     }
     text: string
     results?: { [key: string]: TelegramListResult[] }
+  }
+
+  interface PassResource {
+    id: number
+    type: PassType
+    date: string
+    comment: string
+    used_at: ?string
+    request_id: ?number
+    user?: PersonResource
+    created_at?: string
   }
 }
 

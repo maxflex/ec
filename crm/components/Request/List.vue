@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import type { ClientDialog, RequestDialog } from '#build/components'
+import { mdiAccount, mdiCar } from '@mdi/js'
+import type { ClientDialog, PassDialog, RequestDialog } from '#build/components'
 
 const route = useRoute()
 const model = defineModel<RequestListResource[]>({ default: () => [] })
 const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()
 const clientDialog = ref<InstanceType<typeof ClientDialog>>()
+const passDialog = ref<InstanceType<typeof PassDialog>>()
 const showClient = route.name !== 'clients-id'
 
 function onRequestUpdated(r: RequestListResource) {
@@ -34,6 +36,28 @@ function onClientCreated(c: ClientListResource, requestId?: number) {
     model.value[index].client = c
   }
   itemUpdated('request', requestId)
+}
+
+function onPassCreated(pass: PassResource) {
+  const index = model.value.findIndex(e => e.id === pass.request_id)
+  if (index === -1) {
+    return
+  }
+  model.value[index].passes.push(pass)
+  itemUpdated('request', pass.request_id!)
+}
+
+function onPassDeleted(pass: PassResource) {
+  const index = model.value.findIndex(e => e.id === pass.request_id)
+  if (index === -1) {
+    return
+  }
+  const passIndex = model.value[index].passes.findIndex(e => e.id === pass.id)
+  if (passIndex === -1) {
+    return
+  }
+  model.value[index].passes.splice(passIndex, 1)
+  itemUpdated('request', pass.request_id!)
 }
 </script>
 
@@ -94,10 +118,11 @@ function onClientCreated(c: ClientListResource, requestId?: number) {
               {{ formatName(r.client) }}
             </NuxtLink>
           </div>
-          <div v-else>
-            <a class="cursor-pointer" @click="clientDialog?.create(r.id)">добавить клиента</a>
-          </div>
+          <!--          <div v-else>
+            <a class="cursor-pointer" >добавить клиента</a>
+          </div> -->
         </template>
+        <PassList2 v-if="r.passes.length" :items="r.passes" @edit="passDialog?.edit" />
       </div>
       <div class="request__right">
         <div>{{ formatDateTime(r.created_at) }}</div>
@@ -107,12 +132,37 @@ function onClientCreated(c: ClientListResource, requestId?: number) {
             :entity-id="r.id"
             entity-type="request"
           />
-          <v-btn
-            icon="$edit"
-            :size="48"
-            variant="plain"
-            @click="requestDialog?.edit(r)"
-          />
+
+          <v-menu>
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                icon="$more"
+                :size="48"
+                variant="plain"
+              />
+            </template>
+            <v-list>
+              <v-list-item @click="requestDialog?.edit(r)">
+                <template #prepend>
+                  <v-icon icon="$edit" />
+                </template>
+                редактировать заявку
+              </v-list-item>
+              <v-list-item @click="clientDialog?.create(r.id)">
+                <template #prepend>
+                  <v-icon :icon="mdiAccount" />
+                </template>
+                добавить клиента
+              </v-list-item>
+              <v-list-item @click="passDialog?.create(r.id)">
+                <template #prepend>
+                  <v-icon :icon="mdiCar" />
+                </template>
+                добавить пропуск
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </div>
       </div>
     </div>
@@ -123,6 +173,11 @@ function onClientCreated(c: ClientListResource, requestId?: number) {
     @deleted="onRequestDeleted"
   />
   <ClientDialog ref="clientDialog" @created="onClientCreated" />
+  <PassDialog
+    ref="passDialog"
+    @created="onPassCreated"
+    @deleted="onPassDeleted"
+  />
 </template>
 
 <style lang="scss">

@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enums\{Program, RequestStatus};
 use App\Traits\{HasComments, HasPhones, RelationSyncable};
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Request extends Model
 {
@@ -19,19 +21,24 @@ class Request extends Model
         'responsible_user_id', 'program', 'comment', 'status', 'client_id'
     ];
 
-    public function responsibleUser()
+    public function responsibleUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'responsible_user_id');
     }
 
-    public function client()
+    public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function passes(): HasMany
+    {
+        return $this->hasMany(Pass::class);
     }
 
     public static function booted()
