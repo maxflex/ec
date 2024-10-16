@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { mdiCar } from '@mdi/js'
-import type { ClientDialog, PassDialog, RequestDialog } from '#build/components'
+import { mdiAccountPlus, mdiCar, mdiWeb } from '@mdi/js'
+import type { PassDialog, RequestDialog } from '#build/components'
 
-const route = useRoute()
+const router = useRouter()
 const model = defineModel<RequestListResource[]>({ default: () => [] })
 const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()
-const clientDialog = ref<InstanceType<typeof ClientDialog>>()
 const passDialog = ref<InstanceType<typeof PassDialog>>()
-const showClient = route.name !== 'clients-id'
 
 function onRequestUpdated(r: RequestListResource) {
   const index = model.value.findIndex(e => e.id === r.id)
@@ -25,17 +23,6 @@ function onRequestDeleted(r: RequestResource) {
   if (index !== -1) {
     model.value.splice(index, 1)
   }
-}
-
-function onClientCreated(c: ClientListResource, requestId?: number) {
-  if (!requestId) {
-    return
-  }
-  const index = model.value.findIndex(e => e.id === requestId)
-  if (index !== -1) {
-    model.value[index].client = c
-  }
-  itemUpdated('request', requestId)
 }
 
 function onPassCreated(pass: PassResource) {
@@ -70,6 +57,12 @@ function onPassDeleted(pass: PassResource) {
     >
       <div class="table-actionss">
         <v-btn
+          :icon="mdiAccountPlus"
+          :size="48"
+          variant="plain"
+          @click="router.push({ name: 'requests-id-clients', params: { id: item.id } })"
+        />
+        <v-btn
           icon="$edit"
           :size="48"
           variant="plain"
@@ -98,14 +91,23 @@ function onPassDeleted(pass: PassResource) {
           не установлено
         </span>
       </div>
-      <div style="width: 230px">
-        <PhoneList :items="item.phones" />
+      <div style="width: 200px">
+        <PhoneList :items="item.phones" :verify="!item.user_id" />
       </div>
-      <div v-if="showClient" style="width: 180px">
+      <div style="width: 180px">
         <UiPerson v-if="item.client" :item="item.client" />
-        <a v-else class="cursor-pointer" @click="clientDialog?.create(item.id)">добавить клиента</a>
+        <span v-else class="text-gray">
+          нет клиента
+        </span>
       </div>
       <div class="request-list__actions">
+        <v-btn
+          class="no-pointer-events"
+          :size="48"
+          variant="text"
+          :icon="mdiWeb"
+          :class="{ 'no-items': item.user_id }"
+        />
         <CommentBtn
           :class="{ 'no-items': item.comments_count === 0 }"
           :count="item.comments_count"
@@ -139,7 +141,6 @@ function onPassDeleted(pass: PassResource) {
     @updated="onRequestUpdated"
     @deleted="onRequestDeleted"
   />
-  <ClientDialog ref="clientDialog" @created="onClientCreated" />
   <PassDialog
     ref="passDialog"
     @created="onPassCreated"
@@ -155,7 +156,7 @@ function onPassDeleted(pass: PassResource) {
     width: 150px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 2px;
     .no-items {
       &:not(:hover) {
         opacity: 0.2 !important;

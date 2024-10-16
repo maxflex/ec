@@ -31,7 +31,7 @@ const name = formatName(item, format)
 
 <template>
   <span v-if="isNoLink">{{ name }}</span>
-  <RouterLink v-else :to="{ name: to, params: { id: item.id } }">
+  <RouterLink v-else :to="{ name: to, params: { id: item.id } }" @click.stop>
     {{ name }}
   </RouterLink>
 </template>

@@ -8,6 +8,7 @@ use App\Http\Resources\ClientResource;
 use App\Http\Resources\PersonResource;
 use App\Models\Client;
 use App\Models\ClientParent;
+use App\Models\Phone;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -15,7 +16,8 @@ class ClientController extends Controller
     protected $filters = [
         // 'equals' => ['status'],
         'contract' => ['year'],
-        'search' => ['q']
+        'search' => ['q'],
+        'request' => ['request_id'],
     ];
 
     public function index(Request $request)
@@ -78,5 +80,17 @@ class ClientController extends Controller
     protected function filterContract(&$query, $value, $field)
     {
         $query->whereHas('contracts', fn ($q) => $q->where($field, $value));
+    }
+
+    protected function filterRequest($query, $requestId)
+    {
+        $numbers = Phone::where('entity_id', $requestId)
+            ->where('entity_type', \App\Models\Request::class)
+            ->pluck('number');
+        $query->where(fn($q) => $q
+            ->whereHas('phones', fn($q) => $q->whereIn('number', $numbers))
+            ->orWhereHas('parent.phones', fn($q) => $q->whereIn('number', $numbers))
+        );
+
     }
 }

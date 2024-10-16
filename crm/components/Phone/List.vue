@@ -3,9 +3,10 @@ import { mdiHistory, mdiPhone } from '@mdi/js'
 import type { TelegramMessageDialog } from '#build/components'
 import { openCallApp } from '~/components/CallApp'
 
-const { items, person, q } = defineProps<{
+const { items, person, q, verify } = defineProps<{
   items: PhoneListResource[]
   person?: PersonResource
+  verify?: boolean
   q?: string
 }>()
 const telegramMessageDialog = ref<InstanceType<typeof TelegramMessageDialog>>()
@@ -48,17 +49,11 @@ function highlight(text: string, _q: string) {
 <template>
   <div class="phone-list">
     <div v-for="p in items" :key="p.id">
-      <div class="phone-list__number">
+      <div class="phone-list__number" :class="{ 'opacity-5': verify && !p.is_verified }">
         <a
           :href="`tel:${p.number}`"
           @click.stop
           v-html="q ? highlightPhone(p.number) : formatPhone(p.number)"
-        />
-        <v-icon
-          v-if="p.is_verified"
-          :size="16"
-          color="secondary"
-          icon="$verified"
         />
       </div>
       <div class="phone-list__actions">
@@ -77,7 +72,7 @@ function highlight(text: string, _q: string) {
 <style lang="scss">
 .phone-list {
   margin-top: 2px;
-  width: 250px;
+  width: 200px;
   display: inline-block;
   & > div {
     display: flex;
@@ -90,11 +85,7 @@ function highlight(text: string, _q: string) {
     }
   }
   &__number {
-    min-width: 170px;
-    a {
-      display: inline-block;
-      width: 144px;
-    }
+    min-width: 150px;
     .v-icon {
       top: -2px;
       position: relative;

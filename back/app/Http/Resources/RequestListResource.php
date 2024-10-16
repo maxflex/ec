@@ -19,7 +19,7 @@ class RequestListResource extends JsonResource
     {
         return extract_fields($this, [
             'status', 'created_at', 'comment', 'comments_count',
-            'program'
+            'program', 'user_id'
         ], [
             'phones' => PhoneListResource::collection($this->phones),
             'responsible_user' => new PersonResource($this->responsibleUser),

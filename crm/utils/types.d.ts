@@ -67,7 +67,7 @@ declare global {
 
   interface ClientLessonScore {
     score: LessonScore
-    comment: string | null
+    comment: ?string
   }
 
   interface Meta {
@@ -91,9 +91,9 @@ declare global {
 
   interface HasName {
     id: number
-    first_name: string | null
-    last_name: string | null
-    middle_name: string | null
+    first_name: ?string
+    last_name: ?string
+    middle_name: ?string
   }
 
   interface PersonResource extends HasName {
@@ -121,7 +121,7 @@ declare global {
   }
 
   interface HasPhoto {
-    photo_url: string | null
+    photo_url: ?string
   }
 
   interface HasPhones {
@@ -129,7 +129,7 @@ declare global {
   }
 
   interface AuthResource extends PersonResource, HasPhoto {
-    telegram_id: string | null
+    telegram_id: ?string
     is_call_notifications: boolean
     number: string // phone number
   }
@@ -142,44 +142,46 @@ declare global {
   interface PhoneListResource {
     id: number
     number: string
-    comment: string | null
+    comment: ?string
     is_verified: boolean
-    telegram_id: number | null
+    telegram_id: ?number
     entity_type: EntityType
   }
 
   interface RequestResource {
     id?: number
     status: RequestStatus
-    program: Program | null
-    responsible_user_id: number | null
-    comment: string | null
+    program: ?Program
+    responsible_user_id: ?number
+    comment: ?string
     phones: PhoneListResource[]
     user?: PersonResource
+    client?: ClientListResource
     created_at?: string
   }
 
   interface RequestListResource {
     id: number
     status: RequestStatus
-    program: Program | null
-    comment: string | null
-    responsible_user: PersonResource | null
-    client: PersonResource | null
+    program: ?Program
+    comment: ?string
+    responsible_user: ?PersonResource
+    client: ?PersonResource
     phones: PhoneListResource[]
     created_at: string
     comments_count: number
     passes: PassResource[]
+    user_id: ?number
   }
 
   interface ParentResource extends HasName, HasPhones {
-    passport_series: string | null
-    passport_number: string | null
-    passport_address: string | null
-    passport_code: string | null
-    passport_issued_date: string | null
-    passport_issued_by: string | null
-    fact_address: string | null
+    passport_series: ?string
+    passport_number: ?string
+    passport_address: ?string
+    passport_code: ?string
+    passport_issued_date: ?string
+    passport_issued_by: ?string
+    fact_address: ?string
   }
 
   interface ClientListResource extends PersonResource {
@@ -213,9 +215,9 @@ declare global {
     client_id: number
     is_return: boolean
     is_confirmed: boolean
-    purpose: string | null
-    pko_number: number | null
-    card_number: string | null
+    purpose: ?string
+    pko_number: ?number
+    card_number: ?string
     created_at?: string
     user?: PersonResource
   }
@@ -281,8 +283,8 @@ declare global {
     method: ClientPaymentMethod
     is_return: boolean
     is_confirmed: boolean
-    pko_number: number | null
-    card_number: string | null
+    pko_number: ?number
+    card_number: ?string
     created_at?: string
     user?: PersonResource
   }
@@ -353,7 +355,7 @@ declare global {
     topic?: ?string
     homework?: ?string
     files: UploadedFile[]
-    conducted_at: string | null
+    conducted_at: ?string
     is_topic_verified: boolean
     is_unplanned: boolean
     is_free: boolean
@@ -376,7 +378,7 @@ declare global {
     clientLesson?: {
       status: ClientLessonStatus
       scores: ClientLessonScore[]
-      minutes_late: number | null
+      minutes_late: ?number
       is_remote: boolean
     }
     group: {
@@ -392,14 +394,14 @@ declare global {
     client: PersonWithPhotoResource
     status: ClientLessonStatus
     is_remote: boolean
-    minutes_late: number | null
+    minutes_late: ?number
     scores: ClientLessonScore[]
   }
 
   interface LessonConductResource {
     id: number
     status: LessonStatus
-    conducted_at: string | null
+    conducted_at: ?string
     // внимание: client_lesson или client_group, но структура одинаковая
     students: ClientLessonResource[]
   }
@@ -432,7 +434,7 @@ declare global {
     date: string
     year: Year
     method: TeacherPaymentMethod
-    purpose: string | null
+    purpose: ?string
     teacher_id?: number
     user?: PersonResource
     teacher?: PersonResource
@@ -442,7 +444,7 @@ declare global {
   interface TeacherServiceResource {
     id: number
     sum: number
-    purpose: string | null
+    purpose: ?string
     year: Year
     date: string
     teacher_id?: number
@@ -534,8 +536,8 @@ declare global {
     seconds_left?: number
     questions: TestQuestion[]
     answers: TestAnswers | null
-    started_at: string | null
-    finished_at: string | null
+    started_at: ?string
+    finished_at: ?string
     is_finished: boolean
     is_active: boolean
     questions_count: number
@@ -544,8 +546,8 @@ declare global {
   }
 
   interface TestQuestion {
-    answer: number | null
-    score: number | null
+    answer: ?number
+    score: ?number
   }
 
   interface TestResource {
@@ -583,7 +585,7 @@ declare global {
     table: LogTable | null
     created_at: string
     entity: PersonResource | null
-    row_id: number | null
+    row_id: ?number
     ip: string
     entity_type: ?EntityType
     data: any
@@ -604,7 +606,7 @@ declare global {
     program: Program
     created_at: string
     lessons_count: number
-    price: number | null
+    price: ?number
   }
 
   interface FakeReport {
@@ -628,7 +630,7 @@ declare global {
     knowledge_level_comment?: string
     recommendation_comment?: string
     grade: ?LessonScore
-    price: number | null
+    price: ?number
     teacher?: PersonResource
     client?: PersonResource
     program?: Program
@@ -672,7 +674,7 @@ declare global {
     id: number
     name: string
     date: string
-    description: string | null
+    description: ?string
     is_afterclass: boolean
     participants_count: number
     time?: string
@@ -695,8 +697,8 @@ declare global {
     year: Year
     date: string
     time?: string
-    duration: number | null
-    description: string | null
+    duration: ?number
+    description: ?string
     is_afterclass: boolean
     user?: PersonResource
     created_at?: string
@@ -766,7 +768,7 @@ declare global {
 
   interface ExamScoreResource {
     id: number
-    web_review_id: number | null
+    web_review_id: ?number
     year: Year
     client_id?: number
     exam?: Exam
@@ -799,7 +801,7 @@ declare global {
   interface InstructionResource extends InstructionBaseResource {
     entry_id: number
     teachers: Array<PersonWithPhotoResource & {
-      signed_at: string | null
+      signed_at: ?string
     }>
     signs: Array<{
       id: number
@@ -827,13 +829,13 @@ declare global {
     id: number
     title: string
     created_at: string
-    signed_at: string | null
+    signed_at: ?string
     is_last_version: boolean
   }
 
   interface InstructionTeacherResource {
     id: number
-    signed_at: string | null
+    signed_at: ?string
     title: string
     text: string
     is_last_version: boolean
@@ -842,7 +844,7 @@ declare global {
       id: number
       created_at: string
       is_last_version: boolean
-      signed_at: string | null
+      signed_at: ?string
     }>
   }
 
