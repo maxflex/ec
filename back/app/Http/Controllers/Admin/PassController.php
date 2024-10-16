@@ -44,7 +44,7 @@ class PassController extends Controller
     {
         switch ($status) {
             case 'active':
-                $query->whereDoesntHave('passLog')->where('date', '>=', now());
+                $query->whereDoesntHave('passLog')->where('date', '>=', now()->format('Y-m-d'));
                 break;
 
             case 'used':
@@ -52,7 +52,7 @@ class PassController extends Controller
                 break;
 
             case 'expired':
-                $query->whereDoesntHave('passLog')->where('date', '<', now());
+                $query->whereDoesntHave('passLog')->where('date', '<', now()->format('Y-m-d'));
         }
     }
 }

@@ -41,7 +41,7 @@ function onPassDeleted(pass: PassResource) {
         <td width="160">
           {{ PassTypeLabel[item.type] }}
         </td>
-        <td v-if="showRequest" width="150">
+        <td v-if="showRequest" width="160">
           <span v-if="item.request_id">
             заявка {{ item.request_id }}
           </span>

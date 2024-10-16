@@ -62,6 +62,7 @@ trait TransferTrait
             ET_REQUEST => Request::class,
             ET_CLIENT => Client::class,
             ET_PARENT => ClientParent::class,
+            default => $entityType
         };
     }
 
