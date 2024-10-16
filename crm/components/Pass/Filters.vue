@@ -4,6 +4,12 @@ const model = defineModel<PassFilters>({ required: true })
 
 <template>
   <UiClearableSelect
+    v-model="model.status"
+    label="Статус"
+    :items="selectItems(PassStatusLabel)"
+    density="comfortable"
+  />
+  <UiClearableSelect
     v-model="model.type"
     label="Тип"
     :items="selectItems(PassTypeLabel)"

@@ -1,6 +1,8 @@
 import type Metrics from '~/components/Stats/Metrics'
 
 declare global {
+  type PassStatus = keyof typeof PassStatusLabel
+
   type PassType = keyof typeof PassTypeLabel
 
   type TelegramListStatus = keyof typeof TelegramListStatusLabel

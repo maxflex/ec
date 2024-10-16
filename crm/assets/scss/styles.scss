@@ -361,3 +361,12 @@ code {
     }
   }
 }
+
+.v-table.v-table--hover > .v-table__wrapper > table > tbody > tr,
+tr.hoverable {
+  &:hover {
+    td {
+      background: #f5f5f5;
+    }
+  }
+}

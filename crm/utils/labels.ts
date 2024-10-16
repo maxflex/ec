@@ -597,3 +597,9 @@ export const PassTypeLabel = {
   person: 'на человека',
   car: 'на машину',
 }
+
+export const PassStatusLabel = {
+  active: 'не использован',
+  used: 'использован',
+  expired: 'истёк',
+}

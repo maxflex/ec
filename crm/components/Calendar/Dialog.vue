@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { year } = defineProps<{
-  year?: Year
+  year: Year | undefined
 }>()
 const emit = defineEmits(['close'])
 const { dialog, width, transition } = useDialog('small')

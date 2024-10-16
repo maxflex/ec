@@ -70,6 +70,11 @@ const menu: Menu = [
     to: '/topics',
   },
   {
+    icon: mdiCar,
+    title: 'Пропуски',
+    to: '/passes',
+  },
+  {
     icon: mdiFileDocumentEditOutline,
     title: 'Отчёты',
     to: '/reports',
@@ -113,11 +118,6 @@ const menu: Menu = [
     icon: mdiFinance,
     title: 'Итоги',
     to: '/stats',
-  },
-  {
-    icon: mdiCar,
-    title: 'Пропуски',
-    to: '/passes',
   },
   {
     icon: mdiNumeric5BoxMultiple,

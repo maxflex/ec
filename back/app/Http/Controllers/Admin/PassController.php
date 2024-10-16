@@ -10,7 +10,8 @@ use Illuminate\Http\Request;
 class PassController extends Controller
 {
     protected $filters = [
-        'equals' => ['request_id', 'type']
+        'equals' => ['request_id', 'type'],
+        'status' => ['status']
     ];
 
     public function index(Request $request)
@@ -37,5 +38,21 @@ class PassController extends Controller
     public function destroy(Pass $pass)
     {
         $pass->delete();
+    }
+
+    protected function filterStatus($query, $status)
+    {
+        switch ($status) {
+            case 'active':
+                $query->whereDoesntHave('passLog')->where('date', '>=', now());
+                break;
+
+            case 'used':
+                $query->whereHas('passLog');
+                break;
+
+            case 'expired':
+                $query->whereDoesntHave('passLog')->where('date', '<', now());
+        }
     }
 }

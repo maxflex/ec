@@ -20,6 +20,7 @@ const modelDefaults: PassResource = {
 const saving = ref(false)
 const deleting = ref(false)
 const item = ref<PassResource>(modelDefaults)
+const isDisabled = computed(() => item.value.is_expired || !!item.value.used_at)
 
 function create(requestId: number | null = null) {
   dialog.value = true
@@ -37,19 +38,25 @@ function edit(pass: PassResource) {
 async function save() {
   saving.value = true
   if (item.value.id > 0) {
-    const { data } = await useHttp<PassResource>(`passes/${item.value.id}`, {
-      method: 'put',
-      body: item.value,
-    })
+    const { data } = await useHttp<PassResource>(
+        `passes/${item.value.id}`,
+        {
+          method: 'put',
+          body: item.value,
+        },
+    )
     if (data.value) {
       emit('updated', data.value)
     }
   }
   else {
-    const { data } = await useHttp<PassResource>(`passes`, {
-      method: 'post',
-      body: item.value,
-    })
+    const { data } = await useHttp<PassResource>(
+        `passes`,
+        {
+          method: 'post',
+          body: item.value,
+        },
+    )
     if (data.value) {
       emit('created', data.value)
     }
@@ -90,7 +97,7 @@ defineExpose({ create, edit })
             к заявке {{ item.request_id }}
           </template>
         </template>
-        <div>
+        <div v-if="!isDisabled">
           <v-btn
             v-if="item.id > 0"
             :loading="deleting"
@@ -105,13 +112,18 @@ defineExpose({ create, edit })
       </div>
       <div class="dialog-body">
         <div>
-          <v-select v-model="item.type" label="Тип" :items="selectItems(PassTypeLabel)" />
+          <v-select
+            v-model="item.type"
+            label="Тип"
+            :items="selectItems(PassTypeLabel)"
+            :disabled="isDisabled"
+          />
         </div>
         <div>
-          <UiDateInput v-model="item.date" label="Дата" />
+          <UiDateInput v-model="item.date" label="Дата" :disabled="isDisabled" />
         </div>
         <div>
-          <v-text-field v-model="item.comment" label="ФИО" />
+          <v-text-field v-model="item.comment" label="ФИО" :disabled="isDisabled" />
         </div>
       </div>
     </div>

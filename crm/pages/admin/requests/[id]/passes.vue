@@ -48,7 +48,7 @@ nextTick(loadPasses)
         <div>
           <div />
           <PassList :items="passes">
-            <tr class="cursor-pointer" @click="passDialog?.create(id)">
+            <tr class="hoverable cursor-pointer" @click="passDialog?.create(id)">
               <td colspan="10">
                 <UiIconLink>
                   Добавить пропуск

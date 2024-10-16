@@ -122,6 +122,7 @@ declare global {
   }
 
   interface PassFilters {
+    status?: PassStatus
     type?: PassType
   }
 }
