@@ -2,6 +2,7 @@
 import { clone } from 'rambda'
 
 const emit = defineEmits<{
+  updated: [pass: PassResource]
   created: [pass: PassResource]
   deleted: [pass: PassResource]
 }>()
@@ -13,13 +14,14 @@ const modelDefaults: PassResource = {
   comment: '',
   request_id: null,
   used_at: null,
+  is_expired: false,
 }
 
 const saving = ref(false)
 const deleting = ref(false)
 const item = ref<PassResource>(modelDefaults)
 
-function create(requestId: number) {
+function create(requestId: number | null = null) {
   dialog.value = true
   item.value = {
     ...modelDefaults,
@@ -35,7 +37,13 @@ function edit(pass: PassResource) {
 async function save() {
   saving.value = true
   if (item.value.id > 0) {
-
+    const { data } = await useHttp<PassResource>(`passes/${item.value.id}`, {
+      method: 'put',
+      body: item.value,
+    })
+    if (data.value) {
+      emit('updated', data.value)
+    }
   }
   else {
     const { data } = await useHttp<PassResource>(`passes`, {
@@ -69,9 +77,13 @@ defineExpose({ create, edit })
   <v-dialog v-model="dialog" :width="width">
     <div class="dialog-wrapper">
       <div class="dialog-header">
-        <template v-if="item.id > 0">
+        <div v-if="item.id > 0">
           Редактировать пропуск
-        </template>
+          <div class="dialog-subheader">
+            {{ formatName(item.user!) }}
+            {{ formatDateTime(item.created_at!) }}
+          </div>
+        </div>
         <template v-else>
           Добавить пропуск
           <template v-if="item.request_id">

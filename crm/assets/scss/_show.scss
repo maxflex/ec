@@ -52,6 +52,10 @@
       width: calc(100% + #{$padding * 2});
       min-width: calc(100% + #{$padding * 2});
     }
+
+    .v-table td:first-child {
+      padding-left: $padding !important;
+    }
   }
 
   &__inputs {

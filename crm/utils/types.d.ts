@@ -1011,6 +1011,7 @@ declare global {
     date: string
     comment: string
     used_at: ?string
+    is_expired: boolean
     request_id: ?number
     user?: PersonResource
     created_at?: string

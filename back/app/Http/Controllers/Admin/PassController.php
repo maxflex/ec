@@ -9,9 +9,15 @@ use Illuminate\Http\Request;
 
 class PassController extends Controller
 {
-    public function index()
-    {
+    protected $filters = [
+        'equals' => ['request_id', 'type']
+    ];
 
+    public function index(Request $request)
+    {
+        $query = Pass::latest();
+        $this->filter($request, $query);
+        return $this->handleIndexRequest($request, $query, PassResource::class);
     }
 
     public function store(Request $request)
@@ -19,6 +25,12 @@ class PassController extends Controller
         $pass = auth()->user()->entity->passes()->create(
             $request->all()
         );
+        return new PassResource($pass);
+    }
+
+    public function update(Pass $pass, Request $request)
+    {
+        $pass->update($request->all());
         return new PassResource($pass);
     }
 

@@ -11,6 +11,7 @@ import {
   mdiCalendarBadge,
   mdiCalendarEdit,
   mdiCalendarStar,
+  mdiCar,
   mdiCash,
   mdiDotsTriangle,
   mdiFileDocumentEditOutline,
@@ -112,6 +113,11 @@ const menu: Menu = [
     icon: mdiFinance,
     title: 'Итоги',
     to: '/stats',
+  },
+  {
+    icon: mdiCar,
+    title: 'Пропуски',
+    to: '/passes',
   },
   {
     icon: mdiNumeric5BoxMultiple,

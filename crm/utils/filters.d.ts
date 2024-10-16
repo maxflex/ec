@@ -120,6 +120,10 @@ declare global {
   interface TelegramListFilters {
     status?: TelegramListStatus
   }
+
+  interface PassFilters {
+    type?: PassType
+  }
 }
 
 export {}

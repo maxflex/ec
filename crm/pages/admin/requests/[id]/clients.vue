@@ -83,7 +83,7 @@ nextTick(loadData)
           <v-table hover>
             <tbody>
               <tr v-for="client in clients" :key="client.id" class="cursor-pointer" @click="select(client)">
-                <td class="pl-5" width="300">
+                <td width="300">
                   <UiPerson :item="client" />
                 </td>
                 <td>
@@ -93,7 +93,7 @@ nextTick(loadData)
                 </td>
               </tr>
               <tr class="cursor-pointer" @click="clientDialog?.create(id)">
-                <td class="pl-5" colspan="10">
+                <td colspan="10">
                   <UiIconLink>
                     Новый клиент
                   </UiIconLink>

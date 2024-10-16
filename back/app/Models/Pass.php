@@ -31,4 +31,9 @@ class Pass extends Model
     {
         return $this->passLog?->used_at;
     }
+
+    public function getIsExpiredAttribute(): bool
+    {
+        return $this->used_at === null && $this->date < now()->format('Y-m-d');
+    }
 }

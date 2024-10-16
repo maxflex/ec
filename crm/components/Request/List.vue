@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { mdiAccountPlus, mdiCar, mdiWeb } from '@mdi/js'
-import type { PassDialog, RequestDialog } from '#build/components'
+import type { RequestDialog } from '#build/components'
 
 const router = useRouter()
 const model = defineModel<RequestListResource[]>({ default: () => [] })
 const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()
-const passDialog = ref<InstanceType<typeof PassDialog>>()
 
 function onRequestUpdated(r: RequestListResource) {
   const index = model.value.findIndex(e => e.id === r.id)
@@ -23,28 +22,6 @@ function onRequestDeleted(r: RequestResource) {
   if (index !== -1) {
     model.value.splice(index, 1)
   }
-}
-
-function onPassCreated(pass: PassResource) {
-  const index = model.value.findIndex(e => e.id === pass.request_id)
-  if (index === -1) {
-    return
-  }
-  model.value[index].passes.push(pass)
-  itemUpdated('request', pass.request_id!)
-}
-
-function onPassDeleted(pass: PassResource) {
-  const index = model.value.findIndex(e => e.id === pass.request_id)
-  if (index === -1) {
-    return
-  }
-  const passIndex = model.value[index].passes.findIndex(e => e.id === pass.id)
-  if (passIndex === -1) {
-    return
-  }
-  model.value[index].passes.splice(passIndex, 1)
-  itemUpdated('request', pass.request_id!)
 }
 </script>
 
@@ -116,7 +93,7 @@ function onPassDeleted(pass: PassResource) {
         />
         <div
           class="request-list__passes"
-          @click="passDialog?.create(item.id)"
+          @click="router.push({ name: 'requests-id-passes', params: { id: item.id } })"
         >
           <v-btn
             :size="48"
@@ -140,11 +117,6 @@ function onPassDeleted(pass: PassResource) {
     ref="requestDialog"
     @updated="onRequestUpdated"
     @deleted="onRequestDeleted"
-  />
-  <PassDialog
-    ref="passDialog"
-    @created="onPassCreated"
-    @deleted="onPassDeleted"
   />
 </template>
 
