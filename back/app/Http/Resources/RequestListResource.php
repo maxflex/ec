@@ -18,6 +18,7 @@ class RequestListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $client = $this->client;
         $phones = $this->phones;
         $numbers = $phones->pluck('number');
 
@@ -27,12 +28,12 @@ class RequestListResource extends JsonResource
         ], [
             'phones' => PhoneListResource::collection($phones),
             'responsible_user' => new PersonResource($this->responsibleUser),
-            'client' => new PersonResource($this->client),
+            'client' => new PersonResource($client),
             'passes' => PassResource::collection($this->passes),
             'candidates_count' => Client::where(fn($q) => $q
                 ->whereHas('phones', fn($q) => $q->whereIn('number', $numbers))
                 ->orWhereHas('parent.phones', fn($q) => $q->whereIn('number', $numbers))
-            )->count()
+            )->where('id', '<>', $client?->id)->count()
         ]);
     }
 }
