@@ -61,8 +61,8 @@ function onRequestDeleted(r: RequestResource) {
         </span>
       </div>
       <div style="width: 160px">
-        <span v-if="item.program">
-          {{ ProgramShortLabel[item.program] }}
+        <span v-if="item.direction">
+          {{ RequestDirectionLabel[item.direction] }}
         </span>
         <span v-else class="text-gray">
           не установлено
@@ -75,6 +75,9 @@ function onRequestDeleted(r: RequestResource) {
         <UiPerson v-if="item.client" :item="item.client" />
         <span v-else class="text-gray">
           нет клиента
+        </span>
+        <span v-if="item.candidates_count" class="text-gray">
+          +{{ item.candidates_count }}
         </span>
       </div>
       <div class="request-list__actions">

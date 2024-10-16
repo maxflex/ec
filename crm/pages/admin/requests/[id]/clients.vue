@@ -73,7 +73,7 @@ nextTick(loadData)
   <div class="show">
     <div class="show-title">
       <h2>
-        Выберите клиента к заявке {{ id }}
+        Добавить клиента к заявке {{ id }}
       </h2>
     </div>
     <v-fade-transition>

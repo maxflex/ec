@@ -1,6 +1,8 @@
 import type Metrics from '~/components/Stats/Metrics'
 
 declare global {
+  type RequestDirection = keyof typeof RequestDirectionLabel
+
   type PassStatus = keyof typeof PassStatusLabel
 
   type PassType = keyof typeof PassTypeLabel
@@ -153,9 +155,8 @@ declare global {
   interface RequestResource {
     id?: number
     status: RequestStatus
-    program: ?Program
+    direction: ?RequestDirection
     responsible_user_id: ?number
-    comment: ?string
     phones: PhoneListResource[]
     user?: PersonResource
     client?: ClientListResource
@@ -165,12 +166,12 @@ declare global {
   interface RequestListResource {
     id: number
     status: RequestStatus
-    program: ?Program
-    comment: ?string
+    direction: ?RequestDirection
     responsible_user: ?PersonResource
     client: ?PersonResource
     phones: PhoneListResource[]
     created_at: string
+    candidates_count: number
     comments_count: number
     passes: PassResource[]
     user_id: ?number

@@ -40,7 +40,7 @@ nextTick(loadPasses)
   <div class="show">
     <div class="show-title">
       <h2>
-        Пропуски к заявке {{ id }}
+        Пропуски по заявке {{ id }}
       </h2>
     </div>
     <v-fade-transition>

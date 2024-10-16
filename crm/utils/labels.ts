@@ -589,17 +589,30 @@ export const TelegramListStatusLabel = {
   scheduled: 'запланировано',
   sending: 'отправляется',
   sent: 'отправлено',
-}
+} as const
 
 export const ErrorCodeLabel = [1000] as const
 
 export const PassTypeLabel = {
   person: 'на человека',
   car: 'на машину',
-}
+} as const
 
 export const PassStatusLabel = {
   active: 'не использован',
   used: 'использован',
   expired: 'истёк',
-}
+} as const
+
+export const RequestDirectionLabel = {
+  courses9: 'курсы 9 класс',
+  courses10: 'курсы 10 класс',
+  courses11: 'курсы 11 класс',
+  school8: 'школа 8 класс',
+  school9: 'школа 9 класс',
+  school10: 'школа 10 класс',
+  school11: 'школа 11 класс',
+  external: 'экстернат',
+  otherPython: 'программирование на Python',
+  otherEnglish: 'разговорный английский',
+} as const

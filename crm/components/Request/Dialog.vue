@@ -8,9 +8,8 @@ const emit = defineEmits<{
 
 const modelDefaults: RequestResource = {
   status: 'new',
-  program: null,
+  direction: null,
   responsible_user_id: null,
-  comment: null,
   phones: [],
 }
 
@@ -140,21 +139,15 @@ defineExpose({ create, edit })
         </div>
         <div>
           <UiClearableSelect
-            v-model="request.program as string"
-            label="Программа"
-            :items="selectItems(ProgramLabel)"
+            v-model="request.direction"
+            label="Направление"
+            :items="selectItems(RequestDirectionLabel)"
           />
         </div>
         <div>
           <UserSelector
             v-model="request.responsible_user_id"
             label="Ответственный"
-          />
-        </div>
-        <div>
-          <v-textarea
-            v-model="request.comment"
-            label="Комментарий"
           />
         </div>
         <PhoneEditor v-model="request.phones" />

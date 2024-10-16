@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\{Program, RequestStatus};
+use App\Enums\{RequestDirection, RequestStatus};
 use App\Traits\{HasComments, HasPhones, RelationSyncable};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,11 +14,11 @@ class Request extends Model
 
     protected $casts = [
         'status' => RequestStatus::class,
-        'program' => Program::class,
+        'direction' => RequestDirection::class,
     ];
 
     protected $fillable = [
-        'responsible_user_id', 'program', 'comment', 'status', 'client_id'
+        'responsible_user_id', 'direction', 'status', 'client_id'
     ];
 
     public function responsibleUser(): BelongsTo
