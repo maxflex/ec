@@ -46,12 +46,12 @@ function onRequestDeleted(r: RequestResource) {
           {{ item.id }}
         </div>
       </div>
-      <div style="width: 180px">
+      <div style="width: 150px">
         <template v-if="item.responsible_user">
           {{ formatName(item.responsible_user, 'initials') }}
         </template>
         <span v-else class="text-gray">
-          нет ответственного
+          не установлено
         </span>
       </div>
       <div style="width: 150px">
