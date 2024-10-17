@@ -4,7 +4,7 @@ const users = ref<UserResource[]>([])
 const loading = ref(true)
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<UserResource[]>>(`users`)
+  const { data } = await useHttp<ApiResponse<UserResource>>(`users`)
   if (data.value) {
     users.value = data.value.data.sort((a, b) => Number(b.is_active) - Number(a.is_active))
   }
@@ -21,7 +21,7 @@ onMounted(() => loadData())
     :loading="loading"
     :items="users"
     :item-title="formatName"
-    :item-value="(e) => e.id"
+    item-value="id"
   >
     <template #item="{ props, item }">
       <v-list-item v-bind="props" :class="{ 'text-gray': !item.raw.is_active }">

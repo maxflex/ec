@@ -22,7 +22,7 @@ async function loadSwamps() {
     ...filters.value,
     client_id: clientId,
   }
-  const { data } = await useHttp<ApiResponse<SwampListResource[]>>(`swamps`, { params })
+  const { data } = await useHttp<ApiResponse<SwampListResource>>(`swamps`, { params })
   if (data.value) {
     swamps.value = data.value.data
   }

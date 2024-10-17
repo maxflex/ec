@@ -12,7 +12,7 @@ const examScoreDialog = ref<InstanceType<typeof ExamScoreDialog>>()
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<ExamScoreResource[]>>(
+  const { data } = await useHttp<ApiResponse<ExamScoreResource>>(
     'exam-scores',
     {
       params: {

@@ -12,7 +12,7 @@ const loading = ref(true)
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<ClientTestResource[]>>(
+  const { data } = await useHttp<ApiResponse<ClientTestResource>>(
     `client-tests`,
     {
       params: {

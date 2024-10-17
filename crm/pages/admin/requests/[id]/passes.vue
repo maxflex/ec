@@ -17,7 +17,7 @@ const passDialog = ref<InstanceType<typeof PassDialog>>()
 
 async function loadPasses() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<PassResource[]>>(`passes`, {
+  const { data } = await useHttp<ApiResponse<PassResource>>(`passes`, {
     params: {
       request_id: id,
     },

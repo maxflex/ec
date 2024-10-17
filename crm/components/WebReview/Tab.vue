@@ -8,7 +8,7 @@ const webReviewDialog = ref<InstanceType<typeof WebReviewDialog>>()
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<WebReviewResource[]>>(
+  const { data } = await useHttp<ApiResponse<WebReviewResource>>(
       `web-reviews`,
       {
         params: {

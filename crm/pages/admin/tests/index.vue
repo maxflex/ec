@@ -5,7 +5,7 @@ const testDialog = ref<InstanceType<typeof TestDialog>>()
 const tests = ref<TestResource[]>()
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<TestResource[]>>('tests')
+  const { data } = await useHttp<ApiResponse<TestResource>>('tests')
   if (data.value) {
     const { data: newItems } = data.value
     tests.value = newItems

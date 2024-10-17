@@ -16,7 +16,7 @@ async function loadData() {
   if (tests.value !== undefined) {
     return
   }
-  const { data } = await useHttp<ApiResponse<TestResource[]>>('tests')
+  const { data } = await useHttp<ApiResponse<TestResource>>('tests')
   if (data.value) {
     const { data: newItems } = data.value
     tests.value = newItems

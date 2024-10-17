@@ -151,6 +151,27 @@ defineExpose({ create, edit })
           />
         </div>
         <PhoneEditor v-model="request.phones" />
+        <div>
+          <v-text-field
+            disabled
+            :model-value="request.yandex_id"
+            label="Yandex ID"
+          />
+        </div>
+        <div>
+          <v-text-field
+            disabled
+            :model-value="request.google_id"
+            label="Google ID"
+          />
+        </div>
+        <div>
+          <v-text-field
+            disabled
+            :model-value="request.ip"
+            label="IP"
+          />
+        </div>
       </div>
     </div>
   </v-dialog>

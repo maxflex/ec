@@ -5,7 +5,7 @@ const items = ref<InstructionTeacherListResource[]>([])
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<InstructionTeacherListResource[]>>(
+  const { data } = await useHttp<ApiResponse<InstructionTeacherListResource>>(
       `instructions`,
       {
         params: {

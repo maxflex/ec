@@ -11,7 +11,7 @@ const currentClientId = ref<number | null>(null)
 const loading = ref(true)
 
 async function loadClients() {
-  const { data } = await useHttp<ApiResponse<ClientListResource[]>>(`clients`, {
+  const { data } = await useHttp<ApiResponse<ClientListResource>>(`clients`, {
     params: {
       request_id: id,
     },

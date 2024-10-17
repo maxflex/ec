@@ -30,7 +30,7 @@ async function onSelect(g: GroupListResource) {
 }
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<GroupListResource[]>>(
+  const { data } = await useHttp<ApiResponse<GroupListResource>>(
     'groups',
     {
       params: filters.value,

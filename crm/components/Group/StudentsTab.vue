@@ -37,7 +37,7 @@ async function moveToAnotherGroup(g: GroupListResource, contractId: number) {
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<ClientGroupResource[]>>(
+  const { data } = await useHttp<ApiResponse<ClientGroupResource>>(
     `client-groups`,
     {
       params: {

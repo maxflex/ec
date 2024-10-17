@@ -19,6 +19,7 @@ class RequestResource extends JsonResource
     {
         return extract_fields($this, [
             'status', 'direction', 'responsible_user_id', 'created_at',
+            'yandex_id', 'google_id', 'ip'
         ], [
             'user' => new PersonResource($this->user),
             'client' => new ClientListResource($this->client),

@@ -11,7 +11,7 @@ const teachers = ref<TeacherListResource[]>([])
 const loading = ref(true)
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<TeacherListResource[]>>('teachers')
+  const { data } = await useHttp<ApiResponse<TeacherListResource>>('teachers')
   if (data.value) {
     teachers.value = data.value.data
   }

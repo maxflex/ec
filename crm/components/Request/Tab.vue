@@ -5,7 +5,7 @@ const items = ref<RequestListResource[]>([])
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<RequestListResource[]>>(
+  const { data } = await useHttp<ApiResponse<RequestListResource>>(
       `requests`,
       {
         params: {

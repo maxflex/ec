@@ -9,7 +9,7 @@ const items = ref<GradeListResource[]>([])
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<GradeListResource[]>>(
+  const { data } = await useHttp<ApiResponse<GradeListResource>>(
       `grades`,
       {
         params: {

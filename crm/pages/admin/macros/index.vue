@@ -2,7 +2,7 @@
 const macros = ref<MacroResource[]>()
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<MacroResource[]>>('macros')
+  const { data } = await useHttp<ApiResponse<MacroResource>>('macros')
   if (data.value) {
     const { data: newItems } = data.value
     macros.value = newItems

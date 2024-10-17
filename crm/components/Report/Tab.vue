@@ -15,7 +15,7 @@ const items = ref<ReportListResource[]>([])
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<ReportListResource[]>>(
+  const { data } = await useHttp<ApiResponse<ReportListResource>>(
       `reports`,
       {
         params: {

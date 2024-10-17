@@ -18,7 +18,7 @@ async function loadData() {
     return
   }
   loading.value = true
-  const { data } = await useHttp<ApiResponse<EventListResource[]>>(
+  const { data } = await useHttp<ApiResponse<EventListResource>>(
     `common/events`,
     {
       params: {

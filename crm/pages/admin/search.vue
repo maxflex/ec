@@ -15,7 +15,7 @@ async function search() {
     items.value = []
   }
   else {
-    const { data } = await useHttp<ApiResponse<SearchResultResource[]>>(
+    const { data } = await useHttp<ApiResponse<SearchResultResource>>(
         `search`,
         {
           params: {

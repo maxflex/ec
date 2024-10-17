@@ -105,7 +105,7 @@ const itemsByDate = computed((): {
 
 async function loadLessons() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<LessonListResource[]>>(
+  const { data } = await useHttp<ApiResponse<LessonListResource>>(
       `lessons`,
       {
         params: {
@@ -125,7 +125,7 @@ async function loadEvents() {
   if (groupId) {
     return
   }
-  const { data } = await useHttp<ApiResponse<EventListResource[]>>(
+  const { data } = await useHttp<ApiResponse<EventListResource>>(
       `common/events`,
       {
         params: {
@@ -159,7 +159,7 @@ async function loadTeeth() {
 
 async function loadVacations() {
   vacations.value = {}
-  const { data } = await useHttp<ApiResponse<VacationResource[]>>(
+  const { data } = await useHttp<ApiResponse<VacationResource>>(
       `common/vacations`,
       {
         params: { year: filters.value.year },
@@ -177,7 +177,7 @@ async function loadExamDates() {
     return
   }
   examDates.value = {}
-  const { data } = await useHttp<ApiResponse<ExamDateResource[]>>(
+  const { data } = await useHttp<ApiResponse<ExamDateResource>>(
       `common/exam-dates`,
       {
         params: { program },

@@ -29,7 +29,7 @@ onMounted(async () => {
 })
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<VacationResource[]>>(`common/vacations`)
+  const { data } = await useHttp<ApiResponse<VacationResource>>(`common/vacations`)
   if (data.value) {
     // vacations.value = data.value.data
     for (const { date } of data.value.data) {

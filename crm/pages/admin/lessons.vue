@@ -36,7 +36,7 @@ const itemsByDate = computed((): {
 
 async function loadLessons() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<LessonListResource[]>>(`lessons`, {
+  const { data } = await useHttp<ApiResponse<LessonListResource>>(`lessons`, {
     params: {
       year: filters.value.year,
     },
@@ -49,7 +49,7 @@ async function loadLessons() {
 
 async function loadVacations() {
   vacations.value = {}
-  const { data } = await useHttp<ApiResponse<VacationResource[]>>(`common/vacations`, {
+  const { data } = await useHttp<ApiResponse<VacationResource>>(`common/vacations`, {
     params: { year: filters.value.year },
   })
   if (data.value) {

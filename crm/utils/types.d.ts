@@ -81,7 +81,7 @@ declare global {
   }
 
   interface ApiResponse<T> {
-    data: T
+    data: T[]
     meta: Meta
     extra?: object
   }
@@ -157,6 +157,9 @@ declare global {
     status: RequestStatus
     direction: ?RequestDirection
     responsible_user_id: ?number
+    yandex_id: ?string
+    google_id: ?string
+    ip: ?string
     phones: PhoneListResource[]
     user?: PersonResource
     client?: ClientListResource

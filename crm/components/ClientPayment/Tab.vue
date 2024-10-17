@@ -15,7 +15,7 @@ const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<ClientPaymentResource[]>>(
+  const { data } = await useHttp<ApiResponse<ClientPaymentResource>>(
     'client-payments',
     {
       params: {

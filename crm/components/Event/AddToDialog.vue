@@ -17,7 +17,7 @@ async function open(sp: SelectedPeople, year: Year) {
   dialog.value = true
   loading.value = true
   selected.value = clone(sp)
-  const { data } = await useHttp<ApiResponse<EventListResource[]>>(
+  const { data } = await useHttp<ApiResponse<EventListResource>>(
       `common/events`,
       { params: { year } },
   )

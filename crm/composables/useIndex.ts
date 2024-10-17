@@ -50,7 +50,7 @@ export default function<T, F extends object = object, E extends object = object>
       ...filters.value,
     })
 
-    const { data } = await useHttp<ApiResponse<T[]>>(apiUrl, { params })
+    const { data } = await useHttp<ApiResponse<T>>(apiUrl, { params })
     if (data.value) {
       const { extra: e, meta, data: newItems } = data.value
       if (e) {

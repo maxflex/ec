@@ -50,7 +50,7 @@ async function send() {
 }
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<CommentResource[]>>('comments', {
+  const { data } = await useHttp<ApiResponse<CommentResource>>('comments', {
     params: {
       entity_id: entityId,
       entity_type: EntityTypeValue[entityType],

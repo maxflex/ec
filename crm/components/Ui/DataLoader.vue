@@ -12,7 +12,7 @@ const items = ref<[]>([])
 async function loadData() {
   console.log('LOAD DATA', filters)
   loading.value = true
-  const { data } = await useHttp<ApiResponse<[]>>(url.value, {
+  const { data } = await useHttp<ApiResponse<>>(url.value, {
     params: filters.value,
   })
   if (data.value) {

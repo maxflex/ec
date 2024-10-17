@@ -27,7 +27,7 @@ function open(p: PhoneListResource, _person: PersonResource) {
 }
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<TelegramMessageResource[]>>(
+  const { data } = await useHttp<ApiResponse<TelegramMessageResource>>(
     'telegram-messages',
     {
       params: {
