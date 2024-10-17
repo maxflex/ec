@@ -104,6 +104,10 @@ declare global {
     entity_type: EntityType
   }
 
+  interface ClientWithContractsResource extends PersonResource {
+    contract_versions: ContractVersionResource[]
+  }
+
   type PersonWithPhotoResource = PersonResource & HasPhoto
 
   type ResponseErrors = string[]
@@ -162,7 +166,8 @@ declare global {
     ip: ?string
     phones: PhoneListResource[]
     user?: PersonResource
-    client?: ClientListResource
+    client_id: ?number
+    clients: ClientWithContractsResource[]
     created_at?: string
   }
 
@@ -174,7 +179,7 @@ declare global {
     client: ?PersonResource
     phones: PhoneListResource[]
     created_at: string
-    candidates_count: number
+    clients: PersonResource[]
     comments_count: number
     passes: PassResource[]
     user_id: ?number

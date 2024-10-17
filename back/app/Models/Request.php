@@ -41,6 +41,29 @@ class Request extends Model
         return $this->hasMany(Pass::class);
     }
 
+
+    /**
+     * @param bool $excludeSelected исключить выбранного клиента (нужно для списка заявок)
+     * @return Client[]
+     */
+    public function getClients(bool $excludeSelected = false)
+    {
+        $numbers = $this->phones()->pluck('number');
+
+        $query = Client::where(fn($q) => $q
+            ->whereHas('phones', fn($q) => $q->whereIn('number', $numbers))
+            ->orWhereHas('parent.phones', fn($q) => $q->whereIn('number', $numbers))
+        );
+
+        if ($this->client_id) {
+            $excludeSelected
+                ? $query->where('id', '<>', $this->client_id)
+                : $query->orWhere('id', $this->client_id);
+        }
+
+        return $query->get()->all();
+    }
+
     public static function booted()
     {
         self::creating(function ($request) {

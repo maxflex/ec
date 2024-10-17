@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,22 +17,15 @@ class RequestListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $client = $this->client;
-        $phones = $this->phones;
-        $numbers = $phones->pluck('number');
-
         return extract_fields($this, [
             'status', 'created_at', 'comment', 'comments_count',
             'direction', 'user_id'
         ], [
-            'phones' => PhoneListResource::collection($phones),
+            'phones' => PhoneListResource::collection($this->phones),
             'responsible_user' => new PersonResource($this->responsibleUser),
-            'client' => new PersonResource($client),
+            'client' => new PersonResource($this->client),
             'passes' => PassResource::collection($this->passes),
-            'candidates_count' => Client::where(fn($q) => $q
-                ->whereHas('phones', fn($q) => $q->whereIn('number', $numbers))
-                ->orWhereHas('parent.phones', fn($q) => $q->whereIn('number', $numbers))
-            )->where('id', '<>', $client?->id)->count()
+            'clients' => PersonResource::collection($this->getClients(true)),
         ]);
     }
 }

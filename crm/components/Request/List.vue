@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiAccountPlus, mdiCar, mdiWeb } from '@mdi/js'
+import { mdiCar, mdiWeb } from '@mdi/js'
 import type { RequestDialog } from '#build/components'
 
 const router = useRouter()
@@ -34,25 +34,19 @@ function onRequestDeleted(r: RequestResource) {
     >
       <div class="table-actionss">
         <v-btn
-          :icon="mdiAccountPlus"
-          :size="48"
-          variant="plain"
-          @click="router.push({ name: 'requests-id-clients', params: { id: item.id } })"
-        />
-        <v-btn
           icon="$edit"
           :size="48"
           variant="plain"
           @click="requestDialog?.edit(item)"
         />
       </div>
-      <div style="width: 100px">
+      <div style="width: 80px">
         <div class="d-flex align-center ga-2">
           <RequestStatus :status="item.status" />
           {{ item.id }}
         </div>
       </div>
-      <div style="width: 210px">
+      <div style="width: 180px">
         <template v-if="item.responsible_user">
           {{ formatName(item.responsible_user) }}
         </template>
@@ -60,7 +54,7 @@ function onRequestDeleted(r: RequestResource) {
           нет ответственного
         </span>
       </div>
-      <div style="width: 160px">
+      <div style="width: 150px">
         <span v-if="item.direction">
           {{ RequestDirectionLabel[item.direction] }}
         </span>
@@ -73,11 +67,16 @@ function onRequestDeleted(r: RequestResource) {
       </div>
       <div style="width: 180px">
         <UiPerson v-if="item.client" :item="item.client" />
-        <span v-else class="text-gray">
+        <span v-else-if="item.clients.length === 0" class="text-gray">
           нет клиента
         </span>
-        <span v-if="item.candidates_count" class="text-gray">
-          +{{ item.candidates_count }}
+        <span v-else>
+          <template v-if="item.clients.length === 1">
+            {{ formatName(item.clients[0]) }}
+          </template>
+          <template v-else>
+            {{ item.clients.length }} клиента
+          </template>
         </span>
       </div>
       <div class="request-list__actions">
@@ -111,8 +110,8 @@ function onRequestDeleted(r: RequestResource) {
           />
         </div>
       </div>
-      <div class="text-gray" style="flex: initial; width: 80px">
-        {{ formatDate(item.created_at!) }}
+      <div class="text-gray" style="flex: initial; width: 144px">
+        {{ formatDateTime(item.created_at!) }}
       </div>
     </div>
   </div>
@@ -131,7 +130,6 @@ function onRequestDeleted(r: RequestResource) {
     width: 150px;
     display: flex;
     align-items: center;
-    gap: 2px;
     .no-items {
       &:not(:hover) {
         opacity: 0.2 !important;

@@ -150,6 +150,9 @@ defineExpose({ create, edit })
             label="Ответственный"
           />
         </div>
+        <div>
+          <ClientSelector v-model="request.client_id" :items="request.clients" />
+        </div>
         <PhoneEditor v-model="request.phones" />
         <div>
           <v-text-field

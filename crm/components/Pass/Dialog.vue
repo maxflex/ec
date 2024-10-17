@@ -123,7 +123,11 @@ defineExpose({ create, edit })
           <UiDateInput v-model="item.date" label="Дата" :disabled="isDisabled" />
         </div>
         <div>
-          <v-text-field v-model="item.comment" label="ФИО" :disabled="isDisabled" />
+          <v-text-field
+            v-model="item.comment"
+            :label="item.type === 'person' ? 'ФИО' : 'Марка и номер'"
+            :disabled="isDisabled"
+          />
         </div>
       </div>
     </div>

@@ -19,11 +19,11 @@ class RequestResource extends JsonResource
     {
         return extract_fields($this, [
             'status', 'direction', 'responsible_user_id', 'created_at',
-            'yandex_id', 'google_id', 'ip'
+            'yandex_id', 'google_id', 'ip', 'client_id'
         ], [
             'user' => new PersonResource($this->user),
-            'client' => new ClientListResource($this->client),
             'phones' => PhoneListResource::collection($this->phones),
+            'clients' => ClientWithContractsResource::collection($this->getClients())
         ]);
     }
 }
