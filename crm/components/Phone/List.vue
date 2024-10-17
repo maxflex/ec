@@ -3,10 +3,9 @@ import { mdiHistory, mdiPhone } from '@mdi/js'
 import type { TelegramMessageDialog } from '#build/components'
 import { openCallApp } from '~/components/CallApp'
 
-const { items, person, q, verify } = defineProps<{
+const { items, q, verified } = defineProps<{
   items: PhoneListResource[]
-  person?: PersonResource
-  verify?: boolean
+  verified?: boolean
   q?: string
 }>()
 const telegramMessageDialog = ref<InstanceType<typeof TelegramMessageDialog>>()
@@ -51,7 +50,7 @@ function highlight(text: string, _q: string) {
     <div v-for="p in items" :key="p.id">
       <div
         class="phone-list__number"
-        :class="{ 'opacity-5': verify && !p.is_verified }"
+        :class="{ 'opacity-5': verified === false }"
       >
         <span v-html="q ? highlightPhone(p.number) : formatPhone(p.number)" />
       </div>

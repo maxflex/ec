@@ -273,6 +273,7 @@ export const RequestStatusLabel = {
   new: 'новые',
   awaiting: 'в ожидании',
   finished: 'выполненные',
+  trash: 'архив',
 } as const
 
 export const WeekdayLabel = {

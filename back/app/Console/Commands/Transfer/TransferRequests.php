@@ -29,6 +29,7 @@ class TransferRequests extends Command
                 'direction' => optional($this->getDirection($r))->name,
                 'google_id' => $r->google_id,
                 'yandex_id' => $r->yandex_id,
+                'is_verified' => !!$r->created_email_id,
                 'ip' => $r->ip,
                 'user_id' => $this->getUserId($r->created_email_id),
                 'created_at' => $r->created_at === '0000-00-00 00:00:00'

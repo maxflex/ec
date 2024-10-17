@@ -151,7 +151,6 @@ declare global {
     id: number
     number: string
     comment: ?string
-    is_verified: boolean
     telegram_id: ?number
     entity_type: EntityType
   }
@@ -183,6 +182,7 @@ declare global {
     comments_count: number
     passes: PassResource[]
     user_id: ?number
+    is_verified: boolean
   }
 
   interface ParentResource extends HasName, HasPhones {

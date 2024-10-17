@@ -42,13 +42,13 @@ function onRequestDeleted(r: RequestResource) {
       </div>
       <div style="width: 80px">
         <div class="d-flex align-center ga-2">
-          <RequestStatus :status="item.status" />
+          <RequestStatus :item="item" />
           {{ item.id }}
         </div>
       </div>
       <div style="width: 180px">
         <template v-if="item.responsible_user">
-          {{ formatName(item.responsible_user) }}
+          {{ formatName(item.responsible_user, 'initials') }}
         </template>
         <span v-else class="text-gray">
           нет ответственного
@@ -63,7 +63,7 @@ function onRequestDeleted(r: RequestResource) {
         </span>
       </div>
       <div style="width: 200px">
-        <PhoneList :items="item.phones" :verify="!item.user_id" />
+        <PhoneList :items="item.phones" :verified="item.is_verified" />
       </div>
       <div style="width: 180px">
         <UiPerson v-if="item.client" :item="item.client" />

@@ -246,7 +246,13 @@ export function formatName(
       break
 
     case 'initials':
-      name = [person.last_name, `${person.first_name![0]}.`, `${person.middle_name![0]}.`]
+      name = [person.last_name]
+      if (person.first_name) {
+        name.push(`${person.first_name[0]}.`)
+      }
+      if (person.middle_name) {
+        name.push(`${person.middle_name[0]}.`)
+      }
       break
 
     default:
