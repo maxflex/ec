@@ -49,6 +49,12 @@ class RequestsController extends Controller
         return new RequestListResource($clientRequest);
     }
 
+    public function associated($id)
+    {
+        $clientRequest = ClientRequest::findOrFail($id);
+        return RequestListResource::collection($clientRequest->getAssociatedRequests());
+    }
+
     public function destroy($id)
     {
         $clientRequest = ClientRequest::findOrFail($id);

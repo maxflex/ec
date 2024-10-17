@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { mdiWeb } from '@mdi/js'
+import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 import type { RequestDialog } from '#build/components'
 
-const router = useRouter()
 const model = defineModel<RequestListResource[]>({ default: () => [] })
 const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()
+const expanded = ref<{ [key: number]: RequestListResource[] }>({})
 
 function onRequestUpdated(r: RequestListResource) {
   const index = model.value.findIndex(e => e.id === r.id)
@@ -23,97 +23,47 @@ function onRequestDeleted(r: RequestResource) {
     model.value.splice(index, 1)
   }
 }
+
+async function expand(r: RequestListResource) {
+  if (r.associated_requests_count === 0) {
+    return
+  }
+  if (expanded.value[r.id]) {
+    delete expanded.value[r.id]
+    return
+  }
+  const { data } = await useHttp<RequestListResource[]>(`requests/associated/${r.id}`)
+  if (data.value) {
+    expanded.value[r.id] = data.value
+  }
+}
 </script>
 
 <template>
   <div class="table request-list">
-    <div
-      v-for="item in model"
-      :id="`request-${item.id}`"
-      :key="item.id"
-    >
-      <div class="table-actionss">
-        <v-btn
-          icon="$edit"
-          :size="48"
-          variant="plain"
-          @click="requestDialog?.edit(item)"
+    <template v-for="item in model" :key="item.id">
+      <RequestItem
+        :item="item"
+        :class="{
+          'request-list--expanded': expanded[item.id],
+        }"
+        @edit="requestDialog?.edit"
+        @expand="expand"
+      />
+
+      <Vue3SlideUpDown
+        class="table"
+        :model-value="!!expanded[item.id]"
+        :duration="200"
+      >
+        <RequestItem
+          v-for="r in expanded[item.id]"
+          :key="r.id"
+          :item="r"
+          @edit="requestDialog?.edit"
         />
-      </div>
-      <div style="width: 80px">
-        <div class="d-flex align-center ga-2">
-          <RequestStatus :item="item" />
-          {{ item.id }}
-        </div>
-      </div>
-      <div style="width: 150px">
-        <template v-if="item.responsible_user">
-          {{ formatName(item.responsible_user, 'initials') }}
-        </template>
-        <span v-else class="text-gray">
-          не установлено
-        </span>
-      </div>
-      <div style="width: 150px">
-        <span v-if="item.direction">
-          {{ RequestDirectionLabel[item.direction] }}
-        </span>
-        <span v-else class="text-gray">
-          не установлено
-        </span>
-      </div>
-      <div style="width: 200px">
-        <PhoneList :items="item.phones" :verified="item.is_verified" />
-      </div>
-      <div style="width: 180px">
-        <UiPerson v-if="item.client" :item="item.client" />
-        <span v-else-if="item.clients.length === 0" class="text-gray">
-          нет клиента
-        </span>
-        <span v-else>
-          <template v-if="item.clients.length === 1">
-            {{ formatName(item.clients[0]) }}
-          </template>
-          <template v-else>
-            {{ item.clients.length }} клиента
-          </template>
-        </span>
-      </div>
-      <div class="request-list__actions">
-        <v-btn
-          class="no-pointer-events"
-          :size="48"
-          variant="text"
-          :icon="mdiWeb"
-          :class="{ 'no-items': item.user_id }"
-        />
-        <CommentBtn
-          :class="{ 'no-items': item.comments_count === 0 }"
-          :count="item.comments_count"
-          :entity-id="item.id"
-          entity-type="request"
-        />
-        <div
-          class="request-list__passes"
-          @click="router.push({ name: 'requests-id-passes', params: { id: item.id } })"
-        >
-          <v-btn
-            :size="48"
-            variant="plain"
-            icon="$pass"
-            :class="{ 'no-items': item.passes.length === 0 }"
-          />
-          <v-badge
-            v-if="item.passes.length > 0"
-            floating
-            :content="item.passes.length"
-          />
-        </div>
-      </div>
-      <div class="text-gray" style="flex: initial; width: 144px">
-        {{ formatDateTime(item.created_at!) }}
-      </div>
-    </div>
+      </Vue3SlideUpDown>
+    </template>
   </div>
   <RequestDialog
     ref="requestDialog"
@@ -124,26 +74,21 @@ function onRequestDeleted(r: RequestResource) {
 
 <style lang="scss">
 .request-list {
-  &__actions {
-    flex: 1;
-    color: rgb(var(--v-theme-gray));
-    width: 150px;
-    display: flex;
-    align-items: center;
-    .no-items {
-      &:not(:hover) {
-        opacity: 0.2 !important;
+  .slide-up-down__container {
+    background: rgba(var(--v-theme-secondary), 0.1);
+    .request-item__actions > .badge:last-child {
+      pointer-events: none;
+      .v-badge {
+        pointer-events: none;
+        cursor: default;
       }
     }
   }
-  &__passes {
-    position: relative;
-    .v-badge {
-      position: absolute;
-      right: 20px;
-      top: 20px;
-      cursor: pointer;
-    }
+  &--expanded {
+    background: rgba(var(--v-theme-secondary), 0.2);
+  }
+  & > div {
+    transition: background-color ease-in-out 0.2s;
   }
 }
 </style>

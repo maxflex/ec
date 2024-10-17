@@ -56,7 +56,7 @@
     // }
   }
 
-  & > div,
+  & > div:not(.slide-up-down__container),
   & > a {
     border-bottom: thin solid
       rgba(var(--v-border-color), var(--v-border-opacity));

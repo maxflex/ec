@@ -109,6 +109,8 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::post('files', FileController::class);
 
+    Route::get('requests/associated/{request}', [RequestsController::class, 'associated']);
+
     Route::apiResources([
         'telegram-lists' => TelegramListController::class,
         'requests' => RequestsController::class,

@@ -35,13 +35,13 @@ async function loadData() {
 
 <template>
   <div
-    class="comment-btn"
+    class="badge"
     @click="commentDialog?.open()"
   >
     <v-btn
       v-bind="$attrs"
       :icon="mdiComment"
-      :size="48"
+      :size="42"
       variant="plain"
     />
     <v-badge
@@ -57,15 +57,3 @@ async function loadData() {
     @created="localCount++"
   />
 </template>
-
-<style lang="scss">
-.comment-btn {
-  position: relative;
-  .v-badge {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    cursor: pointer;
-  }
-}
-</style>

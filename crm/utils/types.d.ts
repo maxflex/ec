@@ -183,6 +183,7 @@ declare global {
     passes: PassResource[]
     user_id: ?number
     is_verified: boolean
+    associated_requests_count: number
   }
 
   interface ParentResource extends HasName, HasPhones {
