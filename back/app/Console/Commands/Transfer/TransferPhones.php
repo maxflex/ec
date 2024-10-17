@@ -18,13 +18,16 @@ class TransferPhones extends Command
         DB::table('phones')->truncate();
         $phones = DB::connection('egecrm')->table('phones')->get();
         $bar = $this->output->createProgressBar($phones->count());
+        $verifiedRequests = [];
         foreach ($phones as $p) {
             $entityType = $this->mapEntity($p->entity_type);
+            if ($p->is_verified && $entityType === Request::class) {
+                $verifiedRequests[] = $p->entity_id;
+            }
             DB::table('phones')
                 ->insert([
                     'number' => $p->phone,
                     'comment' => $this->nullify($p->comment),
-                    'is_verified' => $p->is_verified,
                     'entity_type' => $entityType,
                     'entity_id' => $p->entity_id,
                     'telegram_id' => null,
@@ -33,7 +36,12 @@ class TransferPhones extends Command
         }
         $bar->finish();
 
-        // хардкод доступы
+        // is_verified для Requests
+        Request::whereIn('id', $verifiedRequests)->update([
+            'is_verified' => true
+        ]);
+
+        // доступы
         DB::table('phones')
             ->where('entity_type', User::class)
             ->where('entity_id', 1)

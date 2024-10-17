@@ -12,13 +12,15 @@ class Request extends Model
 {
     use HasPhones, HasComments, RelationSyncable;
 
-    protected $casts = [
-        'status' => RequestStatus::class,
-        'direction' => RequestDirection::class,
+    protected $fillable = [
+        'responsible_user_id', 'direction', 'status', 'client_id',
+        'is_verified'
     ];
 
-    protected $fillable = [
-        'responsible_user_id', 'direction', 'status', 'client_id'
+    protected $casts = [
+        'is_verified' => 'bool',
+        'status' => RequestStatus::class,
+        'direction' => RequestDirection::class,
     ];
 
     public function responsibleUser(): BelongsTo

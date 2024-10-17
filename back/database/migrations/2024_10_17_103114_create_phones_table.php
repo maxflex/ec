@@ -11,7 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('phones', function (Blueprint $table) {
+        Schema::dropIfExists('phones');
+        Schema::create('phones', function (Blueprint $table) {
+            $table->id();
+            $table->string('number')->index();
+            $table->string('comment')->nullable();
+            $table->morphs('entity');
             $table->unsignedBigInteger('telegram_id')->nullable();
         });
     }
@@ -21,8 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('phones', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('phones');
     }
 };

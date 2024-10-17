@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\Program;
+use App\Enums\RequestDirection;
 use App\Enums\RequestStatus;
 use App\Models\Client;
 use App\Models\User;
@@ -15,26 +15,29 @@ return new class extends Migration
      */
     public function up(): void
     {
+        DB::table('passes')->truncate();
+        Schema::disableForeignKeyConstraints();
+        Schema::dropIfExists('requests');
         Schema::create('requests', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Client::class)->nullable()->constrained();
-            $table->unsignedBigInteger('responsible_user_id')->nullable()->constrained();
+            $table->unsignedBigInteger('responsible_user_id')->nullable();
             $table->foreign('responsible_user_id')->references('id')->on('users');
             $table->enum(
                 'status',
-                collect(RequestStatus::cases())->map(fn ($e) => $e->name)->all()
+                array_column(RequestStatus::cases(), 'name')
             )->default(RequestStatus::new->name)->index();
             $table->enum(
-                'program',
-                collect(Program::cases())->map(fn ($e) => $e->name)->all()
+                'direction', array_column(RequestDirection::cases(), 'value')
             )->nullable();
+            $table->boolean('is_verified')->default(false)->index();
             $table->string('google_id')->nullable()->index();
             $table->string('yandex_id')->nullable()->index();
             $table->string('ip')->nullable();
-            $table->string('comment', 1000)->nullable();
             $table->foreignIdFor(User::class)->nullable()->constrained();
             $table->timestamps();
         });
+        Schema::enableForeignKeyConstraints();
     }
 
     /**
