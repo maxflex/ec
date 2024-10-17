@@ -11,7 +11,6 @@ import {
   mdiCalendarBadge,
   mdiCalendarEdit,
   mdiCalendarStar,
-  mdiCar,
   mdiCash,
   mdiDotsTriangle,
   mdiFileDocumentEditOutline,
@@ -70,7 +69,7 @@ const menu: Menu = [
     to: '/topics',
   },
   {
-    icon: mdiCar,
+    icon: '$pass',
     title: 'Пропуски',
     to: '/passes',
   },

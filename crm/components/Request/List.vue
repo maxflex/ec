@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiCar, mdiWeb } from '@mdi/js'
+import { mdiWeb } from '@mdi/js'
 import type { RequestDialog } from '#build/components'
 
 const router = useRouter()
@@ -100,7 +100,7 @@ function onRequestDeleted(r: RequestResource) {
           <v-btn
             :size="48"
             variant="plain"
-            :icon="mdiCar"
+            icon="$pass"
             :class="{ 'no-items': item.passes.length === 0 }"
           />
           <v-badge

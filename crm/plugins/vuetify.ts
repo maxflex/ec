@@ -12,6 +12,7 @@ import {
   mdiEyeOutline,
   mdiInformationOutline,
   mdiMagnify,
+  mdiPassport,
   mdiSend,
   mdiTuneVertical,
 } from '@mdi/js'
@@ -32,6 +33,7 @@ const icons = {
     info: mdiInformationOutline,
     send: mdiSend,
     time: mdiClockOutline,
+    pass: mdiPassport,
   },
   sets: {
     mdi,
