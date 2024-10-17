@@ -16,7 +16,8 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        $query = User::query();
+        $query = User::latest('is_active')
+            ->orderBy('id');
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, UserResource::class);
     }

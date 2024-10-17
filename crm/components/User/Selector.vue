@@ -1,11 +1,10 @@
 <script setup lang="ts">
-const { label } = defineProps<{ label: string }>()
 const model = defineModel<number | null>()
 const users = ref<UserResource[]>([])
 const loading = ref(true)
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<UserResource[]>>('users')
+  const { data } = await useHttp<ApiResponse<UserResource[]>>(`users`)
   if (data.value) {
     users.value = data.value.data.sort((a, b) => Number(b.is_active) - Number(a.is_active))
   }
@@ -16,12 +15,21 @@ onMounted(() => loadData())
 </script>
 
 <template>
-  <v-select
+  <UiClearableSelect
     v-model="model"
-    :label="label"
-    :items="users"
-    :item-title="(e) => formatName(e)"
-    :item-value="(e) => e.id"
+    v-bind="$attrs"
     :loading="loading"
-  />
+    :items="users"
+    :item-title="formatName"
+    :item-value="(e) => e.id"
+  >
+    <template #item="{ props, item }">
+      <v-list-item v-bind="props" :class="{ 'text-gray': !item.raw.is_active }">
+        <template #prepend />
+        <template #title>
+          {{ item.title }}
+        </template>
+      </v-list-item>
+    </template>
+  </UiClearableSelect>
 </template>
