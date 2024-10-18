@@ -80,7 +80,6 @@ class TransferContracts extends Command
                         'date' => $cp->date
                     ]);
                 }
-                // DB::table('contract')
             }
             $bar->advance();
         }

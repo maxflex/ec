@@ -14,22 +14,23 @@ class TransferCommand extends Command
     {
         Schema::disableForeignKeyConstraints();
         foreach ([
-            'users',
-            'clients',
-            'requests',
-            'teachers',
-            'phones',
-            'contracts',
-            'groups',
-            'client-groups',
-            'teacher-payments',
-            'teacher-services',
-            'client-payments',
-            'set-request-client-id',
-            'lessons',
-            'contract-lessons',
-            'reviews',
-            'comments',
+                     'users',
+                     'clients',
+                     'requests',
+                     'teachers',
+                     'phones',
+                     'contracts',
+                     'groups',
+                     'client-groups',
+                     'teacher-payments',
+                     'teacher-services',
+                     'client-payments',
+                     'set-request-client-id',
+                     'lessons',
+                     'contract-lessons',
+                     'reviews',
+                     'comments',
+                     'passes'
         ] as $command) {
             $this->info(str($command)->ucfirst());
             $this->call("app:transfer:$command");

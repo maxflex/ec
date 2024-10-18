@@ -3,8 +3,9 @@
 namespace App\Console\Commands\Transfer;
 
 use App\Enums\Branch;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class TransferClients extends Command
 {
@@ -15,6 +16,7 @@ class TransferClients extends Command
 
     public function handle()
     {
+        Schema::disableForeignKeyConstraints();
         DB::table('client_parents')->delete();
         DB::table('clients')->delete();
         $clients = DB::connection('egecrm')
@@ -56,5 +58,6 @@ class TransferClients extends Command
             $bar->advance();
         }
         $bar->finish();
+        Schema::enableForeignKeyConstraints();
     }
 }

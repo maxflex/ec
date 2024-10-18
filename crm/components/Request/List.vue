@@ -5,6 +5,7 @@ import type { RequestDialog } from '#build/components'
 const model = defineModel<RequestListResource[]>({ default: () => [] })
 const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()
 const expanded = ref<{ [key: number]: RequestListResource[] }>({})
+const expandingId = ref<number>()
 
 function onRequestUpdated(r: RequestListResource) {
   const index = model.value.findIndex(e => e.id === r.id)
@@ -32,10 +33,12 @@ async function expand(r: RequestListResource) {
     delete expanded.value[r.id]
     return
   }
+  expandingId.value = r.id
   const { data } = await useHttp<RequestListResource[]>(`requests/associated/${r.id}`)
   if (data.value) {
     expanded.value[r.id] = data.value
   }
+  expandingId.value = undefined
 }
 </script>
 
@@ -47,6 +50,7 @@ async function expand(r: RequestListResource) {
         :class="{
           'request-list--expanded': expanded[item.id],
         }"
+        :expanding="expandingId === item.id"
         @edit="requestDialog?.edit"
         @expand="expand"
       />
@@ -79,8 +83,7 @@ async function expand(r: RequestListResource) {
     .request-item__actions > .badge:last-child {
       pointer-events: none;
       .v-badge {
-        pointer-events: none;
-        cursor: default;
+        display: none !important;
       }
     }
   }
