@@ -2,9 +2,13 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin Report
+ */
 class ReportListResource extends JsonResource
 {
     /**
@@ -18,7 +22,7 @@ class ReportListResource extends JsonResource
         if ($this->id) {
             return extract_fields($this, [
                 'year', 'program', 'is_published', 'is_moderated',
-                'price', 'created_at'
+                'price', 'created_at', 'grade'
             ], [
                 'lessons_count' => $this->lessons->count(),
                 'teacher' => new PersonResource($this->teacher),

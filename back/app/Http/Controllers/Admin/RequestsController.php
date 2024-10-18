@@ -52,7 +52,7 @@ class RequestsController extends Controller
     public function associated($id)
     {
         $clientRequest = ClientRequest::findOrFail($id);
-        return RequestListResource::collection($clientRequest->getAssociatedRequests());
+        return RequestListResource::collection($clientRequest->getAssociatedRequests()->sortByDesc('created_at'));
     }
 
     public function destroy($id)

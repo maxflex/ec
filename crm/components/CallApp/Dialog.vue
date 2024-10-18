@@ -9,9 +9,10 @@ const { activeCalls } = defineProps<{
 const q = ref('')
 
 const { $addSseListener } = useNuxtApp()
-const { width } = useDialog('default')
+const { width, transition } = useDialog('default')
 const { items, loading } = useIndex<CallListResource>('calls', filters, {
   instantLoad: false,
+  disableSaveFilters: true,
   scrollContainerSelector: '.call-app-dialog .dialog-body',
 })
 
@@ -35,6 +36,19 @@ watch(callAppDialog, (isOpen) => {
     // clear items
     setTimeout(() => (items.value = []), 300)
   }
+
+  // copied from useDialog.ts
+  const el = document.documentElement.querySelector(
+    '.v-dialog.v-overlay--active > .dialog',
+  )
+  if (el === null) {
+    transition.value = 'dialog-fade-transition'
+  }
+  else {
+    transition.value = 'dialog-second-transition'
+    // @ts-expect-error
+    el.style.right = isOpen ? `${width * 0.5}px` : null
+  }
 })
 
 async function onDeleted(call: CallListResource) {
@@ -57,7 +71,7 @@ $addSseListener('CallSummaryEvent', (call: CallListResource) => {
 </script>
 
 <template>
-  <v-dialog v-model="callAppDialog" :width="width">
+  <v-dialog v-model="callAppDialog" :width="width" :transition="transition">
     <div class="dialog-wrapper call-app-dialog">
       <UiLoader3 :loading="loading" />
       <div class="dialog-body pa-0 ga-0">

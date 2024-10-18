@@ -248,7 +248,9 @@ a.table-item {
   &--3 {
     background: rgb(var(--v-theme-orange), 0.4);
   }
-  &--2 {
+
+  &--2,
+  &--1 {
     background: rgb(var(--v-theme-error), 0.4);
   }
 }

@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { mdiAlertCircleOutline, mdiCheckAll, mdiSendCircle } from '@mdi/js'
 
-const { dialog, width } = useDialog('default')
+const { dialog, width, transition } = useDialog('default')
 const telegramMessages = ref<TelegramMessageResource[]>([])
 const wrapper = ref<HTMLDivElement | null>(null)
 const noScroll = ref(false)
 const loaded = ref(false)
 const phone = ref<PhoneListResource>()
-const person = ref<PersonResource>()
 
 function scrollBottom() {
   nextTick(() => {
@@ -19,9 +18,8 @@ function scrollBottom() {
   })
 }
 
-function open(p: PhoneListResource, _person: PersonResource) {
+function open(p: PhoneListResource) {
   phone.value = p
-  person.value = _person
   dialog.value = true
   loadData()
 }
@@ -50,7 +48,7 @@ defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :width="width">
+  <v-dialog v-model="dialog" :width="width" :transition="transition">
     <div
       ref="wrapper"
       class="dialog-wrapper telegram-messages-wrapper"
@@ -63,13 +61,12 @@ defineExpose({ open })
         <UiLoader v-if="!loaded" />
       </v-fade-transition>
 
-      <div v-if="person && phone" class="telegram-messages__header">
+      <div v-if="phone" class="telegram-messages__header">
         <span>
           <v-icon :icon="mdiSendCircle" color="#24A1DE" />
           <b>
-            {{ formatName(person) }}
+            {{ EntityTypeLabel[phone.entity_type] }} {{ phone.entity_id }}
           </b>
-          ({{ EntityTypeLabel[phone.entity_type] }})
         </span>
         <span class="text-gray">
           {{ formatPhone(phone.number) }}

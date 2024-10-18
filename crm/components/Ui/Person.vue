@@ -5,8 +5,8 @@ const { item, teacherFormat, noLink } = defineProps<{
   noLink?: boolean
 }>()
 
-const { user } = useAuthStore()
-const isNoLink = noLink ?? user?.entity_type !== EntityTypeValue.user
+const { isAdmin } = useAuthStore()
+const isNoLink = !isAdmin
 let to: string
 let format: NameFormat
 

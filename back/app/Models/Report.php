@@ -126,7 +126,8 @@ class Report extends Model
                 NULL as is_published,
                 NULL as created_at,
                 NULL as price,
-                COUNT(*) as lessons_count
+                COUNT(*) as lessons_count,
+                NULL as grade
             SQL
             )
             ->where('l.status', LessonStatus::conducted->value)
@@ -157,7 +158,8 @@ class Report extends Model
             is_published,
             created_at,
             price,
-            NULL as lessons_count
+            NULL as lessons_count,
+            `grade`
         SQL);
     }
 }

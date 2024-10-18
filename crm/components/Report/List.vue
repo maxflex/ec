@@ -5,6 +5,7 @@ import type { ReportDialog } from '#build/components'
 const props = defineProps<{
   items: ReportListResource[]
 }>()
+const router = useRouter()
 const { isAdmin, isTeacher, isClient } = useAuthStore()
 const { items } = toRefs(props)
 const reportDialog = ref<InstanceType<typeof ReportDialog>>()
@@ -64,13 +65,6 @@ function onDeleted(r: ReportResource) {
       <template v-if="isRealReport(r)">
         <div class="table-actionss">
           <v-btn
-            icon="$eye"
-            :size="48"
-            variant="plain"
-            color="gray"
-            :to="{ name: 'reports-id', params: { id: r.id } }"
-          />
-          <v-btn
             v-if="isEditable(r)"
             icon="$edit"
             :size="48"
@@ -78,7 +72,7 @@ function onDeleted(r: ReportResource) {
             @click="reportDialog?.edit(r.id)"
           />
         </div>
-        <div style="width: 200px">
+        <div style="width: 180px">
           прошло занятий: {{ r.lessons_count }}
         </div>
         <div v-if="!isClient" style="width: 110px">
@@ -86,27 +80,43 @@ function onDeleted(r: ReportResource) {
             {{ formatPrice(r.price) }} руб.
           </span>
         </div>
+        <div style="width: 50px">
+          <span v-if="r.grade" :class="`score score--${r.grade}`">
+            {{ r.grade }}
+          </span>
+        </div>
         <div
+          v-if="!isClient"
           style="width: 100px; flex: 1"
           class="text-center d-flex ga-5"
         >
           <v-icon
-            :class="{
-              'opacity-2': !r.is_published,
-            }"
+            v-if="r.is_published"
             :icon="mdiWeb"
-            :color="r.is_published ? 'secondary' : 'gray'"
+            color="secondary"
+            @click="router.push({ name: 'reports-id', params: { id: r.id } })"
+          />
+          <v-icon
+            v-else
+            class="opacity-2"
+            :icon="mdiWeb"
+            color="gray"
           />
           <v-icon
             :class="{
               'opacity-2': !r.is_moderated,
             }"
             :icon="mdiCheckAll"
-            :color="r.is_moderated ? 'secondary' : 'gray'"
+            :color="r.is_moderated ? 'black' : 'gray'"
           />
         </div>
-        <div style="width: 160px; flex: initial" class="text-gray">
-          отчёт от {{ formatTextDate(r.created_at, true) }}
+        <div style="width: 100px; flex: initial" class="text-gray">
+          {{ formatTextDate(r.created_at, true) }}
+        </div>
+        <div v-if="isClient" class="text-right">
+          <RouterLink :to="{ name: 'reports-id', params: { id: r.id } }">
+            читать отчёт
+          </RouterLink>
         </div>
       </template>
       <template v-else>

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { TelegramMessageDialog } from '#build/components'
+import type { PhoneDialog } from '#build/components'
 
 const { items, q, verified } = defineProps<{
   items: PhoneListResource[]
   verified?: boolean
   q?: string
 }>()
-const telegramMessageDialog = ref<InstanceType<typeof TelegramMessageDialog>>()
+const phoneDialog = ref<InstanceType<PhoneDialog>>()
 
 // подсвечиваем номер телефона
 function highlightPhone(number: string) {
@@ -19,7 +19,7 @@ function highlightPhone(number: string) {
   const indexMap = [1, 4, 5, 6, 9, 10, 11, 13, 14, 16, 17]
   const start = indexMap[index]
   const end = indexMap[index + q!.length - 1]
-  const newQ = text.substr(start, end - start + 1)
+  const newQ = text.substring(start, end - start + 1)
   return highlight(text, newQ)
 }
 
@@ -45,10 +45,10 @@ function highlight(text: string, _q: string) {
 
 <template>
   <div class="phone-list">
-    <div v-for="item in items" :key="item.id">
+    <div v-for="item in items" :key="item.id" @click="phoneDialog?.open(item)">
       <div
         class="phone-list__number"
-        :class="{ 'text-gray': verified === false }"
+        :class="{ 'text-gray': verified }"
       >
         <span v-html="q ? highlightPhone(item.number) : formatPhone(item.number)" />
       </div>
@@ -57,7 +57,7 @@ function highlight(text: string, _q: string) {
       </div>
     </div>
   </div>
-  <TelegramMessageDialog ref="telegramMessageDialog" />
+  <PhoneDialog ref="phoneDialog" />
 </template>
 
 <style lang="scss">

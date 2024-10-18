@@ -7,8 +7,8 @@ function addPhone() {
     id: newId(),
     number: '',
     comment: '',
-    is_verified: false,
     telegram_id: null,
+    entity_type: EntityTypeValue.request,
   })
 }
 

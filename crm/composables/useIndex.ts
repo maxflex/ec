@@ -6,6 +6,7 @@ export default function<T, F extends object = object, E extends object = object>
     scrollContainerSelector?: string
     staticFilters?: object
     tabName?: string | null
+    disableSaveFilters?: boolean
   } = {},
 ) {
   const {
@@ -13,6 +14,7 @@ export default function<T, F extends object = object, E extends object = object>
     scrollContainerSelector = 'main',
     staticFilters = {},
     tabName = null,
+    disableSaveFilters = false,
   } = options
 
   // данные для компонента UiIndexPage
@@ -83,7 +85,7 @@ export default function<T, F extends object = object, E extends object = object>
 
   watch(filters, (newVal) => {
     reloadData()
-    saveFilters(newVal, tabName)
+    !disableSaveFilters && saveFilters(newVal, tabName)
   }, { deep: true })
 
   function onScroll() {

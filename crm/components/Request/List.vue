@@ -88,7 +88,7 @@ async function expand(r: RequestListResource) {
     }
   }
   &--expanded {
-    background: rgba(var(--v-theme-secondary), 0.2);
+    background: rgba(var(--v-theme-secondary), 0.1);
   }
   & > div {
     transition: background-color ease-in-out 0.2s;

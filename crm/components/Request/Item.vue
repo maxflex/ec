@@ -102,7 +102,7 @@ const router = useRouter()
         />
       </div>
     </div>
-    <div class="text-gray" style="flex: initial; width: 80px">
+    <div class="text-gray" style="flex: initial; width: 84px">
       {{ formatDateAgo(item.created_at!) }}
     </div>
   </div>

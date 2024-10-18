@@ -71,10 +71,13 @@ nextTick(loadData)
             >
               <td>
                 <span
-                  v-if="balanceItem.sum >= 0"
+                  v-if="balanceItem.sum > 0"
                   class="text-success"
                 >
                   +{{ formatPrice(balanceItem.sum) }} руб.
+                </span>
+                <span v-else-if="balanceItem.sum === 0" class="text-gray">
+                  0 руб.
                 </span>
               </td>
               <td>

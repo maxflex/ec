@@ -153,6 +153,7 @@ declare global {
     comment: ?string
     telegram_id: ?number
     entity_type: EntityType
+    entity_id: number
   }
 
   interface RequestResource {
@@ -619,6 +620,7 @@ declare global {
     created_at: string
     lessons_count: number
     price: ?number
+    grade: ?LessonScore
   }
 
   interface FakeReport {
