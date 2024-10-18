@@ -22,32 +22,32 @@ const router = useRouter()
         @click="emit('edit', item)"
       />
     </div>
-    <div style="width: 80px">
+    <div style="width: 90px">
       <div class="d-flex align-center ga-2">
         <RequestStatus :item="item" />
         {{ item.id }}
       </div>
     </div>
-    <div style="width: 150px">
+    <div style="width: 140px">
       <template v-if="item.responsible_user">
         {{ formatName(item.responsible_user, 'initials') }}
       </template>
       <span v-else class="text-gray">
-        не установлено
+        отсутствует
       </span>
     </div>
-    <div style="width: 150px">
+    <div style="width: 130px">
       <span v-if="item.direction">
         {{ RequestDirectionLabel[item.direction] }}
       </span>
       <span v-else class="text-gray">
-        не установлено
+        отсутствует
       </span>
     </div>
-    <div style="width: 200px">
+    <div style="width: 300px">
       <PhoneList :items="item.phones" :verified="item.is_verified" />
     </div>
-    <div style="width: 180px">
+    <div style="width: 170px">
       <UiPerson v-if="item.client" :item="item.client" />
       <span v-else-if="item.clients.length === 0" class="text-gray">
         нет клиента
@@ -106,8 +106,8 @@ const router = useRouter()
         />
       </div>
     </div>
-    <div class="text-gray" style="flex: initial; width: 144px">
-      {{ formatDateTime(item.created_at!) }}
+    <div class="text-gray" style="flex: initial; width: 80px">
+      {{ formatDateAgo(item.created_at!) }}
     </div>
   </div>
 </template>

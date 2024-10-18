@@ -1,4 +1,14 @@
-import { format, getMonth, getYear } from 'date-fns'
+import {
+  differenceInDays,
+  differenceInHours,
+  differenceInMinutes,
+  differenceInMonths,
+  differenceInWeeks,
+  differenceInYears,
+  format,
+  getMonth,
+  getYear,
+} from 'date-fns'
 import { curry } from 'rambda'
 import dayjs from 'dayjs'
 
@@ -216,6 +226,46 @@ export function formatDateMode(date: string, mode: StatsMode) {
 export function formatTextDate(date: string, year: boolean = false) {
   const month = getMonth(date)
   return format(date, `d ${MonthLabelShort[month]}${year ? ' yyyy' : ''}`)
+}
+
+/**
+ * Форматировать дату в строку относительно текущего времени
+ */
+export function formatDateAgo(dateStr: string): string {
+  const now = new Date()
+
+  const diffInMinutes = differenceInMinutes(now, dateStr)
+  const diffInHours = differenceInHours(now, dateStr)
+  const diffInDays = differenceInDays(now, dateStr)
+  const diffInWeeks = differenceInWeeks(now, dateStr)
+  const diffInMonths = differenceInMonths(now, dateStr)
+  const diffInYears = differenceInYears(now, dateStr)
+
+  if (diffInMinutes < 5) {
+    return 'недавно'
+  }
+
+  if (diffInMinutes < 60) {
+    return plural(diffInMinutes, ['минута', 'минуты', 'минут'])
+  }
+
+  if (diffInHours < 24) {
+    return plural(diffInHours, ['час', 'часа', 'часов'])
+  }
+
+  if (diffInDays < 14) {
+    return plural(diffInDays, ['день', 'дня', 'дней'])
+  }
+
+  if (diffInMonths < 1) {
+    return `${diffInWeeks} недели` // 2-4 недели
+  }
+
+  if (diffInMonths < 12) {
+    return plural(diffInMonths, ['месяц', 'месяца', 'месяцев'])
+  }
+
+  return plural(diffInYears, ['год', 'года', 'лет'])
 }
 
 export function formatPhone(number: string): string {

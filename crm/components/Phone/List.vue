@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { mdiHistory, mdiPhone } from '@mdi/js'
 import type { TelegramMessageDialog } from '#build/components'
-import { openCallApp } from '~/components/CallApp'
 
 const { items, q, verified } = defineProps<{
   items: PhoneListResource[]
@@ -47,27 +45,15 @@ function highlight(text: string, _q: string) {
 
 <template>
   <div class="phone-list">
-    <div v-for="p in items" :key="p.id">
+    <div v-for="item in items" :key="item.id">
       <div
         class="phone-list__number"
-        :class="{ 'opacity-5': verified === false }"
+        :class="{ 'text-gray': verified === false }"
       >
-        <span v-html="q ? highlightPhone(p.number) : formatPhone(p.number)" />
+        <span v-html="q ? highlightPhone(item.number) : formatPhone(item.number)" />
       </div>
-      <div class="phone-list__actions">
-        <div class="phone-list__comment">
-          {{ p.comment ?? 'Неизвестно' }}
-        </div>
-
-        <!--        <v-icon -->
-        <!--          :icon="mdiSendCircle" -->
-        <!--          :disabled="!person" -->
-        <!--          @click.stop="telegramMessageDialog?.open(p, person!)" -->
-        <!--        /> -->
-        <v-icon :icon="mdiHistory" @click.stop="openCallApp(p.number)" />
-        <a :href="`tel:${p.number}`" class="d-flex">
-          <v-icon :icon="mdiPhone" @click.stop="openCallApp(p.number)" />
-        </a>
+      <div class="phone-list__comment">
+        {{ item.comment }}
       </div>
     </div>
   </div>
@@ -76,56 +62,20 @@ function highlight(text: string, _q: string) {
 
 <style lang="scss">
 .phone-list {
-  margin-top: 2px;
-  display: inline-block;
   & > div {
     display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    position: relative;
-    &:hover {
-      .phone-list__actions {
-        opacity: 1;
-        transform: translateX(0) !important;
-      }
-    }
   }
   &__number {
     cursor: default;
-  }
-  &__actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex: 1;
-    opacity: 0;
-    transition: all ease-in-out 0.2s;
-    transform: translateX(6px);
-    background: white;
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 120%;
-    .v-icon {
-      font-size: 18px;
-      color: rgb(var(--v-theme-secondary));
-      cursor: pointer;
-      opacity: 0.6;
-      &:hover {
-        opacity: 1;
-      }
-    }
+    width: 160px;
   }
   &__comment {
-    cursor: default;
-    //color: rgb(var(--v-theme-gray));
-    white-space: nowrap;
+    color: rgb(var(--v-theme-gray));
+    overflow: hidden;
     text-overflow: ellipsis;
     display: inline-block;
-    overflow: hidden;
-    font-size: 14px;
-    flex: 1;
+    white-space: nowrap;
+    width: 120px;
   }
 }
 </style>
