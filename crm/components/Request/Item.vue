@@ -54,7 +54,7 @@ const router = useRouter()
       </span>
       <span v-else>
         <template v-if="item.clients.length === 1">
-          {{ formatName(item.clients[0]) }}
+          <UiPerson :item="item.clients[0]" class="text-black" />
         </template>
         <template v-else>
           {{ item.clients.length }} клиента

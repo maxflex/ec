@@ -606,14 +606,14 @@ export const PassStatusLabel = {
 } as const
 
 export const RequestDirectionLabel = {
-  courses9: 'курсы 9 класс',
-  courses10: 'курсы 10 класс',
-  courses11: 'курсы 11 класс',
-  school8: 'школа 8 класс',
-  school9: 'школа 9 класс',
-  school10: 'школа 10 класс',
-  school11: 'школа 11 класс',
+  courses9: 'курсы-9',
+  courses10: 'курсы-10',
+  courses11: 'курсы-11',
+  school8: 'школа-8',
+  school9: 'школа-9',
+  school10: 'школа-10',
+  school11: 'школа-11',
   external: 'экстернат',
-  otherPython: 'программирование на Python',
-  otherEnglish: 'разговорный английский',
+  otherPython: 'python',
+  otherEnglish: 'английский',
 } as const

@@ -126,18 +126,13 @@ defineExpose({ create, edit })
         </div>
       </div>
       <UiLoader v-if="loading" />
-      <div
-        v-else
-        class="dialog-body"
-      >
-        <div>
+      <div v-else class="dialog-body">
+        <div class="double-input">
           <v-select
             v-model="request.status"
             label="Статус"
             :items="selectItems(RequestStatusLabel)"
           />
-        </div>
-        <div>
           <UiClearableSelect
             v-model="request.direction"
             label="Направление"
