@@ -166,8 +166,8 @@ declare global {
     phones: PhoneListResource[]
     user?: PersonResource
     client_id: ?number
-    clients: ClientWithContractsResource[]
     created_at?: string
+    associated_clients: ClientWithContractsResource[]
   }
 
   interface RequestListResource {
@@ -178,11 +178,11 @@ declare global {
     client: ?PersonResource
     phones: PhoneListResource[]
     created_at: string
-    clients: PersonResource[]
     comments_count: number
     passes: PassResource[]
     user_id: ?number
     is_verified: boolean
+    associated_clients: PersonResource[]
     associated_requests_count: number
   }
 

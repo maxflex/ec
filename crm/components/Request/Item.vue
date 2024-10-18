@@ -49,17 +49,13 @@ const router = useRouter()
     </div>
     <div style="width: 170px">
       <UiPerson v-if="item.client" :item="item.client" />
-      <span v-else-if="item.clients.length === 0" class="text-gray">
+      <span v-else-if="item.associated_clients.length === 0" class="text-gray">
         нет клиента
       </span>
-      <span v-else>
-        <template v-if="item.clients.length === 1">
-          <UiPerson :item="item.clients[0]" class="text-black" />
-        </template>
-        <template v-else>
-          {{ item.clients.length }} клиента
-        </template>
-      </span>
+      <UiPerson v-else-if="item.associated_clients.length === 1" :item="item.associated_clients[0]" class="text-black" />
+      <template v-else>
+        {{ item.associated_clients.length }} клиента
+      </template>
     </div>
     <div class="request-item__actions">
       <v-btn

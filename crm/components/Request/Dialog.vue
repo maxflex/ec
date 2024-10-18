@@ -11,6 +11,11 @@ const modelDefaults: RequestResource = {
   direction: null,
   responsible_user_id: null,
   phones: [],
+  associated_clients: [],
+  client_id: null,
+  yandex_id: null,
+  google_id: null,
+  ip: null,
 }
 
 const { dialog, width } = useDialog('default')
@@ -146,7 +151,7 @@ defineExpose({ create, edit })
           />
         </div>
         <div>
-          <ClientSelector v-model="request.client_id" :items="request.clients" />
+          <ClientSelector v-model="request.client_id" :items="request.associated_clients" />
         </div>
         <PhoneEditor v-model="request.phones" />
         <div>

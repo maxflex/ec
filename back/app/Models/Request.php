@@ -7,6 +7,7 @@ use App\Traits\{HasComments, HasPhones, RelationSyncable};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 class Request extends Model
 {
@@ -45,12 +46,11 @@ class Request extends Model
 
 
     /**
-     * @param bool $excludeSelected исключить выбранного клиента (нужно для списка заявок)
-     * @return Client[]
+     * @return Collection<int, Client>
      *
      * TODO: use once()
      */
-    public function getClients(bool $excludeSelected = false)
+    public function getAssociatedClients()
     {
         $numbers = $this->phones->pluck('number');
 
@@ -67,29 +67,28 @@ class Request extends Model
                 addslashes(Client::class),
                 $this->client_id
             );
-            $excludeSelected
-                ? $query->whereRaw("NOT $condition")
-                : $query->orWhereRaw($condition);
+            $query->orWhereRaw($condition);
         }
 
-        $clients = [];
+        $clients = collect();
         foreach ($query->get() as $phone) {
-            $clients[] = $phone->entity_type === Client::class ? $phone->entity : $phone->entity->client;
+            $clients->push(
+                $phone->entity_type === Client::class ? $phone->entity : $phone->entity->client
+            );
         }
 
-        return $clients;
+        return $clients->unique('id');
     }
 
     /**
-     * @params ?Client[] $clients
-     * @return Request[]
+     * @return Collection<int, Request>
      *
      * TODO: remove $clients param after once()
      */
-    public function getAssociatedRequests(?array $clients = null)
+    public function getAssociatedRequests()
     {
         $numbers = $this->phones->pluck('number');
-        $clientIds = collect($clients ?? $this->getClients())->pluck('id');
+        $clientIds = $this->getAssociatedClients()->pluck('id');
         if ($this->client_id) {
             $clientIds->push($this->client_id);
         }
@@ -98,7 +97,7 @@ class Request extends Model
             ->where(fn($q) => $q->whereHas('phones', fn($q) => $q->whereIn('number', $numbers))
                 ->when($clientIds->count(), fn($q) => $q->orWhereIn('client_id', $clientIds))
             )
-            ->get()->all();
+            ->get();
     }
 
     public static function booted()

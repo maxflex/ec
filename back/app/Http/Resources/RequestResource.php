@@ -23,7 +23,7 @@ class RequestResource extends JsonResource
         ], [
             'user' => new PersonResource($this->user),
             'phones' => PhoneListResource::collection($this->phones),
-            'clients' => ClientWithContractsResource::collection($this->getClients())
+            'associated_clients' => ClientWithContractsResource::collection($this->getAssociatedClients())
         ]);
     }
 }

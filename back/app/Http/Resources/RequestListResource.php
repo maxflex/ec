@@ -17,22 +17,16 @@ class RequestListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $client = $this->client;
-        $clients = $this->getClients(true);
-        $allClients = $clients;
-        if ($client) {
-            $allClients[] = $client;
-        }
         return extract_fields($this, [
             'status', 'created_at', 'comment', 'comments_count',
             'direction', 'user_id', 'is_verified'
         ], [
             'phones' => PhoneListResource::collection($this->phones),
             'responsible_user' => new PersonResource($this->responsibleUser),
-            'client' => new PersonResource($client),
+            'client' => new PersonResource($this->client),
             'passes' => PassResource::collection($this->passes),
-            'clients' => PersonResource::collection($clients),
-            'associated_requests_count' => count($this->getAssociatedRequests($allClients))
+            'associated_clients' => PersonResource::collection($this->getAssociatedClients()),
+            'associated_requests_count' => count($this->getAssociatedRequests())
         ]);
     }
 }
