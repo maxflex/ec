@@ -68,7 +68,7 @@ function highlight(text: string) {
         <div v-if="item.phones.length === 0" class="text-gray">
           нет контактов
         </div>
-        <PhoneList v-else :items="item.phones" :person="item" :q="q" />
+        <PhoneList v-else :items="item.phones" :q="q" />
       </div>
     </RouterLink>
   </div>

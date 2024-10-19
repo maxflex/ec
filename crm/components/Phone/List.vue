@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import type { PhoneDialog } from '#build/components'
 
-interface Props {
+const { items, q, request } = defineProps<{
   items: PhoneListResource[]
-  verified: boolean | undefined
+  request?: RequestListResource
   showComment?: boolean
   q?: string
-}
+}>()
 
-const { items, q, verified } = withDefaults(defineProps<Props>(), {
-  verified: undefined,
-})
 const phoneDialog = ref<InstanceType<typeof PhoneDialog>>()
 // подсвечиваем номер телефона
 function highlightPhone(number: string) {
@@ -52,7 +49,7 @@ function highlight(text: string, _q: string) {
     <div v-for="item in items" :key="item.id" @click="phoneDialog?.open(item)">
       <div
         class="phone-list__number"
-        :class="{ 'text-gray': verified === false }"
+        :class="{ 'text-gray': request && !request.is_verified }"
       >
         <span v-html="q ? highlightPhone(item.number) : formatPhone(item.number)" />
       </div>

@@ -44,7 +44,7 @@ nextTick(loadData)
           <div class="text-truncate">
             {{ formatName(client) }}
             <div v-if="client.phones">
-              <PhoneList :items="client.phones" :person="client" />
+              <PhoneList :items="client.phones" />
             </div>
           </div>
         </div>
@@ -53,7 +53,7 @@ nextTick(loadData)
           <div class="text-truncate">
             {{ formatName(client.parent) }}
             <div v-if="client.parent.phones">
-              <PhoneList :items="client.parent.phones" :person="client.parent" />
+              <PhoneList :items="client.parent.phones" />
             </div>
           </div>
         </div>

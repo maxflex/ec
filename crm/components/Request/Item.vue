@@ -45,7 +45,7 @@ const router = useRouter()
       </span>
     </div>
     <div style="width: 300px">
-      <PhoneList :items="item.phones" :verified="item.is_verified" show-comment />
+      <PhoneList :items="item.phones" :request="item" show-comment />
     </div>
     <div style="width: 170px">
       <UiPerson v-if="item.client" :item="item.client" />
