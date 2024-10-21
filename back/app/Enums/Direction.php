@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum RequestDirection: string
+enum Direction: string
 {
     case courses9 = 'courses9';
     case courses10 = 'courses10';
@@ -12,8 +12,11 @@ enum RequestDirection: string
     case school10 = 'school10';
     case school11 = 'school11';
     case external = 'external';
-    case otherPython = 'otherPython';
-    case otherEnglish = 'otherEnglish';
+    case practicum = 'practicum';
+    case egeTrial = 'egeTrial';
+    case python = 'python';
+    case english = 'english';
+    case online = 'online';
 
     /**
      * Получить направления по заданным программам
@@ -30,14 +33,16 @@ enum RequestDirection: string
             $str = str($program->value);
 
             $direction = match (true) {
-                $str->endsWith('Ext') => RequestDirection::external,
-                $str->endsWith('School8') => RequestDirection::school8,
-                $str->endsWith('School9') => RequestDirection::school9,
-                $str->endsWith('School10') => RequestDirection::school10,
-                $str->endsWith('School11') => RequestDirection::school11,
-                $str->endsWith('9') => RequestDirection::courses9,
-                $str->endsWith('10') => RequestDirection::courses10,
-                $str->endsWith('11') => RequestDirection::courses11,
+                $str->endsWith('Ext') => Direction::external,
+                $str->endsWith('School8') => Direction::school8,
+                $str->endsWith('School9') => Direction::school9,
+                $str->endsWith('School10') => Direction::school10,
+                $str->endsWith('School11') => Direction::school11,
+                $str->endsWith('9') => Direction::courses9,
+                $str->endsWith('10') => Direction::courses10,
+                $str->endsWith('11') => Direction::courses11,
+                // oge - 9 class school
+                // practicum – new direction
                 default => null,
             };
 

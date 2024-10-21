@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Transfer;
 
-use App\Models\{Request, User};
+use App\Models\{Client, ClientParent, Request, Teacher, User};
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -35,6 +35,16 @@ class TransferPhones extends Command
             $bar->advance();
         }
         $bar->finish();
+
+
+        // удаляем несуществующие
+        foreach ([Client::class, ClientParent::class, Request::class, Teacher::class] as $class) {
+            $table = (new $class)->getTable();
+            DB::table('phones', 'p')
+                ->where('entity_type', $class)
+                ->whereRaw("not exists (select 1 from `$table` as x where x.id = p.entity_id)")
+                ->delete();
+        }
 
         // is_verified для Requests
         Request::whereIn('id', $verifiedRequests)->update([

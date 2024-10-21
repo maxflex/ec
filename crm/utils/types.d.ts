@@ -420,16 +420,18 @@ declare global {
     students: ClientLessonResource[]
   }
 
-  interface TeacherListResource extends PersonResource {
+  interface TeacherListResource extends HasName {
     status: TeacherStatus
     subjects: Subject[]
+    is_published: boolean
     created_at: string
   }
 
-  interface TeacherResource extends PersonResource, HasPhoto {
+  interface TeacherResource extends HasName, HasPhoto {
     phones: PhoneListResource[]
     status: TeacherStatus
     subjects: Subject[]
+    is_published: boolean
     desc?: string
     photo_desc?: string
     passport_series?: string

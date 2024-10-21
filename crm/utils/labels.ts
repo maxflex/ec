@@ -614,6 +614,9 @@ export const RequestDirectionLabel = {
   school10: 'школа-10',
   school11: 'школа-11',
   external: 'экстернат',
-  otherPython: 'python',
-  otherEnglish: 'английский',
+  practicum: 'практикум',
+  egeTrial: 'пробный ЕГЭ',
+  python: 'python',
+  english: 'английский',
+  online: 'онлайн',
 } as const

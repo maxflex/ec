@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\{RequestDirection, RequestStatus};
+use App\Enums\{Direction, RequestStatus};
 use App\Traits\{HasComments, HasPhones, RelationSyncable};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,7 +21,7 @@ class Request extends Model
     protected $casts = [
         'is_verified' => 'bool',
         'status' => RequestStatus::class,
-        'direction' => RequestDirection::class,
+        'direction' => Direction::class,
     ];
 
     public function responsibleUser(): BelongsTo

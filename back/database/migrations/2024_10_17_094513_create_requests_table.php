@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\RequestDirection;
+use App\Enums\Direction;
 use App\Enums\RequestStatus;
 use App\Models\Client;
 use App\Models\User;
@@ -28,7 +28,7 @@ return new class extends Migration
                 array_column(RequestStatus::cases(), 'name')
             )->default(RequestStatus::new->name)->index();
             $table->enum(
-                'direction', array_column(RequestDirection::cases(), 'value')
+                'direction', array_column(Direction::cases(), 'value')
             )->nullable();
             $table->boolean('is_verified')->default(false)->index();
             $table->string('google_id')->nullable()->index();

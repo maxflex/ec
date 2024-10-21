@@ -13,6 +13,7 @@ const modelDefaults: TeacherResource = {
   photo_url: null,
   phones: [],
   subjects: [],
+  is_published: false,
   status: 'active',
 }
 
@@ -217,6 +218,12 @@ defineExpose({ create, edit })
           no-resize
           rows="9"
         />
+        <div>
+          <v-checkbox
+            v-model="teacher.is_published"
+            label="Опубликован"
+          />
+        </div>
       </div>
     </div>
   </v-dialog>

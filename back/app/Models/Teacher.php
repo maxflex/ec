@@ -8,6 +8,8 @@ use App\Traits\{HasBalance, HasName, HasPhones, HasPhoto, HasTelegramMessages, R
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Laravel\Scout\Searchable;
 
@@ -18,39 +20,40 @@ class Teacher extends Model implements HasTeeth, CanLogin
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'status', 'subjects',
         'so', 'desc', 'photo_desc', 'passport_series', 'passport_number',
-        'passport_address', 'passport_code', 'passport_issued_by'
+        'passport_address', 'passport_code', 'passport_issued_by', 'is_published'
     ];
 
     protected $casts = [
-        'status' => TeacherStatus::class
+        'status' => TeacherStatus::class,
+        'is_published' => 'bool',
     ];
 
-    public function payments()
+    public function payments(): HasMany
     {
         return $this->hasMany(TeacherPayment::class)->latest();
     }
 
-    public function services()
+    public function services(): HasMany
     {
         return $this->hasMany(TeacherService::class)->latest();
     }
 
-    public function signs()
+    public function signs(): HasMany
     {
         return $this->hasMany(InstructionSign::class);
     }
 
-    public function reports()
+    public function reports(): HasMany
     {
         return $this->hasMany(Report::class);
     }
 
-    public function lessons()
+    public function lessons(): HasMany
     {
         return $this->hasMany(Lesson::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

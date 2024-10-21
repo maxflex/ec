@@ -2,6 +2,7 @@
 
 use App\Enums\Subject;
 use App\Enums\TeacherStatus;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -26,6 +27,7 @@ return new class extends Migration
                 'status',
                 collect(TeacherStatus::cases())->map(fn ($e) => $e->name)->all()
             )->default(TeacherStatus::inactive->name)->index();
+            $table->boolean('is_published')->default(false)->index();
             $table->text('desc')->nullable();
             $table->string('photo_desc', 1000)->nullable();
             $table->string('passport_series')->nullable();
@@ -34,6 +36,7 @@ return new class extends Migration
             $table->string('passport_code')->nullable();
             $table->string('passport_issued_by')->nullable();
             $table->unsignedSmallInteger('so')->nullable();
+            $table->foreignIdFor(User::class)->nullable()->constrained();
             $table->timestamps();
         });
 

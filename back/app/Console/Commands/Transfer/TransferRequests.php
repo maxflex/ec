@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Transfer;
 
-use App\Enums\RequestDirection;
+use App\Enums\Direction;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -42,28 +42,35 @@ class TransferRequests extends Command
         $bar->finish();
     }
 
-    private function getDirection($r): ?RequestDirection
+    private function getDirection($r): ?Direction
     {
-        if ($r->comment === 'Старшая школа' || in_array($r->grade_id, [8, 15, 16, 17])) {
+        $comment = str($r->comment ?? '')->lower();
+        if ($comment->contains(['пробник', 'пробный'])) {
+            return Direction::egeTrial;
+        }
+        if ($comment->value() === 'онлайн') {
+            return Direction::online;
+        }
+        if ($comment->contains('старшая школа') || in_array($r->grade_id, [8, 15, 16, 17])) {
             return match ($r->grade_id) {
-                8, 15 => RequestDirection::school8,
-                9, 16 => RequestDirection::school9,
-                10, 17 => RequestDirection::school10,
-                default => RequestDirection::school11
+                8, 15 => Direction::school8,
+                9, 16 => Direction::school9,
+                10, 17 => Direction::school10,
+                default => Direction::school11
             };
         }
-        if ($r->comment === 'Развивающие курсы (программирование на Python)') {
-            return RequestDirection::otherPython;
+        if ($comment->value() === 'развивающие курсы (программирование на python)') {
+            return Direction::python;
         }
-        if ($r->comment === 'Развивающие курсы (разговорный английский язык)') {
-            return RequestDirection::otherEnglish;
+        if ($comment->value() === 'развивающие курсы (разговорный английский язык)') {
+            return Direction::english;
         }
 
         return match ($r->grade_id) {
-            9 => RequestDirection::courses9,
-            10 => RequestDirection::courses10,
-            11 => RequestDirection::courses11,
-            14 => RequestDirection::external,
+            9 => Direction::courses9,
+            10 => Direction::courses10,
+            11 => Direction::courses11,
+            14 => Direction::external,
             default => null
         };
     }

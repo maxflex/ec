@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\RequestDirection;
+use App\Enums\Direction;
 use App\Observers\ContractVersionObserver;
 use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -134,10 +134,10 @@ class ContractVersion extends Model
     }
 
     /**
-     * @return RequestDirection[]
+     * @return Direction[]
      */
     public function getDirectionsAttribute(): array
     {
-        return RequestDirection::fromPrograms($this->programs->pluck('program')->all());
+        return Direction::fromPrograms($this->programs->pluck('program')->all());
     }
 }

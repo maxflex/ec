@@ -21,6 +21,14 @@ const { items } = defineProps<{
       <div style="width: 250px">
         {{ TeacherStatusLabel[teacher.status] }}
       </div>
+      <div style="width: 200px">
+        <span v-if="teacher.is_published">
+          опубликован
+        </span>
+        <span v-else class="text-gray">
+          не опубликован
+        </span>
+      </div>
       <div>
         {{ teacher.subjects.map(s => SubjectLabelShort[s]).join('+') }}
       </div>
