@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\CanLogin;
 use App\Contracts\HasTeeth;
 use App\Traits\{HasName, HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable};
 use App\Utils\Teeth;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\{Casts\Attribute,
 use Illuminate\Support\Collection;
 use Laravel\Scout\Searchable;
 
-class Client extends Model implements HasTeeth
+class Client extends Model implements HasTeeth, CanLogin
 {
     use HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable, Searchable, HasName;
 
@@ -178,6 +179,19 @@ class Client extends Model implements HasTeeth
     public function scopeActive($query): void
     {
         $query->whereHas('contracts');
+    }
+
+    public function scopeCanLogin($query)
+    {
+        $query->whereHas('contracts', fn($q) => $q->whereRaw("
+            IF(
+                MONTH(CURDATE()) BETWEEN 1 AND 7, 
+                -- январь-июль
+                `year` BETWEEN YEAR(CURDATE()) - 1 AND YEAR(CURDATE()),
+                -- август-декабрь
+                `year` = YEAR(CURDATE())
+            )
+        "));
     }
 
     public function searchableAs()

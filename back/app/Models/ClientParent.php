@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Contracts\CanLogin;
 use App\Traits\{HasName, HasPhones, HasTelegramMessages, RelationSyncable};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Scout\Searchable;
 
-class ClientParent extends Model
+class ClientParent extends Model implements CanLogin
 {
     use HasName, HasPhones, RelationSyncable, Searchable, HasTelegramMessages;
 
@@ -43,5 +44,10 @@ class ClientParent extends Model
             'phones' => $this->phones()->pluck('number'),
             'weight' => intval($array['weight'] / 2)
         ];
+    }
+
+    public function scopeCanLogin($query)
+    {
+        $query->whereHas('client', fn($q) => $q->canLogin());
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\CanLogin;
 use App\Traits\HasName;
 use App\Traits\HasPhones;
 use App\Traits\HasPhoto;
@@ -9,7 +10,7 @@ use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements CanLogin
 {
     use HasName, HasPhones, HasPhoto, RelationSyncable;
 
@@ -22,6 +23,11 @@ class User extends Authenticatable
         'is_active' => 'boolean',
         'is_call_notifications' => 'boolean',
     ];
+
+    public function scopeCanLogin($query)
+    {
+        $query->active();
+    }
 
     public function scopeActive($query): void
     {

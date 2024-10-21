@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\TeacherStatus;
 use App\Utils\Phone as UtilsPhone;
 use App\Utils\Session;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -65,7 +64,7 @@ class Phone extends Model implements Authenticatable
 
     public static function auth($number): ?Phone
     {
-        $phones = Phone::query()
+        $candidates = Phone::query()
             ->whereIn('entity_type', [
                 User::class,
                 Client::class,
@@ -73,43 +72,13 @@ class Phone extends Model implements Authenticatable
                 Teacher::class,
             ])
             ->whereNumber($number)
-            ->get();
-
-        // кандидаты к логину
-        $candidates = [];
-        foreach ($phones as $phone) {
-            $entity = $phone->entity;
-            switch ($phone->entity_type) {
-                case User::class:
-                    if ($entity->is_active) {
-                        $candidates[] = $phone;
-                    }
-                    break;
-
-                case Teacher::class:
-                    if ($entity->status === TeacherStatus::active) {
-                        $candidates[] = $phone;
-                    }
-                    break;
-
-                // намеренно нет break
-                case ClientParent::class:
-                    $entity = $entity->client;
-
-                case Client::class:
-                    // https://doc.ege-centr.ru/doc/50
-                    [$year, $month] = str(now()->format("Y-m-d"))
-                        ->explode("-")
-                        ->map(fn($x) => intval($x));
-                    $years = $month >= 8 ? [$year + 1] : [$year, $year + 1];
-                    if ($entity->contracts()->whereIn('year', $years)->exists()) {
-                        $candidates[] = $phone;
-                    }
-            }
-        }
+            ->get()
+            ->filter(
+                fn($phone) => $phone->entity_type::whereId($phone->entity_id)->canLogin()->exists()
+            );
 
         // должен быть в итоге единственный кандидат к логину
-        return count($candidates) !== 1 ? null : $candidates[0];
+        return $candidates->count() === 1 ? $candidates->first() : null;
     }
 
     public function getIsAdminAttribute(): bool

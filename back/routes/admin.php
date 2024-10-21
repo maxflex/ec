@@ -111,6 +111,8 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::get('requests/associated/{request}', [RequestsController::class, 'associated']);
 
+    Route::get('passes/permanent', [PassController::class, 'permanent']);
+
     Route::apiResources([
         'telegram-lists' => TelegramListController::class,
         'requests' => RequestsController::class,

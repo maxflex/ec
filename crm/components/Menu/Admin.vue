@@ -74,6 +74,11 @@ const menu: Menu = [
     to: '/passes',
   },
   {
+    icon: '$pass',
+    title: 'Постоянные пропуски',
+    to: '/passes/permanent',
+  },
+  {
     icon: mdiFileDocumentEditOutline,
     title: 'Отчёты',
     to: '/reports',

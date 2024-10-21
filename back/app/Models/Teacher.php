@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Contracts\{HasTeeth};
+use App\Contracts\{CanLogin, HasTeeth};
 use App\Enums\TeacherStatus;
 use App\Traits\{HasBalance, HasName, HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable};
 use App\Utils\Teeth;
@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Laravel\Scout\Searchable;
 
-class Teacher extends Model implements HasTeeth
+class Teacher extends Model implements HasTeeth, CanLogin
 {
     use HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable, Searchable, HasName, HasBalance;
 
@@ -125,6 +125,11 @@ class Teacher extends Model implements HasTeeth
     public function scopeActive($query): void
     {
         $query->where('status', TeacherStatus::active);
+    }
+
+    public function scopeCanLogin($query)
+    {
+        $query->active();
     }
 
     public function getTeeth(int $year): object

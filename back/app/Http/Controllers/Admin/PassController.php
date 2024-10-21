@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PassResource;
+use App\Http\Resources\PersonResource;
 use App\Models\Pass;
 use Illuminate\Http\Request;
 
@@ -19,6 +20,15 @@ class PassController extends Controller
         $query = Pass::latest();
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, PassResource::class);
+    }
+
+    public function permanent(Request $request)
+    {
+        $request->validate(['entity' => ['required', 'string']]);
+
+        $query = $request->entity::canLogin();
+
+        return $this->handleIndexRequest($request, $query, PersonResource::class);
     }
 
     public function store(Request $request)
