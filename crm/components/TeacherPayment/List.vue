@@ -55,7 +55,20 @@ function onDeleted(tp: TeacherPaymentResource) {
       <div style="width: 150px">
         {{ formatDate(payment.date) }}
       </div>
-
+      <div style="width: 150px">
+        <span
+          v-if="payment.is_confirmed"
+          class="text-success"
+        >
+          подтверждён
+        </span>
+        <span
+          v-else
+          class="text-gray"
+        >
+          не подтверждён
+        </span>
+      </div>
       <div
         style="flex: 1"
         class="text-truncate"

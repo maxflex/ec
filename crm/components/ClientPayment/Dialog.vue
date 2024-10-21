@@ -21,6 +21,9 @@ const modelDefaults: ClientPaymentResource = {
   purpose: null,
   is_confirmed: false,
   is_return: false,
+  client_id: newId(),
+  pko_number: null,
+  card_number: null,
 }
 const item = ref<ClientPaymentResource>(modelDefaults)
 

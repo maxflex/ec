@@ -3,8 +3,8 @@
 namespace App\Console\Commands\Transfer;
 
 use App\Enums\TeacherPaymentMethod;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class TransferTeacherPayments extends Command
 {
@@ -34,6 +34,7 @@ class TransferTeacherPayments extends Command
                     'career_guidance' => 'Профориентация',
                     default => 'Обучение'
                 },
+                'is_confirmed' => $p->is_confirmed,
                 'user_id' => $this->getUserId($p->created_email_id),
                 'created_at' => $p->created_at,
                 'updated_at' => $p->updated_at,

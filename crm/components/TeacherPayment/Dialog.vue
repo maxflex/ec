@@ -13,6 +13,7 @@ const modelDefaults: TeacherPaymentResource = {
   method: 'card',
   purpose: null,
   sum: 0,
+  is_confirmed: false,
 }
 
 const { dialog, width } = useDialog('default')
@@ -164,6 +165,12 @@ defineExpose({ create, edit })
             v-model="item.purpose"
             label="Назначение"
             no-resize
+          />
+        </div>
+        <div>
+          <v-checkbox
+            v-model="item.is_confirmed"
+            label="Подтверждён"
           />
         </div>
       </div>

@@ -14,6 +14,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('teacher_payments');
         Schema::create('teacher_payments', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('sum');
@@ -26,6 +27,7 @@ return new class extends Migration
                 )->all()
             );
             $table->string('purpose')->nullable();
+            $table->boolean('is_confirmed')->default(false);
             $table->foreignIdFor(Teacher::class)->constrained();
             $table->foreignIdFor(User::class)->constrained();
             $table->timestamps();

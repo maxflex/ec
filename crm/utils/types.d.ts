@@ -447,6 +447,7 @@ declare global {
     date: string
     year: Year
     method: TeacherPaymentMethod
+    is_confirmed: boolean
     purpose: ?string
     teacher_id?: number
     user?: PersonResource
