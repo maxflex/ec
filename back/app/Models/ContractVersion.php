@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\RequestDirection;
 use App\Observers\ContractVersionObserver;
 use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -130,5 +131,13 @@ class ContractVersion extends Model
     {
         $this->chain()->update(['is_active' => false]);
         $this->chain()->latest()->first()->update(['is_active' => true]);
+    }
+
+    /**
+     * @return RequestDirection[]
+     */
+    public function getDirectionsAttribute(): array
+    {
+        return RequestDirection::fromPrograms($this->programs->pluck('program')->all());
     }
 }

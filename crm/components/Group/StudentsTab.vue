@@ -3,6 +3,8 @@ import { mdiShuffleVariant } from '@mdi/js'
 import type { GroupAddStudentDialog, GroupSelectorDialog } from '#build/components'
 
 const { group } = defineProps<{ group: GroupResource }>()
+
+const tab = ref<'SwampSelector' | 'StudentsTab'>('StudentsTab')
 const loading = ref(true)
 const items = ref<ClientGroupResource[]>([])
 const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
@@ -36,6 +38,7 @@ async function moveToAnotherGroup(g: GroupListResource, contractId: number) {
 }
 
 async function loadData() {
+  tab.value = 'StudentsTab'
   loading.value = true
   const { data } = await useHttp<ApiResponse<ClientGroupResource>>(
     `client-groups`,
@@ -55,59 +58,67 @@ nextTick(loadData)
 </script>
 
 <template>
-  <UiIndexPage :data="{ loading, noData: false }">
-    <div class="table table--actions-on-hover">
-      <div v-for="item in items" :key="item.id">
-        <div style="width: 280px">
-          <UiAvatar :item="item.client" :size="38" class="mr-4" />
-          <NuxtLink
-            class="vf-1"
-            :to="{
-              name: 'clients-id',
-              params: { id: item.client.id },
-            }"
-          >
-            {{ formatName(item.client) }}
-          </NuxtLink>
+  <v-fade-transition>
+    <SwampSelector
+      v-if="tab === 'SwampSelector'"
+      :group="group"
+      @back="tab = 'StudentsTab'"
+      @selected="loadData()"
+    />
+    <UiIndexPage v-else :data="{ loading, noData: false }">
+      <div class="table table--actions-on-hover">
+        <div v-for="item in items" :key="item.id">
+          <div style="width: 280px">
+            <UiAvatar :item="item.client" :size="38" class="mr-4" />
+            <NuxtLink
+              class="vf-1"
+              :to="{
+                name: 'clients-id',
+                params: { id: item.client.id },
+              }"
+            >
+              {{ formatName(item.client) }}
+            </NuxtLink>
+          </div>
+          <div>
+            <TeethBar :items="item.teeth" :current="group.teeth!" />
+          </div>
+          <div v-if="isEditable" class="text-left table-actions">
+            <v-menu>
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  icon="$more"
+                  variant="plain"
+                  :size="48"
+                  :ripple="false"
+                />
+              </template>
+              <v-list>
+                <v-list-item @click="groupSelectorDialog?.open(group.program!, group.year, item.contract_id)">
+                  <template #prepend>
+                    <v-icon :icon="mdiShuffleVariant" />
+                  </template>
+                  переместить в другую группу
+                </v-list-item>
+                <v-list-item @click="removeFromGroup(item)">
+                  <template #prepend>
+                    <v-icon icon="$delete" />
+                  </template>
+                  удалить из этой группы
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </div>
         </div>
-        <div>
-          <TeethBar :items="item.teeth" :current="group.teeth!" />
-        </div>
-        <div v-if="isEditable" class="text-left table-actions">
-          <v-menu>
-            <template #activator="{ props }">
-              <v-btn
-                v-bind="props"
-                icon="$more"
-                variant="plain"
-                :size="48"
-                :ripple="false"
-              />
-            </template>
-            <v-list>
-              <v-list-item @click="groupSelectorDialog?.open(group.program!, group.year, item.contract_id)">
-                <template #prepend>
-                  <v-icon :icon="mdiShuffleVariant" />
-                </template>
-                переместить в другую группу
-              </v-list-item>
-              <v-list-item @click="removeFromGroup(item)">
-                <template #prepend>
-                  <v-icon icon="$delete" />
-                </template>
-                удалить из этой группы
-              </v-list-item>
-            </v-list>
-          </v-menu>
+        <div v-if="isEditable" style="border-bottom: none;">
+          <UiIconLink @click="tab = 'SwampSelector'">
+            добавить в текущую группу
+          </UiIconLink>
         </div>
       </div>
-      <div v-if="isEditable" style="border-bottom: none;">
-        <UiIconLink @click="groupAddStudentDialog?.open()">
-          добавить в текущую группу
-        </UiIconLink>
-      </div>
-    </div>
-  </UiIndexPage>
+    </UiIndexPage>
+  </v-fade-transition>
 
   <GroupSelectorDialog
     ref="groupSelectorDialog"

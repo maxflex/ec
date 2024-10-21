@@ -40,10 +40,7 @@ const emit = defineEmits<{
         {{ YearLabel[item.contract.year] }}
       </div>
       <div style="width: 150px">
-        <span v-if="item.programs_count === 0" class="text-gray"> программ нет </span>
-        <template v-else>
-          программ: {{ item.programs_count }}
-        </template>
+        <ContractVersionDirections :item="item" />
       </div>
       <div style="width: 150px">
         <span v-if="!item.payments_count" class="text-gray">

@@ -1,4 +1,4 @@
-<!-- Список договоров в клиенте -->
+<!-- Вкладка "Договоры" в клиенте -->
 <script setup lang="ts">
 const { items } = defineProps<{ items: ContractVersionListResource[] }>()
 const emit = defineEmits<{
@@ -42,10 +42,7 @@ const emit = defineEmits<{
         </template>
       </div>
       <div>
-        <span v-if="version.programs_count === 0" class="text-gray"> программ нет </span>
-        <template v-else>
-          программ: {{ version.programs_count }}
-        </template>
+        <ContractVersionDirections :item="version" />
       </div>
     </div>
   </div>

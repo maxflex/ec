@@ -1,20 +1,31 @@
 <script setup lang="ts">
 import type { GroupSelectorDialog } from '#build/components'
 
-const { items, selectable } = defineProps<{
+const { items, group } = defineProps<{
   items: SwampListResource[]
-  selectable?: boolean
+  group?: GroupResource
 }>()
-const emit = defineEmits<{
-  select: [swamp: SwampListResource]
-  add: []
-}>()
+const emit = defineEmits(['add', 'selected'])
 const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
+
+async function onSelect(swamp: SwampListResource) {
+  if (!group || !confirm(`Добавить ученика ${formatName(swamp.client)} в группу ${group.id}?`)) {
+    return
+  }
+  await useHttp(`client-groups`, {
+    method: 'post',
+    body: {
+      group_id: group.id,
+      contract_version_program_id: swamp.id,
+    },
+  })
+  emit('selected')
+}
 </script>
 
 <template>
-  <div class="table swamp-list" :class="{ 'table--hover': selectable }">
-    <div v-for="swamp in items" :key="swamp.id" class="swamp-item" @click="emit('select', swamp)">
+  <div class="table swamp-list" :class="{ 'table--hover': !!group }">
+    <div v-for="swamp in items" :key="swamp.id" class="swamp-item" @click="onSelect(swamp)">
       <div style="width: 150px">
         <NuxtLink
           v-if="swamp.group_id"

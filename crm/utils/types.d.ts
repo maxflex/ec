@@ -280,6 +280,7 @@ declare global {
     sum: number
     payments_count: number
     programs_count: number
+    directions: RequestDirection[]
     is_active: boolean
     contract: {
       id: number
