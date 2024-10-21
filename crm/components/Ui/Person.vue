@@ -2,7 +2,7 @@
 interface Props {
   item: PersonResource
   teacherFormat?: NameFormat
-  noLink: boolean | undefined
+  noLink?: boolean | undefined
 }
 
 const { item, teacherFormat, noLink } = withDefaults(defineProps<Props>(), {
