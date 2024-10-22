@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\{LessonConductResource, LessonListResource};
+use App\Http\Resources\{LessonConductResource, LessonListResource, LessonResource};
 use App\Models\ClientLesson;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
@@ -23,10 +23,14 @@ class LessonController extends Controller
         return Lesson::withSequenceNumber($lessons);
     }
 
-    public function show(Lesson $lesson)
+    public function show(Lesson $lesson, Request $request)
     {
-        return new LessonConductResource($lesson);
+        if ($request->has('conduct')) {
+            return new LessonConductResource($lesson);
+        }
+        return new LessonResource($lesson);
     }
+
 
     /**
      * Сохранение ранее проведённого занятия

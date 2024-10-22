@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { mdiAccountEdit, mdiAccountGroup, mdiEyeOutline } from '@mdi/js'
+import {
+  mdiAccountEdit,
+  mdiBookOpenOutline,
+  mdiBookOpenVariant,
+  mdiCalendarBadge,
+  mdiCurrencyUsdOff,
+  mdiEyeOutline,
+  mdiPaperclip,
+} from '@mdi/js'
 
 const { item, checkboxes } = defineProps<{
   item: LessonListResource
@@ -15,6 +23,9 @@ const emit = defineEmits<{
 const { user } = useAuthStore()
 
 const isConductable = (function () {
+  if (item.status === 'cancelled') {
+    return false
+  }
   switch (user?.entity_type) {
     case EntityTypeValue.teacher:
       return true
@@ -25,7 +36,7 @@ const isConductable = (function () {
   }
 })()
 
-const isEditable = user?.entity_type === EntityTypeValue.user
+const isEditable = user?.entity_type !== EntityTypeValue.client
 
 const isClient = user?.entity_type === EntityTypeValue.client
 </script>
@@ -40,14 +51,6 @@ const isClient = user?.entity_type === EntityTypeValue.client
       <UiCheckbox :value="checkboxes[item.id]" />
     </div>
     <div v-else class="table-actionss">
-      <v-btn
-        v-if="isConductable"
-        :icon="mdiAccountEdit"
-        :size="48"
-        variant="text"
-        color="gray"
-        @click.stop="emit('conduct', item.id, item.status)"
-      />
       <v-btn
         v-if="isEditable"
         icon="$edit"
@@ -65,7 +68,7 @@ const isClient = user?.entity_type === EntityTypeValue.client
         @click="emit('view', item.id)"
       />
     </div>
-    <div style="width: 110px; position: relative;" />
+    <div style="width: 90px; position: relative;" />
     <div style="width: 120px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
@@ -84,23 +87,43 @@ const isClient = user?.entity_type === EntityTypeValue.client
         ГР-{{ item.group.id }}
       </NuxtLink>
     </div>
-    <div style="width: 120px">
+    <div style="width: 100px">
       {{ ProgramShortLabel[item.group.program] }}
     </div>
-    <div style="width: 80px; display: flex; align-items: center">
-      <v-icon :icon="mdiAccountGroup" class="mr-2 vfn-1" />
-      {{ item.group.students_count }}
+    <div style="width: 100px">
+      <span v-if="item.quarter">
+        {{ QuarterLabel[item.quarter] }}
+      </span>
     </div>
-    <div style="width: 140px">
+
+    <div style="width: 200px" class="lesson-item__icons">
+      <div>
+        <v-icon v-if="item.topic" :icon="mdiBookOpenOutline" :class="{ 'opacity-3': !item.is_topic_verified }" />
+      </div>
+      <div>
+        <v-icon v-if="item.is_unplanned" :icon="mdiCalendarBadge" />
+      </div>
+      <div>
+        <v-icon v-if="item.is_free" :icon="mdiCurrencyUsdOff" />
+      </div>
+      <div>
+        <v-icon v-if="item.homework" :icon="mdiBookOpenVariant" />
+      </div>
+      <div>
+        <v-icon v-if="item.has_files" :icon="mdiPaperclip" />
+      </div>
+      <div>
+        <v-icon
+          v-if="isConductable"
+          color="secondary"
+          :icon="mdiAccountEdit"
+          @click.stop="emit('conduct', item.id, item.status)"
+        />
+      </div>
+    </div>
+
+    <div style="width: 120px; flex: initial">
       <LessonStatus2 :status="item.status" />
-    </div>
-    <div style="flex: 1">
-      <v-chip v-if="item.is_first" class="text-deepOrange">
-        первое
-      </v-chip>
-      <v-chip v-else-if="item.is_unplanned" class="text-deepOrange">
-        внеплановое
-      </v-chip>
     </div>
     <!--    TODO: удалить? -->
     <div v-if="item.clientLesson" class="lesson-item__contract-lesson">
@@ -147,6 +170,14 @@ const isClient = user?.entity_type === EntityTypeValue.client
     display: flex;
     gap: 20px;
     // padding-left: 650px;
+  }
+  &__icons {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    & > div {
+      width: 26px;
+    }
   }
   &__scores {
     display: flex;

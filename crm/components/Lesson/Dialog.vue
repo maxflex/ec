@@ -6,6 +6,8 @@ const emit = defineEmits<{
   destroyed: [l: LessonListResource]
 }>()
 
+const { isAdmin, isTeacher } = useAuthStore()
+
 const modelDefaults: LessonResource = {
   id: newId(),
   status: 'planned',
@@ -129,27 +131,27 @@ defineExpose({ create, edit })
         v-else
         class="dialog-body"
       >
-        <div>
+        <div v-if="isAdmin">
           <TeacherSelector
             v-model="lesson.teacher_id"
             label="Преподаватель"
           />
         </div>
-        <div>
+        <div v-if="isAdmin">
           <UiClearableSelect
             v-model="lesson.cabinet"
             :items="selectItems(CabinetLabel)"
             label="Кабинет"
           />
         </div>
-        <div>
+        <div v-if="isAdmin">
           <UiClearableSelect
             v-model="lesson.quarter"
             :items="selectItems(QuarterLabel, ['final' as Quarter])"
             label="Четверть"
           />
         </div>
-        <div>
+        <div v-if="isAdmin">
           <v-select
             v-model="lesson.status"
             :items="selectItems(LessonStatusLabel).filter(e => isConducted ? true : e.value !== 'conducted')"
@@ -157,7 +159,7 @@ defineExpose({ create, edit })
             :disabled="isConducted"
           />
         </div>
-        <div>
+        <div v-if="isAdmin">
           <v-text-field
             v-model="lesson.price"
             label="Цена"
@@ -166,7 +168,7 @@ defineExpose({ create, edit })
           />
         </div>
 
-        <div class="double-input">
+        <div v-if="isAdmin" class="double-input">
           <UiDateInput
             v-model="lesson.date"
             :year="year"
@@ -182,6 +184,7 @@ defineExpose({ create, edit })
         <div>
           <v-textarea
             v-model="lesson.topic"
+            :disabled="isTeacher && lesson.is_topic_verified"
             label="Тема"
             no-resize
           />
@@ -199,14 +202,17 @@ defineExpose({ create, edit })
         <div>
           <v-checkbox
             v-model="lesson.is_topic_verified"
+            :disabled="isTeacher"
             label="Тема подтверждена"
           />
           <v-checkbox
             v-model="lesson.is_unplanned"
+            :disabled="isTeacher"
             label="Внеплановое"
           />
           <v-checkbox
             v-model="lesson.is_free"
+            :disabled="isTeacher"
             label="Бесплатное для детей"
           />
         </div>

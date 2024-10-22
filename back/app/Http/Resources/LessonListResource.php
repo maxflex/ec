@@ -19,8 +19,10 @@ class LessonListResource extends JsonResource
     {
         return extract_fields($this, [
             'status', 'date', 'time', 'time_end', 'seq',
-            'cabinet', 'is_unplanned', 'is_first',
+            'cabinet', 'is_unplanned', 'is_first', 'quarter',
+            'topic', 'is_topic_verified', 'is_free', 'homework',
         ], [
+            'has_files' => count($this->files) > 0,
             'clientLesson' => $this->when(
                 !!$this->clientLesson,
                 extract_fields($this->clientLesson, [

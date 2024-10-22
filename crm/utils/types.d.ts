@@ -389,6 +389,12 @@ declare global {
     cabinet: ?Cabinet
     is_unplanned: boolean
     is_first: boolean
+    topic: ?string
+    is_topic_verified: boolean
+    is_free: boolean
+    homework: ?string
+    quarter: Quarter | null
+    has_files: boolean
     clientLesson?: {
       status: ClientLessonStatus
       scores: ClientLessonScore[]
