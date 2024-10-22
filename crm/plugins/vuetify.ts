@@ -11,6 +11,7 @@ import {
   mdiEyeArrowRightOutline,
   mdiEyeOutline,
   mdiInformationOutline,
+  mdiKeyboardBackspace,
   mdiMagnify,
   mdiPassport,
   mdiSend,
@@ -34,6 +35,7 @@ const icons = {
     send: mdiSend,
     time: mdiClockOutline,
     pass: mdiPassport,
+    back: mdiKeyboardBackspace,
   },
   sets: {
     mdi,

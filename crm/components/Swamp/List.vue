@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { GroupSelectorDialog } from '#build/components'
-
 const { items, group } = defineProps<{
   items: SwampListResource[]
   group?: GroupResource
 }>()
-const emit = defineEmits(['add', 'selected'])
-const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
+
+const emit = defineEmits(['attach', 'selected'])
+const route = useRoute()
+const canAttach = route.name === 'clients-id'
 
 async function onSelect(swamp: SwampListResource) {
   if (!group || !confirm(`Добавить ученика ${formatName(swamp.client)} в группу ${group.id}?`)) {
@@ -20,6 +20,13 @@ async function onSelect(swamp: SwampListResource) {
     },
   })
   emit('selected')
+}
+
+function attach(swamp: SwampListResource) {
+  if (!canAttach) {
+    return
+  }
+  emit('attach', swamp)
 }
 </script>
 
@@ -35,7 +42,8 @@ async function onSelect(swamp: SwampListResource) {
         </NuxtLink>
         <UiIconLink
           v-else
-          @click="groupSelectorDialog?.open(swamp)"
+          :class="{ 'no-pointer-events': !canAttach }"
+          @click="attach(swamp)"
         >
           Прикрепить
         </UiIconLink>
@@ -73,11 +81,13 @@ async function onSelect(swamp: SwampListResource) {
       </div>
     </div>
   </div>
-  <GroupSelectorDialog ref="groupSelectorDialog" @select="emit('add')" />
 </template>
 
 <style lang="scss">
 .swamp-list {
+  .no-pointer-events {
+    color: black !important;
+  }
   &.table--hover {
     .swamp-item {
       cursor: pointer;

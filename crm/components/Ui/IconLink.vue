@@ -14,7 +14,7 @@ const { icon, prepend } = withDefaults(defineProps<{
   </a>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 .icon-link {
   --gap: 1px;
   display: inline-flex;
