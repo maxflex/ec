@@ -48,7 +48,7 @@ class ClientTestController extends Controller
             // сколько в секундах осталось на выполнение теста
             'seconds' => max(
                 0,
-                $activeTest->minutes * 60 - Carbon::parse($activeTest->started_at)->diffInSeconds(now())
+                $activeTest->minutes * 60 - (int)abs(Carbon::parse($activeTest->started_at)->diffInSeconds(now()))
             )
         ];
     }

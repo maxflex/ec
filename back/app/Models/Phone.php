@@ -47,6 +47,11 @@ class Phone extends Model implements Authenticatable
     {
     }
 
+    // @phpstan-ignore return.missing
+    public function getAuthPasswordName()
+    {
+    }
+
     public function entity(): MorphTo
     {
         return $this->morphTo();

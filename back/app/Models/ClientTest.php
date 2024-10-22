@@ -85,7 +85,7 @@ class ClientTest extends Model
         }
         return max(
             0,
-            $this->minutes * 60 - Carbon::parse($this->started_at)->diffInSeconds(now())
+            $this->minutes * 60 - (int)abs(Carbon::parse($this->started_at)->diffInSeconds(now()))
         );
     }
 
