@@ -2,12 +2,14 @@
 const router = useRouter()
 const route = useRoute()
 
-const { data } = await useHttp<PersonResource>(`parents/${route.params.id}`)
+async function redirect() {
+  const { data } = await useHttp<PersonResource>(`parents/${route.params.id}`)
+  const { id } = data.value!
+  await router.replace({
+    name: 'clients-id',
+    params: { id },
+  })
+}
 
-router.replace({
-  name: 'clients-id',
-  params: {
-    id: data.value!.id,
-  },
-})
+nextTick(redirect)
 </script>
