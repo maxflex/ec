@@ -16,6 +16,20 @@
     flex-direction: column;
   }
 
+  &-info {
+    & > div {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      & > div {
+        &:first-child {
+          font-weight: bold;
+        }
+      }
+    }
+  }
+
   &-body {
     display: flex;
     flex-direction: column;

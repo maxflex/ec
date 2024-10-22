@@ -31,6 +31,28 @@ const { indexPageData, items } = useIndex<PersonResource, Filters>(`passes/perma
         :items="selectItemsFiltered"
       />
     </template>
+    <template #info>
+      <v-table>
+        <tbody>
+          <tr>
+            <td style="background: #f5f5f5">
+              <template v-if="filters.entity === user">
+                Администраторы с параметром "действующий сотрудник"
+              </template>
+              <template v-else-if="filters.entity === teacher">
+                Преподаватели со статусом "ведет занятия сейчас"
+              </template>
+              <template v-else>
+                Ученики, которые имеют хотя бы один договор в текущем учебном году
+              </template>
+            </td>
+          </tr>
+          <tr style="display: none">
+            <td />
+          </tr>
+        </tbody>
+      </v-table>
+    </template>
     <v-table>
       <tbody>
         <tr v-for="item in items" :key="item.id">

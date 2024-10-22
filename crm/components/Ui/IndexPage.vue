@@ -12,6 +12,7 @@ const { data } = defineProps<{ data: IndexPageData }>()
       <slot name="buttons" />
     </template>
   </UiFilters>
+  <slot v-if="$slots.info" name="info" />
   <div class="index-page" v-bind="$attrs">
     <v-fade-transition>
       <UiLoader v-if="data.loading" />

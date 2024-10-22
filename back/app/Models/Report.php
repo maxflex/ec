@@ -68,6 +68,9 @@ class Report extends Model
         return $query;
     }
 
+    /**
+     * @return Collection<int, ClientLesson>
+     */
     public function getClientLessonsAttribute(): Collection
     {
         return ClientLesson::whereIn('id', $this->lessons->pluck('cl.id'))->with('lesson')->get();
@@ -92,14 +95,13 @@ class Report extends Model
 
         // CTE with last report created_at for each combination
         $lastReportsCte = DB::table('reports')
-            ->selectRaw(<<<SQL
+            ->selectRaw("
                 teacher_id,
                 client_id,
                 year,
                 program,
                 MAX(created_at) as last_report_created_at
-            SQL
-            )
+            ")
             ->groupBy('teacher_id', 'client_id', 'year', 'program');
 
         $fakeReportsCte = DB::table('lessons as l')
@@ -116,7 +118,7 @@ class Report extends Model
                     ->on('lr.year', '=', 'g.year')
                     ->on('lr.program', '=', 'g.program')
             )
-            ->selectRaw(<<<SQL
+            ->selectRaw("
                 NULL as id,
                 l.teacher_id,
                 c.client_id,
@@ -128,13 +130,9 @@ class Report extends Model
                 NULL as price,
                 COUNT(*) as lessons_count,
                 NULL as grade
-            SQL
-            )
+            ")
             ->where('l.status', LessonStatus::conducted->value)
-            ->whereRaw(<<<SQL
-                (lr.last_report_created_at IS NULL OR l.date > lr.last_report_created_at)
-            SQL
-            )
+            ->whereRaw("(lr.last_report_created_at IS NULL OR l.date > lr.last_report_created_at)")
             ->groupBy('l.teacher_id', 'c.client_id', 'g.year', 'g.program')
             ->havingRaw(" COUNT(*) >= ?", [
                 $lessonsUntilReportIsNeeded
@@ -148,7 +146,7 @@ class Report extends Model
 
     public function scopeSelectForUnion($query)
     {
-        return $query->selectRaw(<<<SQL
+        return $query->selectRaw("
             id,
             teacher_id,
             client_id,
@@ -160,6 +158,6 @@ class Report extends Model
             price,
             NULL as lessons_count,
             `grade`
-        SQL);
+        ");
     }
 }

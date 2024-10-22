@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Enums\Program;
+use App\Http\Resources\ReportClientLessonResource;
 use App\Http\Resources\ReportListResource;
 use App\Http\Resources\ReportResource;
 use App\Models\Report;
@@ -62,5 +63,23 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
     {
         abort_if($report->teacher_id !== auth()->id(), 401);
         $report->delete();
+    }
+
+    /**
+     * Получить занятия для отображения в диалоге "Новый отчёт"
+     */
+    public function lessons(Request $request)
+    {
+        $request->validate([
+            'year' => ['required', 'numeric'],
+            'client_id' => ['required', 'exists:clients,id'],
+            'program' => ['required', Rule::enum(Program::class)]
+        ]);
+
+        $report = new Report($request->all());
+        $report->teacher_id = auth()->id();
+        $report->setCreatedAt(now());
+
+        return ReportClientLessonResource::collection($report->clientLessons);
     }
 }

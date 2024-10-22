@@ -15,14 +15,18 @@ const modelDefaults: ReportResource = {
   grade: null,
   client_lessons: [],
 }
-const { dialog, width } = useDialog('default')
+const { dialog, width } = useDialog('large')
 const itemId = ref<number>()
 let fakeItemId: string = ''
 const item = ref<ReportResource>(modelDefaults)
 const loading = ref(false)
 const deleting = ref(false)
 
+// для отображения занятий при создании нового отчёта
+const clientLessons = ref<ReportClientLessonResource[]>([])
+
 async function edit(reportId: number) {
+  clientLessons.value = []
   itemId.value = reportId
   dialog.value = true
   loading.value = true
@@ -37,15 +41,25 @@ async function edit(reportId: number) {
 
 async function create(r: FakeReport) {
   itemId.value = undefined
+  clientLessons.value = []
   fakeItemId = r.id
+  const { year, program, teacher, client } = r
   item.value = clone({
     ...modelDefaults,
-    year: r.year,
-    teacher: r.teacher,
-    client: r.client,
-    program: r.program,
+    year,
+    teacher,
+    client,
+    program,
   })
   dialog.value = true
+  const { data } = await useHttp<ReportClientLessonResource[]>(`reports/lessons`, {
+    params: {
+      year,
+      program,
+      client_id: client.id,
+    },
+  })
+  clientLessons.value = data.value!
 }
 
 async function destroy() {
@@ -129,6 +143,12 @@ defineExpose({ edit, create })
       </div>
       <UiLoader v-if="loading" />
       <div v-else class="dialog-body">
+        <template v-if="clientLessons.length">
+          <div class="font-weight-bold">
+            Посещаемость и пройденные темы:
+          </div>
+          <ReportClientLessons :items="clientLessons" />
+        </template>
         <div class="double-input">
           <div v-if="item.teacher">
             <v-text-field
@@ -161,21 +181,21 @@ defineExpose({ edit, create })
         </div>
         <div class="double-input">
           <v-select v-model="item.grade" label="Оценка" :items="selectItems(LessonScoreLabel)">
-            <template #selection="{ item }">
-              <span :class="`score score--${item.raw.value}`" style="position: absolute;">
-                {{ item.raw.value }}
+            <template #selection="{ item: { raw: { value } } }">
+              <span class="`score score--${value}`" style="position: absolute;">
+                {{ value }}
               </span>
               <span class="ml-10">
-                {{ LessonScoreLabel[item.raw.value] }}
+                {{ LessonScoreLabel[value as LessonScore] }}
               </span>
             </template>
-            <template #item="{ props, item }">
+            <template #item="{ props, item: { raw: { value } } }">
               <v-list-item v-bind="props">
                 <template #title>
-                  <span :class="`score score--${item.raw.value}`" class="mr-2">
-                    {{ item.raw.value }}
+                  <span :class="`score score--${value}`" class="mr-2">
+                    {{ value }}
                   </span>
-                  {{ LessonScoreLabel[item.raw.value] }}
+                  {{ LessonScoreLabel[value as LessonScore] }}
                 </template>
                 <template #prepend>
                   <v-spacer />

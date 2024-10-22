@@ -26,6 +26,7 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::post('sign/{instruction}', 'sign');
     });
     Route::apiResource('instructions', InstructionController::class)->only('index', 'show');
+    Route::get('reports/lessons', [ReportController::class, 'lessons']);
     Route::apiResources([
         'reports' => ReportController::class,
         'grades' => GradeController::class,

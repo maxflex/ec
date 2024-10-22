@@ -638,6 +638,18 @@ declare global {
 
   type ReportListResource = RealReport | FakeReport
 
+  interface ReportClientLessonResource {
+    id: number
+    status: ClientLessonStatus
+    minutes_late: number
+    is_remote: boolean
+    lesson: {
+      id: number
+      date: string
+      topic: string
+    }
+  }
+
   interface ReportResource {
     id: number
     year: Year
@@ -653,17 +665,7 @@ declare global {
     client?: PersonResource
     program?: Program
     created_at?: string
-    client_lessons: Array<{
-      id: number
-      status: ClientLessonStatus
-      minutes_late: number
-      is_remote: boolean
-      lesson: {
-        id: number
-        date: string
-        topic: string
-      }
-    }>
+    client_lessons: ReportClientLessonResource[]
   }
 
   interface BillingResource {

@@ -21,13 +21,7 @@ class ReportResource extends JsonResource
             'created_at', 'homework_comment', 'price', 'recommendation_comment',
             'knowledge_level_comment', 'cognitive_ability_comment', 'grade'
         ], [
-            'client_lessons' => $this->clientLessons->map(fn($cl) => extract_fields($cl, [
-                'status', 'minutes_late', 'is_remote'
-            ], [
-                'lesson' => extract_fields($cl->lesson, [
-                    'date', 'topic'
-                ])
-            ])),
+            'client_lessons' => ReportClientLessonResource::collection($this->client_lessons),
             'teacher' => new PersonResource($this->teacher),
             'client' => new PersonResource($this->client),
         ]);
