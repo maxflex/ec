@@ -53,10 +53,13 @@ async function onFileSelected(e: Event) {
   else {
     model.value = newFile
   }
-  const { data } = await useHttp<string>(`files`, {
-    method: 'post',
-    body: formData,
-  })
+  const { data } = await useHttp<string>(
+      `common/files`,
+      {
+        method: 'post',
+        body: formData,
+      },
+  )
   if (data.value) {
     newFile.url = data.value
   }

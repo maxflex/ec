@@ -15,7 +15,6 @@ use App\Http\Controllers\Admin\{BalanceController,
     ErrorController,
     EventParticipantController,
     ExamScoreController,
-    FileController,
     GradeController,
     GroupController,
     InstructionController,
@@ -106,8 +105,6 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::get('people-selector', PeopleSelectorController::class);
 
     Route::post('telegram-lists/load-people', [TelegramListController::class, 'loadPeople']);
-
-    Route::post('files', FileController::class);
 
     Route::get('requests/associated/{request}', [RequestsController::class, 'associated']);
 

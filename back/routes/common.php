@@ -3,6 +3,7 @@
 use App\Http\Controllers\Common\{AuthController,
     EventController,
     ExamDateController,
+    FileController,
     LogController,
     MangoController,
     TeethController,
@@ -20,6 +21,8 @@ Route::controller(AuthController::class)->prefix('auth')->group(function () {
 Route::post('mango/events/{event}', MangoController::class)
     ->where('event', '[\D]+')
     ->name('mango');
+
+Route::post('files', FileController::class);
 
 Route::middleware(['auth:crm'])->group(function () {
     Route::controller(AuthController::class)->prefix('auth')->group(function () {
