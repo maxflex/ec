@@ -66,7 +66,10 @@ const isClient = user?.entity_type === EntityTypeValue.client
           <v-list-item @click="emit('edit', item.id)">
             редактировать
           </v-list-item>
-          <v-list-item @click="emit('conduct', item.id, item.status)">
+          <v-list-item
+            :disabled="item.teacher.id !== user?.id"
+            @click="emit('conduct', item.id, item.status)"
+          >
             проводка занятия
           </v-list-item>
         </v-list>
@@ -91,9 +94,7 @@ const isClient = user?.entity_type === EntityTypeValue.client
       </template>
     </div>
     <div v-if="item.teacher" style="width: 150px">
-      <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }" @click.stop>
-        {{ formatNameInitials(item.teacher) }}
-      </NuxtLink>
+      {{ formatNameInitials(item.teacher) }}
     </div>
     <div style="width: 90px">
       <NuxtLink :to="{ name: 'groups-id', params: { id: item.group.id } }" @click.stop>

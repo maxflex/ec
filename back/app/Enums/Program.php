@@ -256,7 +256,6 @@ enum Program: string
             '13-10' => self::rusPracticum,
             '16-37' => self::rusPracticum,
 
-
             default => self::rusPracticum,
         };
     }

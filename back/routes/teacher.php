@@ -3,6 +3,7 @@
 use App\Http\Controllers\Teacher\{BalanceController,
     ClientGroupController,
     ClientReviewController,
+    FileController,
     GradeController,
     GroupController,
     InstructionController,
@@ -25,6 +26,7 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::get('diff/{instruction}', 'diff');
         Route::post('sign/{instruction}', 'sign');
     });
+    Route::post('files', FileController::class);
     Route::apiResource('instructions', InstructionController::class)->only('index', 'show');
     Route::get('reports/lessons', [ReportController::class, 'lessons']);
     Route::apiResources([

@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands\Transfer;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class TransferTeacherServices extends Command
 {
@@ -18,6 +18,7 @@ class TransferTeacherServices extends Command
         $items = DB::connection('egecrm')
             ->table('payment_additionals')
             ->where('entity_type', ET_TEACHER)
+            ->whereNotLike('purpose', '%дополнительное%')
             ->get();
         $bar = $this->output->createProgressBar($items->count());
         foreach ($items as $p) {
