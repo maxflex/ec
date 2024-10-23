@@ -4,8 +4,8 @@ namespace App\Console\Commands\Transfer;
 
 use App\Enums\Subject;
 use App\Enums\TeacherStatus;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class TransferTeachers extends Command
@@ -13,6 +13,7 @@ class TransferTeachers extends Command
     use TransferTrait;
 
     protected $signature = 'app:transfer:teachers';
+
     protected $description = 'Transfer teachers';
 
     public function handle()
@@ -24,20 +25,18 @@ class TransferTeachers extends Command
             ->get();
         $bar = $this->output->createProgressBar($teachers->count());
         foreach ($teachers as $t) {
-            $desc = join("\n\n", [
-                $t->ready_to_work,
-                $t->list_comment,
-                $t->public_desc,
-                $t->schedule,
-                $t->impression,
-                $t->students_category,
-                $t->tutoring_experience,
-                $t->experience,
-                $t->preferences,
-                $t->achievements,
-                $t->education,
-                $t->price,
+            $desc = implode("\n\n", [
+                $t->comment,
+                $t->description,
                 $t->contacts,
+                $t->education,
+                $t->achievements,
+                $t->preferences,
+                $t->experience,
+                $t->current_work,
+                $t->tutoring_experience,
+                $t->students_category,
+                $t->impression,
             ]);
             $desc = trim(str_replace("\n\n\n\n", "\n\n", $desc), "\n\n");
             DB::table('teachers')->insert([

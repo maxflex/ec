@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Instruction;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -17,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('text')->nullable();
+            $table->boolean('is_published')->default(false)->index();
             $table->unsignedInteger('entry_id')->index();
             $table->foreignIdFor(User::class)->constrained();
             $table->timestamps();

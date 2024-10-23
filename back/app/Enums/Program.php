@@ -125,7 +125,7 @@ enum Program: string
     /**
      * ID предмета (для переноса из старой БД)
      */
-    public static function getById(int $gradeId, int $subjectId): self
+    public static function fromOld(int $gradeId, int $subjectId): self
     {
         $gradeSubject = join('-', [$gradeId, $subjectId]);
         return match ($gradeSubject) {
@@ -261,9 +261,9 @@ enum Program: string
         };
     }
 
-    public static function getBySubjectId(int $subjectId)
+    public static function fromSubject(int $subjectId)
     {
-        return match (intval($subjectId)) {
+        return match ($subjectId) {
             1 => self::math11,
             2 => self::phys11,
             3 => self::chem11,
@@ -337,7 +337,7 @@ enum Program: string
             self::inf11 => 'информатика 11 класс',
             self::rus11 => 'русский язык 11 класс',
             self::lit11 => 'литература 11 класс',
-            self::soc11 => 'обществознанеие 11 класс',
+            self::soc11 => 'обществознание 11 класс',
             self::his11 => 'история 11 класс',
             self::eng11 => 'английский язык 11 класс',
             self::geo11 => 'география 11 класс',
@@ -351,7 +351,7 @@ enum Program: string
             self::rusExt => 'русский язык экстернат',
             self::litExt => 'литература экстернат',
             self::socExt => 'обществознание экстернат',
-            self::hisExt => 'история экстетрнат',
+            self::hisExt => 'история экстернат',
             self::engExt => 'английский язык экстернат',
             self::geoExt => 'география экстернат',
 

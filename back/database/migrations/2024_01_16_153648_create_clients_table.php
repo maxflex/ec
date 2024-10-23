@@ -23,8 +23,10 @@ return new class extends Migration
                 collect(Branch::cases())->map(fn ($e) => $e->name)->all()
             )->nullable();
             $table->date('birthdate')->nullable();
-            $table->unsignedBigInteger('head_teacher_id')->nullable()->constrained();
+            $table->unsignedBigInteger('head_teacher_id')->nullable();
             $table->foreign('head_teacher_id')->references('id')->on('teachers');
+            $table->boolean('is_remote')->default(false);
+            $table->json('passport')->nullable();
             $table->foreignIdFor(User::class)->nullable()->constrained();
             $table->timestamps();
         });

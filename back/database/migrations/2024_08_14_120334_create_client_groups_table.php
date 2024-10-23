@@ -18,7 +18,6 @@ return new class extends Migration {
             $table->foreignIdFor(Group::class)->constrained();
             $table->unique(['contract_version_program_id', 'group_id']);
         });
-        Schema::dropIfExists('group_contracts');
     }
 
     /**

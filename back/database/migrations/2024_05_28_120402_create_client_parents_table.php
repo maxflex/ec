@@ -18,13 +18,7 @@ return new class extends Migration
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
             $table->string('middle_name')->nullable();
-            $table->string('passport_series')->nullable();
-            $table->string('passport_number')->nullable();
-            $table->string('passport_address')->nullable();
-            $table->string('passport_code')->nullable();
-            $table->date('passport_issued_date')->nullable();
-            $table->string('passport_issued_by')->nullable();
-            $table->string('fact_address')->nullable();
+            $table->json('passport')->nullable();
         });
     }
 

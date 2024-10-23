@@ -64,7 +64,7 @@ class TransferContracts extends Command
                     $price = $cs->price ?? 0;
                     $cvpId = DB::table('contract_version_programs')->insertGetId([
                         'contract_version_id' => $id,
-                        'program' => Program::getById($c->grade_id, $cs->subject_id)->name,
+                        'program' => Program::fromOld($c->grade_id, $cs->subject_id)->name,
                         'lessons_planned' => $cs->lessons_planned ?? 0,
                     ]);
                     DB::table('contract_version_program_prices')->insert([

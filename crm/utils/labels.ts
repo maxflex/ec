@@ -481,11 +481,16 @@ export const TeacherPaymentMethodLabel = {
   mutual: 'взаимозачёт',
 } as const
 
-export const ClientPaymentMethodLabel = {
+export const ContractPaymentMethodLabel = {
   card: 'карта',
   online: 'карта онлайн',
   cash: 'наличные',
   invoice: 'счёт',
+} as const
+
+export const ClientPaymentMethodLabel = {
+  card: 'карта',
+  cash: 'наличные',
 } as const
 
 export const CompanyLabel = {

@@ -11,7 +11,6 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::dropIfExists('telegram_messages');
         Schema::create('telegram_messages', function (Blueprint $table) {
             $table->id();
             $table->mediumText('text');

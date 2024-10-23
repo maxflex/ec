@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class WebReview extends Model
 {
@@ -11,20 +13,20 @@ class WebReview extends Model
     ];
 
     protected $casts = [
-        'is_published' => 'boolean'
+        'is_published' => 'bool'
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function client()
+    public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
     }
 
-    public function examScores()
+    public function examScores(): BelongsToMany
     {
         return $this->belongsToMany(ExamScore::class);
     }

@@ -19,9 +19,9 @@ class TransferReports extends Command
         $items = DB::connection('egecrm')->table('reports')->get();
         $bar = $this->output->createProgressBar($items->count());
         foreach ($items as $r) {
-            $result = DB::connection('egecrm')->select(<<<SQL
+            $result = DB::connection('egecrm')->select("
             select c.grade_id
-            from groups g
+            from `groups` g
             join lessons l on l.group_id = g.id
             join lesson_contracts lc on lc.lesson_id = l.id
             join contracts c on c.id = lc.contract_id
@@ -33,7 +33,7 @@ class TransferReports extends Command
                 and l.conducted_at < ?
             order by l.conducted_at desc
             limit 1
-            SQL, [
+            ", [
                 $r->teacher_id,
                 $r->client_id,
                 $r->subject_id,
@@ -45,13 +45,13 @@ class TransferReports extends Command
                 'client_id' => $r->client_id,
                 'year' => $r->year,
                 'program' => count($result)
-                    ? Program::getById($result[0]->grade_id, $r->subject_id)
-                    : Program::getBySubjectId($r->subject_id),
+                    ? Program::fromOld($result[0]->grade_id, $r->subject_id)
+                    : Program::fromSubject($r->subject_id),
                 'homework_comment' => $r->homework_comment,
                 'cognitive_ability_comment' => $r->learning_ability_comment,
                 'knowledge_level_comment' => $r->knowledge_comment,
                 'recommendation_comment' => $r->recommendation,
-                'grade' => $r->homework_score ? $r->homework_score : null,
+                'grade' => $r->homework_score ?: null,
                 // 'user_id' => $this->getUserId($r->created_email_id),
                 'is_moderated' => ($r->is_not_moderated + 1) % 2,
                 'is_published' => $r->is_available_for_parents,

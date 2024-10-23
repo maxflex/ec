@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('contract_versions', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Contract::class)->constrained();
-            $table->unsignedSmallInteger('version');
+            $table->boolean('is_active')->default(false)->index();
             $table->date('date');
             $table->unsignedInteger('sum');
             $table->foreignIdFor(User::class)->constrained();

@@ -17,7 +17,11 @@ class ClientParent extends Model implements CanLogin
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'passport_series', 'passport_number',
         'passport_address', 'passport_code', 'passport_issued_date', 'passport_issued_by',
-        'fact_address'
+        'fact_address', 'passport'
+    ];
+
+    protected $casts = [
+        'passport' => 'array'
     ];
 
     public function client(): BelongsTo
@@ -49,5 +53,19 @@ class ClientParent extends Model implements CanLogin
     public function scopeCanLogin($query)
     {
         $query->whereHas('client', fn($q) => $q->canLogin());
+    }
+
+
+    public function getPassportAttribute($value)
+    {
+        return $value === null ? [
+            'series' => null,
+            'number' => null,
+            'address' => null,
+            'code' => null,
+            'issued_date' => null,
+            'issued_by' => null,
+            'fact_address' => null,
+        ] : json_decode($value);
     }
 }

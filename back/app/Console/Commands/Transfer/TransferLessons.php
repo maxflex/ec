@@ -26,7 +26,7 @@ class TransferLessons extends Command
                 'group_id' => $l->group_id,
                 'teacher_id' => $l->teacher_id,
                 'price' => $l->price,
-                'cabinet' => Cabinet::getOld($l->cabinet_id)->value,
+                'cabinet' => Cabinet::fromOld($l->cabinet_id)->value,
                 'status' => $l->status,
                 'date' => $l->date,
                 'time' => $l->time,

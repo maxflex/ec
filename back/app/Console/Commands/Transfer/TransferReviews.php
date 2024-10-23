@@ -3,8 +3,8 @@
 namespace App\Console\Commands\Transfer;
 
 use App\Enums\Program;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class TransferReviews extends Command
 {
@@ -16,7 +16,6 @@ class TransferReviews extends Command
     public function handle()
     {
         DB::table('client_reviews')->delete();
-        DB::table('web_review_scores')->delete();
         DB::table('web_reviews')->delete();
         $reviews = DB::connection('egecrm')
             ->table('reviews as r')
@@ -27,15 +26,15 @@ class TransferReviews extends Command
             ->whereNotNull('rc.text')
             ->whereNotNull('rc.created_email_id')
             ->whereNotNull('r.score')
-            ->selectRaw(<<<SQL
+            ->selectRaw("
                 r.client_id, r.subject_id, r.grade_id, r.signature, r.score, r.max_score,
                 r.is_published, r.teacher_id, rc.text, rc.created_email_id, rc.rating,
                 rc.created_at, rc.updated_at
-            SQL)
+            ")
             ->get();
         $bar = $this->output->createProgressBar($reviews->count());
         foreach ($reviews as $r) {
-            $program = Program::getById($r->grade_id, $r->subject_id)->name;
+            $program = Program::fromOld($r->grade_id, $r->subject_id)->name;
             $userId = $this->getUserId($r->created_email_id);
             DB::table('client_reviews')->insert([
                 'client_id' => $r->client_id,
@@ -47,7 +46,7 @@ class TransferReviews extends Command
                 'created_at' => $r->created_at,
                 'updated_at' => $r->updated_at,
             ]);
-            $reviewId = DB::table('web_reviews')->insertGetId([
+            DB::table('web_reviews')->insertGetId([
                 'client_id' => $r->client_id,
                 'text' => $r->text,
                 'signature' => $r->signature,
@@ -56,12 +55,6 @@ class TransferReviews extends Command
                 'user_id' => $this->getUserId($r->created_email_id),
                 'created_at' => $r->created_at,
                 'updated_at' => $r->updated_at,
-            ]);
-            DB::table('web_review_scores')->insert([
-                'web_review_id' => $reviewId,
-                'program' => $program,
-                'score' => $r->score,
-                'max_score' => $r->max_score,
             ]);
             $bar->advance();
         }

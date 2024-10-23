@@ -13,7 +13,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::dropIfExists('tests');
         Schema::create('tests', function (Blueprint $table) {
             $table->id();
             $table->enum(

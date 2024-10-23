@@ -12,7 +12,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::dropIfExists('contract_payments');
         Schema::create('contract_version_payments', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(ContractVersion::class)->constrained();

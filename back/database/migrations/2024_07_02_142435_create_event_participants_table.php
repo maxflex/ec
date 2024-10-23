@@ -13,7 +13,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::dropIfExists('event_participants');
         Schema::create('event_participants', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Event::class)->constrained();

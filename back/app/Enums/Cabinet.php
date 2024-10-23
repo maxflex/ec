@@ -4,79 +4,94 @@ namespace App\Enums;
 
 enum Cabinet: string
 {
-    case n428 = '428';
-    case n430 = '430';
-    case n432 = '432';
-    case n433 = '433';
-    case n434 = '434';
-    case n439 = '439';
+    case cab428 = 'cab428';
+    case cab430 = 'cab430';
+    case cab432 = 'cab432';
+    case cab433 = 'cab433';
+    case cab434 = 'cab434';
+    case cab439 = 'cab439';
 
-    case n407 = '407';
-    case n409 = '409';
-    case n412 = '412';
-    case n413 = '413';
-    case n417 = '417';
-    case n422 = '422';
-    case n423 = '423';
-    case n424 = '424';
+    case cab407 = 'cab407';
+    case cab409 = 'cab409';
+    case cab412 = 'cab412';
+    case cab413 = 'cab413';
+    case cab414 = 'cab414';
+    case cab417 = 'cab417';
+    case cab418 = 'cab418';
+    case cab420 = 'cab420';
+    case cab422 = 'cab422';
+    case cab423 = 'cab423';
+    case cab424 = 'cab424';
+
+    case cab310 = 'cab310';
+    case cab312 = 'cab312';
+    case cab314 = 'cab314';
+    case cab316 = 'cab316';
 
         // old
-    case n10 = '10';
-    case n35 = '35';
-    case n205 = '205';
-    case n214 = '214';
-    case n221 = '221';
-    case n301 = '301';
-    case n302 = '302';
-    case n303 = '303';
-    case n304 = '304';
-    case n305 = '305';
-    case n310 = '310';
-    case n311 = '311';
-    case n314 = '314';
-    case n319 = '319';
-    case n320 = '320';
-    case n321 = '321';
-    case n322 = '322';
-    case n507 = '507';
-    case n809 = '809';
+    case tur10 = 'tur10';
+    case tur35 = 'tur35';
+    case tur205 = 'tur205';
+    case tur214 = 'tur214';
+    case tur221 = 'tur221';
+    case tur301 = 'tur301';
+    case tur302 = 'tur302';
+    case tur303 = 'tur303';
+    case tur304 = 'tur304';
+    case tur305 = 'tur305';
+    case tur310 = 'tur310';
+    case tur311 = 'tur311';
+    case tur314 = 'tur314';
+    case tur319 = 'tur319';
+    case tur320 = 'tur320';
+    case tur321 = 'tur321';
+    case tur322 = 'tur322';
+    case tur507 = 'tur507';
+    case tur809 = 'tur809';
 
-    public static function getOld(int $cabinetId): self
+    public static function fromOld(int $cabinetId): self
     {
         return match ($cabinetId) {
-            2 => self::n35,
-            5 => self::n809,
-            8 => self::n507,
-            10 => self::n10,
-            13 => self::n301,
-            14 => self::n302,
-            15 => self::n303,
-            16 => self::n321,
-            17 => self::n322,
-            18 => self::n304,
-            19 => self::n320,
-            20 => self::n319,
-            21 => self::n310,
-            22 => self::n311,
-            23 => self::n314,
-            25 => self::n305,
-            26 => self::n205,
-            27 => self::n221,
-            28 => self::n214,
-            29 => self::n439,
-            30 => self::n434,
-            31 => self::n432,
-            32 => self::n430,
-            33 => self::n428,
-            34 => self::n433,
-            35 => self::n412,
-            36 => self::n407,
-            37 => self::n409,
-            38 => self::n413,
-            39 => self::n417,
-            40 => self::n423,
-            41 => self::n424,
-            42 => self::n422
+            2 => self::tur35,
+            5 => self::tur809,
+            8 => self::tur507,
+            10 => self::tur10,
+            13 => self::tur301,
+            14 => self::tur302,
+            15 => self::tur303,
+            16 => self::tur321,
+            17 => self::tur322,
+            18 => self::tur304,
+            19 => self::tur320,
+            20 => self::tur319,
+            21 => self::tur310,
+            22 => self::tur311,
+            23 => self::tur314,
+            25 => self::tur305,
+            26 => self::tur205,
+            27 => self::tur221,
+            28 => self::tur214,
+            29 => self::cab439,
+            30 => self::cab434,
+            31 => self::cab432,
+            32 => self::cab430,
+            33 => self::cab428,
+            34 => self::cab433,
+            35 => self::cab412,
+            36 => self::cab407,
+            37 => self::cab409,
+            38 => self::cab413,
+            39 => self::cab417,
+            40 => self::cab423,
+            41 => self::cab424,
+            42 => self::cab422,
+            43 => self::cab414,
+            44 => self::cab418,
+            45 => self::cab420,
+            46 => self::cab310,
+            47 => self::cab312,
+            48 => self::cab314,
+            49 => self::cab316,
         };
     }
 }

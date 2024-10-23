@@ -3,8 +3,9 @@
 namespace App\Console\Commands\Transfer;
 
 use App\Enums\ClientPaymentMethod;
-use Illuminate\Support\Facades\DB;
+use App\Enums\ContractPaymentMethod;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class TransferClientPayments extends Command
 {
@@ -32,7 +33,7 @@ class TransferClientPayments extends Command
                 DB::table('contract_payments')->insert([
                     'sum' => $p->sum,
                     'date' => $p->date,
-                    'method' => ClientPaymentMethod::getFromOld($p->method)->name,
+                    'method' => ContractPaymentMethod::fromOld($p->method)->name,
                     'is_confirmed' => $p->is_confirmed,
                     'is_return' => $p->type === 'return',
                     'contract_id' => $p->entity_id,
@@ -47,7 +48,7 @@ class TransferClientPayments extends Command
                     'sum' => $p->sum,
                     'date' => $p->date,
                     'year' => $p->year,
-                    'method' => ClientPaymentMethod::getFromOld($p->method)->name,
+                    'method' => ClientPaymentMethod::fromOld($p->method)->name,
                     'client_id' => $p->entity_id,
                     'purpose' => $p->category === 'ege_trial' ? 'Пробник' : 'Профориентация',
                     'is_confirmed' => $p->is_confirmed,

@@ -25,8 +25,6 @@ return new class extends Migration
             );
             $table->text('text');
             $table->unsignedSmallInteger('rating');
-            $table->unsignedSmallInteger('max_score')->nullable()->after('rating');
-            $table->unsignedSmallInteger('score')->nullable()->after('rating');
             $table->foreignIdFor(User::class)->constrained();
             $table->timestamps();
         });

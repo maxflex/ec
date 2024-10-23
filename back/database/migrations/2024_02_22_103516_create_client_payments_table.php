@@ -2,6 +2,7 @@
 
 use App\Enums\ClientPaymentMethod;
 use App\Enums\Company;
+use App\Models\Client;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -16,24 +17,23 @@ return new class extends Migration
     {
         Schema::create('client_payments', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(Client::class)->constrained();
             $table->unsignedInteger('sum');
             $table->date('date')->index();
             $table->unsignedSmallInteger('year')->index();
             $table->enum(
                 'method',
-                collect(ClientPaymentMethod::cases())->map(
-                    fn ($e) => $e->name
-                )->all()
+                array_column(ClientPaymentMethod::cases(), 'name')
             );
             $table->enum(
                 'company',
                 collect(Company::cases())->map(fn ($e) => $e->name)->all()
             );
+            $table->string('purpose')->nullable();
             $table->boolean('is_confirmed')->default(false)->index();
             $table->boolean('is_return')->default(false)->index();
-            $table->morphs('entity');
-            $table->string('purpose')->nullable();
-            $table->string('extra')->nullable();
+            $table->string('card_number')->nullable();
+            $table->unsignedInteger('pko_number')->nullable();
             $table->foreignIdFor(User::class)->constrained();
             $table->timestamps();
         });

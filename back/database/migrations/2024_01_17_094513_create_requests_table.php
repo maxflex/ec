@@ -15,9 +15,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::table('passes')->truncate();
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('requests');
         Schema::create('requests', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Client::class)->nullable()->constrained();
@@ -37,7 +34,6 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->nullable()->constrained();
             $table->timestamps();
         });
-        Schema::enableForeignKeyConstraints();
     }
 
     /**

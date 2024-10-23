@@ -24,21 +24,22 @@ return new class extends Migration
             $table->unsignedInteger('price');
             $table->enum('status', collect(LessonStatus::cases())->map(fn ($e) => $e->name)->all());
             $table->enum('cabinet', collect(Cabinet::cases())->map(fn($e) => $e->value)->all())->nullable();
-
             $table->enum(
                 'quarter',
-                collect(Quarter::cases())->map(fn ($e) => $e->name)->all()
-            )->nullable()->default(null)->after('cabinet')->index();
+                array_column(Quarter::cases(), 'name'),
+            )->nullable()->default(null)->index();
 
-            // $table->dateTime('start_at');
-            $table->time('time');
             $table->date('date');
+            $table->time('time');
 
             $table->dateTime('conducted_at')->nullable();
+            $table->boolean('is_free')->default(false);
             $table->boolean('is_unplanned')->default(false);
             $table->boolean('is_topic_verified')->default(false);
-            $table->string('topic')->nullable();
-            $table->foreignIdFor(User::class)->nullable()->constrained()->nullable();
+            $table->string('topic', 1000)->nullable();
+            $table->string('homework', 1000)->nullable();
+            $table->json('files')->nullable();
+            $table->foreignIdFor(User::class)->nullable()->constrained();
             $table->timestamps();
         });
     }

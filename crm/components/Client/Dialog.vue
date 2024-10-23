@@ -14,19 +14,26 @@ const modelDefaults: ClientResource = {
   branches: [],
   phones: [],
   photo_url: null,
+  is_remote: false,
+  passport: {
+    series: null,
+    number: null,
+  },
   parent: {
     id: newId(),
     first_name: null,
     last_name: null,
     middle_name: null,
-    passport_series: null,
-    passport_number: null,
-    passport_address: null,
-    passport_code: null,
-    passport_issued_date: null,
-    passport_issued_by: null,
-    fact_address: null,
     phones: [],
+    passport: {
+      series: null,
+      number: null,
+      address: null,
+      code: null,
+      issued_date: null,
+      issued_by: null,
+      fact_address: null,
+    },
   },
 }
 
@@ -157,7 +164,25 @@ defineExpose({ create, edit })
             label="Куратор"
           />
         </div>
+        <div class="double-input">
+          <v-text-field
+            v-model="client.passport.series"
+            label="Серия паспорта"
+          />
+          <v-text-field
+            v-model="client.passport.number"
+            label="Номер паспорта"
+          />
+        </div>
+
         <PhoneEditor v-model="client.phones" />
+
+        <div>
+          <v-checkbox
+            v-model="client.is_remote"
+            label="Учится удалённо"
+          />
+        </div>
 
         <div class="dialog-section__title">
           Представитель
@@ -178,32 +203,32 @@ defineExpose({ create, edit })
         </div>
         <div class="double-input">
           <v-text-field
-            v-model="client.parent.passport_series"
+            v-model="client.parent.passport.series"
             label="Серия паспорта"
           />
           <v-text-field
-            v-model="client.parent.passport_number"
+            v-model="client.parent.passport.number"
             label="Номер паспорта"
           />
           <v-text-field
-            v-model="client.parent.passport_code"
+            v-model="client.parent.passport.code"
             label="Код подразделения"
           />
         </div>
         <v-textarea
-          v-model="client.parent.passport_issued_by"
+          v-model="client.parent.passport.issued_by"
           label="Паспорт выдан"
           no-resize
           rows="3"
         />
         <v-textarea
-          v-model="client.parent.passport_address"
+          v-model="client.parent.passport.address"
           label="Адрес регистрации"
           no-resize
           rows="3"
         />
         <v-textarea
-          v-model="client.parent.fact_address"
+          v-model="client.parent.passport.fact_address"
           label="Фактический адрес"
           no-resize
           rows="3"

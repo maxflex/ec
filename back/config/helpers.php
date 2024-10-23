@@ -1,7 +1,7 @@
 <?php
 
-use App\Enums\ClientPaymentMethod;
 use App\Enums\Company;
+use App\Enums\ContractPaymentMethod;
 use App\Models\ClientPayment;
 use App\Models\ContractPayment;
 use Illuminate\Support\Collection;
@@ -83,11 +83,11 @@ function get_max_pko_number(Company $company)
     return max(
         ClientPayment::query()
             ->where('company', $company)
-            ->where('method', ClientPaymentMethod::cash)
+            ->where('method', ContractPaymentMethod::cash)
             ->max('pko_number'),
         ContractPayment::query()
             ->whereHas('contract', fn ($q) => $q->where('company', $company))
-            ->where('method', ClientPaymentMethod::cash)
+            ->where('method', ContractPaymentMethod::cash)
             ->max('pko_number'),
     ) + 1;
 }

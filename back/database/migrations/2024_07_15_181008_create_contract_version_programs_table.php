@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\Program;
-use App\Enums\Subject;
 use App\Models\ContractVersion;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,18 +13,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::dropIfExists('contract_programs');
         Schema::create('contract_version_programs', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(ContractVersion::class)->constrained();
             $table->enum(
                 'program',
-                collect(Program::cases())->map(fn ($e) => $e->name)->all()
+                array_column(Program::cases(), 'name')
             );
-            $table->unsignedTinyInteger('lessons');
             $table->unsignedTinyInteger('lessons_planned');
-            $table->unsignedSmallInteger('price');
-            $table->boolean('is_closed')->index();
         });
     }
 

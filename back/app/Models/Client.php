@@ -21,7 +21,12 @@ class Client extends Model implements HasTeeth, CanLogin
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'branches',
-        'head_teacher_id'
+        'head_teacher_id', 'passport', 'is_remote',
+    ];
+
+    protected $casts = [
+        'passport' => 'array',
+        'is_remote' => 'bool',
     ];
 
     public function tests(): HasMany
@@ -213,5 +218,13 @@ class Client extends Model implements HasTeeth, CanLogin
             'is_active' => $maxContractYear === current_academic_year(),
             'weight' => $maxContractYear,
         ];
+    }
+
+    public function getPassportAttribute($value)
+    {
+        return $value === null ? [
+            'series' => null,
+            'number' => null
+        ] : json_decode($value);
     }
 }

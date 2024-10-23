@@ -73,7 +73,7 @@ trait TransferTrait
     ): int
     {
 //        dump([$contractId, $gradeId, $subjectId]);
-        $program = Program::getById($gradeId, $subjectId);
+        $program = Program::fromOld($gradeId, $subjectId);
         return ContractVersion::query()
             ->where('contract_id', $contractId)
             ->active()

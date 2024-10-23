@@ -14,7 +14,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::dropIfExists('client_tests');
         Schema::create('client_tests', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Client::class)->constrained();

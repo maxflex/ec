@@ -39,6 +39,8 @@ declare global {
 
   type ClientPaymentMethod = keyof typeof ClientPaymentMethodLabel
 
+  type ContractPaymentMethod = keyof typeof ContractPaymentMethodLabel
+
   type Company = keyof typeof CompanyLabel
 
   type TeacherPaymentMethod = keyof typeof TeacherPaymentMethodLabel
@@ -188,13 +190,15 @@ declare global {
   }
 
   interface ParentResource extends HasName, HasPhones {
-    passport_series: ?string
-    passport_number: ?string
-    passport_address: ?string
-    passport_code: ?string
-    passport_issued_date: ?string
-    passport_issued_by: ?string
-    fact_address: ?string
+    passport: {
+      series: ?string
+      number: ?string
+      address: ?string
+      code: ?string
+      issued_date: ?string
+      issued_by: ?string
+      fact_address: ?string
+    }
   }
 
   interface ClientListResource extends PersonResource {
@@ -206,6 +210,11 @@ declare global {
     birthdate?: string
     head_teacher_id?: number
     parent: ParentResource
+    is_remote: boolean
+    passport: {
+      series: ?string
+      number: ?string
+    }
     user?: PersonResource
     created_at?: string
   }
@@ -294,7 +303,7 @@ declare global {
     contract_id: number
     sum: number
     date: string
-    method: ClientPaymentMethod
+    method: ContractPaymentMethod
     is_return: boolean
     is_confirmed: boolean
     pko_number: ?number

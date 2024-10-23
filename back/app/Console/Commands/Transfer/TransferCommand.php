@@ -25,9 +25,8 @@ class TransferCommand extends Command
                      'teacher-payments',
                      'teacher-services',
                      'client-payments',
-                     'set-request-client-id',
                      'lessons',
-                     'contract-lessons',
+                     'client-lessons', // самое долгое
                      'reviews',
                      'comments',
                      'passes'

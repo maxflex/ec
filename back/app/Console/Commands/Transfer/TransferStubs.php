@@ -2,9 +2,13 @@
 
 namespace App\Console\Commands\Transfer;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
+/**
+ * Для создания нового файла Transfer
+ * stub заменить на нужную модель
+ */
 class TransferStubs extends Command
 {
     use TransferTrait;

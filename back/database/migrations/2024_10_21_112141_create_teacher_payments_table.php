@@ -14,7 +14,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::dropIfExists('teacher_payments');
         Schema::create('teacher_payments', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('sum');

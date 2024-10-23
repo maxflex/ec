@@ -13,7 +13,6 @@ return new class extends Migration {
         Schema::create('contract_version_program_prices', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('contract_version_program_id'); // Foreign key column
-            // Specifying a shorter name for the foreign key constraint
             $table->foreign('contract_version_program_id', 'contract_version_program_id_foreign')
                 ->references('id')
                 ->on('contract_version_programs');

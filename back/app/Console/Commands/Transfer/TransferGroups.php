@@ -3,8 +3,8 @@
 namespace App\Console\Commands\Transfer;
 
 use App\Enums\Program;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class TransferGroups extends Command
@@ -32,13 +32,13 @@ class TransferGroups extends Command
         foreach ($groups as $g) {
             DB::table('groups')->insert([
                 'id' => $g->id,
-                'program' => Program::getById($g->grade_id, $g->subject_id)->name,
+                'program' => Program::fromOld($g->grade_id, $g->subject_id)->name,
                 'year' => $g->year,
                 'zoom' => $g->zoom_id ? json_encode([
                     'id' => $g->zoom_id,
                     'password' => $g->zoom_password
                 ]) : null,
-                'duration' => $g->duration,
+                'duration' => in_array(intval($g->grade_id), [15, 16]) ? 55 : 125,
                 'created_at' => $g->updated_at,
                 'updated_at' => $g->updated_at,
             ]);

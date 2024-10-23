@@ -1,9 +1,7 @@
 <?php
 
-use App\Enums\Grade;
 use App\Enums\Program;
-use App\Enums\Subject;
-use App\Models\Teacher;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -19,11 +17,15 @@ return new class extends Migration
             $table->id();
             $table->enum(
                 'program',
-                collect(Program::cases())->map(fn ($e) => $e->name)->all()
+                array_column(Program::cases(), 'name')
             )->index();
             $table->unsignedSmallInteger('year');
-            $table->boolean('is_archived')->index()->default(false);
+            $table->unsignedInteger('duration')->nullable();
+            $table->char('letter')->nullable();
+            $table->date('contract_date')->nullable();
+            $table->unsignedSmallInteger('lessons_planned')->nullable();
             $table->json('zoom')->nullable();
+            $table->foreignIdFor(User::class)->nullable()->constrained();
             $table->timestamps();
         });
     }
