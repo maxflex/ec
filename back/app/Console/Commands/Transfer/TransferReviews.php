@@ -45,17 +45,24 @@ class TransferReviews extends Command
                 'created_at' => $r->created_at,
                 'updated_at' => $r->updated_at,
             ]);
-            DB::table('web_reviews')->insert([
-                'id' => $r->id,
-                'client_id' => $r->client_id,
-                'text' => $r->text,
-                'signature' => $r->signature,
-                'rating' => $r->rating,
-                'is_published' => $r->is_published,
-                'user_id' => $userId,
-                'created_at' => $r->created_at,
-                'updated_at' => $r->updated_at,
-            ]);
+            if (
+                $r->type === 'admin'
+                && $r->signature
+                && $r->rating
+            ) {
+                DB::table('web_reviews')->insert([
+                    'id' => $r->id,
+                    'client_id' => $r->client_id,
+                    'text' => $r->text,
+                    'signature' => $r->signature,
+                    'rating' => $r->rating,
+                    'user_id' => $userId,
+                    'created_at' => $r->created_at,
+                    'updated_at' => $r->updated_at,
+                    // 24.10.2024 – осознанно убрали is_published из web_reviews
+                    // 'is_published' => $r->is_published,
+                ]);
+            }
             $bar->advance();
         }
         $bar->finish();
@@ -73,8 +80,8 @@ class TransferReviews extends Command
             ->whereNotNull('r.score')
             ->selectRaw("
                 r.client_id, r.subject_id, r.grade_id, r.signature, r.score, r.max_score,
-                r.is_published, r.teacher_id, rc.text, rc.created_email_id, rc.rating,
-                rc.created_at, rc.updated_at
+                r.teacher_id, rc.text, rc.created_email_id, rc.rating,
+                rc.created_at, rc.updated_at, r.id, rc.type
             ");
     }
 
@@ -85,7 +92,8 @@ class TransferReviews extends Command
     private function getHasAdminButNoFinal()
     {
         $hasAdminButNoFinal = DB::connection('egecrm')->select("
-            select id from reviews r
+            select id 
+            from reviews r
             where exists (
              select 1 from review_comments rc where rc.review_id = r.id and `type` = 'admin'
             ) and not exists (

@@ -19,32 +19,16 @@ return new class extends Migration
             $table->text('text');
             $table->string('signature');
             $table->unsignedSmallInteger('rating');
-            $table->boolean('is_published')->default(false);
             $table->foreignIdFor(User::class)->constrained();
             $table->timestamps();
         });
     }
-    /**
-id
-текст
-client_id
-подпись
-is_published
-rating
-user_id (кто создал)
-created_at
-updated_at
-
-набранный балл 1
-максимальный балл 1
-программа 1
-     */
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('reviews');
+        Schema::dropIfExists('web_reviews');
     }
 };
