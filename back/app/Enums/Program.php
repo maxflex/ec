@@ -260,48 +260,6 @@ enum Program: string
         };
     }
 
-    public static function fromSubject(int $subjectId)
-    {
-        return match ($subjectId) {
-            1 => self::math11,
-            2 => self::phys11,
-            3 => self::chem11,
-            4 => self::bio11,
-            5 => self::inf11,
-            6 => self::rus11,
-            7 => self::lit11,
-            8 => self::soc11,
-            9 => self::his11,
-            10 => self::eng11,
-            11 => self::geo11,
-            12 => self::essay11,
-            13 => self::infSchoolOge,
-            14 => self::physSchoolOge,
-            15 => self::chemSchoolOge,
-            16 => self::bioSchoolOge,
-            17 => self::litSchoolOge,
-            18 => self::engSchoolOge,
-            19 => self::socSchoolOge,
-            20 => self::hisSchoolOge,
-            21 => self::mathProf,
-            22 => self::mathBase,
-            23 => self::math9,
-            24 => self::rus9,
-            25 => self::soc9,
-            26 => self::mathPracticum,
-            27 => self::socPracticum,
-            28 => self::physPracticum,
-            29 => self::chemPracticum,
-            30 => self::bioPracticum,
-            31 => self::infPracticum,
-            32 => self::rusPracticum,
-            33 => self::hisPracticum,
-            34 => self::engPracticum,
-            35 => self::geoPracticum,
-            36 => self::essay9,
-        };
-    }
-
     public function getName()
     {
         return match ($this) {

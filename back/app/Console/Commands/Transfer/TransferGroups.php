@@ -20,13 +20,6 @@ class TransferGroups extends Command
         DB::table('groups')->delete();
         $groups = DB::connection('egecrm')
             ->table('groups')
-            ->selectRaw(<<<SQL
-                groups.*, (
-                    select duration from lessons
-                    where group_id = groups.id
-                    limit 1
-                ) as duration
-            SQL)
             ->get();
         $bar = $this->output->createProgressBar($groups->count());
         foreach ($groups as $g) {

@@ -26,10 +26,13 @@ class TransferCommand extends Command
                      'teacher-services',
                      'client-payments',
                      'lessons',
-                     'client-lessons', // самое долгое
+                     'client-lessons',  // долго
+                     'reports',
                      'reviews',
                      'comments',
-                     'passes'
+                     'passes',
+                     'payment-additionals',
+                     'vacations',
         ] as $command) {
             $this->info(str($command)->ucfirst());
             $this->call("app:transfer:$command");
