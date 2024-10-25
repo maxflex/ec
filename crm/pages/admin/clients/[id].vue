@@ -9,7 +9,7 @@ const tabs = {
   payments: 'платежи',
   examScores: 'баллы на экзаменах',
   grades: 'оценки',
-  reports: 'отчеты',
+  reports: 'отчёты',
   clientReviews: 'отзывы',
   webReviews: 'отзывы на сайте',
   tests: 'тесты',

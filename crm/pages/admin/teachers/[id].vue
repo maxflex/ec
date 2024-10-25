@@ -10,7 +10,7 @@ const tabs = {
   schedule: 'расписание',
   payments: 'платежи',
   balance: 'баланс',
-  reports: 'отчеты',
+  reports: 'отчёты',
   headTeacherReports: 'отчёты кр',
   clientReviews: 'отзывы',
   services: 'допуслуги',

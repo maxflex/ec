@@ -27,7 +27,7 @@ const tableFields: Array<{
 }> = [
   { title: 'проект<br>(занятия)', field: 'lessons_planned' },
   { title: 'начислено<br>(занятия)', field: 'lessons_conducted' },
-  { title: 'начислено<br>(отчеты)', field: 'reports' },
+  { title: 'начислено<br>(отчёты)', field: 'reports' },
   { title: 'начислено<br>(допуслуги)', field: 'teacher_services' },
   { title: 'начислено<br>(итого)', field: 'total' },
   { title: 'выплачено', field: 'teacher_payments' },
