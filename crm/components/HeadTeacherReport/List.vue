@@ -9,32 +9,34 @@ defineEmits<{
 </script>
 
 <template>
-  <v-table hover class="head-teacher-reports">
-    <tbody>
-      <tr
-        v-for="item in items"
-        :id="`head-teacher-report-${item.id}`"
-        :key="item.id"
-        class="cursor-pointer"
-        @click="$emit('edit', item)"
-      >
-        <td v-if="showTeacher" width="180">
-          <UiPerson :item="item.teacher!" />
-        </td>
-        <td width="120">
-          {{ MonthLabel[item.month] }}
-        </td>
-        <td>
-          <div class="text-truncate">
-            {{ item.text }}
-          </div>
-        </td>
-        <td class="text-gray" width="180">
-          {{ formatDateTime(item.created_at!) }}
-        </td>
-      </tr>
-    </tbody>
-  </v-table>
+  <div class="table">
+    <div
+      v-for="item in items"
+      :id="`head-teacher-report-${item.id}`"
+      :key="item.id"
+    >
+      <div class="table-actionss">
+        <v-btn
+          icon="$edit"
+          :size="48"
+          variant="plain"
+          @click="$emit('edit', item)"
+        />
+      </div>
+      <div v-if="showTeacher" style="width: 180px">
+        <UiPerson :item="item.teacher!" />
+      </div>
+      <div style="width: 120px">
+        {{ MonthLabel[item.month] }}
+      </div>
+      <div style="flex: 1" class="text-truncate">
+        {{ item.text }}
+      </div>
+      <div class="text-gray" style="width: 150px; flex: initial">
+        {{ formatDateTime(item.created_at!) }}
+      </div>
+    </div>
+  </div>
 </template>
 
 <style lang="scss">
