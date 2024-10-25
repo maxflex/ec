@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Transfer;
 
+use App\Enums\Exam;
 use App\Enums\Program;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -45,8 +46,9 @@ class TransferReviews extends Command
                 'created_at' => $r->created_at,
                 'updated_at' => $r->updated_at,
             ]);
+
             if (
-                $r->type === 'admin'
+                $r->type === 'final'
                 && $r->signature
                 && $r->rating
             ) {
@@ -61,6 +63,19 @@ class TransferReviews extends Command
                     'updated_at' => $r->updated_at,
                     // 24.10.2024 – осознанно убрали is_published из web_reviews
                     // 'is_published' => $r->is_published,
+                ]);
+            }
+
+            if ($r->score > 0 and $r->max_score > 0) {
+                DB::table('exam_scores')->insert([
+                    'client_id' => $r->client_id,
+                    'year' => $r->year,
+                    'exam' => $this->getExam($r)->value,
+                    'score' => $r->score,
+                    'max_score' => $r->max_score,
+                    'user_id' => $userId,
+                    'created_at' => $r->created_at,
+                    'updated_at' => $r->updated_at,
                 ]);
             }
             $bar->advance();
@@ -81,7 +96,7 @@ class TransferReviews extends Command
             ->selectRaw("
                 r.client_id, r.subject_id, r.grade_id, r.signature, r.score, r.max_score,
                 r.teacher_id, rc.text, rc.created_email_id, rc.rating,
-                rc.created_at, rc.updated_at, r.id, rc.type
+                rc.created_at, rc.updated_at, r.id, rc.type, r.year
             ");
     }
 
@@ -102,5 +117,47 @@ class TransferReviews extends Command
         ");
 
         return array_column($hasAdminButNoFinal, 'id');
+    }
+
+    /**
+     * есть несколько записей, которые нужно обработать
+     * 12/сочинение - 2
+     * 26/МАТ ПРАКТИКУМ – 7
+     * 27/ОБЩ ПРАКТИКУМ – 5
+     */
+    private function getExam($r): Exam
+    {
+        $subject = match ($r->subject_id) {
+            default => 'Math',
+            2 => 'Phys',
+            3 => 'Chem',
+            4 => 'Bio',
+            5 => 'Inf',
+            6 => 'Rus',
+            7 => 'Lit',
+            8 => 'Soc',
+            9 => 'His',
+            10 => 'Eng',
+            11 => 'Geo'
+        };
+
+        switch (intval($r->max_score)) {
+            case 5:
+                $prefix = 'oge';
+                break;
+
+            case 100:
+                $prefix = 'ege';
+                if ($subject === 'Math') {
+                    $subject = 'MathProf';
+                }
+                break;
+
+            // case 20:
+            default:
+                return Exam::egeMathBase;
+        }
+
+        return Exam::from($prefix . $subject);
     }
 }

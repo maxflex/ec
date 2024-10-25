@@ -28,7 +28,7 @@ class Photo extends Model
     public function upload(UploadedFile $file)
     {
         $file = Image::make($file)->fit(300)->stream('jpg');
-        $name = join('/', ['photos', $this->id . ".jpg"]);
+        $name = join('/', ['crm', 'photos', $this->id . ".jpg"]);
         return Storage::put($name, $file);
     }
 
@@ -40,13 +40,13 @@ class Photo extends Model
     {
         $file = Image::make($file)->stream('jpg');
         $fileName = uniqid('instruction_') . ".jpg";
-        Storage::put(join('/', ['photos', $fileName]), $file);
+        Storage::put(join('/', ['crm', 'photos', $fileName]), $file);
         return cdn('photos', $fileName);
     }
 
     public function deleteFromCdn()
     {
-        $name = join('/', ['photos', $this->id . ".jpg"]);
+        $name = join('/', ['crm', 'photos', $this->id . ".jpg"]);
         Storage::delete($name);
     }
 

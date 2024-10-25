@@ -7,6 +7,7 @@ enum Exam: string
     case ogeMath = 'ogeMath';
     case ogePhys = 'ogePhys';
     case ogeChem = 'ogeChem';
+    case ogeBio = 'ogeBio';
     case ogeEng = 'ogeEng';
     case ogeInf = 'ogeInf';
     case ogeRus = 'ogeRus';
@@ -18,6 +19,7 @@ enum Exam: string
     case egeMathProf = 'egeMathProf';
     case egePhys = 'egePhys';
     case egeChem = 'egeChem';
+    case egeBio = 'egeBio';
     case egeEng = 'egeEng';
     case egeInf = 'egeInf';
     case egeRus = 'egeRus';

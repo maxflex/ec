@@ -7,13 +7,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
+/**
+ * delete + uncomment create_web_reviews
+ */
+return new class extends Migration {
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
+        Schema::dropIfExists('exam_scores');
         Schema::create('exam_scores', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Client::class)->constrained();
@@ -27,13 +28,11 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->constrained();
             $table->timestamps();
         });
+        Schema::enableForeignKeyConstraints();
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('exam_scores');
+        Schema::dropIfExists('');
     }
 };

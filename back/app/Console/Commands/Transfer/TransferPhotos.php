@@ -3,8 +3,8 @@
 namespace App\Console\Commands\Transfer;
 
 use App\Models\Photo;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class TransferPhotos extends Command
@@ -18,7 +18,7 @@ class TransferPhotos extends Command
     {
         $oldPhotos = Photo::pluck('id');
         Storage::delete($oldPhotos->map(
-            fn ($id) => "photos/{$id}.jpg"
+            fn($id) => "crm/photos/{$id}.jpg"
         )->all());
         DB::table('photos')->truncate();
         $photos = DB::connection('egecrm')
@@ -30,7 +30,7 @@ class TransferPhotos extends Command
         foreach ($photos as $photo) {
             $file = file_get_contents("https://img.ege-centr.ru/avatar/{$photo->id}_cropped.jpg");
             $id = str()->random(20);
-            Storage::put("photos/{$id}.jpg", $file);
+            Storage::put("crm/photos/{$id}.jpg", $file);
             DB::table('photos')->insert([
                 'id' => $id,
                 'entity_type' => $this->mapEntity($photo->entity_type),
