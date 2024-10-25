@@ -54,39 +54,6 @@ class Client extends Model implements HasTeeth, CanLogin
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * TODO: remove
-     * @return Group[]
-     */
-    public function getGroupsAttribute()
-    {
-        return [];
-//        return Group::whereHas(
-//            'clientGroups',
-//            fn ($q) => $q->whereIn('contract_id', $this->contracts()->pluck('id'))
-//        )->get();
-    }
-
-    /**
-     * TODO: remove
-     * @return array
-     */
-    public function getSwampsAttribute()
-    {
-        return [];
-//        $programs = $this->groups->pluck('program');
-//        $result = [];
-//
-//        foreach ($this->contracts as $contract) {
-//            foreach ($contract->versions->last()->programs as $p) {
-//                if (!$programs->contains($p->program)) {
-//                    $result[] = $p;
-//                }
-//            }
-//        }
-//        return Attribute::make(fn () => $result);
-    }
-
     public function branches(): Attribute
     {
         return Attribute::make(
@@ -95,7 +62,7 @@ class Client extends Model implements HasTeeth, CanLogin
         );
     }
 
-    public function headTeacher()
+    public function headTeacher(): BelongsTo
     {
         return $this->belongsTo(Teacher::class, 'head_teacher_id');
     }

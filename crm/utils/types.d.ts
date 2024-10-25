@@ -110,7 +110,7 @@ declare global {
     contract_versions: ContractVersionResource[]
   }
 
-  type PersonWithPhotoResource = PersonResource & HasPhoto
+  type PersonWithPhotoResource = HasName & HasPhoto
 
   type ResponseErrors = string[]
 
@@ -209,6 +209,7 @@ declare global {
     branches: Branch[]
     birthdate?: string
     head_teacher_id?: number
+    head_teacher?: PersonResource
     parent: ParentResource
     is_remote: boolean
     passport: {

@@ -5,31 +5,27 @@ const { label } = withDefaults(
     label: 'Преподаватель',
   },
 )
-
-const model = defineModel<number | undefined>()
-const teachers = ref<TeacherListResource[]>([])
-const loading = ref(true)
-
-async function loadData() {
-  const { data } = await useHttp<ApiResponse<TeacherListResource>>('teachers')
-  if (data.value) {
-    teachers.value = data.value.data
-  }
-  loading.value = false
-}
-
-onMounted(() => loadData())
+const model = defineModel<number | null>()
+const teachers = useTeachers()
 </script>
 
 <template>
   <UiClearableSelect
-    v-bind="$attrs"
     v-model="model"
+    v-bind="$attrs"
+    :items="teachers"
+    :item-title="formatFullName"
+    item-value="id"
+    :loading="teachers === undefined"
     :label="label"
-    :loading="loading"
-    :items="teachers.map(t => ({
-      value: t.id,
-      title: formatFullName(t),
-    }))"
-  />
+  >
+    <template #item="{ props, item }">
+      <v-list-item v-bind="props" :class="{ 'text-gray': item.raw.status !== 'active' }">
+        <template #prepend />
+        <template #title>
+          {{ item.title }}
+        </template>
+      </v-list-item>
+    </template>
+  </UiClearableSelect>
 </template>

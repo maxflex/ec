@@ -9,12 +9,9 @@ use App\Models\Phone;
 
 class PreviewController extends Controller
 {
-    public function enter(PreviewRequest $request)
+    public function __invoke(PreviewRequest $request)
     {
-        $phone = Phone::query()
-            ->where('entity_id', $request->id)
-            ->where('entity_type', $request->entity_type)
-            ->first();
+        $phone = Phone::where($request->all())->first();
         return [
             'user' => new AuthResource($phone),
             'token' => $phone->createSessionToken(),

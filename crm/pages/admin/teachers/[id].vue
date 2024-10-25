@@ -61,12 +61,7 @@ nextTick(loadData)
           </div>
         </div>
         <div class="panel-actions">
-          <PreviewModeBtn
-            :user="{
-              id: teacher.id,
-              entity_type: EntityTypeValue.teacher,
-            }"
-          />
+          <PreviewMode :teacher-id="teacher.id" />
           <v-btn
             icon="$edit"
             :size="48"

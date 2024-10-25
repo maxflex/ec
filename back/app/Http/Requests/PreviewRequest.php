@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Models\{Client, Teacher, Phone};
+use App\Models\{Client, Teacher};
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Validator;
+
 
 class PreviewRequest extends FormRequest
 {
@@ -27,26 +26,18 @@ class PreviewRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => ['required', 'integer'],
-            'entity_type' => ['required', Rule::in([
-                Client::class,
-                Teacher::class
-            ])]
+            'client_id' => ['required_without:teacher_id', 'exists:clients,id'],
+            'teacher_id' => ['required_without:client_id', 'exists:teachers,id'],
         ];
     }
 
-    public function after(): array
+    protected function passedValidation(): void
     {
-        return [
-            function (Validator $validator) {
-                $phone = Phone::query()
-                    ->where('entity_id', $this->id)
-                    ->where('entity_type', $this->entity_type)
-                    ->first();
-                if ($phone === null) {
-                    $validator->errors()->add('phone', 'нет телефона');
-                }
-            }
-        ];
+        $this->merge([
+            'entity_id' => $this->client_id ?? $this->teacher_id,
+            'entity_type' => $this->client_id ? Client::class : Teacher::class,
+        ]);
+        $this->offsetUnset('client_id');
+        $this->offsetUnset('teacher_id');
     }
 }

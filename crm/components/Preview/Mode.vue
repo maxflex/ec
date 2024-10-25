@@ -1,14 +1,23 @@
 <script setup lang="ts">
-const { user } = defineProps<{ user: AuthResource }>()
+const { clientId, teacherId } = defineProps<{
+  clientId?: number
+  teacherId?: number
+}>()
 const { logIn } = useAuthStore()
 const loading = ref(false)
 
 async function enter() {
   loading.value = true
-  const { data } = await useHttp<TokenResponse>('preview', {
-    method: 'post',
-    body: user,
-  })
+  const { data } = await useHttp<TokenResponse>(
+      `preview`,
+      {
+        method: 'post',
+        body: {
+          client_id: clientId,
+          teacher_id: teacherId,
+        },
+      },
+  )
   if (data.value) {
     const { token, user } = data.value
     logIn(user, token, true)

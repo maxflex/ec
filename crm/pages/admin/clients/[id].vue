@@ -63,19 +63,8 @@ nextTick(loadData)
         </div>
         <div>
           <div>куратор</div>
-          <!-- TODO: подумать, че делать с учителями -->
-          <!-- <div v-if="client.head_teacher">
-            <router-link
-              :to="{
-                name: 'teachers-id',
-                params: { id: client.head_teacher_id },
-              }"
-            >
-              {{ formatName(client.head_teacher) }}
-            </router-link>
-          </div> -->
-          <!-- <div v-else> -->
-          <div>
+          <UiPerson v-if="client.head_teacher" :item="client.head_teacher" />
+          <div v-else>
             не установлено
           </div>
         </div>
@@ -84,12 +73,7 @@ nextTick(loadData)
             :entity-id="client.id"
             entity-type="client"
           />
-          <PreviewModeBtn
-            :user="{
-              id: client.id,
-              entity_type: EntityTypeValue.client,
-            }"
-          />
+          <PreviewMode :client-id="client.id" />
           <v-btn
             icon="$edit"
             :size="48"

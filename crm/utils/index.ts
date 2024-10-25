@@ -286,7 +286,7 @@ export function formatYear(year: Year): string {
 }
 
 export function formatName(
-  person: PersonResource,
+  person: HasName,
   format: NameFormat = 'last-first',
 ): string {
   let name: any[]
