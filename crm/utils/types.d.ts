@@ -59,6 +59,8 @@ declare global {
 
   type Year = keyof typeof YearLabel
 
+  type Month = keyof typeof MonthLabel
+
   type EntityString = keyof typeof EntityTypeValue
 
   type EntityType = keyof typeof EntityTypeLabel
@@ -140,7 +142,8 @@ declare global {
 
   interface AuthResource extends PersonResource, HasPhoto {
     telegram_id: ?string
-    is_call_notifications: boolean
+    is_call_notifications?: boolean
+    is_head_teacher?: boolean
     number: string // phone number
   }
 
@@ -208,7 +211,7 @@ declare global {
   interface ClientResource extends HasName, HasPhoto, HasPhones {
     branches: Branch[]
     birthdate?: string
-    head_teacher_id?: number
+    head_teacher_id: ?number
     head_teacher?: PersonResource
     parent: ParentResource
     is_remote: boolean
@@ -448,6 +451,7 @@ declare global {
     status: TeacherStatus
     subjects: Subject[]
     is_published: boolean
+    is_head_teacher: boolean
     desc?: string
     photo_desc?: string
     passport_series?: string
@@ -1050,6 +1054,15 @@ declare global {
     is_expired: boolean
     request_id: ?number
     user?: PersonResource
+    created_at?: string
+  }
+
+  interface HeadTeacherReportResource {
+    id: number
+    year: Year
+    month: Month
+    text: string
+    teacher?: PersonResource
     created_at?: string
   }
 }

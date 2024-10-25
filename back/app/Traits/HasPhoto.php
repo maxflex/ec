@@ -14,6 +14,6 @@ trait HasPhoto
 
     public function getPhotoUrlAttribute()
     {
-        return optional($this->photo)->url;
+        return $this->photo?->url;
     }
 }

@@ -11,6 +11,7 @@ const modelDefaults: ClientResource = {
   first_name: null,
   last_name: null,
   middle_name: null,
+  head_teacher_id: null,
   branches: [],
   phones: [],
   photo_url: null,

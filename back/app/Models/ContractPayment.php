@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ContractPaymentMethod;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ContractPayment extends Model
 {
@@ -18,12 +19,12 @@ class ContractPayment extends Model
         'is_return' => 'boolean',
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function contract()
+    public function contract(): BelongsTo
     {
         return $this->belongsTo(Contract::class);
     }

@@ -19,10 +19,10 @@ class TeacherController extends Controller
     public function index(Request $request)
     {
         $query = Teacher::query()
-            ->orderByRaw(<<<SQL
+            ->orderByRaw("
                 if(`status` = 'active', 1, 0) desc,
                 concat(last_name, first_name, middle_name) asc
-            SQL);
+            ");
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, TeacherListResource::class);
     }

@@ -138,9 +138,8 @@ a.table-item {
   }
 }
 
-.item-deleted,
-.item-updated {
-  // background: red;
+div.item-deleted,
+div.item-updated {
   &:after {
     content: '';
     position: absolute;
@@ -156,7 +155,14 @@ a.table-item {
   }
 }
 
-.item-deleted:after {
+tr.item-updated > td {
+  animation-name: itemUpdated;
+  animation-timing-function: linear;
+  animation-duration: 2.5s;
+  animation-iteration-count: 1;
+}
+
+div.item-deleted:after {
   animation-name: itemDeleted;
 }
 

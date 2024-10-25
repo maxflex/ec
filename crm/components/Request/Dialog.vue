@@ -150,31 +150,33 @@ defineExpose({ create, edit })
             label="Ответственный"
           />
         </div>
-        <div>
+        <div v-if="itemId">
           <ClientSelector v-model="request.client_id" :items="request.associated_clients" />
         </div>
         <PhoneEditor v-model="request.phones" />
-        <div>
-          <v-text-field
-            disabled
-            :model-value="request.yandex_id"
-            label="Yandex ID"
-          />
-        </div>
-        <div>
-          <v-text-field
-            disabled
-            :model-value="request.google_id"
-            label="Google ID"
-          />
-        </div>
-        <div>
-          <v-text-field
-            disabled
-            :model-value="request.ip"
-            label="IP"
-          />
-        </div>
+        <template v-if="itemId">
+          <div>
+            <v-text-field
+              disabled
+              :model-value="request.yandex_id"
+              label="Yandex ID"
+            />
+          </div>
+          <div>
+            <v-text-field
+              disabled
+              :model-value="request.google_id"
+              label="Google ID"
+            />
+          </div>
+          <div>
+            <v-text-field
+              disabled
+              :model-value="request.ip"
+              label="IP"
+            />
+          </div>
+        </template>
       </div>
     </div>
   </v-dialog>

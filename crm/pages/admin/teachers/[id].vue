@@ -11,12 +11,23 @@ const tabs = {
   payments: 'платежи',
   balance: 'баланс',
   reports: 'отчеты',
+  headTeacherReports: 'отчёты кр',
   clientReviews: 'отзывы',
   services: 'допуслуги',
   instructions: 'инструкции',
 } as const
 
-const selectedTab = ref<keyof typeof tabs>('groups')
+type Tab = keyof typeof tabs
+
+const selectedTab = ref<Tab>('groups')
+
+// вкладка "отчёты КР" только у is_head_teacher
+const availableTabs = computed<Tab[]>(() => {
+  const allTabs = Object.keys(tabs) as Tab[]
+  return teacher.value?.is_head_teacher
+    ? allTabs
+    : allTabs.filter(t => t !== 'headTeacherReports')
+})
 
 async function loadData() {
   const { data } = await useHttp<TeacherResource>(`teachers/${route.params.id}`)
@@ -72,13 +83,13 @@ nextTick(loadData)
       </div>
       <div class="tabs">
         <div
-          v-for="(label, key) in tabs"
-          :key="key"
+          v-for="tab in availableTabs"
+          :key="tab"
           class="tabs-item"
-          :class="{ 'tabs-item--active': selectedTab === key }"
-          @click="selectedTab = key"
+          :class="{ 'tabs-item--active': selectedTab === tab }"
+          @click="selectedTab = tab"
         >
-          {{ label }}
+          {{ tabs[tab] }}
         </div>
       </div>
     </div>
@@ -91,6 +102,7 @@ nextTick(loadData)
     <ClientReviewTab v-else-if="selectedTab === 'clientReviews'" :teacher-id="teacher.id" />
     <InstructionTab v-else-if="selectedTab === 'instructions'" :teacher-id="teacher.id" />
     <ReportTab v-else-if="selectedTab === 'reports'" :teacher-id="teacher.id" />
+    <HeadTeacherReportTab v-else-if="selectedTab === 'headTeacherReports'" :teacher-id="teacher.id" />
     <TeacherPaymentTab v-else-if="selectedTab === 'payments'" :teacher-id="teacher.id" />
     <TeacherServiceTab v-else-if="selectedTab === 'services'" :teacher-id="teacher.id" />
     <Balance v-else :teacher-id="teacher.id" />

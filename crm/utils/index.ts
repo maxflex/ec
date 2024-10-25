@@ -114,6 +114,13 @@ export function currentAcademicYear(): Year {
   return getAcademicYear(today())
 }
 
+/**
+ * Текущий месяц
+ */
+export function curentMonth(): Month {
+  return (getMonth(new Date()) + 1) as Month
+}
+
 function getFiltersKey(tabName: string | null = null) {
   const route = useRoute()
   return [
@@ -215,17 +222,19 @@ export function formatDateTime(dateTime: string | null): string {
 
 export function formatDateMode(date: string, mode: StatsMode) {
   const dateObj = dayjs(date)
-  const month = MonthLabelShort[getMonth(date)]
+  const month = getMonth(date) + 1
+  const monthLabel = MonthLabelShort[month as Month]
   switch (mode) {
-    case 'day': return dateObj.format(`D ${month} YYYY`)
-    case 'month': return dateObj.format(`${month} YYYY`)
+    case 'day': return dateObj.format(`D ${monthLabel} YYYY`)
+    case 'month': return dateObj.format(`${monthLabel} YYYY`)
     case 'year': return dateObj.format('YYYY год')
   }
 }
 
 export function formatTextDate(date: string, year: boolean = false) {
-  const month = getMonth(date)
-  return format(date, `d ${MonthLabelShort[month]}${year ? ' yyyy' : ''}`)
+  const month = getMonth(date) + 1
+  const monthLabel = MonthLabelShort[month as Month]
+  return format(date, `d ${monthLabel}${year ? ' yyyy' : ''}`)
 }
 
 /**

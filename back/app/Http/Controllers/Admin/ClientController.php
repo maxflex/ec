@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 class ClientController extends Controller
 {
     protected $filters = [
-        // 'equals' => ['status'],
+        'equals' => ['status', 'head_teacher_id'],
         'contract' => ['year'],
         'search' => ['q'],
         'request' => ['request_id'],

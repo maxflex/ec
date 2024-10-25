@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\{BalanceController,
     ExamScoreController,
     GradeController,
     GroupController,
+    HeadTeacherReportController,
     InstructionController,
     LessonController,
     MacroController,
@@ -138,5 +139,6 @@ Route::middleware(['auth:crm'])->group(function () {
         'instructions' => InstructionController::class,
         'calls' => CallController::class,
         'passes' => PassController::class,
+        'head-teacher-reports' => HeadTeacherReportController::class,
     ]);
 });

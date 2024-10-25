@@ -48,6 +48,11 @@ class Teacher extends Model implements HasTeeth, CanLogin
         return $this->hasMany(Report::class);
     }
 
+    public function headTeacherReports(): HasMany
+    {
+        return $this->hasMany(HeadTeacherReport::class);
+    }
+
     public function lessons(): HasMany
     {
         return $this->hasMany(Lesson::class);
@@ -183,5 +188,10 @@ class Teacher extends Model implements HasTeeth, CanLogin
         }
 
         $query->whereIn('id', $teacherIds->unique());
+    }
+
+    public function getIsHeadTeacherAttribute(): bool
+    {
+        return Client::where('head_teacher_id', $this->id)->exists();
     }
 }

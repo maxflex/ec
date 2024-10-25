@@ -28,6 +28,7 @@ class TransferCommand extends Command
                      'lessons',
                      'client-lessons',  // долго
                      'reports',
+                     'head-teacher-reports',
                      'reviews',
                      'comments',
                      'passes',

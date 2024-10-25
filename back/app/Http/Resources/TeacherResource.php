@@ -16,9 +16,9 @@ class TeacherResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return array_merge(parent::toArray($request), [
-            'photo_url' => $this->photo_url,
-            'payments' => $this->payments,
+        return extract_fields($this, [
+            'photo_url', 'is_head_teacher', '*'
+        ], [
             'phones' => PhoneListResource::collection($this->phones),
             'user' => new PersonResource($this->user),
         ]);

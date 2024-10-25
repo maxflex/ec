@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Teacher\{BalanceController,
+    ClientController,
     ClientGroupController,
     ClientReviewController,
     GradeController,
     GroupController,
+    HeadTeacherReportController,
     InstructionController,
     LessonController,
     ReportController,
@@ -26,9 +28,11 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::post('sign/{instruction}', 'sign');
     });
     Route::apiResource('instructions', InstructionController::class)->only('index', 'show');
+    Route::apiResource('clients', ClientController::class)->only('index');
     Route::get('reports/lessons', [ReportController::class, 'lessons']);
     Route::apiResources([
         'reports' => ReportController::class,
+        'head-teacher-reports' => HeadTeacherReportController::class,
         'grades' => GradeController::class,
         'client-reviews' => ClientReviewController::class,
     ]);

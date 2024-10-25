@@ -14,6 +14,7 @@ const modelDefaults: TeacherResource = {
   phones: [],
   subjects: [],
   is_published: false,
+  is_head_teacher: false,
   status: 'active',
 }
 
@@ -89,7 +90,7 @@ async function destroy() {
     // emit('deleted', item.value)
     dialog.value = false
     setTimeout(() => (deleting.value = false), 300)
-    useRouter().push({ name: 'teachers' })
+    await useRouter().push({ name: 'teachers' })
   }
 }
 

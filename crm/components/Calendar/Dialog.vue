@@ -67,7 +67,7 @@ function onClick(y: number, m: number, d: number) {
   }
 }
 
-function iterateMonths(y: number): number[] {
+function iterateMonths(y: number): Month[] {
   if (year === undefined) {
     return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   }
@@ -106,7 +106,7 @@ defineExpose({ open })
           >
             <div class="calendar__month-label">
               <span class="text-grey-light">
-                {{ MonthLabel[m - 1] }}
+                {{ MonthLabel[m] }}
                 '{{ y - 2000 }}
               </span>
             </div>

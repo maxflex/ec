@@ -13,6 +13,7 @@ function extract_fields($object, $fields, $merge = []): ?array
     }
     $return = ['id' => $object->id];
     foreach ($fields as $field) {
+        // звёздочка должна быть последним элементом массива
         if ($field === '*') {
             $object = $object->resource ?? $object;
             if (method_exists($object, 'toArray')) {
@@ -70,7 +71,7 @@ function key_by($data, string $field, string $field2 = null, $value = null): arr
 
 function cdn(string $folder, string $file)
 {
-    return "https://cdn.ege-centr.ru/crm/{$folder}/{$file}";
+    return "https://cdn.ege-centr.ru/crm/$folder/$file";
 }
 
 function is_localhost()

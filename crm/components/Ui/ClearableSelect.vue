@@ -1,9 +1,10 @@
 <script setup lang="ts">
 const model = defineModel<any>({ required: true })
+const nullify = model.value === null
 const input = ref()
 
 function clear() {
-  model.value = undefined
+  model.value = nullify ? null : undefined
   nextTick(() => input.value.blur())
 }
 </script>

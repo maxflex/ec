@@ -1,6 +1,5 @@
 <script setup lang="ts">
-const { user } = useAuthStore()
-const entityType = user!.entity_type
+const { isAdmin, isTeacher } = useAuthStore()
 </script>
 
 <template>
@@ -10,9 +9,9 @@ const entityType = user!.entity_type
     </RouterLink>
     <h3>ЕГЭ-Центр</h3>
   </div>
-  <MenuAdmin v-if="entityType === EntityTypeValue.user" />
-  <MenuTeacher v-else-if="entityType === EntityTypeValue.teacher" />
-  <MenuClient v-else />
+  <MenuAdminMenu v-if="isAdmin" />
+  <MenuTeacherMenu v-else-if="isTeacher" />
+  <MenuClientMenu v-else />
 </template>
 
 <style lang="scss">

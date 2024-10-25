@@ -84,6 +84,11 @@ const menu: Menu = [
     to: '/reports',
   },
   {
+    icon: mdiFileDocumentEditOutline,
+    title: 'Отчёты КР',
+    to: '/head-teacher-reports',
+  },
+  {
     icon: mdiStarBoxOutline,
     title: 'Отзывы',
     to: '/client-reviews',
@@ -202,10 +207,7 @@ const menu: Menu = [
 </script>
 
 <template>
-  <v-list
-    nav
-    density="compact"
-  >
+  <v-list nav density="compact">
     <v-list-item :to="{ name: 'search' }">
       <template #prepend>
         <v-icon icon="$search" />
@@ -228,16 +230,8 @@ const menu: Menu = [
         </v-fade-transition>
       </template>
     </v-list-item>
-    <v-list-item
-      v-for="{ title, to, icon } in menu"
-      :key="title"
-      :to="to"
-    >
-      <template #prepend>
-        <v-icon :icon="icon" />
-      </template>
-      {{ title }}
-    </v-list-item>
+
+    <MenuList :items="menu" />
 
     <v-list-item @click="logOut()">
       <template #prepend>
