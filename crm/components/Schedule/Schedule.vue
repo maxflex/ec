@@ -42,7 +42,7 @@ const params = {
   client_id: clientId,
   group_id: groupId,
 }
-const loading = ref(false)
+const loading = ref(true)
 const teeth = ref<Teeth>()
 const lessons = ref<LessonListResource[]>([])
 const events = ref<EventListResource[]>([])
@@ -301,7 +301,7 @@ nextTick(loadData)
         />
         <LessonTeacherItem
           v-else-if="isTeacher"
-          :key="`l-${item.id}`"
+          :key="`lt-${item.id}`"
           :item="item"
           :checkboxes="checkboxes"
           @click="onLessonClick(item)"
