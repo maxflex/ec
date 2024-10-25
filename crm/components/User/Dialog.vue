@@ -119,10 +119,7 @@ defineExpose({ create, edit })
         class="dialog-body"
       >
         <div class="text-center">
-          <AvatarLoader
-            :item="item"
-            entity="user"
-          />
+          <AvatarLoader :item="item" />
         </div>
         <div>
           <v-text-field

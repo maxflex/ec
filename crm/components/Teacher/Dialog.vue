@@ -16,9 +16,18 @@ const modelDefaults: TeacherResource = {
   is_published: false,
   is_head_teacher: false,
   status: 'active',
+  entity_type: EntityTypeValue.teacher,
+  passport: {
+    series: null,
+    number: null,
+    code: null,
+    address: null,
+    issued_by: null,
+  },
 }
 
 const { dialog, width } = useDialog('medium')
+const router = useRouter()
 const teacher = ref<TeacherResource>(modelDefaults)
 const loading = ref(false)
 const saving = ref(false)
@@ -63,7 +72,7 @@ async function save() {
       body: teacher.value,
     })
     if (data.value) {
-      useRouter().push({
+      await router.push({
         name: 'teachers-id',
         params: {
           id: data.value.id,
@@ -90,7 +99,7 @@ async function destroy() {
     // emit('deleted', item.value)
     dialog.value = false
     setTimeout(() => (deleting.value = false), 300)
-    await useRouter().push({ name: 'teachers' })
+    await router.push({ name: 'teachers' })
   }
 }
 
@@ -138,11 +147,7 @@ defineExpose({ create, edit })
       </div>
       <div class="dialog-body">
         <div style="margin-bottom: 40px;">
-          <AvatarLoader
-            :key="teacher.id"
-            entity="teacher"
-            :item="teacher"
-          />
+          <AvatarLoader :key="teacher.id" :item="teacher" />
         </div>
         <div class="double-input">
           <v-text-field
@@ -183,26 +188,26 @@ defineExpose({ create, edit })
 
         <div class="double-input">
           <v-text-field
-            v-model="teacher.passport_series"
+            v-model="teacher.passport.series"
             label="Серия паспорта"
           />
           <v-text-field
-            v-model="teacher.passport_number"
+            v-model="teacher.passport.number"
             label="Номер паспорта"
           />
           <v-text-field
-            v-model="teacher.passport_code"
+            v-model="teacher.passport.code"
             label="Код подразделения"
           />
         </div>
         <v-textarea
-          v-model="teacher.passport_issued_by"
+          v-model="teacher.passport.issued_by"
           label="Паспорт выдан"
           no-resize
           rows="3"
         />
         <v-textarea
-          v-model="teacher.passport_address"
+          v-model="teacher.passport.address"
           label="Адрес регистрации"
           no-resize
           rows="3"

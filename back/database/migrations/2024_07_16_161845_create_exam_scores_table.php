@@ -24,7 +24,7 @@ return new class extends Migration
             );
             $table->unsignedSmallInteger('score');
             $table->unsignedSmallInteger('max_score')->comment('Delete after use');
-            $table->foreignIdFor(User::class)->constrained();
+            $table->foreignIdFor(User::class)->nullable()->constrained();
             $table->timestamps();
         });
     }

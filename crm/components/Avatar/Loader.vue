@@ -2,16 +2,14 @@
 import { mdiCloudUpload } from '@mdi/js'
 import VuePictureCropper, { cropper } from 'vue-picture-cropper'
 
-const { entity, item, size } = withDefaults(
-  defineProps<{
-    entity: Extract<EntityString, 'client' | 'teacher' | 'user'>
-    item: PersonResource & HasPhoto
-    size?: number
-  }>(),
-  {
-    size: 150,
-  },
-)
+interface Props {
+  item: PersonWithPhotoResource
+  size?: number
+}
+
+const { item, size } = withDefaults(defineProps<Props>(), {
+  size: 150,
+})
 
 const { dialog, width, transition } = useDialog('medium')
 const saving = ref(false)
@@ -63,7 +61,7 @@ async function save() {
   }
   const formData = new FormData()
   formData.append('photo', blob)
-  formData.append('entity_type', EntityTypeValue[entity])
+  formData.append('entity_type', item.entity_type)
   formData.append('entity_id', String(item.id))
   const { data, error } = await useHttp<HasPhoto>('photos', {
     method: 'post',

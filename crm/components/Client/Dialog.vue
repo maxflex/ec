@@ -16,6 +16,7 @@ const modelDefaults: ClientResource = {
   phones: [],
   photo_url: null,
   is_remote: false,
+  entity_type: EntityTypeValue.client,
   passport: {
     series: null,
     number: null,
@@ -132,11 +133,7 @@ defineExpose({ create, edit })
             Ученик
           </div> -->
         <div style="margin-bottom: 49px;">
-          <AvatarLoader
-            :key="client.id"
-            entity="client"
-            :item="client"
-          />
+          <AvatarLoader :key="client.id" :item="client" />
         </div>
         <div class="double-input">
           <v-text-field

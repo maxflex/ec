@@ -16,6 +16,7 @@ class ClientResource extends JsonResource
             'birthdate', 'head_teacher_id', 'photo_url', 'created_at',
             'passport', 'is_remote'
         ], [
+            'entity_type' => Client::class,
             'head_teacher' => new PersonResource($this->headTeacher),
             'user' => new PersonResource($this->user),
             'parent' => new ParentResource($this->parent),

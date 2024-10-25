@@ -19,13 +19,13 @@ class Teacher extends Model implements HasTeeth, CanLogin
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'status', 'subjects',
-        'so', 'desc', 'photo_desc', 'passport_series', 'passport_number',
-        'passport_address', 'passport_code', 'passport_issued_by', 'is_published'
+        'so', 'desc', 'photo_desc', 'passport', 'is_published'
     ];
 
     protected $casts = [
         'status' => TeacherStatus::class,
         'is_published' => 'bool',
+        'passport' => 'array',
     ];
 
     public function payments(): HasMany
@@ -193,5 +193,16 @@ class Teacher extends Model implements HasTeeth, CanLogin
     public function getIsHeadTeacherAttribute(): bool
     {
         return Client::where('head_teacher_id', $this->id)->exists();
+    }
+
+    public function getPassportAttribute($value)
+    {
+        return $value === null ? [
+            'series' => null,
+            'number' => null,
+            'address' => null,
+            'code' => null,
+            'issued_by' => null,
+        ] : json_decode($value);
     }
 }

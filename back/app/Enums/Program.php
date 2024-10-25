@@ -127,6 +127,11 @@ enum Program: string
      */
     public static function fromOld(int $gradeId, int $subjectId): self
     {
+        // онлайн
+        if ($gradeId === 20) {
+            return self::rusPracticum;
+        }
+
         $gradeSubject = join('-', [$gradeId, $subjectId]);
         return match ($gradeSubject) {
             '9-1' => self::math9,

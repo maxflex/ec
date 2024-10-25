@@ -97,22 +97,30 @@ declare global {
 
   type NameFormat = 'last-first' | 'full' | 'initials'
 
+  interface HasPhoto {
+    photo_url: ?string
+  }
+
+  interface HasPhones {
+    phones: PhoneListResource[]
+  }
+
   interface HasName {
-    id: number
     first_name: ?string
     last_name: ?string
     middle_name: ?string
   }
 
   interface PersonResource extends HasName {
+    id: number
     entity_type: EntityType
   }
+
+  type PersonWithPhotoResource = PersonResource & HasPhoto
 
   interface ClientWithContractsResource extends PersonResource {
     contract_versions: ContractVersionResource[]
   }
-
-  type PersonWithPhotoResource = HasName & HasPhoto
 
   type ResponseErrors = string[]
 
@@ -132,15 +140,7 @@ declare global {
     password: string
   }
 
-  interface HasPhoto {
-    photo_url: ?string
-  }
-
-  interface HasPhones {
-    phones: PhoneListResource[]
-  }
-
-  interface AuthResource extends PersonResource, HasPhoto {
+  interface AuthResource extends PersonWithPhotoResource {
     telegram_id: ?string
     is_call_notifications?: boolean
     is_head_teacher?: boolean
@@ -193,6 +193,7 @@ declare global {
   }
 
   interface ParentResource extends HasName, HasPhones {
+    id: number
     passport: {
       series: ?string
       number: ?string
@@ -208,7 +209,7 @@ declare global {
     created_at: string
   }
 
-  interface ClientResource extends HasName, HasPhoto, HasPhones {
+  interface ClientResource extends PersonWithPhotoResource, HasPhones {
     branches: Branch[]
     birthdate?: string
     head_teacher_id: ?number
@@ -446,7 +447,7 @@ declare global {
     created_at: string
   }
 
-  interface TeacherResource extends HasName, HasPhoto {
+  interface TeacherResource extends PersonWithPhotoResource {
     phones: PhoneListResource[]
     status: TeacherStatus
     subjects: Subject[]
@@ -454,11 +455,13 @@ declare global {
     is_head_teacher: boolean
     desc?: string
     photo_desc?: string
-    passport_series?: string
-    passport_number?: string
-    passport_address?: string
-    passport_code?: string
-    passport_issued_by?: string
+    passport: {
+      series: ?string
+      number: ?string
+      address: ?string
+      code: ?string
+      issued_by: ?string
+    }
     so?: number
     created_at?: string
     user?: PersonResource
@@ -501,7 +504,7 @@ declare global {
     items: BalanceItem[]
   }
 
-  interface UserResource extends PersonResource, HasPhoto {
+  interface UserResource extends PersonWithPhotoResource {
     is_active: boolean
     is_call_notifications: boolean
     phones: PhoneListResource[]
@@ -991,7 +994,7 @@ declare global {
     person?: PersonResource
   }
 
-  interface SearchResultResource extends PersonResource, HasPhoto, HasPhones {
+  interface SearchResultResource extends PersonWithPhotoResource, HasPhones {
     entity_type: keyof typeof EntityTypeLabel
     contract_versions?: ContractVersionResource[]
     client_id?: number

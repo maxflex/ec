@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('text');
             $table->string('signature');
             $table->unsignedSmallInteger('rating');
-            $table->foreignIdFor(User::class)->constrained();
+            $table->foreignIdFor(User::class)->nullable()->constrained();
             $table->timestamps();
         });
     }

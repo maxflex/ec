@@ -33,29 +33,25 @@ class TransferReviews extends Command
 
         $bar = $this->output->createProgressBar($reviews->count());
         foreach ($reviews as $r) {
-            $program = Program::fromOld($r->grade_id, $r->subject_id)->name;
+            $program = Program::fromOld($r->grade_id, $r->subject_id)->value;
             $userId = $this->getUserId($r->created_email_id);
             DB::table('client_reviews')->insert([
                 'id' => $r->id,
                 'client_id' => $r->client_id,
                 'teacher_id' => $r->teacher_id,
                 'program' => $program,
-                'text' => $r->text,
+                'text' => $r->text ?? '',
                 'rating' => $r->rating,
                 'user_id' => $userId,
                 'created_at' => $r->created_at,
                 'updated_at' => $r->updated_at,
             ]);
 
-            if (
-                $r->type === 'final'
-                && $r->signature
-                && $r->rating
-            ) {
+            if ($r->type === 'final' && $r->signature) {
                 DB::table('web_reviews')->insert([
                     'id' => $r->id,
                     'client_id' => $r->client_id,
-                    'text' => $r->text,
+                    'text' => $r->text ?? '',
                     'signature' => $r->signature,
                     'rating' => $r->rating,
                     'user_id' => $userId,
@@ -89,10 +85,6 @@ class TransferReviews extends Command
             ->table('reviews', 'r')
             ->join('review_comments as rc', 'rc.review_id', '=', 'r.id')
             ->where('rc.rating', '>', 0)
-            ->where('r.grade_id', '<>', 20) // пропускаем онлайн
-            ->whereNotNull('rc.text')
-            ->whereNotNull('rc.created_email_id')
-            ->whereNotNull('r.score')
             ->selectRaw("
                 r.client_id, r.subject_id, r.grade_id, r.signature, r.score, r.max_score,
                 r.teacher_id, rc.text, rc.created_email_id, rc.rating,

@@ -19,6 +19,7 @@ class TeacherResource extends JsonResource
         return extract_fields($this, [
             'photo_url', 'is_head_teacher', '*'
         ], [
+            'entity_type' => Teacher::class,
             'phones' => PhoneListResource::collection($this->phones),
             'user' => new PersonResource($this->user),
         ]);
