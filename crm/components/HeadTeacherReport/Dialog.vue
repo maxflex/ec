@@ -51,9 +51,12 @@ async function destroy() {
     return
   }
   deleting.value = true
-  await useHttp(`head-teacher-reports/${item.value.id}`, {
-    method: 'delete',
-  })
+  await useHttp(
+      `head-teacher-reports/${item.value.id}`,
+      {
+        method: 'delete',
+      },
+  )
   emit('deleted', item.value)
   dialog.value = false
   deleting.value = false
@@ -71,9 +74,12 @@ defineExpose({ edit, create })
   <v-dialog v-model="dialog" :width="width">
     <div class="dialog-wrapper">
       <div class="dialog-header">
-        <template v-if="isEditMode">
+        <div v-if="isEditMode">
           Редактирование отчёта
-        </template>
+          <div class="dialog-subheader">
+            {{ formatDateTime(item.created_at!) }}
+          </div>
+        </div>
         <template v-else>
           Создать отчёт
         </template>
