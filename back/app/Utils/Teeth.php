@@ -27,7 +27,7 @@ class Teeth
                 TIME_TO_SEC(`time`) as `start`,
                 TIME_TO_SEC(`time` + INTERVAL 125 MINUTE) as `end`
             SQL)
-            ->groupBy('weekday', 'time', 'duration')
+            ->groupBy('weekday', 'time')
             ->get();
 
         $teeth = [];
