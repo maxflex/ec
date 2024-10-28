@@ -7,6 +7,9 @@ use App\Enums\ContractPaymentMethod;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Client payments & contract payments
+ */
 class TransferClientPayments extends Command
 {
     use TransferTrait;

@@ -15,7 +15,7 @@ class User extends Authenticatable implements CanLogin
     use HasName, HasPhones, HasPhoto, RelationSyncable;
 
     protected $fillable = [
-        'first_name', 'last_name', 'middle_name',
+        'first_name', 'last_name',
         'is_active', 'is_call_notifications'
     ];
 

@@ -146,15 +146,6 @@ defineExpose({ create, edit })
             :items="selectItems(ProgramLabel)"
           />
         </div>
-        <div>
-          <v-text-field
-            v-model="group.duration"
-            label="Длительность занятия"
-            type="number"
-            hide-spin-buttons
-            suffix="минут"
-          />
-        </div>
         <div class="double-input">
           <v-text-field
             v-model="group.zoom.id"

@@ -30,23 +30,7 @@ enum Direction: string
 
         // Проходим по каждой программе и определяем ее направление
         foreach ($programs as $program) {
-            $str = str($program->value);
-
-            $direction = match (true) {
-                $str->endsWith('Ext') => Direction::external,
-                $str->endsWith('School8') => Direction::school8,
-                $str->endsWith('School9') => Direction::school9,
-                $str->endsWith('Oge') => Direction::school9,
-                $str->endsWith('School10') => Direction::school10,
-                $str->endsWith('School11') => Direction::school11,
-                $str->endsWith('Practicum') => Direction::practicum,
-                $str->endsWith('9') => Direction::courses9,
-                $str->endsWith('10') => Direction::courses10,
-                $str->endsWith('11') => Direction::courses11,
-                // oge - 9 class school
-                // practicum – new direction
-                default => null,
-            };
+            $direction = self::fromProgram($program);
 
             if ($direction && !in_array($direction, $directions)) {
                 $directions[] = $direction;
@@ -54,5 +38,24 @@ enum Direction: string
         }
 
         return $directions;
+    }
+
+    public static function fromProgram(Program $program): ?Direction
+    {
+        $str = str($program->value);
+
+        return match (true) {
+            $str->endsWith('Ext') => Direction::external,
+            $str->endsWith('School8') => Direction::school8,
+            $str->endsWith('School9') => Direction::school9,
+            $str->endsWith('Oge') => Direction::school9,
+            $str->endsWith('School10') => Direction::school10,
+            $str->endsWith('School11') => Direction::school11,
+            $str->endsWith('Practicum') => Direction::practicum,
+            $str->endsWith('9') => Direction::courses9,
+            $str->endsWith('10') => Direction::courses10,
+            $str->endsWith('11') => Direction::courses11,
+            default => null,
+        };
     }
 }

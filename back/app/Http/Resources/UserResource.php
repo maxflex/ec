@@ -2,9 +2,13 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin User
+ */
 class UserResource extends JsonResource
 {
     /**
@@ -15,7 +19,7 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'first_name', 'last_name', 'middle_name', 'created_at',
+            'first_name', 'last_name', 'created_at',
             'photo_url', 'is_active', 'is_call_notifications'
         ], [
             'phones' => PhoneListResource::collection($this->phones)

@@ -10,6 +10,9 @@ class Teeth
     const MIN_SECONDS = 37200; // SEC_TO_TIME = 10:20
     const MAX_SECONDS = 74400; // SEC_TO_TIME = 20:40
 
+    /**
+     * TODO: 125 минут – group duration
+     */
     public static function get(Builder $lessonsQuery, int $year): object
     {
         $lessons = $lessonsQuery
@@ -20,9 +23,9 @@ class Teeth
             ->selectRaw(<<<SQL
                 DAYOFWEEK(`date`) as `weekday`,
                 `time`,
-                `time` + interval g.duration minute as `t_end`,
+                `time` + INTERVAL 125 MINUTE as `t_end`,
                 TIME_TO_SEC(`time`) as `start`,
-                TIME_TO_SEC(`time` + INTERVAL g.duration MINUTE) as `end`
+                TIME_TO_SEC(`time` + INTERVAL 125 MINUTE) as `end`
             SQL)
             ->groupBy('weekday', 'time', 'duration')
             ->get();

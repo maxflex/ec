@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\HasTeeth;
+use App\Enums\Direction;
 use App\Enums\LessonStatus;
 use App\Enums\Program;
 use App\Utils\Teeth;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Group extends Model implements HasTeeth
 {
     protected $fillable = [
-        'duration', 'program', 'year', 'zoom',
+        'program', 'year', 'zoom',
     ];
 
     protected $casts = [
@@ -114,5 +115,22 @@ class Group extends Model implements HasTeeth
         }
 
         return Teacher::whereIn('id', $ids)->get()->all();
+    }
+
+    /**
+     * Всего 2 варианта - 125 и 55 минут (8-9 классы школа)
+     */
+    public function getDurationAttribute(): int
+    {
+        $direction = Direction::fromProgram($this->program);
+
+        if (in_array($direction, [
+            Direction::school8,
+            Direction::school9,
+        ])) {
+            return 55;
+        }
+
+        return 125;
     }
 }

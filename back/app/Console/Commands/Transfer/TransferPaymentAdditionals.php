@@ -73,7 +73,6 @@ class TransferPaymentAdditionals extends Command
                 'letter' => 'X',
                 'program' => $program->value,
                 'year' => $d->year,
-                'duration' => 125,
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);

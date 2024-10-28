@@ -55,7 +55,7 @@ class TransferContracts extends Command
                     'contract_id' => $cv->contract_id,
                     'is_active' => $isActive,
                     'date' => $cv->date,
-                    'sum' => $cv->sum,
+                    'sum' => $this->getDiscountedSum($cv),
                     'created_at' => $cv->created_at,
                     'updated_at' => $cv->updated_at,
                 ]);
@@ -85,5 +85,13 @@ class TransferContracts extends Command
         }
         $bar->finish();
         Schema::enableForeignKeyConstraints();
+    }
+
+    private function getDiscountedSum($cv)
+    {
+        if ($cv->discount > 0) {
+            return round($cv->sum - ($cv->sum * ($cv->discount / 100)));
+        }
+        return $cv->sum;
     }
 }

@@ -20,7 +20,6 @@ return new class extends Migration
                 array_column(Program::cases(), 'name')
             )->index();
             $table->unsignedSmallInteger('year');
-            $table->unsignedInteger('duration')->nullable();
             $table->char('letter')->nullable();
             $table->date('contract_date')->nullable();
             $table->unsignedSmallInteger('lessons_planned')->nullable();

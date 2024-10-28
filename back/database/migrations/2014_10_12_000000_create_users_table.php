@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
-            $table->string('middle_name')->nullable();
             $table->boolean('is_active')->index()->default(false);
             $table->boolean('is_call_notifications')->default(false);
             $table->timestamps();

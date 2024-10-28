@@ -7,6 +7,7 @@ const modelDefaults: UserResource = {
   first_name: null,
   last_name: null,
   middle_name: null,
+  entity_type: EntityTypeValue.user,
   is_active: false,
   is_call_notifications: false,
   photo_url: null,
@@ -131,12 +132,6 @@ defineExpose({ create, edit })
           <v-text-field
             v-model="item.first_name"
             label="Имя"
-          />
-        </div>
-        <div>
-          <v-text-field
-            v-model="item.middle_name"
-            label="Отчество"
           />
         </div>
         <PhoneEditor v-model="item.phones" />

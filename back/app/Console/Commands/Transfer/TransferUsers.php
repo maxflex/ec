@@ -26,7 +26,6 @@ class TransferUsers extends Command
                 'id' => $admin->id,
                 'first_name' => $this->nullify($admin->first_name),
                 'last_name' => $this->nullify($admin->last_name),
-                'middle_name' => $this->nullify($admin->middle_name),
                 'created_at' => $admin->created_at,
                 'updated_at' => now(),
             ]);

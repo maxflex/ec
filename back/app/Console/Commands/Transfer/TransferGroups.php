@@ -31,7 +31,8 @@ class TransferGroups extends Command
                     'id' => $g->zoom_id,
                     'password' => $g->zoom_password
                 ]) : null,
-                'duration' => in_array(intval($g->grade_id), [15, 16]) ? 55 : 125,
+                'contract_date' => $g->contract_date,
+                'lessons_planned' => $g->lessons_planned,
                 'created_at' => $g->updated_at,
                 'updated_at' => $g->updated_at,
             ]);

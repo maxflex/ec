@@ -346,7 +346,6 @@ declare global {
     id: number
     program?: Program
     year: Year
-    duration?: number
     zoom: Zoom | null
     teachers: PersonResource[]
     teeth?: Teeth
