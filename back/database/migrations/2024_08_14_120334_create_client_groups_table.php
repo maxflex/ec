@@ -16,7 +16,8 @@ return new class extends Migration {
             $table->id();
             $table->foreignIdFor(ContractVersionProgram::class)->constrained();
             $table->foreignIdFor(Group::class)->constrained();
-            $table->unique(['contract_version_program_id', 'group_id']);
+//            временно выключили. TODO: включить!
+//            $table->unique(['contract_version_program_id', 'group_id']);
         });
     }
 

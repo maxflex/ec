@@ -3,9 +3,9 @@
 namespace App\Console\Commands\Transfer;
 
 use App\Enums\ClientLessonStatus;
-use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class TransferClientLessons extends Command
 {
@@ -16,6 +16,7 @@ class TransferClientLessons extends Command
 
     public function handle()
     {
+        Schema::disableForeignKeyConstraints();
         DB::table('client_lessons')->delete();
         $items = DB::connection('egecrm')
             ->table('lesson_contracts', 'lc')
@@ -26,25 +27,23 @@ class TransferClientLessons extends Command
         $bar = $this->output->createProgressBar($items->count());
         foreach ($items as $item) {
             $status = $this->getStatus($item);
-            try {
-                DB::table('client_lessons')->insert([
-                    'lesson_id' => $item->lesson_id,
-                    'contract_version_program_id' => $this->getContractVersionProgramId(
-                        $item->contract_id,
-                        $item->grade_id,
-                        $item->subject_id
-                    ),
-                    'price' => $item->price,
-                    'status' => $status->name,
-                    'minutes_late' => $status === ClientLessonStatus::late && $item->late ? $item->late : null,
-                    'is_remote' => $item->is_remote,
-                ]);
-            } catch (Exception $e) {
-                // бывает unique exception (по одному contract_version_program_id в двух одинаковых lesson_id)
-            }
+            DB::table('client_lessons')->insert([
+                'lesson_id' => $item->lesson_id,
+                'contract_version_program_id' => $this->getContractVersionProgramId(
+                    $item->contract_id,
+                    $item->grade_id,
+                    $item->subject_id
+                ),
+                'price' => $item->price,
+                'status' => $status->name,
+                'minutes_late' => $status === ClientLessonStatus::late && $item->late ? $item->late : null,
+                'is_remote' => $item->is_remote,
+            ]);
+            // бывает unique exception (по одному contract_version_program_id в двух одинаковых lesson_id)
             $bar->advance();
         }
         $bar->finish();
+        Schema::enableForeignKeyConstraints();
     }
 
     private function getStatus($item): ClientLessonStatus

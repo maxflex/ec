@@ -25,7 +25,9 @@ return new class extends Migration {
             $table->json('scores')->nullable()->default(null);
             $table->unsignedInteger('minutes_late')->nullable();
             $table->boolean('is_remote')->default(false);
-            $table->unique(['contract_version_program_id', 'lesson_id']);
+
+//            временно выключили. TODO: включить!
+//            $table->unique(['contract_version_program_id', 'lesson_id']);
         });
     }
 
