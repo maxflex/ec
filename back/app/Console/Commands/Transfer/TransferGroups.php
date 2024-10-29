@@ -25,7 +25,7 @@ class TransferGroups extends Command
         foreach ($groups as $g) {
             DB::table('groups')->insert([
                 'id' => $g->id,
-                'program' => Program::fromOld($g->grade_id, $g->subject_id)->name,
+                'program' => Program::fromOld($g->grade_id, $g->subject_id),
                 'year' => $g->year,
                 'zoom' => $g->zoom_id ? json_encode([
                     'id' => $g->zoom_id,

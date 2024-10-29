@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Transfer;
 
+use App\Utils\MigrationError;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
 
@@ -13,6 +14,7 @@ class TransferCommand extends Command
     public function handle()
     {
         Schema::disableForeignKeyConstraints();
+        MigrationError::table()->truncate();
         foreach ([
                      'users',
                      'clients',

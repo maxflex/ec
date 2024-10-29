@@ -17,7 +17,9 @@ class TransferLessons extends Command
     {
         DB::table('lessons')->delete();
         $lessons = DB::connection('egecrm')
-            ->table('lessons')
+            ->table('lessons', 'l')
+            ->join('groups as g', 'g.id', '=', 'l.group_id')
+            ->selectRaw('l.*, if(g.is_free, 1, l.is_free) as is_free')
             ->get();
         $bar = $this->output->createProgressBar($lessons->count());
         foreach ($lessons as $l) {

@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Transfer;
 
 use App\Enums\Program;
+use App\Utils\MigrationError;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +16,7 @@ class TransferReports extends Command
 
     public function handle()
     {
-        $noGradeId = [];
+        MigrationError::table()->where('new_table', 'reports')->delete();
         DB::table('reports')->delete();
         $items = DB::connection('egecrm')
             ->table('reports', 'r')
@@ -39,15 +40,14 @@ class TransferReports extends Command
         $bar = $this->output->createProgressBar($items->count());
         foreach ($items as $r) {
             $gradeId = $r->grade_id ?? $r->contract_grade_id;
-            if (!$gradeId) {
-                $noGradeId[] = $r->id;
-                continue;
-            }
-            DB::table('reports')->insert([
+            $program = $gradeId
+                ? Program::fromOld($gradeId, $r->subject_id)
+                : Program::izlOther;
+            $newId = DB::table('reports')->insertGetId([
                 'teacher_id' => $r->teacher_id,
                 'client_id' => $r->client_id,
                 'year' => $r->year,
-                'program' => Program::fromOld($gradeId, $r->subject_id),
+                'program' => $program,
                 'homework_comment' => $r->homework_comment,
                 'cognitive_ability_comment' => $r->learning_ability_comment,
                 'knowledge_level_comment' => $r->knowledge_comment,
@@ -60,13 +60,21 @@ class TransferReports extends Command
                 'created_at' => $r->created_at,
                 'updated_at' => $r->updated_at,
             ]);
+            if (!$gradeId) {
+                MigrationError::create(
+                    sprintf(
+                        'Не удалось определить grade_id для отчёта %d, установлена программа "%s"',
+                        $newId,
+                        $program->getName(),
+                    ),
+                    'reports',
+                    'reports',
+                    $newId,
+                    $r->id,
+                );
+            }
             $bar->advance();
         }
         $bar->finish();
-
-        if (count($noGradeId)) {
-            $this->line(PHP_EOL);
-            $this->error(implode(", ", $noGradeId));
-        }
     }
 }

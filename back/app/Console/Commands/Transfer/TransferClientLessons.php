@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Transfer;
 
 use App\Enums\ClientLessonStatus;
+use App\Utils\MigrationError;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -16,6 +17,7 @@ class TransferClientLessons extends Command
 
     public function handle()
     {
+        MigrationError::table()->where('old_table', 'lesson_contracts')->delete();
         Schema::disableForeignKeyConstraints();
         DB::table('client_lessons')->delete();
         $items = DB::connection('egecrm')
@@ -27,18 +29,33 @@ class TransferClientLessons extends Command
         $bar = $this->output->createProgressBar($items->count());
         foreach ($items as $item) {
             $status = $this->getStatus($item);
-            DB::table('client_lessons')->insert([
+            $contractVersionProgram = $this->getContractVersionProgram(
+                $item->contract_id,
+                $item->grade_id,
+                $item->subject_id
+            );
+            $newId = DB::table('client_lessons')->insertGetId([
                 'lesson_id' => $item->lesson_id,
-                'contract_version_program_id' => $this->getContractVersionProgramId(
-                    $item->contract_id,
-                    $item->grade_id,
-                    $item->subject_id
-                ),
-                'price' => $item->price,
+                'contract_version_program_id' => $contractVersionProgram->id,
+                'price' => $item->price, // is_free здесь уже правильно учтено
                 'status' => $status->name,
                 'minutes_late' => $status === ClientLessonStatus::late && $item->late ? $item->late : null,
                 'is_remote' => $item->is_remote,
             ]);
+            if ($contractVersionProgram->error) {
+                MigrationError::create(
+                    sprintf(
+                        'Не удалось получить contract_version_program_id для договора %d (grade_id: %d, subject_id: %d)',
+                        $item->contract_id,
+                        $item->grade_id,
+                        $item->subject_id,
+                    ),
+                    'client_lessons',
+                    'lesson_contracts',
+                    $newId,
+                    $item->id,
+                );
+            }
             // бывает unique exception (по одному contract_version_program_id в двух одинаковых lesson_id)
             $bar->advance();
         }

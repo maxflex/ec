@@ -33,7 +33,7 @@ class TransferReviews extends Command
 
         $bar = $this->output->createProgressBar($reviews->count());
         foreach ($reviews as $r) {
-            $program = Program::fromOld($r->grade_id, $r->subject_id)->value;
+            $program = Program::fromOld($r->grade_id, $r->subject_id);
             $userId = $this->getUserId($r->created_email_id);
             DB::table('client_reviews')->insert([
                 'id' => $r->id,

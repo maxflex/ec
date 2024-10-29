@@ -16,7 +16,7 @@ trait TransferTrait
     // const ADMIN = 'App\\Models\\Admin\\Admin';
     // const TEACHER = 'App\\Models\\Teacher';
 
-    protected function getUserId($createdEmailId): int | null
+    protected function getUserId($createdEmailId): ?int
     {
         if (!$createdEmailId) {
             return null;
@@ -40,7 +40,7 @@ trait TransferTrait
             return null;
         }
         $text = trim($text);
-        return $text ? $text : null;
+        return $text ?: null;
     }
 
     protected function mapEnum(string | null $commaSeparated, string $enumClass): string | null
@@ -66,20 +66,30 @@ trait TransferTrait
         };
     }
 
-    protected function getContractVersionProgramId(
+    /**
+     * @return object{id: int, error: bool}
+     */
+    protected function getContractVersionProgram(
         int $contractId,
         int $gradeId,
-        int $subjectId
-    ): int
+        int $subjectId,
+    ): object
     {
-//        dump([$contractId, $gradeId, $subjectId]);
         $program = Program::fromOld($gradeId, $subjectId);
-        return ContractVersion::query()
+        $programs = ContractVersion::query()
             ->where('contract_id', $contractId)
             ->active()
             ->first()
-            ->programs()
-            ->where('program', $program)
-            ->value('id') ?? 0;
+            ->programs;
+        $result = $programs->where('program', $program);
+
+        return $result->isNotEmpty()
+            ? (object)[
+                'id' => $result->value('id'),
+                'error' => false
+            ] : (object)[
+                'id' => $programs->value('id') ?? 0,
+                'error' => true
+            ];
     }
 }

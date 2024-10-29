@@ -8,6 +8,7 @@ use App\Enums\Program;
 use App\Models\Contract;
 use App\Models\Group;
 use App\Models\Lesson;
+use App\Utils\MigrationError;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -24,6 +25,7 @@ class TransferPaymentAdditionals extends Command
 
     public function handle()
     {
+        MigrationError::table()->where('old_table', 'payment_additionals')->delete();
         $subjects = [
             "МАТ" => 1,
             "ФИЗ" => 2,
@@ -71,7 +73,7 @@ class TransferPaymentAdditionals extends Command
 
             $groupId = DB::table('groups')->insertGetId([
                 'letter' => 'X',
-                'program' => $program->value,
+                'program' => $program,
                 'year' => $d->year,
                 'created_at' => $now,
                 'updated_at' => $now,
@@ -114,18 +116,33 @@ class TransferPaymentAdditionals extends Command
                     $contract = Contract::where('client_id', $clientLesson->entity_id)
                         ->where('year', $clientLesson->year)
                         ->firstOrFail();
-                    $contractVersionProgramId = $this->getContractVersionProgramId(
+                    $contractVersionProgram = $this->getContractVersionProgram(
                         $contract->id,
                         $gradeId,
                         $subjectId
                     );
-                    DB::table('client_lessons')->insert([
-                        'contract_version_program_id' => $contractVersionProgramId,
+                    $newId = DB::table('client_lessons')->insertGetId([
+                        'contract_version_program_id' => $contractVersionProgram->id,
                         'lesson_id' => $lessonId,
                         'price' => $clientLesson->sum,
                         'status' => ClientLessonStatus::present->value,
                         'scores' => null,
                     ]);
+
+                    if ($contractVersionProgram->error) {
+                        MigrationError::create(
+                            sprintf(
+                                'Не удалось получить contract_version_program_id для договора %d (grade_id: %d, subject_id: %d)',
+                                $contract->id,
+                                $gradeId,
+                                $subjectId
+                            ),
+                            'client_lessons',
+                            'payment_additionals',
+                            $newId,
+                            $clientLesson->id,
+                        );
+                    }
                 }
             }
             $bar->advance();
