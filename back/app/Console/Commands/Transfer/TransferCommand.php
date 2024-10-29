@@ -32,9 +32,9 @@ class TransferCommand extends Command
                      'reports',
                      'head-teacher-reports',
                      'reviews',
+                     'payment-additionals',
                      'comments',
                      'passes',
-                     'payment-additionals',
                      'vacations',
         ] as $command) {
             $this->info(str($command)->ucfirst());

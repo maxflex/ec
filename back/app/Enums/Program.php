@@ -1463,6 +1463,11 @@ enum Program: string
         };
     }
 
+    public function fromSubjectId(int $subjectId)
+    {
+
+    }
+
     public function getName()
     {
         return match ($this) {
