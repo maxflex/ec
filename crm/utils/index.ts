@@ -117,7 +117,7 @@ export function currentAcademicYear(): Year {
 /**
  * Текущий месяц
  */
-export function curentMonth(): Month {
+export function currentMonth(): Month {
   return (getMonth(new Date()) + 1) as Month
 }
 

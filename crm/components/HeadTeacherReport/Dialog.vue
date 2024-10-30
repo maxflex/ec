@@ -9,7 +9,7 @@ const { dialog, width } = useDialog('medium')
 const modelDefaults: HeadTeacherReportResource = {
   id: newId(),
   text: '',
-  month: curentMonth(),
+  month: currentMonth(),
   year: currentAcademicYear(),
 }
 const saving = ref(false)
