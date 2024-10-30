@@ -21,19 +21,19 @@ const emit = defineEmits<{
 
 const { user } = useAuthStore()
 
-const isConductable = (function () {
-  if (item.status === 'cancelled') {
-    return false
-  }
-  switch (user?.entity_type) {
-    case EntityTypeValue.teacher:
-      return true
-    case EntityTypeValue.client:
-      return false
-    default:
-      return item.status === 'conducted'
-  }
-})()
+// const isConductable = (function () {
+//   if (item.status === 'cancelled') {
+//     return false
+//   }
+//   switch (user?.entity_type) {
+//     case EntityTypeValue.teacher:
+//       return true
+//     case EntityTypeValue.client:
+//       return false
+//     default:
+//       return item.status === 'conducted'
+//   }
+// })()
 
 const isEditable = user?.entity_type !== EntityTypeValue.client
 

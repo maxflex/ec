@@ -310,7 +310,6 @@ code {
 
 // контент разделённый серой строкой
 .separate-content {
-
   .index-page__content {
     display: flex;
     flex-direction: column;
@@ -348,7 +347,6 @@ code {
     gap: 8px;
 
     &:first-child {
-
       .v-btn {
         margin-left: -6px;
         margin-top: 1px;

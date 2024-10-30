@@ -7,6 +7,7 @@
     align-items: center;
     pointer-events: none;
   }
+
   &-actionss {
     position: absolute;
     padding-top: 4px;
@@ -110,7 +111,8 @@
 
   &--separated {
     & > div:first-child {
-      border-top: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+      border-top: thin solid
+        rgba(var(--v-border-color), var(--v-border-opacity));
     }
   }
 

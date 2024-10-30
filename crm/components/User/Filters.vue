@@ -11,7 +11,6 @@ const q = ref(model.value.q)
     density="comfortable"
   />
   <v-text-field
-    ref="input"
     v-model="q"
     label="Имя"
     density="comfortable"

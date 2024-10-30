@@ -4,7 +4,7 @@ const item = ref<InstructionDiffResource>()
 
 async function loadData() {
   const { data } = await useHttp<InstructionDiffResource>(
-		`instructions/diff/${route.params.id}`,
+      `instructions/diff/${route.params.id}`,
   )
   if (data.value) {
     item.value = data.value
@@ -43,15 +43,17 @@ nextTick(loadData)
 <style lang="scss">
 .doc-diff {
   padding-top: 20px;
+
   &__header {
     margin-bottom: 12px;
     display: flex;
     width: 100%;
     font-weight: normal;
+
     & > div {
       flex: 1;
       // text-align: center;
-			text-align: left;
+      text-align: left;
     }
   }
 }
@@ -123,7 +125,7 @@ $diff-bg-color-none-block-alternative: mix(
   border-collapse: collapse;
   border-spacing: 0;
   // border: 1px solid $diff-border-color;
-	border: none;
+  border: none;
   color: $diff-text-color;
   empty-cells: show;
   font-family: 'ibm-plex';
@@ -228,7 +230,7 @@ $diff-bg-color-none-block-alternative: mix(
       .old {
         background: $diff-bg-color-del;
         width: 45vw;
-				// border-right: 1px solid #e0e0e0;
+        // border-right: 1px solid #e0e0e0;
       }
 
       .n-old,
@@ -242,7 +244,8 @@ $diff-bg-color-none-block-alternative: mix(
         width: 45vw;
       }
 
-      .old, .new {
+      .old,
+      .new {
         padding: 0 20px;
       }
 
@@ -275,6 +278,7 @@ $diff-bg-color-none-block-alternative: mix(
     }
   }
 }
+
 .diff-header {
   display: flex;
   position: sticky;
@@ -285,15 +289,18 @@ $diff-bg-color-none-block-alternative: mix(
   padding-top: 20px;
   padding-bottom: 10px;
   margin-bottom: 10px;
+
   & > div {
     flex: 1;
     text-align: left;
     color: gray;
-		padding-left: 20px;
+    padding-left: 20px;
   }
 }
+
 .no-diff {
   display: flex;
+
   & > div {
     flex: 1;
     text-align: center;
@@ -301,5 +308,4 @@ $diff-bg-color-none-block-alternative: mix(
     color: gray;
   }
 }
-
 </style>

@@ -13,19 +13,20 @@ const { user, logOut } = useAuthStore()
         </div>
       </div>
     </div>
-		<v-btn color="primary" style="width: 300px" @click="logOut()">
-			выйти из профиля
-		</v-btn>
+    <v-btn color="primary" style="width: 300px" @click="logOut()">
+      выйти из профиля
+    </v-btn>
   </div>
 </template>
 
 <style lang="scss">
 .my-profile {
   padding: 20px;
-	&__head {
-		display: flex;
-		gap: 30px;
-		margin-bottom: 50px
-	}
+
+  &__head {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 50px;
+  }
 }
 </style>

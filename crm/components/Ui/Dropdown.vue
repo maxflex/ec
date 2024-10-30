@@ -39,22 +39,26 @@ const selectedItem = computed(() => items.find(e => e.value === model.value))
   align-items: center;
   // color: rgb(var(--v-theme-secondary));
   cursor: pointer;
+
   .v-icon {
     transition: transform ease-in-out 0.2s;
     font-size: 1.2em;
     top: 1px;
   }
+
   &[aria-expanded='true'] {
     .v-icon {
       transform: rotate(-180deg);
     }
   }
-	&--disabled {
-		cursor: text;
-		color: black !important;
-		.v-icon {
-			display: none;
-		}
-	}
+
+  &--disabled {
+    cursor: text;
+    color: black !important;
+
+    .v-icon {
+      display: none;
+    }
+  }
 }
 </style>

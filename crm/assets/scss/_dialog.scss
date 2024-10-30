@@ -5,9 +5,10 @@
   left: auto !important;
   transition: all cubic-bezier(0.25, 0.8, 0.25, 1) 0.3s !important;
   background: white;
-  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
-  0 2px 2px 0 rgba(0, 0, 0, 0.14),
-  0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 3px 1px -2px rgba(0, 0, 0, 0.2),
+    0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 1px 5px 0 rgba(0, 0, 0, 0.12);
 
   &-wrapper {
     height: 100vh;
@@ -79,7 +80,8 @@
     min-height: var(--header-height);
     z-index: 1;
     font-weight: bold;
-    border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+    border-bottom: thin solid
+      rgba(var(--v-border-color), var(--v-border-opacity));
     // & > span {
     //   font-size: var(--header-font-size);
     // }
@@ -177,7 +179,8 @@
       pointer-events: none;
       font-weight: normal;
       padding: 16px 0 16px $paddingLeft;
-      border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+      border-bottom: thin solid
+        rgba(var(--v-border-color), var(--v-border-opacity));
     }
   }
 
@@ -198,8 +201,10 @@
       position: relative;
 
       & > td {
-        border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
-        border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+        border-bottom: thin solid
+          rgba(var(--v-border-color), var(--v-border-opacity));
+        border-right: thin solid
+          rgba(var(--v-border-color), var(--v-border-opacity));
 
         &:last-child {
           border-right: none;

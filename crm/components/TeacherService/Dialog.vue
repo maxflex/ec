@@ -16,7 +16,6 @@ const item = ref<TeacherServiceResource>(modelDefaults)
 const loading = ref(false)
 const itemId = ref<number>()
 const sumInput = ref()
-const isEditMode = computed(() => item.value.id > 0)
 const deleting = ref(false)
 function open(c: TeacherServiceResource) {
   item.value = clone(c)
