@@ -28,9 +28,9 @@ function humanFileSize(file: UploadedFile) {
   const i = size === 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024))
   const humanFileSize = Number.parseInt((size / 1024 ** i).toFixed(2))
   return (
-      `${humanFileSize
-      } ${
-          ['байт', 'Кб', 'Мб', 'Гб', 'Тб'][i]}`
+    `${humanFileSize
+    } ${
+      ['байт', 'Кб', 'Мб', 'Гб', 'Тб'][i]}`
   )
 }
 
@@ -54,11 +54,11 @@ async function onFileSelected(e: Event) {
     model.value = newFile
   }
   const { data } = await useHttp<string>(
-      `common/files`,
-      {
-        method: 'post',
-        body: formData,
-      },
+    `common/files`,
+    {
+      method: 'post',
+      body: formData,
+    },
   )
   if (data.value) {
     newFile.url = data.value

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import Codemirror from 'codemirror-editor-vue3'
 import type { EditorConfiguration } from 'codemirror'
+import Codemirror from 'codemirror-editor-vue3'
 import 'codemirror/mode/htmlmixed/htmlmixed.js'
 
 const route = useRoute()

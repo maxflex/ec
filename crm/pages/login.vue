@@ -34,13 +34,13 @@ async function onPhoneEnter() {
   loading.value = true
   errors.value = {}
   const { data, error } = await useHttp<AuthResource>(
-      `common/auth/login`,
-      {
-        method: 'post',
-        body: {
-          phone: phone.value,
-        },
+    `common/auth/login`,
+    {
+      method: 'post',
+      body: {
+        phone: phone.value,
       },
+    },
   )
   setTimeout(() => (loading.value = false), 300)
   if (error.value) {

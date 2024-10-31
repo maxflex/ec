@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { mdiCheckAll } from '@mdi/js'
 import type { LessonDialog } from '#build/components'
+import { mdiCheckAll } from '@mdi/js'
 
 const { items } = defineProps<{
   items: TopicListResource[]

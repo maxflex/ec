@@ -11,14 +11,14 @@ const filters = ref<YearFilters>(loadFilters({
 const teacherPaymentDialog = ref<InstanceType<typeof TeacherPaymentDialog>>()
 
 const { items, indexPageData } = useIndex<TeacherPaymentResource, YearFilters>(
-    `teacher-payments`,
-    filters,
-    {
-      tabName,
-      staticFilters: {
-        teacher_id: teacherId,
-      },
+  `teacher-payments`,
+  filters,
+  {
+    tabName,
+    staticFilters: {
+      teacher_id: teacherId,
     },
+  },
 )
 
 function onUpdated(p: TeacherPaymentResource) {

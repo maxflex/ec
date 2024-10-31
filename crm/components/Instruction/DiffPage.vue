@@ -4,7 +4,7 @@ const item = ref<InstructionDiffResource>()
 
 async function loadData() {
   const { data } = await useHttp<InstructionDiffResource>(
-      `instructions/diff/${route.params.id}`,
+    `instructions/diff/${route.params.id}`,
   )
   if (data.value) {
     item.value = data.value
@@ -69,33 +69,13 @@ $diff-op-highlight-ratio: 90% !default;
 $diff-op-normal-ratio: 25% !default;
 
 // emphasized colors for detailed inline difference
-$diff-bg-color-ins-highlight: mix(
-  $diff-bg-color-ins-base,
-  $diff-bg-color,
-  $diff-op-highlight-ratio
-) !default;
-$diff-bg-color-del-highlight: mix(
-  $diff-bg-color-del-base,
-  $diff-bg-color,
-  $diff-op-highlight-ratio
-) !default;
+$diff-bg-color-ins-highlight: mix($diff-bg-color-ins-base, $diff-bg-color, $diff-op-highlight-ratio) !default;
+$diff-bg-color-del-highlight: mix($diff-bg-color-del-base, $diff-bg-color, $diff-op-highlight-ratio) !default;
 
 // colors for operation rows
-$diff-bg-color-ins: mix(
-  $diff-bg-color-ins-base,
-  $diff-bg-color,
-  $diff-op-normal-ratio
-) !default;
-$diff-bg-color-del: mix(
-  $diff-bg-color-del-base,
-  $diff-bg-color,
-  $diff-op-normal-ratio
-) !default;
-$diff-bg-color-rep: mix(
-  $diff-bg-color-rep-base,
-  $diff-bg-color,
-  $diff-op-normal-ratio
-) !default;
+$diff-bg-color-ins: mix($diff-bg-color-ins-base, $diff-bg-color, $diff-op-normal-ratio) !default;
+$diff-bg-color-del: mix($diff-bg-color-del-base, $diff-bg-color, $diff-op-normal-ratio) !default;
+$diff-bg-color-rep: mix($diff-bg-color-rep-base, $diff-bg-color, $diff-op-normal-ratio) !default;
 
 $diff-table-head-color: mix($diff-bg-color, $diff-text-color, 65%) !default;
 $diff-table-sidebar-color: #fafafa;
@@ -103,16 +83,8 @@ $diff-border-color: #e0e0e0;
 
 // color for the nonexistent block
 // for example, there are a deleted line that has no corresponding one
-$diff-bg-color-none-block: mix(
-  $diff-bg-color,
-  $diff-table-sidebar-color,
-  80%
-) !default;
-$diff-bg-color-none-block-alternative: mix(
-  $diff-bg-color,
-  $diff-table-sidebar-color,
-  55%
-) !default;
+$diff-bg-color-none-block: mix($diff-bg-color, $diff-table-sidebar-color, 80%) !default;
+$diff-bg-color-none-block-alternative: mix($diff-bg-color, $diff-table-sidebar-color, 55%) !default;
 
 .diff-wrapper.diff {
   background: repeating-linear-gradient(

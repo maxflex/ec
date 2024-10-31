@@ -5,8 +5,8 @@ interface Filters {
 }
 const filters = ref<Filters>(loadFilters({}))
 const { items, indexPageData } = useIndex<ClientReviewListResource, Filters>(
-    `client-reviews`,
-    filters,
+  `client-reviews`,
+  filters,
 )
 </script>
 

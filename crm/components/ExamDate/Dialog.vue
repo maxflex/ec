@@ -18,13 +18,13 @@ function edit(ed: ExamDateResource) {
 
 async function save() {
   const { data } = await useHttp<ExamDateResource>(
-      `common/exam-dates/${itemId}`,
-      {
-        method: 'put',
-        body: {
-          dates: dates.value,
-        },
+    `common/exam-dates/${itemId}`,
+    {
+      method: 'put',
+      body: {
+        dates: dates.value,
       },
+    },
   )
   if (data.value) {
     emit('saved', data.value)

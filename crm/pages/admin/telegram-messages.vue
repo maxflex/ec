@@ -2,8 +2,8 @@
 const filters = ref<TelegramMessageFilters>(loadFilters({}))
 
 const { items, indexPageData } = useIndex<TelegramMessageResource, TelegramMessageFilters>(
-    `telegram-messages`,
-    filters,
+  `telegram-messages`,
+  filters,
 )
 </script>
 

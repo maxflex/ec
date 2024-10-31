@@ -59,8 +59,7 @@
 
   & > div:not(.slide-up-down__container),
   & > a {
-    border-bottom: thin solid
-      rgba(var(--v-border-color), var(--v-border-opacity));
+    border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
     padding: 0 20px;
     min-height: var(--height);
     display: flex;
@@ -111,8 +110,7 @@
 
   &--separated {
     & > div:first-child {
-      border-top: thin solid
-        rgba(var(--v-border-color), var(--v-border-opacity));
+      border-top: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
     }
   }
 

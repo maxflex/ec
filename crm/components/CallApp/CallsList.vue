@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { mdiChevronDown, mdiPhoneIncoming, mdiPhoneMissed, mdiPhoneOutgoing } from '@mdi/js'
 import { differenceInSeconds, differenceInWeeks, format, isSameDay, parse } from 'date-fns'
-import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 import { ru } from 'date-fns/locale'
+import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 
 const { items } = defineProps<{
   items: CallListResource[]

@@ -6,12 +6,12 @@ const items = ref<RequestListResource[]>([])
 async function loadData() {
   loading.value = true
   const { data } = await useHttp<ApiResponse<RequestListResource>>(
-      `requests`,
-      {
-        params: {
-          client_id: clientId,
-        },
+    `requests`,
+    {
+      params: {
+        client_id: clientId,
       },
+    },
   )
   if (data.value) {
     items.value = data.value.data

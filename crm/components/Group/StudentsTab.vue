@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { mdiShuffleVariant } from '@mdi/js'
 import type { GroupSelectorDialog } from '#build/components'
+import { mdiShuffleVariant } from '@mdi/js'
 
 const { group } = defineProps<{ group: GroupResource }>()
 

@@ -17,12 +17,12 @@ const swamps = ref<SwampListResource[]>([])
 const noData = computed(() => !loading.value && swamps.value.length === 0)
 
 const { items: groups, indexPageData } = useIndex<GroupListResource, GroupFilters>(
-    `groups`,
-    groupFilters,
-    {
-      instantLoad: false,
-      disableSaveFilters: true,
-    },
+  `groups`,
+  groupFilters,
+  {
+    instantLoad: false,
+    disableSaveFilters: true,
+  },
 )
 
 async function loadSwamps() {

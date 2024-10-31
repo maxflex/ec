@@ -7,8 +7,8 @@ const filters = ref<TeacherFilters>(loadFilters({
 const teacherDialog = ref<InstanceType<typeof TeacherDialog>>()
 
 const { items, indexPageData } = useIndex<TeacherListResource, TeacherFilters>(
-    `teachers`,
-    filters,
+  `teachers`,
+  filters,
 )
 </script>
 

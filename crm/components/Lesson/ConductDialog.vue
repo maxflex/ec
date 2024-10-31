@@ -271,8 +271,7 @@ defineExpose({ open })
     & > div {
       height: $height;
       &:not(:last-child) {
-        border-bottom: thin solid
-          rgba(var(--v-border-color), var(--v-border-opacity));
+        border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
       }
     }
   }

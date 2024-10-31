@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { items, indexPageData } = useIndex<ClientListResource>(
-    `clients`,
+  `clients`,
 )
 </script>
 

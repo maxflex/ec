@@ -5,8 +5,8 @@ const filters = ref<GroupFilters>(loadFilters({
   year: currentAcademicYear(),
 }))
 const { items, indexPageData } = useIndex<GroupListResource, GroupFilters>(
-    `groups`,
-    filters,
+  `groups`,
+  filters,
 )
 
 const groupDialog = ref<null | InstanceType<typeof GroupDialog>>()

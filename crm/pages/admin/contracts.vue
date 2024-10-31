@@ -7,8 +7,8 @@ const filters = ref<ContractVersionFilters>(loadFilters({
 }))
 
 const { items, indexPageData } = useIndex<ContractVersionListResource, ContractVersionFilters>(
-    `contract-versions`,
-    filters,
+  `contract-versions`,
+  filters,
 )
 
 function onUpdated(cv: ContractVersionListResource) {

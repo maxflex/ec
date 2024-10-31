@@ -12,16 +12,16 @@ const tabName = clientId ? 'ClientReviewTab' : 'TeacherClientReviewTab'
 const filters = ref<Filters>(loadFilters({}, tabName))
 
 const { items, indexPageData } = useIndex<ClientReviewListResource, Filters>(
-    `client-reviews`,
-    filters,
-    {
-      tabName,
-      staticFilters: {
-        client_id: clientId,
-        teacher_id: teacherId,
-        with: clientId ? 'client' : 'teacher',
-      },
+  `client-reviews`,
+  filters,
+  {
+    tabName,
+    staticFilters: {
+      client_id: clientId,
+      teacher_id: teacherId,
+      with: clientId ? 'client' : 'teacher',
     },
+  },
 )
 </script>
 

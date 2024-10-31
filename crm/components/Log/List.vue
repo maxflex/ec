@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { mdiArrowTopRightThin } from '@mdi/js'
 import type { UserDialog } from '#build/components'
+import { mdiArrowTopRightThin } from '@mdi/js'
 
 const { items } = defineProps<{
   items: LogResource[]

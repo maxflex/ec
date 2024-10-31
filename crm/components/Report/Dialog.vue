@@ -31,7 +31,7 @@ async function edit(reportId: number) {
   dialog.value = true
   loading.value = true
   const { data } = await useHttp<ReportResource>(
-      `reports/${reportId}`,
+    `reports/${reportId}`,
   )
   if (data.value) {
     item.value = data.value

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { clone } from 'rambda'
 import type { TestQuestionsDialog } from '#build/components'
+import { clone } from 'rambda'
 
 const emit = defineEmits<{
   (e: 'updated'): void

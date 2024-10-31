@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 import type { RequestDialog } from '#build/components'
+import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 
 const model = defineModel<RequestListResource[]>({ default: () => [] })
 const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()

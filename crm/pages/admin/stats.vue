@@ -1,7 +1,7 @@
 <script lang="ts" setup>
+import type { StatsMetricFiltersDialog, StatsMetricSelectorDialog } from '#build/components'
 import { clone } from 'rambda'
 import { VueDraggableNext } from 'vue-draggable-next'
-import type { StatsMetricFiltersDialog, StatsMetricSelectorDialog } from '#build/components'
 import Metrics from '~/components/Stats/Metrics'
 
 const metricSelectorDialog = ref<InstanceType<typeof StatsMetricSelectorDialog>>()
@@ -50,15 +50,15 @@ async function loadMore() {
   loading.value = true
   page.value++
   const { data } = await useHttp<StatsListResource[]>(
-      `stats`,
-      {
-        method: 'post',
-        body: {
-          page: page.value,
-          mode: mode.value,
-          metrics: metrics.value,
-        },
+    `stats`,
+    {
+      method: 'post',
+      body: {
+        page: page.value,
+        mode: mode.value,
+        metrics: metrics.value,
       },
+    },
   )
   if (data.value) {
     if (page.value === 1) {
@@ -235,8 +235,7 @@ function onDragEnd() {
     z-index: 1;
     &-mode {
       height: 57px;
-      border-right: thin solid
-        rgba(var(--v-border-color), var(--v-border-opacity));
+      border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
       &:hover {
         background: rgb(var(--v-theme-bg));
       }
@@ -313,8 +312,7 @@ function onDragEnd() {
   }
   &__date {
     color: rgb(var(--v-theme-gray));
-    border-right: thin solid
-      rgba(var(--v-border-color), var(--v-border-opacity));
+    border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
     height: 57px;
     display: inline-flex;
     width: 100%;

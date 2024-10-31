@@ -1,8 +1,8 @@
 <script setup lang="ts">
 const filters = ref<ClientReviewFilters>(loadFilters({ }))
 const { items, indexPageData } = useIndex<ClientReviewListResource, ClientReviewFilters>(
-    `client-reviews`,
-    filters,
+  `client-reviews`,
+  filters,
 )
 </script>
 

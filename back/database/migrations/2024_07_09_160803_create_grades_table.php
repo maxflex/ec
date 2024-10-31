@@ -27,6 +27,7 @@ return new class extends Migration
                 collect(Quarter::cases())->map(fn ($e) => $e->name)->all()
             )->index();
             $table->unsignedSmallInteger('grade');
+            $table->foreignIdFor(\App\Models\User::class)->nullable()->constrained();
             $table->timestamps();
         });
     }

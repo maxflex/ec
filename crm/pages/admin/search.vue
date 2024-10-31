@@ -16,12 +16,12 @@ async function search() {
   }
   else {
     const { data } = await useHttp<ApiResponse<SearchResultResource>>(
-        `search`,
-        {
-          params: {
-            q: q.value,
-          },
+      `search`,
+      {
+        params: {
+          q: q.value,
         },
+      },
     )
     if (data.value) {
       items.value = data.value.data

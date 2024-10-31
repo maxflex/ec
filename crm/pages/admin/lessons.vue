@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import type { LessonDialog } from '#build/components'
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { groupBy } from 'rambda'
-import type { LessonDialog } from '#build/components'
 
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const filters = ref<YearFilters>(loadFilters({
@@ -116,8 +116,7 @@ nextTick(loadData)
     display: flex;
     flex-direction: column;
     padding: 16px 20px;
-    border-bottom: thin solid
-      rgba(var(--v-border-color), var(--v-border-opacity));
+    border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
     gap: 20px;
     &.week-separator {
       border-bottom: 2px solid rgb(var(--v-theme-gray));

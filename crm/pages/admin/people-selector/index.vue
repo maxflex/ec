@@ -12,12 +12,12 @@ const filters = ref<PeopleSelectorFilters>({
 })
 
 const { items, extra, indexPageData } = useIndex<
-    PersonResource,
-    PeopleSelectorFilters,
-    PeopleSelectorExtra
+  PersonResource,
+  PeopleSelectorFilters,
+  PeopleSelectorExtra
 >(
-    `people-selector`,
-    filters,
+  `people-selector`,
+  filters,
 )
 
 const selected = ref<SelectedPeople>({

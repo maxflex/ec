@@ -7,8 +7,8 @@ const filters = ref<ClientPaymentFilters>(loadFilters({
 }))
 
 const { items, indexPageData } = useIndex<ClientPaymentResource, ClientPaymentFilters>(
-    `client-payments`,
-    filters,
+  `client-payments`,
+  filters,
 )
 </script>
 

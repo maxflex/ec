@@ -38,10 +38,7 @@
         }
       }
       .selected {
-        background: rgba(
-          var(--v-border-color),
-          var(--v-hover-opacity)
-        ) !important;
+        background: rgba(var(--v-border-color), var(--v-hover-opacity)) !important;
         pointer-events: none;
       }
     }

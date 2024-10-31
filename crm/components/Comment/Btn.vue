@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { mdiComment } from '@mdi/js'
 import type { CommentDialog } from '#build/components'
+import { mdiComment } from '@mdi/js'
 
 const { entityId, entityType, count } = defineProps<{
   count?: number
@@ -20,14 +20,14 @@ async function loadData() {
     return
   }
   const { data } = await useHttp<number>(
-      `comments`,
-      {
-        params: {
-          count: 1,
-          entity_id: entityId,
-          entity_type: EntityTypeValue[entityType],
-        },
+    `comments`,
+    {
+      params: {
+        count: 1,
+        entity_id: entityId,
+        entity_type: EntityTypeValue[entityType],
       },
+    },
   )
   localCount.value = data.value || 0
 }

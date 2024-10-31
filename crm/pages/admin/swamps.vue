@@ -4,8 +4,8 @@ const filters = ref<SwampFilters>(loadFilters({
 }))
 
 const { items, indexPageData } = useIndex<SwampListResource, SwampFilters>(
-    `swamps`,
-    filters,
+  `swamps`,
+  filters,
 )
 </script>
 

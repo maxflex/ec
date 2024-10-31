@@ -3,8 +3,8 @@ import type { RequestDialog } from '#components'
 
 const filters = ref<RequestFilters>(loadFilters({}))
 const { items, indexPageData } = useIndex<RequestListResource, RequestFilters>(
-    `requests`,
-    filters,
+  `requests`,
+  filters,
 )
 
 const requestDialog = ref<InstanceType<typeof RequestDialog>>()

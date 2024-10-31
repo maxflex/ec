@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import type { ProgramDialog } from '#build/components'
 import { mdiCheckAll, mdiPrinter } from '@mdi/js'
 import { clone } from 'rambda'
-import type { ProgramDialog } from '#build/components'
 
 const emit = defineEmits<{
   updated: [m: ContractEditMode, c: ContractResource | ContractVersionListResource]
@@ -191,11 +191,11 @@ async function save() {
 
     case 'edit': {
       const { data } = await useHttp<ContractVersionListResource>(
-          `contract-versions/${item.value.id}`,
-          {
-            method: 'put',
-            body: item.value,
-          },
+        `contract-versions/${item.value.id}`,
+        {
+          method: 'put',
+          body: item.value,
+        },
       )
       responseData = data.value
       break
@@ -566,8 +566,7 @@ defineExpose({ edit, newContract, newVersion })
           &:nth-child(4) {
             & > div {
               &:not(:last-child) {
-                border-bottom: thin solid
-                  rgba(var(--v-border-color), var(--v-border-opacity));
+                border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
               }
             }
           }

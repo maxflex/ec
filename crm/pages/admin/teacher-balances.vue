@@ -17,8 +17,8 @@ const filters = ref(loadFilters({
 }))
 
 const { items, indexPageData } = useIndex<TeacherBalance>(
-    `teacher-balances`,
-    filters,
+  `teacher-balances`,
+  filters,
 )
 
 const tableFields: Array<{

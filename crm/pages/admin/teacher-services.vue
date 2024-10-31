@@ -4,8 +4,8 @@ const filters = ref<{ year: Year }>(loadFilters({
 }))
 
 const { items, indexPageData } = useIndex<TeacherServiceResource>(
-    `teacher-services`,
-    filters,
+  `teacher-services`,
+  filters,
 )
 </script>
 

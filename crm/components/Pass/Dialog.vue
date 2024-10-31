@@ -39,11 +39,11 @@ async function save() {
   saving.value = true
   if (item.value.id > 0) {
     const { data } = await useHttp<PassResource>(
-        `passes/${item.value.id}`,
-        {
-          method: 'put',
-          body: item.value,
-        },
+      `passes/${item.value.id}`,
+      {
+        method: 'put',
+        body: item.value,
+      },
     )
     if (data.value) {
       emit('updated', data.value)
@@ -51,11 +51,11 @@ async function save() {
   }
   else {
     const { data } = await useHttp<PassResource>(
-        `passes`,
-        {
-          method: 'post',
-          body: item.value,
-        },
+      `passes`,
+      {
+        method: 'post',
+        body: item.value,
+      },
     )
     if (data.value) {
       emit('created', data.value)

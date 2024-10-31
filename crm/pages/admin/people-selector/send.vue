@@ -100,11 +100,11 @@ nextTick(async () => {
     }
   }
   const { data } = await useHttp<PeopleResource>(
-      `telegram-lists/load-people`,
-      {
-        method: 'post',
-        body: clone(selected.value),
-      },
+    `telegram-lists/load-people`,
+    {
+      method: 'post',
+      body: clone(selected.value),
+    },
   )
   if (data.value) {
     item.value = {

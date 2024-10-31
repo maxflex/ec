@@ -18,8 +18,8 @@ async function open(sp: SelectedPeople, year: Year) {
   loading.value = true
   selected.value = clone(sp)
   const { data } = await useHttp<ApiResponse<EventListResource>>(
-      `common/events`,
-      { params: { year } },
+    `common/events`,
+    { params: { year } },
   )
   if (data.value) {
     events.value = data.value.data
@@ -33,14 +33,14 @@ async function select(e: EventListResource) {
     return
   }
   await useHttp(
-      `event-participants`,
-      {
-        method: 'post',
-        body: {
-          id: e.id,
-          selected: selected.value,
-        },
+    `event-participants`,
+    {
+      method: 'post',
+      body: {
+        id: e.id,
+        selected: selected.value,
       },
+    },
   )
   await router.push({ name: 'events-id', params: { id: e.id } })
   dialog.value = false

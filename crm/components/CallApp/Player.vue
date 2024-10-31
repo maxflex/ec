@@ -16,7 +16,7 @@ async function downloadAudio(e: MouseEvent) {
 
 async function getAudio(action: 'play' | 'download') {
   const { data } = await useHttp(
-      `calls/recording/${action}/${item.id}`,
+    `calls/recording/${action}/${item.id}`,
   )
   console.log(data)
   return data.value as string

@@ -36,7 +36,7 @@ function highlight(text: string, _q: string) {
     const newQ = word.replace(')', '\\)').replace('(', '\\(')
     result = result.replace(
       new RegExp(`${newQ}`, 'gi'),
-        `<span class="highlight">${word}</span>`,
+      `<span class="highlight">${word}</span>`,
     )
   }
 

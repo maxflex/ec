@@ -79,12 +79,12 @@ function onContractPaymentDeleted(cp: ContractPaymentResource) {
 async function loadData() {
   loading.value = true
   const { data } = await useHttp<ApiResponse<ContractResource>>(
-      `contracts`,
-      {
-        params: {
-          client_id: clientId,
-        },
+    `contracts`,
+    {
+      params: {
+        client_id: clientId,
       },
+    },
   )
   if (data.value) {
     items.value = data.value.data

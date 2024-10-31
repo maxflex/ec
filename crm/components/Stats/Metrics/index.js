@@ -1,6 +1,6 @@
-import RequestsMetric from './RequestsMetric.vue'
-import ReportsMetric from './ReportsMetric.vue'
 import ContractPaymentsMetric from './ContractPaymentsMetric.vue'
+import ReportsMetric from './ReportsMetric.vue'
+import RequestsMetric from './RequestsMetric.vue'
 
 export default {
   RequestsMetric,

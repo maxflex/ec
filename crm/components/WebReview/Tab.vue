@@ -9,12 +9,12 @@ const webReviewDialog = ref<InstanceType<typeof WebReviewDialog>>()
 async function loadData() {
   loading.value = true
   const { data } = await useHttp<ApiResponse<WebReviewResource>>(
-      `web-reviews`,
-      {
-        params: {
-          client_id: clientId,
-        },
+    `web-reviews`,
+    {
+      params: {
+        client_id: clientId,
       },
+    },
   )
   if (data.value) {
     items.value = data.value.data

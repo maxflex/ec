@@ -9,8 +9,8 @@ import {
   getMonth,
   getYear,
 } from 'date-fns'
-import { curry } from 'rambda'
 import dayjs from 'dayjs'
+import { curry } from 'rambda'
 
 export function today(): string {
   return format(new Date(), 'yyyy-MM-dd')
@@ -126,7 +126,7 @@ function getFiltersKey(tabName: string | null = null) {
   return [
     'filters',
     getEntityString(),
-   `${tabName || ''}${String(route.name)}`,
+    `${tabName || ''}${String(route.name)}`,
   ].join('-')
 }
 
@@ -177,7 +177,7 @@ export async function itemDeleted(entity: string, id: number) {
   })
 }
 
-export const debounce = curry((delay: number, fn: Function) => {
+export const debounce = curry((delay: number, fn: (...args: any[]) => void) => {
   let timeout: ReturnType<typeof setTimeout> | null = null
   return (...args: any[]) => {
     if (timeout) {

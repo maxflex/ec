@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { callAppDialog, filters, missedCount, player } from '.'
 import { CallAppStatusFilterLabel } from '~/utils/labels'
+import { callAppDialog, filters, missedCount, player } from '.'
 
 const { activeCalls } = defineProps<{
   activeCalls: CallEvent[]

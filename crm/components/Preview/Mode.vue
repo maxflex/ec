@@ -9,14 +9,14 @@ const loading = ref(false)
 async function enter() {
   loading.value = true
   const { data } = await useHttp<TokenResponse>(
-      `preview`,
-      {
-        method: 'post',
-        body: {
-          client_id: clientId,
-          teacher_id: teacherId,
-        },
+    `preview`,
+    {
+      method: 'post',
+      body: {
+        client_id: clientId,
+        teacher_id: teacherId,
       },
+    },
   )
   if (data.value) {
     const { token, user } = data.value

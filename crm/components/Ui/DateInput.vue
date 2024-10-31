@@ -1,18 +1,13 @@
 <script setup lang="ts">
-const props = withDefaults(
-  defineProps<{
-    label?: string
-    year?: Year
-    disabled?: boolean
-    todayBtn?: boolean
-    density?: string
-  }>(),
-  {
-    label: 'Дата',
-  },
-)
-const { label, year, disabled } = toRefs(props)
-const model = defineModel<string>()
+const { label = 'Дата', year, disabled } = defineProps<{
+  label?: string
+  year?: Year
+  disabled?: boolean
+  todayBtn?: boolean
+  density?: string
+}>()
+
+const model = defineModel<string>({ required: true })
 const calendarDialog = ref()
 
 function setToday() {

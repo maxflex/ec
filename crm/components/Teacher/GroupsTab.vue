@@ -5,14 +5,14 @@ const filters = ref<YearFilters>(loadFilters({
   year: currentAcademicYear(),
 }, tabName))
 const { items, indexPageData } = useIndex<GroupListResource, YearFilters>(
-    `groups`,
-    filters,
-    {
-      tabName,
-      staticFilters: {
-        teacher_id: teacherId,
-      },
+  `groups`,
+  filters,
+  {
+    tabName,
+    staticFilters: {
+      teacher_id: teacherId,
     },
+  },
 )
 </script>
 

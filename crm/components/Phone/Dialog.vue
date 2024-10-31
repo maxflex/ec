@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { mdiHistory, mdiPhone, mdiSend } from '@mdi/js'
 import type { TelegramMessageDialog } from '#build/components'
+import { mdiHistory, mdiPhone, mdiSend } from '@mdi/js'
 import { openCallApp } from '~/components/CallApp'
 
 const telegramMessageDialog = ref<InstanceType<typeof TelegramMessageDialog>>()

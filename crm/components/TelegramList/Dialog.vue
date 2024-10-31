@@ -42,11 +42,11 @@ async function open(sp: SelectedPeople, e: EventResource | undefined = undefined
   selected.value = clone(sp)
   event.value = e
   const { data } = await useHttp<PeopleResource>(
-      `telegram-lists/load-people`,
-      {
-        method: 'post',
-        body: selected.value,
-      },
+    `telegram-lists/load-people`,
+    {
+      method: 'post',
+      body: selected.value,
+    },
   )
   if (data.value) {
     item.value = {

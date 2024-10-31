@@ -5,8 +5,8 @@ const filters = ref<YearFilters>(loadFilters({
   year: currentAcademicYear(),
 }))
 const { items, indexPageData } = useIndex<HeadTeacherReportResource, YearFilters>(
-    `head-teacher-reports`,
-    filters,
+  `head-teacher-reports`,
+  filters,
 )
 const dialogRef = ref<InstanceType<typeof HeadTeacherReportDialog>>()
 

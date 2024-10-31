@@ -12,11 +12,11 @@ const filters = ref<SwampFilters>({
 })
 
 const { items, indexPageData } = useIndex<SwampListResource, SwampFilters>(
-    `swamps`,
-    filters,
-    {
-      disableSaveFilters: true,
-    },
+  `swamps`,
+  filters,
+  {
+    disableSaveFilters: true,
+  },
 )
 </script>
 

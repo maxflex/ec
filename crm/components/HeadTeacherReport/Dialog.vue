@@ -28,18 +28,18 @@ async function save() {
   saving.value = true
   const { data } = isEditMode.value
     ? await useHttp<HeadTeacherReportResource>(
-        `head-teacher-reports/${item.value.id}`,
-        {
-          method: 'put',
-          body: { ...item.value },
-        },
+      `head-teacher-reports/${item.value.id}`,
+      {
+        method: 'put',
+        body: { ...item.value },
+      },
     )
     : await useHttp<HeadTeacherReportResource>(
-        `head-teacher-reports`,
-        {
-          method: 'post',
-          body: { ...item.value },
-        },
+      `head-teacher-reports`,
+      {
+        method: 'post',
+        body: { ...item.value },
+      },
     )
   dialog.value = false
   saving.value = false
@@ -52,10 +52,10 @@ async function destroy() {
   }
   deleting.value = true
   await useHttp(
-      `head-teacher-reports/${item.value.id}`,
-      {
-        method: 'delete',
-      },
+    `head-teacher-reports/${item.value.id}`,
+    {
+      method: 'delete',
+    },
   )
   emit('deleted', item.value)
   dialog.value = false

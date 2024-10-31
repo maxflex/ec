@@ -4,8 +4,8 @@ const filters = ref<ClientTestFilters>(loadFilters({
 }))
 
 const { items, indexPageData } = useIndex<ClientTestResource, ClientTestFilters>(
-    `client-tests`,
-    filters,
+  `client-tests`,
+  filters,
 )
 
 function onDestroy(clientTest: ClientTestResource) {

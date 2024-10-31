@@ -23,8 +23,8 @@ const sort = ref<{
 }>()
 
 const { items, indexPageData } = useIndex<ContractBalance>(
-    `contract-balances`,
-    filters,
+  `contract-balances`,
+  filters,
 )
 
 const tableFields: Array<{

@@ -8,8 +8,8 @@ const filters = ref<ClientFilters>(loadFilters({
 
 const clientDialog = ref<InstanceType<typeof ClientDialog>>()
 const { items, indexPageData } = useIndex<ClientListResource, ClientFilters>(
-    `clients`,
-    filters,
+  `clients`,
+  filters,
 )
 
 function onClientCreated(c: ClientListResource) {

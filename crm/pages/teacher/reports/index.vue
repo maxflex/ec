@@ -7,8 +7,8 @@ const filters = ref<Filters>(loadFilters({
   year: currentAcademicYear(),
 }))
 const { items, indexPageData } = useIndex<ReportListResource, Filters>(
-    `reports`,
-    filters,
+  `reports`,
+  filters,
 )
 </script>
 

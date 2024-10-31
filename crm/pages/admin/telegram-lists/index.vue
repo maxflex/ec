@@ -1,8 +1,8 @@
 <script setup lang="ts">
 const filters = ref<TelegramListFilters>(loadFilters({}))
 const { items, indexPageData } = useIndex<TelegramListResource, TelegramListFilters>(
-    `telegram-lists`,
-    filters,
+  `telegram-lists`,
+  filters,
 )
 </script>
 

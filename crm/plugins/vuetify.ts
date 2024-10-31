@@ -1,6 +1,4 @@
 import type { ThemeDefinition } from 'vuetify'
-import { createVuetify } from 'vuetify'
-import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
 import {
   mdiCheckDecagram,
   mdiChevronDown,
@@ -17,6 +15,8 @@ import {
   mdiSend,
   mdiTuneVertical,
 } from '@mdi/js'
+import { createVuetify } from 'vuetify'
+import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
 
 const icons = {
   defaultSet: 'mdi',

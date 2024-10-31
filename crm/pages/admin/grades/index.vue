@@ -4,8 +4,8 @@ const filters = ref<GradeFilters>(loadFilters({
 }))
 
 const { items, indexPageData } = useIndex<GradeListResource, GradeFilters>(
-    `grades`,
-    filters,
+  `grades`,
+  filters,
 )
 </script>
 

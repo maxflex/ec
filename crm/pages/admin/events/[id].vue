@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { mdiCheckAll } from '@mdi/js'
 import type { EventDialog } from '#components'
+import { mdiCheckAll } from '@mdi/js'
 
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
 const { $addSseListener, $removeSseListener } = useNuxtApp()
@@ -10,7 +10,7 @@ const item = ref<EventResource>()
 
 async function loadData() {
   const { data } = await useHttp<EventResource>(
-      `common/events/${route.params.id}`,
+    `common/events/${route.params.id}`,
   )
   if (data.value) {
     item.value = data.value

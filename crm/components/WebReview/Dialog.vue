@@ -72,13 +72,13 @@ async function save() {
 async function loadExamScores() {
   examScores.value = []
   const { data } = await useHttp<ApiResponse<ExamScoreResource>>(
-      `exam-scores`,
-      {
-        params: {
-          web_review_id: item.value?.id,
-          client_id: item.value?.client_id,
-        },
+    `exam-scores`,
+    {
+      params: {
+        web_review_id: item.value?.id,
+        client_id: item.value?.client_id,
       },
+    },
   )
   if (data.value) {
     examScores.value = data.value.data

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { mdiPhone, mdiPhoneInTalk, mdiPhoneIncoming, mdiPhoneMissed } from '@mdi/js'
+import { mdiPhone, mdiPhoneIncoming, mdiPhoneInTalk, mdiPhoneMissed } from '@mdi/js'
 import { hasIncoming } from '.'
 
 const { state } = defineProps<{

@@ -5,12 +5,12 @@ const item = ref<ReportResource>()
 
 async function loadData() {
   const { data } = await useHttp<ReportResource>(
-      `reports/${route.params.id}`,
-      {
-        query: {
-          is_published: 1,
-        },
+    `reports/${route.params.id}`,
+    {
+      query: {
+        is_published: 1,
       },
+    },
   )
   if (data.value) {
     item.value = data.value

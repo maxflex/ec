@@ -60,11 +60,7 @@ const model = defineModel<any[]>({ required: true })
     &:before {
       left: 0;
       width: 16px;
-      background: linear-gradient(
-        to right,
-        rgb(var(--v-theme-bg)),
-        transparent
-      );
+      background: linear-gradient(to right, rgb(var(--v-theme-bg)), transparent);
     }
     &:after {
       right: 0;

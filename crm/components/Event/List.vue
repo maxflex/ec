@@ -2,14 +2,13 @@
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { groupBy } from 'rambda'
 
-const props = defineProps<{
+const { items, year } = defineProps<{
   items: EventListResource[]
   year: Year
 }>()
 defineEmits<{
-  edit: [e: EventListResource]
+  edit: [e: number]
 }>()
-const { items, year } = toRefs(props)
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const dates = computed(() => {
   // Define the start and end months for the academic year
@@ -17,15 +16,15 @@ const dates = computed(() => {
   const endMonth = 4 // May (0-indexed)
 
   // Define start and end dates for the academic year
-  const startDate = startOfMonth(new Date(year.value, startMonth, 1)) // September 1st
-  const endDate = endOfMonth(new Date(year.value + 1, endMonth, 31)) // May 31st
+  const startDate = startOfMonth(new Date(year, startMonth, 1)) // September 1st
+  const endDate = endOfMonth(new Date(year + 1, endMonth, 31)) // May 31st
 
   // Generate array of all dates between startDate and endDate
   const allDates = eachDayOfInterval({ start: startDate, end: endDate })
 
   return allDates.map(d => format(d, 'yyyy-MM-dd'))
 })
-const eventsByDate = computed(() => groupBy(x => x.date, items.value))
+const eventsByDate = computed(() => groupBy(x => x.date, items))
 </script>
 
 <template>
@@ -62,8 +61,7 @@ const eventsByDate = computed(() => groupBy(x => x.date, items.value))
     display: flex;
     flex-direction: column;
     padding: 16px 20px;
-    border-bottom: thin solid
-      rgba(var(--v-border-color), var(--v-border-opacity));
+    border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
     gap: 20px;
     &.week-separator {
       border-bottom: 2px solid rgb(var(--v-theme-gray));

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { mdiCheckAll, mdiWeb } from '@mdi/js'
 import type { ReportDialog } from '#build/components'
+import { mdiCheckAll, mdiWeb } from '@mdi/js'
 
 const props = defineProps<{
   items: ReportListResource[]

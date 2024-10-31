@@ -3,8 +3,8 @@ const filters = ref<YearFilters>(loadFilters({
   year: currentAcademicYear(),
 }))
 const { items, indexPageData } = useIndex<TeacherPaymentResource, YearFilters>(
-    `teacher-payments`,
-    filters,
+  `teacher-payments`,
+  filters,
 )
 </script>
 

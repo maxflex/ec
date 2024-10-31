@@ -10,13 +10,13 @@ const items = ref<GradeListResource[]>([])
 async function loadData() {
   loading.value = true
   const { data } = await useHttp<ApiResponse<GradeListResource>>(
-      `grades`,
-      {
-        params: {
-          ...filters.value,
-          client_id: clientId,
-        },
+    `grades`,
+    {
+      params: {
+        ...filters.value,
+        client_id: clientId,
       },
+    },
   )
   if (data.value) {
     items.value = data.value.data

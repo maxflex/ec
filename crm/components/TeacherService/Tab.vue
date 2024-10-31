@@ -8,14 +8,14 @@ const filters = ref<YearFilters>(loadFilters({
   year: currentAcademicYear(),
 }, tabName))
 const { items, indexPageData } = useIndex<TeacherServiceResource, YearFilters>(
-    `teacher-services`,
-    filters,
-    {
-      tabName,
-      staticFilters: {
-        teacher_id: teacherId,
-      },
+  `teacher-services`,
+  filters,
+  {
+    tabName,
+    staticFilters: {
+      teacher_id: teacherId,
     },
+  },
 )
 
 function onUpdated(p: TeacherServiceResource) {

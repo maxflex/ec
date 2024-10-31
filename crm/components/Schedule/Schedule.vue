@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
-import { groupBy } from 'rambda'
 import type {
   EventDialog,
   LessonBulkCreateDialog,
@@ -9,6 +7,8 @@ import type {
   LessonDialog,
   LessonViewDialog,
 } from '#build/components'
+import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
+import { groupBy } from 'rambda'
 
 // потому что props ещё есть ниже
 const properties = defineProps<{
@@ -58,7 +58,7 @@ const checkboxes = ref<{ [key: number]: boolean }>({})
 const lessonIds = computed((): number[] => {
   const result = []
   for (const key in checkboxes.value) {
-    if (checkboxes.value[key] === true) {
+    if (checkboxes.value[key]) {
       result.push(Number.parseInt(key))
     }
   }
@@ -106,13 +106,13 @@ const itemsByDate = computed((): {
 async function loadLessons() {
   loading.value = true
   const { data } = await useHttp<ApiResponse<LessonListResource>>(
-      `lessons`,
-      {
-        params: {
-          ...params,
-          year: groupId ? undefined : filters.value.year,
-        },
+    `lessons`,
+    {
+      params: {
+        ...params,
+        year: groupId ? undefined : filters.value.year,
       },
+    },
   )
   if (data.value) {
     lessons.value = data.value.data
@@ -126,13 +126,13 @@ async function loadEvents() {
     return
   }
   const { data } = await useHttp<ApiResponse<EventListResource>>(
-      `common/events`,
-      {
-        params: {
-          ...params,
-          year: filters.value.year,
-        },
+    `common/events`,
+    {
+      params: {
+        ...params,
+        year: filters.value.year,
       },
+    },
   )
   if (data.value) {
     events.value = data.value.data
@@ -144,13 +144,13 @@ async function loadTeeth() {
     return
   }
   const { data } = await useHttp<Teeth>(
-      `common/teeth`,
-      {
-        params: {
-          ...params,
-          year: filters.value.year,
-        },
+    `common/teeth`,
+    {
+      params: {
+        ...params,
+        year: filters.value.year,
       },
+    },
   )
   if (data.value) {
     teeth.value = data.value
@@ -160,10 +160,10 @@ async function loadTeeth() {
 async function loadVacations() {
   vacations.value = {}
   const { data } = await useHttp<ApiResponse<VacationResource>>(
-      `common/vacations`,
-      {
-        params: { year: filters.value.year },
-      },
+    `common/vacations`,
+    {
+      params: { year: filters.value.year },
+    },
   )
   if (data.value) {
     for (const { date } of data.value.data) {
@@ -178,10 +178,10 @@ async function loadExamDates() {
   }
   examDates.value = {}
   const { data } = await useHttp<ApiResponse<ExamDateResource>>(
-      `common/exam-dates`,
-      {
-        params: { program },
-      },
+    `common/exam-dates`,
+    {
+      params: { program },
+    },
   )
   if (data.value && data.value.data.length) {
     const { dates } = data.value.data[0]
@@ -357,8 +357,7 @@ nextTick(loadData)
     display: flex;
     flex-direction: column;
     padding: 16px 20px;
-    border-bottom: thin solid
-      rgba(var(--v-border-color), var(--v-border-opacity));
+    border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
     gap: 20px;
     &.week-separator {
       border-bottom: 2px solid rgb(var(--v-theme-gray));
