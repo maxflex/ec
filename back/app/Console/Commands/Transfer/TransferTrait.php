@@ -160,7 +160,7 @@ trait TransferTrait
         }
 
         return (object)[
-            'id' => 0,
+            'id' => $programs->first()->id,
             'error' => true
         ];
     }
