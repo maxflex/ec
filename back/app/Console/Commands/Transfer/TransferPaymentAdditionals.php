@@ -108,7 +108,7 @@ class TransferPaymentAdditionals extends Command
                     ->table('payment_additionals')
                     ->where('entity_type', ET_CLIENT)
                     ->where('year', $d->year)
-                    ->where('date', $d->date)
+                    ->where('date', $payment->date)
                     ->where('purpose', $d->purpose)
                     ->get();
 
