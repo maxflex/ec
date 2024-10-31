@@ -1,13 +1,8 @@
 <script setup lang="ts">
-const { user, size } = withDefaults(
-  defineProps<{
-    user: PersonResource
-    size?: number
-  }>(),
-  {
-    size: 60,
-  },
-)
+const { user, size = 60 } = defineProps<{
+  user: PersonResource
+  size?: number
+}>()
 const id = (Math.abs(user.id) % 25) + 1
 </script>
 

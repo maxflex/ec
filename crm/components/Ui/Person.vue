@@ -1,13 +1,9 @@
 <script setup lang="ts">
-interface Props {
+const { item, teacherFormat, noLink = undefined } = defineProps<{
   item: PersonResource
   teacherFormat?: NameFormat
   noLink?: boolean | undefined
-}
-
-const { item, teacherFormat, noLink } = withDefaults(defineProps<Props>(), {
-  noLink: undefined,
-})
+}>()
 
 const { isAdmin } = useAuthStore()
 const isNoLink = noLink ?? !isAdmin

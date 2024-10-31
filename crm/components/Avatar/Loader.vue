@@ -2,14 +2,10 @@
 import { mdiCloudUpload } from '@mdi/js'
 import VuePictureCropper, { cropper } from 'vue-picture-cropper'
 
-interface Props {
+const { item, size = 150 } = defineProps<{
   item: PersonWithPhotoResource
   size?: number
-}
-
-const { item, size } = withDefaults(defineProps<Props>(), {
-  size: 150,
-})
+}>()
 
 const { dialog, width, transition } = useDialog('medium')
 const saving = ref(false)

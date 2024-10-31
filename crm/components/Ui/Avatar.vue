@@ -1,15 +1,10 @@
 <script setup lang="ts">
 import { getGender } from 'lvovich'
 
-const { item, size } = withDefaults(
-  defineProps<{
-    item: PersonWithPhotoResource
-    size?: number
-  }>(),
-  {
-    size: 100,
-  },
-)
+const { item, size = 100 } = defineProps<{
+  item: PersonWithPhotoResource
+  size?: number
+}>()
 
 const src = computed(() => {
   if (item.photo_url) {

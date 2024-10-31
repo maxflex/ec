@@ -40,6 +40,13 @@ export default defineNuxtConfig({
         transformAssetUrls,
       },
     },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler',
+        },
+      },
+    },
   },
 
   imports: {
@@ -64,4 +71,6 @@ export default defineNuxtConfig({
       title: 'Личный кабинет V3',
     },
   },
+
+  compatibilityDate: '2024-10-31',
 })

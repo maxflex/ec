@@ -4,6 +4,6 @@ const { items, indexPageData } = useIndex<ReportListResource>(`reports`)
 
 <template>
   <UiIndexPage :data="indexPageData">
-    <ReportList :items="items" />
+    <ReportListForClients :items="items" />
   </UiIndexPage>
 </template>

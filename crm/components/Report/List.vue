@@ -6,7 +6,7 @@ const props = defineProps<{
   items: ReportListResource[]
 }>()
 const router = useRouter()
-const { isAdmin, isTeacher, isClient } = useAuthStore()
+const { isAdmin, isTeacher } = useAuthStore()
 const { items } = toRefs(props)
 const reportDialog = ref<InstanceType<typeof ReportDialog>>()
 
@@ -56,7 +56,7 @@ function onDeleted(r: ReportResource) {
       <div v-if="!isTeacher" style="width: 170px">
         <UiPerson :item="r.teacher" />
       </div>
-      <div v-if="!isClient" style="width: 220px">
+      <div style="width: 220px">
         <UiPerson :item="r.client" />
       </div>
       <div style="width: 140px">
@@ -75,7 +75,7 @@ function onDeleted(r: ReportResource) {
         <div style="width: 180px">
           прошло занятий: {{ r.lessons_count }}
         </div>
-        <div v-if="!isClient" style="width: 110px">
+        <div style="width: 110px">
           <span v-if="r.price">
             {{ formatPrice(r.price) }} руб.
           </span>
@@ -86,7 +86,6 @@ function onDeleted(r: ReportResource) {
           </span>
         </div>
         <div
-          v-if="!isClient"
           style="width: 100px; flex: 1"
           class="text-center d-flex ga-5"
         >
@@ -112,11 +111,6 @@ function onDeleted(r: ReportResource) {
         </div>
         <div style="width: 100px; flex: initial" class="text-gray">
           {{ formatTextDate(r.created_at, true) }}
-        </div>
-        <div v-if="isClient" class="text-right">
-          <RouterLink :to="{ name: 'reports-id', params: { id: r.id } }">
-            читать отчёт
-          </RouterLink>
         </div>
       </template>
       <template v-else>

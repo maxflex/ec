@@ -57,42 +57,44 @@ nextTick(loadData)
         </div>
         <div class="balance-items">
           <table>
-            <tr>
-              <td width="140" />
-              <td width="140" />
-              <td width="180">
-                {{ formatPrice(b.balance) }} руб.
-              </td>
-              <td />
-            </tr>
-            <tr
-              v-for="(balanceItem, i) in b.items"
-              :key="i"
-            >
-              <td>
-                <span
-                  v-if="balanceItem.sum > 0"
-                  class="text-success"
-                >
-                  +{{ formatPrice(balanceItem.sum) }} руб.
-                </span>
-                <span v-else-if="balanceItem.sum === 0" class="text-gray">
-                  0 руб.
-                </span>
-              </td>
-              <td>
-                <span
-                  v-if="balanceItem.sum < 0"
-                  class="text-error"
-                >
-                  {{ formatPrice(balanceItem.sum) }} руб.
-                </span>
-              </td>
-              <td />
-              <td>
-                {{ balanceItem.comment }}
-              </td>
-            </tr>
+            <tbody>
+              <tr>
+                <td width="140" />
+                <td width="140" />
+                <td width="180">
+                  {{ formatPrice(b.balance) }} руб.
+                </td>
+                <td />
+              </tr>
+              <tr
+                v-for="(balanceItem, i) in b.items"
+                :key="i"
+              >
+                <td>
+                  <span
+                    v-if="balanceItem.sum > 0"
+                    class="text-success"
+                  >
+                    +{{ formatPrice(balanceItem.sum) }} руб.
+                  </span>
+                  <span v-else-if="balanceItem.sum === 0" class="text-gray">
+                    0 руб.
+                  </span>
+                </td>
+                <td>
+                  <span
+                    v-if="balanceItem.sum < 0"
+                    class="text-error"
+                  >
+                    {{ formatPrice(balanceItem.sum) }} руб.
+                  </span>
+                </td>
+                <td />
+                <td>
+                  {{ balanceItem.comment }}
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>

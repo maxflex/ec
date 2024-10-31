@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import { mdiBookOpenBlankVariantOutline } from '@mdi/js'
 
-const { label } = withDefaults(
-  defineProps<{
-    label?: string
-    icon?: string
-  }>(),
-  {
-    label: 'нет данных',
-    icon: mdiBookOpenBlankVariantOutline,
-  },
-)
+const {
+  label = 'нет данных',
+  icon = mdiBookOpenBlankVariantOutline,
+} = defineProps<{
+  label?: string
+  icon?: string
+}>()
 </script>
 
 <template>

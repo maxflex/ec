@@ -207,6 +207,7 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
   }
   &__content {
     display: flex;
+    justify-content: space-between;
     padding: 20px;
     width: 100%;
     h3 {

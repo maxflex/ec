@@ -23,7 +23,7 @@ return new class extends Migration
                 array_column(Exam::cases(), 'name')
             );
             $table->unsignedSmallInteger('score');
-            $table->unsignedSmallInteger('max_score')->comment('Delete after use');
+            $table->unsignedSmallInteger('max_score')->nullable()->comment('Delete after use');
             $table->foreignIdFor(User::class)->nullable()->constrained();
             $table->timestamps();
         });
