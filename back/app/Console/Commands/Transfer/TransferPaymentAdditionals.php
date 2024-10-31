@@ -115,6 +115,7 @@ class TransferPaymentAdditionals extends Command
                 foreach ($clientLessons as $clientLesson) {
                     $contract = Contract::where('client_id', $clientLesson->entity_id)
                         ->where('year', $clientLesson->year)
+                        ->latest('id')
                         ->firstOrFail();
                     $contractVersionProgram = $this->getContractVersionProgram(
                         $contract->id,
