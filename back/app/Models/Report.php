@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\{LessonStatus, Program, TelegramTemplate};
+use App\Enums\{LessonStatus, Program, ReportStatus, TelegramTemplate};
 use App\Observers\ReportObserver;
 use Illuminate\Database\Eloquent\{Attributes\ObservedBy, Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Collection;
@@ -12,16 +12,14 @@ use Illuminate\Support\Facades\DB;
 class Report extends Model
 {
     protected $fillable = [
-        'year', 'program', 'price', 'homework_comment',
-        'is_moderated', 'is_published', 'client_id',
+        'year', 'program', 'price', 'client_id', 'status', 'grade',
         'recommendation_comment', 'knowledge_level_comment',
-        'cognitive_ability_comment', 'grade'
+        'cognitive_ability_comment', 'homework_comment',
     ];
 
     protected $casts = [
-        'is_moderated' => 'boolean',
-        'is_published' => 'boolean',
         'program' => Program::class,
+        'status' => ReportStatus::class
     ];
 
     public function teacher(): BelongsTo
@@ -124,12 +122,11 @@ class Report extends Model
                 c.client_id,
                 g.year,
                 g.program,
-                NULL as is_moderated,
-                NULL as is_published,
+                NULL as `status`,
                 NULL as created_at,
                 NULL as price,
                 COUNT(*) as lessons_count,
-                NULL as grade
+                NULL as `grade`
             ")
             ->where('l.status', LessonStatus::conducted->value)
             ->whereRaw("(lr.last_report_created_at IS NULL OR l.date > lr.last_report_created_at)")
@@ -152,8 +149,7 @@ class Report extends Model
             client_id,
             year,
             program,
-            is_moderated,
-            is_published,
+            `status`,
             created_at,
             price,
             NULL as lessons_count,

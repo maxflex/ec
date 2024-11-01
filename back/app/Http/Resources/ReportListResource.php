@@ -21,7 +21,7 @@ class ReportListResource extends JsonResource
         // real report
         if ($this->id) {
             return extract_fields($this, [
-                'year', 'program', 'is_published', 'is_moderated',
+                'year', 'program', 'status',
                 'price', 'created_at', 'grade'
             ], [
                 'lessons_count' => $this->lessons->count(),

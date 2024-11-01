@@ -9,8 +9,7 @@ const emit = defineEmits<{
 const modelDefaults: ReportResource = {
   id: newId(),
   year: currentAcademicYear(),
-  is_moderated: false,
-  is_published: false,
+  status: 'new',
   price: null,
   grade: null,
   client_lessons: [],
@@ -212,6 +211,13 @@ defineExpose({ edit, create })
           />
         </div>
         <div>
+          <v-select
+            v-model="item.status"
+            label="Статус"
+            :items="selectItems(ReportStatusLabel)"
+          />
+        </div>
+        <div>
           <v-textarea
             v-model="item.homework_comment"
             rows="3"
@@ -245,16 +251,6 @@ defineExpose({ edit, create })
             no-resize
             auto-grow
             label="Рекомендации родителям"
-          />
-        </div>
-        <div>
-          <v-checkbox
-            v-model="item.is_moderated"
-            label="Промодерирован"
-          />
-          <v-checkbox
-            v-model="item.is_published"
-            label="Опубликован"
           />
         </div>
       </div>

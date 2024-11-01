@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Transfer;
 
 use App\Enums\Program;
+use App\Enums\ReportStatus;
 use App\Utils\MigrationError;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -53,9 +54,7 @@ class TransferReports extends Command
                 'knowledge_level_comment' => $r->knowledge_comment,
                 'recommendation_comment' => $r->recommendation,
                 'grade' => round(($r->homework_score + $r->learning_ability_score + $r->knowledge_score) / 3),
-                'is_moderated' => ($r->is_not_moderated + 1) % 2,
-                'is_published' => $r->is_available_for_parents,
-                'moderated_user_id' => null, // раньше не было
+                'status' => $this->getStatus($r),
                 'price' => $r->price,
                 'created_at' => $r->created_at,
                 'updated_at' => $r->updated_at,
@@ -76,5 +75,21 @@ class TransferReports extends Command
             $bar->advance();
         }
         $bar->finish();
+    }
+
+    /**
+     * если доступно для родителей, то это значит в новой системе ставим статус 4 (опубликовано)
+     * если не доступно для родителей + НЕ СТОИТ метка «не промодерировано», то это значит в новой системе ставим статус 1 (не проверку)
+     * если не доступно для родителей + СТОИТ метка «не промодерировано», то это значит в новой системе ставим статус 2 (возвращено)
+     * таким образом статуса 3 на данный момент нет, но он будет
+     */
+    private function getStatus($r): ReportStatus
+    {
+        if ($r->is_available_for_parents) {
+            return ReportStatus::published;
+        }
+        return $r->is_not_moderated
+            ? ReportStatus::refused
+            : ReportStatus::new;
     }
 }

@@ -22,9 +22,9 @@ const model = defineModel<ReportFilters>({ required: true })
     density="comfortable"
   />
   <UiClearableSelect
-    v-model="model.is_published"
-    label="Публикация"
-    :items="yesNo('опубликован', 'не опубликован')"
+    v-model="model.status"
+    label="Статус"
+    :items="selectItems(ReportStatusLabel)"
     density="comfortable"
   />
 </template>

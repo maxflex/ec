@@ -50,9 +50,8 @@ declare global {
   interface ReportFilters {
     year: Year
     program?: Program
-    is_moderated?: number
-    is_published?: number
     type?: number
+    status?: ReportStatus
   }
 
   interface TopicFilters {

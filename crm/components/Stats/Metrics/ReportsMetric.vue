@@ -8,8 +8,7 @@
 interface Filters {
   year?: Year
   program?: Program
-  is_moderated?: number
-  is_published?: number
+  status?: ReportStatus
   // type: 'payments' | 'returns'
 }
 
@@ -33,16 +32,9 @@ export default {
   </div>
   <div>
     <UiClearableSelect
-      v-model="filters.is_moderated"
-      :items="yesNo()"
-      label="Промодерировано"
-    />
-  </div>
-  <div>
-    <UiClearableSelect
-      v-model="filters.is_published"
-      :items="yesNo()"
-      label="Опубликовано"
+      v-model="filters.status"
+      :items="selectItems(ReportStatusLabel)"
+      label="Статус"
     />
   </div>
 </template>

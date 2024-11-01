@@ -12,7 +12,7 @@ class ReportController extends Controller
 {
     protected $filters = [
         'equals' => [
-            'year', 'program', 'is_published', 'is_moderated', 'client_id', 'teacher_id'
+            'year', 'program', 'status', 'client_id', 'teacher_id'
         ],
         'type' => ['type']
     ];
@@ -45,7 +45,6 @@ class ReportController extends Controller
      */
     public function show(Report $report, Request $request)
     {
-        abort_if(!$report->is_published && $request->has('is_published'), 404);
         return new ReportResource($report);
     }
 

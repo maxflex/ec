@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Enums\ReportStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReportListResource;
 use App\Http\Resources\ReportResource;
@@ -21,7 +22,7 @@ class ReportController extends Controller
      */
     public function show(Report $report)
     {
-        abort_if(!$report->is_published, 404);
+        abort_if($report->status !== ReportStatus::published, 404);
         abort_if($report->client_id !== auth()->id(), 404);
         return new ReportResource($report);
     }

@@ -8,13 +8,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
+        Schema::dropIfExists('reports');
         Schema::create('reports', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Teacher::class)->constrained();
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('year')->index();
             $table->enum(
                 'program',
-                collect(Program::cases())->map(fn ($e) => $e->name)->all()
+                collect(Program::cases())->map(fn($e) => $e->name)->all()
             )->index();
             $table->mediumText('homework_comment')->nullable();
             $table->mediumText('cognitive_ability_comment')->nullable();

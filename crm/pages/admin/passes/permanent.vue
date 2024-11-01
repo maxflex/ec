@@ -31,7 +31,7 @@ const { indexPageData, items } = useIndex<PersonResource, Filters>(`passes/perma
         :items="selectItemsFiltered"
       />
     </template>
-    <template #info>
+    <template #header>
       <v-table>
         <tbody>
           <tr>

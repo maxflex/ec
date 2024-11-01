@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ReportDialog } from '#build/components'
-import { mdiCheckAll, mdiWeb } from '@mdi/js'
+import { mdiWeb } from '@mdi/js'
 
 const props = defineProps<{
   items: ReportListResource[]
@@ -16,7 +16,7 @@ function isRealReport(r: ReportListResource): r is RealReport {
 
 function isEditable(r: RealReport): boolean {
   if (isTeacher) {
-    return !r.is_moderated
+    return r.status === 'published'
   }
   else if (isAdmin) {
     return true
@@ -90,7 +90,7 @@ function onDeleted(r: ReportResource) {
           class="text-center d-flex ga-5"
         >
           <v-icon
-            v-if="r.is_published"
+            v-if="r.status === 'published'"
             :icon="mdiWeb"
             color="secondary"
             @click="router.push({ name: 'reports-id', params: { id: r.id } })"
@@ -100,13 +100,6 @@ function onDeleted(r: ReportResource) {
             class="opacity-2"
             :icon="mdiWeb"
             color="gray"
-          />
-          <v-icon
-            :class="{
-              'opacity-2': !r.is_moderated,
-            }"
-            :icon="mdiCheckAll"
-            :color="r.is_moderated ? 'black' : 'gray'"
           />
         </div>
         <div style="width: 100px; flex: initial" class="text-gray">

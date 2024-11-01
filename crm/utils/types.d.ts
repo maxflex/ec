@@ -3,6 +3,8 @@ import type Metrics from '~/components/Stats/Metrics'
 declare global {
   type RequestDirection = keyof typeof RequestDirectionLabel
 
+  type ReportStatus = keyof typeof ReportStatusLabel
+
   type PassStatus = keyof typeof PassStatusLabel
 
   type PassType = keyof typeof PassTypeLabel
@@ -638,8 +640,7 @@ declare global {
   interface RealReport {
     id: number
     year: Year
-    is_published: boolean
-    is_moderated: boolean
+    status: ReportStatus
     teacher: PersonResource
     client: PersonResource
     program: Program
@@ -675,8 +676,7 @@ declare global {
   interface ReportResource {
     id: number
     year: Year
-    is_published: boolean
-    is_moderated: boolean
+    status: ReportStatus
     homework_comment?: string
     cognitive_ability_comment?: string
     knowledge_level_comment?: string

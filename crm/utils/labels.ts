@@ -1844,3 +1844,10 @@ export const RequestDirectionLabel = {
   english: 'английский',
   online: 'онлайн',
 } as const
+
+export const ReportStatusLabel = {
+  new: 'на проверку',
+  refused: 'возвращено',
+  moderated: 'промодерировано',
+  published: 'опубликовано',
+} as const

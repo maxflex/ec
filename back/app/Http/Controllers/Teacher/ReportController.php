@@ -41,7 +41,6 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
      */
     public function show(Report $report, Request $request)
     {
-        abort_if(!$report->is_published && $request->has('is_published'), 404);
         abort_if($report->teacher_id !== auth()->id(), 404);
         return new ReportResource($report);
     }
