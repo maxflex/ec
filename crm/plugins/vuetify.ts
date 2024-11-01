@@ -1,5 +1,7 @@
 import type { ThemeDefinition } from 'vuetify'
 import {
+  mdiCheck,
+  mdiCheckAll,
   mdiCheckDecagram,
   mdiChevronDown,
   mdiClockOutline,
@@ -12,6 +14,7 @@ import {
   mdiKeyboardBackspace,
   mdiMagnify,
   mdiPassport,
+  mdiPrinter,
   mdiSend,
   mdiTuneVertical,
 } from '@mdi/js'
@@ -36,6 +39,9 @@ const icons = {
     time: mdiClockOutline,
     pass: mdiPassport,
     back: mdiKeyboardBackspace,
+    print: mdiPrinter,
+    check: mdiCheck,
+    checkAll: mdiCheckAll,
   },
   sets: {
     mdi,

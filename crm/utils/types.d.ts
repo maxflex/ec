@@ -1067,6 +1067,20 @@ declare global {
     teacher?: PersonResource
     created_at?: string
   }
+
+  interface GroupActResource {
+    id: number
+    date: string
+    date_from: string
+    date_to: string
+    group_id?: number
+    teacher_id?: number
+    teacher?: PersonResource
+    lessons?: number
+    sum?: number
+    user?: PersonResource
+    created_at?: string
+  }
 }
 
 export {}

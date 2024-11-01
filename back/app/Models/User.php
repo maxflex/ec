@@ -39,6 +39,11 @@ class User extends Authenticatable implements CanLogin
         return $this->hasMany(Pass::class);
     }
 
+    public function groupActs(): HasMany
+    {
+        return $this->hasMany(GroupAct::class);
+    }
+
     public function clientTests(): HasMany
     {
         return $this->hasMany(ClientTest::class);

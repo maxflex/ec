@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ProgramDialog } from '#build/components'
-import { mdiCheckAll, mdiPrinter } from '@mdi/js'
 import { clone } from 'rambda'
 
 const emit = defineEmits<{
@@ -306,7 +305,7 @@ defineExpose({ edit, newContract, newVersion })
               <template #activator="{ props }">
                 <v-btn
                   v-bind="props"
-                  :icon="mdiPrinter"
+                  icon="$print"
                   :size="48"
                   variant="text"
                 />
@@ -354,7 +353,7 @@ defineExpose({ edit, newContract, newVersion })
               type="number"
               hide-spin-buttons
             />
-            <v-icon v-if="isPaymentSumValid" color="success" :icon="mdiCheckAll" />
+            <v-icon v-if="isPaymentSumValid" color="success" icon="$checkAll" />
           </div>
           <UiDateInput v-model="item.date" today-btn />
         </div>

@@ -5,6 +5,7 @@ const tabs = {
   schedule: 'расписание',
   visits: 'посещаемость',
   students: 'ученики',
+  acts: 'акты',
 } as const
 
 const selectedTab = ref<keyof typeof tabs>('schedule')
@@ -83,6 +84,7 @@ nextTick(loadData)
       :program="group.program"
     />
     <GroupVisitsTab v-else-if="selectedTab === 'visits'" :id="group.id" />
+    <GroupActTab v-else-if="selectedTab === 'acts'" :id="group.id" />
     <GroupStudentsTab v-else :group="group" />
   </template>
   <GroupDialog

@@ -17,7 +17,7 @@ const { dialog, width } = useDialog('default')
 const loading = ref(false)
 const itemId = ref<number | undefined>()
 const item = ref<UserResource>(clone(modelDefaults))
-const destroying = ref(false)
+const deleting = ref(false)
 
 function openDialog(u: UserResource) {
   item.value = clone(u)
@@ -58,17 +58,17 @@ async function destroy() {
   if (!confirm('Вы уверены, что хотите удалить пользователя?')) {
     return
   }
-  destroying.value = true
+  deleting.value = true
   const { data, status } = await useHttp<UserResource>(`users/${item.value.id}`, {
     method: 'delete',
   })
   if (status.value === 'error') {
-    destroying.value = false
+    deleting.value = false
   }
   else if (data.value) {
     emit('destroyed', data.value)
     dialog.value = false
-    setTimeout(() => destroying.value = false, 300)
+    setTimeout(() => deleting.value = false, 300)
   }
 }
 
@@ -99,7 +99,7 @@ defineExpose({ create, edit })
         <div>
           <v-btn
             v-if="itemId"
-            :loading="destroying"
+            :loading="deleting"
             :size="48"
             class="remove-btn"
             icon="$delete"

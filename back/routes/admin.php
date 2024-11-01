@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\Admin\{BalanceController,
+use App\Http\Controllers\Admin\{
+    BalanceController,
     CallController,
     ClientController,
     ClientGroupController,
@@ -41,7 +42,9 @@ use App\Http\Controllers\Admin\{BalanceController,
     TestController,
     TopicController,
     UserController,
-    WebReviewController};
+    WebReviewController,
+    GroupActController
+};
 use App\Http\Controllers\Common\LogController;
 use Illuminate\Support\Facades\Route;
 
@@ -116,6 +119,7 @@ Route::middleware(['auth:crm'])->group(function () {
         'requests' => RequestsController::class,
         'clients' => ClientController::class,
         'groups' => GroupController::class,
+        'group-acts' => GroupActController::class,
         'client-groups' => ClientGroupController::class,
         'contracts' => ContractController::class,
         'contract-versions' => ContractVersionController::class,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-const { label = 'Преподаватель' } = defineProps<{ label: string }>()
-const model = defineModel<number | null>()
+const { label = 'Преподаватель' } = defineProps<{ label?: string }>()
+const model = defineModel<number | null >()
 const teachers = useTeachers()
 </script>
 
