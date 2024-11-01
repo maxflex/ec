@@ -188,11 +188,10 @@ nextTick(loadData)
   &__final {
     border-top: 1px solid rgb(var(--v-theme-border));
     margin-top: 20px;
-    padding-top: 20px;
+    padding: 20px;
     display: flex;
     align-items: center;
     gap: 10px;
-    padding-left: 20px;
     &-title {
       font-weight: bold;
       font-size: 20px;

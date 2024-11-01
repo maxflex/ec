@@ -6,7 +6,7 @@ const router = useRouter()
 </script>
 
 <template>
-  <v-table fixed-header height="calc(100vh - 81px)" hover class="grades-table">
+  <v-table hover class="grades-table">
     <thead>
       <tr>
         <th />
