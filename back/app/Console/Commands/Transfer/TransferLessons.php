@@ -5,7 +5,6 @@ namespace App\Console\Commands\Transfer;
 use App\Enums\Cabinet;
 use App\Enums\Quarter;
 use Illuminate\Console\Command;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -26,7 +25,7 @@ class TransferLessons extends Command
             ->selectRaw("
                 l.*, 
                 if(g.is_free, 1, l.is_free) as is_free,
-                g.year
+                g.year, g.grade_id
             ")
             ->get();
         $bar = $this->output->createProgressBar($lessons->count());
@@ -60,7 +59,7 @@ class TransferLessons extends Command
     private function getQuarter($l): ?Quarter
     {
         $year = intval($l->year);
-        if ($year !== 2023) {
+        if (!($year === 2023 && $l->grade_id === 16)) {
             return null;
         }
         $lessonDate = $l->date;

@@ -37,7 +37,7 @@ class TransferCommand extends Command
                      'passes',
                      'vacations',
                      'grades',
-                     'group-acts'
+                     'group-acts',
         ] as $command) {
             $this->info(str($command)->ucfirst());
             $this->call("app:transfer:$command");

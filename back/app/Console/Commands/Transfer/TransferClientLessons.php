@@ -34,6 +34,10 @@ class TransferClientLessons extends Command
                 $item->grade_id,
                 $item->subject_id
             );
+            $scores = $item->score ? json_encode([[
+                'score' => $item->score,
+                'score_comment' => $this->nullify($item->score_comment)
+            ]]) : null;
             $newId = DB::table('client_lessons')->insertGetId([
                 'lesson_id' => $item->lesson_id,
                 'contract_version_program_id' => $contractVersionProgram->id,
@@ -41,6 +45,7 @@ class TransferClientLessons extends Command
                 'status' => $status->name,
                 'minutes_late' => $status === ClientLessonStatus::late && $item->late ? $item->late : null,
                 'is_remote' => $item->is_remote,
+                'scores' => $scores,
             ]);
             if ($contractVersionProgram->error) {
                 MigrationError::create(

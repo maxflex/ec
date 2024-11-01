@@ -1586,7 +1586,7 @@ export const LessonScoreLabel = {
   4: 'четыре',
   3: 'три',
   2: 'два',
-}
+} as const
 
 export const YearLabel = {
   2024: '2024–2025 уч. г.',
