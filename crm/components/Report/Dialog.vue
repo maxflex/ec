@@ -179,9 +179,14 @@ defineExpose({ edit, create })
           />
         </div>
         <div class="double-input">
+          <v-select
+            v-model="item.status"
+            label="Статус"
+            :items="selectItems(ReportStatusLabel)"
+          />
           <v-select v-model="item.grade" label="Оценка" :items="selectItems(LessonScoreLabel)">
             <template #selection="{ item: { raw: { value } } }">
-              <span class="`score score--${value}`" style="position: absolute;">
+              <span :class="`score score--${value}`" style="position: absolute;">
                 {{ value }}
               </span>
               <span class="ml-10">
@@ -210,13 +215,7 @@ defineExpose({ edit, create })
             hide-spin-buttons
           />
         </div>
-        <div>
-          <v-select
-            v-model="item.status"
-            label="Статус"
-            :items="selectItems(ReportStatusLabel)"
-          />
-        </div>
+
         <div>
           <v-textarea
             v-model="item.homework_comment"

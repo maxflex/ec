@@ -61,7 +61,7 @@ nextTick(loadData)
 }
 
 $diff-bg-color: #f2f4f8;
-$diff-text-color: invert($diff-bg-color) !default;
+$diff-text-color: color.invert($diff-bg-color) !default;
 
 $diff-bg-color-ins-base: #8e8 !default;
 $diff-bg-color-del-base: #e88 !default;
