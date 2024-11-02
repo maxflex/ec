@@ -666,6 +666,7 @@ declare global {
     status: ClientLessonStatus
     minutes_late: number
     is_remote: boolean
+    scores: ClientLessonScore[]
     lesson: {
       id: number
       date: string

@@ -24,14 +24,14 @@ class TransferClientPayments extends Command
         $items = DB::connection('egecrm')
             ->table('payments')
             ->whereIn('entity_type', [
-                ET_CLIENT,
-                ET_CONTRACT,
+                self::ET_CLIENT,
+                self::ET_CONTRACT,
             ])
             ->where('category', '<>', 'lunch')
             ->get();
         $bar = $this->output->createProgressBar($items->count());
         foreach ($items as $p) {
-            $isContractPayment = $p->entity_type === ET_CONTRACT;
+            $isContractPayment = $p->entity_type === self::ET_CONTRACT;
             if ($isContractPayment) {
                 DB::table('contract_payments')->insert([
                     'sum' => $p->sum,

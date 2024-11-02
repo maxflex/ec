@@ -66,10 +66,11 @@ const router = useRouter()
         :class="{ 'no-items': item.user_id }"
       />
       <CommentBtn
+        :size="42"
         :class="{ 'no-items': item.comments_count === 0 }"
         :count="item.comments_count"
         :entity-id="item.id"
-        entity-type="request"
+        :entity-type="EntityTypeValue.request"
       />
       <div
         class="badge"

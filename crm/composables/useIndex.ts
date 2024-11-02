@@ -24,6 +24,7 @@ export default function<T, F extends object = object, E extends object = object>
   })
 
   const extra = ref({}) as Ref<E>
+  const total = ref<number>()
 
   // любая загрузка
   const loading = ref(false)
@@ -72,6 +73,7 @@ export default function<T, F extends object = object, E extends object = object>
         items.value = items.value.concat(newItems)
       }
       isLastPage = meta.current_page >= meta.last_page
+      total.value = meta.total
     }
     loading.value = false
     setScrollContainer()
@@ -119,6 +121,7 @@ export default function<T, F extends object = object, E extends object = object>
     items,
     extra,
     loading,
+    total,
     indexPageData,
     reloadData,
   }

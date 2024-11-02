@@ -27,7 +27,7 @@ class TransferFiles extends Command
             ->table('files', 'f')
             ->join('lessons as l', 'l.id', '=', 'f.entity_id')
             ->join('groups as g', 'g.id', '=', 'l.group_id')
-            ->where('f.entity_type', ET_LESSON)
+            ->where('f.entity_type', self::ET_LESSON)
             ->where('g.year', 2024)
             ->selectRaw('f.*')
             ->get()

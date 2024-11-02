@@ -36,7 +36,7 @@ class TransferClientLessons extends Command
             );
             $scores = $item->score ? json_encode([[
                 'score' => $item->score,
-                'score_comment' => $this->nullify($item->score_comment)
+                'comment' => $this->nullify($item->score_comment)
             ]]) : null;
             $newId = DB::table('client_lessons')->insertGetId([
                 'lesson_id' => $item->lesson_id,

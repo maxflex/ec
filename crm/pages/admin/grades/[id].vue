@@ -28,6 +28,11 @@ function setFinalGrade(grade: LessonScore) {
   })
 }
 
+function setQuarter(q: Quarter) {
+  quarter.value = q
+  smoothScroll('main', 'top', 'instant')
+}
+
 nextTick(loadData)
 </script>
 
@@ -40,7 +45,7 @@ nextTick(loadData)
       :class="{ 'tab-btn--active': quarter === key }"
       variant="plain"
       :ripple="false"
-      @click="quarter = key"
+      @click="setQuarter(key)"
     >
       {{ q }}
     </v-btn>

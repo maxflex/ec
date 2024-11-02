@@ -52,7 +52,7 @@ class TransferPaymentAdditionals extends Command
         $data = DB::connection('egecrm')
             ->table('payment_additionals')
             ->whereLike('purpose', '%дополнительное%')
-            ->where('entity_type', ET_TEACHER)
+            ->where('entity_type', self::ET_TEACHER)
             ->selectRaw("entity_id, purpose, `year`")
             ->groupByRaw("entity_id, purpose, `year`")
             ->get();
@@ -81,7 +81,7 @@ class TransferPaymentAdditionals extends Command
 
             $payments = DB::connection('egecrm')
                 ->table('payment_additionals')
-                ->where('entity_type', ET_TEACHER)
+                ->where('entity_type', self::ET_TEACHER)
                 ->where('year', $d->year)
                 ->where('entity_id', $d->entity_id)
                 ->where('purpose', $d->purpose)
@@ -106,7 +106,7 @@ class TransferPaymentAdditionals extends Command
 
                 $clientLessons = DB::connection('egecrm')
                     ->table('payment_additionals')
-                    ->where('entity_type', ET_CLIENT)
+                    ->where('entity_type', self::ET_CLIENT)
                     ->where('year', $d->year)
                     ->where('date', $payment->date)
                     ->where('purpose', $d->purpose)

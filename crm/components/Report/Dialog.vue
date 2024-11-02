@@ -15,17 +15,24 @@ const modelDefaults: ReportResource = {
   client_lessons: [],
 }
 const { dialog, width } = useDialog('large')
+const { isTeacher } = useAuthStore()
 const itemId = ref<number>()
 let fakeItemId: string = ''
 const item = ref<ReportResource>(modelDefaults)
 const loading = ref(false)
 const deleting = ref(false)
 
-// для отображения занятий при создании нового отчёта
-const clientLessons = ref<ReportClientLessonResource[]>([])
+// если статус = разрабатывается или на проверку, или пустой отчет,
+// то препод может редактировать все. Если остальные типы, то отчет нельзя редактировать
+const isDisabled = computed(() => {
+  return isTeacher && !([
+    'new',
+    'toCheck',
+    'empty',
+  ] as ReportStatus[]).includes(item.value.status)
+})
 
 async function edit(reportId: number) {
-  clientLessons.value = []
   itemId.value = reportId
   dialog.value = true
   loading.value = true
@@ -40,7 +47,6 @@ async function edit(reportId: number) {
 
 async function create(r: FakeReport) {
   itemId.value = undefined
-  clientLessons.value = []
   fakeItemId = r.id
   const { year, program, teacher, client } = r
   item.value = clone({
@@ -58,7 +64,7 @@ async function create(r: FakeReport) {
       client_id: client.id,
     },
   })
-  clientLessons.value = data.value!
+  item.value.client_lessons = data.value!
 }
 
 async function destroy() {
@@ -123,31 +129,41 @@ defineExpose({ edit, create })
           Новый отчёт
         </template>
         <div>
-          <v-btn
-            v-if="itemId"
-            icon="$delete"
-            :size="48"
-            class="remove-btn"
-            variant="text"
-            :loading="deleting"
-            @click="destroy()"
-          />
+          <template v-if="itemId">
+            <v-btn
+              v-if="!isDisabled"
+              icon="$delete"
+              :size="48"
+              class="remove-btn"
+              variant="text"
+              :loading="deleting"
+              @click="destroy()"
+            />
+            <div style="position: relative; display: inline-block">
+              <CommentBtn
+                variant="text"
+                :entity-id="itemId"
+                :entity-type="EntityTypeValue.report"
+              />
+            </div>
+          </template>
           <v-btn
             icon="$save"
             :size="48"
             variant="text"
+            :disabled="isDisabled"
             @click="save()"
           />
         </div>
       </div>
       <UiLoader v-if="loading" />
       <div v-else class="dialog-body">
-        <template v-if="clientLessons.length">
-          <div class="font-weight-bold">
+        <div v-if="item.client_lessons.length">
+          <div class="font-weight-bold mb-4">
             Посещаемость и пройденные темы:
           </div>
-          <ReportClientLessons :items="clientLessons" />
-        </template>
+          <ReportClientLessons :items="item.client_lessons" />
+        </div>
         <div class="double-input">
           <div v-if="item.teacher">
             <v-text-field
@@ -183,8 +199,14 @@ defineExpose({ edit, create })
             v-model="item.status"
             label="Статус"
             :items="selectItems(ReportStatusLabel)"
+            :disabled="isDisabled"
           />
-          <v-select v-model="item.grade" label="Оценка" :items="selectItems(LessonScoreLabel)">
+          <v-select
+            v-model="item.grade"
+            label="Оценка"
+            :items="selectItems(LessonScoreLabel)"
+            :disabled="isDisabled"
+          >
             <template #selection="{ item: { raw: { value } } }">
               <span :class="`score score--${value}`" style="position: absolute;">
                 {{ value }}
@@ -209,6 +231,7 @@ defineExpose({ edit, create })
           </v-select>
           <v-text-field
             v-model="item.price"
+            :disabled="isDisabled"
             label="Цена"
             type="number"
             suffix="руб."
@@ -219,6 +242,7 @@ defineExpose({ edit, create })
         <div>
           <v-textarea
             v-model="item.homework_comment"
+            :disabled="isDisabled"
             rows="3"
             no-resize
             auto-grow
@@ -228,6 +252,7 @@ defineExpose({ edit, create })
         <div>
           <v-textarea
             v-model="item.cognitive_ability_comment"
+            :disabled="isDisabled"
             rows="3"
             no-resize
             auto-grow
@@ -237,6 +262,7 @@ defineExpose({ edit, create })
         <div>
           <v-textarea
             v-model="item.knowledge_level_comment"
+            :disabled="isDisabled"
             rows="3"
             no-resize
             auto-grow
@@ -246,6 +272,7 @@ defineExpose({ edit, create })
         <div>
           <v-textarea
             v-model="item.recommendation_comment"
+            :disabled="isDisabled"
             rows="3"
             no-resize
             auto-grow

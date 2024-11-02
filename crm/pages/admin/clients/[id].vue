@@ -71,7 +71,7 @@ nextTick(loadData)
         <div class="panel-actions">
           <CommentBtn
             :entity-id="client.id"
-            entity-type="client"
+            :entity-type="EntityTypeValue.client"
           />
           <PreviewMode :client-id="client.id" />
           <v-btn

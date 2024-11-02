@@ -14,7 +14,7 @@ class ReportClientLessonResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'status', 'minutes_late', 'is_remote'
+            'status', 'minutes_late', 'is_remote', 'scores'
         ], [
             'lesson' => extract_fields($this->lesson, [
                 'date', 'topic'

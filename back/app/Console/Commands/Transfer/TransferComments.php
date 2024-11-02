@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands\Transfer;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class TransferComments extends Command
@@ -18,7 +18,11 @@ class TransferComments extends Command
         DB::table('comments')->truncate();
         $comments = DB::connection('egecrm')
             ->table('comments')
-            ->whereIn('entity_type', [ET_CLIENT, ET_REQUEST])
+            ->whereIn('entity_type', [
+                self::ET_CLIENT,
+                self::ET_REQUEST,
+                self::ET_REPORT
+            ])
             ->get();
         $bar = $this->output->createProgressBar($comments->count());
         foreach ($comments as $c) {

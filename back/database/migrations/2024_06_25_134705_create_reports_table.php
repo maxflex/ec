@@ -33,7 +33,7 @@ return new class extends Migration
             $table->enum(
                 'status',
                 array_column(ReportStatus::cases(), 'value')
-            )->index();
+            )->default(ReportStatus::new)->index();
             $table->timestamps();
         });
         Schema::table('reports', function (Blueprint $table) {

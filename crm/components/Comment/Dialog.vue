@@ -3,10 +3,10 @@ import { mdiSendVariant } from '@mdi/js'
 
 const { entityId, entityType } = defineProps<{
   entityId: number
-  entityType: EntityString
+  entityType: EntityType
 }>()
 const emit = defineEmits<{ (e: 'created'): void }>()
-const { dialog, width } = useDialog('default')
+const { dialog, width, transition } = useDialog('default')
 const comments = ref<CommentResource[]>([])
 const input = ref()
 const wrapper = ref<HTMLDivElement | null>(null)
@@ -31,12 +31,12 @@ async function send() {
   if (!text.value.length) {
     return
   }
-  const { data } = await useHttp<CommentResource>('comments', {
+  const { data } = await useHttp<CommentResource>(`comments`, {
     method: 'post',
     body: {
       text: text.value,
       entity_id: entityId,
-      entity_type: EntityTypeValue[entityType],
+      entity_type: entityType,
     },
   })
   if (data.value) {
@@ -50,12 +50,15 @@ async function send() {
 }
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<CommentResource>>('comments', {
-    params: {
-      entity_id: entityId,
-      entity_type: EntityTypeValue[entityType],
+  const { data } = await useHttp<ApiResponse<CommentResource>>(
+    `comments`,
+    {
+      params: {
+        entity_id: entityId,
+        entity_type: entityType,
+      },
     },
-  })
+  )
   if (data.value) {
     noScroll.value = true
     comments.value = data.value.data
@@ -74,6 +77,7 @@ defineExpose({ open })
   <v-dialog
     v-model="dialog"
     :width="width"
+    :transition="transition"
   >
     <div
       ref="wrapper"

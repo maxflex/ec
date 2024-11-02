@@ -1569,6 +1569,7 @@ export const EntityTypeValue = {
   teacher: 'App\\Models\\Teacher',
   user: 'App\\Models\\User',
   group: 'App\\Models\\Group',
+  report: 'App\\Models\\Report',
 } as const
 
 export const EntityTypeLabel = {
@@ -1579,6 +1580,7 @@ export const EntityTypeLabel = {
   'App\\Models\\Teacher': 'преподаватель',
   'App\\Models\\User': 'администратор',
   'App\\Models\\Group': 'группа',
+  'App\\Models\\Report': 'отчет',
 } as const
 
 export const LessonScoreLabel = {
@@ -1846,8 +1848,11 @@ export const RequestDirectionLabel = {
 } as const
 
 export const ReportStatusLabel = {
-  new: 'на проверку',
+  new: 'новый',
+  toCheck: 'на проверку',
   refused: 'возвращено',
   moderated: 'промодерировано',
   published: 'опубликовано',
+  empty: 'пустой отчет',
+  emptyApproved: 'одобренный пустой отчет',
 } as const

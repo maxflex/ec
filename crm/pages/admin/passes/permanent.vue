@@ -18,7 +18,7 @@ const filters = ref<Filters>({
   entity: client,
 })
 
-const { indexPageData, items } = useIndex<PersonResource, Filters>(`passes/permanent`, filters)
+const { indexPageData, items, total } = useIndex<PersonResource, Filters>(`passes/permanent`, filters)
 </script>
 
 <template>
@@ -30,12 +30,15 @@ const { indexPageData, items } = useIndex<PersonResource, Filters>(`passes/perma
         label="Тип"
         :items="selectItemsFiltered"
       />
+      <div class="text-gray">
+        всего: {{ total }}
+      </div>
     </template>
     <template #header>
       <v-table>
         <tbody>
           <tr>
-            <td style="background: #f5f5f5">
+            <td class="permanent-pass-info" style="">
               <template v-if="filters.entity === user">
                 Администраторы с параметром "действующий сотрудник"
               </template>
@@ -43,7 +46,22 @@ const { indexPageData, items } = useIndex<PersonResource, Filters>(`passes/perma
                 Преподаватели со статусом "ведет занятия сейчас"
               </template>
               <template v-else>
-                Ученики, которые имеют хотя бы один договор в текущем учебном году
+                <p>
+                  {{ filters.entity === client ? 'Ученики' : 'Представители' }}, которые имеют хотя бы 1 нужный договор.
+                </p>
+
+                <p class="mt-2">
+                  Что такое нужные договоры:
+                </p>
+
+                <ui>
+                  <li>
+                    если сейчас период 01.01.23-31.07.23, то нужными договорами считаются договоры 2023-2024 или 2024-2025 учебных годов
+                  </li>
+                  <li>
+                    если сейчас период 01.08.23-31.12.23, то нужными договорами считаются договора 2024-2025 учебного года
+                  </li>
+                </ui>
               </template>
             </td>
           </tr>
@@ -64,3 +82,12 @@ const { indexPageData, items } = useIndex<PersonResource, Filters>(`passes/perma
     </v-table>
   </UiIndexPage>
 </template>
+
+<style lang="scss">
+.permanent-pass-info {
+  $padding: 20px !important;
+  background: #f5f5f5;
+  padding-top: $padding;
+  padding-bottom: $padding;
+}
+</style>

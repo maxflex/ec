@@ -19,6 +19,14 @@ const item = ref<HeadTeacherReportResource>({ ...modelDefaults })
 
 const isEditMode = computed(() => item.value.id > 0)
 
+const months = [10, 11, 12, 1, 2, 3, 4, 5].map(m => ({
+  title: [
+    MonthLabel[m as Month],
+    item.value.year + (m <= 5 ? 1 : 0),
+  ].join(' '),
+  value: m,
+}))
+
 function edit(headTeacherReport: HeadTeacherReportResource) {
   item.value = clone(headTeacherReport)
   dialog.value = true
@@ -104,7 +112,7 @@ defineExpose({ edit, create })
       </div>
       <div class="dialog-body">
         <div class="double-input">
-          <v-select v-model="item.month" :items="selectItems(MonthLabel)" label="Месяц" />
+          <v-select v-model="item.month" :items="months" label="Месяц" />
           <UiYearSelector v-model="item.year" disabled />
         </div>
         <div>

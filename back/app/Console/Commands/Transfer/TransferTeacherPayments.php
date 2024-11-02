@@ -18,7 +18,7 @@ class TransferTeacherPayments extends Command
         DB::table('teacher_payments')->delete();
         $items = DB::connection('egecrm')
             ->table('payments')
-            ->where('entity_type', ET_TEACHER)
+            ->where('entity_type', self::ET_TEACHER)
             ->where('category', '<>', 'lunch')
             ->get();
         $bar = $this->output->createProgressBar($items->count());

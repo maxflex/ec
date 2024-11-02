@@ -50,11 +50,14 @@ trait TransferTrait
         38 => 'eng-spoken',
     ];
 
-    // const CLIENT = 'App\\Models\\Client\\Client';
-    // const PARENT = 'App\\Models\\Client\\Representative';
-    // const REQUEST = 'App\\Models\\Request';
-    // const ADMIN = 'App\\Models\\Admin\\Admin';
-    // const TEACHER = 'App\\Models\\Teacher';
+    const ET_CLIENT = 'App\\Models\\Client\\Client';
+    const ET_CONTRACT = 'App\\Models\\Contract\\Contract';
+    const ET_PARENT = 'App\\Models\\Client\\Representative';
+    const ET_REQUEST = 'App\\Models\\Request';
+    const ET_ADMIN = 'App\\Models\\Admin\\Admin';
+    const ET_LESSON = 'App\\Models\\Lesson\\Lesson';
+    const ET_TEACHER = 'App\\Models\\Teacher';
+    const ET_REPORT = 'App\\Models\\Report\\Report';
 
     protected function getUserId($createdEmailId): ?int
     {
@@ -97,11 +100,11 @@ trait TransferTrait
     private function mapEntity($entityType)
     {
         return match ($entityType) {
-            ET_ADMIN => User::class,
-            ET_TEACHER => Teacher::class,
-            ET_REQUEST => Request::class,
-            ET_CLIENT => Client::class,
-            ET_PARENT => ClientParent::class,
+            self::ET_ADMIN => User::class,
+            self::ET_TEACHER => Teacher::class,
+            self::ET_REQUEST => Request::class,
+            self::ET_CLIENT => Client::class,
+            self::ET_PARENT => ClientParent::class,
             default => $entityType
         };
     }
