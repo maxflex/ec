@@ -32,7 +32,7 @@ class TransferGrades extends Command
                 'year' => $item->year,
                 'quarter' => Quarter::from('q' . $item->quarter),
                 'grade' => $item->score,
-                'user_id' => 5,
+                'teacher_id' => null,
                 'created_at' => now()->format('Y-m-d H:i:s'),
                 'updated_at' => now()->format('Y-m-d H:i:s'),
             ]);

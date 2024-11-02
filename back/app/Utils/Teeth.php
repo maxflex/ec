@@ -4,6 +4,7 @@ namespace App\Utils;
 
 use App\Enums\LessonStatus;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 
 class Teeth
 {
@@ -20,38 +21,61 @@ class Teeth
             ->where('is_unplanned', 0)
             ->where('g.year', $year)
             ->join('groups as g', 'g.id', '=', 'lessons.group_id')
-            ->selectRaw(<<<SQL
+            ->selectRaw("
                 DAYOFWEEK(`date`) as `weekday`,
                 `time`,
-                `time` + INTERVAL 125 MINUTE as `t_end`,
-                TIME_TO_SEC(`time`) as `start`,
-                TIME_TO_SEC(`time` + INTERVAL 125 MINUTE) as `end`
-            SQL)
-            ->groupBy('weekday', 'time')
+                IF(g.program LIKE '%School8' OR g.program LIKE '%School9', 55, 125) as `duration`
+            ")
+            ->groupBy('weekday', 'time', 'duration')
             ->get();
 
         $teeth = [];
         foreach ($lessons as $l) {
             $weekday = $l->weekday === 1 ? 6 : $l->weekday - 2;
-            $startPercent = self::getPercent($l->start);
-            $endPercent = self::getPercent($l->end);
-            // if (!isset($teeth[$weekday])) {
-            //     $teeth[$weekday] = [];
-            // }
+            [$start, $end] = self::getPercents($l);
             $teeth[$weekday][] = [
                 'time' => $l->time,
-                'time_end' => $l->t_end,
-                'left' => $startPercent,
-                'width' => $endPercent - $startPercent,
+                'time_end' => self::time($l->time)->addMinutes($l->duration)->format('H:i:s'),
+                'left' => $start,
+                'width' => $end - $start,
             ];
         }
         return (object) $teeth;
     }
 
-    private static function getPercent($seconds)
+
+    /**
+     * @return array{int, int}
+     */
+    private static function getPercents($l): array
+    {
+        $startSeconds = self::timeToSeconds($l->time);
+        $endSeconds = $startSeconds + $l->duration * 60;
+
+        return [
+            self::secondsToPercent($startSeconds),
+            self::secondsToPercent($endSeconds)
+        ];
+    }
+
+    /**
+     * 10:20 – 0%
+     * 20:40 – 100%
+     */
+    private static function secondsToPercent($seconds)
     {
         return intval(round(
             ($seconds - self::MIN_SECONDS) / (self::MAX_SECONDS - self::MIN_SECONDS) * 100
         ));
+    }
+
+    private static function timeToSeconds(string $time): int
+    {
+        return (int)self::time($time)->secondsSinceMidnight();
+    }
+
+    private static function time(string $time)
+    {
+        return Carbon::createFromFormat('H:i:s', $time);
     }
 }

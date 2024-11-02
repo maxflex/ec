@@ -27,7 +27,8 @@ class GradeListResource extends JsonResource
             ->where('client_id', $this->client_id)
             ->where('year', $this->year)
             ->where('program', $this->program)
-            ->pluck('grade', 'quarter');
+            ->get();
+//            ->pluck('grade', 'quarter');
 
         foreach (Quarter::cases() as $quarter) {
             $currentGroupId = ClientGroup::query()
@@ -40,8 +41,10 @@ class GradeListResource extends JsonResource
                 ->where('quarter', $q)
                 ->where('status', LessonStatus::planned)
                 ->count();
+            $grade = $grades->where('quarter', $q)->first();
             $quarters[$q] = [
-                'grade' => $grades[$q] ?? null,
+                'grade' => $grade?->grade,
+                'teacher' => new PersonResource($grade?->teacher),
                 'conducted' => $conducted,
                 'total' => $conducted + $planned,
             ];

@@ -10,12 +10,18 @@ use Illuminate\Support\Facades\DB;
 class Grade extends Model
 {
     protected $fillable = [
-        'grade', 'client_id', 'program', 'year', 'quarter'
+        'grade', 'client_id', 'program', 'year', 'quarter',
+        'teacher_id'
     ];
 
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public function teacher(): BelongsTo
+    {
+        return $this->belongsTo(Teacher::class);
     }
 
     /**
@@ -32,15 +38,14 @@ class Grade extends Model
             ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
             ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
             ->join('groups as g', 'g.id', '=', 'l.group_id')
-            ->selectRaw(<<<SQL
+            ->selectRaw("
                 CONCAT(c.client_id, '-',  g.`year`, '-', cvp.program) AS `id`,
                 c.client_id, cvp.program, cl.contract_version_program_id, g.year,
                 CAST(sum(if(`quarter` = 'q1', 1, 0)) AS UNSIGNED) AS `q1_cnt`,
                 CAST(sum(if(`quarter` = 'q2', 1, 0)) AS UNSIGNED) AS `q2_cnt`,
                 CAST(sum(if(`quarter` = 'q3', 1, 0)) AS UNSIGNED) AS `q3_cnt`,
                 CAST(sum(if(`quarter` = 'q4', 1, 0)) AS UNSIGNED) AS `q4_cnt`
-                SQL
-            )
+            ")
             ->groupByRaw('c.client_id, cvp.program, cl.contract_version_program_id, g.year');
 
         if ($teacherId) {

@@ -36,6 +36,7 @@ class GradeController extends Controller
         ]);
         [$clientId, $year, $program] = explode('-', $request->id);
         $grade = Grade::create([
+            'teacher_id' => auth()->id(),
             'client_id' => $clientId,
             'year' => $year,
             'program' => $program,

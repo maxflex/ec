@@ -793,6 +793,8 @@ declare global {
       conducted: number
       total: number
       grade: ?LessonScore
+      teacher?: PersonResource
+
       client_lessons: Array<{
         id: number
         is_remote: boolean

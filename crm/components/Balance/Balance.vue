@@ -62,7 +62,7 @@ nextTick(loadData)
                 <td width="140" />
                 <td width="140" />
                 <td width="180">
-                  {{ formatPrice(b.balance) }} руб.
+                  {{ formatPrice(b.balance, true) }} руб.
                 </td>
                 <td />
               </tr>
