@@ -29,12 +29,14 @@ const model = defineModel<any[]>({ required: true })
 .multiple-select {
   position: relative;
   .v-messages {
-    display: flex;
-    gap: 8px;
     overflow: scroll;
     white-space: nowrap;
     padding-left: 16px;
     opacity: 1 !important;
+    &__message {
+      display: flex;
+      gap: 8px;
+    }
     a {
       cursor: pointer;
       user-select: none;

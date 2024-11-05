@@ -59,23 +59,7 @@ nextTick(loadData)
       </div>
       <div>
         <div>Посещаемость и пройденные темы:</div>
-        <div>
-          <div v-for="cl in item.client_lessons" :key="cl.id">
-            {{ formatDate(cl.lesson.date) }} –
-            <span :class="{ 'text-error': cl.status === 'absent' }">
-              {{ ClientLessonStatusLabel[cl.status] }}
-            </span>
-            <template v-if="cl.status !== 'absent'">
-              {{ cl.is_remote ? ' удалённо' : ' очно' }}
-            </template>
-            <template v-if="cl.status === 'late'">
-              на {{ cl.minutes_late }} мин.
-            </template>
-            <template v-if="cl.lesson.topic">
-              ({{ cl.lesson.topic }})
-            </template>
-          </div>
-        </div>
+        <ReportClientLessons :items="item.client_lessons" />
       </div>
       <div v-if="item.homework_comment">
         <div>
