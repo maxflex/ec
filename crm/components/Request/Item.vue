@@ -38,7 +38,7 @@ const router = useRouter()
     </div>
     <div style="width: 130px">
       <span v-if="item.direction">
-        {{ RequestDirectionLabel[item.direction] }}
+        {{ DirectionLabel[item.direction] }}
       </span>
       <span v-else class="text-gray">
         отсутствует

@@ -141,7 +141,7 @@ defineExpose({ create, edit })
           <UiClearableSelect
             v-model="request.direction"
             label="Направление"
-            :items="selectItems(RequestDirectionLabel)"
+            :items="selectItems(DirectionLabel)"
           />
         </div>
         <div>

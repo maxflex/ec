@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
 const item = ref<GradeResource>()
+const changeScore = ref(false)
 
 async function loadData() {
   const { data } = await useHttp<GradeResource>(`grades/${route.params.id}`)
@@ -46,51 +47,42 @@ nextTick(loadData)
     </v-btn>
   </UiFilters>
   <div v-if="item && selected" class="grades">
-    <div class="grades__content">
-      <div>
-        <div>
-          Ученик:
-        </div>
-        <div>
-          <UiPerson :item="item.client" />
-        </div>
-      </div>
-      <div>
-        <div>Программа:</div>
-        <div>
-          {{ ProgramLabel[item.program] }}
-        </div>
-      </div>
-      <div v-if="selected.client_lessons.length">
-        <div>Посещаемость и пройденные темы:</div>
-        <div class="grades__client-lessons">
-          <div v-for="cl in item.quarters[quarter].client_lessons" :key="cl.id">
-            <div>
-              <span class="font-weight-medium">
-                {{ formatDate(cl.lesson.date) }}
-              </span>
-              –
-              <span :class="{ 'text-error': cl.status === 'absent' }">
-                {{ ClientLessonStatusLabel[cl.status] }}
-              </span>
-              <template v-if="cl.status !== 'absent'">
-                {{ cl.is_remote ? ' удалённо' : ' очно' }}
-              </template>
-              <template v-if="cl.status === 'late'">
-                на {{ cl.minutes_late }} мин.
-              </template>
-            </div>
-            <div>
-              <template v-if="cl.lesson.topic">
-                {{ cl.lesson.topic }}
-              </template>
-            </div>
-            <div>
-              Преподаватель:
-              <RouterLink :to="`/teachers/${cl.lesson.teacher.id}`">
-                {{ formatFullName(cl.lesson.teacher) }}
-              </RouterLink>
-            </div>
+    <v-table>
+      <tbody>
+        <tr>
+          <td colspan="2">
+            Ученик:
+            <UiPerson :item="item.client" />
+          </td>
+          <td colspan="10">
+            Программа:
+            {{ ProgramLabel[item.program] }}
+          </td>
+        </tr>
+        <tr v-for="cl in item.quarters[quarter].client_lessons" :key="cl.id">
+          <td width="120">
+            {{ formatDate(cl.lesson.date) }}
+          </td>
+          <td width="150">
+            <span :class="{ 'text-error': cl.status === 'absent' }">
+              {{ ClientLessonStatusLabel[cl.status] }}
+            </span>
+            <template v-if="cl.status !== 'absent'">
+              {{ cl.is_remote ? ' удалённо' : ' очно' }}
+            </template>
+            <template v-if="cl.status === 'late'">
+              на {{ cl.minutes_late }} мин.
+            </template>
+          </td>
+          <td width="180">
+            <UiPerson :item="cl.lesson.teacher" />
+          </td>
+          <td>
+            <template v-if="cl.lesson.topic">
+              {{ cl.lesson.topic }}
+            </template>
+          </td>
+          <td width="300">
             <div v-if="cl.scores.length" class="grades__scores">
               <div v-for="(score, i) in cl.scores" :key="i">
                 <span :class="`score score--${score.score}`">
@@ -101,10 +93,10 @@ nextTick(loadData)
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          </td>
+        </tr>
+      </tbody>
+    </v-table>
     <div v-if="selected.grade" class="grades__final">
       <div class="grades__final-grade">
         <div>
@@ -118,12 +110,41 @@ nextTick(loadData)
         <span :class="`score score--${selected.grade}`">
           {{ selected.grade }}
         </span>
+        <v-menu close-on-content-click>
+          <template #activator="{ props }">
+            <v-btn
+              icon="$more"
+              :size="48"
+              variant="text"
+              color="gray"
+              v-bind="props"
+            />
+          </template>
+          <v-list v-if="changeScore" class="grades__final-selector">
+            <v-list-item v-for="(label, score) in LessonScoreLabel" :key="score" @click="setFinalGrade(score)">
+              <template #title>
+                <span :class="`score score--${score}`" class="mr-2">
+                  {{ score }}
+                </span>
+                {{ label }}
+              </template>
+            </v-list-item>
+          </v-list>
+          <v-list v-else>
+            <v-list-item @click="changeScore = true">
+              изменить оценку
+            </v-list-item>
+            <v-list-item>
+              удалить оценку
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </div>
       <div v-if="selected.teacher" class="text-gray mt-1">
         Поставил <UiPerson :item="selected.teacher" teacher-format="full" />
       </div>
     </div>
-    <div v-else class="grades__final">
+    <div v-show="!selected.grade" class="grades__final">
       <v-menu>
         <template #activator="{ props }">
           <v-btn color="primary" v-bind="props">
@@ -153,27 +174,14 @@ nextTick(loadData)
 
 <style lang="scss">
 .grades {
-  &__content {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    & > div {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      & > div {
-        &:first-child {
-          font-weight: bold;
-        }
-      }
+  .v-table {
+    tr:first-child td {
+      background: #f5f5f5;
     }
-  }
-  &__client-lessons {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
+    td {
+      padding: 16px 16px !important;
+      min-height: auto !important;
+    }
   }
   &__scores {
     display: flex;
@@ -188,7 +196,7 @@ nextTick(loadData)
   }
   &__final {
     border-top: 1px solid rgb(var(--v-theme-border));
-    margin-top: 20px;
+    //margin-top: 20px;
     padding: 20px;
     &-grade {
       display: flex;

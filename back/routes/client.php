@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Client\{BillingController,
     ClientTestController,
+    GradeController,
     GroupController,
+    JournalController,
     LessonController,
     ReportController};
 use Illuminate\Support\Facades\Route;
@@ -16,6 +18,9 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::apiResource('lessons', LessonController::class)->only(['index', 'show']);
     Route::get('billing', BillingController::class);
     Route::apiResource('groups', GroupController::class)->only('index');
+    Route::get('grades/journal', [GradeController::class, 'journal']);
+    Route::apiResource('grades', GradeController::class)->only('index');
     Route::apiResource('reports', ReportController::class)->only(['index', 'show']);
     Route::apiResource('client-tests', ClientTestController::class)->only('index', 'show');
+    Route::get('journal', JournalController::class);
 });

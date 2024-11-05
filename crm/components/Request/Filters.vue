@@ -12,7 +12,7 @@ const model = defineModel<RequestFilters>({ required: true })
   <UiClearableSelect
     v-model="model.direction"
     label="Направление"
-    :items="selectItems(RequestDirectionLabel)"
+    :items="selectItems(DirectionLabel)"
     density="comfortable"
   />
 </template>

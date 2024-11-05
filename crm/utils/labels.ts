@@ -1831,7 +1831,7 @@ export const PassStatusLabel = {
   expired: 'истёк',
 } as const
 
-export const RequestDirectionLabel = {
+export const DirectionLabel = {
   courses9: 'курсы-9',
   courses10: 'курсы-10',
   courses11: 'курсы-11',

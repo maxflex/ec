@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Client;
+use App\Models\Grade;
 use App\Models\Phone;
 use App\Models\Teacher;
 use App\Models\User;
@@ -23,28 +25,33 @@ class AuthResource extends JsonResource
     {
         $entity = $this->entity;
 
-        $extra = ['first_name', 'last_name', 'middle_name', 'photo_url'];
-
         switch ($this->entity_type) {
             case Teacher::class:
                 $extra = [
-                    ...$extra,
-                    'is_head_teacher'
+                    'is_head_teacher' => $this->is_head_teacher,
+                ];
+                break;
+
+            case Client::class:
+                $extra = [
+                    'has_grades' => Grade::where('client_id', $entity->id)->exists()
                 ];
                 break;
 
             case User::class:
                 $extra = [
-                    ...$extra,
-                    'is_call_notifications'
+                    'is_call_notifications' => $this->is_call_notifications,
                 ];
                 break;
         }
 
         return extract_fields($this, [
             'telegram_id', 'entity_type', 'number',
-        ], extract_fields($entity, $extra, [
-                'id' => $this->entity_id
+        ], extract_fields($entity, [
+                'first_name', 'last_name', 'middle_name', 'photo_url'
+            ], [
+                ...$extra,
+                'id' => $this->entity_id,
             ])
         );
     }

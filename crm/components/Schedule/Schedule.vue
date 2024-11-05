@@ -33,7 +33,7 @@ const filters = ref({
   year: year || loadedFilters.year,
 })
 
-const { user, isTeacher } = useAuthStore()
+const { user, isTeacher, isClient } = useAuthStore()
 const isMassEditable = user?.entity_type === EntityTypeValue.user && !!groupId
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const params = {
@@ -301,6 +301,16 @@ nextTick(loadData)
         />
         <LessonTeacherItem
           v-else-if="isTeacher"
+          :key="`lt-${item.id}`"
+          :item="item"
+          :checkboxes="checkboxes"
+          @click="onLessonClick(item)"
+          @edit="lessonDialog?.edit"
+          @conduct="conductDialog?.open"
+          @view="lessonViewDialog?.open"
+        />
+        <LessonClientItem
+          v-else-if="isClient"
           :key="`lt-${item.id}`"
           :item="item"
           :checkboxes="checkboxes"

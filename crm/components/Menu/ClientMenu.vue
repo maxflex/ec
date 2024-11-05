@@ -1,24 +1,31 @@
 <script setup lang="ts">
 import {
-  mdiAccountGroup,
+  mdiBookOpenBlankVariantOutline,
   mdiCalendar,
   mdiCreditCardCheckOutline,
   mdiDotsTriangle,
   mdiFileDocumentEditOutline,
+  mdiNumeric5BoxMultiple,
 } from '@mdi/js'
 
 const { user } = useAuthStore()
 
 const menu: Menu = [
   {
-    icon: mdiAccountGroup,
-    title: 'Группы',
-    to: '/groups',
+    icon: mdiBookOpenBlankVariantOutline,
+    title: 'Дневник',
+    to: '/journal',
   },
   {
     icon: mdiCalendar,
     title: 'Расписание',
     to: '/schedule',
+  },
+  {
+    icon: mdiNumeric5BoxMultiple,
+    title: 'Оценки',
+    to: '/grades',
+    hide: !user?.has_grades,
   },
   {
     icon: mdiFileDocumentEditOutline,
@@ -40,7 +47,7 @@ const menu: Menu = [
 
 <template>
   <v-list nav density="compact">
-    <MenuList :items="menu" />
+    <MenuList :items="menu.filter(e => !e.hide)" />
     <v-list-item v-if="user" :to="{ name: 'profile' }">
       <template #prepend>
         <UiAvatar :item="user" :size="26" />

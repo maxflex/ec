@@ -239,7 +239,9 @@ div.item-deleted:after {
   $size: 30px;
   border-radius: 50%;
   height: $size;
+  min-height: $size;
   width: $size;
+  min-width: $size;
   display: inline-flex;
   align-items: center;
   justify-content: center;

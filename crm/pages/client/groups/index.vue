@@ -1,3 +1,0 @@
-<template>
-  <GroupPage />
-</template>

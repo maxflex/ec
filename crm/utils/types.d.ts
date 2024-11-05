@@ -1,7 +1,7 @@
 import type Metrics from '~/components/Stats/Metrics'
 
 declare global {
-  type RequestDirection = keyof typeof RequestDirectionLabel
+  type Direction = keyof typeof DirectionLabel
 
   type ReportStatus = keyof typeof ReportStatusLabel
 
@@ -133,6 +133,7 @@ declare global {
     to: string
     title: string
     icon: string
+    hide?: boolean
   }
 
   type Menu = MenuItem[]
@@ -146,6 +147,7 @@ declare global {
     telegram_id: ?string
     is_call_notifications?: boolean
     is_head_teacher?: boolean
+    has_grades?: boolean
     number: string // phone number
   }
 
@@ -166,7 +168,7 @@ declare global {
   interface RequestResource {
     id?: number
     status: RequestStatus
-    direction: ?RequestDirection
+    direction: ?Direction
     responsible_user_id: ?number
     yandex_id: ?string
     google_id: ?string
@@ -181,7 +183,7 @@ declare global {
   interface RequestListResource {
     id: number
     status: RequestStatus
-    direction: ?RequestDirection
+    direction: ?Direction
     responsible_user: ?PersonResource
     client: ?PersonResource
     phones: PhoneListResource[]
@@ -296,7 +298,7 @@ declare global {
     sum: number
     payments_count: number
     programs_count: number
-    directions: RequestDirection[]
+    directions: Direction[]
     is_active: boolean
     contract: {
       id: number
@@ -785,6 +787,14 @@ declare global {
     } }
   }
 
+  interface GradeListForClients {
+    id: number
+    grade: number
+    program: Program
+    created_at: string
+    teacher?: PersonResource
+  }
+
   interface GradeResource {
     id: string
     client: PersonResource
@@ -1083,6 +1093,24 @@ declare global {
     sum?: number
     user?: PersonResource
     created_at?: string
+  }
+
+  interface JournalResource {
+    id: number
+    status: ClientLessonStatus
+    minutes_late: number
+    is_remote: boolean
+    scores: ClientLessonScore[]
+    program: Program
+    lesson: {
+      id: number
+      date: string
+      topic: string
+      homework: string
+      quarter: ?Quarter
+      teacher: PersonResource
+      files: UploadedFile[]
+    }
   }
 }
 

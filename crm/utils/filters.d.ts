@@ -6,7 +6,7 @@ declare global {
 
   interface RequestFilters {
     status?: RequestStatus
-    direction?: RequestDirection
+    direction?: Direction
   }
 
   interface CallAppFilters {
