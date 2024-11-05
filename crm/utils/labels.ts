@@ -1696,15 +1696,15 @@ export const SubjectLabelShort = {
 export const TeacherPaymentMethodLabel = {
   card: 'карта',
   cash: 'наличные',
-  invoice: 'счёт',
+  bill: 'счёт',
   mutual: 'взаимозачёт',
 } as const
 
 export const ContractPaymentMethodLabel = {
   card: 'карта',
-  online: 'карта онлайн',
   cash: 'наличные',
-  invoice: 'счёт',
+  bill: 'счёт',
+  matcap: 'маткапитал',
 } as const
 
 export const ClientPaymentMethodLabel = {

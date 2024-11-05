@@ -6,15 +6,15 @@ enum TeacherPaymentMethod: string
 {
     case card = 'card';
     case cash = 'cash';
-    case invoice = 'invoice';
+    case bill = 'bill';
     case mutual = 'mutual';
 
-    public static function getFromOld(string $method): self
+    public static function fromOld(string $method): self
     {
         return match ($method) {
             'card' => self::card,
             'cash' => self::cash,
-            'bill' => self::invoice,
+            'bill' => self::bill,
             'mutual' => self::mutual,
         };
     }
@@ -24,7 +24,7 @@ enum TeacherPaymentMethod: string
         return match ($this) {
             self::card => 'карта',
             self::cash => 'наличные',
-            self::invoice => 'счёт',
+            self::bill => 'счёт',
             self::mutual => 'взаимозачёт',
         };
     }

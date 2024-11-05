@@ -52,9 +52,7 @@ nextTick(loadData)
           Ученик:
         </div>
         <div>
-          <RouterLink :to="{ name: 'teachers-id', params: { id: item.client.id } }">
-            {{ formatName(item.client) }}
-          </RouterLink>
+          <UiPerson :item="item.client" />
         </div>
       </div>
       <div>

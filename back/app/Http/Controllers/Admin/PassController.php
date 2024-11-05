@@ -17,7 +17,7 @@ class PassController extends Controller
 
     public function index(Request $request)
     {
-        $query = Pass::latest();
+        $query = Pass::orderBy('date', 'desc')->latest();
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, PassResource::class);
     }

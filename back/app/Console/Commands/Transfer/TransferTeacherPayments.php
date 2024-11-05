@@ -27,7 +27,7 @@ class TransferTeacherPayments extends Command
                 'sum' => $p->sum,
                 'date' => $p->date,
                 'year' => $p->year,
-                'method' => TeacherPaymentMethod::getFromOld($p->method)->name,
+                'method' => TeacherPaymentMethod::fromOld($p->method)->name,
                 'teacher_id' => $p->entity_id,
                 'purpose' => match ($p->category) {
                     'ege_trial' => 'Пробник',
