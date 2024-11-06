@@ -59,7 +59,7 @@ class TransferLessons extends Command
     private function getQuarter($l): ?Quarter
     {
         $year = intval($l->year);
-        if (!($year === 2023 && $l->grade_id === 16)) {
+        if (!($year >= 2023 && $l->grade_id === 16)) {
             return null;
         }
         $lessonDate = $l->date;

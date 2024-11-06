@@ -75,10 +75,10 @@ const headTeacherMenu: Menu = [
   <v-list nav density="compact">
     <MenuList :items="menu" />
     <template v-if="user?.is_head_teacher">
-      <v-divider />
-      <v-list-subheader>
-        Классный руководитель
-      </v-list-subheader>
+      <!--      <v-divider /> -->
+      <!--      <v-list-subheader> -->
+      <!--        Классный руководитель -->
+      <!--      </v-list-subheader> -->
       <MenuList :items="headTeacherMenu" />
     </template>
     <v-list-item v-if="user" :to="{ name: 'profile' }">

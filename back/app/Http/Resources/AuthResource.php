@@ -28,7 +28,7 @@ class AuthResource extends JsonResource
         switch ($this->entity_type) {
             case Teacher::class:
                 $extra = [
-                    'is_head_teacher' => $this->is_head_teacher,
+                    'is_head_teacher' => $entity->is_head_teacher,
                 ];
                 break;
 
@@ -40,7 +40,7 @@ class AuthResource extends JsonResource
 
             case User::class:
                 $extra = [
-                    'is_call_notifications' => $this->is_call_notifications,
+                    'is_call_notifications' => $entity->is_call_notifications,
                 ];
                 break;
         }

@@ -14,6 +14,10 @@ class Grade extends Model
         'teacher_id'
     ];
 
+    protected $casts = [
+        'grade' => 'int',
+    ];
+
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);

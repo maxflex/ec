@@ -1,5 +1,3 @@
-import type Metrics from '~/components/Stats/Metrics'
-
 declare global {
   type Direction = keyof typeof DirectionLabel
 
@@ -412,7 +410,7 @@ declare global {
     homework: ?string
     quarter: Quarter | null
     has_files: boolean
-    clientLesson?: {
+    client_lesson?: {
       status: ClientLessonStatus
       scores: ClientLessonScore[]
       minutes_late: ?number
@@ -776,49 +774,38 @@ declare global {
     }>
   }
 
-  interface GradeListResource {
+  interface QuartersGradesResource {
     id: string
     client: PersonResource
     program: Program
-    quarters: { [key in Quarter]: {
-      conducted: number
-      total: number
-      grade: ?LessonScore
-    } }
-  }
-
-  interface GradeListForClients {
-    id: number
-    grade: number
-    program: Program
-    created_at: string
-    teacher?: PersonResource
+    quarters: {
+      [key in Quarter]: {
+        conducted_count: number
+        total_count: number
+        grade: ?GradeResource
+        client_lessons?: Array<{
+          id: number
+          is_remote: boolean
+          minutes_late: ?number
+          status: ClientLessonStatus
+          scores: ClientLessonScore[]
+          lesson: {
+            id: number
+            date: string
+            teacher: PersonResource
+            topic: string
+          }
+        }>
+      }
+    }
   }
 
   interface GradeResource {
-    id: string
-    client: PersonResource
+    id: number
+    grade: LessonScore
     program: Program
-    quarters: { [key in Quarter]: {
-      conducted: number
-      total: number
-      grade: ?LessonScore
-      teacher?: PersonResource
-
-      client_lessons: Array<{
-        id: number
-        is_remote: boolean
-        minutes_late: ?number
-        status: ClientLessonStatus
-        scores: ClientLessonScore[]
-        lesson: {
-          id: number
-          date: string
-          teacher: PersonResource
-          topic: string
-        }
-      }>
-    } }
+    created_at: string
+    teacher?: PersonResource
   }
 
   interface ExamScoreResource {

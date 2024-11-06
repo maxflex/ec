@@ -5,7 +5,6 @@ import type {
   LessonBulkUpdateDialog,
   LessonConductDialog,
   LessonDialog,
-  LessonViewDialog,
 } from '#build/components'
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { groupBy } from 'rambda'
@@ -49,7 +48,6 @@ const events = ref<EventListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
 const lessonBulkUpdateDialog = ref<InstanceType<typeof LessonBulkUpdateDialog>>()
 const lessonBulkCreateDialog = ref<InstanceType<typeof LessonBulkCreateDialog>>()
-const lessonViewDialog = ref<InstanceType<typeof LessonViewDialog>>()
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 const vacations = ref<Record<string, boolean>>({})
@@ -307,7 +305,6 @@ nextTick(loadData)
           @click="onLessonClick(item)"
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
-          @view="lessonViewDialog?.open"
         />
         <LessonClientItem
           v-else-if="isClient"
@@ -317,7 +314,6 @@ nextTick(loadData)
           @click="onLessonClick(item)"
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
-          @view="lessonViewDialog?.open"
         />
         <LessonItem
           v-else
@@ -327,7 +323,6 @@ nextTick(loadData)
           @click="onLessonClick(item)"
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
-          @view="lessonViewDialog?.open"
         />
       </template>
       <div v-if="vacations[d]" class="schedule-event schedule-event--vacation">
@@ -338,7 +333,6 @@ nextTick(loadData)
       </div>
     </div>
   </div>
-  <LessonViewDialog ref="lessonViewDialog" />
   <LessonDialog ref="lessonDialog" />
   <EventDialog ref="eventDialog" />
   <LessonConductDialog

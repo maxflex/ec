@@ -3,7 +3,7 @@ const filters = ref<YearFilters>({
   year: currentAcademicYear(),
 })
 
-const grades = ref<GradeListForClients[]>([])
+const grades = ref<GradeResource[]>([])
 const selectedQuarter = ref<Quarter | null>(null)
 const selectedProgram = ref<Program | undefined>(undefined)
 const availablePrograms = ref<Program[]>([])
@@ -34,7 +34,7 @@ const filteredItems = computed(() => items.value.filter((e) => {
 const filteredGrades = computed(() => selectedProgram.value ? grades.value.filter(g => g.program === selectedProgram.value) : grades.value)
 
 async function loadFinalGrades() {
-  const { data } = await useHttp<GradeListForClients[]>(
+  const { data } = await useHttp<GradeResource[]>(
     `grades/journal`,
     {
       params: {
@@ -60,6 +60,6 @@ async function loadFinalGrades() {
       />
     </template>
     <JournalList :items="filteredItems" />
-    <GradeListForClients :items="filteredGrades" />
+    <GradeListInJournal :items="filteredGrades" />
   </UiIndexPage>
 </template>

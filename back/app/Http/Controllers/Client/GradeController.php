@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
-use App\Http\Resources\GradeListForClientsResource;
+use App\Http\Resources\GradeResource;
 use App\Models\Grade;
 use Illuminate\Http\Request;
 
@@ -20,7 +20,7 @@ class GradeController extends \App\Http\Controllers\Admin\GradeController
 
     public function journal(Request $request)
     {
-        return GradeListForClientsResource::collection(
+        return GradeResource::collection(
             Grade::where('client_id', auth()->id())
                 ->where('year', $request->year)
                 ->where('quarter', $request->quarter)

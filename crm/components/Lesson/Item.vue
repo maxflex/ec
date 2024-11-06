@@ -2,8 +2,6 @@
 import {
   mdiBookOpenOutline,
   mdiBookOpenVariant,
-  mdiCalendarBadge,
-  mdiCurrencyUsdOff,
   mdiEyeOutline,
   mdiPaperclip,
 } from '@mdi/js'
@@ -81,16 +79,16 @@ const isClient = user?.entity_type === EntityTypeValue.client
         @click="emit('view', item.id)"
       />
     </div>
-    <div style="width: 90px; position: relative;" />
+    <div style="width: 80px; position: relative;" />
     <div style="width: 120px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
-    <div style="width: 80px">
+    <div style="width: 70px">
       <template v-if="item.cabinet">
         {{ CabinetLabel[item.cabinet] }}
       </template>
     </div>
-    <div v-if="item.teacher" style="width: 150px">
+    <div v-if="item.teacher" style="width: 140px">
       <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }" @click.stop>
         {{ formatNameInitials(item.teacher) }}
       </NuxtLink>
@@ -103,21 +101,15 @@ const isClient = user?.entity_type === EntityTypeValue.client
     <div style="width: 100px">
       {{ ProgramShortLabel[item.group.program] }}
     </div>
-    <div style="width: 100px">
+    <div style="width: 70px">
       <span v-if="item.quarter">
-        {{ QuarterLabel[item.quarter] }}
+        {{ QuarterShortLabel[item.quarter] }}
       </span>
     </div>
 
-    <div style="width: 200px" class="lesson-item__icons">
+    <div style="width: 100px" class="lesson-item__icons">
       <div>
         <v-icon v-if="item.topic" :icon="mdiBookOpenOutline" :class="{ 'opacity-3': !item.is_topic_verified }" />
-      </div>
-      <div>
-        <v-icon v-if="item.is_unplanned" :icon="mdiCalendarBadge" />
-      </div>
-      <div>
-        <v-icon v-if="item.is_free" :icon="mdiCurrencyUsdOff" />
       </div>
       <div>
         <v-icon v-if="item.homework" :icon="mdiBookOpenVariant" />
@@ -126,42 +118,33 @@ const isClient = user?.entity_type === EntityTypeValue.client
         <v-icon v-if="item.has_files" :icon="mdiPaperclip" />
       </div>
     </div>
-
-    <div style="width: 120px; flex: initial">
+    <div style="width: 50px; display: inline-flex" class="ga-1">
       <LessonStatus2 :status="item.status" />
+      <div v-if="item.is_unplanned" class="lesson-item-status lesson-item-status--is-unplanned" />
+      <div v-if="item.is_free" class="lesson-item-status lesson-item-status--is-free" />
     </div>
-    <!--    TODO: удалить? -->
-    <div v-if="item.clientLesson" class="lesson-item__contract-lesson">
-      <!-- <div style="width: 240px">
-        {{ item.clientLesson.is_remote ? 'удалённо' : 'очно' }}
-      </div> -->
-      <div style="width: 110px" />
-      <div class="lesson-item__scores" style="width: 500px">
-        <div v-for="(score, i) in item.clientLesson.scores" :key="i">
-          <span :class="`score score--${score.score}`" class="mr-3">
-            {{ score.score }}
-          </span>
-          <div>
+    <div style="width: 100px">
+      <template v-if="item.client_lesson">
+        <span :class="{ 'text-error': item.client_lesson.status === 'absent' }">
+          {{ ClientLessonStatusLabel[item.client_lesson.status] }}
+        </span>
+        <template v-if="item.client_lesson.status !== 'absent'">
+          {{ item.client_lesson.is_remote ? ' дист' : '' }}
+        </template>
+      </template>
+    </div>
+    <div style="flex: initial">
+      <div v-if="item.client_lesson" class="lesson-item__inline-scores">
+        <div v-for="(score, i) in item.client_lesson.scores" :key="i">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <span :class="`score score--${score.score}`" v-bind="props">
+                {{ score.score }}
+              </span>
+            </template>
             {{ score.comment }}
-          </div>
+          </v-tooltip>
         </div>
-      </div>
-      <div style="width: 220px">
-        {{ item.clientLesson.is_remote ? 'удалённо' : 'очно' }}
-      </div>
-      <div style="flex: 1">
-        <UiCircleStatus
-          :class="{
-            'text-error': item.clientLesson.status === 'absent',
-            'text-warning': item.clientLesson.status === 'late',
-            'text-success': item.clientLesson.status === 'present',
-          }"
-        >
-          {{ ClientLessonStatusLabel[item.clientLesson.status] }}
-          <template v-if="item.clientLesson.minutes_late">
-            на {{ item.clientLesson.minutes_late }} мин.
-          </template>
-        </UiCircleStatus>
       </div>
     </div>
   </div>
@@ -184,12 +167,15 @@ const isClient = user?.entity_type === EntityTypeValue.client
       width: 26px;
     }
   }
-  &__scores {
+  &__inline-scores {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    & > div {
-      display: flex;
+    gap: 4px;
+    .score {
+      $size: 24px !important;
+      width: $size;
+      height: $size;
+      min-width: $size;
+      min-height: $size;
     }
   }
   &--cancelled {
@@ -202,6 +188,21 @@ const isClient = user?.entity_type === EntityTypeValue.client
   &__checkbox {
     position: absolute;
     right: 0;
+  }
+  &-status {
+    --size: 10px;
+    height: var(--size);
+    width: var(--size);
+    border-radius: 50%;
+    background-color: var(--color);
+    top: 1px;
+    position: relative;
+    &--is-unplanned {
+      --color: #aa00ff;
+    }
+    &--is-free {
+      --color: rgb(var(--v-theme-primary));
+    }
   }
 }
 </style>

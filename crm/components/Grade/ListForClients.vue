@@ -1,25 +1,27 @@
 <script setup lang="ts">
 const { items } = defineProps<{
-  items: GradeListForClients[]
+  items: QuartersGradesResource[]
 }>()
 </script>
 
 <template>
-  <v-table class="grade-list-for-clients">
+  <v-table hover class="grades-for-clients">
+    <thead>
+      <tr>
+        <th />
+        <th v-for="(q, key) in QuarterLabel" :key="key" class="text-center">
+          {{ q }}
+        </th>
+      </tr>
+    </thead>
     <tbody>
-      <tr v-for="item in items" :key="item.id">
-        <td width="120">
-          {{ formatDate(item.created_at) }}
+      <tr v-for="g in items" :key="g.id">
+        <td width="200">
+          {{ ProgramShortLabel[g.program] }}
         </td>
-        <td width="150">
-          {{ ProgramShortLabel[item.program] }}
-        </td>
-        <td width="180">
-          <UiPerson v-if="item.teacher" :item="item.teacher" />
-        </td>
-        <td>
-          <span :class="`score score--${item.grade}`" class="mr-2">
-            {{ item.grade }}
+        <td v-for="(q, key) in g.quarters" :key="key" width="160" class="text-center">
+          <span v-if="q.grade" :class="`score score--${q.grade.grade}`">
+            {{ q.grade.grade }}
           </span>
         </td>
       </tr>
@@ -28,7 +30,14 @@ const { items } = defineProps<{
 </template>
 
 <style lang="scss">
-.grade-list-for-clients {
-  border-top: 1px solid rgb(var(--v-theme-border));
+.grades-for-clients {
+  tr {
+    td,
+    th {
+      &:nth-child(6) {
+        border-left: 1px solid rgb(var(--v-theme-border));
+      }
+    }
+  }
 }
 </style>

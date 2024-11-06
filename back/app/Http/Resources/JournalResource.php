@@ -13,9 +13,11 @@ class JournalResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $program = $this->program ?? $this->lesson->group->program;
         return extract_fields($this, [
-            'status', 'is_remote', 'scores', 'minutes_late', 'program',
+            'status', 'is_remote', 'scores', 'minutes_late',
         ], [
+            'program' => $program,
             'lesson' => extract_fields($this->lesson, [
                 'date', 'topic', 'homework', 'files', 'quarter'
             ], [

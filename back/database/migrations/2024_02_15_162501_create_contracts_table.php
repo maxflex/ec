@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\Company;
-use App\Enums\Grade;
 use App\Models\Client;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -24,6 +23,7 @@ return new class extends Migration
             );
         });
     }
+
 
     /**
      * Reverse the migrations.

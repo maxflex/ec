@@ -13,9 +13,6 @@ use Illuminate\Database\{Eloquent\Casts\Attribute,
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-/**
- * @property ?object $clientLesson проведённое занятия в расписании клиента
- */
 class Lesson extends Model
 {
     protected $fillable = [
@@ -119,6 +116,25 @@ class Lesson extends Model
             'conducted_at' => now(),
             'status' => LessonStatus::conducted
         ]);
+    }
+
+    /**
+     * Получить clientLesson для выбранного клиента
+     */
+    public function getClientLesson(int $clientId): ?ClientLesson
+    {
+        return $this->clientLessons()
+            ->join(
+                'contract_version_programs as cvp',
+                'cvp.id',
+                '=',
+                'client_lessons.contract_version_program_id'
+            )
+            ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
+            ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
+            ->where('c.client_id', $clientId)
+            ->selectRaw('client_lessons.*')
+            ->first();
     }
 
     /**

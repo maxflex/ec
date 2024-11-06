@@ -1516,6 +1516,14 @@ export const QuarterLabel = {
   final: 'итоговая',
 } as const
 
+export const QuarterShortLabel = {
+  q1: '1 четв.',
+  q2: '2 четв.',
+  q3: '3 четв.',
+  q4: '4 четв.',
+  final: 'итоговая',
+} as const
+
 export const MonthLabel = {
   1: 'январь',
   2: 'февраль',

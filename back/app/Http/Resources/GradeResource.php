@@ -2,37 +2,21 @@
 
 namespace App\Http\Resources;
 
-use App\Models\ClientLesson;
+use App\Models\Grade;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class GradeResource extends GradeListResource
+/**
+ * @mixin Grade
+ */
+class GradeResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
-        $arr = parent::toArray($request);
-
-        foreach ($arr['quarters'] as $quarter => $data) {
-            $clientLessons = ClientLesson::query()
-                ->where('contract_version_program_id', $arr['contract_version_program_id'])
-                ->whereHas('lesson', fn($q) => $q->where('quarter', $quarter))
-                ->get();
-            $arr['quarters'][$quarter]['client_lessons'] = $clientLessons
-                ->map(fn($cl) => extract_fields($cl, [
-                    'is_remote', 'minutes_late', 'status', 'scores',
-                ], [
-                    'lesson' => extract_fields($cl->lesson, [
-                        'topic', 'date'
-                    ], [
-                        'teacher' => new PersonResource($cl->lesson->teacher)
-                    ])
-                ]));
-        }
-
-        return $arr;
+        return extract_fields($this, [
+            'grade', 'program', 'created_at'
+        ], [
+            'teacher' => new PersonResource($this->teacher)
+        ]);
     }
 }

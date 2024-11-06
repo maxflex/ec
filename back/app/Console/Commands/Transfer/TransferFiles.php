@@ -28,7 +28,7 @@ class TransferFiles extends Command
             ->join('lessons as l', 'l.id', '=', 'f.entity_id')
             ->join('groups as g', 'g.id', '=', 'l.group_id')
             ->where('f.entity_type', self::ET_LESSON)
-            ->where('g.year', 2024)
+            ->whereIn('g.year', [2023, 2024])
             ->selectRaw('f.*')
             ->get()
             ->groupBy('entity_id');

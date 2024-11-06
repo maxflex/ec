@@ -3,7 +3,7 @@ const filters = ref<YearFilters>({
   year: currentAcademicYear(),
 })
 
-const { items, indexPageData } = useIndex<GradeListResource, YearFilters>(
+const { items, indexPageData } = useIndex<QuartersGradesResource, YearFilters>(
   `grades`,
   filters,
 )
@@ -14,6 +14,6 @@ const { items, indexPageData } = useIndex<GradeListResource, YearFilters>(
     <template #filters>
       <UiYearSelector v-model="filters.year" density="comfortable" />
     </template>
-    <GradeList :items="items" />
+    <GradeListForClients :items="items" />
   </UiIndexPage>
 </template>

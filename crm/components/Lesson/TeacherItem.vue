@@ -2,8 +2,6 @@
 import {
   mdiBookOpenOutline,
   mdiBookOpenVariant,
-  mdiCalendarBadge,
-  mdiCurrencyUsdOff,
   mdiEyeOutline,
   mdiPaperclip,
 } from '@mdi/js'
@@ -115,12 +113,6 @@ const isClient = user?.entity_type === EntityTypeValue.client
         <v-icon v-if="item.topic" :icon="mdiBookOpenOutline" :class="{ 'opacity-3': !item.is_topic_verified }" />
       </div>
       <div>
-        <v-icon v-if="item.is_unplanned" :icon="mdiCalendarBadge" />
-      </div>
-      <div>
-        <v-icon v-if="item.is_free" :icon="mdiCurrencyUsdOff" />
-      </div>
-      <div>
         <v-icon v-if="item.homework" :icon="mdiBookOpenVariant" />
       </div>
       <div>
@@ -130,40 +122,6 @@ const isClient = user?.entity_type === EntityTypeValue.client
 
     <div style="width: 120px; flex: initial">
       <LessonStatus2 :status="item.status" />
-    </div>
-    <!--    TODO: удалить? -->
-    <div v-if="item.clientLesson" class="lesson-item__contract-lesson">
-      <!-- <div style="width: 240px">
-        {{ item.clientLesson.is_remote ? 'удалённо' : 'очно' }}
-      </div> -->
-      <div style="width: 110px" />
-      <div class="lesson-item__scores" style="width: 500px">
-        <div v-for="(score, i) in item.clientLesson.scores" :key="i">
-          <span :class="`score score--${score.score}`" class="mr-3">
-            {{ score.score }}
-          </span>
-          <div>
-            {{ score.comment }}
-          </div>
-        </div>
-      </div>
-      <div style="width: 220px">
-        {{ item.clientLesson.is_remote ? 'удалённо' : 'очно' }}
-      </div>
-      <div style="flex: 1">
-        <UiCircleStatus
-          :class="{
-            'text-error': item.clientLesson.status === 'absent',
-            'text-warning': item.clientLesson.status === 'late',
-            'text-success': item.clientLesson.status === 'present',
-          }"
-        >
-          {{ ClientLessonStatusLabel[item.clientLesson.status] }}
-          <template v-if="item.clientLesson.minutes_late">
-            на {{ item.clientLesson.minutes_late }} мин.
-          </template>
-        </UiCircleStatus>
-      </div>
     </div>
   </div>
 </template>

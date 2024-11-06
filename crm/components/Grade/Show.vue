@@ -1,32 +1,66 @@
 <script setup lang="ts">
 const route = useRoute()
-const item = ref<GradeResource>()
-const changeScore = ref(false)
+const item = ref<QuartersGradesResource>()
+const isChangeGradeSubmenu = ref(false)
 
 async function loadData() {
-  const { data } = await useHttp<GradeResource>(`grades/${route.params.id}`)
-  if (data.value) {
-    item.value = data.value
-    console.log(data.value)
-  }
+  const { data } = await useHttp<QuartersGradesResource>(
+    `grades/${route.params.id}`,
+    {
+      params: {
+        with: 'client_lessons',
+      },
+    },
+  )
+  item.value = data.value!
 }
 
 const quarter = ref<Quarter>('q1')
-const selected = computed(() => item.value ? item.value.quarters[quarter.value] : undefined)
+const selectedQuarter = computed(() => item.value ? item.value.quarters[quarter.value] : undefined)
 
-function setFinalGrade(grade: LessonScore) {
+async function setFinalGrade(score: LessonScore) {
   if (!item.value) {
     return
   }
-  item.value.quarters[quarter.value].grade = grade
-  useHttp(`grades`, {
+  const { data } = await useHttp<GradeResource>(`grades`, {
     method: 'post',
     body: {
-      grade,
+      grade: score,
       id: item.value.id,
       quarter: quarter.value,
     },
   })
+  selectedQuarter.value!.grade = data.value!
+}
+
+async function updateFinalGrade(score: LessonScore) {
+  if (!selectedQuarter.value?.grade) {
+    return
+  }
+  const { data } = await useHttp<GradeResource>(
+    `grades/${selectedQuarter.value.grade.id}`,
+    {
+      method: 'put',
+      body: {
+        grade: score,
+        teacher_id: null, // чтобы сбрасывался teacher_id, если оценку изменил админ
+      },
+    },
+  )
+  selectedQuarter.value!.grade = data.value!
+}
+
+function deleteFinalGrade() {
+  if (!selectedQuarter.value?.grade) {
+    return
+  }
+  useHttp<GradeResource>(
+    `grades/${selectedQuarter.value.grade.id}`,
+    {
+      method: 'delete',
+    },
+  )
+  selectedQuarter.value!.grade = null
 }
 
 nextTick(loadData)
@@ -35,18 +69,18 @@ nextTick(loadData)
 <template>
   <UiFilters>
     <v-btn
-      v-for="(q, key) in QuarterLabel"
-      :key="key"
+      v-for="(label, q) in QuarterLabel"
+      :key="q"
       class="tab-btn"
-      :class="{ 'tab-btn--active': quarter === key }"
+      :class="{ 'tab-btn--active': quarter === q }"
       variant="plain"
       :ripple="false"
-      @click="quarter = key"
+      @click="quarter = q"
     >
-      {{ q }}
+      {{ label }}
     </v-btn>
   </UiFilters>
-  <div v-if="item && selected" class="grades">
+  <div v-if="item && selectedQuarter" class="grades">
     <v-table>
       <tbody>
         <tr>
@@ -59,7 +93,7 @@ nextTick(loadData)
             {{ ProgramLabel[item.program] }}
           </td>
         </tr>
-        <tr v-for="cl in item.quarters[quarter].client_lessons" :key="cl.id">
+        <tr v-for="cl in selectedQuarter.client_lessons" :key="cl.id">
           <td width="120">
             {{ formatDate(cl.lesson.date) }}
           </td>
@@ -97,7 +131,7 @@ nextTick(loadData)
         </tr>
       </tbody>
     </v-table>
-    <div v-if="selected.grade" class="grades__final">
+    <div v-if="selectedQuarter.grade" class="grades__final">
       <div class="grades__final-grade">
         <div>
           <span v-if="quarter === 'final'">
@@ -107,21 +141,22 @@ nextTick(loadData)
             Оценка за четверть:
           </span>
         </div>
-        <span :class="`score score--${selected.grade}`">
-          {{ selected.grade }}
+        <span :class="`score score--${selectedQuarter.grade.grade}`">
+          {{ selectedQuarter.grade.grade }}
         </span>
-        <v-menu close-on-content-click>
+        <v-menu :close-on-content-click="isChangeGradeSubmenu" :width="160">
           <template #activator="{ props }">
             <v-btn
               icon="$more"
-              :size="48"
+              :size="38"
               variant="text"
               color="gray"
               v-bind="props"
+              @click="isChangeGradeSubmenu = false"
             />
           </template>
-          <v-list v-if="changeScore" class="grades__final-selector">
-            <v-list-item v-for="(label, score) in LessonScoreLabel" :key="score" @click="setFinalGrade(score)">
+          <v-list v-if="isChangeGradeSubmenu" class="grades__final-selector">
+            <v-list-item v-for="(label, score) in LessonScoreLabel" :key="score" @click="updateFinalGrade(score)">
               <template #title>
                 <span :class="`score score--${score}`" class="mr-2">
                   {{ score }}
@@ -131,20 +166,20 @@ nextTick(loadData)
             </v-list-item>
           </v-list>
           <v-list v-else>
-            <v-list-item @click="changeScore = true">
+            <v-list-item @click="isChangeGradeSubmenu = true">
               изменить оценку
             </v-list-item>
-            <v-list-item>
+            <v-list-item @click="deleteFinalGrade()">
               удалить оценку
             </v-list-item>
           </v-list>
         </v-menu>
       </div>
-      <div v-if="selected.teacher" class="text-gray mt-1">
-        Поставил <UiPerson :item="selected.teacher" teacher-format="full" />
+      <div v-if="selectedQuarter.grade.teacher" class="text-gray mt-1">
+        Поставил <UiPerson :item="selectedQuarter.grade.teacher" teacher-format="full" />
       </div>
     </div>
-    <div v-show="!selected.grade" class="grades__final">
+    <div v-show="!selectedQuarter.grade" class="grades__final">
       <v-menu>
         <template #activator="{ props }">
           <v-btn color="primary" v-bind="props">

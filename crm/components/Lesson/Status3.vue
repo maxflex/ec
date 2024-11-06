@@ -5,13 +5,14 @@ const { status } = defineProps<{
 </script>
 
 <template>
-  <div :class="`lesson-status-2 lesson-status-2--${status}`">
-    <div class="lesson-status-2__circle" />
+  <div :class="`lesson-status-3 lesson-status-3--${status}`">
+    <div class="lesson-status-3__circle" />
+    {{ LessonStatusLabel[status] }}
   </div>
 </template>
 
 <style lang="scss">
-.lesson-status-2 {
+.lesson-status-3 {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -27,7 +28,7 @@ const { status } = defineProps<{
     --color: #eb4432;
   }
   &__circle {
-    --size: 10px;
+    --size: 8px;
     height: var(--size);
     width: var(--size);
     border-radius: 50%;

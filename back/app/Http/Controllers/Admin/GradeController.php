@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\Quarter;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\GradeListResource;
 use App\Http\Resources\GradeResource;
+use App\Http\Resources\QuartersGradesResource;
 use App\Models\Grade;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -20,13 +20,9 @@ class GradeController extends Controller
     {
         $query = Grade::fakeQuery();
         $this->filter($request, $query);
-
-        return $this->handleIndexRequest($request, $query, GradeListResource::class);
+        return $this->handleIndexRequest($request, $query, QuartersGradesResource::class);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -35,27 +31,26 @@ class GradeController extends Controller
             'grade' => ['required', 'numeric', 'gt:0']
         ]);
         [$clientId, $year, $program] = explode('-', $request->id);
-        $grade = Grade::create([
+        $request->merge([
             'client_id' => $clientId,
             'year' => $year,
-            'program' => $program,
-            'quarter' => $request->quarter,
-            'grade' => $request->grade,
+            'program' => $program
         ]);
-        return new GradeListResource($grade);
+        $grade = Grade::create($request->all());
+        return new GradeResource($grade);
     }
 
     public function update(Grade $grade, Request $request)
     {
         $grade->update($request->all());
-        return new GradeListResource($grade);
+        return new GradeResource($grade);
     }
 
     public function show($id)
     {
         $grade = Grade::fakeQuery()->whereId($id)->first();
         abort_if($grade === null, 404);
-        return new GradeResource($grade);
+        return new QuartersGradesResource($grade);
     }
 
     public function destroy(Grade $grade)

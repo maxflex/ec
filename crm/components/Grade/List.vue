@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { items } = defineProps<{
-  items: GradeListResource[]
+  items: QuartersGradesResource[]
 }>()
 const router = useRouter()
 </script>
@@ -11,7 +11,7 @@ const router = useRouter()
       <tr>
         <th />
         <th />
-        <th v-for="(q, key) in QuarterLabel" :key="key">
+        <th v-for="(q, key) in QuarterLabel" :key="key" class="text-center">
           {{ q }}
         </th>
       </tr>
@@ -34,29 +34,23 @@ const router = useRouter()
         <td width="200">
           {{ ProgramShortLabel[g.program] }}
         </td>
-        <td v-for="(q, key) in g.quarters" :key="key" width="160">
-          <div class="d-flex ga-1">
-            <v-tooltip location="bottom">
-              <template #activator="{ props }">
-                <v-progress-circular
-                  v-if="key !== 'final'"
-                  v-bind="props"
-                  :model-value="q.total ? (q.conducted / q.total * 100) : 0"
-                  :width="3"
-                  :size="30"
-                  color="secondary"
-                >
-                  <!--              <template #default> -->
-                  <!--                {{ key.replaceAll(/\D/g, '') }} -->
-                  <!--              </template> -->
-                </v-progress-circular>
-              </template>
-              {{ q.conducted }} / {{ q.total }} занятий проведено
-            </v-tooltip>
-            <span v-if="q.grade" :class="`score score--${q.grade}`">
-              {{ q.grade }}
-            </span>
-          </div>
+        <td v-for="(q, key) in g.quarters" :key="key" width="160" class="text-center">
+          <!--            <v-tooltip location="bottom"> -->
+          <!--              <template #activator="{ props }"> -->
+          <!--                <v-progress-circular -->
+          <!--                  v-if="key !== 'final'" -->
+          <!--                  v-bind="props" -->
+          <!--                  :model-value="q.total_count ? (q.conducted_count / q.total_count * 100) : 0" -->
+          <!--                  :width="3" -->
+          <!--                  :size="30" -->
+          <!--                  color="secondary" -->
+          <!--                /> -->
+          <!--              </template> -->
+          <!--              {{ q.conducted_count }} / {{ q.total_count }} занятий проведено -->
+          <!--            </v-tooltip> -->
+          <span v-if="q.grade" :class="`score score--${q.grade.grade}`">
+            {{ q.grade.grade }}
+          </span>
         </td>
       </tr>
     </tbody>

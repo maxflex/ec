@@ -17,9 +17,10 @@ const { items } = defineProps<{
               {{ ClientLessonStatusLabel[item.status] }}
             </span>
             <template v-if="item.status !== 'absent'">
-              {{ item.is_remote ? ' удалённо' : ' очно' }}
+              {{ item.is_remote ? ' дист' : '' }}
             </template>
             <template v-if="item.status === 'late'">
+              <br>
               на {{ item.minutes_late }} мин.
             </template>
           </td>
@@ -29,7 +30,7 @@ const { items } = defineProps<{
               {{ ProgramShortLabel[item.program] }}
             </div>
           </td>
-          <td>
+          <td width="500">
             <div class="journal__data">
               <div v-if="item.lesson.topic">
                 <div>
@@ -39,23 +40,7 @@ const { items } = defineProps<{
                   {{ item.lesson.topic }}
                 </div>
               </div>
-              <div v-if="item.scores.length">
-                <div>
-                  Оценки:
-                </div>
-                <div>
-                  <div class="journal__scores">
-                    <div v-for="(score, i) in item.scores" :key="i">
-                      <span :class="`score score--${score.score}`">
-                        {{ score.score }}
-                      </span>
-                      <div>
-                        {{ score.comment }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
               <div v-if="item.lesson.homework">
                 <div>Домашнее задание:</div>
                 <div>
@@ -67,6 +52,22 @@ const { items } = defineProps<{
                 <div class="journal__files">
                   <div v-for="f in item.lesson.files" :key="f.url">
                     <FileItem :item="f" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div v-if="item.scores.length">
+              <div>
+                <div class="journal__scores">
+                  <div v-for="(score, i) in item.scores" :key="i">
+                    <span :class="`score score--${score.score}`">
+                      {{ score.score }}
+                    </span>
+                    <div>
+                      {{ score.comment }}
+                    </div>
                   </div>
                 </div>
               </div>

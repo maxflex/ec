@@ -23,11 +23,9 @@ class LessonListResource extends JsonResource
             'topic', 'is_topic_verified', 'is_free', 'homework',
         ], [
             'has_files' => count($this->files) > 0,
-            'clientLesson' => $this->when(
-                !!$this->clientLesson,
-                extract_fields($this->clientLesson, [
-                    'status', 'scores', 'minutes_late', 'is_remote'
-                ])
+            'client_lesson' => $this->when(
+                $request->has('client_id'),
+                fn() => $this->getClientLesson(intval($request->client_id)),
             ),
             'group' => extract_fields($this->group, [
                 'program'

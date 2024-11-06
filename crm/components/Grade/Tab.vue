@@ -5,11 +5,11 @@ const filters = ref<YearFilters>(loadFilters({
   year: currentAcademicYear(),
 }, tabName))
 const loading = ref(true)
-const items = ref<GradeListResource[]>([])
+const items = ref<QuartersGradesListResource[]>([])
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<GradeListResource>>(
+  const { data } = await useHttp<ApiResponse<QuartersGradesListResource>>(
     `grades`,
     {
       params: {
