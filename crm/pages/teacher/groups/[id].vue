@@ -43,11 +43,21 @@ nextTick(loadData)
             {{ ProgramLabel[group.program] }}
           </div>
         </div>
-
         <div>
           <div>zoom</div>
           <div>
             {{ group.zoom?.id || 'не установлено' }}
+          </div>
+        </div>
+        <div>
+          <div>
+            занятий
+          </div>
+          <div>
+            {{ group.lessons_count }}
+            <span v-if="group.lessons_free_count" class="text-deepOrange">
+              + {{ group.lessons_free_count }}
+            </span>
           </div>
         </div>
       </div>

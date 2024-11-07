@@ -44,7 +44,20 @@ function onClick(g: GroupListResource) {
       </div>
       <div style="width: 120px">
         <template v-if="item.lessons_count">
-          {{ plural(item.lessons_count, ['урок', 'урока', 'уроков']) }}
+          {{ item.lessons_count }}
+          <span v-if="item.lessons_free_count" class="text-deepOrange">
+            + {{ item.lessons_free_count }}
+          </span>
+          {{ plural(item.lessons_count, ['урок', 'урока', 'уроков'], false) }}
+        </template>
+      </div>
+      <div style="width: 100px">
+        <template v-if="item.lessons_conducted_count">
+          {{ item.lessons_conducted_count }}
+          <span v-if="item.lessons_conducted_free_count" class="text-deepOrange">
+            + {{ item.lessons_conducted_free_count }}
+          </span>
+          {{ plural(item.lessons_conducted_count, ['урок', 'урока', 'уроков'], false) }}
         </template>
       </div>
       <div style="width: 100px">

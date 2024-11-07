@@ -29,7 +29,7 @@ const { item, checkboxes } = defineProps<{
     <div style="width: 90px">
       ГР-{{ item.group.id }}
     </div>
-    <div style="width: 100px">
+    <div style="width: 140px">
       {{ ProgramShortLabel[item.group.program] }}
     </div>
     <div style="width: 70px">

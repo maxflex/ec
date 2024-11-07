@@ -75,6 +75,23 @@ class Report extends Model
     }
 
     /**
+     * Наполняемость отчета
+     */
+    public function getFillAttribute(): int
+    {
+        $max = 1000; // сколько символов = 100% заполняемость
+
+        $totalLength = collect([
+            $this->homework_comment,
+            $this->recommendation_comment,
+            $this->cognitive_ability_comment,
+            $this->knowledge_level_comment
+        ])->reduce(fn($carry, $comment) => $carry + mb_strlen($comment), 0);
+
+        return min(round($totalLength * 100 / $max), 100);
+    }
+
+    /**
      * Прочитать отчёт
      */
     public function read(): void

@@ -2,7 +2,6 @@
 import {
   mdiBookOpenOutline,
   mdiBookOpenVariant,
-  mdiEyeOutline,
   mdiPaperclip,
 } from '@mdi/js'
 
@@ -17,25 +16,7 @@ const emit = defineEmits<{
   conduct: [id: number, status: LessonStatus]
 }>()
 
-const { user } = useAuthStore()
-
-// const isConductable = (function () {
-//   if (item.status === 'cancelled') {
-//     return false
-//   }
-//   switch (user?.entity_type) {
-//     case EntityTypeValue.teacher:
-//       return true
-//     case EntityTypeValue.client:
-//       return false
-//     default:
-//       return item.status === 'conducted'
-//   }
-// })()
-
-const isEditable = user?.entity_type !== EntityTypeValue.client
-
-const isClient = user?.entity_type === EntityTypeValue.client
+const isConductDisabled = item.status !== 'conducted'
 </script>
 
 <template>
@@ -48,9 +29,7 @@ const isClient = user?.entity_type === EntityTypeValue.client
       <UiCheckbox :value="checkboxes[item.id]" />
     </div>
     <div v-else class="table-actionss">
-      <v-menu
-        v-if="isEditable"
-      >
+      <v-menu>
         <template #activator="{ props }">
           <v-btn
             icon="$more"
@@ -64,20 +43,14 @@ const isClient = user?.entity_type === EntityTypeValue.client
           <v-list-item @click="emit('edit', item.id)">
             редактировать
           </v-list-item>
-          <v-list-item @click="emit('conduct', item.id, item.status)">
+          <v-list-item
+            :disabled="isConductDisabled"
+            @click="emit('conduct', item.id, item.status)"
+          >
             проводка занятия
           </v-list-item>
         </v-list>
       </v-menu>
-
-      <v-btn
-        v-if="isClient"
-        :icon="mdiEyeOutline"
-        :size="48"
-        variant="text"
-        color="gray"
-        @click="emit('view', item.id)"
-      />
     </div>
     <div style="width: 80px; position: relative;" />
     <div style="width: 120px">
@@ -122,30 +95,6 @@ const isClient = user?.entity_type === EntityTypeValue.client
       <LessonStatus2 :status="item.status" />
       <div v-if="item.is_unplanned" class="lesson-item-status lesson-item-status--is-unplanned" />
       <div v-if="item.is_free" class="lesson-item-status lesson-item-status--is-free" />
-    </div>
-    <div style="width: 100px">
-      <template v-if="item.client_lesson">
-        <span :class="{ 'text-error': item.client_lesson.status === 'absent' }">
-          {{ ClientLessonStatusLabel[item.client_lesson.status] }}
-        </span>
-        <template v-if="item.client_lesson.status !== 'absent'">
-          {{ item.client_lesson.is_remote ? ' дист' : '' }}
-        </template>
-      </template>
-    </div>
-    <div style="flex: initial">
-      <div v-if="item.client_lesson" class="lesson-item__inline-scores">
-        <div v-for="(score, i) in item.client_lesson.scores" :key="i">
-          <v-tooltip location="bottom">
-            <template #activator="{ props }">
-              <span :class="`score score--${score.score}`" v-bind="props">
-                {{ score.score }}
-              </span>
-            </template>
-            {{ score.comment }}
-          </v-tooltip>
-        </div>
-      </div>
     </div>
   </div>
 </template>

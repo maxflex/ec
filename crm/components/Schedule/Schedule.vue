@@ -308,16 +308,25 @@ nextTick(loadData)
         />
         <LessonClientItem
           v-else-if="isClient"
-          :key="`lt-${item.id}`"
+          :key="`lc-${item.id}`"
           :item="item"
           :checkboxes="checkboxes"
           @click="onLessonClick(item)"
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
         />
-        <LessonItem
+        <LessonAdminClientItem
+          v-else-if="clientId"
+          :key="`lac-${item.id}`"
+          :item="item"
+          :checkboxes="checkboxes"
+          @click="onLessonClick(item)"
+          @edit="lessonDialog?.edit"
+          @conduct="conductDialog?.open"
+        />
+        <LessonAdminItem
           v-else
-          :key="`l-${item.id}`"
+          :key="`la-${item.id}`"
           :item="item"
           :checkboxes="checkboxes"
           @click="onLessonClick(item)"

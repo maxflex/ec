@@ -30,6 +30,7 @@ class QuartersGradesResource extends JsonResource
             ->where('program', $this->program)
             ->get();
 
+        $quarters = [];
         foreach (Quarter::cases() as $quarter) {
             $currentGroupId = ClientGroup::query()
                 ->where('contract_version_program_id', $this->contract_version_program_id)
@@ -50,11 +51,22 @@ class QuartersGradesResource extends JsonResource
 
             // подгрузить client_lessons?
             if ($request->input('with') === 'client_lessons') {
-                $clientLessons = ClientLesson::query()
-                    ->where('contract_version_program_id', $this->contract_version_program_id)
-                    ->whereHas('lesson', fn($q) => $q->where('quarter', $quarter))
-                    ->get();
-                $quarterData['client_lessons'] = JournalResource::collection($clientLessons);
+                // final приравниваем к 4 четверти
+                if ($quarter === Quarter::final) {
+                    $quarterData['last_teacher_id'] = $quarters[Quarter::q4->value]['last_teacher_id'];
+                } else {
+                    $clientLessons = ClientLesson::query()
+                        ->where('contract_version_program_id', $this->contract_version_program_id)
+                        ->whereHas('lesson', fn($q) => $q->where('quarter', $quarter))
+                        ->get()
+                        ->sortBy(fn($cl) => $cl->lesson->dateTime);
+
+                    $quarterData['client_lessons'] = JournalResource::collection($clientLessons);
+
+                    // если подгружаем client_lessons, то это Show страница
+                    // тут же нужен last_teacher_id
+                    $quarterData['last_teacher_id'] = $clientLessons->last()?->lesson->teacher_id;
+                }
             }
 
             $quarters[$quarter->value] = $quarterData;

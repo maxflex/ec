@@ -55,3 +55,12 @@ main {
     }
   }
 }
+
+.v-btn--size-large.v-btn--disabled {
+  background: #e4e4e4 !important;
+  opacity: 0.5 !important;
+
+  .v-btn__overlay {
+    display: none;
+  }
+}

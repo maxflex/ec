@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { mdiDownload } from '@mdi/js'
+import { formatFileSize } from '~/utils'
 
 const { folder } = defineProps<{
   folder: 'lessons' | 'tests'
@@ -21,17 +22,6 @@ function removeFile(file: UploadedFile) {
   else {
     model.value = null
   }
-}
-
-function humanFileSize(file: UploadedFile) {
-  const { size } = file
-  const i = size === 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024))
-  const humanFileSize = Number.parseInt((size / 1024 ** i).toFixed(2))
-  return (
-    `${humanFileSize
-    } ${
-      ['байт', 'Кб', 'Мб', 'Гб', 'Тб'][i]}`
-  )
 }
 
 async function onFileSelected(e: Event) {
@@ -83,7 +73,7 @@ async function onFileSelected(e: Event) {
             </template>
             скачать
             <span class="text-gray">
-              ({{ humanFileSize(file) }})
+              ({{ formatFileSize(file) }})
             </span>
           </v-list-item>
           <v-list-item @click="removeFile(file)">

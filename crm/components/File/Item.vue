@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { mdiFilePdfBox, mdiFileTableBox, mdiImage } from '@mdi/js'
 
-const { item } = defineProps<{
+const { item, downloadable } = defineProps<{
   item: UploadedFile
+  downloadable?: boolean
+  showSize?: boolean
 }>()
 
 function getIcon(file: UploadedFile): UploadedFileIcon {
@@ -30,13 +32,22 @@ function getIcon(file: UploadedFile): UploadedFileIcon {
       }
   }
 }
+
+function onClick() {
+  if (downloadable) {
+    window.open(item.url)
+  }
+}
 </script>
 
 <template>
-  <div class="file-item" :class="{ 'opacity-disabled': !item.url }">
+  <div class="file-item" :class="{ 'opacity-disabled': !item.url }" @click="onClick()">
     <v-icon :icon="getIcon(item).icon" :color="getIcon(item).color" />
     <span>
       {{ filterTruncate(item.name, 40) }}
+    </span>
+    <span v-if="showSize" class="ml-2 text-gray">
+      {{ formatFileSize(item) }}
     </span>
   </div>
 </template>

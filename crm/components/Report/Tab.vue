@@ -57,6 +57,6 @@ nextTick(loadData)
         density="comfortable"
       />
     </template>
-    <ReportList :items="items" />
+    <ReportListForAdmins :items="items" />
   </UiIndexPage>
 </template>

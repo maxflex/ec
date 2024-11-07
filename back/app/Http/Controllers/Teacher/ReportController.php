@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Enums\Program;
+use App\Http\Resources\JournalResource;
 use App\Http\Resources\ReportClientLessonResource;
 use App\Http\Resources\ReportListResource;
 use App\Http\Resources\ReportResource;
@@ -79,6 +80,6 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
         $report->teacher_id = auth()->id();
         $report->setCreatedAt(now());
 
-        return ReportClientLessonResource::collection($report->clientLessons);
+        return JournalResource::collection($report->clientLessons);
     }
 }

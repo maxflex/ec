@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
 
-const emit = defineEmits<{
-  deleted: [r: ReportResource]
-  updated: [r: RealReport]
-  created: [r: RealReport, fakeItemId: string]
-}>()
 const modelDefaults: ReportResource = {
   id: newId(),
   year: currentAcademicYear(),
@@ -14,30 +9,49 @@ const modelDefaults: ReportResource = {
   grade: null,
   client_lessons: [],
 }
-const { dialog, width } = useDialog('large')
+
+const route = useRoute()
+const router = useRouter()
+
+const id = Number.parseInt(route.params.id as string)
+
 const { isTeacher } = useAuthStore()
-const itemId = ref<number>()
-let fakeItemId: string = ''
 const item = ref<ReportResource>(modelDefaults)
-const loading = ref(false)
+const loading = ref(true)
 const deleting = ref(false)
+const saving = ref(false)
+
+const teacherStatuses = [
+  'new',
+  'toCheck',
+  'empty',
+] as ReportStatus[]
 
 // если статус = разрабатывается или на проверку, или пустой отчет,
 // то препод может редактировать все. Если остальные типы, то отчет нельзя редактировать
 const isDisabled = computed(() => {
-  return isTeacher && !([
-    'new',
-    'toCheck',
-    'empty',
-  ] as ReportStatus[]).includes(item.value.status)
+  return isTeacher && !['new', 'toCheck', 'empty', 'refused'].includes(item.value.status)
 })
 
-async function edit(reportId: number) {
-  itemId.value = reportId
-  dialog.value = true
+const availableStatuses = computed(() => {
+  const obj = {}
+  if (isTeacher) {
+    for (const s of teacherStatuses) {
+      obj[s] = ReportStatusLabel[s]
+    }
+  }
+  else {
+    for (const s of ['refused', 'moderated', 'published']) {
+      obj[s] = ReportStatusLabel[s]
+    }
+  }
+  return obj
+})
+
+async function edit() {
   loading.value = true
   const { data } = await useHttp<ReportResource>(
-    `reports/${reportId}`,
+    `reports/${id}`,
   )
   if (data.value) {
     item.value = data.value
@@ -45,25 +59,33 @@ async function edit(reportId: number) {
   loading.value = false
 }
 
-async function create(r: FakeReport) {
-  itemId.value = undefined
-  fakeItemId = r.id
-  const { year, program, teacher, client } = r
+async function create() {
+  const { year, program, client_id: clientId, teacher_id: teacherId } = route.query
+
+  const t = await useHttp<PersonResource>(`teachers/${teacherId}`)
+  const teacher = t.data.value!
+
+  const c = await useHttp<PersonResource>(`clients/${clientId}`)
+  const client = c.data.value!
+
   item.value = clone({
     ...modelDefaults,
-    year,
+    year: year as Year,
+    program: program as Program,
     teacher,
     client,
-    program,
   })
-  dialog.value = true
-  const { data } = await useHttp<ReportClientLessonResource[]>(`reports/lessons`, {
-    params: {
-      year,
-      program,
-      client_id: client.id,
+
+  const { data } = await useHttp<JournalResource[]>(
+    `reports/lessons`,
+    {
+      params: {
+        year,
+        program,
+        client_id: clientId,
+      },
     },
-  })
+  )
   item.value.client_lessons = data.value!
 }
 
@@ -79,70 +101,70 @@ async function destroy() {
     deleting.value = false
   }
   else {
-    emit('deleted', item.value)
-    dialog.value = false
-    setTimeout(() => (deleting.value = false), 300)
+    await router.push({ name: 'reports' })
   }
 }
 
 async function save() {
-  dialog.value = false
-  if (itemId.value) {
-    const { data } = await useHttp<RealReport>(`reports/${itemId.value}`, {
+  saving.value = true
+  if (id) {
+    const { data } = await useHttp<RealReport>(`reports/${id}`, {
       method: 'put',
       body: item.value,
     })
-    if (data.value) {
-      emit('updated', data.value)
-    }
+    saving.value = false
   }
   else {
-    const { data } = await useHttp<RealReport>('reports', {
-      method: 'post',
-      body: {
-        ...item.value,
-        client_id: item.value.client?.id,
+    const { data } = await useHttp<RealReport>(
+      `reports`,
+      {
+        method: 'post',
+        body: {
+          ...item.value,
+          client_id: item.value.client?.id,
+        },
       },
-    })
-    if (data.value) {
-      emit('created', data.value, fakeItemId)
-    }
+    )
+    await router.push({ name: 'reports-id-edit', params: { id: data.value?.id } })
   }
 }
 
-defineExpose({ edit, create })
+async function loadData() {
+  loading.value = true
+  id ? await edit() : await create()
+  loading.value = false
+}
+
+nextTick(loadData)
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :width="width">
-    <div class="dialog-wrapper">
-      <div class="dialog-header">
-        <div v-if="itemId">
-          Редактирование отчёта
-          <div class="dialog-subheader">
-            <template v-if="item.created_at">
-              {{ formatDateTime(item.created_at) }}
-            </template>
-          </div>
-        </div>
-        <template v-else>
-          Новый отчёт
-        </template>
-        <div>
-          <template v-if="itemId">
+  <v-fade-transition>
+    <div v-if="!loading" class="report-edit-page">
+      <div class="report-edit-page__header">
+        <h2>
+          <template v-if="id">
+            Редактирование отчёта
+          </template>
+          <template v-else>
+            Новый отчёт
+          </template>
+        </h2>
+        <div class="report-edit-page__actions">
+          <template v-if="id">
             <v-btn
               v-if="!isDisabled"
               icon="$delete"
               :size="48"
-              class="remove-btn"
               variant="text"
               :loading="deleting"
+              class="remove-btn"
               @click="destroy()"
             />
             <div style="position: relative; display: inline-block">
               <CommentBtn
                 variant="text"
-                :entity-id="itemId"
+                :entity-id="id"
                 :entity-type="EntityTypeValue.report"
               />
             </div>
@@ -152,18 +174,12 @@ defineExpose({ edit, create })
             :size="48"
             variant="text"
             :disabled="isDisabled"
+            :loading="saving"
             @click="save()"
           />
         </div>
       </div>
-      <UiLoader v-if="loading" />
-      <div v-else class="dialog-body">
-        <div v-if="item.client_lessons.length">
-          <div class="font-weight-bold mb-4">
-            Посещаемость и пройденные темы:
-          </div>
-          <ReportClientLessons :items="item.client_lessons" />
-        </div>
+      <div class="report-edit-page__inputs">
         <div class="double-input">
           <div v-if="item.teacher">
             <v-text-field
@@ -198,9 +214,16 @@ defineExpose({ edit, create })
           <v-select
             v-model="item.status"
             label="Статус"
-            :items="selectItems(ReportStatusLabel)"
+            :items="selectItems(availableStatuses)"
             :disabled="isDisabled"
-          />
+          >
+            <template v-if="isTeacher && item.status === 'refused'" #selection>
+              {{ ReportStatusLabel.refused }}
+            </template>
+            <template v-else-if="!(item.status in availableStatuses)" #selection>
+              {{ ReportStatusLabel[item.status] }}
+            </template>
+          </v-select>
           <v-select
             v-model="item.grade"
             label="Оценка"
@@ -231,7 +254,7 @@ defineExpose({ edit, create })
           </v-select>
           <v-text-field
             v-model="item.price"
-            :disabled="isDisabled"
+            :disabled="isDisabled || isTeacher"
             label="Цена"
             type="number"
             suffix="руб."
@@ -279,6 +302,36 @@ defineExpose({ edit, create })
           />
         </div>
       </div>
+      <div v-if="item.client_lessons.length" class="mt-4">
+        <h2 class="page-title">
+          Посещаемость и пройденные темы
+        </h2>
+        <JournalList :items="item.client_lessons" />
+      </div>
     </div>
-  </v-dialog>
+  </v-fade-transition>
 </template>
+
+<style lang="scss">
+.report-edit-page {
+  $width: 1000px;
+  $padding: 20px;
+
+  &__inputs {
+    padding: $padding;
+    max-width: $width;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  &__header {
+    padding: $padding;
+    max-width: $width;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+</style>

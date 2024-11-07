@@ -1862,5 +1862,4 @@ export const ReportStatusLabel = {
   moderated: 'промодерировано',
   published: 'опубликовано',
   empty: 'пустой отчет',
-  emptyApproved: 'одобренный пустой отчет',
 } as const

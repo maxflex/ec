@@ -336,6 +336,17 @@ export function formatPrice(price: number, showZero: boolean = false) {
   return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
 }
 
+export function formatFileSize(file: UploadedFile) {
+  const { size } = file
+  const i = size === 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024))
+  const humanFileSize = Number.parseInt((size / 1024 ** i).toFixed(2))
+  return (
+    `${humanFileSize
+    } ${
+      ['байт', 'Кб', 'Мб', 'Гб', 'Тб'][i]}`
+  )
+}
+
 export function filterAge(date: string) {
   const currentYear = Number.parseInt(dayjs().format('YYYY'))
   const year = Number.parseInt(date.split('-')[0])

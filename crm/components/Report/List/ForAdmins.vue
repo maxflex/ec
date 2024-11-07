@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { ReportDialog } from '#build/components'
-import { mdiWeb } from '@mdi/js'
+import type { ReportDialog } from '#components'
 
 const props = defineProps<{
   items: ReportListResource[]
@@ -12,6 +11,16 @@ const reportDialog = ref<InstanceType<typeof ReportDialog>>()
 
 function isRealReport(r: ReportListResource): r is RealReport {
   return 'created_at' in r
+}
+
+function getFillColor(r: RealReport) {
+  if (r.fill > 80) {
+    return 'success'
+  }
+  if (r.fill > 50) {
+    return 'orange'
+  }
+  return 'error'
 }
 
 function isEditable(r: RealReport): boolean {
@@ -53,13 +62,13 @@ function onDeleted(r: ReportResource) {
 <template>
   <div class="table">
     <div v-for="r in items" :id="`report-${r.id}`" :key="r.id">
-      <div v-if="!isTeacher" style="width: 170px">
+      <div v-if="!isTeacher" style="width: 150px">
         <UiPerson :item="r.teacher" />
       </div>
-      <div style="width: 220px">
+      <div style="width: 180px">
         <UiPerson :item="r.client" />
       </div>
-      <div style="width: 140px">
+      <div style="width: 120px">
         {{ ProgramShortLabel[r.program] }}
       </div>
       <template v-if="isRealReport(r)">
@@ -69,39 +78,43 @@ function onDeleted(r: ReportResource) {
             icon="$edit"
             :size="48"
             variant="plain"
-            @click="reportDialog?.edit(r.id)"
+            color="gray"
+            :to="{ name: 'reports-id-edit', params: { id: r.id } }"
           />
         </div>
-        <div style="width: 180px">
+        <div style="width: 150px">
           прошло занятий: {{ r.lessons_count }}
         </div>
-        <div style="width: 110px">
+        <div style="width: 70px">
           <span v-if="r.price">
             {{ formatPrice(r.price) }} руб.
           </span>
         </div>
-        <div style="width: 50px">
+        <div style="width: 30px">
           <span v-if="r.grade" :class="`score score--${r.grade}`">
             {{ r.grade }}
           </span>
         </div>
+
         <div
-          style="width: 100px; flex: 1"
+          style="width: 150px"
           class="text-center d-flex ga-5"
         >
-          <v-icon
-            v-if="r.status === 'published'"
-            :icon="mdiWeb"
-            color="secondary"
-            @click="router.push({ name: 'reports-id', params: { id: r.id } })"
-          />
-          <v-icon
-            v-else
-            class="opacity-2"
-            :icon="mdiWeb"
-            color="gray"
+          {{ ReportStatusLabel[r.status] }}
+        </div>
+
+        <div style="width: 100px" class="pr-2">
+          <v-progress-linear
+            bg-color="#92aed9"
+            :color="getFillColor(r)"
+            height="12"
+            max="100"
+            min="0"
+            :model-value="r.fill"
+            rounded
           />
         </div>
+
         <div style="width: 100px; flex: initial" class="text-gray">
           {{ formatTextDate(r.created_at, true) }}
         </div>
@@ -112,7 +125,8 @@ function onDeleted(r: ReportResource) {
             icon="$edit"
             :size="48"
             variant="plain"
-            @click="reportDialog?.create(r)"
+            color="gray"
+            :to="{ name: 'reports-id-edit', params: { id: r.id } }"
           />
         </div>
         <div style="width: 100px; flex: 1">

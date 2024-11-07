@@ -50,7 +50,7 @@ class Grade extends Model
                 CAST(sum(if(`quarter` = 'q3', 1, 0)) AS UNSIGNED) AS `q3_cnt`,
                 CAST(sum(if(`quarter` = 'q4', 1, 0)) AS UNSIGNED) AS `q4_cnt`
             ")
-            ->groupByRaw('c.client_id, cvp.program, cl.contract_version_program_id, g.year');
+            ->groupByRaw('c.client_id, cl.contract_version_program_id, g.year');
 
         if ($teacherId) {
             $cte->where('l.teacher_id', $teacherId);

@@ -1,3 +1,3 @@
 <template>
-  <GradeShow />
+  <ReportEditPage />
 </template>

@@ -11,6 +11,7 @@ use App\Http\Controllers\Teacher\{BalanceController,
     InstructionController,
     LessonController,
     ReportController,
+    TeacherController,
     TeacherPaymentController};
 use Illuminate\Support\Facades\Route;
 
@@ -29,7 +30,8 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::post('sign/{instruction}', 'sign');
     });
     Route::apiResource('instructions', InstructionController::class)->only('index', 'show');
-    Route::apiResource('clients', ClientController::class)->only('index');
+    Route::apiResource('clients', ClientController::class)->only('index', 'show');
+    Route::apiResource('teachers', TeacherController::class)->only('show');
     Route::get('reports/lessons', [ReportController::class, 'lessons']);
     Route::apiResources([
         'reports' => ReportController::class,

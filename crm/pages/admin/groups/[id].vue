@@ -51,10 +51,21 @@ nextTick(loadData)
           </div>
         </div>
         <div>
-          <div class="mb-1">
+          <div>
             расписание
           </div>
-          <TeethBar :items="group.teeth!" />
+          <TeethAsText :items="group.teeth!" />
+        </div>
+        <div>
+          <div>
+            занятий
+          </div>
+          <div>
+            {{ group.lessons_count }}
+            <span v-if="group.lessons_free_count" class="text-deepOrange">
+              + {{ group.lessons_free_count }}
+            </span>
+          </div>
         </div>
         <div class="panel-actions">
           <v-btn

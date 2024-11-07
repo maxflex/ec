@@ -2,6 +2,7 @@
 const route = useRoute()
 const item = ref<QuartersGradesResource>()
 const isChangeGradeSubmenu = ref(false)
+const { isTeacher, user } = useAuthStore()
 
 async function loadData() {
   const { data } = await useHttp<QuartersGradesResource>(
@@ -17,6 +18,7 @@ async function loadData() {
 
 const quarter = ref<Quarter>('q1')
 const selectedQuarter = computed(() => item.value ? item.value.quarters[quarter.value] : undefined)
+const isDisabled = computed(() => isTeacher && selectedQuarter.value?.last_teacher_id !== user?.id)
 
 async function setFinalGrade(score: LessonScore) {
   if (!item.value) {
@@ -81,56 +83,7 @@ nextTick(loadData)
     </v-btn>
   </UiFilters>
   <div v-if="item && selectedQuarter" class="grades">
-    <v-table>
-      <tbody>
-        <tr>
-          <td colspan="2">
-            Ученик:
-            <UiPerson :item="item.client" />
-          </td>
-          <td colspan="10">
-            Программа:
-            {{ ProgramLabel[item.program] }}
-          </td>
-        </tr>
-        <tr v-for="cl in selectedQuarter.client_lessons" :key="cl.id">
-          <td width="120">
-            {{ formatDate(cl.lesson.date) }}
-          </td>
-          <td width="150">
-            <span :class="{ 'text-error': cl.status === 'absent' }">
-              {{ ClientLessonStatusLabel[cl.status] }}
-            </span>
-            <template v-if="cl.status !== 'absent'">
-              {{ cl.is_remote ? ' удалённо' : ' очно' }}
-            </template>
-            <template v-if="cl.status === 'late'">
-              на {{ cl.minutes_late }} мин.
-            </template>
-          </td>
-          <td width="180">
-            <UiPerson :item="cl.lesson.teacher" />
-          </td>
-          <td>
-            <template v-if="cl.lesson.topic">
-              {{ cl.lesson.topic }}
-            </template>
-          </td>
-          <td width="300">
-            <div v-if="cl.scores.length" class="grades__scores">
-              <div v-for="(score, i) in cl.scores" :key="i">
-                <span :class="`score score--${score.score}`">
-                  {{ score.score }}
-                </span>
-                <div>
-                  {{ score.comment }}
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
+    <JournalList :items="selectedQuarter.client_lessons" />
     <div v-if="selectedQuarter.grade" class="grades__final">
       <div class="grades__final-grade">
         <div>
@@ -144,7 +97,7 @@ nextTick(loadData)
         <span :class="`score score--${selectedQuarter.grade.grade}`">
           {{ selectedQuarter.grade.grade }}
         </span>
-        <v-menu :close-on-content-click="isChangeGradeSubmenu" :width="160">
+        <v-menu v-if="!isDisabled" :close-on-content-click="isChangeGradeSubmenu" :width="160">
           <template #activator="{ props }">
             <v-btn
               icon="$more"
@@ -182,7 +135,11 @@ nextTick(loadData)
     <div v-show="!selectedQuarter.grade" class="grades__final">
       <v-menu>
         <template #activator="{ props }">
-          <v-btn color="primary" v-bind="props">
+          <v-btn
+            color="primary"
+            v-bind="props"
+            :disabled="isDisabled"
+          >
             <template v-if="quarter === 'final'">
               выставить итоговую оценку
             </template>
@@ -209,26 +166,6 @@ nextTick(loadData)
 
 <style lang="scss">
 .grades {
-  .v-table {
-    tr:first-child td {
-      background: #f5f5f5;
-    }
-    td {
-      padding: 16px 16px !important;
-      min-height: auto !important;
-    }
-  }
-  &__scores {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 4px;
-    & > div {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-  }
   &__final {
     border-top: 1px solid rgb(var(--v-theme-border));
     //margin-top: 20px;

@@ -57,10 +57,7 @@ nextTick(loadData)
           {{ ProgramLabel[item.program!] }}
         </div>
       </div>
-      <div>
-        <div>Посещаемость и пройденные темы:</div>
-        <ReportClientLessons :items="item.client_lessons" />
-      </div>
+
       <div v-if="item.homework_comment">
         <div>
           Выполнение домашнего задания:
@@ -83,6 +80,14 @@ nextTick(loadData)
         </div>
         <div>
           {{ item.knowledge_level_comment }}
+        </div>
+      </div>
+      <div v-if="item.recommendation_comment">
+        <div>
+          Рекомендации родителям:
+        </div>
+        <div>
+          {{ item.recommendation_comment }}
         </div>
       </div>
     </div>

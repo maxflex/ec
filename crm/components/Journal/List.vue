@@ -51,7 +51,7 @@ const { items } = defineProps<{
                 <div>Файлы:</div>
                 <div class="journal__files">
                   <div v-for="f in item.lesson.files" :key="f.url">
-                    <FileItem :item="f" />
+                    <FileItem :item="f" downloadable show-size />
                   </div>
                 </div>
               </div>

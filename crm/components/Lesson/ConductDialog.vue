@@ -3,6 +3,7 @@ const emit = defineEmits(['conducted'])
 const { width, dialog } = useDialog('large')
 const itemId = ref<number>()
 const item = ref<LessonConductResource>()
+const { isTeacher } = useAuthStore()
 
 const minutesLateMask = { mask: '###' }
 const loading = ref(false)
@@ -104,7 +105,7 @@ defineExpose({ open })
             Проводка занятия
           </div>
           <div>
-            <v-btn color="primary" :loading="saving" @click="conduct()">
+            <v-btn v-if="isTeacher" color="primary" :loading="saving" @click="conduct()">
               провести занятие
             </v-btn>
           </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\LessonStatus;
 use App\Models\Group;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -17,6 +18,8 @@ class GroupResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, ['*'], [
+            'lessons_count' => $this->lessons()->where('status', '<>', LessonStatus::cancelled)->where('is_free', 0)->count(),
+            'lessons_free_count' => $this->lessons()->where('status', '<>', LessonStatus::cancelled)->where('is_free', 1)->count(),
             'user' => new PersonResource($this->user),
             'teachers' => PersonResource::collection($this->teachers),
             'teeth' => $this->getTeeth($this->year)

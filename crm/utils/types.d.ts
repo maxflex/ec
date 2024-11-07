@@ -337,6 +337,9 @@ declare global {
   interface GroupListResource {
     id: number
     lessons_count: number
+    lessons_conducted_count: number
+    lessons_conducted_free_count: number
+    lessons_free_count: number
     client_groups_count: number
     program: Program
     teachers: PersonResource[]
@@ -353,6 +356,8 @@ declare global {
     teeth?: Teeth
     created_at?: string
     user?: PersonResource
+    lessons_count: number
+    lessons_free_count: number
   }
 
   interface UploadedFile {
@@ -620,6 +625,7 @@ declare global {
     id: number
     date: string
   }
+
   interface LogResource {
     id: number
     type: LogType
@@ -648,6 +654,7 @@ declare global {
     lessons_count: number
     price: ?number
     grade: ?LessonScore
+    fill: number
   }
 
   interface FakeReport {
@@ -660,19 +667,6 @@ declare global {
   }
 
   type ReportListResource = RealReport | FakeReport
-
-  interface ReportClientLessonResource {
-    id: number
-    status: ClientLessonStatus
-    minutes_late: number
-    is_remote: boolean
-    scores: ClientLessonScore[]
-    lesson: {
-      id: number
-      date: string
-      topic: string
-    }
-  }
 
   interface ReportResource {
     id: number
@@ -688,7 +682,7 @@ declare global {
     client?: PersonResource
     program?: Program
     created_at?: string
-    client_lessons: ReportClientLessonResource[]
+    client_lessons: JournalResource[]
   }
 
   interface BillingResource {
@@ -782,6 +776,7 @@ declare global {
       [key in Quarter]: {
         conducted_count: number
         total_count: number
+        last_teacher_id: ?number
         grade: ?GradeResource
         client_lessons?: Array<{
           id: number

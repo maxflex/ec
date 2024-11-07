@@ -28,6 +28,6 @@ const { items, indexPageData } = useIndex<ReportListResource, Filters>(
         density="comfortable"
       />
     </template>
-    <ReportList :items="items" />
+    <ReportListForTeachers :items="items" />
   </UiIndexPage>
 </template>

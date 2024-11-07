@@ -10,6 +10,6 @@ const { items, indexPageData } = useIndex<ReportListResource, ReportFilters>(`re
     <template #filters>
       <ReportFilters v-model="filters" />
     </template>
-    <ReportList :items="items" />
+    <ReportListForAdmins :items="items" />
   </UiIndexPage>
 </template>

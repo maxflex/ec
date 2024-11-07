@@ -10,5 +10,4 @@ enum ReportStatus: string
     case moderated = 'moderated';
     case published = 'published';
     case empty = 'empty';
-    case emptyApproved = 'emptyApproved';
 }
