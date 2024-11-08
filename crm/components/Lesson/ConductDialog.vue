@@ -119,13 +119,13 @@ defineExpose({ open })
               <td width="290">
                 {{ formatName(s.client) }}
               </td>
-              <td width="100">
+              <td width="200">
                 <UiToggler
                   v-model="s.status"
                   :items="selectItems(ClientLessonStatusLabel)"
                 />
               </td>
-              <td width="80">
+              <td width="100">
                 <v-text-field
                   v-if="['late', 'lateOnline'].includes(s.status)"
                   v-model="s.minutes_late"

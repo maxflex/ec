@@ -14,9 +14,9 @@ class LessonController extends \App\Http\Controllers\Admin\LessonController
      */
     public function update(Request $request, Lesson $lesson)
     {
-        foreach ($request->contracts as $c) {
-            $clientLesson = ClientLesson::find($c['id']);
-            $clientLesson->update($c);
+        foreach ($request->students as $s) {
+            $clientLesson = ClientLesson::find($s['id']);
+            $clientLesson->update($s);
         }
         return new LessonListResource($lesson);
     }

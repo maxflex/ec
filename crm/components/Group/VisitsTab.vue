@@ -58,7 +58,11 @@ function isRemote(l: GroupVisitResource, c: PersonResource): boolean {
   if (!clientLessons.value) {
     return false
   }
-  return ['lateOnline', 'presentOnline'].includes(clientLessons.value[l.id][c.id].status)
+
+  console.log(l.id, c.id, clientLessons.value)
+  const { status } = clientLessons.value[l.id][c.id]
+
+  return ['lateOnline', 'presentOnline'].includes(status)
 }
 
 function getCircleColor(l: GroupVisitResource, c: PersonResource) {
