@@ -127,22 +127,12 @@ defineExpose({ open })
               </td>
               <td width="80">
                 <v-text-field
-                  v-if="s.status === 'late' "
+                  v-if="['late', 'lateOnline'].includes(s.status)"
                   v-model="s.minutes_late"
                   v-maska:[minutesLateMask]
                   type="number"
                   hide-spin-buttons
                   placeholder="минут"
-                />
-              </td>
-              <td width="120">
-                <UiToggler
-                  v-if="s.status !== 'absent'"
-                  v-model="s.is_remote"
-                  :items="[
-                    { value: false, title: 'очно' },
-                    { value: true, title: 'удалённо' },
-                  ]"
                 />
               </td>
               <td width="57" class="conduct-dialog__scores">

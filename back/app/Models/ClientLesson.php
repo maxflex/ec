@@ -15,14 +15,13 @@ class ClientLesson extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'price', 'status', 'minutes_late', 'is_remote', 'scores',
+        'price', 'status', 'minutes_late', 'scores',
         'contract_version_program_id'
     ];
 
     protected $casts = [
         'status' => ClientLessonStatus::class,
         'scores' => JsonArrayCast::class,
-        'is_remote' => 'boolean',
     ];
 
     public function lesson(): BelongsTo

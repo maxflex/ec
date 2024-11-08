@@ -25,7 +25,7 @@ class GroupVisitResource extends JsonResource
         ], [
             'teacher' => new PersonResource($this->teacher),
             'clientLessons' => $clientLessons->map(fn($cl) => extract_fields($cl, [
-                'status', 'is_remote', 'minutes_late'
+                'status', 'minutes_late'
             ], [
                 'client' => new PersonResource($cl->contractVersionProgram->contractVersion->contract->client),
             ]))

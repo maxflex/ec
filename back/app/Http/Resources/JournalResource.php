@@ -15,7 +15,7 @@ class JournalResource extends JsonResource
     {
         $program = $this->program ?? $this->lesson->group->program;
         return extract_fields($this, [
-            'status', 'is_remote', 'scores', 'minutes_late',
+            'status', 'scores', 'minutes_late',
         ], [
             'program' => $program,
             'lesson' => extract_fields($this->lesson, [

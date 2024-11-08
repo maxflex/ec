@@ -27,10 +27,7 @@ const { client, program, items } = defineProps<{
           <span :class="{ 'text-error': item.status === 'absent' }">
             {{ ClientLessonStatusLabel[item.status] }}
           </span>
-          <template v-if="item.status !== 'absent'">
-            {{ item.is_remote ? ' удалённо' : ' очно' }}
-          </template>
-          <template v-if="item.status === 'late'">
+          <template v-if="item.minutes_late">
             на {{ item.minutes_late }} мин.
           </template>
         </td>

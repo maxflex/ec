@@ -11,11 +11,13 @@ class ClientLessonObserver
 {
     public function created(ClientLesson $clientLesson): void
     {
-        // если ученик опоздал, не был и/или был удаленно
-        if (
-            $clientLesson->status <> ClientLessonStatus::present
-            || $clientLesson->is_remote
-        ) {
+        // если ученик опоздал, не был или был удаленно
+        if (in_array($clientLesson->status, [
+            ClientLessonStatus::late,
+            ClientLessonStatus::absent,
+            ClientLessonStatus::lateOnline,
+            ClientLessonStatus::presentOnline,
+        ])) {
             $phones = $clientLesson->contractVersionProgram->contractVersion->contract->client->parent
                 ->phones()
                 ->withTelegram()

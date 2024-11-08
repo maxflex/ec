@@ -15,9 +15,10 @@ const { state } = defineProps<{
 </template>
 
 <style lang="scss">
-.call-state-icon {
-  &--has-incoming {
-    animation: ring 1s ease-in-out infinite;
-  }
-}
+// включить, если понадобится анимация входящего
+//.call-state-icon {
+//  &--has-incoming {
+//    animation: ring 1s ease-in-out infinite;
+//  }
+//}
 </style>

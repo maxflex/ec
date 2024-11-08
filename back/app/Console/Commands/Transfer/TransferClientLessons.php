@@ -43,8 +43,7 @@ class TransferClientLessons extends Command
                 'contract_version_program_id' => $contractVersionProgram->id,
                 'price' => $item->price, // is_free здесь уже правильно учтено
                 'status' => $status->name,
-                'minutes_late' => $status === ClientLessonStatus::late && $item->late ? $item->late : null,
-                'is_remote' => $item->is_remote,
+                'minutes_late' => $this->getMinutesLate($item, $status),
                 'scores' => $scores,
             ]);
             if ($contractVersionProgram->error) {
@@ -74,8 +73,23 @@ class TransferClientLessons extends Command
             return ClientLessonStatus::absent;
         }
         if ($item->late > 0) {
-            return ClientLessonStatus::late;
+            return $item->is_remote
+                ? ClientLessonStatus::lateOnline
+                : ClientLessonStatus::late;
         }
-        return ClientLessonStatus::present;
+        return $item->is_remote
+            ? ClientLessonStatus::presentOnline
+            : ClientLessonStatus::present;
+    }
+
+    private function getMinutesLate($item, ClientLessonStatus $status): ?int
+    {
+        if (in_array($status, [
+            ClientLessonStatus::late,
+            ClientLessonStatus::lateOnline
+        ])) {
+            return $item->late;
+        }
+        return null;
     }
 }

@@ -13,6 +13,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        Schema::dropIfExists('client_lessons');
         Schema::create('client_lessons', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(ContractVersionProgram::class)->constrained();
@@ -24,9 +25,6 @@ return new class extends Migration {
             );
             $table->json('scores')->nullable()->default(null);
             $table->unsignedInteger('minutes_late')->nullable();
-
-//            временно выключили. TODO: включить!
-//            $table->unique(['contract_version_program_id', 'lesson_id']);
         });
     }
 

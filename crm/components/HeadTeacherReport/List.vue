@@ -30,10 +30,10 @@ defineEmits<{
         {{ MonthLabel[item.month] }}
       </div>
       <div style="flex: 1" class="text-truncate">
-        {{ item.text }}
+        {{ filterTruncate(item.text, 60) }}
       </div>
-      <div class="text-gray" style="width: 150px; flex: initial">
-        {{ formatDateTime(item.created_at!) }}
+      <div class="text-gray" style="width: 80px; flex: initial">
+        {{ formatDate(item.created_at!) }}
       </div>
     </div>
   </div>

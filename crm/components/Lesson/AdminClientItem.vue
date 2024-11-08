@@ -101,9 +101,6 @@ const isConductDisabled = item.status !== 'conducted'
         <span :class="{ 'text-error': item.client_lesson.status === 'absent' }">
           {{ ClientLessonStatusLabel[item.client_lesson.status] }}
         </span>
-        <template v-if="item.client_lesson.status !== 'absent'">
-          {{ item.client_lesson.is_remote ? ' дист' : '' }}
-        </template>
       </template>
     </div>
     <div style="flex: initial">

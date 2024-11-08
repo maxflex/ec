@@ -12,7 +12,7 @@ class ClientLessonResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'contract_version_program_id', 'is_remote', 'minutes_late', 'status', 'scores',
+            'contract_version_program_id', 'minutes_late', 'status', 'scores',
         ], [
             'client' => new PersonWithPhotoResource(
                 $this->contractVersionProgram->contractVersion->contract->client

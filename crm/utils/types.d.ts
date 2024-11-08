@@ -419,7 +419,6 @@ declare global {
       status: ClientLessonStatus
       scores: ClientLessonScore[]
       minutes_late: ?number
-      is_remote: boolean
     }
     group: {
       id: number
@@ -433,7 +432,6 @@ declare global {
     contract_version_program_id: number
     client: PersonWithPhotoResource
     status: ClientLessonStatus
-    is_remote: boolean
     minutes_late: ?number
     scores: ClientLessonScore[]
   }
@@ -761,7 +759,6 @@ declare global {
     status: LessonStatus
     clientLessons: Array<{
       id: number
-      is_remote: boolean
       minutes_late: number
       status: ClientLessonStatus
       client: PersonResource
@@ -780,7 +777,6 @@ declare global {
         grade: ?GradeResource
         client_lessons?: Array<{
           id: number
-          is_remote: boolean
           minutes_late: ?number
           status: ClientLessonStatus
           scores: ClientLessonScore[]
@@ -1081,7 +1077,6 @@ declare global {
     id: number
     status: ClientLessonStatus
     minutes_late: number
-    is_remote: boolean
     scores: ClientLessonScore[]
     program: Program
     lesson: {

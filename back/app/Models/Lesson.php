@@ -106,7 +106,6 @@ class Lesson extends Model
                 'minutes_late' => $s->status === ClientLessonStatus::late->value
                     ? $s->minutes_late
                     : null,
-                'is_remote' => $s->is_remote,
                 'price' => $this->is_free ? 0 : $contractVersionProgram->getNextPrice(),
                 'scores' => count($s->scores) ? $s->scores : null
             ]);

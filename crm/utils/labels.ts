@@ -1503,8 +1503,10 @@ export const LessonStatusLabel = {
 } as const
 
 export const ClientLessonStatusLabel = {
-  present: 'был',
-  late: 'опоздал',
+  present: 'был очно',
+  presentOnline: 'был дист',
+  late: 'опоздал очно',
+  lateOnline: 'опоздал дист',
   absent: 'не был',
 } as const
 

@@ -21,7 +21,6 @@ const clientLessons = computed(() => {
     [key: number]: {
       [key: number]: {
         status: ClientLessonStatus
-        is_remote: boolean
         minutes_late: number
       }
     }
@@ -31,7 +30,6 @@ const clientLessons = computed(() => {
     for (const clientLesson of item.clientLessons) {
       result[item.id][clientLesson.client.id] = {
         status: clientLesson.status,
-        is_remote: clientLesson.is_remote,
         minutes_late: clientLesson.minutes_late,
       }
     }
@@ -54,6 +52,32 @@ async function loadData() {
     items.value = data.value
   }
   loading.value = false
+}
+
+function isRemote(l: GroupVisitResource, c: PersonResource): boolean {
+  if (!clientLessons.value) {
+    return false
+  }
+  return ['lateOnline', 'presentOnline'].includes(clientLessons.value[l.id][c.id].status)
+}
+
+function getCircleColor(l: GroupVisitResource, c: PersonResource) {
+  if (!clientLessons.value) {
+    return false
+  }
+  const { status } = clientLessons.value[l.id][c.id]
+
+  switch (status) {
+    case 'absent':
+      return 'text-error'
+
+    case 'late':
+    case 'lateOnline':
+      return 'text-warning'
+
+    default:
+      return 'text-success'
+  }
 }
 
 const noData = computed(() => !loading.value && items.value.length === 0)
@@ -112,14 +136,10 @@ nextTick(loadData)
               }"
             />
           </td>
-          <td v-for="c in clients" :key="c.id" :class="{ 'is-remote': clientLessons[l.id][c.id] && clientLessons[l.id][c.id].is_remote }">
+          <td v-for="c in clients" :key="c.id" :class="{ 'is-remote': isRemote(l, c) }">
             <UiCircleStatus
               v-if="clientLessons[l.id][c.id]"
-              :class="{
-                'text-error': clientLessons[l.id][c.id].status === 'absent',
-                'text-warning': clientLessons[l.id][c.id].status === 'late',
-                'text-success': clientLessons[l.id][c.id].status === 'present',
-              }"
+              :class="getCircleColor(l, c) "
             />
           </td>
           <td />
