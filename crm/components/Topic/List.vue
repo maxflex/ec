@@ -1,24 +1,30 @@
 <script setup lang="ts">
-import type { LessonDialog } from '#build/components'
+import type { TopicDialog } from '#build/components'
 import { mdiCheckAll } from '@mdi/js'
 
 const { items } = defineProps<{
   items: TopicListResource[]
 }>()
 
-const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
+const topicDialog = ref<InstanceType<typeof TopicDialog>>()
+
+function onUpdated(item: TopicListResource) {
+  const index = items.findIndex(e => e.id === item.id)
+  // eslint-disable-next-line
+  items.splice(index, 1, item)
+}
 </script>
 
 <template>
   <div class="table">
-    <div v-for="l in items" :key="l.id">
+    <div v-for="l in items" :id="`topic-${l.id}`" :key="l.id">
       <div class="table-actionss">
         <v-btn
           icon="$edit"
           :size="48"
           variant="plain"
           color="gray"
-          @click="lessonDialog?.edit(l.id)"
+          @click="topicDialog?.edit(l)"
         />
       </div>
       <div style="width: 100px">
@@ -35,7 +41,7 @@ const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
       <div style="flex: 1" class="text-truncate">
         {{ l.topic }}
       </div>
-      <div class="text-right" style="width: 30px; flex: initial">
+      <div style="width: 100px; flex: initial">
         <v-icon
           :class="{
             'opacity-2': !l.is_topic_verified,
@@ -46,5 +52,5 @@ const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
       </div>
     </div>
   </div>
-  <LessonDialog ref="lessonDialog" />
+  <TopicDialog ref="topicDialog" @updated="onUpdated" />
 </template>

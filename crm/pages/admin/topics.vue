@@ -10,6 +10,6 @@ const { items, indexPageData } = useIndex<TopicListResource, TopicFilters>(`topi
     <template #filters>
       <TopicFilters v-model="filters" />
     </template>
-    <TopicList :items="items" />
+    <TopicList :items="items" @updated="onUpdated" />
   </UiIndexPage>
 </template>

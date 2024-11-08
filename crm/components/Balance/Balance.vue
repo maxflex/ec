@@ -77,9 +77,6 @@ nextTick(loadData)
                   >
                     +{{ formatPrice(balanceItem.sum) }} руб.
                   </span>
-                  <span v-else-if="balanceItem.sum === 0" class="text-gray">
-                    0 руб.
-                  </span>
                 </td>
                 <td>
                   <span
@@ -87,6 +84,9 @@ nextTick(loadData)
                     class="text-error"
                   >
                     {{ formatPrice(balanceItem.sum) }} руб.
+                  </span>
+                  <span v-else-if="balanceItem.sum === 0" class="text-gray">
+                    бесплатно
                   </span>
                 </td>
                 <td />

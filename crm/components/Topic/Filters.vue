@@ -11,8 +11,8 @@ const model = defineModel<TopicFilters>({ required: true })
   />
   <UiClearableSelect
     v-model="model.is_topic_verified"
-    :items="yesNo('промодерировано', 'не промодерировано')"
-    label="Модерация"
+    :items="yesNo()"
+    label="Тема подтверждена"
     density="comfortable"
   />
 </template>
