@@ -17,6 +17,7 @@ class ClientTestResource extends JsonResource
     public function toArray(Request $request): array
     {
         $extra = [
+            'file' => $this->file,
             'client' => $this->whenLoaded('client', fn () => new PersonResource($this->client))
         ];
 
@@ -37,7 +38,7 @@ class ClientTestResource extends JsonResource
 
         return extract_fields($this, [
             'program', 'name', 'is_finished', 'is_active',
-            'minutes', 'questions_count', 'file', 'created_at',
+            'minutes', 'questions_count', 'created_at',
             'finished_at', 'started_at'
         ], $extra);
     }

@@ -30,12 +30,16 @@ export function getCookie(key: string): object | null {
   return null
 }
 
-export function getEntityString(): EntityString | null {
+export function getEntityStringFromToken(): EntityString | null {
   const token = useCookie('preview-token').value || useCookie('token').value
   if (token) {
     return token.split('|')[0] as EntityString
   }
   return null
+}
+
+export function getEntityString(entityType: EntityType): EntityString {
+  return entityType.split('\\').slice(-1)[0].toLowerCase() as EntityString
 }
 
 let _newId = 0
@@ -125,7 +129,7 @@ function getFiltersKey(tabName: string | null = null) {
   const route = useRoute()
   return [
     'filters',
-    getEntityString(),
+    getEntityStringFromToken(),
     `${tabName || ''}${String(route.name)}`,
   ].join('-')
 }

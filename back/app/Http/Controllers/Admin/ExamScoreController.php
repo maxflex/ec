@@ -13,9 +13,6 @@ class ExamScoreController extends Controller
         'equals' => ['year', 'client_id']
     ];
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $query = ExamScore::query()
@@ -36,35 +33,23 @@ class ExamScoreController extends Controller
         );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $examScore = auth()->user()->entity->examScores()->create($request->all());
         return new ExamScoreResource($examScore);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(ExamScore $examScore)
     {
         return new ExamScoreResource($examScore);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, ExamScore $examScore)
     {
         $examScore->update($request->all());
         return new ExamScoreResource($examScore);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(ExamScore $examScore)
     {
         $examScore->delete();

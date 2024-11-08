@@ -22,7 +22,7 @@ class VacationController extends Controller
 
     public function store(Request $request)
     {
-        abort_if(auth()->user()->entity_type !== User::class, 401);
+        abort_if(auth()->user()->entity_type !== User::class, 403);
 
         $vacation = Vacation::where('date', $request->date)->first();
         if ($vacation === null) {

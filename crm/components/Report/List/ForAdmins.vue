@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import type { ReportDialog } from '#components'
-
 const props = defineProps<{
   items: ReportListResource[]
 }>()
-const router = useRouter()
 const { isAdmin, isTeacher } = useAuthStore()
 const { items } = toRefs(props)
-const reportDialog = ref<InstanceType<typeof ReportDialog>>()
 
 function isRealReport(r: ReportListResource): r is RealReport {
   return 'created_at' in r
@@ -31,31 +27,6 @@ function isEditable(r: RealReport): boolean {
     return true
   }
   return false
-}
-
-function onUpdated(r: RealReport) {
-  const index = items.value.findIndex(e => e.id === r.id)
-  if (index === -1) {
-    return
-  }
-  items.value[index] = r
-  itemUpdated('report', r.id)
-}
-
-function onCreated(r: RealReport, fakeItemId: string) {
-  const index = items.value.findIndex(e => e.id === fakeItemId)
-  if (index === -1) {
-    return
-  }
-  items.value[index] = r
-  itemUpdated('report', r.id)
-}
-
-function onDeleted(r: ReportResource) {
-  const index = items.value.findIndex(e => e.id === r.id)
-  if (index !== -1) {
-    items.value.splice(index, 1)
-  }
 }
 </script>
 
@@ -143,10 +114,4 @@ function onDeleted(r: ReportResource) {
       </template>
     </div>
   </div>
-  <ReportDialog
-    ref="reportDialog"
-    @updated="onUpdated"
-    @created="onCreated"
-    @deleted="onDeleted"
-  />
 </template>

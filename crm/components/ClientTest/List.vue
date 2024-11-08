@@ -5,7 +5,8 @@ const emit = defineEmits<{
   destroy: [t: ClientTestResource]
 }>()
 
-const { isAdmin, isClient } = useAuthStore()
+// isTeacher – for head teachers
+const { isAdmin, isClient, isTeacher } = useAuthStore()
 </script>
 
 <template>
@@ -77,7 +78,7 @@ const { isAdmin, isClient } = useAuthStore()
       <!--      </div> -->
       <div class="text-right">
         <v-btn
-          v-if="t.is_finished"
+          v-if="t.is_finished && isAdmin"
           color="secondary"
           density="comfortable"
           variant="tonal"

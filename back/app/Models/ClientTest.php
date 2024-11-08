@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Casts\JsonArrayCast;
 use App\Enums\Program;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 class ClientTest extends Model
@@ -15,18 +16,18 @@ class ClientTest extends Model
     ];
 
     protected $casts = [
+        'file' => 'json',
         'program' => Program::class,
         'questions' => JsonArrayCast::class,
         'answers' => JsonArrayCast::class,
-        'file' => 'array',
     ];
 
-    public function client()
+    public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

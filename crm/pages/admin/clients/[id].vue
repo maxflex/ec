@@ -21,8 +21,8 @@ const client = ref<ClientResource>()
 const clientDialog = ref<InstanceType<typeof ClientDialog>>()
 
 async function loadData() {
-  const { data } = await useHttp(`clients/${route.params.id}`)
-  client.value = data.value as ClientResource
+  const { data } = await useHttp<ClientResource>(`clients/${route.params.id}`)
+  client.value = data.value!
 }
 
 function onClientUpdated(c: ClientResource) {

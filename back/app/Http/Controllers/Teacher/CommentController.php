@@ -9,6 +9,6 @@ class CommentController extends \App\Http\Controllers\Admin\CommentController
 {
     public function __construct(Request $request)
     {
-        abort_if($request->entity_type !== Report::class, 401);
+        abort_if($request->entity_type !== Report::class, 403);
     }
 }

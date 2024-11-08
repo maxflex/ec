@@ -4,7 +4,9 @@ use App\Http\Controllers\Teacher\{BalanceController,
     ClientController,
     ClientGroupController,
     ClientReviewController,
+    ClientTestController,
     CommentController,
+    ExamScoreController,
     GradeController,
     GroupController,
     HeadTeacherReportController,
@@ -13,6 +15,7 @@ use App\Http\Controllers\Teacher\{BalanceController,
     ReportController,
     TeacherController,
     TeacherPaymentController};
+use App\Http\Middleware\HeadTeacherMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:crm'])->group(function () {
@@ -40,4 +43,9 @@ Route::middleware(['auth:crm'])->group(function () {
         'client-reviews' => ClientReviewController::class,
         'comments' => CommentController::class,
     ]);
+
+    Route::middleware(HeadTeacherMiddleware::class)->group(function () {
+        Route::apiResource('exam-scores', ExamScoreController::class)->only('index');
+        Route::apiResource('client-tests', ClientTestController::class)->only('index');
+    });
 });

@@ -9,7 +9,7 @@ export default <RouterConfig>{
       // @ts-expect-error
       r => !r.name.includes('-'),
     )
-    const entityString = getEntityString()
+    const entityString = getEntityStringFromToken()
     // console.log({ entityString })
     if (entityString) {
       routes
