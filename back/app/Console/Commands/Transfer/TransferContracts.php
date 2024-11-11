@@ -74,6 +74,9 @@ class TransferContracts extends Command
                     }
                     foreach ($prices as $p) {
                         [$lessons, $price] = $p;
+                        if ($cv->discount > 0) {
+                            $price = round($price - ($price * ($cv->discount / 100)));
+                        }
                         DB::table('contract_version_program_prices')->insert([
                             'contract_version_program_id' => $cvpId,
                             'lessons' => $lessons,
