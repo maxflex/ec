@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { mdiExclamationThick } from '@mdi/js'
+
 const { items } = defineProps<{
   items: QuartersGradesResource[]
 }>()
@@ -35,22 +37,10 @@ const router = useRouter()
           {{ ProgramShortLabel[g.program] }}
         </td>
         <td v-for="(q, key) in g.quarters" :key="key" width="160" class="text-center">
-          <!--            <v-tooltip location="bottom"> -->
-          <!--              <template #activator="{ props }"> -->
-          <!--                <v-progress-circular -->
-          <!--                  v-if="key !== 'final'" -->
-          <!--                  v-bind="props" -->
-          <!--                  :model-value="q.total_count ? (q.conducted_count / q.total_count * 100) : 0" -->
-          <!--                  :width="3" -->
-          <!--                  :size="30" -->
-          <!--                  color="secondary" -->
-          <!--                /> -->
-          <!--              </template> -->
-          <!--              {{ q.conducted_count }} / {{ q.total_count }} занятий проведено -->
-          <!--            </v-tooltip> -->
           <span v-if="q.grade" :class="`score score--${q.grade.grade}`">
             {{ q.grade.grade }}
           </span>
+          <v-icon v-else-if="q.is_grade_needed" :icon="mdiExclamationThick" color="error" />
         </td>
       </tr>
     </tbody>

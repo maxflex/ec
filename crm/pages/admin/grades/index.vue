@@ -3,7 +3,7 @@ const filters = ref<GradeFilters>(loadFilters({
   year: currentAcademicYear(),
 }))
 
-const { items, indexPageData } = useIndex<QuartersGradesListResource, GradeFilters>(
+const { items, indexPageData } = useIndex<QuartersGradesResource, GradeFilters>(
   `grades`,
   filters,
 )

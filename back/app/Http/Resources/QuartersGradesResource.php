@@ -35,18 +35,27 @@ class QuartersGradesResource extends JsonResource
             $currentGroupId = ClientGroup::query()
                 ->where('contract_version_program_id', $this->contract_version_program_id)
                 ->value('group_id');
-            $conductedCount = $this->{$quarter->value . '_cnt'} ?? 0;
-            $plannedCount = $quarter === Quarter::final ? 0 : Lesson::query()
-                ->where('group_id', $currentGroupId)
-                ->where('quarter', $quarter)
-                ->where('status', LessonStatus::planned)
-                ->count();
+
             $grade = $grades->where('quarter', $quarter->value)->first();
+
+            // таким образом, в Quarter::final будут значения Quarter::q4
+            // (значения от предыдущей итерации цикла)
+            if ($quarter !== Quarter::final) {
+                $noPlannedLessons = !Lesson::query()
+                    ->where('group_id', $currentGroupId)
+                    ->where('quarter', $quarter)
+                    ->where('status', LessonStatus::planned)
+                    ->exists();
+
+                $conductedLessonsCount = $this->{$quarter->value . '_conducted_lessons_count'};
+
+                $isGradeNeeded = $grade === null && $noPlannedLessons && $conductedLessonsCount > 0;
+            }
+
 
             $quarterData = [
                 'grade' => new GradeResource($grade),
-                'conducted_count' => $conductedCount,
-                'total_count' => $conductedCount + $plannedCount,
+                'is_grade_needed' => $isGradeNeeded,
             ];
 
             // подгрузить client_lessons?

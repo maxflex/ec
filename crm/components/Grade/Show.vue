@@ -82,57 +82,52 @@ nextTick(loadData)
       {{ label }}
     </v-btn>
   </UiFilters>
-  <div v-if="item && selectedQuarter" class="grades">
-    <JournalList :items="selectedQuarter.client_lessons" />
-    <div v-if="selectedQuarter.grade" class="grades__final">
-      <div class="grades__final-grade">
-        <div>
-          <span v-if="quarter === 'final'">
-            Итоговая оценка:
-          </span>
-          <span v-else>
-            Оценка за четверть:
-          </span>
-        </div>
-        <span :class="`score score--${selectedQuarter.grade.grade}`">
-          {{ selectedQuarter.grade.grade }}
+  <template v-if="item && selectedQuarter">
+    <UiNoData v-if="!selectedQuarter.client_lessons?.length" class="grades__no-data" />
+    <JournalList v-else :items="selectedQuarter.client_lessons" />
+    <div v-if="selectedQuarter.grade" :key="selectedQuarter.grade.id" class="grades__final">
+      <div class="dialog-section__title mt-0">
+        <span v-if="quarter === 'final'">
+          Итоговая оценка:
         </span>
-        <v-menu v-if="!isDisabled" :close-on-content-click="isChangeGradeSubmenu" :width="160">
-          <template #activator="{ props }">
-            <v-btn
-              icon="$more"
-              :size="38"
-              variant="text"
-              color="gray"
-              v-bind="props"
-              @click="isChangeGradeSubmenu = false"
-            />
-          </template>
-          <v-list v-if="isChangeGradeSubmenu" class="grades__final-selector">
-            <v-list-item v-for="(label, score) in LessonScoreLabel" :key="score" @click="updateFinalGrade(score)">
-              <template #title>
-                <span :class="`score score--${score}`" class="mr-2">
-                  {{ score }}
-                </span>
-                {{ label }}
-              </template>
-            </v-list-item>
-          </v-list>
-          <v-list v-else>
-            <v-list-item @click="isChangeGradeSubmenu = true">
-              изменить оценку
-            </v-list-item>
-            <v-list-item @click="deleteFinalGrade()">
-              удалить оценку
-            </v-list-item>
-          </v-list>
-        </v-menu>
+        <span v-else>
+          Оценка за четверть:
+        </span>
       </div>
-      <div v-if="selectedQuarter.grade.teacher" class="text-gray mt-1">
-        Поставил <UiPerson :item="selectedQuarter.grade.teacher" teacher-format="full" />
+      <v-menu v-if="!isDisabled" :close-on-content-click="isChangeGradeSubmenu" :width="160">
+        <template #activator="{ props }">
+          <span
+            :class="`score score--${selectedQuarter.grade.grade}`"
+            v-bind="props"
+            @click="isChangeGradeSubmenu = false"
+          >
+            {{ selectedQuarter.grade.grade }}
+          </span>
+        </template>
+        <v-list v-if="isChangeGradeSubmenu" class="grades__final-selector">
+          <v-list-item v-for="(label, score) in LessonScoreLabel" :key="score" @click="updateFinalGrade(score)">
+            <template #title>
+              <span :class="`score score--${score}`" class="mr-2">
+                {{ score }}
+              </span>
+              {{ label }}
+            </template>
+          </v-list-item>
+        </v-list>
+        <v-list v-else>
+          <v-list-item @click="isChangeGradeSubmenu = true">
+            изменить оценку
+          </v-list-item>
+          <v-list-item @click="deleteFinalGrade()">
+            удалить оценку
+          </v-list-item>
+        </v-list>
+      </v-menu>
+      <div v-if="selectedQuarter.grade.teacher" class="text-gray pl-2 flex-1-0 text-right">
+        <UiPerson :item="selectedQuarter.grade.teacher" teacher-format="full" />
       </div>
     </div>
-    <div v-show="!selectedQuarter.grade" class="grades__final">
+    <div v-else class="grades__final">
       <v-menu>
         <template #activator="{ props }">
           <v-btn
@@ -160,29 +155,57 @@ nextTick(loadData)
         </v-list>
       </v-menu>
     </div>
-  </div>
+  </template>
   <UiLoader v-else />
 </template>
 
 <style lang="scss">
 .grades {
   &__final {
+    position: sticky !important;
+    bottom: 0;
+    background: white;
     border-top: 1px solid rgb(var(--v-theme-border));
-    //margin-top: 20px;
-    padding: 20px;
-    &-grade {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      & > div:first-child {
-        font-weight: bold;
-        font-size: 20px;
-      }
-    }
+    padding: 0 20px;
+    flex: initial !important;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     &-selector {
       display: flex;
       flex-direction: column-reverse;
     }
+    .score {
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      &:before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        background-color: transparent;
+        height: 100%;
+        width: 100%;
+        z-index: -1;
+        transition: background-color ease-in-out 0.2s;
+      }
+      &:hover {
+        &:before {
+          background-color: rgba(black, 0.2);
+        }
+      }
+    }
+  }
+  &__no-data {
+    position: relative !important;
+  }
+}
+.page-grades-id {
+  .filters {
+    padding: 0 20px !important;
+    --height: 70px !important;
   }
 }
 </style>

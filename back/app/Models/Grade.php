@@ -44,11 +44,14 @@ class Grade extends Model
             ->join('groups as g', 'g.id', '=', 'l.group_id')
             ->selectRaw("
                 CONCAT(c.client_id, '-',  g.`year`, '-', cvp.program) AS `id`,
-                c.client_id, cvp.program, cl.contract_version_program_id, g.year,
-                CAST(sum(if(`quarter` = 'q1', 1, 0)) AS UNSIGNED) AS `q1_cnt`,
-                CAST(sum(if(`quarter` = 'q2', 1, 0)) AS UNSIGNED) AS `q2_cnt`,
-                CAST(sum(if(`quarter` = 'q3', 1, 0)) AS UNSIGNED) AS `q3_cnt`,
-                CAST(sum(if(`quarter` = 'q4', 1, 0)) AS UNSIGNED) AS `q4_cnt`
+                c.client_id, 
+                cvp.program, 
+                cl.contract_version_program_id, 
+                g.year,
+                CAST(sum(if(`quarter` = 'q1', 1, 0)) AS UNSIGNED) AS `q1_conducted_lessons_count`,
+                CAST(sum(if(`quarter` = 'q2', 1, 0)) AS UNSIGNED) AS `q2_conducted_lessons_count`,
+                CAST(sum(if(`quarter` = 'q3', 1, 0)) AS UNSIGNED) AS `q3_conducted_lessons_count`,
+                CAST(sum(if(`quarter` = 'q4', 1, 0)) AS UNSIGNED) AS `q4_conducted_lessons_count`
             ")
             ->groupByRaw('c.client_id, cl.contract_version_program_id, g.year');
 

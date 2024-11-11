@@ -771,10 +771,9 @@ declare global {
     program: Program
     quarters: {
       [key in Quarter]: {
-        conducted_count: number
-        total_count: number
         last_teacher_id: ?number
         grade: ?GradeResource
+        is_grade_needed: boolean
         client_lessons?: Array<{
           id: number
           minutes_late: ?number
