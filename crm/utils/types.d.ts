@@ -127,11 +127,16 @@ declare global {
   // type Date = `${Year}-${number}${number}-${number}${number}`
   // type Time = `${number}${number}:${number}${number}:${number}${number}`
 
+  interface MenuCounts {
+    schedule: number
+  }
+
   interface MenuItem {
     to: string
     title: string
     icon: string
     hide?: boolean
+    count?: keyof MenuCounts
   }
 
   type Menu = MenuItem[]
@@ -411,6 +416,7 @@ declare global {
     is_first: boolean
     topic: ?string
     is_topic_verified: boolean
+    is_need_conduct: boolean
     is_free: boolean
     homework: ?string
     quarter: Quarter | null

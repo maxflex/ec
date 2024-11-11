@@ -65,22 +65,33 @@ function isRemote(l: GroupVisitResource, c: PersonResource): boolean {
   return ['lateOnline', 'presentOnline'].includes(status)
 }
 
-function getCircleColor(l: GroupVisitResource, c: PersonResource) {
+function getClientLessonColor(l: GroupVisitResource, c: PersonResource) {
   if (!clientLessons.value) {
-    return false
+    return ''
   }
   const { status } = clientLessons.value[l.id][c.id]
 
   switch (status) {
     case 'absent':
-      return 'text-error'
+      return 'error'
 
     case 'late':
     case 'lateOnline':
-      return 'text-warning'
+      return 'warning'
 
     default:
-      return 'text-success'
+      return 'success'
+  }
+}
+
+function getTeacherColor(l: GroupVisitResource) {
+  switch (l.status) {
+    case 'conducted':
+      return 'success'
+    case 'planned':
+      return 'gray'
+    case 'cancelled':
+      return 'error'
   }
 }
 
@@ -130,20 +141,15 @@ nextTick(loadData)
             </span>
           </td>
           <td v-for="t in teachers" :key="t.id">
-            <UiCircleStatus
+            <UiCircle
               v-if="l.teacher.id === t.id"
-              class="group-visits__teacher-status"
-              :class="{
-                'text-success': l.status === 'conducted',
-                'text-error': l.status === 'cancelled',
-                'text-gray': l.status === 'planned',
-              }"
+              :color="getTeacherColor(l)"
             />
           </td>
           <td v-for="c in clients" :key="c.id" :class="{ 'is-remote': isRemote(l, c) }">
-            <UiCircleStatus
+            <UiCircle
               v-if="clientLessons[l.id][c.id]"
-              :class="getCircleColor(l, c) "
+              :color="getClientLessonColor(l, c) "
             />
           </td>
           <td />
@@ -206,11 +212,6 @@ nextTick(loadData)
   .is-remote {
     background: rgba(var(--v-theme-orange), 0.2);
   }
-  // &__teacher-status {
-  //   .circle-status__circle {
-  //     --size: 10px !important;
-  //   }
-  // }
   &__col {
     &--teacher {
       background: #f6f8fb !important;

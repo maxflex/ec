@@ -157,6 +157,7 @@ const menu: Menu = [
     icon: mdiCalendar,
     title: 'Занятия',
     to: '/lessons',
+    count: 'schedule',
   },
   {
     icon: mdiCalendarBadge,
@@ -204,6 +205,8 @@ const menu: Menu = [
     to: '/errors',
   },
 ]
+
+nextTick(updateMenuCounts)
 </script>
 
 <template>

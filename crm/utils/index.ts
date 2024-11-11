@@ -12,6 +12,26 @@ import {
 import dayjs from 'dayjs'
 import { curry } from 'rambda'
 
+export const menuCounts = ref<MenuCounts>({
+  schedule: 0,
+})
+
+export async function updateMenuCounts() {
+  // у админа кружок напротив "занятий" нужно отображать в зависимости от того, какой год установлен внутри
+  const { isAdmin } = useAuthStore()
+  const params: any = {}
+  if (isAdmin) {
+    const filters = localStorage.getItem(getFiltersKey(null, 'lessons'))
+    params.year = filters
+      ? JSON.parse(filters).year
+      : currentAcademicYear()
+  }
+  const { data } = await useHttp<MenuCounts>(`menu-counts`, {
+    params,
+  })
+  menuCounts.value = data.value!
+}
+
 export function today(): string {
   return format(new Date(), 'yyyy-MM-dd')
 }
@@ -125,25 +145,29 @@ export function currentMonth(): Month {
   return (getMonth(new Date()) + 1) as Month
 }
 
-function getFiltersKey(tabName: string | null = null) {
-  const route = useRoute()
+/**
+ * @param tabName
+ * @param routeName устанавливается только у админа в updateMenuCounts
+ */
+function getFiltersKey(
+  tabName: string | null = null,
+  routeName: string | null = null,
+) {
+  if (!routeName) {
+    const route = useRoute()
+    routeName = String(route.name)
+  }
   return [
     'filters',
     getEntityStringFromToken(),
-    `${tabName || ''}${String(route.name)}`,
+    `${tabName || ''}${routeName}`,
   ].join('-')
 }
 
-/**
- * Сохранение и загрузка фильтров работает только у админа
- */
 export function saveFilters(filters: object, tabName: string | null = null): void {
   localStorage.setItem(getFiltersKey(tabName), JSON.stringify(filters))
 }
 
-/**
- * Сохранение и загрузка фильтров работает только у админа
- */
 export function loadFilters<T>(defaultFilters: T, tabName: string | null = null): T {
   const filters = localStorage.getItem(getFiltersKey(tabName))
   return filters === null ? defaultFilters : JSON.parse(filters)

@@ -6,7 +6,7 @@ const { items } = defineProps<{
 
 <template>
   <v-list-item
-    v-for="{ title, to, icon } in items"
+    v-for="{ title, to, icon, count } in items"
     :key="title"
     :to="to"
   >
@@ -14,5 +14,8 @@ const { items } = defineProps<{
       <v-icon :icon="icon" />
     </template>
     {{ title }}
+    <template v-if="count && menuCounts[count]" #append>
+      <UiCircle color="error" class="pr-1" />
+    </template>
   </v-list-item>
 </template>

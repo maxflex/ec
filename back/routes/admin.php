@@ -1,7 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\{
-    BalanceController,
+use App\Http\Controllers\Admin\{BalanceController,
     CallController,
     ClientController,
     ClientGroupController,
@@ -17,12 +16,14 @@ use App\Http\Controllers\Admin\{
     EventParticipantController,
     ExamScoreController,
     GradeController,
+    GroupActController,
     GroupController,
     HeadTeacherReportController,
     InstructionController,
     LessonController,
     MacroController,
     MangoTestController,
+    MenuCountsController,
     PassController,
     PeopleSelectorController,
     PhotoController,
@@ -42,9 +43,7 @@ use App\Http\Controllers\Admin\{
     TestController,
     TopicController,
     UserController,
-    WebReviewController,
-    GroupActController
-};
+    WebReviewController};
 use App\Http\Controllers\Common\LogController;
 use Illuminate\Support\Facades\Route;
 
@@ -114,6 +113,8 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::get('passes/permanent', [PassController::class, 'permanent']);
 
+    Route::get('menu-counts', MenuCountsController::class);
+   
     Route::apiResources([
         'telegram-lists' => TelegramListController::class,
         'requests' => RequestsController::class,

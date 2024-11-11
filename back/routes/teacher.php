@@ -12,6 +12,7 @@ use App\Http\Controllers\Teacher\{BalanceController,
     HeadTeacherReportController,
     InstructionController,
     LessonController,
+    MenuCountsController,
     ReportController,
     TeacherController,
     TeacherPaymentController};
@@ -48,4 +49,6 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::apiResource('exam-scores', ExamScoreController::class)->only('index');
         Route::apiResource('client-tests', ClientTestController::class)->only('index');
     });
+
+    Route::get('menu-counts', MenuCountsController::class);
 });

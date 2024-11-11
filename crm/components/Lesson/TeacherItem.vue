@@ -108,10 +108,8 @@ const isConductDisabled = item.date > today() || item.status === 'cancelled' || 
       </div>
     </div>
 
-    <div style="width: 50px; flex: initial; display: inline-flex" class="ga-1">
-      <LessonStatus2 :status="item.status" />
-      <div v-if="item.is_unplanned" class="lesson-item-status lesson-item-status--is-unplanned" />
-      <div v-if="item.is_free" class="lesson-item-status lesson-item-status--is-free" />
+    <div style="width: 50px; flex: initial">
+      <LessonStatusCircles :item="item" />
     </div>
   </div>
 </template>

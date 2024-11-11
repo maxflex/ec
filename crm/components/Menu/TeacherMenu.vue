@@ -23,6 +23,7 @@ const menu: Menu = [
     icon: mdiCalendar,
     title: 'Расписание',
     to: '/schedule',
+    count: 'schedule',
   },
   {
     icon: mdiFileDocumentEditOutline,
@@ -69,6 +70,8 @@ const headTeacherMenu: Menu = [
     to: '/head-teacher-reports',
   },
 ]
+
+nextTick(updateMenuCounts)
 </script>
 
 <template>

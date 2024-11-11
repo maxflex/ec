@@ -64,9 +64,10 @@ async function loadData() {
   await loadVacations()
 }
 
-watch(filters, (newVal) => {
-  loadData()
+watch(filters, async (newVal) => {
+  await loadData()
   saveFilters(newVal)
+  await updateMenuCounts()
 }, { deep: true })
 
 nextTick(loadData)
@@ -88,7 +89,6 @@ nextTick(loadData)
       :key="d"
       :class="{
         'week-separator': getDay(d) === 0,
-        'all-lesson-list--vacation': vacations[d] === true,
       }"
     >
       <div>
@@ -97,12 +97,15 @@ nextTick(loadData)
           {{ dayLabels[getDay(d)] }}
         </span>
       </div>
-      <LessonItem
+      <template
         v-for="item in itemsByDate[d]"
-        :key="`l-${item.id}`"
-        :item="item"
-        @edit="lessonDialog?.edit"
-      />
+        :key="`la-${item.id}`"
+      >
+        <LessonAdminItem :checkboxes="[]" :item="item" @edit="lessonDialog?.edit" />
+        <div v-if="vacations[d]" class="schedule-event schedule-event--vacation">
+          Государственный праздник
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -155,9 +158,6 @@ nextTick(loadData)
         left: 20px;
       }
     }
-  }
-  &--vacation {
-    background: rgba(var(--v-theme-red), 0.1);
   }
 }
 </style>

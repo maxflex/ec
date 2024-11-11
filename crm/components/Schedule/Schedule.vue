@@ -411,14 +411,14 @@ nextTick(loadData)
     }
   }
   &-event {
-    padding: 20px 20px 20px 130px;
+    padding: 20px 20px 20px 110px;
     position: relative;
     &:after {
       content: '';
-      width: calc(100% - 110px);
+      width: calc(100% - 90px);
       height: 100%;
       position: absolute;
-      left: 110px;
+      left: 90px;
       top: 0;
       border-radius: 8px;
       pointer-events: none;

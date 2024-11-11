@@ -91,10 +91,8 @@ const isConductDisabled = item.status !== 'conducted'
         <v-icon v-if="item.has_files" :icon="mdiPaperclip" />
       </div>
     </div>
-    <div style="width: 50px; display: inline-flex" class="ga-1">
-      <LessonStatus2 :status="item.status" />
-      <div v-if="item.is_unplanned" class="lesson-item-status lesson-item-status--is-unplanned" />
-      <div v-if="item.is_free" class="lesson-item-status lesson-item-status--is-free" />
+    <div style="width: 50px">
+      <LessonStatusCircles :item="item" />
     </div>
     <div style="width: 100px">
       <template v-if="item.client_lesson">
@@ -158,21 +156,6 @@ const isConductDisabled = item.status !== 'conducted'
   &__checkbox {
     position: absolute;
     right: 0;
-  }
-  &-status {
-    --size: 10px;
-    height: var(--size);
-    width: var(--size);
-    border-radius: 50%;
-    background-color: var(--color);
-    top: 1px;
-    position: relative;
-    &--is-unplanned {
-      --color: #aa00ff;
-    }
-    &--is-free {
-      --color: rgb(var(--v-theme-primary));
-    }
   }
 }
 </style>

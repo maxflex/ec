@@ -137,6 +137,15 @@ class Lesson extends Model
     }
 
     /**
+     * Занятие нужно провести (прошло более часа с начала)
+     */
+    public function getIsNeedConductAttribute(): bool
+    {
+        return $this->status === LessonStatus::planned
+            && Carbon::parse($this->date_time)->addHour()->isPast();
+    }
+
+    /**
      * @param Collection<int, Lesson> $lessons
      */
     public static function withSequenceNumber(Collection $lessons)
@@ -151,5 +160,12 @@ class Lesson extends Model
             $seq++;
         }
         return paginate(LessonListResource::collection($lessons));
+    }
+
+    public function scopeNeedConduct($query)
+    {
+        $query->where('status', LessonStatus::planned)->whereRaw("
+            TIMESTAMP(`date`, `time`) < NOW() - INTERVAL 1 HOUR
+        ");
     }
 }

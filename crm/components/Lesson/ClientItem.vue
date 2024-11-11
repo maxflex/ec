@@ -38,10 +38,12 @@ const { item, checkboxes } = defineProps<{
       </span>
     </div>
     <div style="width: 120px">
-      <LessonStatus3 :status="item.status" />
+      <LessonStatus :item="item" show-label :size="8" />
     </div>
     <div style="flex: initial">
-      <LessonStatus4 v-if="item.is_unplanned" />
+      <UiCircle v-if="item.is_unplanned" color="purple" :size="8">
+        внеплановое
+      </UiCircle>
     </div>
   </div>
 </template>

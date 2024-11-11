@@ -1,29 +1,29 @@
 <script setup lang="ts">
-const { status } = defineProps<{
-  status: LessonStatus
+const { item, size = 10, showLabel } = defineProps<{
+  item: LessonListResource
+  showLabel?: boolean
+  size?: number
 }>()
+
+const statusColor = (function () {
+  if (item.is_need_conduct) {
+    return 'error'
+  }
+  switch (item.status) {
+    case 'planned':
+      return 'gray'
+    case 'conducted':
+      return 'success'
+    case 'cancelled':
+      return 'error'
+  }
+})()
 </script>
 
 <template>
-  <div :class="`lesson-status lesson-status--${status}`" />
+  <UiCircle :color="statusColor" :size="size">
+    <template v-if="showLabel" #default>
+      {{ LessonStatusLabel[item.status] }}
+    </template>
+  </UiCircle>
 </template>
-
-<style lang="scss">
-.lesson-status {
-  --size: 7px;
-  --bg: red;
-  height: var(--size);
-  width: var(--size);
-  border-radius: 50%;
-  background-color: var(--bg);
-  &--planned {
-    --bg: #949db1;
-  }
-  &--conducted {
-    --bg: #00a272;
-  }
-  &--cancelled {
-    --bg: #eb4432;
-  }
-}
-</style>
