@@ -122,6 +122,11 @@ function json_redecode($object, $assoc = true)
     return json_decode(json_encode($object), $assoc);
 }
 
+function format_date(string $date, string $format = 'd.m.Y'): string
+{
+    return date($format, strtotime($date));
+}
+
 function paginate($data)
 {
     return [

@@ -2,10 +2,14 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Macro;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class MacroListResource extends JsonResource
+/**
+ * @mixin Macro
+ */
+class MacroResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,10 +18,6 @@ class MacroListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
-            'id' => $this->id,
-            'title' => $this->title,
-            'text' => $this->text,
-        ];
+        return extract_fields($this, ['*']);
     }
 }

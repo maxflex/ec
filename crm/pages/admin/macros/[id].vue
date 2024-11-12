@@ -5,6 +5,7 @@ import 'codemirror/mode/htmlmixed/htmlmixed.js'
 
 const route = useRoute()
 const saving = ref(false)
+const company = ref<Company>('ooo')
 const item = ref<MacroResource>()
 const cmOptions: EditorConfiguration = {
   tabSize: 4,
@@ -19,7 +20,6 @@ async function loadData() {
   )
   if (data.value) {
     item.value = data.value
-    console.log(data.value)
   }
 }
 
@@ -42,6 +42,9 @@ nextTick(loadData)
       <div>
         <v-text-field v-model="item.title" label="Заголовок" />
       </div>
+      <div>
+        <v-select v-model="company" :items="selectItems(CompanyLabel)" label="Компания" />
+      </div>
       <div class="text-right">
         <v-btn
           icon="$save"
@@ -54,7 +57,13 @@ nextTick(loadData)
     </div>
     <div>
       <Codemirror
-        v-model:value="item.text"
+        v-if="company === 'ooo'"
+        v-model:value="item.text_ooo"
+        :options="cmOptions"
+      />
+      <Codemirror
+        v-else
+        v-model:value="item.text_ip"
         :options="cmOptions"
       />
     </div>
@@ -87,6 +96,7 @@ nextTick(loadData)
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 20px;
     & > div {
       flex: 1;
     }

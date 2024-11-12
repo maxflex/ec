@@ -1,4 +1,4 @@
-<b>Составитель отчета:</b> {{ $report->teacher->formatNameFull() }}
+<b>Составитель отчета:</b> {{ $report->teacher->formatName('full') }}
 <b>Ученик:</b> {{ $report->client->formatName() }}
 <b>Программа:</b> {{ $report->program->getName() }}
 

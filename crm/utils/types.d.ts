@@ -622,7 +622,8 @@ declare global {
   interface MacroResource {
     id: number
     title: string
-    text: string
+    text_ooo: string
+    text_ip: string
   }
 
   interface VacationResource {

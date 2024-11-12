@@ -14,10 +14,12 @@ class PrintController extends Controller
     public function show($id, Request $request)
     {
         $macro = Macro::findOrFail($id);
+        $contractVersion = ContractVersion::find($request->contract_version_id);
+        $textField = 'text_' . $contractVersion->contract->company->value;
 
         // Render the template with Blade and pass variables
-        $renderedText = Blade::render($macro->text, [
-            'contractVersion' => ContractVersion::find($request->contract_version_id)
+        $renderedText = Blade::render($macro->$textField, [
+            'contractVersion' => $contractVersion
         ]);
 
         return [
