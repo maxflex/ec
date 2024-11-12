@@ -37,7 +37,7 @@ nextTick(loadData)
 
 <template>
   <UiLoader v-if="item === undefined" />
-  <div v-else class="macro">
+  <template v-else>
     <div class="macro__title">
       <div>
         <v-text-field v-model="item.title" label="Заголовок" />
@@ -55,7 +55,7 @@ nextTick(loadData)
         />
       </div>
     </div>
-    <div>
+    <div class="px-5">
       <Codemirror
         v-if="company === 'ooo'"
         v-model:value="item.text_ooo"
@@ -67,8 +67,7 @@ nextTick(loadData)
         :options="cmOptions"
       />
     </div>
-    <div class="macro__actions" />
-  </div>
+  </template>
 </template>
 
 <style lang="scss">
@@ -88,15 +87,19 @@ nextTick(loadData)
 }
 
 .macro {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
   &__title {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 20px;
+    padding: 20px;
+    padding-bottom: 5px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: white;
+    box-shadow: 0 0 10px 10px white;
+    margin-bottom: 20px;
     & > div {
       flex: 1;
     }

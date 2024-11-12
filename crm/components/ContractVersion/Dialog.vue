@@ -33,11 +33,13 @@ const mode = ref<ContractEditMode>('edit')
 
 const printOptions: PrintOption[] = [
   { id: 1, label: 'договор' },
-  { id: 2, label: 'договор школа-родитель' },
-  { id: 3, label: 'допсоглашение' },
-  { id: 4, label: 'допсоглашение на маткапитал' },
-  { id: 5, label: 'акт оказанных услуг' },
+  { id: 2, label: 'допсоглашение' },
+  { id: 3, label: 'договор школа-родитель' },
+  { id: 4, label: 'допсоглашение маткапитал' },
+  { id: 5, label: 'соглашение о расторжении' },
   { id: 6, label: 'согласие на обработку данных' },
+  { id: 7, label: 'акт оказанных услуг' },
+  { id: 8, label: 'заявление очное обучение' },
 ]
 
 function newContract() {
