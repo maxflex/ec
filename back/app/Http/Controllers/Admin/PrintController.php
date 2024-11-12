@@ -30,7 +30,7 @@ class PrintController extends Controller
             $textField = 'text_' . $payment->contract->company->value;
         } elseif ($request->has('act_id')) {
             $act = GroupAct::find($request->act_id);
-            $textField = 'text_ooo';
+            $textField = $request->text_field;
         }
 
         // Render the template with Blade and pass variables

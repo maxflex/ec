@@ -13,6 +13,11 @@ const modelDefaults: GroupActResource = {
   date_to: '',
 }
 
+const printOptions: PrintOption[] = [
+  { id: 12, label: 'Печать ООО' },
+  { id: 12, label: 'Печать ИП' },
+]
+
 const { dialog, width } = useDialog('default')
 const item = ref<GroupActResource>(modelDefaults)
 const saving = ref(false)
@@ -90,12 +95,24 @@ defineExpose({ edit, create })
               variant="text"
               @click="destroy()"
             />
-            <v-btn
-              icon="$print"
-              :size="48"
-              variant="text"
-              @click="print({ id: 12, label: '' } as PrintOption, { act_id: item.id })"
-            />
+            <v-menu>
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  icon="$print"
+                  :size="48"
+                  variant="text"
+                />
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="p in printOptions" :key="p.label"
+                  @click="print(p, { act_id: item.id, text_field: p.label === 'Печать ООО' ? 'text_ooo' : 'text_ip' })"
+                >
+                  {{ p.label }}
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </template>
           <v-btn
             :loading="saving"
