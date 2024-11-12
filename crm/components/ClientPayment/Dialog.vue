@@ -11,6 +11,10 @@ const saving = ref(false)
 const loading = ref(false)
 const itemId = ref<number>()
 
+const printOptions: PrintOption[] = [
+  { id: 9, label: 'платежка (наличные)' },
+]
+
 const modelDefaults: ClientPaymentResource = {
   id: newId(),
   sum: 0,
@@ -95,15 +99,36 @@ defineExpose({ create, edit })
           Добавить платеж
         </span>
         <div>
-          <v-btn
+          <template
             v-if="itemId"
-            icon="$delete"
-            :size="48"
-            variant="text"
-            :loading="deleting"
-            class="remove-btn"
-            @click="destroy()"
-          />
+          >
+            <v-btn
+              icon="$delete"
+              :size="48"
+              variant="text"
+              :loading="deleting"
+              class="remove-btn"
+              @click="destroy()"
+            />
+            <v-menu>
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  icon="$print"
+                  :size="48"
+                  variant="text"
+                />
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="p in printOptions" :key="p.id"
+                  @click="print(p, { client_payment_id: item.id })"
+                >
+                  {{ p.label }}
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </template>
           <v-btn
             icon="$save"
             :size="48"

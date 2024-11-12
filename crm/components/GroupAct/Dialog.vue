@@ -13,11 +13,6 @@ const modelDefaults: GroupActResource = {
   date_to: '',
 }
 
-const printOptions: PrintOption[] = [
-  { id: 11, label: 'Печать ООО' },
-  { id: 12, label: 'Печать ИП' },
-]
-
 const { dialog, width } = useDialog('default')
 const item = ref<GroupActResource>(modelDefaults)
 const saving = ref(false)
@@ -86,33 +81,22 @@ defineExpose({ edit, create })
           Добавить акт
         </div>
         <div>
-          <v-btn
-            v-if="item.id > 0"
-            :loading="deleting"
-            :size="48"
-            class="remove-btn"
-            icon="$delete"
-            variant="text"
-            @click="destroy()"
-          />
-          <v-menu>
-            <template #activator="{ props }">
-              <v-btn
-                v-bind="props"
-                icon="$print"
-                :size="48"
-                variant="text"
-              />
-            </template>
-            <v-list>
-              <v-list-item
-                v-for="p in printOptions" :key="p.id"
-                @click="print(p, { contract_version_id: item.id })"
-              >
-                {{ p.label }}
-              </v-list-item>
-            </v-list>
-          </v-menu>
+          <template v-if="item.id > 0">
+            <v-btn
+              :loading="deleting"
+              :size="48"
+              class="remove-btn"
+              icon="$delete"
+              variant="text"
+              @click="destroy()"
+            />
+            <v-btn
+              icon="$print"
+              :size="48"
+              variant="text"
+              @click="print({ id: 12, label: '' } as PrintOption, { act_id: item.id })"
+            />
+          </template>
           <v-btn
             :loading="saving"
             :size="48"

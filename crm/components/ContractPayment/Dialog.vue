@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
+import { ContractPaymentMethodLabel } from '~/utils/labels'
 
 const emit = defineEmits<{
   updated: [e: ContractPaymentResource]
@@ -10,6 +11,12 @@ const deleting = ref(false)
 const saving = ref(false)
 const loading = ref(false)
 const itemId = ref<number>()
+
+const printOptions: PrintOption[] = [
+  { id: 10, label: 'счёт на оплату' },
+  { id: 11, label: 'счёт на оплату (с печатью)' },
+  { id: 9, label: 'платежка (наличные)' },
+]
 
 const modelDefaults: ContractPaymentResource = {
   id: newId(),
@@ -96,15 +103,36 @@ defineExpose({ create, edit })
           Новый платеж
         </span>
         <div>
-          <v-btn
+          <template
             v-if="itemId"
-            icon="$delete"
-            :size="48"
-            variant="text"
-            :loading="deleting"
-            class="remove-btn"
-            @click="destroy()"
-          />
+          >
+            <v-btn
+              icon="$delete"
+              :size="48"
+              variant="text"
+              :loading="deleting"
+              class="remove-btn"
+              @click="destroy()"
+            />
+            <v-menu>
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  icon="$print"
+                  :size="48"
+                  variant="text"
+                />
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="p in printOptions" :key="p.id"
+                  @click="print(p, { contract_payment_id: item.id })"
+                >
+                  {{ p.label }}
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </template>
           <v-btn
             icon="$save"
             :size="48"
@@ -129,7 +157,7 @@ defineExpose({ create, edit })
           <v-select
             v-model="item.method"
             label="Способ оплаты"
-            :items="selectItems(ClientPaymentMethodLabel)"
+            :items="selectItems(ContractPaymentMethodLabel)"
           />
         </div>
         <div v-if="item.method === 'card'">

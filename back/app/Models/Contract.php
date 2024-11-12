@@ -51,6 +51,14 @@ class Contract extends Model
         return $this->hasMany(ContractPayment::class);
     }
 
+    public function getActiveVersionAttribute(): ContractVersion
+    {
+        return $this->versions()->active()->first();
+    }
+
+    /**
+     * TODO: refactor
+     */
     public function getActiveVersion(): ContractVersion
     {
         return $this->versions()->active()->first();
