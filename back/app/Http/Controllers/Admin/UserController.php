@@ -58,8 +58,7 @@ class UserController extends Controller
         $query->where(function ($q) use ($words) {
             foreach ($words as $word) {
                 $q->where('first_name', 'like', "%{$word}%")
-                    ->orWhere('last_name', 'like', "%{$word}%")
-                    ->orWhere('middle_name', 'like', "%{$word}%");
+                    ->orWhere('last_name', 'like', "%{$word}%");
             }
         });
     }
