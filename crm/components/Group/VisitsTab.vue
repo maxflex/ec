@@ -209,7 +209,15 @@ nextTick(loadData)
     }
   }
   .is-remote {
-    background: rgba(var(--v-theme-orange), 0.2);
+    &:before {
+      position: absolute;
+      content: '';
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(var(--v-theme-orange), 0.2);
+    }
   }
   &__col {
     &--teacher {
