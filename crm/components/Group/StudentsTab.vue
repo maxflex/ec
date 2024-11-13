@@ -68,15 +68,7 @@ nextTick(loadData)
       <div v-for="item in items" :key="item.id">
         <div style="width: 280px">
           <UiAvatar :item="item.client" :size="38" class="mr-4" />
-          <NuxtLink
-            class="vf-1"
-            :to="{
-              name: 'clients-id',
-              params: { id: item.client.id },
-            }"
-          >
-            {{ formatName(item.client) }}
-          </NuxtLink>
+          <UiPerson :item="item.client" />
         </div>
         <div>
           <TeethBar :items="item.teeth" :current="group.teeth!" />

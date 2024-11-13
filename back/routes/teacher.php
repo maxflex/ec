@@ -14,7 +14,6 @@ use App\Http\Controllers\Teacher\{BalanceController,
     LessonController,
     MenuCountsController,
     ReportController,
-    TeacherController,
     TeacherPaymentController};
 use App\Http\Middleware\HeadTeacherMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -35,7 +34,6 @@ Route::middleware(['auth:crm'])->group(function () {
     });
     Route::apiResource('instructions', InstructionController::class)->only('index', 'show');
     Route::apiResource('clients', ClientController::class)->only('index', 'show');
-    Route::apiResource('teachers', TeacherController::class)->only('show');
     Route::get('reports/lessons', [ReportController::class, 'lessons']);
     Route::apiResources([
         'reports' => ReportController::class,

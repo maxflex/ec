@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Teacher;
 
 use App\Enums\Program;
 use App\Http\Resources\JournalResource;
-use App\Http\Resources\ReportClientLessonResource;
 use App\Http\Resources\ReportListResource;
 use App\Http\Resources\ReportResource;
 use App\Models\Report;

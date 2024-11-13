@@ -21,31 +21,24 @@ const loading = ref(true)
 const deleting = ref(false)
 const saving = ref(false)
 
-const teacherStatuses = [
+const availableTeacherStatuses = [
   'new',
   'toCheck',
   'empty',
 ] as ReportStatus[]
 
+const availableAdminStatuses = [
+  'refused',
+  'moderated',
+  'published',
+] as ReportStatus[]
+
+const availableStatuses = isTeacher ? availableTeacherStatuses : availableAdminStatuses
+
 // если статус = разрабатывается или на проверку, или пустой отчет,
 // то препод может редактировать все. Если остальные типы, то отчет нельзя редактировать
 const isDisabled = computed(() => {
-  return isTeacher && !['new', 'toCheck', 'empty', 'refused'].includes(item.value.status)
-})
-
-const availableStatuses = computed(() => {
-  const obj = {}
-  if (isTeacher) {
-    for (const s of teacherStatuses) {
-      obj[s] = ReportStatusLabel[s]
-    }
-  }
-  else {
-    for (const s of ['refused', 'moderated', 'published']) {
-      obj[s] = ReportStatusLabel[s]
-    }
-  }
-  return obj
+  return isTeacher && !availableTeacherStatuses.includes(item.value.status) && item.value.status !== 'refused'
 })
 
 async function edit() {
@@ -60,18 +53,20 @@ async function edit() {
 }
 
 async function create() {
-  const { year, program, client_id: clientId, teacher_id: teacherId } = route.query
+  const r = await useHttp<ApiResponse<ReportListResource>>(`reports`, {
+    params: {
+      ...route.query,
+      type: 0, // требуется отчет
+    },
+  })
 
-  const t = await useHttp<PersonResource>(`teachers/${teacherId}`)
-  const teacher = t.data.value!
-
-  const c = await useHttp<PersonResource>(`clients/${clientId}`)
-  const client = c.data.value!
+  const reportListItem: ReportListResource = r.data.value!.data[0]
+  const { year, program, teacher, client } = reportListItem
 
   item.value = clone({
     ...modelDefaults,
-    year: Number.parseInt(String(year)) as Year,
-    program: program as Program,
+    year,
+    program,
     teacher,
     client,
   })
@@ -82,7 +77,7 @@ async function create() {
       params: {
         year,
         program,
-        client_id: clientId,
+        client_id: client.id,
       },
     },
   )
@@ -108,7 +103,7 @@ async function destroy() {
 async function save() {
   saving.value = true
   if (id) {
-    const { data } = await useHttp<RealReport>(`reports/${id}`, {
+    await useHttp<RealReport>(`reports/${id}`, {
       method: 'put',
       body: item.value,
     })
@@ -214,13 +209,13 @@ nextTick(loadData)
           <v-select
             v-model="item.status"
             label="Статус"
-            :items="selectItems(availableStatuses)"
+            :items="availableStatuses.map(value => ({
+              value,
+              title: ReportStatusLabel[value],
+            }))"
             :disabled="isDisabled"
           >
-            <template v-if="isTeacher && item.status === 'refused'" #selection>
-              {{ ReportStatusLabel.refused }}
-            </template>
-            <template v-else-if="!(item.status in availableStatuses)" #selection>
+            <template v-if="!(item.status in availableStatuses)" #selection>
               {{ ReportStatusLabel[item.status] }}
             </template>
           </v-select>
