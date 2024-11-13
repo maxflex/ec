@@ -34,9 +34,8 @@ class TransferUsers extends Command
         $bar->finish();
         Schema::enableForeignKeyConstraints();
         // Hardcode: active certain users
-        DB::table('users')->whereIn('id', [1, 5, 12])->update([
+        DB::table('users')->whereIn('id', [1, 5, 121])->update([
             'is_active' => 1,
-            'is_call_notifications' => 1,
         ]);
     }
 }

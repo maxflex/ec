@@ -55,22 +55,18 @@ async function loadData() {
 }
 
 function isRemote(l: GroupVisitResource, c: PersonResource): boolean {
-  if (!clientLessons.value) {
+  if (!clientLessons.value || !clientLessons.value[l.id] || !clientLessons.value[l.id][c.id]) {
     return false
   }
-
-  console.log(l.id, c.id, clientLessons.value)
   const { status } = clientLessons.value[l.id][c.id]
-
   return ['lateOnline', 'presentOnline'].includes(status)
 }
 
 function getClientLessonColor(l: GroupVisitResource, c: PersonResource) {
-  if (!clientLessons.value) {
+  if (!clientLessons.value || !clientLessons.value[l.id] || !clientLessons.value[l.id][c.id]) {
     return ''
   }
   const { status } = clientLessons.value[l.id][c.id]
-
   switch (status) {
     case 'absent':
       return 'error'
@@ -163,6 +159,9 @@ nextTick(loadData)
 .group-visits {
   height: calc(100vh - 118px);
   position: relative;
+  td .circle {
+    justify-content: center;
+  }
   table {
     table-layout: fixed;
     tr {

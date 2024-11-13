@@ -18,6 +18,7 @@ class ClientController extends \App\Http\Controllers\Admin\ClientController
 
     public function show(Client $client)
     {
+        abort_if($client->head_teacher_id !== auth()->id(), 404);
         return new ClientResource($client);
     }
 }

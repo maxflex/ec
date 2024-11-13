@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ClientPayment;
 use App\Models\ContractPayment;
 use App\Models\ContractVersion;
+use App\Models\Group;
 use App\Models\GroupAct;
 use App\Models\Macro;
 use Illuminate\Http\Request;
@@ -31,6 +32,9 @@ class PrintController extends Controller
         } elseif ($request->has('act_id')) {
             $act = GroupAct::find($request->act_id);
             $textField = $request->text_field;
+        } elseif ($request->has('group_id')) {
+            $group = Group::find($request->group_id);
+            $textField = $request->text_field;
         }
 
         // Render the template with Blade and pass variables
@@ -38,6 +42,7 @@ class PrintController extends Controller
             'contractVersion' => $contractVersion ?? null,
             'payment' => $payment ?? null,
             'act' => $act ?? null,
+            'group' => $group ?? null,
         ]);
 
         return ['text' => $renderedText];

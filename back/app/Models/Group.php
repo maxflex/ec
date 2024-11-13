@@ -22,11 +22,6 @@ class Group extends Model implements HasTeeth
         'zoom' => 'array',
     ];
 
-    public function teacher(): BelongsTo
-    {
-        return $this->belongsTo(Teacher::class);
-    }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -93,6 +88,11 @@ class Group extends Model implements HasTeeth
     public function getTeeth(int $year): object
     {
         return Teeth::get($this->lessons()->getQuery(), $year);
+    }
+
+    public function getTeacherAttribute(): ?Teacher
+    {
+        return $this->teachers[0];
     }
 
     /**

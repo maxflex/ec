@@ -70,7 +70,7 @@ async function create() {
 
   item.value = clone({
     ...modelDefaults,
-    year: year as Year,
+    year: Number.parseInt(String(year)) as Year,
     program: program as Program,
     teacher,
     client,

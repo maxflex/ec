@@ -2,42 +2,20 @@
 
 namespace App\Http\Controllers\Teacher;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\GroupListResource;
-use App\Http\Resources\GroupResource;
-use App\Http\Resources\GroupVisitResource;
-use App\Models\Group;
 use Illuminate\Http\Request;
 
-class GroupController extends Controller
+class GroupController extends \App\Http\Controllers\Admin\GroupController
 {
-    protected $filters = [
-        'equals' => ['program', 'year'],
-    ];
-
     public function index(Request $request)
     {
-        $query = Group::query()
-            ->whereTeacher(auth()->id())
-            ->withCount('lessons', 'clientGroups')
-            ->latest('id');
+        // препод может видеть только свои группы
+        // (исключение – классрук, он может видеть группы клиента)
+        if (!auth()->user()->entity->is_head_teacher) {
+            $request->merge([
+                'teacher_id' => auth()->id()
+            ]);
+        }
 
-        $this->filter($request, $query);
-
-        return $this->handleIndexRequest($request, $query, GroupListResource::class);
-    }
-
-    public function show($id)
-    {
-        $group = Group::find($id);
-        return new GroupResource($group);
-    }
-
-
-    public function visits(Group $group)
-    {
-        return GroupVisitResource::collection(
-            $group->lessons()->orderByRaw('date, time')->get()
-        );
+        return parent::index($request);
     }
 }

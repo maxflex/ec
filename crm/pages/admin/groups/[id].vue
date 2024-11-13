@@ -14,6 +14,11 @@ const route = useRoute()
 const group = ref<GroupResource>()
 const groupDialog = ref<InstanceType<typeof GroupDialog>>()
 
+const printOptions: PrintOption[] = [
+  { id: 13, label: 'Договор на преподавателя (ООО)' },
+  { id: 13, label: 'Договор на преподавателя (ИП)' },
+]
+
 async function loadData() {
   const { data } = await useHttp(`groups/${route.params.id}`)
   group.value = data.value as GroupResource
@@ -68,6 +73,24 @@ nextTick(loadData)
           </div>
         </div>
         <div class="panel-actions">
+          <v-menu>
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                icon="$print"
+                :size="48"
+                variant="plain"
+              />
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="(p, i) in printOptions" :key="p.label"
+                @click="print(p, { group_id: group.id, text_field: i === 0 ? 'text_ooo' : 'text_ip' })"
+              >
+                {{ p.label }}
+              </v-list-item>
+            </v-list>
+          </v-menu>
           <v-btn
             icon="$edit"
             :size="48"
