@@ -66,7 +66,7 @@ const headTeacherMenu: Menu = [
   },
   {
     icon: mdiFileDocumentEditOutline,
-    title: 'Отчёты',
+    title: 'Отчёты КР',
     to: '/head-teacher-reports',
   },
 ]

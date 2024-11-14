@@ -10,7 +10,7 @@ class GroupController extends \App\Http\Controllers\Admin\GroupController
     {
         // препод может видеть только свои группы
         // (исключение – классрук, он может видеть группы клиента)
-        if (!auth()->user()->entity->is_head_teacher) {
+        if (!($request->has('client_id') && auth()->user()->entity->is_head_teacher)) {
             $request->merge([
                 'teacher_id' => auth()->id()
             ]);

@@ -23,7 +23,6 @@ return new class extends Migration
             $table->char('letter')->nullable();
             $table->date('contract_date')->nullable();
             $table->unsignedSmallInteger('lessons_planned')->nullable();
-            $table->json('zoom')->nullable();
             $table->foreignIdFor(User::class)->nullable()->constrained();
             $table->timestamps();
         });

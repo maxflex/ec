@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Support\Carbon;
 
 class Contract extends Model
 {
@@ -81,7 +80,7 @@ class Contract extends Model
                 'sum' => $clientLesson->price * -1,
                 'comment' => sprintf(
                     'занятие %s, группа %d, кабинет %s',
-                    Carbon::parse($lesson->dateTime)->format('d.m.y в H:i'),
+                    $lesson->date_time->format('d.m.y в H:i'),
                     $lesson->group_id,
                     $lesson->cabinet->value
                 )

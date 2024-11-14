@@ -94,4 +94,36 @@ enum Cabinet: string
             49 => self::cab316,
         };
     }
+
+    /**
+     * У нас в ZOOM каждому кабинету соответствует свой
+     * ZOOM UserID
+     */
+    public function getZoomUserId(): ?string
+    {
+        return match ($this) {
+            self::cab310 => '_H_TAPOZR5CcAHkv4msBzw',
+            self::cab312 => 'cKkPLkj-TeeDhJPkJQSVYw',
+            self::cab314 => '84iZzyvKQj25UEEWwJZu_w',
+            self::cab316 => 'suFs1QTdQZOfAqQZoJub2Q',
+            self::cab407 => '7arTEpSxR2-WOM9sattmog',
+            self::cab409 => 'tNuph7FgQC6rytbMwsKGMg',
+            self::cab412 => 'I7Pm1RtuSWamxW1mt-993Q',
+            self::cab413 => 'vzVCfTJKS1araTSXOKKeFQ',
+            self::cab414 => 'e1MKDR9XT0uqF9CNP5ja5Q',
+            self::cab417 => 'K_M7DHS-TwSLPEoriKWQxw',
+            self::cab418 => 'IidauDRzQ9qlkHdq2SnVog',
+            self::cab420 => 'qBy4XhvwSS-BrR0HU6NcIA',
+            self::cab422 => '7VkJ7lXmTsOsMPAi1i1g8w',
+            self::cab423 => 'XNrXrBHCSPOQ9KyErRzn2A',
+            self::cab424 => 'oyEBX0k9SZWuWyYNx7Jj0Q',
+            self::cab428 => 'V4kLgxdeT6-w9OVd4771WA',
+            self::cab430 => 'k5Ae5dzUQCOwa9_IicfxBA',
+            self::cab432 => 'IJwaRNz3Tre9ss7JwIJr3w',
+            self::cab433 => 'LpouUBOHTOyBHrRRYkRTig',
+            self::cab434 => 'k1onTy6zRxSojiK0uoGs2Q',
+            self::cab439 => 'aC0Sn9wsTYOOAbcGpK8boQ',
+            default => null,
+        };
+    }
 }

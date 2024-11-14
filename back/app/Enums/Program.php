@@ -2198,4 +2198,18 @@ enum Program: string
             default => Exam::egeRus,
         };
     }
+
+    /**
+     * Всего 2 варианта - 125 и 55 минут (8-9 классы школа)
+     */
+    public function getDuration(): int
+    {
+        $str = str($this->value);
+
+        if ($str->endsWith('School8') || $str->endsWith('School9')) {
+            return 55;
+        }
+
+        return 125;
+    }
 }

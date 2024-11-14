@@ -39,6 +39,7 @@ return new class extends Migration
             $table->string('topic', 1000)->nullable();
             $table->string('homework', 1000)->nullable();
             $table->json('files')->nullable();
+            $table->json('zoom')->nullable();
             $table->foreignIdFor(User::class)->nullable()->constrained();
             $table->timestamps();
         });

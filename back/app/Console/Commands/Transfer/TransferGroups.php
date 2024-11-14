@@ -27,10 +27,6 @@ class TransferGroups extends Command
                 'id' => $g->id,
                 'program' => Program::fromOld($g->grade_id, $g->subject_id),
                 'year' => $g->year,
-                'zoom' => $g->zoom_id ? json_encode([
-                    'id' => $g->zoom_id,
-                    'password' => $g->zoom_password
-                ]) : null,
                 'contract_date' => $g->contract_date,
                 'lessons_planned' => $g->lessons_planned,
                 'created_at' => $g->updated_at,

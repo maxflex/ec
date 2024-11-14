@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
 use Laravel\Scout\Searchable;
 
 class Teacher extends Model implements HasTeeth, CanLogin
@@ -87,7 +86,7 @@ class Teacher extends Model implements HasTeeth, CanLogin
                 'sum' => $lesson->price,
                 'comment' => sprintf(
                     'занятие %s, группа %d, кабинет %s',
-                    Carbon::parse($lesson->dateTime)->format('d.m.y в H:i'),
+                    $lesson->date_time->format('d.m.y в H:i'),
                     $lesson->group_id,
                     $lesson->cabinet->value
                 )

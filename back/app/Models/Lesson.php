@@ -5,11 +5,8 @@ namespace App\Models;
 use App\Casts\JsonArrayCast;
 use App\Enums\{Cabinet, ClientLessonStatus, LessonStatus};
 use App\Http\Resources\LessonListResource;
-use Carbon\Carbon;
-use Illuminate\Database\{Eloquent\Casts\Attribute,
-    Eloquent\Model,
-    Eloquent\Relations\BelongsTo,
-    Eloquent\Relations\HasMany};
+use Illuminate\Database\{Eloquent\Model, Eloquent\Relations\BelongsTo, Eloquent\Relations\HasMany};
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -28,6 +25,7 @@ class Lesson extends Model
         'status' => LessonStatus::class,
         'cabinet' => Cabinet::class,
         'files' => JsonArrayCast::class,
+        'zoom' => 'array',
     ];
 
     public function teacher(): BelongsTo
@@ -60,34 +58,29 @@ class Lesson extends Model
         return $query->where('status', LessonStatus::conducted);
     }
 
-    public function getDateTimeAttribute()
+    public function getDateTimeAttribute(): Carbon
     {
-        return join(' ', [$this->date, $this->time]);
+        return Carbon::parse(join(' ', [$this->date, $this->time]));
     }
 
     /**
      * Время конца занятия
      */
-    public function timeEnd(): Attribute
+    public function getTimeEndAttribute(): string
     {
-        return Attribute::make(
-            fn () => Carbon::parse($this->time)
-                ->addMinutes($this->group->duration)
-                ->format("H:i:s")
-        );
+        return $this->date_time
+            ->addMinutes($this->group->program->getDuration())
+            ->format('H:i:s');
     }
 
     /**
      * Является первым занятием в группе
      */
-    public function isFirst(): Attribute
+    public function isFirst(): bool
     {
-        return Attribute::make(
-            fn (): bool => !$this
-                ->chain()
-                ->where(DB::raw("concat(`date`, ' ', `time`)"), '<', $this->dateTime)
-                ->exists()
-        );
+        return !$this->chain()
+            ->where(DB::raw("concat(`date`, ' ', `time`)"), '<', $this->date_time->format('Y-m-d H:i:s'))
+            ->exists();
     }
 
     /**
@@ -142,7 +135,7 @@ class Lesson extends Model
     public function getIsNeedConductAttribute(): bool
     {
         return $this->status === LessonStatus::planned
-            && Carbon::parse($this->date_time)->addHour()->isPast();
+            && $this->date_time->addHour()->isPast();
     }
 
     /**

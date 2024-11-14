@@ -68,7 +68,7 @@ class QuartersGradesResource extends JsonResource
                         ->where('contract_version_program_id', $this->contract_version_program_id)
                         ->whereHas('lesson', fn($q) => $q->where('quarter', $quarter))
                         ->get()
-                        ->sortBy(fn($cl) => $cl->lesson->dateTime);
+                        ->sortBy(fn($cl) => $cl->lesson->date_time);
 
                     $quarterData['client_lessons'] = JournalResource::collection($clientLessons);
 

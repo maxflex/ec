@@ -11,10 +11,6 @@ const modelDefaults: GroupResource = {
   id: newId(),
   year: currentAcademicYear(),
   teachers: [],
-  zoom: {
-    id: '',
-    password: '',
-  },
 }
 
 const { dialog, width } = useDialog('default')
@@ -144,16 +140,6 @@ defineExpose({ create, edit })
             v-model="group.program"
             label="Программа"
             :items="selectItems(ProgramLabel)"
-          />
-        </div>
-        <div class="double-input">
-          <v-text-field
-            v-model="group.zoom.id"
-            label="Zoom логин"
-          />
-          <v-text-field
-            v-model="group.zoom.password"
-            label="Zoom пароль"
           />
         </div>
       </div>

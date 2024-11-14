@@ -44,12 +44,6 @@ nextTick(loadData)
           </div>
         </div>
         <div>
-          <div>zoom</div>
-          <div>
-            {{ group.zoom?.id || 'не установлено' }}
-          </div>
-        </div>
-        <div>
           <div>
             занятий
           </div>

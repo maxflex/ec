@@ -144,6 +144,7 @@ declare global {
   interface Zoom {
     id: string
     password: string
+    url: string
   }
 
   interface AuthResource extends PersonWithPhotoResource {
@@ -348,7 +349,6 @@ declare global {
     client_groups_count: number
     program: Program
     teachers: PersonResource[]
-    zoom: Zoom | null
     teeth: Teeth
   }
 
@@ -356,7 +356,6 @@ declare global {
     id: number
     program?: Program
     year: Year
-    zoom: Zoom | null
     teachers: PersonResource[]
     teeth?: Teeth
     created_at?: string
@@ -394,6 +393,7 @@ declare global {
     topic?: ?string
     homework?: ?string
     files: UploadedFile[]
+    zoom: ?Zoom
     conducted_at: ?string
     is_topic_verified: boolean
     is_unplanned: boolean

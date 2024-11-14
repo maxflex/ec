@@ -91,6 +91,7 @@ nextTick(loadData)
 <style lang="scss">
 .page-clients-id.entity-teacher {
   //.v-btn:not(.v-btn--icon) {
+  .table-actionss,
   .v-btn {
     display: none;
   }

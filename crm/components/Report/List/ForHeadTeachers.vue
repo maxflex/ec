@@ -25,9 +25,6 @@ function getFillColor(r: RealReport) {
       <div style="width: 150px">
         <UiPerson :item="r.teacher" />
       </div>
-      <div style="width: 180px">
-        <UiPerson :item="r.client" />
-      </div>
       <div style="width: 120px">
         {{ ProgramShortLabel[r.program] }}
       </div>
@@ -43,20 +40,14 @@ function getFillColor(r: RealReport) {
             :to="{ name: 'reports-id-edit', params: { id: r.id } }"
           />
         </div>
-        <div style="width: 150px">
+        <div style="width: 180px">
           прошло занятий: {{ r.lessons_count }}
         </div>
-        <div style="width: 70px">
-          <span v-if="r.price">
-            {{ formatPrice(r.price) }} руб.
-          </span>
-        </div>
-        <div style="width: 30px">
+        <div style="width: 50px">
           <span v-if="r.grade" :class="`score score--${r.grade}`">
             {{ r.grade }}
           </span>
         </div>
-
         <div
           style="width: 150px"
           class="text-center d-flex ga-5"
@@ -64,7 +55,7 @@ function getFillColor(r: RealReport) {
           {{ ReportStatusLabel[r.status] }}
         </div>
 
-        <div style="width: 100px" class="pr-2">
+        <div style="width: 100px" class="pr-5">
           <v-progress-linear
             bg-color="#92aed9"
             :color="getFillColor(r)"
@@ -76,8 +67,13 @@ function getFillColor(r: RealReport) {
           />
         </div>
 
-        <div style="width: 100px; flex: initial" class="text-gray">
+        <div style="width: 100px; flex: 1" class="text-gray">
           {{ formatTextDate(r.created_at, true) }}
+        </div>
+        <div>
+          <RouterLink :to="{ name: 'reports-id', params: { id: r.id } }">
+            читать отчёт
+          </RouterLink>
         </div>
       </template>
 

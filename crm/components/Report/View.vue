@@ -32,9 +32,7 @@ nextTick(loadData)
           Составитель отчёта:
         </div>
         <div>
-          <RouterLink :to="{ name: 'teachers-id', params: { id: item.teacher!.id } }">
-            {{ formatFullName(item.teacher!) }}
-          </RouterLink>
+          <UiPerson :item="item.teacher!" teacher-format="full" />
         </div>
       </div>
       <div>

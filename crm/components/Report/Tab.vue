@@ -4,6 +4,10 @@ const { clientId, teacherId } = defineProps<{
   teacherId?: number
 }>()
 const tabName = clientId ? 'ClientReportTab' : 'TeacherReportTab'
+
+// isHeadTeacher
+const { isTeacher } = useAuthStore()
+
 const filters = ref<{
   year: Year
   type?: number
@@ -57,6 +61,8 @@ nextTick(loadData)
         density="comfortable"
       />
     </template>
-    <ReportListForAdmins :items="items" />
+
+    <ReportListForHeadTeachers v-if="isTeacher" :items="items" />
+    <ReportListForAdmins v-else :items="items" />
   </UiIndexPage>
 </template>
