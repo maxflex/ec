@@ -37,10 +37,10 @@ class TransferClients extends Command
                 'branches' => $this->mapEnum($c->branches, Branch::class),
                 'user_id' => $this->getUserId($c->created_email_id),
                 'head_teacher_id' => $this->nullify($c->head_teacher_id),
-                'passport' => $c->series ? json_encode([
-                    'series' => $c->series,
-                    'number' => $c->number,
-                    'birthdate' => $this->nullify($c->birthdate),
+                'passport' => $c->birthdate ? json_encode([
+                    'series' => $this->nullify($c->series),
+                    'number' => $this->nullify($c->number),
+                    'birthdate' => $c->birthdate,
                 ]) : null,
                 'is_remote' => $c->is_remote,
                 'created_at' => $c->created_at,
