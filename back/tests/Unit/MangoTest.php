@@ -1,19 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace Tests\Unit;
 
 use App\Http\Controllers\Common\MangoController;
-use App\Http\Controllers\Controller;
 use App\Models\Call;
 use App\Utils\Mango;
 use Illuminate\Http\Request;
 
-/**
- * Тестирование звонилки, localhost only
- */
-class MangoTestController extends Controller
+class MangoTest
 {
-    protected $defaults = [
+    private $defaults = [
         [
             "entry_id" => "MTYzNzM5MTI5MDA=x",
             "number" => "79168524317",
@@ -26,26 +22,26 @@ class MangoTestController extends Controller
         ]
     ];
 
-    public function __invoke($event)
+    /**
+     * @param 0|1 $index
+     */
+    public function __construct(
+        public int $index
+    )
     {
-        if (method_exists($this, $event)) {
-            return $this->$event();
-        }
-
-        abort(404, "Event $event not found");
     }
 
-    private function appeared()
+    public function appeared()
     {
         return $this->callEvent([
-            "entry_id" => $this->defaults[request()->input('index')]['entry_id'],
+            "entry_id" => $this->defaults[$this->index]['entry_id'],
             "call_id" => "MToxMDA5Njg3Nzo1MDY6NTIyOTA1ODM4OjE=",
             "timestamp" => strtotime(now()),
             "seq" => 1,
             "call_state" => "Appeared",
             "location" => "ivr",
             "from" => [
-                "number" => $this->defaults[request()->input('index')]['number'],
+                "number" => $this->defaults[$this->index]['number'],
                 "line_number" => Mango::LINE_NUMBER
             ],
             "to" => [
@@ -58,23 +54,23 @@ class MangoTestController extends Controller
         ]);
     }
 
-    private function connected()
+    public function connected()
     {
         // ответ на звонок
         return $this->callEvent([
-            "entry_id" => $this->defaults[request()->input('index')]['entry_id'],
+            "entry_id" => $this->defaults[$this->index]['entry_id'],
             "call_id" => "MToxMDA5Njg3Nzo1MDY6NTIyOTA1ODQ2",
             "timestamp" => strtotime(now()),
             "seq" => 2,
             "call_state" => "Connected",
             "location" => "abonent",
             "from" => [
-                "number" => $this->defaults[request()->input('index')]['number'],
+                "number" => $this->defaults[$this->index]['number'],
                 "taken_from_call_id" => "MToxMDA5Njg3Nzo1MDY6NTIyOTA1ODM4OjE=",
                 "line_number" => Mango::LINE_NUMBER
             ],
             "to" => [
-                "extension" => $this->defaults[request()->input('index')]['user_id'],
+                "extension" => $this->defaults[$this->index]['user_id'],
                 "number" => "sip:gavriluk@kapralovka.mangosip.ru",
                 "line_number" => Mango::LINE_NUMBER,
                 "acd_group" => ""
@@ -86,23 +82,23 @@ class MangoTestController extends Controller
         ]);
     }
 
-    private function disconnected()
+    public function disconnected()
     {
         // конец соединения
         return $this->callEvent([
-            "entry_id" => $this->defaults[request()->input('index')]['entry_id'],
+            "entry_id" => $this->defaults[$this->index]['entry_id'],
             "call_id" => "MToxMDA5Njg3Nzo1MDY6NTIyOTA1ODQ2",
             "timestamp" => strtotime(now()),
             "seq" => 3,
             "call_state" => "Disconnected",
             "location" => "abonent",
             "from" => [
-                "number" => $this->defaults[request()->input('index')]['number'],
+                "number" => $this->defaults[$this->index]['number'],
                 "taken_from_call_id" => "MToxMDA5Njg3Nzo1MDY6NTIyOTA1ODM4OjE=",
                 "line_number" => Mango::LINE_NUMBER
             ],
             "to" => [
-                "extension" => $this->defaults[request()->input('index')]['user_id'],
+                "extension" => $this->defaults[$this->index]['user_id'],
                 "number" => "sip:gavriluk@kapralovka.mangosip.ru",
                 "line_number" => Mango::LINE_NUMBER,
                 "acd_group" => ""
@@ -114,7 +110,7 @@ class MangoTestController extends Controller
         ]);
     }
 
-    private function outgoingConnected()
+    public function outgoingConnected()
     {
         return $this->callEvent([
             'entry_id' => 'MTYzNzM4MjI5NjM=',
@@ -138,7 +134,7 @@ class MangoTestController extends Controller
         ]);
     }
 
-    private function outgoingDisconnected()
+    public function outgoingDisconnected()
     {
         return $this->callEvent([
             'entry_id' => 'MTYzNzM4MjI5NjM=',
@@ -162,7 +158,7 @@ class MangoTestController extends Controller
         ]);
     }
 
-    private function summary()
+    public function summary()
     {
         Call::query()->where('id', 'MjE0NTM3MDU1Mzg=')->delete();
         $payload = [

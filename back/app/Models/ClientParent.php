@@ -15,9 +15,7 @@ class ClientParent extends Model implements CanLogin
     public $timestamps = false;
 
     protected $fillable = [
-        'first_name', 'last_name', 'middle_name', 'passport_series', 'passport_number',
-        'passport_address', 'passport_code', 'passport_issued_date', 'passport_issued_by',
-        'fact_address', 'passport'
+        'first_name', 'last_name', 'middle_name', 'passport'
     ];
 
     protected $casts = [
@@ -54,7 +52,6 @@ class ClientParent extends Model implements CanLogin
     {
         $query->whereHas('client', fn($q) => $q->canLogin());
     }
-
 
     public function getPassportAttribute($value)
     {

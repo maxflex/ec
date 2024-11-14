@@ -219,17 +219,17 @@ declare global {
 
   interface ClientResource extends PersonWithPhotoResource, HasPhones {
     branches: Branch[]
-    birthdate?: string
     head_teacher_id: ?number
     head_teacher?: PersonResource
     parent: ParentResource
     is_remote: boolean
+    user?: PersonResource
+    created_at?: string
     passport: {
       series: ?string
       number: ?string
+      birthdate: ?string
     }
-    user?: PersonResource
-    created_at?: string
   }
 
   interface CommentResource {

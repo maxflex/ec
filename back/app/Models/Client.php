@@ -191,7 +191,8 @@ class Client extends Model implements HasTeeth, CanLogin
     {
         return $value === null ? [
             'series' => null,
-            'number' => null
+            'number' => null,
+            'birthdate' => null,
         ] : json_decode($value);
     }
 }

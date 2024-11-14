@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->morphs('entity');
             $table->string('comment');
+            $table->string('complaint')->nullable();
             $table->dateTime('used_at');
         });
     }

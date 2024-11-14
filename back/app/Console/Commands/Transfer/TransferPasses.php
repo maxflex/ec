@@ -37,7 +37,6 @@ class TransferPasses extends Command
         $bar->finish();
         Schema::enableForeignKeyConstraints();
 
-
         DB::table('pass_logs')->truncate();
         $passLogs = DB::connection('egecrm')
             ->table('pass_logs')
@@ -53,6 +52,5 @@ class TransferPasses extends Command
             $bar->advance();
         }
         $bar->finish();
-
     }
 }

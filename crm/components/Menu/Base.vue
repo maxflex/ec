@@ -4,9 +4,7 @@ const { isAdmin, isTeacher } = useAuthStore()
 
 <template>
   <div class="menu-logo">
-    <RouterLink to="/mango-test">
-      <img src="/img/logo.svg">
-    </RouterLink>
+    <img alt="" src="/img/logo.svg">
     <h3>ЕГЭ-Центр</h3>
   </div>
   <MenuAdminMenu v-if="isAdmin" />

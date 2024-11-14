@@ -17,6 +17,7 @@ const properties = defineProps<{
   year?: Year
   program?: Program
   showTeeth?: boolean
+  headTeacher?: boolean
 }>()
 
 const { groupId, teacherId, clientId, program, showTeeth, year } = properties
@@ -297,9 +298,9 @@ nextTick(loadData)
           :item="item"
           @edit="eventDialog?.edit"
         />
-        <LessonTeacherItem
-          v-else-if="isTeacher"
-          :key="`lt-${item.id}`"
+        <LessonAdminClientItem
+          v-else-if="clientId || headTeacher"
+          :key="`lac-${item.id}`"
           :item="item"
           :checkboxes="checkboxes"
           @click="onLessonClick(item)"
@@ -315,9 +316,9 @@ nextTick(loadData)
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
         />
-        <LessonAdminClientItem
-          v-else-if="clientId"
-          :key="`lac-${item.id}`"
+        <LessonTeacherItem
+          v-else-if="isTeacher"
+          :key="`lt-${item.id}`"
           :item="item"
           :checkboxes="checkboxes"
           @click="onLessonClick(item)"

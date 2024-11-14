@@ -22,7 +22,6 @@ use App\Http\Controllers\Admin\{BalanceController,
     InstructionController,
     LessonController,
     MacroController,
-    MangoTestController,
     MenuCountsController,
     PassController,
     PeopleSelectorController,
@@ -59,8 +58,6 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::apiResource('logs', LogController::class)->only('index');
     Route::apiResource('topics', TopicController::class)->only('index');
     Route::post('lessons/bulk', [LessonController::class, 'bulk']);
-
-    Route::post('mango-test/{event}', MangoTestController::class);
 
     Route::prefix('lessons')->controller(LessonController::class)->group(function () {
         // Групповое редактирование уроков

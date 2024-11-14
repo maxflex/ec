@@ -20,6 +20,7 @@ const modelDefaults: ClientResource = {
   passport: {
     series: null,
     number: null,
+    birthdate: null,
   },
   parent: {
     id: newId(),
@@ -150,6 +151,20 @@ defineExpose({ create, edit })
           />
         </div>
         <div class="double-input">
+          <v-text-field
+            v-model="client.passport.series"
+            label="Серия паспорта"
+          />
+          <v-text-field
+            v-model="client.passport.number"
+            label="Номер паспорта"
+          />
+          <UiDateInput
+            v-model="client.passport.birthdate"
+            label="Дата рождения"
+          />
+        </div>
+        <div class="double-input">
           <v-select
             v-model="client.branches"
             label="Филиалы"
@@ -160,16 +175,6 @@ defineExpose({ create, edit })
           <TeacherSelector
             v-model="client.head_teacher_id"
             label="Куратор"
-          />
-        </div>
-        <div class="double-input">
-          <v-text-field
-            v-model="client.passport.series"
-            label="Серия паспорта"
-          />
-          <v-text-field
-            v-model="client.passport.number"
-            label="Номер паспорта"
           />
         </div>
 
@@ -213,9 +218,13 @@ defineExpose({ create, edit })
             label="Код подразделения"
           />
         </div>
+        <UiDateInput
+          v-model="client.parent.passport.issued_date"
+          label="Дата выдачи паспорта"
+        />
         <v-textarea
           v-model="client.parent.passport.issued_by"
-          label="Паспорт выдан"
+          label="Кем выдан"
           no-resize
           rows="3"
         />

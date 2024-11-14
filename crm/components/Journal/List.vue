@@ -45,7 +45,7 @@ const { items } = defineProps<{
                 </div>
               </div>
               <div v-if="item.lesson.files.length">
-                <div>Файлы:</div>
+                <div />
                 <div class="journal__files">
                   <div v-for="f in item.lesson.files" :key="f.url">
                     <FileItem :item="f" downloadable show-size />
