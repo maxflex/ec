@@ -10,7 +10,9 @@ class GradeController extends \App\Http\Controllers\Admin\GradeController
 {
     public function index(Request $request)
     {
-        $query = Grade::fakeQuery(auth()->id());
+        $query = ($request->has('client_id') && auth()->user()->entity->is_head_teacher)
+            ? Grade::fakeQuery()
+            : Grade::fakeQuery(auth()->id());
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, QuartersGradesResource::class);
     }

@@ -11,10 +11,11 @@ const tabs = {
   payments: 'платежи',
   balance: 'баланс',
   reports: 'отчёты',
-  headTeacherReports: 'отчёты кр',
   clientReviews: 'отзывы',
   services: 'допуслуги',
   instructions: 'инструкции',
+  headTeacherClients: 'классный руководитель',
+  headTeacherReports: 'отчёты кр',
 } as const
 
 type Tab = keyof typeof tabs
@@ -26,7 +27,7 @@ const availableTabs = computed<Tab[]>(() => {
   const allTabs = Object.keys(tabs) as Tab[]
   return teacher.value?.is_head_teacher
     ? allTabs
-    : allTabs.filter(t => t !== 'headTeacherReports')
+    : allTabs.filter(t => !t.startsWith('headTeacher'))
 })
 
 async function loadData() {
@@ -102,10 +103,11 @@ nextTick(loadData)
     <ClientReviewTab v-else-if="selectedTab === 'clientReviews'" :teacher-id="teacher.id" />
     <InstructionTab v-else-if="selectedTab === 'instructions'" :teacher-id="teacher.id" />
     <ReportTab v-else-if="selectedTab === 'reports'" :teacher-id="teacher.id" />
-    <HeadTeacherReportTab v-else-if="selectedTab === 'headTeacherReports'" :teacher-id="teacher.id" />
     <TeacherPaymentTab v-else-if="selectedTab === 'payments'" :teacher-id="teacher.id" />
     <TeacherServiceTab v-else-if="selectedTab === 'services'" :teacher-id="teacher.id" />
-    <Balance v-else :teacher-id="teacher.id" />
+    <Balance v-else-if="selectedTab === 'balance'" :teacher-id="teacher.id" />
+    <HeadTeacherReportTab v-else-if="selectedTab === 'headTeacherReports'" :teacher-id="teacher.id" />
+    <HeadTeacherClientsTab v-else-if="selectedTab === 'headTeacherClients'" :teacher-id="teacher.id" />
   </template>
 
   <TeacherDialog ref="teacherDialog" @updated="onUpdated" />

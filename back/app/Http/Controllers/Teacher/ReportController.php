@@ -17,7 +17,11 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
      */
     public function index(Request $request)
     {
-        $request->merge(['teacher_id' => auth()->id()]);
+        if (!($request->has('client_id') && auth()->user()->entity->is_head_teacher)) {
+            $request->merge([
+                'teacher_id' => auth()->id()
+            ]);
+        }
 
         return parent::index($request);
     }
@@ -41,7 +45,7 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
      */
     public function show(Report $report, Request $request)
     {
-        abort_if($report->teacher_id !== auth()->id(), 404);
+        abort_if(!auth()->user()->entity->is_head_teacher, 404);
         return new ReportResource($report);
     }
 
