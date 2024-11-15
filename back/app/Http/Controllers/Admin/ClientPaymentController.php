@@ -24,7 +24,7 @@ class ClientPaymentController extends Controller
 
     public function store(Request $request)
     {
-        $clientPayment = auth()->user()->entity->clientPayments()->create($request->all());
+        $clientPayment = auth()->user()->clientPayments()->create($request->all());
         return new ClientPaymentResource($clientPayment);
     }
 

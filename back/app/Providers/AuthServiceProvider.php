@@ -4,11 +4,10 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 
-use App\Models\Phone;
 use App\Utils\Session;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -26,8 +25,14 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Custom user provider
+        Auth::provider('phone-user-provider', function ($app, array $config) {
+            return new PhoneUserProvider();
+        });
+
+        // Custom session handler
         Auth::viaRequest(
-            'crm',
+            'redis-session',
             fn (Request $request) =>
             Session::get($request->bearerToken())
         );

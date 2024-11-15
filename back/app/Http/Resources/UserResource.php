@@ -22,7 +22,7 @@ class UserResource extends JsonResource
             'first_name', 'last_name', 'created_at',
             'photo_url', 'is_active', 'is_call_notifications'
         ], [
-            'phones' => PhoneListResource::collection($this->phones)
+            'phones' => PhoneResource::collection($this->phones)
         ]);
     }
 }

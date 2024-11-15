@@ -17,7 +17,7 @@ class TestController extends Controller
 
     public function store(Request $request)
     {
-        $test = auth()->user()->entity->tests()->create($request->all());
+        $test = auth()->user()->tests()->create($request->all());
         return new TestResource($test);
     }
 

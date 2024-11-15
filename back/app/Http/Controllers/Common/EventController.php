@@ -34,7 +34,7 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        $event = auth()->user()->entity->events()->create($request->all());
+        $event = auth()->user()->events()->create($request->all());
         $event->loadCount('participants');
         return new EventListResource($event);
     }

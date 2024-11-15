@@ -22,7 +22,7 @@ class RequestResource extends JsonResource
             'yandex_id', 'google_id', 'ip', 'client_id'
         ], [
             'user' => new PersonResource($this->user),
-            'phones' => PhoneListResource::collection($this->phones),
+            'phones' => PhoneResource::collection($this->phones),
             'associated_clients' => ClientWithContractsResource::collection($this->getAssociatedClients())
         ]);
     }

@@ -17,7 +17,7 @@ class ParentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, ['*'], [
-            'phones' => PhoneListResource::collection($this->phones)
+            'phones' => PhoneResource::collection($this->phones)
         ]);
     }
 }

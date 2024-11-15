@@ -6,7 +6,7 @@ const telegramMessages = ref<TelegramMessageResource[]>([])
 const wrapper = ref<HTMLDivElement | null>(null)
 const noScroll = ref(false)
 const loaded = ref(false)
-const phone = ref<PhoneListResource>()
+const phone = ref<PhoneResource>()
 
 function scrollBottom() {
   nextTick(() => {
@@ -18,7 +18,7 @@ function scrollBottom() {
   })
 }
 
-function open(p: PhoneListResource) {
+function open(p: PhoneResource) {
   phone.value = p
   dialog.value = true
   loadData()

@@ -18,10 +18,8 @@ async function enter() {
       },
     },
   )
-  if (data.value) {
-    const { token, user } = data.value
-    logIn(user, token, true)
-  }
+  const { token, user } = data.value!
+  logIn(user, token, true)
 }
 </script>
 

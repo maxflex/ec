@@ -26,7 +26,7 @@ class WebReviewController extends Controller
 
     public function store(Request $request)
     {
-        $webReview = auth()->user()->entity->webReviews()->create($request->all());
+        $webReview = auth()->user()->webReviews()->create($request->all());
         $webReview->examScores()->sync($request->exam_scores);
         return new WebReviewResource($webReview);
     }

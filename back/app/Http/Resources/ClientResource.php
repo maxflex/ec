@@ -20,7 +20,7 @@ class ClientResource extends JsonResource
             'head_teacher' => new PersonResource($this->headTeacher),
             'user' => new PersonResource($this->user),
             'parent' => new ParentResource($this->parent),
-            'phones' => PhoneListResource::collection($this->phones),
+            'phones' => PhoneResource::collection($this->phones),
         ]);
     }
 }

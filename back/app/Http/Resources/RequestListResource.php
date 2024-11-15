@@ -21,7 +21,7 @@ class RequestListResource extends JsonResource
             'status', 'created_at', 'comment', 'comments_count',
             'direction', 'user_id', 'is_verified'
         ], [
-            'phones' => PhoneListResource::collection($this->phones),
+            'phones' => PhoneResource::collection($this->phones),
             'responsible_user' => new PersonResource($this->responsibleUser),
             'client' => new PersonResource($this->client),
             'passes' => PassResource::collection($this->passes),

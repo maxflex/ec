@@ -17,7 +17,7 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
      */
     public function index(Request $request)
     {
-        if (!($request->has('client_id') && auth()->user()->entity->is_head_teacher)) {
+        if (!($request->has('client_id') && auth()->user()->is_head_teacher)) {
             $request->merge([
                 'teacher_id' => auth()->id()
             ]);
@@ -36,7 +36,7 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
             'program' => [Rule::enum(Program::class)],
             'year' => ['required', 'numeric', 'gt:0']
         ]);
-        $report = auth()->user()->entity->reports()->create($request->all());
+        $report = auth()->user()->reports()->create($request->all());
         return new ReportListResource($report);
     }
 
@@ -45,7 +45,7 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
      */
     public function show(Report $report, Request $request)
     {
-        abort_if(!auth()->user()->entity->is_head_teacher, 404);
+        abort_if(!auth()->user()->is_head_teacher, 404);
         return new ReportResource($report);
     }
 

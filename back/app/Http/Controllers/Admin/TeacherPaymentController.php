@@ -35,7 +35,7 @@ class TeacherPaymentController extends Controller
 
     public function store(Request $request)
     {
-        $teacherPayment = auth()->user()->entity->teacherPayments()->create($request->all());
+        $teacherPayment = auth()->user()->teacherPayments()->create($request->all());
         return new TeacherPaymentResource($teacherPayment);
     }
 

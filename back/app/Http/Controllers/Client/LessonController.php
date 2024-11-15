@@ -18,7 +18,7 @@ class LessonController extends Controller
     public function index(Request $request)
     {
         if ($request->has('client_id')) {
-            $lessons = auth()->user()->entity->getSchedule($request->year);
+            $lessons = auth()->user()->getSchedule($request->year);
         } else {
             $query = Lesson::with(['teacher', 'group', 'clientLessons']);
             $this->filter($request, $query);
@@ -33,7 +33,7 @@ class LessonController extends Controller
         $clientLesson = $lesson->clientLessons()
             ->whereIn(
                 'contract_version_program_id',
-                auth()->user()->entity->getContractVersionProgramIds(),
+                auth()->user()->getContractVersionProgramIds(),
             )
             ->first();
 

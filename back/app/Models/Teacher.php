@@ -6,13 +6,11 @@ use App\Contracts\{CanLogin, HasTeeth};
 use App\Enums\TeacherStatus;
 use App\Traits\{HasBalance, HasName, HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable};
 use App\Utils\Teeth;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\{Casts\Attribute, Relations\BelongsTo, Relations\HasMany};
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Scout\Searchable;
 
-class Teacher extends Model implements HasTeeth, CanLogin
+class Teacher extends Authenticatable implements HasTeeth, CanLogin
 {
     use HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable, Searchable, HasName, HasBalance;
 

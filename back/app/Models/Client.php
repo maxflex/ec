@@ -7,15 +7,15 @@ use App\Contracts\HasTeeth;
 use App\Traits\{HasName, HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable};
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\{Casts\Attribute,
-    Model,
     Relations\BelongsTo,
     Relations\HasMany,
     Relations\HasOne,
     Relations\MorphMany};
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Collection;
 use Laravel\Scout\Searchable;
 
-class Client extends Model implements HasTeeth, CanLogin
+class Client extends Authenticatable implements HasTeeth, CanLogin
 {
     use HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable, Searchable, HasName;
 

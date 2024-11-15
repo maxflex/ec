@@ -5,7 +5,7 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<AuthResource>()
   const token = useCookie('token', forever)
   const previewToken = useCookie('preview-token')
-  const rememberUser = useCookie<AuthResource | undefined>('remember-user', forever)
+  const rememberUser = useCookie<RememberUser | undefined>('remember-user', forever)
   const isAdmin = ref(false)
   const isClient = ref(false)
   const isTeacher = ref(false)
@@ -29,13 +29,25 @@ export const useAuthStore = defineStore('auth', () => {
     else {
       previewToken.value = undefined
       token.value = t
-      // если не учитель, сохраняем в remember me
-      if (u.entity_type !== EntityTypeValue.teacher) {
-        rememberUser.value = u
-      }
       setTimeout(() => window.location.href = sessionStorage.getItem('redirect') || '/')
       // navigateTo({ path })
     }
+  }
+
+  /**
+   * @param u Пользователь будет записан в useAuthStore
+   * @param t Токен для сохранения в Cookies
+   * @param number Номер телефона для rememberUser
+   */
+  function logInAndRemember(u: AuthResource, t: string, number: string) {
+    // учителя не сохраняем в rememberUser
+    if (u.entity_type !== EntityTypeValue.teacher) {
+      rememberUser.value = {
+        ...u,
+        number,
+      }
+    }
+    logIn(u, t)
   }
 
   function clearCurrentToken() {
@@ -71,6 +83,7 @@ export const useAuthStore = defineStore('auth', () => {
     isClient,
     isTeacher,
     logIn,
+    logInAndRemember,
     logOut,
     getCurrentToken,
     clearCurrentToken,

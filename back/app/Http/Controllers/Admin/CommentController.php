@@ -22,7 +22,7 @@ class CommentController extends Controller
 
     public function store(Request $request)
     {
-        $comment = auth()->user()->entity->comments()->create(
+        $comment = auth()->user()->comments()->create(
             $request->all()
         );
         return new CommentResource($comment);

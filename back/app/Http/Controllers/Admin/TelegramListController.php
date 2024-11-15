@@ -29,7 +29,7 @@ class TelegramListController extends Controller
 
     public function store(Request $request)
     {
-        $telegramList = auth()->user()->entity->telegramLists()->create(
+        $telegramList = auth()->user()->telegramLists()->create(
             $request->all(),
         );
         return new TelegramListResource($telegramList);

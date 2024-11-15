@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('telegram', TelegramBotController::class);
 
 Route::controller(AuthController::class)->prefix('auth')->group(function () {
-    Route::post('login', 'login');
+    Route::post('submit-phone', 'submitPhone');
     Route::post('verify-code', 'verifyCode');
 });
 

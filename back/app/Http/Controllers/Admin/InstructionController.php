@@ -42,7 +42,7 @@ class InstructionController extends Controller
      */
     public function store(Request $request)
     {
-        $instruction = auth()->user()->entity->instructions()->create($request->all());
+        $instruction = auth()->user()->instructions()->create($request->all());
         $instruction->loadCount('versions', 'signs');
         return new InstructionListResource($instruction);
     }

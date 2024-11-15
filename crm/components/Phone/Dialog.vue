@@ -5,9 +5,9 @@ import { openCallApp } from '~/components/CallApp'
 
 const telegramMessageDialog = ref<InstanceType<typeof TelegramMessageDialog>>()
 const { dialog, width } = useDialog('default')
-const item = ref<PhoneListResource>()
+const item = ref<PhoneResource>()
 
-function open(p: PhoneListResource) {
+function open(p: PhoneResource) {
   item.value = p
   dialog.value = true
 }

@@ -46,7 +46,7 @@ class LessonController extends Controller
 
     public function store(Request $request)
     {
-        $lesson = auth()->user()->entity->lessons()->create($request->all());
+        $lesson = auth()->user()->lessons()->create($request->all());
         return new LessonListResource($lesson);
     }
 
@@ -69,7 +69,7 @@ class LessonController extends Controller
                 $data['date'] = $from->format('Y-m-d');
                 $data['time'] = $time;
                 $data['cabinet'] = $cabinet ?: null;
-                $lessons[] = auth()->user()->entity->lessons()->create($data);
+                $lessons[] = auth()->user()->lessons()->create($data);
             }
             $from->addDay();
         }

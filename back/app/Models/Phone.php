@@ -3,54 +3,14 @@
 namespace App\Models;
 
 use App\Utils\Phone as UtilsPhone;
-use App\Utils\Session;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class Phone extends Model implements Authenticatable
+class Phone extends Model
 {
     public $timestamps = false;
+
     protected $fillable = ['number', 'comment'];
-
-    // public function getNumberAttribute($value)
-    // {
-    //     return $value ? UtilsPhone::format($value) : null;
-    // }
-
-    public function getAuthIdentifier()
-    {
-        return $this->entity_id;
-    }
-
-    // @phpstan-ignore return.missing
-    public function getAuthIdentifierName()
-    {
-    }
-
-    // @phpstan-ignore return.missing
-    public function getAuthPassword()
-    {
-    }
-
-    // @phpstan-ignore return.missing
-    public function getRememberToken()
-    {
-    }
-
-    public function setRememberToken($value)
-    {
-    }
-
-    // @phpstan-ignore return.missing
-    public function getRememberTokenName()
-    {
-    }
-
-    // @phpstan-ignore return.missing
-    public function getAuthPasswordName()
-    {
-    }
 
     public function entity(): MorphTo
     {
@@ -84,29 +44,6 @@ class Phone extends Model implements Authenticatable
 
         // должен быть в итоге единственный кандидат к логину
         return $candidates->count() === 1 ? $candidates->first() : null;
-    }
-
-    public function getIsAdminAttribute(): bool
-    {
-        return $this->entity_type === User::class;
-    }
-
-    public function getIsTeacherAttribute(): bool
-    {
-        return $this->entity_type === Teacher::class;
-    }
-
-    public function getIsClientAttribute(): bool
-    {
-        return in_array($this->entity_type, [
-            Client::class,
-            ClientParent::class
-        ]);
-    }
-
-    public function createSessionToken(): string
-    {
-        return Session::createToken($this);
     }
 
     public static function booted()

@@ -44,7 +44,7 @@ class ContractVersionController extends Controller
             'contract.id' => ['required', 'exists:contracts,id']
         ]);
         $request->merge(['contract_id' => $request->contract['id']]);
-        $contractVersion = auth()->user()->entity->contractVersions()->create($request->all());
+        $contractVersion = auth()->user()->contractVersions()->create($request->all());
         $contractVersion->syncRelation($request->all(), 'programs');
         foreach ($contractVersion->programs as $index => $program) {
             $program->syncRelation($request->programs[$index], 'prices');

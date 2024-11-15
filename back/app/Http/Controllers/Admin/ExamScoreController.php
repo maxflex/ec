@@ -35,7 +35,7 @@ class ExamScoreController extends Controller
 
     public function store(Request $request)
     {
-        $examScore = auth()->user()->entity->examScores()->create($request->all());
+        $examScore = auth()->user()->examScores()->create($request->all());
         return new ExamScoreResource($examScore);
     }
 

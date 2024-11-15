@@ -32,7 +32,7 @@ class ContractController extends Controller
             ...$request->contract,
             'client_id' => $request->client_id,
         ]);
-        $contractVersion = auth()->user()->entity->contractVersions()->create([
+        $contractVersion = auth()->user()->contractVersions()->create([
             ...$request->all(),
             'contract_id' => $contract->id,
         ]);

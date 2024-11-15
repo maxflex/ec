@@ -28,7 +28,7 @@ class TeacherServiceController extends Controller
      */
     public function store(Request $request)
     {
-        $teacherService = auth()->user()->entity->teacherServices()->create($request->all());
+        $teacherService = auth()->user()->teacherServices()->create($request->all());
         return new TeacherServiceResource($teacherService);
     }
 

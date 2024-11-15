@@ -10,7 +10,7 @@ class GradeController extends \App\Http\Controllers\Admin\GradeController
 {
     public function index(Request $request)
     {
-        $query = ($request->has('client_id') && auth()->user()->entity->is_head_teacher)
+        $query = ($request->has('client_id') && auth()->user()->is_head_teacher)
             ? Grade::fakeQuery()
             : Grade::fakeQuery(auth()->id());
         $this->filter($request, $query);

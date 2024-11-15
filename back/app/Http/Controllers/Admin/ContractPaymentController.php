@@ -28,7 +28,7 @@ class ContractPaymentController extends Controller
 
     public function store(Request $request)
     {
-        $contractPayment = auth()->user()->entity->contractPayments()->create($request->all());
+        $contractPayment = auth()->user()->contractPayments()->create($request->all());
         return new ContractPaymentResource($contractPayment);
     }
 

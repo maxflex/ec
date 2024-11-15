@@ -14,6 +14,6 @@ class BalanceController extends Controller
             'teacher_id' => ['required', 'numeric', 'in:' . auth()->id()]
         ]);
 
-        return auth()->user()->entity->getBalance($request->year);
+        return auth()->user()->getBalance($request->year);
     }
 }

@@ -22,7 +22,7 @@ class GroupActController extends Controller
 
     public function store(Request $request)
     {
-        $groupAct = auth()->user()->entity->groupActs()->create($request->all());
+        $groupAct = auth()->user()->groupActs()->create($request->all());
         return new GroupActResource($groupAct);
     }
 

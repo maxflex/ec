@@ -2,7 +2,7 @@
 import type { PhoneDialog } from '#build/components'
 
 const { items, q, request } = defineProps<{
-  items: PhoneListResource[]
+  items: PhoneResource[]
   request?: RequestListResource
   showComment?: boolean
   q?: string

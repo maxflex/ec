@@ -1,13 +1,14 @@
 <script setup lang="ts">
 const { $addSseListener, $removeSseListener } = useNuxtApp()
 const { public: config } = useRuntimeConfig()
-const { rememberUser, logIn } = useAuthStore()
-const phone = ref('')
+const { rememberUser, logInAndRemember } = useAuthStore()
+const number = ref('')
 const phoneMask = { mask: '+7 (###) ###-##-##' }
-const user = ref<AuthResource>()
+const currentUser = ref<AuthResource>()
+const currentPhone = ref<PhoneResource>()
 const loading = ref(false)
 const errors = ref<{
-  phone?: ResponseErrors
+  number?: ResponseErrors
   code?: ResponseErrors
 }>({})
 const otpInput = ref()
@@ -33,12 +34,15 @@ const bot = config.env === 'local'
 async function onPhoneEnter() {
   loading.value = true
   errors.value = {}
-  const { data, error } = await useHttp<AuthResource>(
-    `common/auth/login`,
+  const { data, error } = await useHttp<{
+    user: AuthResource
+    phone: PhoneResource
+  }>(
+    `common/auth/submit-phone`,
     {
       method: 'post',
       body: {
-        phone: phone.value,
+        number: number.value,
       },
     },
   )
@@ -47,13 +51,12 @@ async function onPhoneEnter() {
     errors.value = error.value.data.errors
     return
   }
-  if (data.value) {
-    user.value = data.value
-    console.log(user.value)
-    nextTick(() => {
-      window.value = user.value?.telegram_id ? 3 : 2
-    })
-  }
+  const { user, phone } = data.value!
+  currentUser.value = user
+  currentPhone.value = phone
+  nextTick(() => {
+    window.value = phone.telegram_id ? 3 : 2
+  })
 }
 
 function otherUser() {
@@ -61,11 +64,11 @@ function otherUser() {
   // setTimeout(() => (cookieUser.value = null), 1000)
 }
 
-function continueRememberMe() {
+function continueRememberUser() {
   if (rememberUser === undefined) {
     return
   }
-  phone.value = rememberUser.number
+  number.value = rememberUser.number
   onPhoneEnter()
 }
 
@@ -77,7 +80,7 @@ async function onOtpFinish() {
     {
       method: 'post',
       body: {
-        phone: phone.value,
+        phone_id: currentPhone.value?.id,
         code: otp.code,
       },
     },
@@ -88,10 +91,8 @@ async function onOtpFinish() {
     nextTick(() => otpInput.value.focus())
     return
   }
-  if (data.value) {
-    const { user, token } = data.value
-    logIn(user, token)
-  }
+  const { user, token } = data.value!
+  logInAndRemember(user, token, currentPhone.value!.number)
 }
 
 watch(
@@ -103,7 +104,7 @@ watch(
     }
     if (newVal === 2) {
       $addSseListener('TelegramBotAdded', (u: AuthResource) => {
-        if (user.value?.id === u.id) {
+        if (currentUser.value?.id === u.id) {
           onPhoneEnter()
         }
       })
@@ -128,10 +129,10 @@ definePageMeta({ layout: 'login' })
       <v-window-item>
         <v-text-field
           ref="phoneInput"
-          v-model="phone"
+          v-model="number"
           v-maska:[phoneMask]
           label="Телефон"
-          :error-messages="errors.phone"
+          :error-messages="errors.number"
           @keydown.enter="onPhoneEnter()"
         />
         <v-btn
@@ -165,7 +166,7 @@ definePageMeta({ layout: 'login' })
           :loading="loading"
           block
           size="x-large"
-          @click="continueRememberMe()"
+          @click="continueRememberUser()"
         >
           продолжить
         </v-btn>
@@ -174,12 +175,9 @@ definePageMeta({ layout: 'login' })
         </div>
       </v-window-item>
       <v-window-item eager>
-        <div
-          v-if="user"
-          class="login__info"
-        >
+        <div v-if="currentUser" class="login__info">
           <div class="login__info-title">
-            {{ user.first_name }}, здравствуйте!
+            {{ currentUser.first_name }}, здравствуйте!
           </div>
           <div>
             Это ваш первый вход в ЛК. Для продолжения необходимо

@@ -2,10 +2,14 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Phone;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PhoneListResource extends JsonResource
+/**
+ * @mixin Phone
+ */
+class PhoneResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

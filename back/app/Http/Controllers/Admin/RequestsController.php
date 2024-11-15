@@ -29,7 +29,7 @@ class RequestsController extends Controller
 
     public function store(Request $request)
     {
-        $clientRequest = auth()->user()->entity->requests()->create(
+        $clientRequest = auth()->user()->requests()->create(
             $request->all()
         );
         return new RequestListResource($clientRequest);

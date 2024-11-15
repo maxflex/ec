@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const model = defineModel<PhoneListResource[]>({ default: () => [] })
+const model = defineModel<PhoneResource[]>({ default: () => [] })
 const phoneMask = { mask: '+7 (###) ###-##-##' }
 
 function addPhone() {
@@ -12,7 +12,7 @@ function addPhone() {
   })
 }
 
-function removePhone(p: PhoneListResource) {
+function removePhone(p: PhoneResource) {
   model.value.splice(
     model.value.findIndex(({ id }) => id === p.id),
     1,

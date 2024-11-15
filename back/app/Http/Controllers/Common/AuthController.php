@@ -4,32 +4,41 @@ namespace App\Http\Controllers\Common;
 
 use App\Enums\LogType;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\AuthResource;
-use App\Http\Requests\AuthRequest;
-use App\Models\Log;
-use App\Utils\VerificationService;
-use App\Models\Phone;
-use App\Utils\Session;
+use App\Http\Requests\{SubmitPhoneRequest, VerifyCodeRequest};
+use App\Http\Resources\{AuthResource, PhoneResource};
+use App\Models\{Log, Phone};
+use App\Utils\{Session, VerificationService};
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    public function login(AuthRequest $request)
+    /**
+     * Первый шаг авторизации: ввели номер телефона
+     */
+    public function submitPhone(SubmitPhoneRequest $request)
     {
-        $phone = Phone::auth($request->phone);
+        $phone = Phone::auth($request->input('number'));
         if ($phone->telegram_id) {
             VerificationService::sendCode($phone);
         }
-        return new AuthResource($phone);
+        return [
+            'user' => new AuthResource($phone->entity),
+            'phone' => new PhoneResource($phone),
+        ];
     }
 
-    public function verifyCode(AuthRequest $request)
+    /**
+     * Второй шаг авторизации: подтверждение кода подтверждения
+     * При успешном подтверждении происходит вход в систему (создаётся сессия)
+     */
+    public function verifyCode(VerifyCodeRequest $request)
     {
-        $phone = Phone::auth($request->phone);
+        $phone = Phone::find($request->phone_id);
+        $token = Session::logIn($phone);
         $this->logSuccess($phone);
         return [
-            'user' => new AuthResource($phone),
-            'token' => $phone->createSessionToken(),
+            'user' => new AuthResource($phone->entity),
+            'token' => $token,
         ];
     }
 

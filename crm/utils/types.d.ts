@@ -102,7 +102,7 @@ declare global {
   }
 
   interface HasPhones {
-    phones: PhoneListResource[]
+    phones: PhoneResource[]
   }
 
   interface HasName {
@@ -148,11 +148,13 @@ declare global {
   }
 
   interface AuthResource extends PersonWithPhotoResource {
-    telegram_id: ?string
     is_call_notifications?: boolean
     is_head_teacher?: boolean
     has_grades?: boolean
-    number: string // phone number
+  }
+
+  interface RememberUser extends PersonWithPhotoResource {
+    number: string
   }
 
   interface TokenResponse {
@@ -160,7 +162,7 @@ declare global {
     token: string
   }
 
-  interface PhoneListResource {
+  interface PhoneResource {
     id: number
     number: string
     comment: ?string
@@ -177,7 +179,7 @@ declare global {
     yandex_id: ?string
     google_id: ?string
     ip: ?string
-    phones: PhoneListResource[]
+    phones: PhoneResource[]
     user?: PersonResource
     client_id: ?number
     created_at?: string
@@ -190,7 +192,7 @@ declare global {
     direction: ?Direction
     responsible_user: ?PersonResource
     client: ?PersonResource
-    phones: PhoneListResource[]
+    phones: PhoneResource[]
     created_at: string
     comments_count: number
     passes: PassResource[]
@@ -458,7 +460,7 @@ declare global {
   }
 
   interface TeacherResource extends PersonWithPhotoResource {
-    phones: PhoneListResource[]
+    phones: PhoneResource[]
     status: TeacherStatus
     subjects: Subject[]
     is_published: boolean
@@ -517,7 +519,7 @@ declare global {
   interface UserResource extends PersonWithPhotoResource {
     is_active: boolean
     is_call_notifications: boolean
-    phones: PhoneListResource[]
+    phones: PhoneResource[]
     created_at?: string
   }
 

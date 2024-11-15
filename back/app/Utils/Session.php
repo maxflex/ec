@@ -2,12 +2,19 @@
 
 namespace App\Utils;
 
-use Illuminate\Support\Facades\{Redis, Hash};
-use App\Models\{Phone, Teacher, Client, ClientParent, Log, User};
+use App\Models\{Client, ClientParent, Phone, Teacher, User};
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Facades\{Hash, Redis};
 
 class Session
 {
-    public static function createToken(Phone $phone): string
+    /**
+     * Create new session for Phone (log in)
+     *
+     * @param Phone $phone
+     * @return string Session token
+     */
+    public static function logIn(Phone $phone): string
     {
         $hash = Hash::make($phone->number);
         // App\Models\User => admin
@@ -43,7 +50,7 @@ class Session
         Redis::del(self::cacheKey($token));
     }
 
-    public static function get(?string $token): ?Phone
+    public static function get(?string $token): ?Authenticatable
     {
         if ($token === null) {
             return null;
@@ -57,7 +64,7 @@ class Session
             return null;
         }
         Redis::expire(self::cacheKey($token), self::getDuration($phone));
-        return $phone;
+        return $phone->entity;
     }
 
     public static function cacheKey(string $token)

@@ -18,7 +18,7 @@ class HeadTeacherReportController extends \App\Http\Controllers\Admin\HeadTeache
 
     public function store(Request $request)
     {
-        $headTeacherReport = auth()->user()->entity->headTeacherReports()->create(
+        $headTeacherReport = auth()->user()->headTeacherReports()->create(
             $request->all()
         );
         return new HeadTeacherReportResource($headTeacherReport);

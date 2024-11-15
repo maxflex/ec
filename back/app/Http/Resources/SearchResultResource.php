@@ -18,7 +18,7 @@ class SearchResultResource extends JsonResource
 
         $extra = [
             'entity_type' => $class,
-            'phones' => PhoneListResource::collection($model->phones)
+            'phones' => PhoneResource::collection($model->phones)
         ];
 
         switch ($class) {

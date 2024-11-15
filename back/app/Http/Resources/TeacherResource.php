@@ -20,7 +20,7 @@ class TeacherResource extends JsonResource
             'photo_url', 'is_head_teacher', '*'
         ], [
             'entity_type' => Teacher::class,
-            'phones' => PhoneListResource::collection($this->phones),
+            'phones' => PhoneResource::collection($this->phones),
             'user' => new PersonResource($this->user),
         ]);
     }

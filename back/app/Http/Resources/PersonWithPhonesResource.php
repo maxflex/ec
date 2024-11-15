@@ -17,7 +17,7 @@ class PersonWithPhonesResource extends JsonResource
         return extract_fields($this, [
             'first_name', 'last_name', 'middle_name'
         ], [
-            'phones' => PhoneListResource::collection($this->phones),
+            'phones' => PhoneResource::collection($this->phones),
         ]);
     }
 }

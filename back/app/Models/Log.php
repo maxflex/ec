@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Enums\LogType;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Request;
 
 class Log extends Model
 {
@@ -63,8 +63,8 @@ class Log extends Model
 
         static::creating(function ($model) {
             if (auth()->user()) {
-                $model->entity_type = auth()->user()->entity_type;
-                $model->entity_id = auth()->user()->entity_id;
+                $model->entity_type = get_class(auth()->user());
+                $model->entity_id = auth()->id();
             }
             $model->ip = Request::ip();
         });
