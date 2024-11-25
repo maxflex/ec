@@ -533,7 +533,7 @@ defineExpose({ edit, newContract, newVersion })
     </div>
   </v-dialog>
   <ProgramDialog ref="programDialog" @saved="onProgramsSaved" />
-  <PrintDialog ref="printDialog" />
+  <LazyPrintDialog ref="printDialog" />
 </template>
 
 <style lang="scss">

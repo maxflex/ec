@@ -205,5 +205,5 @@ defineExpose({ create, edit })
       </div>
     </div>
   </v-dialog>
-  <PrintDialog ref="printDialog" />
+  <LazyPrintDialog ref="printDialog" />
 </template>

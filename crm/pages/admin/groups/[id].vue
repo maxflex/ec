@@ -127,5 +127,5 @@ nextTick(loadData)
     @updated="g => (group = g)"
     @deleted="onGroupDeleted"
   />
-  <PrintDialog ref="printDialog" />
+  <LazyPrintDialog ref="printDialog" />
 </template>
