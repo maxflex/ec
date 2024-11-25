@@ -26,11 +26,6 @@ class User extends Authenticatable implements CanLogin
 
     public function scopeCanLogin($query)
     {
-        $query->active();
-    }
-
-    public function scopeActive($query): void
-    {
         $query->where('is_active', true);
     }
 

@@ -19,7 +19,7 @@ class InstructionListResource extends JsonResource
             'title', 'versions_count', 'signs_count', 'created_at',
             'is_published'
         ], [
-            'signs_needed' => Teacher::active()->count(),
+            'signs_needed' => Teacher::canLogin()->count(),
             'signed_at' => $this->whenLoaded(
                 'signs',
                 fn () => $this->signs->first()?->signed_at,

@@ -149,11 +149,6 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
         return Teeth::get($query, $year);
     }
 
-    public function scopeActive($query): void
-    {
-        $query->whereHas('contracts');
-    }
-
     public function scopeCanLogin($query)
     {
         $query->whereHas('contracts', fn($q) => $q->whereRaw("
@@ -175,7 +170,7 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
     public function toSearchableArray()
     {
         $class = class_basename(self::class);
-        $maxContractYear = intval($this->contracts()->max('year') ?? 1000);
+        $weight = intval($this->contracts()->max('year') ?? 1000);
 
         return [
             'id' => implode('-', [$class, $this->id]),
@@ -183,8 +178,9 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
             'last_name' => $this->last_name ?? '',
             'middle_name' => $this->middle_name ?? '',
             'phones' => $this->phones()->pluck('number'),
-            'is_active' => $maxContractYear === current_academic_year(),
-            'weight' => $maxContractYear,
+            'contract_ids' => $this->contracts()->pluck('id')->map(fn($e) => (string)$e)->all(),
+            'is_active' => Client::canLogin()->whereId($this->id)->exists(),
+            'weight' => $weight,
         ];
     }
 

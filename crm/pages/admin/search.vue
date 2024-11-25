@@ -44,6 +44,7 @@ onMounted(() => input.value.focus())
       placeholder="Поиск"
       prepend-inner-icon="$search"
       style="width: 40vw !important"
+      class="search__input"
       rounded
     >
       <template #append-inner>
@@ -69,6 +70,11 @@ onMounted(() => input.value.focus())
     .v-icon {
       font-size: 120px !important;
       opacity: 0.2 !important;
+    }
+  }
+  &__input {
+    .v-field__outline {
+      border-radius: 50px !important;
     }
   }
 }

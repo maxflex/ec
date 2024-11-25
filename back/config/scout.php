@@ -23,13 +23,17 @@ $schema = [
                 'infix' => true,
             ],
             [
+                'name' => 'contract_ids',
+                'type' => 'string[]',
+            ],
+            [
                 'name' => 'is_active',
                 'type' => 'bool'
             ],
             [
                 'name' => 'weight',
                 'type' => 'int32'
-            ]
+            ],
         ],
     ],
 ];

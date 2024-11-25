@@ -12,11 +12,13 @@ class SearchResultResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        [$className, $id] = explode('-', $this->resource['document']['id']);
+        $document = $this->resource['document'];
+        [$className, $id] = explode('-', $document['id']);
         $class = "App\\Models\\$className";
         $model = $class::find($id);
 
         $extra = [
+            'is_active' => $document['is_active'],
             'entity_type' => $class,
             'phones' => PhoneResource::collection($model->phones)
         ];
@@ -30,8 +32,6 @@ class SearchResultResource extends JsonResource
                 $contracts = $contracts ?? $model->contracts;
                 $extra = [
                     ...$extra,
-                    // Дубль из Phone::auth
-                    'is_active' => $contracts->where('year', current_academic_year())->count() > 0,
                     'contract_versions' => ContractVersionResource::collection(
                         $contracts->sortByDesc('id')->values()->map(fn($c) => $c->getActiveVersion())
                     ),
@@ -47,7 +47,7 @@ class SearchResultResource extends JsonResource
         }
 
         return extract_fields($model, [
-            'first_name', 'last_name', 'middle_name', 'photo_url'
+            'first_name', 'last_name', 'middle_name', 'photo_url',
         ], $extra);
     }
 }

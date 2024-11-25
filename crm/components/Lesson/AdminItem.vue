@@ -53,6 +53,7 @@ const isConductDisabled = item.status !== 'conducted'
       </v-menu>
     </div>
     <div style="width: 80px; position: relative;" />
+
     <div style="width: 120px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
@@ -93,6 +94,9 @@ const isConductDisabled = item.status !== 'conducted'
     </div>
     <div style="width: 50px; flex: initial">
       <LessonStatusCircles :item="item" />
+    </div>
+    <div v-if="!Object.keys(checkboxes).length" class="text-gray opacity-5 text-right pr-1">
+      {{ item.seq }}
     </div>
   </div>
 </template>

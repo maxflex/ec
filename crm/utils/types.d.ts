@@ -988,19 +988,21 @@ declare global {
     id: number
     code: ErrorCode
     entity_id: number
-    entity_type: keyof typeof EntityTypeLabel
+    entity_type: EntityType
     number?: string
     person?: PersonResource
   }
 
   interface SearchResultResource extends PersonWithPhotoResource, HasPhones {
-    entity_type: keyof typeof EntityTypeLabel
+    entity_type: EntityType
+    is_active: boolean
+    // у ученика
     contract_versions?: ContractVersionResource[]
+    // ссылка на клиента у родителя
     client_id?: number
+    // у препода
     status?: TeacherStatus
     subjects?: Subject[]
-    // активный клиент?
-    is_active?: boolean
   }
 
   interface PrintOption {

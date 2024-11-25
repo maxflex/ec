@@ -339,7 +339,7 @@ nextTick(loadData)
         Государственный праздник
       </div>
       <div v-if="examDates[d]" class="schedule-event schedule-event--exam">
-        экзамен
+        Экзамен
       </div>
     </div>
   </div>

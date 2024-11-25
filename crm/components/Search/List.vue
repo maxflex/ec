@@ -43,11 +43,13 @@ function highlight(text: string) {
       <div class="search-result__info">
         <div>
           <div v-html="highlight(formatFullName(item))" />
-          <div v-if="item.status" :class="{ 'text-success': item.status === 'active' }">
-            {{ TeacherStatusLabel[item.status] }}
-          </div>
-          <div v-if="item.is_active" :class="{ 'text-success': item.is_active }">
-            активный клиент
+          <div :class="{ 'text-success': item.is_active }">
+            <template v-if="item.entity_type === EntityTypeValue.teacher">
+              {{ TeacherStatusLabel[item.status!] }}
+            </template>
+            <template v-else-if="item.is_active">
+              активный клиент
+            </template>
           </div>
           <div>
             {{ EntityTypeLabel[item.entity_type] }}

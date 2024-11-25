@@ -127,14 +127,9 @@ class Teacher extends Authenticatable implements HasTeeth, CanLogin
         return $balanceItems;
     }
 
-    public function scopeActive($query): void
-    {
-        $query->where('status', TeacherStatus::active);
-    }
-
     public function scopeCanLogin($query)
     {
-        $query->active();
+        $query->where('status', TeacherStatus::active);
     }
 
     public function getTeeth(int $year): object
@@ -158,7 +153,8 @@ class Teacher extends Authenticatable implements HasTeeth, CanLogin
             'last_name' => $this->last_name ?? '',
             'middle_name' => $this->middle_name ?? '',
             'phones' => $this->phones()->pluck('number'),
-            'is_active' => $this->status === TeacherStatus::active,
+            'contract_ids' => [],
+            'is_active' => Teacher::canLogin()->whereId($this->id)->exists(),
             'weight' => 499 + intval($this->lessons()->count() / 3),
         ];
     }

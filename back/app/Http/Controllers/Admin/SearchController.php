@@ -17,9 +17,9 @@ class SearchController extends Controller
 
         $result = Client::search($request->q)
             ->options([
-                'include_fields' => 'id',
-                'query_by' => 'last_name,first_name,middle_name,phones',
-                'infix' => 'off,off,off,fallback',
+                'include_fields' => 'id,is_active',
+                'query_by' => 'last_name,first_name,middle_name,contract_ids,phones',
+                'infix' => 'off,off,off,off,fallback',
                 'sort_by' => 'is_active:desc,weight:desc,_text_match:desc',
                 'enable_highlight_v1' => false,
                 'per_page' => 30,
