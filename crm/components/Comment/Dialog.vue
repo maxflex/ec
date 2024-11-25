@@ -9,10 +9,13 @@ const emit = defineEmits<{ (e: 'created'): void }>()
 const { dialog, width, transition } = useDialog('default')
 const comments = ref<CommentResource[]>([])
 const input = ref()
+const editInput = ref()
 const wrapper = ref<HTMLDivElement | null>(null)
 const text = ref('')
 const noScroll = ref(false)
-const loaded = ref(false)
+const isLoaded = ref(false)
+const editId = ref<number>()
+const { user } = useAuthStore()
 
 function scrollBottom() {
   nextTick(() => {
@@ -24,6 +27,7 @@ function scrollBottom() {
 
 function open() {
   dialog.value = true
+  editId.value = undefined
   loadData()
 }
 
@@ -65,9 +69,40 @@ async function loadData() {
     scrollBottom()
     setTimeout(() => {
       noScroll.value = false
-      loaded.value = true
+      isLoaded.value = true
     }, 200)
   }
+}
+
+function destroy(c: CommentResource) {
+  const index = comments.value.findIndex(e => e.id === c.id)
+  comments.value.splice(index, 1)
+  useHttp<CommentResource>(`comments/${c.id}`, {
+    method: 'delete',
+  })
+}
+
+function startEdit(c: CommentResource) {
+  editId.value = c.id
+  text.value = c.text
+  nextTick(() => editInput.value?.focus())
+}
+
+async function saveEdit() {
+  const index = comments.value.findIndex(e => e.id === editId.value)
+  const { data } = await useHttp<CommentResource>(`comments/${editId.value}`, {
+    method: 'put',
+    body: {
+      text: text.value,
+    },
+  })
+  comments.value.splice(index, 1, data.value!)
+  quitEdit()
+}
+
+function quitEdit() {
+  editId.value = undefined
+  text.value = ''
 }
 
 defineExpose({ open })
@@ -84,11 +119,11 @@ defineExpose({ open })
       class="dialog-wrapper comments-wrapper"
       :class="{
         'comments-wrapper--no-scroll': noScroll,
-        'comments-wrapper--loaded': loaded,
+        'comments-wrapper--loaded': isLoaded,
       }"
     >
       <v-fade-transition>
-        <UiLoader v-if="!loaded" />
+        <UiLoader v-if="!isLoaded" />
       </v-fade-transition>
       <transition-group
         name="new-comment"
@@ -112,13 +147,43 @@ defineExpose({ open })
               <span v-if="c.created_at">
                 {{ formatDateTime(c.created_at) }}
               </span>
+              <v-menu v-if="c.user.id === user?.id">
+                <template #activator="{ props }">
+                  <v-icon icon="$more" v-bind="props" />
+                </template>
+                <v-list density="comfortable">
+                  <v-list-item @click="startEdit(c)">
+                    редактировать
+                  </v-list-item>
+                  <v-list-item @click="destroy(c)">
+                    удалить
+                  </v-list-item>
+                </v-list>
+              </v-menu>
             </div>
             {{ c.text }}
           </div>
         </div>
       </transition-group>
       <div class="comments__input">
+        <template v-if="editId">
+          <span class="text-gray">Редактировать комментарий</span>
+          <v-textarea
+            ref="editInput"
+            v-model="text"
+            rows="1"
+            placeholder="Введите комментарий..."
+            auto-grow
+            hide-details
+            maxlength="1000"
+            max-height="100"
+            @keydown.enter.exact.prevent
+            @keyup.enter.exact="saveEdit()"
+            @keydown.esc.prevent.stop="quitEdit()"
+          />
+        </template>
         <v-textarea
+          v-else
           ref="input"
           v-model="text"
           rows="1"
@@ -194,6 +259,13 @@ defineExpose({ open })
     .v-field__outline {
       display: none !important;
     }
+
+    & > span:first-child {
+      position: absolute;
+      font-size: 14px;
+      left: 24px;
+      top: 6px;
+    }
   }
   &-wrapper {
     .loaderr {
@@ -248,8 +320,12 @@ defineExpose({ open })
         font-weight: normal;
       }
     }
+    .v-icon--clickable {
+      opacity: 0;
+      transition: opacity ease-in-out 0.2s;
+    }
     &:hover {
-      .comment-item__controls {
+      .v-icon--clickable {
         opacity: 1;
       }
     }

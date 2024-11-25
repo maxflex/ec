@@ -27,4 +27,20 @@ class CommentController extends Controller
         );
         return new CommentResource($comment);
     }
+
+    public function update(Comment $comment, Request $request)
+    {
+        abort_if($comment->user_id !== auth()->id(), 403);
+        $request->validate([
+            'text' => ['required', 'string']
+        ]);
+        $comment->update($request->all());
+        return new CommentResource($comment);
+    }
+
+    public function destroy(Comment $comment)
+    {
+        abort_if($comment->user_id !== auth()->id(), 403);
+        $comment->delete();
+    }
 }
