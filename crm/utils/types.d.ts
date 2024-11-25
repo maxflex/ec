@@ -221,6 +221,7 @@ declare global {
 
   interface ClientResource extends PersonWithPhotoResource, HasPhones {
     branches: Branch[]
+    directions: Direction[]
     head_teacher_id: ?number
     head_teacher?: PersonResource
     parent: ParentResource

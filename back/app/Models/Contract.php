@@ -56,7 +56,7 @@ class Contract extends Model
     }
 
     /**
-     * TODO: refactor
+     * TODO: remove and use only getActiveVersionAttribute
      */
     public function getActiveVersion(): ContractVersion
     {

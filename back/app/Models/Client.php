@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Contracts\CanLogin;
 use App\Contracts\HasTeeth;
+use App\Enums\Direction;
 use App\Traits\{HasName, HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable};
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\{Casts\Attribute,
@@ -194,5 +195,26 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
             'number' => null,
             'birthdate' => null,
         ] : json_decode($value);
+    }
+
+    /**
+     * Направления клиента
+     * Для этого из всех договоров берем договоры последнего года (их может быть несколько).
+     * Берем у договора(ов) по последней версии и выдаем направления по этой версии
+     *
+     * @return Direction[]
+     */
+    public function getDirectionsAttribute(): array
+    {
+        $contracts = $this->contracts;
+        $maxYear = $contracts->max('year');
+
+        return $contracts
+            ->where('year', $maxYear)
+            ->map(fn($c) => $c->active_version)
+            ->map(fn($activeVersion) => $activeVersion->directions)
+            ->flatten()
+            ->unique()
+            ->all();
     }
 }

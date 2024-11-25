@@ -58,6 +58,20 @@ nextTick(loadData)
           </div>
         </div>
         <div>
+          <div>направления</div>
+          <div>
+            <template v-if="client.directions.length > 2">
+              {{ plural(client.directions.length, ['направление', 'направления', 'направлений']) }}
+            </template>
+            <template v-else-if="client.directions.length === 0">
+              не установлено
+            </template>
+            <template v-else>
+              {{ client.directions.map(e => DirectionLabel[e]).join(', ') }}
+            </template>
+          </div>
+        </div>
+        <div>
           <div>филиалы</div>
           <UiBranches :branches="client.branches" />
         </div>
@@ -106,9 +120,6 @@ nextTick(loadData)
     <ClientGroupsTab v-else-if="selectedTab === 'groups'" :client-id="client.id" />
     <ClientTestTab v-else-if="selectedTab === 'tests'" :client-id="client.id" />
     <Schedule v-else :client-id="client.id" show-teeth />
-    <ClientDialog
-      ref="clientDialog"
-      @updated="onClientUpdated"
-    />
+    <ClientDialog ref="clientDialog" @updated="onClientUpdated" />
   </template>
 </template>

@@ -13,6 +13,7 @@ const modelDefaults: ClientResource = {
   middle_name: null,
   head_teacher_id: null,
   branches: [],
+  directions: [],
   phones: [],
   photo_url: null,
   is_remote: false,
