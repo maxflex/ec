@@ -55,17 +55,9 @@ class Contract extends Model
         return $this->versions()->active()->first();
     }
 
-    /**
-     * TODO: remove and use only getActiveVersionAttribute
-     */
-    public function getActiveVersion(): ContractVersion
-    {
-        return $this->versions()->active()->first();
-    }
-
     protected function getBalanceItems(): array
     {
-        $programIds = $this->getActiveVersion()->programs()->pluck('id');
+        $programIds = $this->active_version->programs()->pluck('id');
 
         $clientLessons = ClientLesson::query()
             ->whereIn('contract_version_program_id', $programIds)

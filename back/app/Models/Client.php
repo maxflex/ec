@@ -100,7 +100,7 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
 
         $contracts = $this->contracts()->where('year', $year)->get();
         foreach ($contracts as $contract) {
-            $programs = $contract->getActiveVersion()
+            $programs = $contract->active_version
                 ->programs()
                 ->whereHas('clientGroup')
                 ->get();

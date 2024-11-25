@@ -12,7 +12,7 @@ class ContractBalanceResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $activeVersion = $this->getActiveVersion();
+        $activeVersion = $this->active_version;
         $contractPayments = $this->payments->reduce(fn($carry, $p) => $carry + $p->realSum, 0);
         $clientLessons = intval(
             ClientLesson::query()

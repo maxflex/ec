@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { GroupDialog } from '#build/components'
+import type { GroupDialog, PrintDialog } from '#build/components'
 
 const tabs = {
   schedule: 'расписание',
@@ -13,6 +13,7 @@ const selectedTab = ref<keyof typeof tabs>('schedule')
 const route = useRoute()
 const group = ref<GroupResource>()
 const groupDialog = ref<InstanceType<typeof GroupDialog>>()
+const printDialog = ref<InstanceType<typeof PrintDialog>>()
 
 const printOptions: PrintOption[] = [
   { id: 13, label: 'Договор на преподавателя (ООО)' },
@@ -85,7 +86,7 @@ nextTick(loadData)
             <v-list>
               <v-list-item
                 v-for="(p, i) in printOptions" :key="p.label"
-                @click="print(p, { group_id: group.id, text_field: i === 0 ? 'text_ooo' : 'text_ip' })"
+                @click="printDialog?.open(p, { group_id: group.id, text_field: i === 0 ? 'text_ooo' : 'text_ip' })"
               >
                 {{ p.label }}
               </v-list-item>
@@ -126,4 +127,5 @@ nextTick(loadData)
     @updated="g => (group = g)"
     @deleted="onGroupDeleted"
   />
+  <PrintDialog ref="printDialog" />
 </template>

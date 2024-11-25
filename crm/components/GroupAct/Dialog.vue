@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { PrintDialog } from '#components'
 import { clone } from 'rambda'
 
 const emit = defineEmits<{
@@ -13,6 +14,7 @@ const modelDefaults: GroupActResource = {
   date_to: '',
 }
 
+const printDialog = ref<InstanceType<typeof PrintDialog>>()
 const printOptions: PrintOption[] = [
   { id: 12, label: 'Печать ООО' },
   { id: 12, label: 'Печать ИП' },
@@ -107,7 +109,10 @@ defineExpose({ edit, create })
               <v-list>
                 <v-list-item
                   v-for="p in printOptions" :key="p.label"
-                  @click="print(p, { act_id: item.id, text_field: p.label === 'Печать ООО' ? 'text_ooo' : 'text_ip' })"
+                  @click="printDialog?.open(p, {
+                    act_id: item.id,
+                    text_field: p.label === 'Печать ООО' ? 'text_ooo' : 'text_ip',
+                  })"
                 >
                   {{ p.label }}
                 </v-list-item>
@@ -141,4 +146,5 @@ defineExpose({ edit, create })
       </div>
     </div>
   </v-dialog>
+  <PrintDialog ref="printDialog" />
 </template>

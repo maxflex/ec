@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ProgramDialog } from '#build/components'
+import type { PrintDialog, ProgramDialog } from '#build/components'
 import { clone } from 'rambda'
 
 const emit = defineEmits<{
@@ -31,6 +31,7 @@ const deleting = ref(false)
 const loading = ref(false)
 const mode = ref<ContractEditMode>('edit')
 
+const printDialog = ref<InstanceType<typeof PrintDialog>>()
 const printOptions: PrintOption[] = [
   { id: 1, label: 'договор' },
   { id: 2, label: 'допсоглашение' },
@@ -315,7 +316,7 @@ defineExpose({ edit, newContract, newVersion })
               <v-list>
                 <v-list-item
                   v-for="p in printOptions" :key="p.id"
-                  @click="print(p, { contract_version_id: item.id })"
+                  @click="printDialog?.open(p, { contract_version_id: item.id })"
                 >
                   {{ p.label }}
                 </v-list-item>
@@ -531,10 +532,8 @@ defineExpose({ edit, newContract, newVersion })
       </div>
     </div>
   </v-dialog>
-  <ProgramDialog
-    ref="programDialog"
-    @saved="onProgramsSaved"
-  />
+  <ProgramDialog ref="programDialog" @saved="onProgramsSaved" />
+  <PrintDialog ref="printDialog" />
 </template>
 
 <style lang="scss">

@@ -12,7 +12,7 @@ class ClientWithContractsResource extends PersonResource
     {
         return array_merge(parent::toArray($request), [
             'contract_versions' => ContractVersionResource::collection(
-                $this->contracts->sortByDesc('id')->values()->map(fn($c) => $c->getActiveVersion())
+                $this->contracts->sortByDesc('id')->values()->map(fn($c) => $c->active_version)
             ),
         ]);
     }

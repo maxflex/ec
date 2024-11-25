@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { PrintDialog } from '#components'
 import { clone } from 'rambda'
 import { ContractPaymentMethodLabel } from '~/utils/labels'
 
@@ -12,6 +13,7 @@ const saving = ref(false)
 const loading = ref(false)
 const itemId = ref<number>()
 
+const printDialog = ref<InstanceType<typeof PrintDialog>>()
 const printOptions: PrintOption[] = [
   { id: 10, label: 'счёт на оплату' },
   { id: 11, label: 'счёт на оплату (с печатью)' },
@@ -126,7 +128,7 @@ defineExpose({ create, edit })
               <v-list>
                 <v-list-item
                   v-for="p in printOptions" :key="p.id"
-                  @click="print(p, { contract_payment_id: item.id })"
+                  @click="printDialog?.open(p, { contract_payment_id: item.id })"
                 >
                   {{ p.label }}
                 </v-list-item>
@@ -189,4 +191,5 @@ defineExpose({ create, edit })
       </div>
     </div>
   </v-dialog>
+  <PrintDialog ref="printDialog" />
 </template>

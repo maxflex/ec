@@ -33,7 +33,7 @@ class SearchResultResource extends JsonResource
                 $extra = [
                     ...$extra,
                     'contract_versions' => ContractVersionResource::collection(
-                        $contracts->sortByDesc('id')->values()->map(fn($c) => $c->getActiveVersion())
+                        $contracts->sortByDesc('id')->values()->map(fn($c) => $c->active_version)
                     ),
                 ];
                 break;
