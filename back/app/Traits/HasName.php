@@ -10,7 +10,7 @@ trait HasName
      */
     public function formatName(string $format = 'last-first'): string
     {
-        return match ($format) {
+        return trim(match ($format) {
             'full' => join(' ', [
                 $this->last_name,
                 $this->first_name,
@@ -29,6 +29,6 @@ trait HasName
                 $this->last_name,
                 $this->first_name,
             ]),
-        };
+        });
     }
 }

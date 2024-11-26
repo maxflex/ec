@@ -71,6 +71,21 @@ nextTick(loadData)
 </template>
 
 <style lang="scss">
+.CodeMirror {
+  &-code {
+    pre {
+      font-family: 'ibm-plex', serif !important;
+      font-size: 14px !important;
+    }
+  }
+  &-gutters {
+    display: none !important;
+  }
+  &-sizer {
+    margin: 0 !important;
+  }
+}
+
 .macro {
   &__title {
     display: flex;

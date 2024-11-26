@@ -9,6 +9,14 @@ class PassLog extends Model
 {
     public $timestamps = false;
 
+    protected $fillable = [
+        'entity_id',
+        'entity_type',
+        'used_at',
+        'comment',
+        'complaint'
+    ];
+
     public function entity(): MorphTo
     {
         return $this->morphTo();
