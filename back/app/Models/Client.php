@@ -55,6 +55,11 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
         return $this->belongsTo(User::class);
     }
 
+    public function grades(): HasMany
+    {
+        return $this->hasMany(Grade::class);
+    }
+
     public function branches(): Attribute
     {
         return Attribute::make(
@@ -191,6 +196,11 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
             'number' => null,
             'birthdate' => null,
         ] : json_decode($value);
+    }
+
+    public function getHasGradesAttribute(): bool
+    {
+        return $this->grades()->exists();
     }
 
     /**
