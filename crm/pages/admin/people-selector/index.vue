@@ -5,7 +5,7 @@ const telegramListDialog = shallowRef<InstanceType<typeof TelegramListDialog>>()
 const eventAddToDialog = shallowRef<InstanceType<typeof EventAddToDialog>>()
 const filters = ref<PeopleSelectorFilters>({
   mode: 'clients',
-  year: 2023,
+  year: currentAcademicYear(),
   program: [],
   statuses: [],
   subjects: [],
@@ -86,25 +86,23 @@ nextTick(() => {
       </tbody>
     </v-table>
   </UiIndexPage>
-  <v-slide-y-reverse-transition>
-    <div v-if="selectedTotal" class="bottom-bar">
-      <div>
-        <v-btn icon="$close" :size="30" variant="text" @click="clearSelection()" />
-        выбрано: {{ selectedTotal }}
-      </div>
-      <div>
-        <v-btn variant="text" @click="eventAddToDialog?.open(selected, filters.year)">
-          добавить к событию
-        </v-btn>
-        <v-btn color="secondary" :to="{ name: 'people-selector-send' }">
-          отправить
-          <template #append>
-            <v-icon icon="$next" />
-          </template>
-        </v-btn>
-      </div>
+  <UiBottomBar :model-value="!!selectedTotal">
+    <div>
+      <v-btn icon="$close" :size="30" variant="text" @click="clearSelection()" />
+      выбрано: {{ selectedTotal }}
     </div>
-  </v-slide-y-reverse-transition>
+    <div>
+      <v-btn variant="text" @click="eventAddToDialog?.open(selected, filters.year)">
+        добавить к событию
+      </v-btn>
+      <v-btn color="secondary" :to="{ name: 'people-selector-send' }">
+        отправить
+        <template #append>
+          <v-icon icon="$next" />
+        </template>
+      </v-btn>
+    </div>
+  </UiBottomBar>
   <TelegramListDialog ref="telegramListDialog" />
   <EventAddToDialog ref="eventAddToDialog" />
 </template>

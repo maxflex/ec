@@ -95,6 +95,8 @@ declare global {
     noData: boolean
   }
 
+  type GlobalMessageColor = 'error' | 'success' | undefined
+
   type NameFormat = 'last-first' | 'full' | 'initials'
 
   interface HasPhoto {

@@ -329,35 +329,6 @@ code {
   }
 }
 
-.bottom-bar {
-  position: fixed !important;
-  bottom: 0;
-  left: 255px;
-  padding: 0 20px;
-  height: 52px;
-  z-index: 3;
-  background: rgb(var(--v-theme-bg));
-  width: calc(100vw - 255px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-top: thin solid rgb(var(--v-theme-border));
-  // border-top: 2px solid rgb(var(--v-theme-gray));
-  & > div {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    &:first-child {
-      .v-btn {
-        margin-left: -6px;
-        margin-top: 1px;
-        opacity: 0.6;
-      }
-    }
-  }
-}
-
 .people-selector-table {
   user-select: none;
 

@@ -6,6 +6,8 @@ const currentPageClass = computed(() => [
   `page-${(route.name as string) || 'default'}`,
   `entity-${user ? getEntityString(user.entity_type) : 'default'}`,
 ])
+
+const { globalMessage } = useGlobalMessage()
 </script>
 
 <template>
@@ -20,6 +22,9 @@ const currentPageClass = computed(() => [
       <v-main :class="currentPageClass">
         <NuxtPage />
       </v-main>
+      <UiBottomBar v-model="globalMessage.value" :color="globalMessage.color">
+        {{ globalMessage.text }}
+      </UiBottomBar>
     </v-app>
   </ClientOnly>
 </template>
