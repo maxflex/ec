@@ -41,7 +41,7 @@ class ClientTestController extends Controller
                 ...$request->all(),
                 'program' => $test->program,
                 'name' => $test->name,
-                'file' => $test->getRawOriginal('file'),
+                'file' => $test->file,
                 'minutes' => $test->minutes,
                 'questions' => $test->questions,
             ]);

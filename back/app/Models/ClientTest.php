@@ -16,7 +16,7 @@ class ClientTest extends Model
     ];
 
     protected $casts = [
-        'file' => 'json',
+        'file' => 'array',
         'program' => Program::class,
         'questions' => JsonArrayCast::class,
         'answers' => JsonArrayCast::class,
