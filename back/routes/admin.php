@@ -31,6 +31,7 @@ use App\Http\Controllers\Admin\{BalanceController,
     PrintController,
     ReportController,
     RequestsController,
+    ScholarshipScoreController,
     SearchController,
     StatsController,
     SwampController,
@@ -106,6 +107,8 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::get('people-selector', PeopleSelectorController::class);
 
     Route::get('free-cabinets', FreeCabinetController::class);
+
+    Route::get('scholarship-scores', ScholarshipScoreController::class);
 
     Route::post('telegram-lists/load-people', [TelegramListController::class, 'loadPeople']);
 

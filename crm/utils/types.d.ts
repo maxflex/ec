@@ -1104,6 +1104,14 @@ declare global {
       files: UploadedFile[]
     }
   }
+
+  interface ScholarshipScoreClient {
+    client: PersonResource
+    avg_score: number
+    scores_count: number
+    year: Year
+    month: Month
+  }
 }
 
 export {}

@@ -28,6 +28,7 @@ import {
   mdiSendCircle,
   mdiStarBox,
   mdiStarBoxOutline,
+  mdiTrophy,
 } from '@mdi/js'
 import { missedCount, openCallApp } from '~/components/CallApp'
 
@@ -148,6 +149,11 @@ const menu: Menu = [
     icon: mdiSendCircle,
     title: 'Сообщения',
     to: '/telegram-messages',
+  },
+  {
+    icon: mdiTrophy,
+    title: 'Стипендия',
+    to: '/scholarship-scores',
   },
   {
     icon: mdiSeatPassenger,

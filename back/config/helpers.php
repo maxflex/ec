@@ -132,9 +132,9 @@ function num_to_text(int $number)
     return (new NumberFormatter("ru", NumberFormatter::SPELLOUT))->format($number);
 }
 
-function paginate($data)
+function paginate($data, $extra = null)
 {
-    return [
+    $result = [
         'data' => $data,
         'meta' => [
             'current_page' => 1,
@@ -142,4 +142,10 @@ function paginate($data)
             'total' => count($data)
         ]
     ];
+
+    if ($extra) {
+        $result['extra'] = $extra;
+    }
+
+    return $result;
 }
