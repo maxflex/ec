@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Client;
 use App\Models\ClientParent;
+use App\Models\Request;
 use App\Models\Teacher;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -30,6 +31,7 @@ class ScoutReimportAll extends Command
     public function handle()
     {
         $models = [
+            Request::class,
             Teacher::class,
             Client::class,
             ClientParent::class,

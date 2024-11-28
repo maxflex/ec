@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\{Client, ClientParent, Teacher};
+use App\Models\{Client, ClientParent, Request, Teacher};
 
 $schema = [
     'collection-schema' => [
@@ -214,6 +214,7 @@ return [
         'model-settings' => [
             Teacher::class => $schema,
             Client::class => $schema,
+            Request::class => $schema,
             ClientParent::class => $schema,
         ],
     ],

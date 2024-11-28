@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Laravel\Scout\Searchable;
 
 class Request extends Model
 {
-    use HasPhones, HasComments, RelationSyncable;
+    use HasPhones, HasComments, RelationSyncable, Searchable;
 
     protected $fillable = [
         'responsible_user_id', 'direction', 'status', 'client_id',
@@ -98,6 +99,28 @@ class Request extends Model
                 ->when($clientIds->count(), fn($q) => $q->orWhereIn('client_id', $clientIds))
             )
             ->get();
+    }
+
+    public function searchableAs()
+    {
+        return 'people';
+    }
+
+    public function toSearchableArray()
+    {
+        $class = class_basename(self::class);
+        $weight = 100;
+
+        return [
+            'id' => implode('-', [$class, $this->id]),
+            'first_name' => '',
+            'last_name' => '',
+            'middle_name' => '',
+            'phones' => $this->phones()->pluck('number'),
+            'contract_ids' => [],
+            'is_active' => false,
+            'weight' => $weight,
+        ];
     }
 
     public static function booted()

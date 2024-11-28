@@ -44,6 +44,12 @@ class SearchResultResource extends JsonResource
                     'status' => $model->status,
                     'subjects' => $model->subjects,
                 ];
+
+            case \App\Models\Request::class:
+                $extra = [
+                    ...$extra,
+                    'request' => new RequestListResource($model),
+                ];
         }
 
         return extract_fields($model, [

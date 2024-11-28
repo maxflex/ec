@@ -10,10 +10,9 @@ function getLink(item: SearchResultResource): string {
   switch (item.entity_type) {
     case EntityTypeValue.teacher:
       return `teachers/${item.id}`
-    case EntityTypeValue.clientParent:
+    default:
       return `clients/${item.client_id}`
   }
-  return `clients/${item.id}`
 }
 
 // Подсветить результаты поиска. Временно
@@ -32,47 +31,50 @@ function highlight(text: string) {
 
 <template>
   <div class="table table--hover search-result">
-    <RouterLink
-      v-for="item in items"
-      :key="`${item.entity_type}${item.id}`"
-      :to="getLink(item)" class="table-item"
-    >
-      <div>
-        <UiAvatar :item="item" :size="80" />
-      </div>
-      <div class="search-result__info">
+    <template v-for="item in items" :key="`${item.entity_type}${item.id}`">
+      <RequestItem v-if="item.request" :item="item.request" />
+      <RouterLink
+        v-else
+        :to="getLink(item)"
+        class="table-item"
+      >
         <div>
-          <div v-html="highlight(formatFullName(item))" />
-          <div :class="{ 'text-success': item.is_active }">
-            <template v-if="item.entity_type === EntityTypeValue.teacher">
-              {{ TeacherStatusLabel[item.status!] }}
-            </template>
-            <template v-else-if="item.is_active">
-              активный клиент
-            </template>
-          </div>
+          <UiAvatar :item="item" :size="80" />
+        </div>
+        <div class="search-result__info">
           <div>
-            {{ EntityTypeLabel[item.entity_type] }}
+            <div v-html="highlight(formatFullName(item))" />
+            <div :class="{ 'text-success': item.is_active }">
+              <template v-if="item.entity_type === EntityTypeValue.teacher">
+                {{ TeacherStatusLabel[item.status!] }}
+              </template>
+              <template v-else-if="item.is_active">
+                активный клиент
+              </template>
+            </div>
+            <div>
+              {{ EntityTypeLabel[item.entity_type] }}
+            </div>
           </div>
-        </div>
-        <div v-if="item.contract_versions" class="search-result__contract-versions">
-          <div v-if="item.contract_versions.length === 0" class="text-gray">
-            нет договоров
+          <div v-if="item.contract_versions" class="search-result__contract-versions">
+            <div v-if="item.contract_versions.length === 0" class="text-gray">
+              нет договоров
+            </div>
+            <div v-for="cv in item.contract_versions" :key="cv.id">
+              договор №{{ cv.contract.id }} на {{ YearLabel[cv.contract.year] }}
+            </div>
           </div>
-          <div v-for="cv in item.contract_versions" :key="cv.id">
-            договор №{{ cv.contract.id }} на {{ YearLabel[cv.contract.year] }}
-          </div>
-        </div>
 
-        <div v-if="item.subjects">
-          {{ item.subjects.map(s => SubjectLabel[s]).join(', ') }}
+          <div v-if="item.subjects">
+            {{ item.subjects.map(s => SubjectLabel[s]).join(', ') }}
+          </div>
+          <div v-if="item.phones.length === 0" class="text-gray">
+            нет контактов
+          </div>
+          <PhoneList v-else :items="item.phones" :q="q" />
         </div>
-        <div v-if="item.phones.length === 0" class="text-gray">
-          нет контактов
-        </div>
-        <PhoneList v-else :items="item.phones" :q="q" />
-      </div>
-    </RouterLink>
+      </RouterLink>
+    </template>
   </div>
 </template>
 
@@ -111,6 +113,14 @@ function highlight(text: string) {
   }
   .highlight {
     //background: rgba(var(--v-theme-orange), 0.1);
+  }
+  .request-item {
+    .table-actionss {
+      display: none !important;
+    }
+    & > div:last-child {
+      text-align: right !important;
+    }
   }
 }
 </style>

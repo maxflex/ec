@@ -1007,6 +1007,8 @@ declare global {
     // у препода
     status?: TeacherStatus
     subjects?: Subject[]
+    // у заявки
+    request?: RequestListResource
   }
 
   interface PrintOption {

@@ -13,7 +13,7 @@ const router = useRouter()
 </script>
 
 <template>
-  <div :id="`request-${item.id}`">
+  <div :id="`request-${item.id}`" class="request-item">
     <div class="table-actionss">
       <v-btn
         icon="$edit"
