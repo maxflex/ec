@@ -28,7 +28,7 @@ enum Cabinet: string
     case cab314 = 'cab314';
     case cab316 = 'cab316';
 
-        // old
+    // old
     case tur10 = 'tur10';
     case tur35 = 'tur35';
     case tur205 = 'tur205';

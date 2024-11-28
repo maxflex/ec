@@ -24,6 +24,7 @@ import {
   mdiLogout,
   mdiNumeric5BoxMultiple,
   mdiPrinter,
+  mdiSeatPassenger,
   mdiSendCircle,
   mdiStarBox,
   mdiStarBoxOutline,
@@ -147,6 +148,11 @@ const menu: Menu = [
     icon: mdiSendCircle,
     title: 'Сообщения',
     to: '/telegram-messages',
+  },
+  {
+    icon: mdiSeatPassenger,
+    title: 'Свободные кабинеты',
+    to: '/free-cabinets',
   },
   {
     icon: mdiFileSign,

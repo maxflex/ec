@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\{BalanceController,
     ErrorController,
     EventParticipantController,
     ExamScoreController,
+    FreeCabinetController,
     GradeController,
     GroupActController,
     GroupController,
@@ -103,6 +104,8 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::apiResource('print', PrintController::class)->only('show');
 
     Route::get('people-selector', PeopleSelectorController::class);
+
+    Route::get('free-cabinets', FreeCabinetController::class);
 
     Route::post('telegram-lists/load-people', [TelegramListController::class, 'loadPeople']);
 
