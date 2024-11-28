@@ -38,5 +38,6 @@ const { items, indexPageData, extra } = useIndex<ScholarshipScoreClient, Filters
       />
     </template>
     <ScholarshipScoreClientsList v-if="extra.mode === 'clients'" :items="items" />
+    <ScholarshipScoreTeachersList v-else :items="items" />
   </UiIndexPage>
 </template>

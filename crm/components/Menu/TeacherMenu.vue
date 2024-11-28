@@ -9,6 +9,7 @@ import {
   mdiFileSign,
   mdiNumeric5BoxMultiple,
   mdiStarBoxOutline,
+  mdiTrophy,
 } from '@mdi/js'
 
 const { user } = useAuthStore()
@@ -49,6 +50,11 @@ const menu: Menu = [
     icon: mdiCash,
     title: 'Платежи',
     to: '/payments',
+  },
+  {
+    icon: mdiTrophy,
+    title: 'Стипендия',
+    to: '/scholarship-scores',
   },
   {
     icon: mdiFileSign,

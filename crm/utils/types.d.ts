@@ -1112,6 +1112,26 @@ declare global {
     year: Year
     month: Month
   }
+
+  interface ScholarshipScoreTeacher {
+    teacher: PersonResource
+    scores_count: number
+    total: number
+    year: Year
+    month: Month
+  }
+
+  interface ScholarshipScoreResource {
+    id?: number
+    score?: number
+    year: year
+    month: Month
+    client: PersonResource
+    program: Program
+    teacher_id: number
+    client_id: number
+    lessons_count: number
+  }
 }
 
 export {}

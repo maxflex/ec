@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PersonResource;
 use App\Models\Client;
 use App\Models\ScholarshipScore;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -24,12 +25,12 @@ class ScholarshipScoreController extends Controller
                 COUNT(DISTINCT ss.id) as scores_count,
                 AVG(ss.score) as avg_score
             ")
-                ->leftJoin('scholarship_scores as ss', function ($join) {
+                ->leftJoin('scholarship_scores as ss', fn($join) =>
                     $join
                         ->on('ss.year', '=', 's.year')
                         ->on('ss.month', '=', 's.month')
-                        ->on('ss.client_id', '=', 's.client_id');
-                })
+                        ->on('ss.client_id', '=', 's.client_id')
+                )
                 ->groupBy(DB::raw("`year`, `month`, client_id"))
                 ->orderBy('avg_score', 'desc')
                 ->orderBy('scores_count', 'desc')
@@ -47,19 +48,29 @@ class ScholarshipScoreController extends Controller
                 COUNT(DISTINCT ss.id) as scores_count,
                 COUNT(*) as total
             ")
-                ->leftJoin('scholarship_scores as ss', function ($join) {
+                ->leftJoin('scholarship_scores as ss', fn($join) =>
                     $join
                         ->on('ss.year', '=', 's.year')
                         ->on('ss.month', '=', 's.month')
                         ->on('ss.client_id', '=', 's.client_id')
-                        ->on('ss.grade_id', '=', 's.grade_id')
-                        ->on('ss.subject_id', '=', 's.subject_id')
-                        ->on('ss.teacher_id', '=', 's.teacher_id');
-                })
+                        ->on('ss.teacher_id', '=', 's.teacher_id')
+                        ->on('ss.program', '=', 's.program')
+                )
                 ->groupBy(DB::raw("`year`, `month`, teacher_id"))
                 ->orderBy('scores_count', 'desc')
                 ->orderBy('total', 'desc')
-                ->get();
+                ->get()
+                ->transform(function ($item) {
+                    $item->teacher = new PersonResource(Teacher::find($item->teacher_id));
+                    return $item;
+                })
+                ->sortBy([
+                    ['scores_count', 'desc'],
+                    'teacher.last_name',
+                    'teacher.first_name',
+                    'teacher.middle_name',
+                ])
+                ->values();
         }
 
         return paginate($items, [

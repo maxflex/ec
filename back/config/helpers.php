@@ -11,7 +11,7 @@ function extract_fields($object, $fields, $merge = []): ?array
     if ($object === null) {
         return null;
     }
-    $return = ['id' => $object->id];
+    $return = isset($object->id) ? ['id' => $object->id] : [];
     foreach ($fields as $field) {
         // звёздочка должна быть последним элементом массива
         if ($field === '*') {

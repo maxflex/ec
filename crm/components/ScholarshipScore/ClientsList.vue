@@ -8,7 +8,7 @@ const { items } = defineProps<{
   <v-table>
     <tbody>
       <tr v-for="item in items" :key="item.client.id">
-        <td width="300">
+        <td width="350">
           <UiPerson :item="item.client" />
         </td>
         <td width="200">
