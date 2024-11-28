@@ -156,7 +156,7 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
             </tbody>
           </table>
         </div>
-        <div>
+        <div v-if="selectedContract.year === currentAcademicYear()">
           <QRCodeVue3
             :width="qrSize"
             :height="qrSize"

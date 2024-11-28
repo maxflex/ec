@@ -22,7 +22,7 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'branches',
-        'head_teacher_id', 'passport', 'is_remote',
+        'head_teacher_id', 'passport', 'is_remote', 'email'
     ];
 
     protected $casts = [

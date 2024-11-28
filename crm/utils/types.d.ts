@@ -206,6 +206,7 @@ declare global {
 
   interface ParentResource extends HasName, HasPhones {
     id: number
+    email?: string
     passport: {
       series: ?string
       number: ?string
@@ -230,6 +231,7 @@ declare global {
     is_remote: boolean
     user?: PersonResource
     created_at?: string
+    email?: string
     passport: {
       series: ?string
       number: ?string

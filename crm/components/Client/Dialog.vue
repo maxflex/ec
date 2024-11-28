@@ -172,10 +172,13 @@ defineExpose({ create, edit })
             multiple
             :items="selectItems(BranchLabel)"
           />
-
           <TeacherSelector
             v-model="client.head_teacher_id"
             label="Куратор"
+          />
+          <v-text-field
+            v-model="client.email"
+            label="E-mail"
           />
         </div>
 
@@ -219,10 +222,17 @@ defineExpose({ create, edit })
             label="Код подразделения"
           />
         </div>
-        <UiDateInput
-          v-model="client.parent.passport.issued_date"
-          label="Дата выдачи паспорта"
-        />
+        <div class="double-input">
+          <UiDateInput
+            v-model="client.parent.passport.issued_date"
+            label="Дата выдачи паспорта"
+          />
+          <v-text-field
+            v-model="client.parent.email"
+            label="E-mail"
+          />
+        </div>
+
         <v-textarea
           v-model="client.parent.passport.issued_by"
           label="Кем выдан"

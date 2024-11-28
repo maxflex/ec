@@ -15,7 +15,8 @@ class ClientParent extends Model implements CanLogin
     public $timestamps = false;
 
     protected $fillable = [
-        'first_name', 'last_name', 'middle_name', 'passport'
+        'first_name', 'last_name', 'middle_name',
+        'passport', 'email'
     ];
 
     protected $casts = [
