@@ -14,6 +14,7 @@ const groupFilters = ref<GroupFilters>({
 const loading = ref(true)
 const selectedSwampId = ref<number>()
 const swamps = ref<SwampListResource[]>([])
+const clientGroups = ref<GroupListResource[]>([])
 const noData = computed(() => !loading.value && swamps.value.length === 0)
 
 const { items: groups, indexPageData } = useIndex<GroupListResource, GroupFilters>(
@@ -24,11 +25,18 @@ const { items: groups, indexPageData } = useIndex<GroupListResource, GroupFilter
     disableSaveFilters: true,
   },
 )
+async function loadData() {
+  loading.value = true
+  await loadGroups()
+  await loadSwamps()
+  loading.value = false
+}
 
 async function loadSwamps() {
   loading.value = true
   const params = {
     ...filters.value,
+    status: 'noGroup',
     client_id: clientId,
   }
   const { data } = await useHttp<ApiResponse<SwampListResource>>(`swamps`, { params })
@@ -46,6 +54,17 @@ function onAttachStart(swamp: SwampListResource) {
   }
 }
 
+async function loadGroups() {
+  const params = {
+    ...filters.value,
+    client_id: clientId,
+  }
+  const { data } = await useHttp<ApiResponse<GroupListResource>>(`groups`, { params })
+  if (data.value) {
+    clientGroups.value = data.value.data
+  }
+}
+
 async function onGroupSelected(group: GroupListResource) {
   await useHttp(`client-groups`, {
     method: 'post',
@@ -55,7 +74,7 @@ async function onGroupSelected(group: GroupListResource) {
     },
   })
   back()
-  await loadSwamps()
+  await loadData()
 }
 
 function back() {
@@ -63,11 +82,11 @@ function back() {
 }
 
 watch(filters, (newVal) => {
-  loadSwamps()
+  loadData()
   saveFilters(newVal, tabName)
 }, { deep: true })
 
-nextTick(loadSwamps)
+nextTick(loadData)
 </script>
 
 <template>
@@ -94,6 +113,7 @@ nextTick(loadSwamps)
         density="comfortable"
       />
     </template>
+    <GroupList :items="clientGroups" />
     <SwampList :items="swamps" @attach="onAttachStart" />
   </UiIndexPage>
 </template>

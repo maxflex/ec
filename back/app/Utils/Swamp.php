@@ -86,6 +86,10 @@ class Swamp
             case 'completeInGroup':
                 $query->whereRaw("group_id IS NOT NULL AND total_price_passed = total_price");
                 break;
+
+            case 'noGroup':
+                $query->whereRaw("group_id IS NULL");
+                break;
         }
     }
 }
