@@ -7,7 +7,7 @@ const filters = ref<Filters>({
   month: new Date().getMonth() + 1 as Month,
 })
 
-const { items, indexPageData } = useIndex<ScholarshipScoreResource, Filters>(
+const { items, indexPageData, reloadData } = useIndex<ScholarshipScoreResource, Filters>(
   `scholarship-scores`,
   filters,
 )
@@ -18,6 +18,6 @@ const { items, indexPageData } = useIndex<ScholarshipScoreResource, Filters>(
     <template #filters>
       <UiMonthSelector v-model="filters.month" density="comfortable" />
     </template>
-    <ScholarshipScoreList :items="items" />
+    <ScholarshipScoreList :items="items" @updated="reloadData()" />
   </UiIndexPage>
 </template>

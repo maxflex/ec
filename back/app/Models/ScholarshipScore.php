@@ -11,7 +11,6 @@ class ScholarshipScore extends Model
 {
     protected $fillable = [
         'client_id',
-        'teacher_id',
         'year',
         'month',
         'score',

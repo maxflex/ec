@@ -25,6 +25,11 @@ class Teacher extends Authenticatable implements HasTeeth, CanLogin
         'passport' => 'array',
     ];
 
+    public function scholarshipScores(): HasMany
+    {
+        return $this->hasMany(ScholarshipScore::class);
+    }
+
     public function payments(): HasMany
     {
         return $this->hasMany(TeacherPayment::class)->latest();

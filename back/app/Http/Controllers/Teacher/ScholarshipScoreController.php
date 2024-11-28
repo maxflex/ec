@@ -21,8 +21,15 @@ class ScholarshipScoreController extends Controller
 
     }
 
-    public function store()
+    public function store(Request $request)
     {
+        auth()->user()->scholarshipScores()->create(
+            $request->all()
+        );
+    }
 
+    public function update(ScholarshipScore $scholarshipScore, Request $request)
+    {
+        $scholarshipScore->update($request->all());
     }
 }

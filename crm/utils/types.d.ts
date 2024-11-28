@@ -1128,7 +1128,6 @@ declare global {
     month: Month
     client: PersonResource
     program: Program
-    teacher_id: number
     client_id: number
     lessons_count: number
   }

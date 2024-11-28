@@ -1,11 +1,17 @@
 <script setup lang="ts">
+import { ScholarshipScoreDialog } from '#components'
+
 const { items } = defineProps<{
   items: ScholarshipScoreResource[]
 }>()
+
+const emit = defineEmits(['updated'])
+
+const dialog = ref<InstanceType<typeof ScholarshipScoreDialog>>()
 </script>
 
 <template>
-  <v-table>
+  <v-table class="scholarship-score-list">
     <tbody>
       <tr v-for="(item, index) in items" :key="index">
         <td width="300">
@@ -26,13 +32,29 @@ const { items } = defineProps<{
             нет оценки
           </span>
         </td>
-        <td v-if="item.id" class="text-sm-right">
-          <!--          edit -->
-        </td>
-        <td v-else class="text-md-right pa-0" width="100">
-          <!--          create -->
+        <td>
+          <div class="table-actionss">
+            <v-btn
+              icon="$edit"
+              :size="48"
+              variant="plain"
+              @click="dialog?.open(item)"
+            />
+          </div>
         </td>
       </tr>
     </tbody>
   </v-table>
+  <ScholarshipScoreDialog ref="dialog" @updated="emit('updated')" />
 </template>
+
+<style lang="scss">
+.scholarship-score-list {
+  tr {
+    position: relative;
+  }
+  td > .table-actionss {
+    top: -3px !important;
+  }
+}
+</style>
