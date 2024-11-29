@@ -25,7 +25,6 @@ class SearchResultResource extends JsonResource
 
         switch ($class) {
             case ClientParent::class:
-                $extra['client_id'] = $model->client_id;
                 $contracts = $model->client->contracts;
 
             case Client::class:

@@ -25,7 +25,6 @@ class Lesson extends Model
         'status' => LessonStatus::class,
         'cabinet' => Cabinet::class,
         'files' => JsonArrayCast::class,
-        'zoom' => 'array',
     ];
 
     public function teacher(): BelongsTo

@@ -144,9 +144,9 @@ declare global {
   type Menu = MenuItem[]
 
   interface Zoom {
-    id: string
-    password: string
-    url: string
+    id: ?string
+    password: ?string
+    // url: string
   }
 
   interface AuthResource extends PersonWithPhotoResource {
@@ -357,6 +357,7 @@ declare global {
     program: Program
     teachers: PersonResource[]
     teeth: Teeth
+    zoom: Zoom
   }
 
   interface GroupResource {
@@ -367,6 +368,7 @@ declare global {
     teeth?: Teeth
     created_at?: string
     user?: PersonResource
+    zoom: Zoom
     lessons_count: number
     lessons_free_count: number
   }
@@ -400,7 +402,6 @@ declare global {
     topic?: ?string
     homework?: ?string
     files: UploadedFile[]
-    zoom: ?Zoom
     conducted_at: ?string
     is_topic_verified: boolean
     is_unplanned: boolean
@@ -1002,8 +1003,6 @@ declare global {
     is_active: boolean
     // у ученика
     contract_versions?: ContractVersionResource[]
-    // ссылка на клиента у родителя
-    client_id?: number
     // у препода
     status?: TeacherStatus
     subjects?: Subject[]

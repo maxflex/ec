@@ -18,7 +18,7 @@ class GroupListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'program', 'client_groups_count'
+            'program', 'client_groups_count', 'zoom'
         ], [
             'lessons_count' => $this->lessons()->where('status', '<>', LessonStatus::cancelled)->where('is_free', 0)->count(),
             'lessons_free_count' => $this->lessons()->where('status', '<>', LessonStatus::cancelled)->where('is_free', 1)->count(),

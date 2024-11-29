@@ -4,29 +4,31 @@ const { items, q } = defineProps<{
   q: string
 }>()
 
-const qWords = q.split(' ').filter(Boolean)
+// const qWords = q.split(' ').filter(Boolean)
 
 function getLink(item: SearchResultResource): string {
   switch (item.entity_type) {
     case EntityTypeValue.teacher:
       return `teachers/${item.id}`
+    case EntityTypeValue.clientParent:
+      return `parents/${item.id}`
     default:
-      return `clients/${item.client_id}`
+      return `clients/${item.id}`
   }
 }
 
 // Подсветить результаты поиска. Временно
-function highlight(text: string) {
-  let result = text.trim()
-  for (const word of qWords) {
-    const newQ = word.replace(')', '\\)').replace('(', '\\(')
-    result = result.replace(
-      new RegExp(`${newQ}`, 'gi'),
-      `<span class="highlight">${word}</span>`,
-    )
-  }
-  return result
-}
+// function highlight(text: string) {
+//   let result = text.trim()
+//   for (const word of qWords) {
+//     const newQ = word.replace(')', '\\)').replace('(', '\\(')
+//     result = result.replace(
+//       new RegExp(`${newQ}`, 'gi'),
+//       `<span class="highlight">${word}</span>`,
+//     )
+//   }
+//   return result
+// }
 </script>
 
 <template>
@@ -43,7 +45,7 @@ function highlight(text: string) {
         </div>
         <div class="search-result__info">
           <div>
-            <div v-html="highlight(formatFullName(item))" />
+            <div v-html="formatFullName(item)" />
             <div :class="{ 'text-success': item.is_active }">
               <template v-if="item.entity_type === EntityTypeValue.teacher">
                 {{ TeacherStatusLabel[item.status!] }}

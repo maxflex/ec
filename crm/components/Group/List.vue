@@ -19,7 +19,8 @@ function onClick(g: GroupListResource) {
 
 <template>
   <div
-    class="table table--padding" :class="{
+    class="table table--padding group-list"
+    :class="{
       'group-list--selectable table--hover': selectable,
     }"
   >
@@ -33,6 +34,14 @@ function onClick(g: GroupListResource) {
         <NuxtLink :to="{ name: 'groups-id', params: { id: item.id } }">
           Группа {{ item.id }}
         </NuxtLink>
+        <div v-if="item.zoom.id" class="group-list__zoom">
+          <div>
+            Zoom логин: {{ item.zoom.id }}
+          </div>
+          <div>
+            Zoom пароль: {{ item.zoom.password }}
+          </div>
+        </div>
       </div>
       <div style="width: 200px">
         <div v-for="t in item.teachers" :key="t.id">
@@ -73,6 +82,13 @@ function onClick(g: GroupListResource) {
 
 <style lang="scss">
 .group-list {
+  & > div {
+    align-items: flex-start !important;
+  }
+  &__zoom {
+    white-space: nowrap;
+    color: rgb(var(--v-theme-gray));
+  }
   &--selectable {
     & > div {
       cursor: pointer;

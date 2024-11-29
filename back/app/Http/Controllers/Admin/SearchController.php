@@ -15,7 +15,7 @@ class SearchController extends Controller
             'q' => ['required', 'string', 'min:3']
         ]);
 
-        $result = Client::search($request->q)
+        $result = Client::search(mb_strtolower($request->q))
             ->options([
                 'include_fields' => 'id,is_active',
                 'query_by' => 'last_name,first_name,middle_name,contract_ids,phones',

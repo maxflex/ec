@@ -15,9 +15,9 @@ const loading = ref(true)
 const selectedSwampId = ref<number>()
 const swamps = ref<SwampListResource[]>([])
 const clientGroups = ref<GroupListResource[]>([])
-const noData = computed(() => !loading.value && swamps.value.length === 0)
+const noData = computed(() => !loading.value && clientGroups.value.length === 0 && swamps.value.length === 0)
 
-const { items: groups, indexPageData } = useIndex<GroupListResource, GroupFilters>(
+const { items: groups } = useIndex<GroupListResource, GroupFilters>(
   `groups`,
   groupFilters,
   {
@@ -90,7 +90,7 @@ nextTick(loadData)
 </script>
 
 <template>
-  <UiIndexPage v-if="selectedSwampId" :data="indexPageData">
+  <UiIndexPage v-if="selectedSwampId" :data="{ loading, noData }">
     <template #filters>
       <GroupFilters v-model="groupFilters" disabled />
     </template>

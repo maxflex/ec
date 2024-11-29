@@ -154,9 +154,9 @@ class Teacher extends Authenticatable implements HasTeeth, CanLogin
 
         return [
             'id' => implode('-', [$class, $this->id]),
-            'first_name' => $this->first_name ?? '',
-            'last_name' => $this->last_name ?? '',
-            'middle_name' => $this->middle_name ?? '',
+            'first_name' => $this->first_name ? mb_strtolower($this->first_name) : '',
+            'last_name' => $this->last_name ? mb_strtolower($this->last_name) : '',
+            'middle_name' => $this->middle_name ? mb_strtolower($this->middle_name) : '',
             'phones' => $this->phones()->pluck('number'),
             'contract_ids' => [],
             'is_active' => Teacher::canLogin()->whereId($this->id)->exists(),

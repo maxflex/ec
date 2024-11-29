@@ -13,10 +13,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Group extends Model implements HasTeeth
 {
     protected $fillable = [
-        'program', 'year'
+        'program', 'year', 'zoom'
     ];
 
     protected $casts = [
+        'zoom' => 'array',
         'program' => Program::class,
     ];
 
@@ -38,10 +39,10 @@ class Group extends Model implements HasTeeth
 
     public function getZoomAttribute($value)
     {
-        return json_decode($value) ?? [
-            'id' => '',
-            'password' => ''
-        ];
+        return $value === null ? [
+            'id' => null,
+            'password' => null,
+        ] : json_decode($value);
     }
 
     public function scopeWhereTeacher($query, $teacherId)
