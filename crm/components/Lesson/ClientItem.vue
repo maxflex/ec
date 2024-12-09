@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { mdiVideo } from '@mdi/js'
+
 const { item, checkboxes } = defineProps<{
   item: LessonListResource
   checkboxes: { [key: number]: boolean }
@@ -36,6 +38,19 @@ const { item, checkboxes } = defineProps<{
       <span v-if="item.quarter">
         {{ QuarterShortLabel[item.quarter] }}
       </span>
+    </div>
+    <div style="width: 70px">
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
+          <v-icon :icon="mdiVideo" v-bind="props" />
+        </template>
+        <div>
+          ZOOM логин: {{ item.group.zoom.id }}
+        </div>
+        <div>
+          ZOOM пароль: {{ item.group.zoom.password }}
+        </div>
+      </v-tooltip>
     </div>
     <div style="width: 120px">
       <LessonStatus :item="item" show-label :size="8" />

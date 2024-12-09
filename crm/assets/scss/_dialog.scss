@@ -178,7 +178,11 @@
       pointer-events: none;
       font-weight: normal;
       padding: 16px 0 16px $paddingLeft;
+    }
+
+    & tr > th {
       border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+      border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
     }
   }
 

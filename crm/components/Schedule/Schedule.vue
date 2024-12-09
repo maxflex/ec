@@ -17,15 +17,23 @@ const properties = defineProps<{
   year?: Year
   program?: Program
   showTeeth?: boolean
+  programFilter?: boolean
   headTeacher?: boolean
 }>()
 
-const { groupId, teacherId, clientId, program, showTeeth, year } = properties
+const { groupId, teacherId, clientId, program, showTeeth, year, programFilter } = properties
 const tabName = teacherId ? 'TeacherSchedule' : (groupId ? 'GroupSchedule' : 'ClientSchedule')
 
-const loadedFilters = loadFilters({
+interface Filters {
+  year: Year
+  hideEmptyDates: number
+  program: Program | undefined
+}
+
+const loadedFilters = loadFilters<Filters>({
   year: currentAcademicYear(),
   hideEmptyDates: 0,
+  program: undefined,
 }, tabName)
 
 const filters = ref({
@@ -96,11 +104,18 @@ const dates = computed(() => {
 const itemsByDate = computed((): {
   [index: string]: Array<LessonListResource | EventListResource>
 } => {
+  const filteredLessons = filters.value.program
+    ? lessons.value.filter(l => l.group.program === filters.value.program)
+    : lessons.value
   return groupBy(x => x.date, [
-    ...lessons.value,
+    ...filteredLessons,
     ...events.value,
   ])
 })
+
+const availablePrograms = computed(() => [...new Set(
+  lessons.value.map(l => l.group.program),
+)])
 
 async function loadLessons() {
   loading.value = true
@@ -241,6 +256,16 @@ nextTick(loadData)
       v-model="filters.hideEmptyDates"
       label="Даты"
       :items="yesNo('скрыть пустые', 'показывать все', true)"
+      density="comfortable"
+    />
+    <UiClearableSelect
+      v-if="programFilter"
+      v-model="filters.program"
+      label="Программа"
+      :items="availablePrograms.map(value => ({
+        value,
+        title: ProgramLabel[value],
+      }))"
       density="comfortable"
     />
     <template #buttons>

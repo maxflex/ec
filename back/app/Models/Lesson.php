@@ -142,14 +142,15 @@ class Lesson extends Model
      */
     public static function withSequenceNumber(Collection $lessons)
     {
-        $seq = 1;
-        $lessons = $lessons->sortBy(['date', 'time'])->values();
-        foreach ($lessons->all() as $lesson) {
-            if ($lesson->status === LessonStatus::cancelled) {
-                continue;
+        foreach ($lessons->groupBy('group.program') as $programLessons) {
+            $seq = 1;
+            foreach ($programLessons->sortBy(['date', 'time'])->values()->all() as $lesson) {
+                if ($lesson->status === LessonStatus::cancelled) {
+                    continue;
+                }
+                $lesson->setAttribute('seq', $seq);
+                $seq++;
             }
-            $lesson->setAttribute('seq', $seq);
-            $seq++;
         }
         return paginate(LessonListResource::collection($lessons));
     }

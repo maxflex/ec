@@ -114,18 +114,35 @@ defineExpose({ open })
       <UiLoader v-if="loading" />
       <div v-else-if="item" class="dialog-body pt-0 conduct-dialog">
         <table class="dialog-table">
+          <thead>
+            <tr>
+              <th>
+                Ученик
+              </th>
+              <th>
+                Статус посещения
+              </th>
+              <th>
+                Опоздание
+              </th>
+              <th />
+              <th colspan="10">
+                Оценки
+              </th>
+            </tr>
+          </thead>
           <tbody>
             <tr v-for="s in item?.students" :key="s.id">
               <td width="290">
                 {{ formatName(s.client) }}
               </td>
-              <td width="200">
+              <td width="190">
                 <UiToggler
                   v-model="s.status"
                   :items="selectItems(ClientLessonStatusLabel)"
                 />
               </td>
-              <td width="100">
+              <td width="110">
                 <v-text-field
                   v-if="['late', 'lateOnline'].includes(s.status)"
                   v-model="s.minutes_late"

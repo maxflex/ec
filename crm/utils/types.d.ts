@@ -438,6 +438,7 @@ declare global {
       id: number
       program: Program
       students_count: number
+      zoom: Zoom
     }
   }
 

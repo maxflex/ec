@@ -10,6 +10,8 @@ const emit = defineEmits<{
   select: [g: GroupListResource]
 }>()
 
+const { isTeacher, user } = useAuthStore()
+
 function onClick(g: GroupListResource) {
   if (selectable) {
     emit('select', g)
@@ -28,6 +30,9 @@ function onClick(g: GroupListResource) {
       v-for="item in items"
       :id="`group-${item.id}`"
       :key="item.id"
+      :class="{
+        'group-list__item--blur': isTeacher && !item.teachers.map(e => e.id).includes(user?.id),
+      }"
       @click="onClick(item)"
     >
       <div style="width: 150px">
@@ -94,6 +99,13 @@ function onClick(g: GroupListResource) {
       cursor: pointer;
       & > div:first-child {
         width: 120px !important;
+      }
+    }
+  }
+  &__item {
+    &--blur {
+      & > div {
+        opacity: 0.4;
       }
     }
   }
