@@ -87,9 +87,7 @@
     display: none !important;
     &__only-mobile {
       display: flex !important;
-      overflow: hidden;
       flex-direction: column;
-      height: 90vh;
       gap: 20px;
       background: rgba(white, 0.95);
       border-radius: 20px;
@@ -101,6 +99,9 @@
       justify-content: center;
       align-items: center;
       padding: 0 20px;
+      position: fixed;
+      width: 100%;
+      height: 100vh;
       h4 {
         font-size: 24px;
         font-weight: bold;
