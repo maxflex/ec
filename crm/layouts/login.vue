@@ -98,10 +98,12 @@
       font-size: 20px;
       justify-content: center;
       align-items: center;
-      padding: 0 20px;
+      padding: 0 30px;
       position: fixed;
       width: 100%;
-      height: 100vh;
+      height: 90vh;
+      top: 0;
+      left: 0;
       h4 {
         font-size: 24px;
         font-weight: bold;
