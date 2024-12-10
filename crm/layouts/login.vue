@@ -19,21 +19,21 @@
       </video>
     </div>
     <div class="login-layout__content">
-      <div class="login-layout__only-mobile">
-        <h4>Мобильная версия пока недоступна</h4>
-        <img alt="" src="/img/clock.svg">
-        <!--        <img alt="" src="/img/monitor.svg"> -->
-        <div>
-          Мобильная версия пока недоступна, но мы уже работаем над её созданием.
-          <br>
-          А пока вы можете зайти в Личный Кабинет с компьютера.
-        </div>
-      </div>
       <ClientOnly>
         <slot />
       </ClientOnly>
     </div>
   </v-app>
+  <div class="login-layout__only-mobile">
+    <h4>Мобильная версия пока недоступна</h4>
+    <img alt="" src="/img/clock.svg">
+    <!--        <img alt="" src="/img/monitor.svg"> -->
+    <div>
+      Мобильная версия пока недоступна, но мы уже работаем над её созданием.
+      <br>
+      А пока вы можете зайти в Личный Кабинет с компьютера.
+    </div>
+  </div>
 </template>
 
 <style lang="scss">
@@ -58,9 +58,6 @@
       width: 100%;
       height: 100%;
     }
-  }
-  &__only-mobile {
-    display: none;
   }
 }
 .video-background {
@@ -87,24 +84,23 @@
 
 @media screen and (max-width: 500px) {
   .login-layout {
-    .login {
-      display: none !important;
-    }
+    display: none !important;
     &__only-mobile {
       display: flex !important;
+      overflow: hidden;
       flex-direction: column;
+      height: 90vh;
       gap: 20px;
       background: rgba(white, 0.95);
       border-radius: 20px;
-      width: 400px;
       // border: 2px solid rgba(255, 196, 35, 0.5);
       z-index: 2;
       scale: 1.05;
       text-align: center;
-      padding: 20px 14px;
       font-size: 20px;
       justify-content: center;
       align-items: center;
+      padding: 0 20px;
       h4 {
         font-size: 24px;
         font-weight: bold;
