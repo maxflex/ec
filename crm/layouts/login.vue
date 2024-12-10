@@ -30,7 +30,6 @@
     <!--        <img alt="" src="/img/monitor.svg"> -->
     <div>
       Мобильная версия пока недоступна, но мы уже работаем над её созданием.
-      <br>
       А пока вы можете зайти в Личный Кабинет с компьютера.
     </div>
   </div>
@@ -98,12 +97,13 @@
       font-size: 20px;
       justify-content: center;
       align-items: center;
-      padding: 0 30px;
+      padding: 0 40px;
       position: fixed;
       width: 100%;
       height: 90vh;
       top: 0;
       left: 0;
+      text-wrap: balance;
       h4 {
         font-size: 24px;
         font-weight: bold;
