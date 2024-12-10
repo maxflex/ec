@@ -10,7 +10,7 @@ class Phone extends Model
 {
     public $timestamps = false;
 
-    protected $fillable = ['number', 'comment'];
+    protected $fillable = ['number', 'comment', 'telegram_id'];
 
     public function entity(): MorphTo
     {

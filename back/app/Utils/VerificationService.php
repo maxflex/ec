@@ -16,10 +16,10 @@ class VerificationService
         // }
         $code = self::generateCode();
         self::storeCode($phone, $code);
-        if (is_localhost()) {
-            return;
-        }
-        Telegram::sendMessage($phone->telegram_id, "*$code* – код для авторизации в ЛК", 'MarkdownV2');
+//        if (is_localhost()) {
+//            return;
+//        }
+        Telegram::sendMessage($phone->telegram_id, "*$code* – код для авторизации", 'MarkdownV2');
     }
 
     public static function verifyCode(Phone $phone, $code)

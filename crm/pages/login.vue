@@ -179,11 +179,18 @@ definePageMeta({ layout: 'login' })
           <div class="login__info-title">
             {{ currentUser.first_name }}, здравствуйте!
           </div>
-          <div>
-            Это ваш первый вход в ЛК. Для продолжения необходимо
-            <a :href="bot.url">
-              добавить бота в Telegram
-            </a>
+          <div class="login__info-tg">
+            Это ваш первый вход в Личный Кабинет. Для продолжения нужно добавить бота Telegram.
+            <div class="login__info-tg-steps">
+              <div>
+                <img src="/img/1.svg" alt="">
+                Откройте камеру на телефоне и наведите её на QR-код ниже
+              </div>
+              <div>
+                <img src="/img/2.svg" alt="">
+                Перейдите по ссылке, которая появится, и нажмите «Начать»
+              </div>
+            </div>
           </div>
           <div class="login__qr">
             <img :src="bot.qr">
@@ -264,12 +271,32 @@ definePageMeta({ layout: 'login' })
     }
   }
   &__info {
-    font-size: 20px;
     text-align: center;
     text-wrap: balance;
     &-title {
+      font-size: 20px;
       font-weight: bold;
       margin-bottom: 20px;
+    }
+    &-tg {
+      //font-size: 16px;
+      &-steps {
+        text-align: left;
+        display: flex;
+        gap: 20px;
+        flex-direction: column;
+        width: 80%;
+        margin: 20px auto 0;
+        & > div {
+          display: flex;
+          align-items: center;
+          line-height: 20px;
+          img {
+            height: 30px;
+            margin-right: 20px;
+          }
+        }
+      }
     }
   }
   &__other {

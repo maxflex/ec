@@ -1,3 +1,6 @@
+<script setup lang="ts">
+</script>
+
 <template>
   <v-app class="login-layout">
     <div class="video-background">
@@ -15,7 +18,16 @@
         Your browser does not support the video tag.
       </video>
     </div>
-    <div>
+    <div class="login-layout__content">
+      <div class="login-layout__only-mobile">
+        <h4>Мобильная версия пока недоступна</h4>
+        <img alt="" src="/img/clock.svg">
+        <!--        <img alt="" src="/img/monitor.svg"> -->
+        <div>
+          Мобильная версия пока недоступна, но мы уже работаем над её запуском.
+          А пока вы можете зайти в Личный Кабинет с компьютера.
+        </div>
+      </div>
       <ClientOnly>
         <slot />
       </ClientOnly>
@@ -24,25 +36,30 @@
 </template>
 
 <style lang="scss">
-.login-layout > div > div:last-child {
-  // background: linear-gradient(to bottom, #f1e4a5 0%, rgba(255, 196, 35, 0.15));
-  //background-image: url('/img/bg.webp');
-  //background-size: cover;
-  //background: linear-gradient(45deg, #5a2d22, #c7784f);
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  &:after {
-    //content: '';
-    background: rgba(black, 0.4);
-    left: 0;
-    top: 0;
-    position: absolute;
-    width: 100%;
-    height: 100%;
+.login-layout {
+  &__content {
+    // background: linear-gradient(to bottom, #f1e4a5 0%, rgba(255, 196, 35, 0.15));
+    //background-image: url('/img/bg.webp');
+    //background-size: cover;
+    //background: linear-gradient(45deg, #5a2d22, #c7784f);
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:after {
+      //content: '';
+      background: rgba(black, 0.4);
+      left: 0;
+      top: 0;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+  }
+  &__only-mobile {
+    display: none;
   }
 }
 .video-background {
@@ -65,5 +82,37 @@
   transform: translate(-50%, -50%);
   z-index: -1;
   // filter: blur(3px); /* Apply blur effect */
+}
+
+@media screen and (max-width: 500px) {
+  .login-layout {
+    .login {
+      display: none !important;
+    }
+    &__only-mobile {
+      display: flex !important;
+      flex-direction: column;
+      gap: 20px;
+      background: rgba(white, 0.95);
+      border-radius: 20px;
+      width: 400px;
+      // border: 2px solid rgba(255, 196, 35, 0.5);
+      z-index: 2;
+      scale: 1.05;
+      text-align: center;
+      padding: 20px;
+      font-size: 20px;
+      justify-content: center;
+      align-items: center;
+      h4 {
+        font-size: 24px;
+        font-weight: bold;
+        text-wrap: balance;
+      }
+      img {
+        width: 80px;
+      }
+    }
+  }
 }
 </style>

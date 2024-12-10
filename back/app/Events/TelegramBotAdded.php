@@ -26,7 +26,7 @@ class TelegramBotAdded implements ShouldBroadcastNow
     public function broadcastWith(): array
     {
         return [
-            'data' => new AuthResource($this->phone),
+            'data' => new AuthResource($this->phone->entity),
         ];
     }
 }

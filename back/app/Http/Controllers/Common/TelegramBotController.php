@@ -16,7 +16,14 @@ class TelegramBotController extends Controller
     public function __invoke(Request $request)
     {
         logger("TELEGRAM: " . json_encode($request->all(), JSON_PRETTY_PRINT));
-        // dd($request->all());
+
+        if ($request->has('my_chat_member')) {
+            $botDeleted = $this->onBotDeleted($request);
+            if ($botDeleted) {
+                return;
+            }
+        }
+
         try {
             $bot = new Client(config('telegram.key'));
 
@@ -46,6 +53,7 @@ class TelegramBotController extends Controller
 
             //Handle text messages
             $bot->on(function (Update $update) use ($bot) {
+
                 $callback = $update->getCallbackQuery();
                 /**
                  * Обработка кнопок
@@ -101,8 +109,9 @@ class TelegramBotController extends Controller
                     if ($phone === null) {
                         $bot->sendMessage($telegramId, view('bot.auth-fail', compact('number')));
                     } else {
-                        $phone->telegram_id = $contact->getUserId();
-                        $phone->save();
+                        $phone->update([
+                            'telegram_id' => $contact->getUserId()
+                        ]);
                         TelegramBotAdded::dispatch($phone);
                         $bot->sendMessage(
                             $telegramId,
@@ -126,5 +135,23 @@ class TelegramBotController extends Controller
         } catch (Exception $e) {
             $e->getMessage();
         }
+    }
+
+    /**
+     * Бота удалили
+     * TODO: переделать, когда выйдет v3
+     * https://github.com/TelegramBot/Api/blob/master/CHANGELOG.md#300---yyyy-mm-dd
+     */
+    private function onBotDeleted(Request $request): bool
+    {
+        $myChatMember = $request->input('my_chat_member');
+        if (isset($myChatMember['new_chat_member']) && $myChatMember['new_chat_member']['status'] === 'kicked') {
+            $telegramId = $myChatMember['chat']['id'];
+            Phone::where('telegram_id', $telegramId)->update([
+                'telegram_id' => null
+            ]);
+            return true;
+        }
+        return false;
     }
 }
