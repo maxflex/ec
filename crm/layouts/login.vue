@@ -24,7 +24,8 @@
         <img alt="" src="/img/clock.svg">
         <!--        <img alt="" src="/img/monitor.svg"> -->
         <div>
-          Мобильная версия пока недоступна, но мы уже работаем над её запуском.
+          Мобильная версия пока недоступна, но мы уже работаем над её созданием.
+          <br>
           А пока вы можете зайти в Личный Кабинет с компьютера.
         </div>
       </div>
@@ -100,7 +101,7 @@
       z-index: 2;
       scale: 1.05;
       text-align: center;
-      padding: 20px;
+      padding: 20px 14px;
       font-size: 20px;
       justify-content: center;
       align-items: center;
