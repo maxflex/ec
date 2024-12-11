@@ -47,7 +47,7 @@ async function onOtpFinish() {
   <div class="balance-verification">
     <v-icon :icon="mdiLockOutline" color="gray" />
     <p>
-      Для просмотра этой страницы,<br>
+      Для просмотра этой страницы<br>
       необходимо подтверждение доступа
     </p>
     <v-otp-input
