@@ -81,7 +81,7 @@
   // filter: blur(3px); /* Apply blur effect */
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 900px) {
   .login-layout {
     display: none !important;
     &__only-mobile {
