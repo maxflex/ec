@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import QRCodeVue3 from 'qrcode-vue3'
+import VueQrcode from '@chenfengyuan/vue-qrcode'
 
 const selected = ref(0)
 const qrSize = 600
@@ -31,8 +31,7 @@ const qrValue = computed(() => {
     BankName: 'АО "АЛЬФА-БАНК"',
     BIC: '044525593',
     CorrespAcc: '30101810200000000593',
-    Purpose: `Платные образовательные услуги по договору №${selectedContract.value.id} 
-            от ${formatDate(selectedContract.value.version.date)} г.`,
+    Purpose: `Платные образовательные услуги по договору №${selectedContract.value.id} от ${formatDate(selectedContract.value.version.date)} г.`,
     PayeeINN: currentQrData.PayeeINN,
     KPP: currentQrData.KPP,
     LastName: selectedContract.value.parent.last_name,
@@ -157,36 +156,7 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
           </table>
         </div>
         <div v-if="selectedContract.year === currentAcademicYear()">
-          <QRCodeVue3
-            :width="qrSize"
-            :height="qrSize"
-            image="/img/qr-billing.png"
-            imgclass="billing__qr"
-            :qr-options="{
-              typeNumber: '0',
-              mode: 'Byte',
-              errorCorrectionLevel: 'Q',
-            }"
-            :dots-options="{
-              type: 'extra-rounded',
-              color: '#6a1a4c',
-              gradient: {
-                type: 'linear',
-                rotation: 0.7853981633974483,
-                colorStops: [
-                  { offset: 0, color: '#ffc423' },
-                  { offset: 1, color: '#916f5d' },
-                ],
-              },
-            }"
-            :background-options="{ color: '#ffffff' }"
-            :corners-square-options="{
-              type: 'extra-rounded',
-              color: '#000000',
-            }"
-            :corners-dot-options="{ type: undefined, color: '#000000' }"
-            :value="qrValue"
-          />
+          <VueQrcode :value="qrValue" :options="{ width: qrSize, height: qrSize }" class="billing__qr" />
           <p>
             Откройте приложение вашего банка. Выберите в меню "Оплата по QR-коду".
             Наведите на изображение. Все реквизиты будут подставлены автоматически.
@@ -202,8 +172,8 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
 .billing {
   &__qr {
     --size: 300px;
-    width: var(--size);
-    height: var(--size);
+    width: var(--size) !important;
+    height: var(--size) !important;
   }
   &__content {
     display: flex;

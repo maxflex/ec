@@ -184,10 +184,14 @@ definePageMeta({ layout: 'login' })
             <div class="login__info-tg-steps">
               <div>
                 <img src="/img/1.svg" alt="">
-                Откройте камеру на телефоне и наведите её на QR-код ниже
+                Убедитесь, что на вашем телефоне установлен Telegram
               </div>
               <div>
                 <img src="/img/2.svg" alt="">
+                Откройте камеру на телефоне и наведите её на QR-код ниже
+              </div>
+              <div>
+                <img src="/img/3.svg" alt="">
                 Перейдите по ссылке, которая появится, и нажмите «Начать»
               </div>
             </div>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Teacher\{BalanceController,
+    BalanceVerificationController,
     ClientController,
     ClientGroupController,
     ClientReviewController,
@@ -51,4 +52,10 @@ Route::middleware(['auth:crm'])->group(function () {
     });
 
     Route::get('menu-counts', MenuCountsController::class);
+
+    Route::prefix('balance-verification')->controller(BalanceVerificationController::class)->group(function () {
+        Route::get('check', 'check');
+        Route::post('send-code', 'sendCode');
+        Route::post('check-code', 'checkCode');
+    });
 });

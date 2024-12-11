@@ -58,6 +58,9 @@
       height: 100%;
     }
   }
+  &__only-mobile {
+    display: none;
+  }
 }
 .video-background {
   position: fixed;

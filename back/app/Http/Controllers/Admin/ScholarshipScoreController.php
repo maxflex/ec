@@ -12,12 +12,19 @@ use Illuminate\Support\Facades\DB;
 
 class ScholarshipScoreController extends Controller
 {
+    protected $filters = [
+        'equals' => ['month']
+    ];
+
+    protected $mapFilters = [
+        'month' => 's.month'
+    ];
+
     public function __invoke(Request $request)
     {
         $query = ScholarshipScore::getQuery();
-        $query = DB::table(DB::raw("({$query->toSql()}) as s"))
-            ->mergeBindings($query)
-            ->where('s.month', $request->month);
+
+        $this->filter($request, $query);
 
         if ($request->mode === 'clients') {
             $items = $query->selectRaw("
@@ -31,7 +38,7 @@ class ScholarshipScoreController extends Controller
                         ->on('ss.month', '=', 's.month')
                         ->on('ss.client_id', '=', 's.client_id')
                 )
-                ->groupBy(DB::raw("`year`, `month`, client_id"))
+                ->groupBy(DB::raw("s.`year`, s.`month`, s.client_id"))
                 ->orderBy('avg_score', 'desc')
                 ->orderBy('scores_count', 'desc')
                 ->get()
@@ -56,7 +63,7 @@ class ScholarshipScoreController extends Controller
                         ->on('ss.teacher_id', '=', 's.teacher_id')
                         ->on('ss.program', '=', 's.program')
                 )
-                ->groupBy(DB::raw("`year`, `month`, teacher_id"))
+                ->groupBy(DB::raw("s.`year`, s.`month`, s.teacher_id"))
                 ->orderBy('scores_count', 'desc')
                 ->orderBy('total', 'desc')
                 ->get()

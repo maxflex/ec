@@ -26,7 +26,7 @@ class ScholarshipScore extends Model
         $year = current_academic_year();
         $startFrom = "$year-10-01";
 
-        return DB::table('lessons', 'l')
+        $cte = DB::table('lessons', 'l')
             ->join('groups as g', 'g.id', '=', 'l.group_id')
             ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
             ->join(
@@ -47,6 +47,10 @@ class ScholarshipScore extends Model
             ")
             ->groupByRaw("
                 g.year, `month`, l.teacher_id, c.client_id, g.program
-            ");
+            ")
+            ->having('lessons_count', '>=', 3);
+
+        return DB::table('s')
+            ->withExpression('s', $cte);
     }
 }

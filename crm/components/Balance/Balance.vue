@@ -14,13 +14,16 @@ const loading = ref(true)
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<Balance[]>(`balance`, {
-    params: {
-      year: teacherId ? filters.value.year : undefined,
-      teacher_id: teacherId,
-      contract_id: contractId,
+  const { data } = await useHttp<Balance[]>(
+    `balance`,
+    {
+      params: {
+        year: teacherId ? filters.value.year : undefined,
+        teacher_id: teacherId,
+        contract_id: contractId,
+      },
     },
-  })
+  )
   if (data.value) {
     balance.value = data.value
   }

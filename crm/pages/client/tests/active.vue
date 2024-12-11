@@ -56,6 +56,7 @@ async function finish() {
 }
 
 watch(answers, saveAnswers)
+
 nextTick(loadData)
 </script>
 
