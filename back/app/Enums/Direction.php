@@ -45,7 +45,7 @@ enum Direction: string
         $str = str($program->value);
 
         return match (true) {
-            $str->endsWith('Ext') => Direction::external,
+            $str->endsWith('External') => Direction::external,
             $str->endsWith('School8') => Direction::school8,
             $str->endsWith('School9') => Direction::school9,
             $str->endsWith('Oge') => Direction::school9,
