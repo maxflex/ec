@@ -43,6 +43,7 @@ class SearchResultResource extends JsonResource
                     'status' => $model->status,
                     'subjects' => $model->subjects,
                 ];
+                break;
 
             case \App\Models\Request::class:
                 $extra = [

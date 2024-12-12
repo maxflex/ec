@@ -22,13 +22,16 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
           @click="clientDialog?.edit(item.id)"
         />
       </div>
-      <div>
+      <div style="width: 40px">
         {{ item.id }}
       </div>
-      <div>
+      <div style="width: 300px">
         <NuxtLink :to="{ name: 'clients-id', params: { id: item.id } }">
           {{ formatName(item) }}
         </NuxtLink>
+      </div>
+      <div>
+        {{ item.directions.map(e => DirectionLabel[e]).join(', ') }}
       </div>
       <div class="text-right text-gray">
         {{ formatDateTime(item.created_at) }}

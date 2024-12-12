@@ -80,7 +80,7 @@ nextTick(loadData)
       </div>
     </div>
     <HeadTeacherClientGroupsTab v-if="selectedTab === 'groups'" :client-id="client.id" />
-    <Schedule v-else-if="selectedTab === 'schedule'" :client-id="client.id" show-teeth head-teacher />
+    <Schedule v-else-if="selectedTab === 'schedule'" :client-id="client.id" show-teeth head-teacher program-filter />
     <ExamScoreTab v-else-if="selectedTab === 'examScores'" :client-id="client.id" />
     <GradeTab v-else-if="selectedTab === 'grades'" :client-id="client.id" />
     <ReportTab v-else-if="selectedTab === 'reports'" :client-id="client.id" />

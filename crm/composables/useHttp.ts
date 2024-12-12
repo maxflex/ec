@@ -40,11 +40,9 @@ export const useHttp: useFetchType = (path: string, options = {}) => {
           }
           break
 
+        case 403:
         case 404:
-          showError({
-            statusCode: status,
-            statusMessage: 'Not found',
-          })
+          showError({ statusCode: status })
           break
 
         case 500:

@@ -14,10 +14,11 @@ use Illuminate\Http\Request;
 class ClientController extends Controller
 {
     protected $filters = [
-        'equals' => ['status', 'head_teacher_id'],
+        'equals' => ['status'],
         'contract' => ['year'],
         'search' => ['q'],
         'request' => ['request_id'],
+        'headTeacher' => ['head_teacher_id'],
     ];
 
     public function index(Request $request)
@@ -91,6 +92,14 @@ class ClientController extends Controller
             ->whereHas('phones', fn($q) => $q->whereIn('number', $numbers))
             ->orWhereHas('parent.phones', fn($q) => $q->whereIn('number', $numbers))
         );
+    }
 
+
+    // https://doc.ege-centr.ru/tasks/834
+    protected function filterHeadTeacher($query, $headTeacherId)
+    {
+        $query
+            ->where('head_teacher_id', $headTeacherId)
+            ->whereHas('contracts', fn($q) => $q->where('year', current_academic_year()));
     }
 }

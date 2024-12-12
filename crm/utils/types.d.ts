@@ -219,6 +219,7 @@ declare global {
   }
 
   interface ClientListResource extends PersonResource {
+    directions: Direction[]
     created_at: string
   }
 

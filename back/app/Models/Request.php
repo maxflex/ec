@@ -45,7 +45,6 @@ class Request extends Model
         return $this->hasMany(Pass::class);
     }
 
-
     /**
      * @return Collection<int, Client>
      *
