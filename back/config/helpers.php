@@ -4,6 +4,7 @@ use App\Enums\Company;
 use App\Enums\ContractPaymentMethod;
 use App\Models\ClientPayment;
 use App\Models\ContractPayment;
+use App\Models\User;
 use Illuminate\Support\Collection;
 
 function extract_fields($object, $fields, $merge = []): ?array
@@ -148,4 +149,13 @@ function paginate($data, $extra = null)
     }
 
     return $result;
+}
+
+function get_preview_user(): ?User
+{
+    if (request()->hasHeader('Preview')) {
+        $user = \App\Utils\Session::get(request()->header('Preview'));
+        return $user instanceof User ? $user : null;
+    }
+    return null;
 }

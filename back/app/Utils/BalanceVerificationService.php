@@ -11,13 +11,18 @@ class BalanceVerificationService
     public static function sendCode(Teacher $teacher)
     {
         $code = self::generateCode();
+
         self::storeCode($teacher, $code);
-        if (is_localhost()) {
-            Telegram::sendMessage(980106803, "*$code* – код для просмотра страницы", 'MarkdownV2');
-            return;
-        }
-        $teacher->phones()->withTelegram()->get()->each(
-            fn($phone) => Telegram::sendMessage($phone->telegram_id, "*$code* – код для просмотра страницы", 'MarkdownV2')
+
+        // в режиме просмотра отправляем код подтверждения админу
+        $receiver = get_preview_user() ?? $teacher;
+
+        $receiver->phones()->withTelegram()->get()->each(
+            fn($phone) => Telegram::sendMessage(
+                $phone->telegram_id,
+                "*$code* – код для просмотра страницы",
+                'MarkdownV2'
+            )
         );
     }
 

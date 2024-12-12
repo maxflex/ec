@@ -58,6 +58,10 @@ export const useAuthStore = defineStore('auth', () => {
     return previewToken.value ? previewToken : token
   }
 
+  function getPreviewModeToken() {
+    return previewToken.value ? token.value : null
+  }
+
   async function logOut() {
     await useHttp('common/auth/logout')
     clearCurrentToken()
@@ -88,5 +92,6 @@ export const useAuthStore = defineStore('auth', () => {
     getCurrentToken,
     clearCurrentToken,
     getLoggedUser,
+    getPreviewModeToken,
   }
 })
