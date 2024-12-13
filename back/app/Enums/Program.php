@@ -329,6 +329,7 @@ enum Program: string
     case litOgeSchool10 = 'litOgeSchool10';
     case litOgeSchool11 = 'litOgeSchool11';
     case litOgePract11 = 'litOgePract11';
+    case litPracticumPract11 = 'litPracticumPract11';
     case engOge1 = 'engOge1';
     case engOge2 = 'engOge2';
     case engOge3 = 'engOge3';
@@ -1462,6 +1463,8 @@ enum Program: string
             '17-38' => self::engSpokenSchool10,
             '18-38' => self::engSpokenSchool11,
             '19-38' => self::engSpokenPract11,
+            '19-39' => self::litPracticumPract11,
+            default => throw new \Exception("No grade-subject for $gradeId-$subjectId"),
         };
     }
 
@@ -1791,6 +1794,7 @@ enum Program: string
             self::litOgeSchool10 => 'ЛИТ ОГЭ 10 класс – школа',
             self::litOgeSchool11 => 'ЛИТ ОГЭ 11 класс - школа',
             self::litOgePract11 => 'ЛИТ ОГЭ 11 класс – практикум',
+            self::litPracticumPract11 => 'ЛИТ ПРАКТИКУМ 11 класс – практикум',
             self::engOge1 => 'АНГ ОГЭ 1 класс',
             self::engOge2 => 'АНГ ОГЭ 2 класс',
             self::engOge3 => 'АНГ ОГЭ 3 класс',
