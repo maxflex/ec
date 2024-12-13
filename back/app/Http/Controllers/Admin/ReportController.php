@@ -30,12 +30,12 @@ class ReportController extends Controller
             ->selectForUnion()
             ->with(['teacher', 'client']);
 
-        $fakeQuery = Report::fakeQuery();
+        $requiredQuery = Report::required();
 
         $this->filter($request, $query);
-        $this->filter($request, $fakeQuery);
+        $this->filter($request, $requiredQuery);
 
-        $query->union($fakeQuery);
+        $query->union($requiredQuery);
 
         return $this->handleIndexRequest($request, $query, ReportListResource::class);
     }

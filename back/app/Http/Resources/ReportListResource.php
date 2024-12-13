@@ -25,7 +25,7 @@ class ReportListResource extends JsonResource
                 'year', 'program', 'status', 'fill',
                 'price', 'created_at', 'grade'
             ], [
-                'lessons_count' => $this->lessons->count(),
+                'lessons_count' => $report->lessons->count(),
                 'teacher' => new PersonResource($this->teacher),
                 'client' => new PersonResource($this->client),
             ]);
