@@ -19,7 +19,7 @@ return new class extends Migration
                 'program',
                 array_column(Program::cases(), 'name')
             )->index();
-            $table->unsignedSmallInteger('year');
+            $table->unsignedSmallInteger('year')->index();
             $table->char('letter')->nullable();
             $table->date('contract_date')->nullable();
             $table->unsignedSmallInteger('lessons_planned')->nullable();

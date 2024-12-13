@@ -2,6 +2,8 @@
 
 namespace App\Enums;
 
+use Illuminate\Support\Collection;
+
 enum Program: string
 {
     case math1 = 'math1';
@@ -2211,5 +2213,37 @@ enum Program: string
         }
 
         return 125;
+    }
+
+    /**
+     * Все программы курсов (9, 10, 11 классы)
+     *
+     * @return Collection<int, string>
+     */
+    public static function getCourses(): Collection
+    {
+        return collect(Program::cases())
+            ->map(fn($e) => str($e->name))
+            ->filter(
+                fn($e) => $e->length() < 7
+                    && ($e->endsWith("9") || $e->endsWith("10") || $e->endsWith("11"))
+            )
+            ->map(fn($e) => $e->value())
+            ->values();
+    }
+
+
+    /**
+     * Программы школа 8-11, экст
+     *
+     * @return Collection<int, string>
+     */
+    public static function getSchoolAndExternal(): Collection
+    {
+        return collect(Program::cases())
+            ->map(fn($e) => str($e->name))
+            ->filter(fn($e) => $e->endsWith("External") || $e->contains("School"))
+            ->map(fn($e) => $e->value())
+            ->values();
     }
 }
