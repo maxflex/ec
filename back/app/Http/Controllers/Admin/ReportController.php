@@ -36,6 +36,8 @@ class ReportController extends Controller
             );
         }
 
+        $query->with(['teacher', 'client']);
+
         $this->filter($request, $query);
 
         return $this->handleIndexRequest($request, $query, ReportListResource::class);
