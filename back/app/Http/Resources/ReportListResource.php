@@ -2,7 +2,9 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Client;
 use App\Models\Report;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -26,8 +28,8 @@ class ReportListResource extends JsonResource
                 'price', 'created_at', 'grade'
             ], [
                 'lessons_count' => $report->lessons->count(),
-                'teacher' => new PersonResource($this->teacher),
-                'client' => new PersonResource($this->client),
+                'teacher' => new PersonResource($report->teacher),
+                'client' => new PersonResource($report->client),
             ]);
         }
         // fake report
@@ -35,8 +37,8 @@ class ReportListResource extends JsonResource
             'year', 'program', 'lessons_count'
         ], [
             'id' => uniqid(),
-            'teacher' => new PersonResource($this->teacher),
-            'client' => new PersonResource($this->client),
+            'teacher' => new PersonResource(Teacher::find($this->teacher_id)),
+            'client' => new PersonResource(Client::find($this->client_id)),
         ]);
     }
 }

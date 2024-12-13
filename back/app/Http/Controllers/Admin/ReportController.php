@@ -7,6 +7,7 @@ use App\Http\Resources\ReportListResource;
 use App\Http\Resources\ReportResource;
 use App\Models\Report;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
@@ -14,7 +15,6 @@ class ReportController extends Controller
         'equals' => [
             'year', 'program', 'status', 'client_id', 'teacher_id'
         ],
-        'type' => ['type']
     ];
 
     /**
@@ -26,16 +26,17 @@ class ReportController extends Controller
             'year' => ['required']
         ]);
 
-        $query = Report::query()
-            ->selectForUnion()
-            ->with(['teacher', 'client']);
-
-        $requiredQuery = Report::required();
+        if ($request->has('type')) {
+            $query = $request->type
+                ? Report::selectForUnion()
+                : Report::required();
+        } else {
+            $query = DB::table('r')->withExpression('r',
+                Report::selectForUnion()->union(Report::required())
+            );
+        }
 
         $this->filter($request, $query);
-        $this->filter($request, $requiredQuery);
-
-        $query->union($requiredQuery);
 
         return $this->handleIndexRequest($request, $query, ReportListResource::class);
     }
@@ -64,9 +65,9 @@ class ReportController extends Controller
     {
         $report->delete();
     }
-
-    protected function filterType(&$query, $type)
-    {
-        $type ? $query->whereNotNull('id') : $query->whereNull('id');
-    }
+//
+//    protected function filterType(&$query, $type)
+//    {
+//        $type ? $query->whereNotNull('id') : $query->whereNull('id');
+//    }
 }
