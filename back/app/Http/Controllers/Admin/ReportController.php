@@ -26,6 +26,8 @@ class ReportController extends Controller
             'year' => ['required']
         ]);
 
+        // для быстродействия не делаем union, если выбран фильтр созданные/требуется
+        // хотя улучшение сомнительно
         if ($request->has('type')) {
             $query = $request->type
                 ? Report::selectForUnion()
@@ -35,8 +37,6 @@ class ReportController extends Controller
                 Report::selectForUnion()->union(Report::required())
             );
         }
-
-        $query->with(['teacher', 'client']);
 
         $this->filter($request, $query);
 
