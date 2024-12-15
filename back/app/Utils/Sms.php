@@ -11,12 +11,12 @@ class Sms
     {
         $url = config('sms.host') . 'send.php';
 
-        $response = Http::post($url, [
+        $response = Http::asForm()->post($url, [
             'login' => config('sms.login'),
             'psw' => config('sms.psw'),
             'sender' => config('sms.sender'),
             'charset' => 'utf-8',
-            "fmt" => 1, // 1 – вернуть ответ в виде чисел: ID и количество SMS через запятую (1234,1)
+            "fmt" => 3, // JSON
             "phones" => $phone->number,
             "mes" => $message,
             "tinyurl" => 1,
