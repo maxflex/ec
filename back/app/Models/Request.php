@@ -16,7 +16,7 @@ class Request extends Model
 
     protected $fillable = [
         'responsible_user_id', 'direction', 'status', 'client_id',
-        'is_verified'
+        'is_verified', 'yandex_id', 'google_id'
     ];
 
     protected $casts = [

@@ -33,6 +33,7 @@ class RouteServiceProvider extends ServiceProvider
                     ->prefix($r)
                     ->group(base_path("routes/{$r}.php"));
             }
+            Route::prefix('pub')->group(base_path("routes/pub.php"));
         });
     }
 }

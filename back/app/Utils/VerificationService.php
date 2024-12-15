@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Redis;
 
 class VerificationService
 {
-    public static function sendCode(Phone $phone)
+    public static function sendCode(Phone $phone, bool $sendBySms = false)
     {
         // если код уже отправлен – ничего не делаем
         // if (Redis::get(self::cacheKey($phone)) !== null) {
@@ -16,10 +16,12 @@ class VerificationService
         // }
         $code = self::generateCode();
         self::storeCode($phone, $code);
-//        if (is_localhost()) {
-//            return;
-//        }
-        Telegram::sendMessage($phone->telegram_id, "*$code* – код для авторизации", 'MarkdownV2');
+        if (is_localhost()) {
+            return;
+        }
+        $sendBySms
+            ? Sms::send($phone, "Код подтверждения: $code")
+            : Telegram::sendMessage($phone->telegram_id, "*$code* – код для авторизации", 'MarkdownV2');
     }
 
     public static function verifyCode(Phone $phone, $code)

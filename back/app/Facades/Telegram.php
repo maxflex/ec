@@ -5,7 +5,6 @@ namespace App\Facades;
 use Illuminate\Support\Facades\Facade;
 use TelegramBot\Api\BotApi;
 
-
 /**
  * @mixin BotApi
  */

@@ -2,6 +2,8 @@
 
 namespace App\Enums;
 
+use Illuminate\Http\Request;
+
 enum Direction: string
 {
     case courses9 = 'courses9';
@@ -57,5 +59,51 @@ enum Direction: string
             $str->endsWith('11') => Direction::courses11,
             default => null,
         };
+    }
+
+    /**
+     * Получить направление входящей заявке
+     * TODO: в идеале переделать фронт, чтобы отправлял значение напрямую
+     */
+    public static function fromIncomingRequest(Request $request): Direction
+    {
+        $grade = intval($request->input('grade'));
+
+        /**
+         * forms: [
+         * { value: "courses", text: "Курсы" },
+         * { value: "external", text: "Экстернат" },
+         * { value: "school", text: "Старшая школа" },
+         * { value: "other", text: "Развивающие курсы" },
+         * ],
+         */
+        switch ($request->input('form')) {
+            case 'courses':
+                return match ($grade) {
+                    9 => Direction::courses9,
+                    10 => Direction::courses10,
+                    default => Direction::courses11
+                };
+
+            case 'external':
+                return Direction::external;
+
+            case 'school':
+                return match ($grade) {
+                    8 => Direction::school8,
+                    9 => Direction::school9,
+                    10 => Direction::school10,
+                    default => Direction::school11
+                };
+
+            case 'other':
+                return match ($request->input('otherCourse')) {
+                    'python' => Direction::python,
+                    default => Direction::english
+                };
+        }
+
+        // не удалось получить направление
+        return Direction::online;
     }
 }
