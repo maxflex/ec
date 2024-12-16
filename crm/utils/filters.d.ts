@@ -52,6 +52,7 @@ declare global {
     program?: Program
     type?: number
     status?: ReportStatus
+    teacher_id?: number
   }
 
   interface TopicFilters {

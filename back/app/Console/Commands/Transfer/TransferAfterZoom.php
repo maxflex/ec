@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Добавление после основного переноса
  */
-class TransferZoom extends Command
+class TransferAfterZoom extends Command
 {
     use TransferTrait;
 
-    protected $signature = 'app:transfer:zoom';
+    protected $signature = 'app:transfer:after:zoom';
     protected $description = 'Transfer zoom';
 
     public function handle()

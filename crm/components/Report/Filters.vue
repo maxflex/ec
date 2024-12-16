@@ -16,15 +16,13 @@ const model = defineModel<ReportFilters>({ required: true })
     density="comfortable"
   />
   <UiClearableSelect
-    v-model="model.program"
-    label="Программа"
-    :items="selectItems(ProgramLabel)"
-    density="comfortable"
-  />
-  <UiClearableSelect
     v-model="model.status"
     label="Статус"
     :items="selectItems(ReportStatusLabel)"
+    density="comfortable"
+  />
+  <TeacherSelector
+    v-model="model.teacher_id"
     density="comfortable"
   />
 </template>

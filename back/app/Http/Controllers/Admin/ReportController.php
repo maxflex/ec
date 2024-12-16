@@ -38,6 +38,8 @@ class ReportController extends Controller
             );
         }
 
+        $query->latest('id');
+
         $this->filter($request, $query);
 
         return $this->handleIndexRequest($request, $query, ReportListResource::class);
