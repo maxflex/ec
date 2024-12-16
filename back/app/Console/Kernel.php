@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('app:check-errors')->dailyAt('03:00');
         $schedule->command('app:send-telegram-messages')->everyMinute();
+        $schedule->command('scout:reimport-all')->dailyAt('14:00');
         // $schedule->command('inspire')->hourly();
     }
 
