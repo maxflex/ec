@@ -17,13 +17,18 @@ class GroupListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        // Filter lessons using the preloaded relationship
+        $nonCancelledLessons = $this->lessons->filter(fn($lesson) => $lesson->status !== LessonStatus::cancelled);
+        $conductedLessons = $this->lessons->filter(fn($lesson) => $lesson->status === LessonStatus::conducted);
+
         return extract_fields($this, [
             'program', 'client_groups_count', 'zoom'
         ], [
-            'lessons_count' => $this->lessons()->where('status', '<>', LessonStatus::cancelled)->where('is_free', 0)->count(),
-            'lessons_free_count' => $this->lessons()->where('status', '<>', LessonStatus::cancelled)->where('is_free', 1)->count(),
-            'lessons_conducted_count' => $this->lessons()->where('status', LessonStatus::conducted)->where('is_free', 0)->count(),
-            'lessons_conducted_free_count' => $this->lessons()->where('status', LessonStatus::conducted)->where('is_free', 1)->count(),
+            'lessons_count' => $nonCancelledLessons->where('is_free', false)->count(),
+            'lessons_free_count' => $nonCancelledLessons->where('is_free', true)->count(),
+            'lessons_conducted_count' => $conductedLessons->where('is_free', false)->count(),
+            'lessons_conducted_free_count' => $conductedLessons->where('is_free', true)->count(),
+            'first_lesson_date' => $this->lessons->min('date'),
             'teachers' => PersonResource::collection($this->teachers),
             'teeth' => $this->getTeeth($this->year)
         ]);

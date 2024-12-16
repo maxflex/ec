@@ -76,6 +76,9 @@ function onClick(g: GroupListResource) {
           </span>
           {{ plural(item.lessons_conducted_count, ['урок', 'урока', 'уроков'], false) }}
         </template>
+        <span v-else-if="item.first_lesson_date" class="text-orange">
+          {{ formatDate(item.first_lesson_date) }}
+        </span>
       </div>
       <div style="width: 100px">
         <v-icon :icon="mdiAccountGroup" class="mr-2" style="top: -3px; position: relative" />

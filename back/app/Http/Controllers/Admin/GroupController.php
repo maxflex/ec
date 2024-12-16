@@ -25,6 +25,7 @@ class GroupController extends Controller
     {
         $query = Group::query()
             ->withCount('clientGroups')
+            ->with('lessons')
             ->latest('id');
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, GroupListResource::class);

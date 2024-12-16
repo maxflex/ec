@@ -864,6 +864,7 @@ export const ProgramShortLabel = {
   litSchool10: '10Ш-ЛИТ',
   litSchool11: '11Ш-ЛИТ',
   litPract11: '11П-ЛИТ',
+  litPracticumPract11: '11П-ЛИТ-ПРАКТ',
   soc1: '1-ОБЩ',
   soc2: '2-ОБЩ',
   soc3: '3-ОБЩ',

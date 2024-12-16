@@ -355,6 +355,7 @@ declare global {
     lessons_conducted_free_count: number
     lessons_free_count: number
     client_groups_count: number
+    first_lesson_date?: string
     program: Program
     teachers: PersonResource[]
     teeth: Teeth
