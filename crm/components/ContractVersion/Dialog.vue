@@ -494,6 +494,7 @@ defineExpose({ edit, newContract, newVersion })
                     v-model="p.date"
                     label=""
                     density="compact"
+                    :year="item.contract.year"
                   />
                 </td>
                 <td>

@@ -25,6 +25,9 @@
   }
 
   &__month {
+    &:last-child {
+      padding-bottom: 20px;
+    }
     &-label {
       font-weight: bold;
       padding: 30px 12px 42px 12px;
