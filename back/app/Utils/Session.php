@@ -16,6 +16,11 @@ class Session
      */
     public static function logIn(Phone $phone): string
     {
+        // Вход родителя приравниваем ко входу ученика
+        if ($phone->entity_type === ClientParent::class) {
+            $phone = $phone->entity->client->phones()->first();
+        }
+
         $hash = Hash::make($phone->number);
         // App\Models\User => admin
         // App\Models\Client = client
