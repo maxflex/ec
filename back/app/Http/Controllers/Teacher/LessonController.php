@@ -9,14 +9,16 @@ use Illuminate\Http\Request;
 
 class LessonController extends \App\Http\Controllers\Admin\LessonController
 {
-    /**
-     * Сохранение ранее проведённого занятия
-     */
     public function update(Request $request, Lesson $lesson)
     {
-        foreach ($request->students as $s) {
-            $clientLesson = ClientLesson::find($s['id']);
-            $clientLesson->update($s);
+        // Сохранение ранее проведённого занятия
+        if ($request->has('students')) {
+            foreach ($request->students as $s) {
+                $clientLesson = ClientLesson::find($s['id']);
+                $clientLesson->update($s);
+            }
+        } else {
+            $lesson->update($request->all());
         }
         return new LessonListResource($lesson);
     }
