@@ -99,7 +99,7 @@ class Lesson extends Model
                     ? $s->minutes_late
                     : null,
                 'price' => $this->is_free ? 0 : $contractVersionProgram->getNextPrice(),
-                'scores' => count($s->scores) ? $s->scores : null
+                'scores' => $s->scores,
             ]);
         }
 
