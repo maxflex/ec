@@ -6,7 +6,7 @@ const emit = defineEmits<{
 }>()
 
 // isTeacher – for head teachers
-const { isAdmin, isClient, isTeacher } = useAuthStore()
+const { isAdmin, isClient } = useAuthStore()
 </script>
 
 <template>
@@ -93,7 +93,7 @@ const { isAdmin, isClient, isTeacher } = useAuthStore()
           просмотр
         </v-btn>
         <v-btn
-          v-else-if="isClient"
+          v-else-if="isClient && !t.is_finished"
           color="primary"
           density="comfortable"
           :width="154"
