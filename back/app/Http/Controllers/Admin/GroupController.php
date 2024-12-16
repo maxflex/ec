@@ -15,9 +15,10 @@ use Illuminate\Http\Request;
 class GroupController extends Controller
 {
     protected $filters = [
-        'equals' => ['program', 'year'],
+        'equals' => ['year'],
         'teacher' => ['teacher_id'],
         'client' => ['client_id'],
+        'findInSet' => ['program'],
     ];
 
     public function index(Request $request)

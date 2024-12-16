@@ -33,7 +33,7 @@ declare global {
 
   interface GroupFilters {
     year: Year
-    program?: Program
+    program: Program[]
   }
 
   interface ClientFilters {

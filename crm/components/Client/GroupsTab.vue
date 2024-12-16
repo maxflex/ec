@@ -9,6 +9,7 @@ const filters = ref<YearFilters>(loadFilters({
 
 const groupFilters = ref<GroupFilters>({
   year: currentAcademicYear(),
+  program: [],
 })
 
 const loading = ref(true)
@@ -50,7 +51,7 @@ function onAttachStart(swamp: SwampListResource) {
   selectedSwampId.value = swamp.id
   groupFilters.value = {
     year: filters.value.year,
-    program: swamp.program,
+    program: [swamp.program],
   }
 }
 

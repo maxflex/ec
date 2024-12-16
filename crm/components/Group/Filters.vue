@@ -13,7 +13,7 @@ const model = defineModel<GroupFilters>({ required: true })
     density="comfortable"
     :disabled="disabled"
   />
-  <UiClearableSelect
+  <UiMultipleSelect
     v-model="model.program"
     label="Программа"
     :items="selectItems(ProgramLabel)"

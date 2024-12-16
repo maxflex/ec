@@ -3,6 +3,7 @@ import type { GroupDialog } from '#build/components'
 
 const filters = ref<GroupFilters>(loadFilters({
   year: currentAcademicYear(),
+  program: [],
 }))
 const { items, indexPageData } = useIndex<GroupListResource, GroupFilters>(
   `groups`,
