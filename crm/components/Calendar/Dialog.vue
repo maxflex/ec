@@ -6,8 +6,12 @@ const emit = defineEmits(['close'])
 const { dialog, width, transition } = useDialog('small')
 const model = defineModel<string | string[]>({ required: true })
 
+// начиная с какой даты возможен выбор в календаре
+// для выбора даты рождения клиента нужны старые даты
+const startYear = 2000
+
 const years = year === undefined
-  ? Object.keys(YearLabel).map(y => Number(y))
+  ? Array.from({ length: currentAcademicYear() - startYear + 1 }, (_, i) => startYear + i)
   : [year, year + 1]
 
 function open() {
@@ -107,7 +111,7 @@ defineExpose({ open })
             <div class="calendar__month-label">
               <span class="text-grey-light">
                 {{ MonthLabel[m] }}
-                '{{ y - 2000 }}
+                '{{ y - 2000 > 10 ? '' : '0' }}{{ y - 2000 }}
               </span>
             </div>
             <div class="calendar__month-days">
