@@ -58,6 +58,7 @@ class RequestsController extends Controller
     public function destroy($id)
     {
         $clientRequest = ClientRequest::findOrFail($id);
+        $clientRequest->phones->each->delete();
         $clientRequest->delete();
     }
 }
