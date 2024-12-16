@@ -6,7 +6,6 @@ use App\Http\Controllers\Common\{AuthController,
     FileController,
     LogController,
     MangoController,
-    SecurityController,
     TeethController,
     TelegramBotController,
     VacationController};
@@ -37,12 +36,4 @@ Route::middleware(['auth:crm'])->group(function () {
         'vacations' => VacationController::class,
         'events' => EventController::class,
     ]);
-});
-
-Route::prefix('security')->controller(SecurityController::class)->group(function () {
-    Route::post('send-code', 'sendCode');
-    Route::post('verify-code', 'verifyCode');
-    Route::get('passes', 'getAllPasses');
-    Route::post('passes', 'usePass');
-    Route::get('history', 'history');
 });

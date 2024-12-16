@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Common;
+namespace App\Http\Controllers\Pub;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PassLogResource;
 use App\Http\Resources\SecurityPassResource;
 use App\Models\Client;
 use App\Models\ClientParent;
@@ -15,6 +16,16 @@ use Illuminate\Http\Request;
 
 class SecurityController extends Controller
 {
+    protected $filters = [
+        'search' => ['q'],
+        'equals' => ['date'],
+    ];
+
+    protected $mapFilters = [
+        'q' => 'comment',
+        'date' => 'DATE(used_at)'
+    ];
+
     public function sendCode()
     {
         SecurityVerificationService::sendCode();
@@ -87,6 +98,9 @@ class SecurityController extends Controller
      */
     public function history(Request $request)
     {
-
+        $request->merge(['paginate' => 100]);
+        $query = PassLog::with('entity')->orderBy('id', 'desc');
+        $this->filter($request, $query);
+        return $this->handleIndexRequest($request, $query, PassLogResource::class);
     }
 }
