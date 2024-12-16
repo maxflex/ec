@@ -55,6 +55,11 @@ class Contract extends Model
         return $this->versions()->active()->first();
     }
 
+    public function getFirstVersionAttribute(): ContractVersion
+    {
+        return $this->versions()->first();
+    }
+
     protected function getBalanceItems(): array
     {
         $programIds = $this->active_version->programs()->pluck('id');
