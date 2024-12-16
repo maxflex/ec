@@ -1,32 +1,27 @@
 <script setup lang="ts">
-const emit = defineEmits(['select'])
+const emit = defineEmits<{
+  select: [groupId: number, cvpId: number]
+}>()
 const { dialog, width } = useDialog('large')
 const groups = ref<GroupListResource[]>([])
-const swamp = ref<SwampListResource>()
+const contractVersionProgramId = ref<number>(-1)
 const filters = ref<{
   year?: Year
   program?: Program
 }>({})
 
-function open(s: SwampListResource) {
-  swamp.value = s
+function open(year: Year, program: Program, cvpId: number) {
   dialog.value = true
+  contractVersionProgramId.value = cvpId
   filters.value = {
-    year: s.year,
-    program: s.program,
+    year,
+    program,
   }
 }
 
 async function onSelect(g: GroupListResource) {
   dialog.value = false
-  await useHttp(`client-groups`, {
-    method: 'post',
-    params: {
-      group_id: g.id,
-      contract_version_program_id: swamp.value!.id,
-    },
-  })
-  emit('select')
+  emit('select', g.id, contractVersionProgramId.value)
 }
 
 async function loadData() {

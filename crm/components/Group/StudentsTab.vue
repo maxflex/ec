@@ -23,15 +23,15 @@ async function removeFromGroup(gc: ClientGroupResource) {
 }
 
 // переместить в другую группу
-async function moveToAnotherGroup(g: GroupListResource, contractId: number) {
-  await removeFromGroup(
-    items.value.find(i => i.contract_id === contractId)!,
+function moveToAnotherGroup(groupId: number, cvpId: number) {
+  removeFromGroup(
+    items.value.find(i => i.contract_version_program_id === cvpId)!,
   )
-  await useHttp(`client-groups`, {
+  useHttp(`client-groups`, {
     method: 'post',
     params: {
-      group_id: g.id,
-      contract_id: contractId,
+      group_id: groupId,
+      contract_version_program_id: cvpId,
     },
   })
 }
@@ -85,7 +85,13 @@ nextTick(loadData)
               />
             </template>
             <v-list>
-              <v-list-item @click="groupSelectorDialog?.open(group.program!, group.year, item.contract_id)">
+              <v-list-item
+                @click="groupSelectorDialog?.open(
+                  group.year,
+                  group.program!,
+                  item.contract_version_program_id,
+                )"
+              >
                 <template #prepend>
                   <v-icon :icon="mdiShuffleVariant" />
                 </template>

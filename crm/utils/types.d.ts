@@ -934,7 +934,7 @@ declare global {
 
   interface ClientGroupResource {
     id: number
-    contract_id: number
+    contract_version_program_id: number
     teeth: Teeth
     client: PersonWithPhotoResource
   }
