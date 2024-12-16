@@ -78,7 +78,7 @@ const { isAdmin, isClient } = useAuthStore()
       <!--      </div> -->
       <div class="text-right">
         <v-btn
-          v-if="t.is_finished && isAdmin"
+          v-if="t.is_finished"
           color="secondary"
           density="comfortable"
           variant="tonal"
@@ -93,7 +93,7 @@ const { isAdmin, isClient } = useAuthStore()
           просмотр
         </v-btn>
         <v-btn
-          v-else-if="isClient && !t.is_finished"
+          v-else-if="isClient"
           color="primary"
           density="comfortable"
           :width="154"
