@@ -9,19 +9,17 @@ class Sms
 {
     public static function send(Phone $phone, string $message)
     {
-        $url = config('sms.host') . 'send.php';
-
-        $response = Http::asForm()->post($url, [
+        $params = [
             'login' => config('sms.login'),
             'psw' => config('sms.psw'),
             'sender' => config('sms.sender'),
+            'tinyurl' => 1,
+            'fmt' => 3,
             'charset' => 'utf-8',
-            "fmt" => 3, // JSON
-            "phones" => $phone->number,
-            "mes" => $message,
-            "tinyurl" => 1,
-        ]);
+            'phones' => $phone->number,
+            'mes' => $message,
+        ];
 
-        return $response->json();
+        return Http::get(config('sms.host'), $params)->json();
     }
 }
