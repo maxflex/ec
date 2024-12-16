@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Pub\{RequestsController, SecurityController};
+use App\Http\Controllers\Pub\{RequestsController, SecurityController, WebReviewController};
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('requests')->controller(RequestsController::class)->group(function () {
@@ -15,3 +15,5 @@ Route::prefix('security')->controller(SecurityController::class)->group(function
     Route::post('passes', 'usePass');
     Route::get('history', 'history');
 });
+
+Route::apiResource('reviews', WebReviewController::class)->only('index', 'show');
