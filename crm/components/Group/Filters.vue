@@ -20,4 +20,9 @@ const model = defineModel<GroupFilters>({ required: true })
     density="comfortable"
     :disabled="disabled"
   />
+  <TeacherSelector
+    v-model="model.teacher_id"
+    density="comfortable"
+    :disabled="disabled"
+  />
 </template>

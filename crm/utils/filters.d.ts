@@ -34,6 +34,7 @@ declare global {
   interface GroupFilters {
     year: Year
     program: Program[]
+    teacher_id?: number
   }
 
   interface ClientFilters {
