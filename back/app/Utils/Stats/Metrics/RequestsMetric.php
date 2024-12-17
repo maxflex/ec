@@ -4,7 +4,6 @@ namespace App\Utils\Stats\Metrics;
 
 use App\Models\Request as ClientRequest;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Query\Builder as QueryBuilder;
 
 class RequestsMetric extends BaseMetric
 {
@@ -23,7 +22,7 @@ class RequestsMetric extends BaseMetric
             ]);
     }
 
-    public static function getQueryValue(Builder|QueryBuilder $query): int
+    public static function getQueryValue($query): int
     {
         return $query->count();
     }

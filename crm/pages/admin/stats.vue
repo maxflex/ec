@@ -30,7 +30,7 @@ function onMetricsSelected(items: StatsMetric[]) {
   for (const metric of items) {
     metrics.value.push({
       metric,
-      filters: {},
+      filters: { },
     })
   }
 }

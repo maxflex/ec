@@ -125,7 +125,6 @@ defineExpose({ open })
               <th>
                 Опоздание
               </th>
-              <th />
               <th colspan="10">
                 Оценки
               </th>
@@ -153,31 +152,38 @@ defineExpose({ open })
                 />
               </td>
               <td width="57" class="conduct-dialog__scores">
-                <div
-                  v-for="(score, index) in s.scores" :key="index"
-                  :class="`conduct-dialog__score conduct-dialog__score--${score.score}`"
-                >
-                  <UiToggler
-                    v-model="s.scores[index].score"
-                    :items="scores.map(e => ({ value: e, title: e.toString() }))"
-                  />
-                </div>
+                <template v-if="s.status !== 'absent'">
+                  <div
+                    v-for="(score, index) in s.scores" :key="index"
+                    :class="`conduct-dialog__score conduct-dialog__score--${score.score}`"
+                  >
+                    <UiToggler
+                      v-model="s.scores[index].score"
+                      :items="scores.map(e => ({ value: e, title: e.toString() }))"
+                    />
+                  </div>
+                </template>
               </td>
               <td class="conduct-dialog__score-comments">
-                <div v-for="(score, index) in s.scores" :key="index">
-                  <v-text-field
-                    v-model="s.scores[index].comment"
-                    density="compact"
-                    placeholder="комментарий"
-                  />
-                  <v-icon
-                    icon="$close"
-                    @click="s.scores.splice(index, 1)"
-                  />
-                </div>
+                <template v-if="s.status !== 'absent'">
+                  <div v-for="(score, index) in s.scores" :key="index">
+                    <v-text-field
+                      v-model="s.scores[index].comment"
+                      density="compact"
+                      placeholder="комментарий"
+                    />
+                    <v-icon
+                      icon="$close"
+                      @click="s.scores.splice(index, 1)"
+                    />
+                  </div>
+                </template>
               </td>
               <td width="20">
-                <a v-if="s.scores.length < 3" @click="s.scores.push({ score: 5, comment: null })">
+                <a
+                  v-if="s.scores.length < 3 && s.status !== 'absent'"
+                  @click="s.scores.push({ score: 5, comment: null })"
+                >
                   <v-icon icon="$plus" />
                 </a>
               </td>

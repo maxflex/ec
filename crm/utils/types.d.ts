@@ -1,5 +1,3 @@
-import type { ContractPaymentMethodLabel } from '~/utils/labels'
-
 declare global {
   type Direction = keyof typeof DirectionLabel
 

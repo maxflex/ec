@@ -20,7 +20,7 @@ class AllPaymentsController extends Controller
 
     public function __invoke(Request $request)
     {
-        $query = AllPayments::query();
+        $query = AllPayments::query()->orderBy('date', 'desc');
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, AllPaymentResource::class);
     }

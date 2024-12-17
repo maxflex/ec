@@ -1,0 +1,54 @@
+<script lang="ts" setup>
+interface Filters {
+  year?: Year
+  type?: number
+  method?: ContractPaymentMethod
+  company?: Company
+  is_confirmed?: number
+}
+
+const filters = ref<Filters>({ })
+
+defineExpose({ filters })
+</script>
+
+<script lang="ts">
+export default {
+  label: 'Платежи клиентов',
+  width: 130,
+}
+</script>
+
+<template>
+  <div>
+    <UiClearableSelect v-model="filters.year" :items="selectItems(YearLabel)" label="Учебный год" />
+  </div>
+  <div>
+    <UiClearableSelect
+      v-model="filters.type"
+      :items="yesNo('по договорам', 'по клиентам')"
+      label="Тип"
+    />
+  </div>
+  <div>
+    <UiClearableSelect
+      v-model="filters.method"
+      label="Метод"
+      :items="selectItems(ContractPaymentMethodLabel)"
+    />
+  </div>
+  <div>
+    <UiClearableSelect
+      v-model="filters.company"
+      label="Компания"
+      :items="selectItems(CompanyLabel)"
+    />
+  </div>
+  <div>
+    <UiClearableSelect
+      v-model="filters.is_confirmed"
+      label="Подтверждён"
+      :items="yesNo()"
+    />
+  </div>
+</template>

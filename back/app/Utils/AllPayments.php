@@ -6,6 +6,9 @@ use App\Models\ClientPayment;
 use App\Models\ContractPayment;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Платежи клиентов по договорам + остальные client_payments
+ */
 class AllPayments
 {
     public static function query()
@@ -24,9 +27,7 @@ class AllPayments
 
         $cte = $clientPayments->union($contractPayments);
 
-        return DB::table('payments')
-            ->withExpression('payments', $cte)
-            ->orderBy('date', 'desc');
+        return DB::table('payments')->withExpression('payments', $cte);
     }
 
 }
