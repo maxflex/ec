@@ -1,4 +1,7 @@
 <script setup lang="ts">
+/**
+ * @DEPRICATED страница не используется
+ */
 import type { ClientPaymentDialog } from '#build/components'
 
 const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()

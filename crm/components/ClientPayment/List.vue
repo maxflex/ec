@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const { items } = defineProps<{ items: ClientPaymentResource[] }>()
-const emit = defineEmits<{ (e: 'open', p: ClientPaymentResource): void }>()
+const emit = defineEmits<{
+  edit: [id: number]
+}>()
 </script>
 
 <template>
@@ -15,7 +17,7 @@ const emit = defineEmits<{ (e: 'open', p: ClientPaymentResource): void }>()
           variant="plain"
           icon="$edit"
           :size="48"
-          @click="emit('open', item)"
+          @click="emit('edit', item.id)"
         />
       </div>
       <div style="width: 200px">
@@ -44,16 +46,10 @@ const emit = defineEmits<{ (e: 'open', p: ClientPaymentResource): void }>()
         {{ ClientPaymentMethodLabel[item.method] }}
       </div>
       <div>
-        <span
-          v-if="item.is_confirmed"
-          class="text-success"
-        >
+        <span v-if="item.is_confirmed" class="text-success">
           подтверждён
         </span>
-        <span
-          v-else
-          class="text-gray"
-        >
+        <span v-else class="text-gray">
           не подтверждён
         </span>
       </div>

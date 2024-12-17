@@ -75,7 +75,7 @@ nextTick(loadData)
         добавить платеж
       </v-btn>
     </template>
-    <ClientPaymentList :items="items" @open="clientPaymentDialog?.edit" />
+    <ClientPaymentList :items="items" @edit="clientPaymentDialog?.edit" />
   </UiIndexPage>
   <ClientPaymentDialog
     ref="clientPaymentDialog"

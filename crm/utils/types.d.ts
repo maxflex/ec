@@ -1,3 +1,5 @@
+import type { ContractPaymentMethodLabel } from '~/utils/labels'
+
 declare global {
   type Direction = keyof typeof DirectionLabel
 
@@ -1134,6 +1136,20 @@ declare global {
     program: Program
     client_id: number
     lessons_count: number
+  }
+
+  interface AllPaymentResource {
+    id: number
+    date: string
+    is_confirmed: boolean
+    is_return: boolean
+    method: ContractPaymentMethod
+    year: Year
+    purpose: ?string
+    company: Company
+    contract_id: ?number
+    client: PersonResource
+    sum: number
   }
 }
 

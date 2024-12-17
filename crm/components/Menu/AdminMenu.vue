@@ -103,7 +103,7 @@ const menu: Menu = [
   {
     icon: mdiCash,
     title: 'Платежи клиентов',
-    to: '/client-payments',
+    to: '/all-payments',
   },
   {
     icon: mdiCash,

@@ -157,7 +157,7 @@ nextTick(loadData)
         <ContractPaymentList
           v-if="selectedContract.payments.length"
           :items="selectedContract.payments"
-          @open="contractPaymentDialog?.edit"
+          @edit="contractPaymentDialog?.edit"
         />
       </template>
     </template>

@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\Admin\{BalanceController,
+use App\Http\Controllers\Admin\{AllPaymentsController,
+    BalanceController,
     CallController,
     ClientController,
     ClientGroupController,
@@ -117,6 +118,8 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::get('passes/permanent', [PassController::class, 'permanent']);
 
     Route::get('menu-counts', MenuCountsController::class);
+
+    Route::get('all-payments', AllPaymentsController::class);
    
     Route::apiResources([
         'telegram-lists' => TelegramListController::class,

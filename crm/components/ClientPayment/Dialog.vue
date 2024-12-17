@@ -41,8 +41,7 @@ function create(clientId: number, year: Year) {
   dialog.value = true
 }
 
-async function edit(e: ClientPaymentResource) {
-  const { id } = e
+async function edit(id: number) {
   itemId.value = id
   loading.value = true
   dialog.value = true

@@ -40,8 +40,8 @@ function create(c: ContractResource) {
   dialog.value = true
 }
 
-async function edit(e: ContractPaymentResource) {
-  const { id } = e
+async function edit(id: number) {
+  console.log('edit', id)
   itemId.value = id
   loading.value = true
   dialog.value = true
