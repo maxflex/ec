@@ -43,12 +43,18 @@ class TelegramMessage extends Model
             'text' => $text,
         ]);
         if ($phone->telegram_id) {
-            Telegram::sendMessage(
-                $phone->telegram_id,
-                $text,
-                'HTML',
-                replyMarkup: $replyMarkup
-            );
+            try {
+                Telegram::sendMessage(
+                    $phone->telegram_id,
+                    $text,
+                    'HTML',
+                    replyMarkup: $replyMarkup
+                );
+            } catch (\Exception $e) {
+                logger("Cant send telegram message", $phone->toArray());
+//                "message": "Bad Request: chat not found",
+//                "exception": "TelegramBot\\Api\\HttpException",
+            }
             return true;
         }
         return false;
