@@ -45,7 +45,10 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
      */
     public function show(Report $report, Request $request)
     {
-        abort_if(!auth()->user()->is_head_teacher, 404);
+        abort_unless(
+            auth()->user()->is_head_teacher || $report->teacher_id === auth()->id(),
+            403
+        );
         return new ReportResource($report);
     }
 
