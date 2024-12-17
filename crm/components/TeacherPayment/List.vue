@@ -73,7 +73,9 @@ function onDeleted(tp: TeacherPaymentResource) {
         style="flex: 1"
         class="text-truncate"
       >
-        {{ filterTruncate(payment.purpose!, 20) }}
+        <template v-if="payment.purpose">
+          {{ filterTruncate(payment.purpose, 20) }}
+        </template>
       </div>
     </div>
     <TeacherPaymentDialog
