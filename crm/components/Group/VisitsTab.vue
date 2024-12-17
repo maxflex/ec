@@ -5,7 +5,7 @@ import { uniq } from 'rambda'
 const { id } = defineProps<{ id: number }>()
 const items = ref<GroupVisitResource[]>([])
 const loading = ref(true)
-
+const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const clients = computed(() => {
   const result: PersonResource[] = []
   for (const item of items.value) {
@@ -133,7 +133,7 @@ nextTick(loadData)
           <td>
             {{ formatTextDate(l.dateTime) }}
             <span class="text-gray ml-1">
-              {{ WeekdayLabel[getDay(l.dateTime) as Weekday] }}
+              {{ dayLabels[getDay(l.dateTime)] }}
             </span>
           </td>
           <td v-for="t in teachers" :key="t.id">
