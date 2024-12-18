@@ -17,8 +17,6 @@ declare global {
 
   type CallAppStatusFilter = keyof typeof CallAppStatusFilterLabel
 
-  type StatsMetric = keyof typeof Metrics
-
   type SwampFilterStatus = keyof typeof SwampFilterStatusLabel
 
   type TelegramTemplate = keyof typeof TelegramTemplateLabel
@@ -938,11 +936,6 @@ declare global {
     contract_version_program_id: number
     teeth: Teeth
     client: PersonWithPhotoResource
-  }
-
-  interface MetricItem {
-    metric: StatsMetric
-    filters: object
   }
 
   interface ExamDateResource {

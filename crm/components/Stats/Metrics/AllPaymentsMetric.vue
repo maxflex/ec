@@ -5,6 +5,7 @@ interface Filters {
   method?: ContractPaymentMethod
   company?: Company
   is_confirmed?: number
+  is_return?: number
 }
 
 const filters = ref<Filters>({ })
@@ -33,7 +34,7 @@ export default {
   <div>
     <UiClearableSelect
       v-model="filters.method"
-      label="Метод"
+      label="Метод оплаты"
       :items="selectItems(ContractPaymentMethodLabel)"
     />
   </div>
@@ -49,6 +50,13 @@ export default {
       v-model="filters.is_confirmed"
       label="Подтверждён"
       :items="yesNo()"
+    />
+  </div>
+  <div>
+    <UiClearableSelect
+      v-model="filters.is_return"
+      label="Возврат"
+      :items="yesNo('только платежи', 'только возвраты')"
     />
   </div>
 </template>

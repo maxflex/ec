@@ -1,19 +1,19 @@
 <script lang="ts" setup>
-import Metrics from '~/components/Stats/Metrics'
+import { type MetricComponent, MetricComponents } from '~/components/Stats/Metrics'
 
 const emit = defineEmits<{
   select: [items: StatsMetric[]]
 }>()
 
 const { dialog, width } = useDialog('default')
-const selected = ref<StatsMetric[]>([])
+const selected = ref<MetricComponent[]>([])
 
 function open() {
   dialog.value = true
   selected.value = []
 }
 
-function onSelect(key: StatsMetric) {
+function onSelect(key: MetricComponent) {
   const index = selected.value.findIndex(k => k === key)
   index === -1
     ? selected.value.push(key)
@@ -21,7 +21,12 @@ function onSelect(key: StatsMetric) {
 }
 
 function save() {
-  emit('select', selected.value)
+  emit('select', selected.value.map(metric => ({
+    metric,
+    label: MetricComponents[metric].label,
+    color: 'black',
+    filters: MetricComponents[metric].filters as object ?? {},
+  })))
   dialog.value = false
 }
 
@@ -37,7 +42,7 @@ defineExpose({ open })
       </div>
       <div class="dialog-body pt-0">
         <div class="table table--hover table-metrics-dialog">
-          <div v-for="(metric, key) in Metrics" :key="key" @click="onSelect(key)">
+          <div v-for="(metric, key) in MetricComponents" :key="key" @click="onSelect(key)">
             <div>
               <div class="vfn-1" style="width: 20px">
                 <UiCheckbox :value="selected.includes(key)" />

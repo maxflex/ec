@@ -2,12 +2,12 @@
 import type { StatsMetricFiltersDialog, StatsMetricSelectorDialog } from '#build/components'
 import { clone } from 'rambda'
 import { VueDraggableNext } from 'vue-draggable-next'
-import Metrics from '~/components/Stats/Metrics'
+import { MetricComponents, type StatsMetric } from '~/components/Stats/Metrics'
 
 const metricSelectorDialog = ref<InstanceType<typeof StatsMetricSelectorDialog>>()
 const metricFiltersDialog = ref<InstanceType<typeof StatsMetricFiltersDialog>>()
 const mode = ref<StatsMode>('day')
-const metrics = ref<MetricItem[]>([])
+const metrics = ref<StatsMetric[]>([])
 const loading = ref(false)
 // сохраняем параметры ответа сервера, чтобы не зависеть от текущих параметров
 // (например, если снесли метрику или изменили режим на "по годам", чтобы не менялось форматирование)
@@ -27,11 +27,8 @@ const dragThreshold = 300
 let scrollContainer: HTMLElement | null = null
 
 function onMetricsSelected(items: StatsMetric[]) {
-  for (const metric of items) {
-    metrics.value.push({
-      metric,
-      filters: { },
-    })
+  for (const item of items) {
+    metrics.value.push(item)
   }
 }
 
@@ -39,8 +36,8 @@ function deleteMetric(index: number) {
   metrics.value.splice(index, 1)
 }
 
-function onFiltersApply(index: number, f: any) {
-  metrics.value[index].filters = f
+function onSave(index: number, m: StatsMetric) {
+  metrics.value.splice(index, 1, m)
 }
 
 async function loadMore() {
@@ -83,12 +80,8 @@ function loadData() {
   loadMore()
 }
 
-function hasFilters(m: MetricItem): boolean {
-  return Object.keys(m.filters).length > 0
-}
-
-function getWidth(m: MetricItem) {
-  const { width } = Metrics[m.metric]
+function getWidth(m: StatsMetric) {
+  const { width } = MetricComponents[m.metric]
   return {
     width: `${width || 90}px`,
   }
@@ -171,7 +164,6 @@ function onDragEnd() {
           v-for="(metric, index) in metrics"
           :key="index"
           :class="{
-            'table-stats__header-metric--has-items': hasFilters(metric),
             'table-stats__header-metric--will-be-deleted': isOverDeleteThreshold && draggedIndex === index,
           }"
           :style="getWidth(metric)"
@@ -179,7 +171,7 @@ function onDragEnd() {
           @click="metricFiltersDialog?.open(metric, index)"
         >
           <span>
-            {{ Metrics[metric.metric].label }}
+            {{ metric.label }}
           </span>
         </div>
       </VueDraggableNext>
@@ -199,7 +191,7 @@ function onDragEnd() {
       <div
         v-for="(value, index) in values"
         :key="index"
-        :class="{ 'text-error': value < 0 }"
+        :class="`text-${responseParams.metrics[index].color}`"
         :style="getWidth(responseParams.metrics[index])"
       >
         {{ value ? formatPrice(value) : '' }}
@@ -207,7 +199,7 @@ function onDragEnd() {
     </div>
   </div>
   <StatsMetricSelectorDialog ref="metricSelectorDialog" @select="onMetricsSelected" />
-  <StatsMetricFiltersDialog ref="metricFiltersDialog" @apply="onFiltersApply" />
+  <StatsMetricFiltersDialog ref="metricFiltersDialog" @save="onSave" />
 </template>
 
 <style lang="scss" scoped>
@@ -251,22 +243,6 @@ function onDragEnd() {
       position: relative;
       line-height: 20px;
       padding: $padding;
-      &--has-items {
-        span {
-          position: relative;
-          &:after {
-            content: '';
-            $size: 8px;
-            height: $size;
-            width: $size;
-            border-radius: 50%;
-            position: absolute;
-            right: -10px;
-            top: 0;
-            background: rgb(var(--v-theme-error));
-          }
-        }
-      }
       &--will-be-deleted {
         background: rgb(var(--v-theme-error)) !important;
         color: white;
