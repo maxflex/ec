@@ -2,13 +2,15 @@
 interface Filters {
   year?: Year
   type?: number
-  method?: ContractPaymentMethod
+  method: ContractPaymentMethod[]
   company?: Company
   is_confirmed?: number
   is_return?: number
 }
 
-const filters = ref<Filters>({ })
+const filters = ref<Filters>({
+  method: [],
+})
 
 defineExpose({ filters })
 </script>
@@ -17,6 +19,9 @@ defineExpose({ filters })
 export default {
   label: 'Платежи клиентов',
   width: 130,
+  filters: {
+    method: [],
+  },
 }
 </script>
 
@@ -32,7 +37,7 @@ export default {
     />
   </div>
   <div>
-    <UiClearableSelect
+    <UiMultipleSelect
       v-model="filters.method"
       label="Метод оплаты"
       :items="selectItems(ContractPaymentMethodLabel)"

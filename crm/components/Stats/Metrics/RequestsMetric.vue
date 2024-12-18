@@ -12,6 +12,7 @@ defineExpose({ filters })
 <script lang="ts">
 export default {
   label: 'Заявки',
+  filters: {},
 }
 </script>
 

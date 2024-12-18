@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { clone, isNotNil, pickBy } from 'rambda'
-import { MetricColors, MetricComponents, type StatsMetric } from '~/components/Stats/Metrics'
+import { MetricColors, MetricComponents, type StatsMetric } from '~/components/Stats/Metrics/index'
 
 const emit = defineEmits<{
   save: [index: number, m: StatsMetric]
 }>()
 
-const { dialog, width } = useDialog('default')
+const { dialog, width, transition } = useDialog('default')
 const item = ref<StatsMetric>({
   metric: 'RequestsMetric',
   color: 'black',
@@ -36,7 +36,7 @@ defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :width="width">
+  <v-dialog v-model="dialog" :width="width" :transition="transition">
     <div class="dialog-wrapper">
       <div class="dialog-header">
         {{ CurrentMetricComponent.label }}

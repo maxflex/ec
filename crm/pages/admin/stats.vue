@@ -1,20 +1,24 @@
 <script lang="ts" setup>
-import type { StatsMetricFiltersDialog, StatsMetricSelectorDialog } from '#build/components'
+import type { StatsDialog } from '#build/components'
+import { mdiTune } from '@mdi/js'
 import { clone } from 'rambda'
 import { VueDraggableNext } from 'vue-draggable-next'
-import { MetricComponents, type StatsMetric } from '~/components/Stats/Metrics'
+import { MetricComponents, type StatsMetric, type StatsParams } from '~/components/Stats/Metrics'
 
-const metricSelectorDialog = ref<InstanceType<typeof StatsMetricSelectorDialog>>()
-const metricFiltersDialog = ref<InstanceType<typeof StatsMetricFiltersDialog>>()
-const mode = ref<StatsMode>('day')
-const metrics = ref<StatsMetric[]>([])
-const loading = ref(false)
+const statsDialog = ref<InstanceType<typeof StatsDialog>>()
+
+const params = ref<StatsParams>({
+  metrics: [],
+  mode: 'day',
+  date: today(),
+})
+
 // сохраняем параметры ответа сервера, чтобы не зависеть от текущих параметров
 // (например, если снесли метрику или изменили режим на "по годам", чтобы не менялось форматирование)
-const responseParams = ref({
-  mode: mode.value,
-  metrics: clone(metrics.value),
-})
+const responseParams = ref<StatsParams>()
+
+const loading = ref(false)
+
 const items = ref<StatsListResource[]>([])
 const page = ref<number>(0)
 
@@ -26,18 +30,13 @@ const dragThreshold = 300
 
 let scrollContainer: HTMLElement | null = null
 
-function onMetricsSelected(items: StatsMetric[]) {
-  for (const item of items) {
-    metrics.value.push(item)
-  }
+function onSave(p: StatsParams) {
+  params.value = clone(p)
+  loadData()
 }
 
 function deleteMetric(index: number) {
-  metrics.value.splice(index, 1)
-}
-
-function onSave(index: number, m: StatsMetric) {
-  metrics.value.splice(index, 1, m)
+  params.value.metrics.splice(index, 1)
 }
 
 async function loadMore() {
@@ -51,18 +50,14 @@ async function loadMore() {
     {
       method: 'post',
       body: {
+        ...params.value,
         page: page.value,
-        mode: mode.value,
-        metrics: metrics.value,
       },
     },
   )
   if (data.value) {
     if (page.value === 1) {
-      responseParams.value = {
-        mode: mode.value,
-        metrics: clone(metrics.value),
-      }
+      responseParams.value = clone(params.value)
       items.value = data.value
     }
     else {
@@ -83,7 +78,7 @@ function loadData() {
 function getWidth(m: StatsMetric) {
   const { width } = MetricComponents[m.metric]
   return {
-    width: `${width || 90}px`,
+    width: `${width || 120}px`,
   }
 }
 
@@ -139,76 +134,69 @@ function onDragEnd() {
 </script>
 
 <template>
-  <div :class="{ 'table-stats--loading': loading }" class="table table-stats">
+  <div :class="{ 'table-stats--loading': loading && page === 1 }" class="table table-stats">
     <div class="table-stats__header">
-      <div class="table-stats__header-mode">
-        <UiToggler
-          v-model="mode"
-          :items="selectItems(StatsModeLabel)"
-        />
-      </div>
-      <VueDraggableNext
-        v-model="metrics"
-        :remove-clone-on-hide="true"
-        :animation="200"
-        :class="{
-          'table-stats__header-metrics--dragging': isDragging,
-        }"
-        class="table-stats__header-metrics"
-        direction="horizontal"
-        @start="onDragStart"
-        @end="onDragEnd"
-        @drag="onDragging"
-      >
-        <div
-          v-for="(metric, index) in metrics"
-          :key="index"
-          :class="{
-            'table-stats__header-metric--will-be-deleted': isOverDeleteThreshold && draggedIndex === index,
-          }"
-          :style="getWidth(metric)"
-          class="table-stats__header-metric"
-          @click="metricFiltersDialog?.open(metric, index)"
-        >
-          <span>
-            {{ metric.label }}
-          </span>
+      <template v-if="responseParams">
+        <div class="table-stats__header-mode">
+          {{ StatsModeLabel[responseParams.mode] }}
         </div>
-      </VueDraggableNext>
-      <div class="table-stats__header-add" @click="metricSelectorDialog?.open()">
-        <v-icon icon="$plus" />
-      </div>
+        <VueDraggableNext
+          v-model="responseParams.metrics"
+          :remove-clone-on-hide="true"
+          :animation="200"
+          :class="{
+            'table-stats__header-metrics--dragging': isDragging,
+          }"
+          class="table-stats__header-metrics"
+          direction="horizontal"
+          @start="onDragStart"
+          @end="onDragEnd"
+          @drag="onDragging"
+        >
+          <div
+            v-for="(metric, index) in responseParams.metrics"
+            :key="index"
+            :class="{
+              'table-stats__header-metric--will-be-deleted': isOverDeleteThreshold && draggedIndex === index,
+            }"
+            :style="getWidth(metric)"
+            class="table-stats__header-metric"
+          >
+            <span>
+              {{ metric.label }}
+            </span>
+          </div>
+        </VueDraggableNext>
+      </template>
       <div class="table-stats__header-apply">
-        <v-btn :loading="page === 1 && loading" color="primary" @click="loadData()">
-          применить
-        </v-btn>
+        <v-btn :icon="mdiTune" :size="48" @click="statsDialog?.open()" />
       </div>
     </div>
-    <div v-for="{ date, values } in items" :key="date" class="table-stats__body">
-      <div class="table-stats__date">
-        {{ formatDateMode(date, responseParams.mode) }}
+    <template v-if="responseParams">
+      <div v-for="{ date, values } in items" :key="date" class="table-stats__body">
+        <div class="table-stats__date">
+          {{ formatDateMode(date, responseParams.mode) }}
+        </div>
+        <div
+          v-for="(value, index) in values"
+          :key="index"
+          :class="`text-${responseParams.metrics[index].color}`"
+          :style="getWidth(responseParams.metrics[index])"
+        >
+          {{ value ? formatPrice(value) : '' }}
+        </div>
       </div>
-      <div
-        v-for="(value, index) in values"
-        :key="index"
-        :class="`text-${responseParams.metrics[index].color}`"
-        :style="getWidth(responseParams.metrics[index])"
-      >
-        {{ value ? formatPrice(value) : '' }}
-      </div>
-    </div>
+    </template>
   </div>
-  <StatsMetricSelectorDialog ref="metricSelectorDialog" @select="onMetricsSelected" />
-  <StatsMetricFiltersDialog ref="metricFiltersDialog" @save="onSave" />
+  <StatsDialog ref="statsDialog" @save="onSave" />
 </template>
 
 <style lang="scss" scoped>
 .table-stats {
   $padding: 0 20px;
+  transition: opacity ease-in-out 0.2s;
   &--loading {
-    .table-stats__body {
-      opacity: 0.5;
-    }
+    opacity: 0.3;
   }
   & > div {
     gap: 0 !important;
@@ -228,16 +216,9 @@ function onDragEnd() {
     &-mode {
       height: 57px;
       border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
-      &:hover {
-        background: rgb(var(--v-theme-bg));
-      }
-      a {
-        padding: $padding;
-        display: inline-flex;
-        height: 100%;
-        width: 100%;
-        align-items: center;
-      }
+      padding: $padding;
+      display: inline-flex;
+      align-items: center;
     }
     &-metric {
       position: relative;
@@ -248,7 +229,6 @@ function onDragEnd() {
         color: white;
       }
     }
-    &-add,
     &-metric {
       align-self: stretch;
       display: flex;
@@ -266,14 +246,6 @@ function onDragEnd() {
             opacity: 1;
           }
         }
-      }
-    }
-    &-add {
-      width: 60px !important;
-      justify-content: center;
-      color: rgb(var(--v-theme-secondary));
-      &:hover {
-        background: rgb(var(--v-theme-bg));
       }
     }
     &-apply {

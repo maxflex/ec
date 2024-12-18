@@ -163,6 +163,7 @@ defineExpose({ create, edit })
           <UiDateInput
             v-model="client.passport.birthdate"
             label="Дата рождения"
+            past
           />
         </div>
         <div class="double-input">

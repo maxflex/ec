@@ -3,12 +3,20 @@ import ReportsMetric from './ReportsMetric.vue'
 import RequestsMetric from './RequestsMetric.vue'
 import TeacherPaymentsMetric from './TeacherPaymentsMetric.vue'
 
-export const MetricComponents = {
+export const MetricComponents: { [key: string]: {
+  width: number
+  label: string
+  filters: object
+} } = {
+  // @ts-expect-error
   RequestsMetric,
+  // @ts-expect-error
   ReportsMetric,
+  // @ts-expect-error
   AllPaymentsMetric,
+  // @ts-expect-error
   TeacherPaymentsMetric,
-} as const
+}
 
 export const MetricColors = {
   black: 'чёрный',
@@ -25,4 +33,10 @@ export interface StatsMetric {
   color: MetricColor
   label: string
   filters: object
+}
+
+export interface StatsParams {
+  metrics: StatsMetric[]
+  mode: StatsMode
+  date: string
 }

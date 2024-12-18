@@ -1,9 +1,10 @@
 <script setup lang="ts">
-const { label = 'Дата', year, disabled } = defineProps<{
+const { label = 'Дата', year, disabled, past } = defineProps<{
   label?: string
   year?: Year
   disabled?: boolean
   todayBtn?: boolean
+  past?: boolean
   density?: string
 }>()
 
@@ -46,6 +47,7 @@ function setToday() {
     ref="calendarDialog"
     v-model="model"
     :year="year"
+    :past="past"
   />
 </template>
 

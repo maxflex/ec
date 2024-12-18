@@ -1,6 +1,8 @@
 <script setup lang="ts">
-const { year } = defineProps<{
+const { year, past } = defineProps<{
   year: Year | undefined
+  // далёкие даты в прошлом. нужно для установки даты рождения
+  past?: boolean
 }>()
 const emit = defineEmits(['close'])
 const { dialog, width, transition } = useDialog('small')
@@ -8,10 +10,10 @@ const model = defineModel<string | string[]>({ required: true })
 
 // начиная с какой даты возможен выбор в календаре
 // для выбора даты рождения клиента нужны старые даты
-const startYear = 2000
+const startYear = past ? 2000 : 2015
 
 const years = year === undefined
-  ? Array.from({ length: currentAcademicYear() - startYear + 1 }, (_, i) => startYear + i)
+  ? Array.from({ length: currentAcademicYear() - startYear + 2 }, (_, i) => startYear + i)
   : [year, year + 1]
 
 function open() {

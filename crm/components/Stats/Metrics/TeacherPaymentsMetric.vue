@@ -14,6 +14,7 @@ defineExpose({ filters })
 export default {
   label: 'Платежи препод',
   width: 130,
+  filters: {},
 }
 </script>
 
