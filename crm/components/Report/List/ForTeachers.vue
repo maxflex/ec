@@ -39,7 +39,7 @@ function getFillColor(r: RealReport) {
           />
         </div>
         <div style="width: 180px">
-          прошло занятий: {{ r.lessons_count }}
+          занятий: {{ r.lessons_count }}
         </div>
         <div style="width: 100px">
           <span v-if="r.price">
@@ -94,7 +94,7 @@ function getFillColor(r: RealReport) {
           />
         </div>
         <div style="width: 100px; flex: 1">
-          прошло занятий: {{ r.lessons_count }}
+          занятий: {{ r.lessons_count }}
         </div>
         <div style="width: 160px; flex: initial">
           <span class="text-error">

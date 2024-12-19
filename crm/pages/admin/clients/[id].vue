@@ -72,10 +72,6 @@ nextTick(loadData)
           </div>
         </div>
         <div>
-          <div>филиалы</div>
-          <UiBranches :branches="client.branches" />
-        </div>
-        <div>
           <div>куратор</div>
           <UiPerson v-if="client.head_teacher" :item="client.head_teacher" />
           <div v-else>

@@ -14,7 +14,7 @@ const { items } = defineProps<{
         {{ ProgramShortLabel[r.program] }}
       </div>
       <div style="width: 180px">
-        прошло занятий: {{ r.lessons_count }}
+        занятий: {{ r.lessons_count }}
       </div>
       <div style="width: 50px">
         <span v-if="r.grade" :class="`score score--${r.grade}`">

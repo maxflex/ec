@@ -41,7 +41,7 @@ function getFillColor(r: RealReport) {
           />
         </div>
         <div style="width: 180px">
-          прошло занятий: {{ r.lessons_count }}
+          занятий: {{ r.lessons_count }}
         </div>
         <div style="width: 50px">
           <span v-if="r.grade" :class="`score score--${r.grade}`">
@@ -80,7 +80,7 @@ function getFillColor(r: RealReport) {
       <!--      fake report -->
       <template v-else>
         <div style="width: 100px; flex: 1">
-          прошло занятий: {{ r.lessons_count }}
+          занятий: {{ r.lessons_count }}
         </div>
         <div style="width: 160px; flex: initial">
           <span class="text-error">

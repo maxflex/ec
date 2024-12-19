@@ -22,6 +22,7 @@ class UserResource extends JsonResource
             'first_name', 'last_name', 'created_at',
             'photo_url', 'is_active', 'is_call_notifications'
         ], [
+            'entity_type' => User::class,
             'phones' => PhoneResource::collection($this->phones)
         ]);
     }
