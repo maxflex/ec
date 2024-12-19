@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import type { StatsMetricsDialog } from '#build/components'
+import type { StatsMetricsEditor } from '#build/components'
 import { mdiChevronRight, mdiPlus } from '@mdi/js'
-import { type MetricComponent, MetricComponents, type StatsMetric, type StatsParams } from '~/components/Stats/Metrics'
+import { type MetricComponent, MetricComponents, type StatsMetric, type StatsParams, type StatsPreset } from '~/components/Stats/Metrics'
 
 const emit = defineEmits<{
   save: [params: StatsParams]
 }>()
 
-const { dialog, width } = useDialog('large')
+const { dialog, width } = useDialog('x-large')
 
 const params = ref<StatsParams>({
   metrics: [],
@@ -15,10 +15,13 @@ const params = ref<StatsParams>({
   date: today(),
 })
 
-const metricsDialog = ref<InstanceType<typeof StatsMetricsDialog>>()
+const metricsEditor = ref<InstanceType<typeof StatsMetricsEditor>>()
+const selectedIndex = ref(-1)
+const presets = ref<StatsPreset[]>([])
 
 function open() {
   dialog.value = true
+  loadPresets()
 }
 
 function save() {
@@ -36,9 +39,50 @@ function addMetric(metric: MetricComponent) {
   // itemUpdated('metric', selected.value.length - 1)
 }
 
-function onMetricSave(index: number, m: StatsMetric) {
-  params.value.metrics.splice(index, 1, m)
-  itemUpdated('metric', index)
+function addPreset(preset: StatsPreset) {
+  const { metric, label, filters, color } = preset
+  params.value.metrics.push({ metric, label, filters, color })
+}
+
+function deletePreset(preset: StatsPreset) {
+  if (!confirm(`Удалить ${preset.label}?`)) {
+    return
+  }
+  presets.value.splice(
+    presets.value.findIndex(e => e.id === preset.id),
+    1,
+  )
+  useHttp(`stats-presets/${preset.id}`, {
+    method: 'delete',
+  })
+}
+
+async function loadPresets() {
+  const { data } = await useHttp<StatsPreset[]>(`stats-presets`)
+  presets.value = data.value!
+}
+
+function onMetricSave(m: StatsMetric) {
+  const i = selectedIndex.value
+  selectedIndex.value = -1
+  params.value.metrics.splice(i, 1, m)
+  itemUpdated('metric', i)
+}
+
+function onPresetSave(m: StatsPreset) {
+  presets.value.push(m)
+  itemUpdated('stats-preset', m.id)
+}
+
+function onMetricDelete() {
+  const i = selectedIndex.value
+  selectedIndex.value = -1
+  params.value.metrics.splice(i, 1)
+}
+
+function editMetric(m: StatsMetric, i: number) {
+  selectedIndex.value = i
+  nextTick(() => metricsEditor.value?.open(m))
 }
 
 defineExpose({ open })
@@ -57,22 +101,22 @@ defineExpose({ open })
       <div class="dialog-body pa-0">
         <div class="stats-dialog">
           <div>
-            <div>
-              <v-select
-                v-model="params.mode"
-                :items="selectItems(StatsModeLabel)"
-                label="Отображать"
-              />
+            <div class="stats-dialog__inputs">
+              <div>
+                <v-select
+                  v-model="params.mode"
+                  :items="selectItems(StatsModeLabel)"
+                  label="Отображать"
+                />
+              </div>
+              <div>
+                <UiDateInput
+                  v-model="params.date"
+                  label="Начиная с"
+                  today-btn
+                />
+              </div>
             </div>
-            <div>
-              <UiDateInput
-                v-model="params.date"
-                label="Начиная с"
-                today-btn
-              />
-            </div>
-          </div>
-          <div>
             <v-table hover>
               <thead>
                 <tr>
@@ -84,11 +128,33 @@ defineExpose({ open })
               <tbody>
                 <tr v-for="(metric, key) in MetricComponents" :key="key" @click="addMetric(key)">
                   <td>
-                    <div class="d-flex align-center justify-space-between">
+                    <div class="stats-dialog__metric">
                       <span>
                         {{ metric.label }}
                       </span>
                       <v-icon :icon="mdiPlus" color="gray" />
+                    </div>
+                  </td>
+                </tr>
+                <tr
+                  v-for="preset in presets"
+                  :id="`stats-preset-${preset.id}`"
+                  :key="preset.id"
+                  @click="addPreset(preset)"
+                >
+                  <td>
+                    <div class="stats-dialog__metric">
+                      <span>
+                        {{ preset.label }}
+                      </span>
+                      <div class="d-flex ga-1 align-center">
+                        <v-icon
+                          icon="$delete" color="gray" :size="22"
+                          class="stats-dialog__remove-preset"
+                          @click.stop="deletePreset(preset)"
+                        />
+                        <v-icon :icon="mdiPlus" color="gray" />
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -109,10 +175,11 @@ defineExpose({ open })
                   v-for="(m, index) in params.metrics"
                   :id="`metric-${index}`"
                   :key="index"
-                  @click="metricsDialog?.open(m, index)"
+                  :class="{ 'stats-dialog__selected-metric': index === selectedIndex }"
+                  @click="editMetric(m, index)"
                 >
                   <td>
-                    <div class="d-flex align-center justify-space-between">
+                    <div class="stats-dialog__metric">
                       <span>
                         {{ m.label }}
                       </span>
@@ -123,11 +190,19 @@ defineExpose({ open })
               </tbody>
             </v-table>
           </div>
+          <div class="stats-dialog__inputs">
+            <StatsMetricsEditor
+              v-if="selectedIndex >= 0"
+              ref="metricsEditor"
+              @save="onMetricSave"
+              @save-preset="onPresetSave"
+              @delete="onMetricDelete"
+            />
+          </div>
         </div>
       </div>
     </div>
   </v-dialog>
-  <StatsMetricsDialog ref="metricsDialog" @save="onMetricSave" />
 </template>
 
 <style lang="scss">
@@ -135,18 +210,19 @@ defineExpose({ open })
   display: flex;
   flex: 1;
 
+  &__inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 30px 20px;
+    max-height: calc(100vh - 64px);
+    overflow: scroll;
+  }
+
   & > div {
     flex: 1;
     &:not(:last-child) {
       border-right: 1px solid rgb(var(--v-theme-border));
-    }
-    &:first-child {
-      padding: 30px 26px;
-      display: flex;
-      flex-direction: column;
-      gap: 30px;
-      flex: 0.8;
-      //background: rgb(var(--v-theme-bg));
     }
   }
 
@@ -175,6 +251,25 @@ defineExpose({ open })
           opacity: 1;
         }
       }
+    }
+  }
+  &__metric {
+    display: flex;
+    justify-content: space-between;
+  }
+  &__selected-metric {
+    td {
+      //background: rgba(var(--v-theme-primary), 0.1) !important;
+      //background: #fff3d6 !important;
+      background: #f5f5f5 !important;
+    }
+    .v-icon {
+      opacity: 1 !important;
+    }
+  }
+  &__remove-preset {
+    &:hover {
+      color: rgb(var(--v-theme-error)) !important;
     }
   }
 }

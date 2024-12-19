@@ -35,6 +35,10 @@ export interface StatsMetric {
   filters: object
 }
 
+export interface StatsPreset extends StatsMetric {
+  id: number
+}
+
 export interface StatsParams {
   metrics: StatsMetric[]
   mode: StatsMode

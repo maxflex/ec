@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 interface Filters {
   year?: Year
-  method?: TeacherPaymentMethod
+  method: TeacherPaymentMethod[]
   is_confirmed?: number
 }
 
-const filters = ref<Filters>({ })
+const filters = ref<Filters>({
+  method: [],
+})
 
 defineExpose({ filters })
 </script>
@@ -14,7 +16,9 @@ defineExpose({ filters })
 export default {
   label: 'Платежи препод',
   width: 130,
-  filters: {},
+  filters: {
+    method: [],
+  },
 }
 </script>
 
@@ -23,9 +27,9 @@ export default {
     <UiClearableSelect v-model="filters.year" :items="selectItems(YearLabel)" label="Учебный год" />
   </div>
   <div>
-    <UiClearableSelect
+    <UiMultipleSelect
       v-model="filters.method"
-      label="Метод"
+      label="Метод оплаты"
       :items="selectItems(TeacherPaymentMethodLabel)"
     />
   </div>

@@ -8,13 +8,18 @@ use Illuminate\Http\Request;
 
 class StatsController extends Controller
 {
-    /**
-     * @method POST
-     */
     public function __invoke(Request $request)
     {
+        $request->validate([
+            'mode' => ['required'],
+            'page' => ['required'],
+            'metrics' => ['required'],
+            'date' => ['required', 'date_format:Y-m-d']
+        ]);
+
         return Stats::getData(
             $request->mode,
+            $request->date,
             $request->page,
             $request->metrics,
         );

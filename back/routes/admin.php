@@ -35,6 +35,7 @@ use App\Http\Controllers\Admin\{AllPaymentsController,
     ScholarshipScoreController,
     SearchController,
     StatsController,
+    StatsPresetController,
     SwampController,
     TeacherBalanceController,
     TeacherController,
@@ -151,5 +152,6 @@ Route::middleware(['auth:crm'])->group(function () {
         'calls' => CallController::class,
         'passes' => PassController::class,
         'head-teacher-reports' => HeadTeacherReportController::class,
+        'stats-presets' => StatsPresetController::class,
     ]);
 });

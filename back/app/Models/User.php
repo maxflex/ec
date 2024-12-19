@@ -133,4 +133,9 @@ class User extends Authenticatable implements CanLogin
     {
         return $this->hasMany(TelegramList::class);
     }
+
+    public function statsPresets(): HasMany
+    {
+        return $this->hasMany(StatsPreset::class);
+    }
 }

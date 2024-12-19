@@ -2,16 +2,19 @@
 
 namespace App\Utils\Stats;
 
+use Carbon\Carbon;
 use Exception;
 
 class Stats
 {
-    public static function getData(string $mode, int $page, array $metrics): array
+    public static function getData(string $mode, string $date, int $page, array $metrics): array
     {
         $paginate = 30;
 
+        $dateObj = Carbon::createFromFormat('Y-m-d', $date);
+
         // 1st page = -0 day
-        $from = now()->modify(sprintf('-%d %s', ($page - 1) * $paginate, $mode));
+        $from = $dateObj->modify(sprintf('-%d %s', ($page - 1) * $paginate, $mode));
         if ($mode === 'week') {
             $from->startOfWeek();
         }

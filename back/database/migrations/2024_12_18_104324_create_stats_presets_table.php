@@ -13,7 +13,13 @@ return new class extends Migration {
             $table->string('label');
             $table->string('color');
             $table->json('filters');
+            $table->foreignIdFor(\App\Models\User::class)->constrained();
             $table->timestamps();
         });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('stats_presets');
     }
 };
