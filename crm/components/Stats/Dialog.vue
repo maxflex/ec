@@ -226,12 +226,12 @@ defineExpose({ open })
     flex-direction: column;
     gap: 30px;
     padding: 30px 20px;
-    max-height: calc(100vh - 64px);
-    overflow: scroll;
   }
 
   & > div {
     flex: 1;
+    max-height: calc(100vh - 64px);
+    overflow: scroll;
     &:not(:last-child) {
       border-right: 1px solid rgb(var(--v-theme-border));
     }
