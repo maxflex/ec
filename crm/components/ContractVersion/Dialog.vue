@@ -518,7 +518,7 @@ defineExpose({ edit, newContract, newVersion })
               </tr>
               <tr>
                 <td>
-                  <UiIconLink @click=" addPayment() ">
+                  <UiIconLink @click="addPayment() ">
                     добавить платеж
                   </UiIconLink>
                 </td>
@@ -529,6 +529,10 @@ defineExpose({ edit, newContract, newVersion })
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <div class="dialog-section">
+          <v-checkbox v-model="item.contract.is_marked" label="Пометить договор (временно)" />
         </div>
       </div>
     </div>

@@ -69,12 +69,30 @@ class ContractVersionProgram extends Model
         return $this->clientLessons()->count() >= $this->prices()->sum('lessons');
     }
 
-    public function getNextPrice(): int
+    /**
+     * @param int $plus это временно, для имитации, для NalogController
+     * @return int
+     */
+    public function getNextPrice(int $plus = 0): int
     {
-        return $this->prices()->latest('id')->first()->price;
-//        TODO: для того, чтоб это работало, нужна правильная миграция contract_version_program_prices
-//        $offset = $this->clientLessons()->count();
-//        return $this->prices()->offset($offset)->first()->price;
+        // сколько занятий уже прошло
+        $lessonsPassed = $this->clientLessons()->where('price', '>', 0)->count();
+        $lessonsPassed += $plus;
+
+        $cumulativeLessons = 0;
+        foreach ($this->prices as $p) {
+
+            // Update cumulative lesson count
+            $cumulativeLessons += $p->lessons;
+
+            // Check if lessonsPassed falls within the current block
+            if ($lessonsPassed < $cumulativeLessons) {
+                return $p->price; // Return price if within block range
+            }
+        }
+
+        // If no match, return last price by default (fallback case)
+        return $this->prices->last()->price;
     }
 
     public static function booted()

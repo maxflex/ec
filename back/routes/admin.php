@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\{AllPaymentsController,
     LessonController,
     MacroController,
     MenuCountsController,
+    NalogContractController,
     PassController,
     PeopleSelectorController,
     PhotoController,
@@ -121,6 +122,8 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::get('menu-counts', MenuCountsController::class);
 
     Route::get('all-payments', AllPaymentsController::class);
+
+    Route::get('nalog-contracts', NalogContractController::class);
    
     Route::apiResources([
         'telegram-lists' => TelegramListController::class,

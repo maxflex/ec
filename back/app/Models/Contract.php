@@ -16,10 +16,11 @@ class Contract extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'year', 'company', 'client_id'
+        'year', 'company', 'client_id', 'is_marked'
     ];
 
     protected $casts = [
+        'is_marked' => 'bool',
         'company' => Company::class,
     ];
 

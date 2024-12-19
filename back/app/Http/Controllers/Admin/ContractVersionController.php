@@ -72,6 +72,11 @@ class ContractVersionController extends Controller
             $program->syncRelation($request->programs[$index], 'prices');
         }
         $contractVersion->syncRelation($request->all(), 'payments');
+
+        $contractVersion->contract->update([
+            'is_marked' => $request->contract['is_marked']
+        ]);
+
         return new ContractVersionListResource($contractVersion);
     }
 
