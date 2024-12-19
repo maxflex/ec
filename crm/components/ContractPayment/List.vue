@@ -39,6 +39,9 @@ const emit = defineEmits<{
       </div>
       <div style="width: 220px">
         {{ ContractPaymentMethodLabel[item.method] }}
+        <div v-if="item.pko_number" class="text-gray text-caption">
+          ПКО: {{ item.pko_number }}
+        </div>
       </div>
       <div>
         <span v-if="item.is_confirmed" class="text-success">

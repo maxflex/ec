@@ -75,6 +75,9 @@ function edit(item: AllPaymentResource) {
         </div>
         <div style="width: 120px">
           {{ ContractPaymentMethodLabel[item.method] }}
+          <div v-if="item.pko_number" class="text-gray text-caption">
+            ПКО: {{ item.pko_number }}
+          </div>
         </div>
         <div style="width: 90px">
           {{ CompanyLabel[item.company] }}

@@ -37,8 +37,14 @@ class ContractPayment extends Model
     public static function booted()
     {
         static::creating(function ($payment) {
-            if ($payment->method === ContractPaymentMethod::cash) {
-                $payment->pko_number = get_max_pko_number($payment->contract->company);
+            if (
+                $payment->method === ContractPaymentMethod::cash
+                && !$payment->is_return
+            ) {
+                $payment->pko_number = get_max_pko_number(
+                    $payment->contract->company,
+                    $payment->date,
+                );
             }
         });
     }

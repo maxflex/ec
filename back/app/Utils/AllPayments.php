@@ -16,13 +16,13 @@ class AllPayments
         $clientPayments = ClientPayment::selectRaw("
             client_id, is_return, method, is_confirmed, `date`,
             `company`, `year`, `purpose`, NULL as contract_id,
-            `sum`, id
+            `sum`, id, pko_number
         ");
 
         $contractPayments = ContractPayment::selectRaw("
             client_id, is_return, method, is_confirmed, `date`,
             `company`, `year`, NULL as purpose, contract_id,
-            `sum`, contract_payments.id
+            `sum`, contract_payments.id, pko_number
         ")->join('contracts as c', 'c.id', '=', 'contract_id');
 
         $cte = $clientPayments->union($contractPayments);

@@ -33,8 +33,14 @@ class ClientPayment extends Model
     public static function booted()
     {
         static::creating(function ($payment) {
-            if ($payment->method === ClientPaymentMethod::cash) {
-                $payment->pko_number = get_max_pko_number($payment->company);
+            if (
+                $payment->method === ClientPaymentMethod::cash
+                && !$payment->is_return
+            ) {
+                $payment->pko_number = get_max_pko_number(
+                    $payment->company,
+                    $payment->date,
+                );
             }
         });
     }

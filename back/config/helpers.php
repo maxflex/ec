@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ClientPaymentMethod;
 use App\Enums\Company;
 use App\Enums\ContractPaymentMethod;
 use App\Models\ClientPayment;
@@ -80,18 +81,25 @@ function is_localhost()
     return app()->environment('local');
 }
 
-function get_max_pko_number(Company $company)
+function get_max_pko_number(Company $company, string $date)
 {
-    return max(
-        ClientPayment::query()
-            ->where('company', $company)
-            ->where('method', ContractPaymentMethod::cash)
-            ->max('pko_number'),
-        ContractPayment::query()
-            ->whereHas('contract', fn ($q) => $q->where('company', $company))
-            ->where('method', ContractPaymentMethod::cash)
-            ->max('pko_number'),
-    ) + 1;
+    $year = intval(explode('-', $date)[0]);
+
+    $clientPaymentsMaxPko = intval(ClientPayment::query()
+        ->where('company', $company)
+        ->where('method', ClientPaymentMethod::cash)
+        ->where('is_return', false)
+        ->whereRaw('YEAR(`date`) = ?', [$year])
+        ->max('pko_number'));
+
+    $contractPaymentsMaxPko = intval(ContractPayment::query()
+        ->whereHas('contract', fn($q) => $q->where('company', $company))
+        ->where('method', ContractPaymentMethod::cash)
+        ->where('is_return', false)
+        ->whereRaw('YEAR(`date`) = ?', [$year])
+        ->max('pko_number'));
+
+    return max($contractPaymentsMaxPko, $clientPaymentsMaxPko) + 1;
 }
 
 /**

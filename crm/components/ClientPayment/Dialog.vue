@@ -181,7 +181,7 @@ defineExpose({ create, edit })
             type="number"
             hide-spin-buttons
           />
-          <v-text-field v-else disabled value="Будет присвоен" label="Номер ПКО" />
+          <v-text-field v-else disabled label="Будет присвоен номер ПКО" />
         </div>
         <div>
           <v-textarea

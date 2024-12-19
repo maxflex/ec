@@ -123,7 +123,13 @@ nextTick(loadData)
       </v-btn>
     </template>
     <template #buttons>
-      <v-menu>
+      <v-btn v-if="showBalance" color="primary" :width="132" @click="showBalance = false">
+        <template #prepend>
+          <v-icon icon="$back" />
+        </template>
+        назад
+      </v-btn>
+      <v-menu v-else>
         <template #activator="{ props }">
           <v-btn color="primary" v-bind="props">
             действия
@@ -140,8 +146,8 @@ nextTick(loadData)
             <v-list-item @click="() => contractPaymentDialog?.create(selectedContract!)">
               добавить платеж
             </v-list-item>
-            <v-list-item @click="showBalance = !showBalance">
-              {{ showBalance ? 'скрыть баланс' : 'показать баланс' }}
+            <v-list-item @click="showBalance = true">
+              показать баланс
             </v-list-item>
           </template>
         </v-list>

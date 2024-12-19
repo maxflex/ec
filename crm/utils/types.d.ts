@@ -1139,6 +1139,7 @@ declare global {
     purpose: ?string
     company: Company
     contract_id: ?number
+    pko_number: ?number
     client: PersonResource
     sum: number
   }
