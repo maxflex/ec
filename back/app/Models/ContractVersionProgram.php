@@ -70,14 +70,14 @@ class ContractVersionProgram extends Model
     }
 
     /**
-     * @param int $plus это временно, для имитации, для NalogController
-     * @return int
+     * @param ?int $lessonsPassed это временно, для имитации, для NalogController
      */
-    public function getNextPrice(int $plus = 0): int
+    public function getNextPrice(?int $lessonsPassed = null): int
     {
-        // сколько занятий уже прошло
-        $lessonsPassed = $this->clientLessons()->where('price', '>', 0)->count();
-        $lessonsPassed += $plus;
+        if ($lessonsPassed === null) {
+            // сколько занятий уже прошло
+            $lessonsPassed = $this->clientLessons()->where('price', '>', 0)->count();
+        }
 
         $cumulativeLessons = 0;
         foreach ($this->prices as $p) {

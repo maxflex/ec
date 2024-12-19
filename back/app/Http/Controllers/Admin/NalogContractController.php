@@ -52,8 +52,11 @@ class NalogContractController extends Controller
                         ->where('is_free', false)
                         ->get();
 
-                    foreach ($plannedLessons as $i => $plannedLesson) {
-                        $nextPrice = $program->getNextPrice($i + 1);
+                    $lessonsPassed = $program->clientLessons()->where('price', '>', 0)->count();
+
+                    foreach ($plannedLessons as $plannedLesson) {
+                        $lessonsPassed++;
+                        $nextPrice = $program->getNextPrice($lessonsPassed);
                         if ($plannedLesson->date <= $date1) {
                             $sum1 += $nextPrice;
                         }
