@@ -36,9 +36,6 @@ nextTick(loadData)
           дата
         </th>
         <th>
-          company
-        </th>
-        <th>
           до 31 декабря
         </th>
         <th>

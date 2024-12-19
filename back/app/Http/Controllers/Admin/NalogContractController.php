@@ -33,7 +33,6 @@ class NalogContractController extends Controller
                     ->where('l.date', '<=', $date1)
                     ->sum('client_lessons.price');
 
-
                 $sum2 = $sum1 + ClientLesson::query()
                         ->where('contract_version_program_id', $program->id)
                         ->join('lessons as l', 'l.id', '=', 'client_lessons.lesson_id')
