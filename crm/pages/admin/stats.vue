@@ -2,7 +2,6 @@
 import type { StatsDialog } from '#build/components'
 import { mdiTune } from '@mdi/js'
 import { clone } from 'rambda'
-import { VueDraggableNext } from 'vue-draggable-next'
 import { MetricComponents, type StatsMetric, type StatsParams } from '~/components/Stats/Metrics'
 
 const statsDialog = ref<InstanceType<typeof StatsDialog>>()
@@ -22,21 +21,11 @@ const loading = ref(false)
 const items = ref<StatsListResource[]>([])
 const page = ref<number>(0)
 
-const isDragging = ref(false)
-const isOverDeleteThreshold = ref(false)
-const draggedIndex = ref(0)
-let dragStartY: number = 0
-const dragThreshold = 300
-
 let scrollContainer: HTMLElement | null = null
 
 function onSave(p: StatsParams) {
   params.value = clone(p)
   loadData()
-}
-
-function deleteMetric(index: number) {
-  params.value.metrics.splice(index, 1)
 }
 
 async function loadMore() {
@@ -103,34 +92,6 @@ onMounted(() => {
 onUnmounted(() => {
   scrollContainer?.removeEventListener('scroll', onScroll)
 })
-
-// Methods
-function onDragStart(evt: any) {
-  isDragging.value = true
-  dragStartY = (evt.originalEvent as DragEvent).clientY
-  draggedIndex.value = evt.oldIndex
-  isOverDeleteThreshold.value = false
-}
-
-function onDragging(evt: DragEvent) {
-  const { x, y, clientX, clientY } = evt
-
-  // Это dragEnd
-  if (x === 0 && y === 0 && clientX === 0 && clientY === 0) {
-    if (isOverDeleteThreshold.value) {
-      deleteMetric(draggedIndex.value)
-    }
-    isOverDeleteThreshold.value = false
-    return
-  }
-
-  const distanceDragged = clientY - dragStartY
-  isOverDeleteThreshold.value = distanceDragged > dragThreshold
-}
-
-function onDragEnd() {
-  isDragging.value = false
-}
 </script>
 
 <template>
@@ -140,33 +101,16 @@ function onDragEnd() {
         <div class="table-stats__header-mode">
           {{ StatsModeLabel[responseParams.mode] }}
         </div>
-        <VueDraggableNext
-          v-model="responseParams.metrics"
-          :remove-clone-on-hide="true"
-          :animation="200"
-          :class="{
-            'table-stats__header-metrics--dragging': isDragging,
-          }"
-          class="table-stats__header-metrics"
-          direction="horizontal"
-          @start="onDragStart"
-          @end="onDragEnd"
-          @drag="onDragging"
+        <div
+          v-for="(metric, index) in responseParams.metrics"
+          :key="index"
+          :style="getWidth(metric)"
+          class="table-stats__header-metric"
         >
-          <div
-            v-for="(metric, index) in responseParams.metrics"
-            :key="index"
-            :class="{
-              'table-stats__header-metric--will-be-deleted': isOverDeleteThreshold && draggedIndex === index,
-            }"
-            :style="getWidth(metric)"
-            class="table-stats__header-metric"
-          >
-            <span>
-              {{ metric.label }}
-            </span>
-          </div>
-        </VueDraggableNext>
+          <span>
+            {{ metric.label }}
+          </span>
+        </div>
       </template>
       <div class="table-stats__header-apply">
         <v-btn :icon="mdiTune" :size="48" @click="statsDialog?.open()" />
@@ -224,29 +168,16 @@ function onDragEnd() {
       position: relative;
       line-height: 20px;
       padding: $padding;
-      &--will-be-deleted {
-        background: rgb(var(--v-theme-error)) !important;
-        color: white;
-      }
     }
     &-metric {
       align-self: stretch;
       display: flex;
       align-items: center;
-      cursor: pointer;
       user-select: none;
     }
     &-metrics {
       display: flex;
       align-self: stretch;
-      &:not(.table-stats__header-metrics--dragging) {
-        & > div:hover {
-          background: rgb(var(--v-theme-bg));
-          .v-icon {
-            opacity: 1;
-          }
-        }
-      }
     }
     &-apply {
       padding: $padding;
@@ -266,13 +197,5 @@ function onDragEnd() {
     width: 100%;
     align-items: center;
   }
-}
-.sortable-drag {
-  .v-icon {
-    display: none;
-  }
-}
-.sortable-ghost {
-  background: rgba(var(--v-theme-secondary), 0.1);
 }
 </style>

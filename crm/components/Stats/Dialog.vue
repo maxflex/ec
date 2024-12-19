@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { StatsMetricsEditor } from '#build/components'
 import { mdiChevronRight, mdiPlus } from '@mdi/js'
-import { type MetricComponent, MetricComponents, type StatsMetric, type StatsParams, type StatsPreset } from '~/components/Stats/Metrics'
+import { VueDraggableNext } from 'vue-draggable-next'
+import { type MetricComponent, MetricComponents, type StatsMetric, type StatsParams } from '~/components/Stats/Metrics'
 
 const emit = defineEmits<{
   save: [params: StatsParams]
@@ -16,11 +17,12 @@ const params = ref<StatsParams>({
 })
 
 const metricsEditor = ref<InstanceType<typeof StatsMetricsEditor>>()
-const selectedIndex = ref(-1)
-const presets = ref<StatsPreset[]>([])
+const selected = ref<number>()
+const presets = ref<StatsMetric[]>([])
 
 function open() {
   dialog.value = true
+  selected.value = undefined
   loadPresets()
 }
 
@@ -31,6 +33,7 @@ function save() {
 
 function addMetric(metric: MetricComponent) {
   params.value.metrics.push({
+    id: newId(),
     metric,
     label: MetricComponents[metric].label,
     filters: MetricComponents[metric].filters,
@@ -39,12 +42,13 @@ function addMetric(metric: MetricComponent) {
   // itemUpdated('metric', selected.value.length - 1)
 }
 
-function addPreset(preset: StatsPreset) {
+function addPreset(preset: StatsMetric) {
+  const id = newId()
   const { metric, label, filters, color } = preset
-  params.value.metrics.push({ metric, label, filters, color })
+  params.value.metrics.push({ id, metric, label, filters, color })
 }
 
-function deletePreset(preset: StatsPreset) {
+function deletePreset(preset: StatsMetric) {
   if (!confirm(`Удалить ${preset.label}?`)) {
     return
   }
@@ -58,30 +62,30 @@ function deletePreset(preset: StatsPreset) {
 }
 
 async function loadPresets() {
-  const { data } = await useHttp<StatsPreset[]>(`stats-presets`)
+  const { data } = await useHttp<StatsMetric[]>(`stats-presets`)
   presets.value = data.value!
 }
 
 function onMetricSave(m: StatsMetric) {
-  const i = selectedIndex.value
-  selectedIndex.value = -1
+  const i = params.value.metrics.findIndex(e => e.id === selected.value)
+  selected.value = undefined
   params.value.metrics.splice(i, 1, m)
-  itemUpdated('metric', i)
+  itemUpdated('metric', m.id)
 }
 
-function onPresetSave(m: StatsPreset) {
+function onPresetSave(m: StatsMetric) {
   presets.value.push(m)
   itemUpdated('stats-preset', m.id)
 }
 
 function onMetricDelete() {
-  const i = selectedIndex.value
-  selectedIndex.value = -1
+  const i = params.value.metrics.findIndex(e => e.id === selected.value)
+  selected.value = undefined
   params.value.metrics.splice(i, 1)
 }
 
-function editMetric(m: StatsMetric, i: number) {
-  selectedIndex.value = i
+function editMetric(m: StatsMetric) {
+  selected.value = m.id
   nextTick(() => metricsEditor.value?.open(m))
 }
 
@@ -170,13 +174,20 @@ defineExpose({ open })
                   </th>
                 </tr>
               </thead>
-              <tbody>
+
+              <VueDraggableNext
+                v-model="params.metrics"
+                :remove-clone-on-hide="true"
+                :animation="200"
+                direction="vertical"
+                tag="tbody"
+              >
                 <tr
-                  v-for="(m, index) in params.metrics"
-                  :id="`metric-${index}`"
-                  :key="index"
-                  :class="{ 'stats-dialog__selected-metric': index === selectedIndex }"
-                  @click="editMetric(m, index)"
+                  v-for="m in params.metrics"
+                  :id="`metric-${m.id}`"
+                  :key="m.id"
+                  :class="{ 'stats-dialog__selected-metric': m.id === selected }"
+                  @click="editMetric(m)"
                 >
                   <td>
                     <div class="stats-dialog__metric">
@@ -187,12 +198,12 @@ defineExpose({ open })
                     </div>
                   </td>
                 </tr>
-              </tbody>
+              </VueDraggableNext>
             </v-table>
           </div>
           <div class="stats-dialog__inputs">
             <StatsMetricsEditor
-              v-if="selectedIndex >= 0"
+              v-if="selected !== undefined"
               ref="metricsEditor"
               @save="onMetricSave"
               @save-preset="onPresetSave"
@@ -230,6 +241,13 @@ defineExpose({ open })
     left: 0 !important;
     width: auto !important;
     min-width: auto !important;
+    tbody:has(tr.sortable-chosen) {
+      tr:not(.stats-dialog__selected-metric) {
+        td {
+          background: white !important;
+        }
+      }
+    }
     th {
       text-align: center !important;
       cursor: default !important;
@@ -240,6 +258,9 @@ defineExpose({ open })
       .v-icon {
         transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1);
         opacity: 0.5;
+      }
+      &:active td {
+        background: white !important;
       }
       &:last-child {
         td {

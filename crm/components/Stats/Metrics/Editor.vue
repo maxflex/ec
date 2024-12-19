@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { clone, isNotNil, pickBy } from 'rambda'
-import { MetricColors, MetricComponents, type StatsMetric, type StatsPreset } from '~/components/Stats/Metrics/index'
+import { MetricColors, MetricComponents, type StatsMetric } from '~/components/Stats/Metrics/index'
 
 const emit = defineEmits<{
   save: [m: StatsMetric]
-  savePreset: [m: StatsPreset]
+  savePreset: [m: StatsMetric]
   delete: []
 }>()
 
@@ -25,7 +25,7 @@ function save() {
 async function savePreset() {
   savingPreset.value = true
   cleanUpFilters()
-  const { data } = await useHttp<StatsPreset>(
+  const { data } = await useHttp<StatsMetric>(
     `stats-presets`,
     {
       method: 'post',
@@ -36,7 +36,7 @@ async function savePreset() {
     setTimeout(() => {
       emit('savePreset', data.value!)
       savingPreset.value = false
-    }, 600)
+    }, 500)
   }
   else {
     savingPreset.value = false

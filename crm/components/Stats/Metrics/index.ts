@@ -29,14 +29,11 @@ export type MetricColor = keyof typeof MetricColors
 export type MetricComponent = keyof typeof MetricComponents
 
 export interface StatsMetric {
+  id: number
   metric: MetricComponent
   color: MetricColor
   label: string
   filters: object
-}
-
-export interface StatsPreset extends StatsMetric {
-  id: number
 }
 
 export interface StatsParams {
