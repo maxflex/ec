@@ -5,7 +5,6 @@ import { MetricColors, MetricComponents, type StatsMetric } from '~/components/S
 const emit = defineEmits<{
   save: [m: StatsMetric]
   savePreset: [m: StatsMetric]
-  delete: []
 }>()
 
 const item = ref<StatsMetric>()
@@ -70,27 +69,14 @@ defineExpose({ open })
     </div>
     <component :is="CurrentMetricComponent" ref="metricComponentRef" />
     <div>
-      <v-btn
-        color="primary"
-        size="x-large"
-        block
-        @click="save()"
-      >
+      <v-btn color="primary" size="x-large" block @click="save()">
         применить
       </v-btn>
     </div>
-
-    <div style="display: flex; flex-direction: column; gap: 10px">
-      <div>
-        <v-btn variant="text" block :loading="savingPreset" @click="savePreset()">
-          сохранить в пресет
-        </v-btn>
-      </div>
-      <div>
-        <v-btn variant="text" block @click="emit('delete')">
-          удалить
-        </v-btn>
-      </div>
+    <div>
+      <v-btn variant="text" block :loading="savingPreset" size="x-large" @click="savePreset()">
+        сохранить в пресет
+      </v-btn>
     </div>
   </template>
 </template>

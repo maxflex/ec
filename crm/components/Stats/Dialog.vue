@@ -78,9 +78,11 @@ function onPresetSave(m: StatsMetric) {
   itemUpdated('stats-preset', m.id)
 }
 
-function onMetricDelete() {
-  const i = params.value.metrics.findIndex(e => e.id === selected.value)
-  selected.value = undefined
+function deleteMetric(m: StatsMetric) {
+  const i = params.value.metrics.findIndex(e => e.id === m.id)
+  if (m.id === selected.value) {
+    selected.value = undefined
+  }
   params.value.metrics.splice(i, 1)
 }
 
@@ -194,7 +196,14 @@ defineExpose({ open })
                       <span>
                         {{ m.label }}
                       </span>
-                      <v-icon :icon="mdiChevronRight" color="gray" />
+                      <div class="d-flex ga-1 align-center">
+                        <v-icon
+                          icon="$delete" color="gray" :size="22"
+                          class="stats-dialog__remove-preset"
+                          @click.stop="deleteMetric(m)"
+                        />
+                        <v-icon :icon="mdiChevronRight" color="gray" />
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -207,7 +216,6 @@ defineExpose({ open })
               ref="metricsEditor"
               @save="onMetricSave"
               @save-preset="onPresetSave"
-              @delete="onMetricDelete"
             />
           </div>
         </div>
@@ -268,7 +276,7 @@ defineExpose({ open })
         }
       }
       &:hover {
-        .v-icon {
+        .v-icon:last-child {
           opacity: 1;
         }
       }
@@ -284,7 +292,7 @@ defineExpose({ open })
       //background: #fff3d6 !important;
       background: #f5f5f5 !important;
     }
-    .v-icon {
+    .v-icon:last-child {
       opacity: 1 !important;
     }
   }
