@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { mdiCheckBold } from '@mdi/js'
+
 interface NalogItem {
   id: number
+  is_marked: boolean
   parent: PersonResource
   seq: number
   date: string
@@ -13,7 +16,7 @@ const loading = ref(true)
 
 // Временная страница
 async function loadData() {
-  const { data } = await useHttp<NalogNumber[]>(`nalog-contracts`)
+  const { data } = await useHttp<NalogItem[]>(`nalog-contracts`)
   items.value = data.value
   loading.value = false
 }
@@ -41,6 +44,9 @@ nextTick(loadData)
         <th>
           до 31 февраля
         </th>
+        <th>
+          метка
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -57,7 +63,12 @@ nextTick(loadData)
         <td width="200">
           {{ formatPrice(item.sum1, true) }} руб.
         </td>
-        <td>{{ formatPrice(item.sum2, true) }} руб.</td>
+        <td width="200">
+          {{ formatPrice(item.sum2, true) }} руб.
+        </td>
+        <td>
+          <v-icon v-if="item.is_marked" :icon="mdiCheckBold" color="success" />
+        </td>
       </tr>
     </tbody>
   </v-table>

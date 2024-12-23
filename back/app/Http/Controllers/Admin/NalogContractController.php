@@ -70,6 +70,7 @@ class NalogContractController extends Controller
 
             $result->push([
                 'id' => $contract->id,
+                'is_marked' => $contract->is_marked,
                 'parent' => new PersonResource($contract->client->parent),
                 'seq' => $activeVersion->seq,
                 'date' => $activeVersion->date,
