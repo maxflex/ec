@@ -36,7 +36,7 @@ export default {
   <div>
     <UiClearableSelect
       v-model="filters.is_confirmed"
-      label="Подтверждён"
+      label="Подтверждение платежа"
       :items="yesNo()"
     />
   </div>

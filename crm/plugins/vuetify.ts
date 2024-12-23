@@ -62,6 +62,7 @@ const colors = {
   bg: '#fafafa', // очень светлый серый
   border: '#e0e0e0', // серый бордеры
   placeholder: '#a7a7a7',
+  label: '#666666', // label инпутов
 }
 
 const myTheme: ThemeDefinition = {

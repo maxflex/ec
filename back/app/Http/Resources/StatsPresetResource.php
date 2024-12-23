@@ -12,7 +12,7 @@ class StatsPresetResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'metric', 'color', 'label', 'filters'
+            'name', 'params'
         ]);
     }
 }

@@ -33,7 +33,7 @@ export default {
     <UiClearableSelect
       v-model="filters.type"
       :items="yesNo('по договорам', 'по клиентам')"
-      label="Тип"
+      label="Тип платежа"
     />
   </div>
   <div>
@@ -53,14 +53,14 @@ export default {
   <div>
     <UiClearableSelect
       v-model="filters.is_confirmed"
-      label="Подтверждён"
+      label="Подтверждение платежа"
       :items="yesNo()"
     />
   </div>
   <div>
     <UiClearableSelect
       v-model="filters.is_return"
-      label="Возврат"
+      label="Тип операции"
       :items="yesNo('только платежи', 'только возвраты')"
     />
   </div>

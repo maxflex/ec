@@ -1,24 +1,32 @@
 <script setup lang="ts">
 import type { StatsMetricsEditor } from '#build/components'
 import { mdiChevronRight, mdiPlus } from '@mdi/js'
+import { clone } from 'rambda'
 import { VueDraggableNext } from 'vue-draggable-next'
-import { type MetricComponent, MetricComponents, type StatsMetric, type StatsParams } from '~/components/Stats/Metrics'
+import {
+  type MetricComponent,
+  MetricComponents,
+  type StatsMetric,
+  type StatsParams,
+  type StatsPreset,
+} from '~/components/Stats/Metrics'
 
 const emit = defineEmits<{
-  save: [params: StatsParams]
+  go: [params: StatsParams]
 }>()
 
 const { dialog, width } = useDialog('x-large')
+const presetDialog = ref()
 
 const params = ref<StatsParams>({
   metrics: [],
   mode: 'day',
-  date: today(),
+  date: null,
 })
 
 const metricsEditor = ref<InstanceType<typeof StatsMetricsEditor>>()
 const selected = ref<number>()
-const presets = ref<StatsMetric[]>([])
+const presets = ref<StatsPreset[]>([])
 
 function open() {
   dialog.value = true
@@ -26,30 +34,32 @@ function open() {
   loadPresets()
 }
 
-function save() {
+function go() {
   dialog.value = false
-  emit('save', params.value)
+  emit('go', params.value)
 }
 
 function addMetric(metric: MetricComponent) {
+  const id = newId()
   params.value.metrics.push({
-    id: newId(),
+    id,
     metric,
     label: MetricComponents[metric].label,
     filters: MetricComponents[metric].filters,
     color: 'black',
   })
-  // itemUpdated('metric', selected.value.length - 1)
+  // itemUpdated('metric', id)
 }
 
-function addPreset(preset: StatsMetric) {
-  const id = newId()
-  const { metric, label, filters, color } = preset
-  params.value.metrics.push({ id, metric, label, filters, color })
+// Загрузить конфигурацию из пресета
+function loadFromPreset(preset: StatsPreset) {
+  params.value = clone(preset.params)
+  selected.value = undefined
+  // preset.params.metrics.map(m => itemUpdated('metric', m.id))
 }
 
-function deletePreset(preset: StatsMetric) {
-  if (!confirm(`Удалить ${preset.label}?`)) {
+function deletePreset(preset: StatsPreset) {
+  if (!confirm(`Удалить пресет ${preset.name}?`)) {
     return
   }
   presets.value.splice(
@@ -62,20 +72,18 @@ function deletePreset(preset: StatsMetric) {
 }
 
 async function loadPresets() {
-  const { data } = await useHttp<StatsMetric[]>(`stats-presets`)
+  const { data } = await useHttp<StatsPreset[]>(`stats-presets`)
   presets.value = data.value!
 }
 
-function onMetricSave(m: StatsMetric) {
+function onMetricUpdated(m: StatsMetric) {
   const i = params.value.metrics.findIndex(e => e.id === selected.value)
-  selected.value = undefined
   params.value.metrics.splice(i, 1, m)
-  itemUpdated('metric', m.id)
 }
 
-function onPresetSave(m: StatsMetric) {
-  presets.value.push(m)
-  itemUpdated('stats-preset', m.id)
+function onPresetSave(p: StatsPreset) {
+  presets.value.push(p)
+  itemUpdated('stats-preset', p.id)
 }
 
 function deleteMetric(m: StatsMetric) {
@@ -99,9 +107,15 @@ defineExpose({ open })
     <div class="dialog-wrapper">
       <div class="dialog-header">
         Конфигуратор
-        <v-btn color="primary" @click="save()">
-          отобразить
-        </v-btn>
+
+        <div class="d-flex ga-4">
+          <v-btn variant="text" @click="presetDialog?.open(params)">
+            сохранить пресет
+          </v-btn>
+          <v-btn color="primary" @click="go()">
+            отобразить
+          </v-btn>
+        </div>
         <!--        <v-btn :size="48" icon="$save" variant="text" @click="save()" /> -->
       </div>
       <div class="dialog-body pa-0">
@@ -120,6 +134,8 @@ defineExpose({ open })
                   v-model="params.date"
                   label="Начиная с"
                   today-btn
+                  clearable
+                  placeholder="текущего дня"
                 />
               </div>
             </div>
@@ -127,7 +143,7 @@ defineExpose({ open })
               <thead>
                 <tr>
                   <th>
-                    Добавить метрики
+                    Метрики
                   </th>
                 </tr>
               </thead>
@@ -142,24 +158,34 @@ defineExpose({ open })
                     </div>
                   </td>
                 </tr>
+              </tbody>
+            </v-table>
+            <v-table v-if="presets.length > 0" class="mt-6" hover>
+              <thead>
+                <tr>
+                  <th>Пресеты</th>
+                </tr>
+              </thead>
+              <tbody>
                 <tr
                   v-for="preset in presets"
                   :id="`stats-preset-${preset.id}`"
                   :key="preset.id"
-                  @click="addPreset(preset)"
+                  @click="loadFromPreset(preset)"
                 >
                   <td>
                     <div class="stats-dialog__metric">
                       <span>
-                        {{ preset.label }}
+                        {{ preset.name }}
                       </span>
                       <div class="d-flex ga-1 align-center">
                         <v-icon
-                          icon="$delete" color="gray" :size="22"
+                          icon="$delete"
+                          color="gray"
+                          :size="22"
                           class="stats-dialog__remove-preset"
                           @click.stop="deletePreset(preset)"
                         />
-                        <v-icon :icon="mdiPlus" color="gray" />
                       </div>
                     </div>
                   </td>
@@ -214,14 +240,14 @@ defineExpose({ open })
             <StatsMetricsEditor
               v-if="selected !== undefined"
               ref="metricsEditor"
-              @save="onMetricSave"
-              @save-preset="onPresetSave"
+              @update="onMetricUpdated"
             />
           </div>
         </div>
       </div>
     </div>
   </v-dialog>
+  <StatsPresetDialog ref="presetDialog" @save="onPresetSave" />
 </template>
 
 <style lang="scss">
@@ -240,6 +266,10 @@ defineExpose({ open })
     flex: 1;
     max-height: calc(100vh - 64px);
     overflow: scroll;
+    padding-bottom: 30px;
+    &::-webkit-scrollbar {
+      display: none; /* Safari and Chrome */
+    }
     &:not(:last-child) {
       border-right: 1px solid rgb(var(--v-theme-border));
     }
@@ -276,7 +306,7 @@ defineExpose({ open })
         }
       }
       &:hover {
-        .v-icon:last-child {
+        .v-icon:not(.stats-dialog__remove-preset):last-child {
           opacity: 1;
         }
       }

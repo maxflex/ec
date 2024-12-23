@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class StatsPreset extends Model
 {
     protected $fillable = [
-        'metric', 'color', 'label', 'filters'
+        'name', 'params'
     ];
 
     protected $casts = [
-        'filters' => 'array',
+        'params' => 'array',
     ];
 }

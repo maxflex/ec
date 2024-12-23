@@ -5,14 +5,20 @@ const { label = 'Дата', year, disabled, past } = defineProps<{
   disabled?: boolean
   todayBtn?: boolean
   past?: boolean
+  clearable?: boolean
   density?: string
+  placeholder?: string | null
 }>()
 
-const model = defineModel<string>({ required: true })
+const model = defineModel<string | null>({ required: true })
 const calendarDialog = ref()
 
 function setToday() {
   model.value = today()
+}
+
+function clear() {
+  model.value = null
 }
 </script>
 
@@ -24,12 +30,15 @@ function setToday() {
     }"
   >
     <div
-      :class="`date-input__input date-input__input--${density}`"
+      :class="{
+        [`date-input__input date-input__input--${density}`]: true,
+        'date-input--no-value': !model,
+      }"
       @click="() => calendarDialog.open()"
     >
       <v-text-field
         :label="label"
-        :model-value="model ? formatDate(model) : null"
+        :model-value="model ? formatDate(model) : (placeholder || null)"
         hide-details
         :disabled="disabled"
         :density="density"
@@ -40,6 +49,9 @@ function setToday() {
     </div>
     <a v-if="todayBtn" class="date-input__today" @click="setToday()">
       сегодня
+    </a>
+    <a v-if="clearable && model" class="date-input__today" @click="clear()">
+      очистить
     </a>
   </div>
 
@@ -53,9 +65,9 @@ function setToday() {
 
 <style lang="scss">
 .date-input {
-  cursor: pointer;
   position: relative;
   &__input {
+    cursor: pointer;
     .v-input {
       pointer-events: none;
     }
@@ -83,8 +95,14 @@ function setToday() {
     }
   }
   &__today {
-    padding-left: 16px;
+    margin-left: 16px;
     font-size: 14px;
+    cursor: pointer;
+  }
+  &--no-value {
+    input {
+      color: rgb(var(--v-theme-label));
+    }
   }
 }
 </style>

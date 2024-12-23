@@ -23,7 +23,7 @@ const page = ref<number>(0)
 
 let scrollContainer: HTMLElement | null = null
 
-function onSave(p: StatsParams) {
+function onGo(p: StatsParams) {
   params.value = clone(p)
   loadData()
 }
@@ -132,7 +132,7 @@ onUnmounted(() => {
       </div>
     </template>
   </div>
-  <StatsDialog ref="statsDialog" @save="onSave" />
+  <StatsDialog ref="statsDialog" @go="onGo" />
 </template>
 
 <style lang="scss" scoped>

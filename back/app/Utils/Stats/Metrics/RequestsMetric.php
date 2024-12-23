@@ -8,7 +8,14 @@ use Illuminate\Database\Eloquent\Builder;
 class RequestsMetric extends BaseMetric
 {
     protected $filters = [
-        'equals' => ['program', 'responsible_user_id']
+        'equals' => [
+            'direction', 'responsible_user_id'
+        ],
+        'null' => ['is_from_internet'],
+    ];
+
+    protected $mapFilters = [
+        'is_from_internet' => 'user_id'
     ];
 
     public static function getQuery(string $date, string $sqlFormat): Builder

@@ -1,8 +1,10 @@
 <script setup lang="ts">
+const { notSet = 'не установлено ' } = defineProps<{
+  notSet?: string
+}>()
 const model = defineModel<any>({ required: true })
 const nullify = model.value === null
 const input = ref()
-
 function clear() {
   model.value = nullify ? null : undefined
   nextTick(() => input.value.blur())
@@ -24,7 +26,7 @@ function clear() {
         @click="clear()"
       >
         <v-list-item-title class="gray">
-          не установлено
+          {{ notSet }}
         </v-list-item-title>
         <template #prepend>
           <v-spacer />

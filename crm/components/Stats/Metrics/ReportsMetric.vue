@@ -35,7 +35,7 @@ export default {
     <UiClearableSelect
       v-model="filters.status"
       :items="selectItems(ReportStatusLabel)"
-      label="Статус"
+      label="Статус отчёта"
     />
   </div>
 </template>

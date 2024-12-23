@@ -16,15 +16,8 @@ class StatsPresetController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'metric' => ['required'],
-            'color' => ['required'],
-            'filters' => ['required'],
-            'label' => ['required'],
-        ]);
-
         return new StatsPresetResource(
-            auth()->user()->statsPresets()->create($data)
+            auth()->user()->statsPresets()->create($request->all())
         );
     }
 

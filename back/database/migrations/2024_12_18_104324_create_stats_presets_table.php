@@ -9,10 +9,8 @@ return new class extends Migration {
     {
         Schema::create('stats_presets', function (Blueprint $table) {
             $table->id();
-            $table->string('metric');
-            $table->string('label');
-            $table->string('color');
-            $table->json('filters');
+            $table->string('name');
+            $table->json('params');
             $table->foreignIdFor(\App\Models\User::class)->constrained();
             $table->timestamps();
         });

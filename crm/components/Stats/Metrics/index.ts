@@ -39,5 +39,11 @@ export interface StatsMetric {
 export interface StatsParams {
   metrics: StatsMetric[]
   mode: StatsMode
-  date: string
+  date: string | null
+}
+
+export interface StatsPreset {
+  id: number
+  name: string
+  params: StatsParams
 }
