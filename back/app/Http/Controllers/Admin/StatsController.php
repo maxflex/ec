@@ -14,12 +14,15 @@ class StatsController extends Controller
             'mode' => ['required'],
             'page' => ['required'],
             'metrics' => ['required'],
-            'date' => ['required', 'date_format:Y-m-d']
+            'date' => ['nullable', 'date_format:Y-m-d']
         ]);
+
+        // если дата не установлена, то сегодняшняя
+        $date = $request->date ?? now()->format('Y-m-d');
 
         return Stats::getData(
             $request->mode,
-            $request->date,
+            $date,
             $request->page,
             $request->metrics,
         );
