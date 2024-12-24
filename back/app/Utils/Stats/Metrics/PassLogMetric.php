@@ -12,14 +12,15 @@ class PassLogMetric extends BaseMetric
         'equals' => ['entity_type'],
     ];
 
-    public static function getQuery(string $date, string $sqlFormat): Builder
+    public static function getQuery(): Builder
     {
         return PassLog::query()
-            ->where('entity_type', '<>', Pass::class)
-            ->whereRaw("DATE_FORMAT(used_at, ?) = ?", [
-                $sqlFormat,
-                $date
-            ]);
+            ->where('entity_type', '<>', Pass::class);
+    }
+
+    public static function getDateField(): string
+    {
+        return 'used_at';
     }
 
     public static function getQueryValue($query): int

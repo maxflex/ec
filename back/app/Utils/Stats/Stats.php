@@ -26,10 +26,10 @@ class Stats
                 $format = 'Y-m-d';
                 $sqlFormat = '%Y-%m-%d';
                 break;
-            // case 'week':
-            //     $format = 'Y-m-d';
-            //     $sqlFormat = 'LEFT(DATE_ADD(%1$s, INTERVAL(-WEEKDAY(%1$s)) DAY), 10)';
-            //     break;
+            case 'week':
+                $format = 'Y-m-d';
+                $sqlFormat = '%Y-%u';
+                break;
             case 'month':
                 $format = 'Y-m-01';
                 $sqlFormat = '%Y-%m-01';
@@ -54,7 +54,7 @@ class Stats
                 if (!class_exists($metricClass)) {
                     throw new Exception("Class $metricClass not found");
                 }
-                $values[] = $metricClass::getValue($metric['filters'], $date, $sqlFormat);
+                $values[] = $metricClass::getValue($metric['filters'], $date, $sqlFormat, $mode);
             }
             $result[] = [
                 'date' => $date,

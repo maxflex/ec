@@ -1757,6 +1757,7 @@ export const ExamLabel = {
 
 export const StatsModeLabel = {
   day: 'по дням',
+  week: 'по неделям',
   month: 'по месяцам',
   year: 'по годам',
 } as const

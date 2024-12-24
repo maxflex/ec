@@ -11,13 +11,14 @@ class ReportMetric extends BaseMetric
         'equals' => ['year', 'program', 'is_published', 'is_moderated']
     ];
 
-    public static function getQuery(string $date, string $sqlFormat): Builder
+    public static function getQuery(): Builder
     {
-        return Report::query()
-            ->whereRaw("DATE_FORMAT(created_at, ?) = ?", [
-                $sqlFormat,
-                $date
-            ]);
+        return Report::query();
+    }
+
+    public static function getDateField(): string
+    {
+        return 'created_at';
     }
 
     public static function getQueryValue($query): int

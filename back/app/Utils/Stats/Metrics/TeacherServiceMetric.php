@@ -3,21 +3,22 @@
 namespace App\Utils\Stats\Metrics;
 
 use App\Models\TeacherPayment;
+use Illuminate\Database\Eloquent\Builder;
 
 class TeacherServiceMetric extends BaseMetric
 {
     protected $filters = [
         'equals' => ['year'],
-//        'findInSet' => ['method'],
     ];
 
-    public static function getQuery(string $date, string $sqlFormat)
+    public static function getQuery(): Builder
     {
-        return TeacherPayment::query()
-            ->whereRaw("DATE_FORMAT(`date`, ?) = ?", [
-                $sqlFormat,
-                $date
-            ]);
+        return TeacherPayment::query();
+    }
+
+    public static function getDateField(): string
+    {
+        return 'date';
     }
 
     public static function getQueryValue($query): int

@@ -2,7 +2,6 @@
 
 namespace App\Utils\Stats\Metrics;
 
-use App\Enums\LessonStatus;
 use App\Models\Lesson;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -12,14 +11,14 @@ class TeacherLessonMetric extends BaseMetric
         'equals' => ['status'],
     ];
 
-    public static function getQuery(string $date, string $sqlFormat): Builder
+    public static function getQuery(): Builder
     {
-        return Lesson::query()
-            ->where('status', '<>', LessonStatus::cancelled)
-            ->whereRaw("DATE_FORMAT(`date`, ?) = ?", [
-                $sqlFormat,
-                $date
-            ]);
+        return Lesson::query();
+    }
+
+    public static function getDateField(): string
+    {
+        return 'date';
     }
 
     public static function getQueryValue($query): int

@@ -254,6 +254,7 @@ export function formatDateMode(date: string, mode: StatsMode) {
   const monthLabel = MonthLabelShort[month as Month]
   switch (mode) {
     case 'day': return dateObj.format(`D ${monthLabel} YYYY`)
+    case 'week': return dateObj.format(`D ${monthLabel} YYYY`)
     case 'month': return dateObj.format(`${monthLabel} YYYY`)
     case 'year': return dateObj.format('YYYY год')
   }

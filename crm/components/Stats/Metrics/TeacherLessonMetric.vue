@@ -14,7 +14,7 @@ defineExpose({ filters })
 <script lang="ts">
 export default {
   label: 'Начисления уроки препод',
-  width: 130,
+  width: 150,
   filters: { },
 }
 </script>

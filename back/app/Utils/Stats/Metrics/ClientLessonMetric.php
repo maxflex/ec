@@ -13,15 +13,16 @@ class ClientLessonMetric extends BaseMetric
         'equals' => ['status'],
     ];
 
-    public static function getQuery(string $date, string $sqlFormat): Builder
+    public static function getQuery(): Builder
     {
         return Lesson::query()
             ->where('status', '<>', LessonStatus::cancelled)
-            ->where('is_free', false)
-            ->whereRaw("DATE_FORMAT(`date`, ?) = ?", [
-                $sqlFormat,
-                $date
-            ]);
+            ->where('is_free', false);
+    }
+
+    public static function getDateField(): string
+    {
+        return 'date';
     }
 
     public static function getQueryValue($query): int

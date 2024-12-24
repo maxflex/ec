@@ -18,13 +18,14 @@ class RequestMetric extends BaseMetric
         'is_from_internet' => 'user_id'
     ];
 
-    public static function getQuery(string $date, string $sqlFormat): Builder
+    public static function getQuery(): Builder
     {
-        return ClientRequest::query()
-            ->whereRaw("DATE_FORMAT(created_at, ?) = ?", [
-                $sqlFormat,
-                $date
-            ]);
+        return ClientRequest::query();
+    }
+
+    public static function getDateField(): string
+    {
+        return 'created_at';
     }
 
     public static function getQueryValue($query): int

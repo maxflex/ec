@@ -59,9 +59,6 @@ function loadFromPreset(preset: StatsPreset) {
 }
 
 function deletePreset(preset: StatsPreset) {
-  if (!confirm(`Удалить пресет ${preset.name}?`)) {
-    return
-  }
   presets.value.splice(
     presets.value.findIndex(e => e.id === preset.id),
     1,

@@ -14,13 +14,14 @@ class ContractVersionMetric extends BaseMetric
         'direction' => ['direction'],
     ];
 
-    public static function getQuery(string $date, string $sqlFormat): Builder
+    public static function getQuery(): Builder
     {
-        return ContractVersion::query()
-            ->whereRaw("DATE_FORMAT(`date`, ?) = ?", [
-                $sqlFormat,
-                $date
-            ]);
+        return ContractVersion::query();
+    }
+
+    public static function getDateField(): string
+    {
+        return 'date';
     }
 
     public static function getQueryValue($query): int

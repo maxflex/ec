@@ -11,13 +11,14 @@ class LessonMetric extends BaseMetric
         'equals' => ['status'],
     ];
 
-    public static function getQuery(string $date, string $sqlFormat): Builder
+    public static function getQuery(): Builder
     {
-        return Lesson::query()
-            ->whereRaw("DATE_FORMAT(`date`, ?) = ?", [
-                $sqlFormat,
-                $date
-            ]);
+        return Lesson::query();
+    }
+
+    public static function getDateField(): string
+    {
+        return 'date';
     }
 
     public static function getQueryValue($query): int
