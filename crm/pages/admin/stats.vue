@@ -95,7 +95,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div :class="{ 'table-stats--loading': loading && page === 1 }" class="table table-stats">
+  <v-fade-transition>
+    <UiLoader v-if="loading" />
+  </v-fade-transition>
+  <div class="table table-stats">
     <div class="table-stats__header">
       <template v-if="responseParams">
         <div class="table-stats__header-mode">
@@ -138,10 +141,6 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 .table-stats {
   $padding: 0 20px;
-  transition: opacity ease-in-out 0.2s;
-  &--loading {
-    opacity: 0.3;
-  }
   & > div {
     gap: 0 !important;
     padding: 0 !important;
@@ -196,6 +195,16 @@ onUnmounted(() => {
     display: inline-flex;
     width: 100%;
     align-items: center;
+  }
+}
+.page-stats {
+  .loader {
+    position: fixed;
+    top: 0;
+    left: 255px;
+    width: calc(100% - 255px) !important;
+    background: rgba(white, 0.8);
+    z-index: 9;
   }
 }
 </style>

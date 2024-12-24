@@ -1,17 +1,21 @@
 <script lang="ts" setup>
+const { cancelled, ...LessonStatusLabelWithoutCancelled } = LessonStatusLabel
+
 interface Filters {
   status?: LessonStatus
 }
 
-const filters = ref<Filters>({})
+const filters = ref<Filters>({
+})
 
 defineExpose({ filters })
 </script>
 
 <script lang="ts">
 export default {
-  label: 'Уроки',
-  filters: {},
+  label: 'Начисления уроки препод',
+  width: 130,
+  filters: { },
 }
 </script>
 
@@ -19,7 +23,7 @@ export default {
   <div>
     <UiClearableSelect
       v-model="filters.status"
-      :items="selectItems(LessonStatusLabel)"
+      :items="selectItems(LessonStatusLabelWithoutCancelled)"
       label="Статус урока"
     />
   </div>

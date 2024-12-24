@@ -20,4 +20,10 @@ class ClientGroup extends Model
     {
         return $this->belongsTo(Group::class);
     }
+
+    public function clientLessons(): BelongsTo
+    {
+        return $this->belongsTo(ClientLesson::class, 'contract_version_program_id', 'id');
+    }
+
 }

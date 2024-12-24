@@ -12,7 +12,7 @@ defineExpose({ filters })
 
 <script lang="ts">
 export default {
-  label: 'Отчёты (сумма в руб.)',
+  label: 'Отчёты (сумма)',
   filters: {},
 }
 </script>
