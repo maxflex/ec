@@ -1,4 +1,5 @@
 import AllPaymentsMetric from './AllPaymentsMetric.vue'
+import PassLogMetric from './PassLogMetric.vue'
 import ReportsMetric from './ReportsMetric.vue'
 import RequestsMetric from './RequestsMetric.vue'
 import TeacherPaymentsMetric from './TeacherPaymentsMetric.vue'
@@ -16,6 +17,8 @@ export const MetricComponents: { [key: string]: {
   AllPaymentsMetric,
   // @ts-expect-error
   TeacherPaymentsMetric,
+  // @ts-expect-error
+  PassLogMetric,
 }
 
 export const MetricColors = {

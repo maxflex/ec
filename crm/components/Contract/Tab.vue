@@ -115,7 +115,7 @@ nextTick(loadData)
         @click="selectTab(i)"
       >
         <div>
-          Договор №{{ contract.id }}
+          №{{ contract.id }} {{ CompanyLabel[contract.company] }}
         </div>
         <div>
           на {{ formatYear(contract.year) }}
