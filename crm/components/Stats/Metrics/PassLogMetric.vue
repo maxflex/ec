@@ -21,7 +21,7 @@ defineExpose({ filters })
 
 <script lang="ts">
 export default {
-  label: 'Проходы охрана',
+  label: 'Постоянные пропуски',
   filters: {},
 }
 </script>

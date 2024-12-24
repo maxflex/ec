@@ -1,15 +1,8 @@
 <script lang="ts" setup>
-// const paymentTypeLabel = {
-//   payments: 'только платежи',
-//   returns: 'только возвраты',
-//   diff: 'разница',
-// }
-
 interface Filters {
   year?: Year
   program?: Program
   status?: ReportStatus
-  // type: 'payments' | 'returns'
 }
 
 const filters = ref<Filters>({})
@@ -19,7 +12,7 @@ defineExpose({ filters })
 
 <script lang="ts">
 export default {
-  label: 'Отчёты',
+  label: 'Отчёты (сумма в руб.)',
   filters: {},
 }
 </script>

@@ -2,21 +2,21 @@
 
 namespace App\Utils\Stats\Metrics;
 
-use App\Models\Pass;
-use App\Models\PassLog;
+use App\Models\Report;
 use Illuminate\Database\Eloquent\Builder;
 
-class PassLogMetric extends BaseMetric
+class ReportSumMetric extends BaseMetric
 {
     protected $filters = [
-        'equals' => ['entity_type'],
+        'equals' => [
+            'year', 'program', 'is_published', 'is_moderated'
+        ]
     ];
 
     public static function getQuery(string $date, string $sqlFormat): Builder
     {
-        return PassLog::query()
-            ->where('entity_type', '<>', Pass::class)
-            ->whereRaw("DATE_FORMAT(used_at, ?) = ?", [
+        return Report::query()
+            ->whereRaw("DATE_FORMAT(created_at, ?) = ?", [
                 $sqlFormat,
                 $date
             ]);
@@ -24,6 +24,6 @@ class PassLogMetric extends BaseMetric
 
     public static function getQueryValue($query): int
     {
-        return $query->count();
+        return $query->sum('price');
     }
 }

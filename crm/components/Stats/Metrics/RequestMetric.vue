@@ -25,7 +25,7 @@ export default {
     <UiClearableSelect
       v-model="filters.is_from_internet"
       :items="yesNo('заявка с сайта', 'создана вручную')"
-      label="Источник"
+      label="Кто создал"
     />
   </div>
   <div>

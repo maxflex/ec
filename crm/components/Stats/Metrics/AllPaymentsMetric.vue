@@ -61,7 +61,7 @@ export default {
     <UiClearableSelect
       v-model="filters.is_return"
       label="Тип операции"
-      :items="yesNo('только платежи', 'только возвраты')"
+      :items="yesNo('платежи', 'возвраты')"
     />
   </div>
 </template>

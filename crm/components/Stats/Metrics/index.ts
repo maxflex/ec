@@ -1,25 +1,31 @@
 import AllPaymentsMetric from './AllPaymentsMetric.vue'
+import ContractVersionMetric from './ContractVersionMetric.vue'
+import LessonMetric from './LessonMetric.vue'
 import PassLogMetric from './PassLogMetric.vue'
-import ReportsMetric from './ReportsMetric.vue'
-import RequestsMetric from './RequestsMetric.vue'
-import TeacherPaymentsMetric from './TeacherPaymentsMetric.vue'
+import ReportMetric from './ReportMetric.vue'
+import ReportSumMetric from './ReportSumMetric.vue'
+import RequestMetric from './RequestMetric.vue'
+import TeacherPaymentMetric from './TeacherPaymentMetric.vue'
+import TeacherServiceMetric from './TeacherServiceMetric.vue'
 
-export const MetricComponents: { [key: string]: {
+interface MetricComponentParams {
   width: number
   label: string
   filters: object
-} } = {
-  // @ts-expect-error
-  RequestsMetric,
-  // @ts-expect-error
-  ReportsMetric,
-  // @ts-expect-error
-  AllPaymentsMetric,
-  // @ts-expect-error
-  TeacherPaymentsMetric,
-  // @ts-expect-error
-  PassLogMetric,
 }
+
+export const MetricComponents = {
+  RequestMetric,
+  ReportMetric,
+  ReportSumMetric,
+  AllPaymentsMetric,
+  TeacherPaymentMetric,
+  TeacherServiceMetric,
+  PassLogMetric,
+  LessonMetric,
+  ContractVersionMetric,
+
+} as unknown as { [key: string]: MetricComponentParams }
 
 export const MetricColors = {
   black: 'чёрный',

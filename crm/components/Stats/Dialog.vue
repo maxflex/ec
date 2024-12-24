@@ -15,7 +15,7 @@ const emit = defineEmits<{
   go: [params: StatsParams]
 }>()
 
-const { dialog, width } = useDialog('x-large')
+const { dialog, width } = useDialog('large')
 const presetDialog = ref()
 
 const params = ref<StatsParams>({
@@ -139,28 +139,7 @@ defineExpose({ open })
                 />
               </div>
             </div>
-            <v-table hover>
-              <thead>
-                <tr>
-                  <th>
-                    Метрики
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(metric, key) in MetricComponents" :key="key" @click="addMetric(key)">
-                  <td>
-                    <div class="stats-dialog__metric">
-                      <span>
-                        {{ metric.label }}
-                      </span>
-                      <v-icon :icon="mdiPlus" color="gray" />
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </v-table>
-            <v-table v-if="presets.length > 0" class="mt-6" hover>
+            <v-table v-if="presets.length > 0" class="mb-8" hover>
               <thead>
                 <tr>
                   <th>Пресеты</th>
@@ -187,6 +166,27 @@ defineExpose({ open })
                           @click.stop="deletePreset(preset)"
                         />
                       </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </v-table>
+            <v-table hover>
+              <thead>
+                <tr>
+                  <th>
+                    Метрики
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(metric, key) in MetricComponents" :key="key" @click="addMetric(key)">
+                  <td>
+                    <div class="stats-dialog__metric">
+                      <span>
+                        {{ metric.label }}
+                      </span>
+                      <v-icon :icon="mdiPlus" color="gray" />
                     </div>
                   </td>
                 </tr>

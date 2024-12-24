@@ -4,12 +4,10 @@ namespace App\Utils\Stats\Metrics;
 
 use App\Models\TeacherPayment;
 
-class TeacherPaymentsMetric extends BaseMetric
+class TeacherServiceMetric extends BaseMetric
 {
     protected $filters = [
-        'equals' => [
-            'year', 'is_confirmed', 'method'
-        ],
+        'equals' => ['year'],
 //        'findInSet' => ['method'],
     ];
 

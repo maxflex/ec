@@ -42,7 +42,11 @@ enum Direction: string
         return $directions;
     }
 
-    public static function fromProgram(Program $program): ?Direction
+    /**
+     * К какому направлению относится данная программа?
+     *
+     */
+    private static function fromProgram(Program $program): ?Direction
     {
         $str = str($program->value);
 
@@ -105,5 +109,30 @@ enum Direction: string
 
         // не удалось получить направление
         return Direction::online;
+    }
+
+    /**
+     * Из направления получить массив программ
+     *
+     * @return array<string>
+     */
+    public static function toPrograms(Direction $direction): array
+    {
+        $programs = collect(Program::cases())->map(fn($e) => str($e->name));
+
+        $result = match ($direction) {
+            self::courses9 => $programs->filter(fn($p) => $p->length() < 7 && $p->endsWith("9")),
+            self::courses10 => $programs->filter(fn($p) => $p->length() < 7 && $p->endsWith("10")),
+            self::courses11 => $programs->filter(fn($p) => $p->length() < 7 && $p->endsWith("11")),
+            self::school8 => $programs->filter(fn($p) => $p->endsWith("School8")),
+            self::school9 => $programs->filter(fn($p) => $p->endsWith("School9")),
+            self::school10 => $programs->filter(fn($p) => $p->endsWith("School10")),
+            self::school11 => $programs->filter(fn($p) => $p->endsWith("School11")),
+            self::external => $programs->filter(fn($p) => $p->endsWith("External")),
+            self::practicum => $programs->filter(fn($p) => $p->contains("Pract")),
+            default => collect(),
+        };
+
+        return $result->values()->all();
     }
 }
