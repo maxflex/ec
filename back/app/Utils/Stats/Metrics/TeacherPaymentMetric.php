@@ -3,7 +3,6 @@
 namespace App\Utils\Stats\Metrics;
 
 use App\Models\TeacherPayment;
-use Illuminate\Database\Eloquent\Builder;
 
 class TeacherPaymentMetric extends BaseMetric
 {
@@ -14,7 +13,7 @@ class TeacherPaymentMetric extends BaseMetric
         'findInSet' => ['method'],
     ];
 
-    public static function getQuery(): Builder
+    public static function getQuery()
     {
         return TeacherPayment::query();
     }

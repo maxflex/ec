@@ -16,6 +16,7 @@ defineExpose({ filters })
 <script lang="ts">
 export default {
   label: 'Сумма версий',
+  width: 150,
   filters: {
     direction: [],
   },

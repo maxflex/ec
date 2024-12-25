@@ -3,7 +3,6 @@
 namespace App\Utils\Stats\Metrics;
 
 use App\Models\Report;
-use Illuminate\Database\Eloquent\Builder;
 
 class ReportSumMetric extends BaseMetric
 {
@@ -13,7 +12,7 @@ class ReportSumMetric extends BaseMetric
         ]
     ];
 
-    public static function getQuery(): Builder
+    public static function getQuery()
     {
         return Report::query();
     }

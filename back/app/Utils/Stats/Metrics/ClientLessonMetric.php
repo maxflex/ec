@@ -4,7 +4,6 @@ namespace App\Utils\Stats\Metrics;
 
 use App\Enums\LessonStatus;
 use App\Models\Lesson;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 class ClientLessonMetric extends BaseMetric
@@ -13,7 +12,7 @@ class ClientLessonMetric extends BaseMetric
         'equals' => ['status'],
     ];
 
-    public static function getQuery(): Builder
+    public static function getQuery()
     {
         return Lesson::query()
             ->where('status', '<>', LessonStatus::cancelled)

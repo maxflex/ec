@@ -4,7 +4,6 @@ namespace App\Utils\Stats\Metrics;
 
 use App\Models\Pass;
 use App\Models\PassLog;
-use Illuminate\Database\Eloquent\Builder;
 
 class PassLogMetric extends BaseMetric
 {
@@ -12,7 +11,7 @@ class PassLogMetric extends BaseMetric
         'equals' => ['entity_type'],
     ];
 
-    public static function getQuery(): Builder
+    public static function getQuery()
     {
         return PassLog::query()
             ->where('entity_type', '<>', Pass::class);

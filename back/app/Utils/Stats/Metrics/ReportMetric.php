@@ -3,7 +3,6 @@
 namespace App\Utils\Stats\Metrics;
 
 use App\Models\Report;
-use Illuminate\Database\Eloquent\Builder;
 
 class ReportMetric extends BaseMetric
 {
@@ -11,7 +10,7 @@ class ReportMetric extends BaseMetric
         'equals' => ['year', 'program', 'is_published', 'is_moderated']
     ];
 
-    public static function getQuery(): Builder
+    public static function getQuery()
     {
         return Report::query();
     }

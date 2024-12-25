@@ -3,7 +3,6 @@
 namespace App\Utils\Stats\Metrics;
 
 use App\Models\TeacherPayment;
-use Illuminate\Database\Eloquent\Builder;
 
 class TeacherServiceMetric extends BaseMetric
 {
@@ -11,7 +10,7 @@ class TeacherServiceMetric extends BaseMetric
         'equals' => ['year'],
     ];
 
-    public static function getQuery(): Builder
+    public static function getQuery()
     {
         return TeacherPayment::query();
     }

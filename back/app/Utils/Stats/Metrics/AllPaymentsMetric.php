@@ -3,7 +3,6 @@
 namespace App\Utils\Stats\Metrics;
 
 use App\Utils\AllPayments;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 class AllPaymentsMetric extends BaseMetric
@@ -16,7 +15,7 @@ class AllPaymentsMetric extends BaseMetric
         'findInSet' => ['method'],
     ];
 
-    public static function getQuery(): Builder
+    public static function getQuery()
     {
         return AllPayments::query();
     }

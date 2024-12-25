@@ -13,6 +13,14 @@ abstract class BaseMetric extends Controller implements MetricInterface
         $dateField = static::getDateField();
         $query = static::getQuery();
 
+//        if ($mode === 'year') {
+//            [$y, $m, $d] = explode('-', $date);
+//            $query->whereHas('contract', fn($q) => $q->where('year', $y));
+//            $query->whereRaw("`year` = DATE_FORMAT(?, ?)", [
+//                $sqlFormat,
+//                $date,
+//                $sqlFormat,
+//            ]);
         if ($mode === 'week') {
             $query->whereRaw("DATE_FORMAT(`$dateField`, ?) = DATE_FORMAT(?, ?)", [
                 $sqlFormat,

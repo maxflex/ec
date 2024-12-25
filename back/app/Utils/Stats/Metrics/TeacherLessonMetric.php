@@ -3,7 +3,6 @@
 namespace App\Utils\Stats\Metrics;
 
 use App\Models\Lesson;
-use Illuminate\Database\Eloquent\Builder;
 
 class TeacherLessonMetric extends BaseMetric
 {
@@ -11,7 +10,7 @@ class TeacherLessonMetric extends BaseMetric
         'equals' => ['status'],
     ];
 
-    public static function getQuery(): Builder
+    public static function getQuery()
     {
         return Lesson::query();
     }

@@ -3,7 +3,6 @@
 namespace App\Utils\Stats\Metrics;
 
 use App\Models\Request as ClientRequest;
-use Illuminate\Database\Eloquent\Builder;
 
 class RequestMetric extends BaseMetric
 {
@@ -18,7 +17,7 @@ class RequestMetric extends BaseMetric
         'is_from_internet' => 'user_id'
     ];
 
-    public static function getQuery(): Builder
+    public static function getQuery()
     {
         return ClientRequest::query();
     }
