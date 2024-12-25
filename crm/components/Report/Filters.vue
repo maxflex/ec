@@ -25,4 +25,10 @@ const model = defineModel<ReportFilters>({ required: true })
     v-model="model.teacher_id"
     density="comfortable"
   />
+  <UiClearableSelect
+    v-model="model.program"
+    label="Программа"
+    :items="selectItems(ProgramLabel)"
+    density="comfortable"
+  />
 </template>
