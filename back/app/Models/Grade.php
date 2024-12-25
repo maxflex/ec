@@ -49,14 +49,13 @@ class Grade extends Model
                 CONCAT(c.client_id, '-',  g.`year`, '-', cvp.program) AS `id`,
                 c.client_id, 
                 cvp.program, 
-                cl.contract_version_program_id, 
                 g.year,
                 CAST(sum(if(`quarter` = 'q1', 1, 0)) AS UNSIGNED) AS `q1_conducted_lessons_count`,
                 CAST(sum(if(`quarter` = 'q2', 1, 0)) AS UNSIGNED) AS `q2_conducted_lessons_count`,
                 CAST(sum(if(`quarter` = 'q3', 1, 0)) AS UNSIGNED) AS `q3_conducted_lessons_count`,
                 CAST(sum(if(`quarter` = 'q4', 1, 0)) AS UNSIGNED) AS `q4_conducted_lessons_count`
             ")
-            ->groupByRaw('c.client_id, cl.contract_version_program_id, g.year');
+            ->groupByRaw('c.client_id, cvp.program, g.year');
 
         if ($teacherId) {
             $cte->where('l.teacher_id', $teacherId);

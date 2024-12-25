@@ -32,9 +32,14 @@ class QuartersGradesResource extends JsonResource
 
         $quarters = [];
         foreach (Quarter::cases() as $quarter) {
-            $currentGroupId = ClientGroup::query()
-                ->where('contract_version_program_id', $this->contract_version_program_id)
-                ->value('group_id');
+            $groupIds = ClientGroup::query()
+                ->join('contract_version_programs as cvp', 'cvp.id', '=', 'contract_version_program_id')
+                ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
+                ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
+                ->where('cvp.program', $this->program)
+                ->where('c.client_id', $this->client_id)
+                ->where('c.year', $this->year)
+                ->pluck('group_id');
 
             $grade = $grades->where('quarter', $quarter->value)->first();
 
@@ -42,7 +47,7 @@ class QuartersGradesResource extends JsonResource
             // (значения от предыдущей итерации цикла)
             if ($quarter !== Quarter::final) {
                 $noPlannedLessons = !Lesson::query()
-                    ->where('group_id', $currentGroupId)
+                    ->whereIn('group_id', $groupIds)
                     ->where('quarter', $quarter)
                     ->where('status', LessonStatus::planned)
                     ->exists();
@@ -65,7 +70,12 @@ class QuartersGradesResource extends JsonResource
                     $quarterData['last_teacher_id'] = $quarters[Quarter::q4->value]['last_teacher_id'];
                 } else {
                     $clientLessons = ClientLesson::query()
-                        ->where('contract_version_program_id', $this->contract_version_program_id)
+                        ->join('contract_version_programs as cvp', 'cvp.id', '=', 'contract_version_program_id')
+                        ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
+                        ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
+                        ->where('cvp.program', $this->program)
+                        ->where('c.client_id', $this->client_id)
+                        ->where('c.year', $this->year)
                         ->whereHas('lesson', fn($q) => $q->where('quarter', $quarter))
                         ->get()
                         ->sortBy(fn($cl) => $cl->lesson->date_time);
@@ -82,7 +92,7 @@ class QuartersGradesResource extends JsonResource
         }
 
         return extract_fields($this, [
-            'year', 'program', 'contract_version_program_id'
+            'year', 'program',
         ], [
             'quarters' => $quarters,
             'client' => new PersonResource(Client::find($this->client_id))
