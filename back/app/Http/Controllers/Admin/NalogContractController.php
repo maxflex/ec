@@ -26,19 +26,21 @@ class NalogContractController extends Controller
 
         foreach ($contracts as $contract) {
             $activeVersion = $contract->active_version;
+            $sum1 = 0;
+            $sum2 = 0;
+
             foreach ($activeVersion->programs as $program) {
-                $sum1 = ClientLesson::query()
+                $sum1 += ClientLesson::query()
                     ->where('contract_version_program_id', $program->id)
                     ->join('lessons as l', 'l.id', '=', 'client_lessons.lesson_id')
                     ->where('l.date', '<=', $date1)
                     ->sum('client_lessons.price');
 
-                $sum2 = $sum1 + ClientLesson::query()
-                        ->where('contract_version_program_id', $program->id)
-                        ->join('lessons as l', 'l.id', '=', 'client_lessons.lesson_id')
-                        ->where('l.date', '>', $date1)
-                        ->where('l.date', '<=', $date2)
-                        ->sum('client_lessons.price');
+                $sum2 += ClientLesson::query()
+                    ->where('contract_version_program_id', $program->id)
+                    ->join('lessons as l', 'l.id', '=', 'client_lessons.lesson_id')
+                    ->whereBetween('l.date', ['2025-01-01', $date2])
+                    ->sum('client_lessons.price');
 
                 $group = ClientGroup::query()
                     ->where('contract_version_program_id', $program->id)
@@ -59,13 +61,11 @@ class NalogContractController extends Controller
                         $nextPrice = $program->getNextPrice($lessonsPassed);
                         if ($plannedLesson->date <= $date1) {
                             $sum1 += $nextPrice;
-                        }
-                        if ($plannedLesson->date <= $date2) {
+                        } else if ($plannedLesson->date <= $date2) {
                             $sum2 += $nextPrice;
                         }
                     }
                 }
-
             }
 
             $result->push([
@@ -75,7 +75,7 @@ class NalogContractController extends Controller
                 'seq' => $activeVersion->seq,
                 'date' => $activeVersion->date,
                 'sum1' => $sum1,
-                'sum2' => $sum2,
+                'sum2' => $sum1 + $sum2,
             ]);
         }
 
