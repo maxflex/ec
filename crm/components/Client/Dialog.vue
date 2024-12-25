@@ -227,6 +227,7 @@ defineExpose({ create, edit })
           <UiDateInput
             v-model="client.parent.passport.issued_date"
             label="Дата выдачи паспорта"
+            past
           />
           <v-text-field
             v-model="client.parent.email"
