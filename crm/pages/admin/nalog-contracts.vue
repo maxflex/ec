@@ -9,6 +9,7 @@ interface NalogItem {
   date: string
   sum1: number
   sum2: number
+  paid: number
 }
 
 const items = ref<NalogItem[]>([])
@@ -45,13 +46,16 @@ nextTick(loadData)
           до 31 февраля
         </th>
         <th>
+          оплачено
+        </th>
+        <th>
           метка
         </th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="item in items" :key="item.id">
-        <td width="280">
+        <td width="260">
           <UiPerson :item="item.parent" />
         </td>
         <td width="180">
@@ -65,6 +69,9 @@ nextTick(loadData)
         </td>
         <td width="200">
           {{ formatPrice(item.sum2, true) }} руб.
+        </td>
+        <td width="200">
+          {{ formatPrice(item.paid, true) }} руб.
         </td>
         <td>
           <v-icon v-if="item.is_marked" :icon="mdiCheckBold" color="success" />

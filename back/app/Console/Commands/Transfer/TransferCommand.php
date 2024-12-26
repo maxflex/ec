@@ -2,9 +2,7 @@
 
 namespace App\Console\Commands\Transfer;
 
-use App\Utils\MigrationError;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Schema;
 
 class TransferCommand extends Command
 {
@@ -13,37 +11,37 @@ class TransferCommand extends Command
 
     public function handle()
     {
-        Schema::disableForeignKeyConstraints();
-        MigrationError::table()->truncate();
-        foreach ([
-                     'users',
-                     'clients',
-                     'requests',
-                     'teachers',
-                     'phones',
-                     'contracts',
-                     'groups',
-                     'client-groups',
-                     'teacher-payments',
-                     'teacher-services',
-                     'client-payments',
-                     'lessons',
-                     'client-lessons',  // долго
-                     'reports',
-                     'head-teacher-reports',
-                     'reviews',
-                     'payment-additionals',
-                     'comments',
-                     'passes',
-                     'vacations',
-                     'grades',
-                     'group-acts',
-                     'scholarship-scores',
-        ] as $command) {
-            $this->info(str($command)->ucfirst());
-            $this->call("app:transfer:$command");
-            $this->line(PHP_EOL);
-        }
-        Schema::enableForeignKeyConstraints();
+//        Schema::disableForeignKeyConstraints();
+//        MigrationError::table()->truncate();
+//        foreach ([
+//                     'users',
+//                     'clients',
+//                     'requests',
+//                     'teachers',
+//                     'phones',
+//                     'contracts',
+//                     'groups',
+//                     'client-groups',
+//                     'teacher-payments',
+//                     'teacher-services',
+//                     'client-payments',
+//                     'lessons',
+//                     'client-lessons',  // долго
+//                     'reports',
+//                     'head-teacher-reports',
+//                     'reviews',
+//                     'payment-additionals',
+//                     'comments',
+//                     'passes',
+//                     'vacations',
+//                     'grades',
+//                     'group-acts',
+//                     'scholarship-scores',
+//        ] as $command) {
+//            $this->info(str($command)->ucfirst());
+//            $this->call("app:transfer:$command");
+//            $this->line(PHP_EOL);
+//        }
+//        Schema::enableForeignKeyConstraints();
     }
 }

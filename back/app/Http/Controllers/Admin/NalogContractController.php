@@ -17,9 +17,10 @@ class NalogContractController extends Controller
         $date1 = '2024-12-31';
         $date2 = '2025-02-28';
 
-        $contracts = Contract::with('client.parent')
+        $contracts = Contract::with('client.parent', 'payments')
             ->where('year', 2024)
             ->where('company', Company::ip)
+            ->where('client_id', 9075)
             ->get();
 
         $result = collect();
@@ -76,7 +77,7 @@ class NalogContractController extends Controller
                 'date' => $activeVersion->date,
                 'sum1' => $sum1,
                 'sum2' => $sum1 + $sum2,
-            ]);
+                'paid' => $contract->payments->reduce(fn($carry, $p) => $carry + $p->realSum, 0)]);
         }
 
         return $result->sortBy([
