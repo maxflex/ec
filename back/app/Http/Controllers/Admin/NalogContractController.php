@@ -20,7 +20,7 @@ class NalogContractController extends Controller
         $contracts = Contract::with('client.parent', 'payments')
             ->where('year', 2024)
             ->where('company', Company::ip)
-            ->where('client_id', 9075)
+//            ->where('client_id', 9075)
             ->get();
 
         $result = collect();
