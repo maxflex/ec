@@ -15,7 +15,7 @@ class WebReviewController extends Controller
             $request->input('seed')
         );
         // в старой системе отображались только отзывы с фотками
-        $query->whereHas('client.photo');
+        $query->whereHas('client.photo')->where('rating', 5);
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, WebReviewPubResource::class);
     }
