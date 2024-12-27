@@ -52,16 +52,16 @@ export default {
   </div>
   <div>
     <UiClearableSelect
-      v-model="filters.is_confirmed"
-      label="Подтверждение платежа"
-      :items="yesNo()"
+      v-model="filters.is_return"
+      label="Операция"
+      :items="yesNo('платеж', 'возврат')"
     />
   </div>
   <div>
     <UiClearableSelect
-      v-model="filters.is_return"
-      label="Тип операции"
-      :items="yesNo('платежи', 'возвраты')"
+      v-model="filters.is_confirmed"
+      label="Подтверждение платежа"
+      :items="yesNo()"
     />
   </div>
 </template>
