@@ -14,7 +14,7 @@ class ReportObserver
         if ($report->isDirty('status') && $report->status === ReportStatus::published) {
             TelegramMessage::sendTemplate(
                 TelegramTemplate::reportPublished,
-                $report->client->parent->phones()->withTelegram()->get()->all(),
+                $report->client->parent,
                 ['report' => $report],
                 ['id' => $report->id]
             );

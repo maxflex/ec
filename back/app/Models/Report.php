@@ -98,7 +98,7 @@ class Report extends Model
     {
         TelegramMessage::sendTemplate(
             TelegramTemplate::reportRead,
-            $this->client->parent->phones()->withTelegram()->get()->all(),
+            $this->client->parent,
             ['report' => $this]
         );
     }

@@ -18,14 +18,9 @@ class ClientLessonObserver
             ClientLessonStatus::lateOnline,
             ClientLessonStatus::presentOnline,
         ])) {
-            $phones = $clientLesson->contractVersionProgram->contractVersion->contract->client->parent
-                ->phones()
-                ->withTelegram()
-                ->get()
-                ->all();
             TelegramMessage::sendTemplate(
                 TelegramTemplate::clientLessonStatus,
-                $phones,
+                $clientLesson->contractVersionProgram->contractVersion->contract->client->parent,
                 ['clientLesson' => $clientLesson]
             );
         }

@@ -17,6 +17,10 @@ class TelegramMessage extends Model
         'text', 'list_id', 'template', 'number', 'telegram_id'
     ];
 
+    protected $casts = [
+        'template' => TelegramTemplate::class
+    ];
+
     public function entity(): MorphTo
     {
         return $this->morphTo();
@@ -24,24 +28,34 @@ class TelegramMessage extends Model
 
     /**
      * Отправить сообщение и сохранить TelegramMessage
+     * Неудачные попытки будут отображаться красным в истории сообщений
      *
      * @param InlineKeyboardMarkup|ReplyKeyboardMarkup|ReplyKeyboardRemove|ForceReply|null $replyMarkup
      */
-    public static function send(Phone $phone, string|TelegramList $where, $replyMarkup = null): bool
+    public static function send(
+        Phone               $phone,
+        string|TelegramList $textOrList,
+                            $replyMarkup = null,
+        ?TelegramTemplate   $template = null,
+    ): bool
     {
-        if ($where instanceof TelegramList) {
-            $listId = $where->id;
-            $text = $where->text;
+        if ($textOrList instanceof TelegramList) {
+            $listId = $textOrList->id;
+            $text = $textOrList->text;
         } else {
             $listId = null;
-            $text = $where;
+            $text = $textOrList;
         }
+
+        // если нет telegram_id, всё равно сохраняем попытку отправить
         $phone->entity->telegramMessages()->create([
             'list_id' => $listId,
             'telegram_id' => $phone->telegram_id,
             'number' => $phone->number,
             'text' => $text,
+            'template' => $template,
         ]);
+
         if ($phone->telegram_id) {
             try {
                 Telegram::sendMessage(
@@ -60,18 +74,15 @@ class TelegramMessage extends Model
         return false;
     }
 
-    /**
-     * @param Phone[] $phones
-     */
     public static function sendTemplate(
         TelegramTemplate $template,
-        array $phones,
+        $receiver,
         array $viewVariables = [],
         array $callbackData = []
     ) {
-        foreach ($phones as $phone) {
+        foreach ($receiver->phones as $phone) {
             $text = $template->getText($viewVariables);
-            TelegramMessage::send($phone, $text, $template->getReplyMarkup($callbackData));
+            TelegramMessage::send($phone, $text, $template->getReplyMarkup($callbackData), $template);
         }
     }
 }

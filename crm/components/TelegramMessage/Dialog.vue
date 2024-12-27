@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiAlertCircleOutline, mdiCheckAll, mdiSendCircle } from '@mdi/js'
+import { mdiAlertCircleOutline, mdiCheckAll } from '@mdi/js'
 
 const { dialog, width, transition } = useDialog('default')
 const telegramMessages = ref<TelegramMessageResource[]>([])
@@ -61,42 +61,32 @@ defineExpose({ open })
         <UiLoader v-if="!loaded" />
       </v-fade-transition>
 
-      <div v-if="phone" class="telegram-messages__header">
-        <span>
-          <v-icon :icon="mdiSendCircle" color="#24A1DE" />
-          <b>
-            {{ EntityTypeLabel[phone.entity_type] }} {{ phone.entity_id }}
-          </b>
-        </span>
-        <span class="text-gray">
-          {{ formatPhone(phone.number) }}
-        </span>
-      </div>
+      <!--      <div v-if="phone" class="telegram-messages__header"> -->
+      <!--        <span> -->
+      <!--          <v-icon :icon="mdiSendCircle" color="#24A1DE" /> -->
+      <!--          <b> -->
+      <!--            {{ EntityTypeLabel[phone.entity_type] }} {{ phone.entity_id }} -->
+      <!--          </b> -->
+      <!--        </span> -->
+      <!--        <span class="text-gray"> -->
+      <!--          {{ formatPhone(phone.number) }} -->
+      <!--        </span> -->
+      <!--      </div> -->
 
       <UiNoData v-if="loaded && telegramMessages.length === 0" />
 
-      <transition-group
-        name="new-telegram"
-        class="telegram-messages__items"
-        tag="div"
-      >
+      <div class="telegram-messages__items">
         <div v-for="m in telegramMessages" :key="m.id" class="telegram-message">
-          <UiEcAvatar :size="46" />
           <div>
             <div class="telegram-message__title">
-              <span>
-                {{ formatName(m.entity) }}
-              </span>
-              <span v-if="m.created_at">
-                {{ formatDateTime(m.created_at) }}
-              </span>
+              {{ formatDateTime(m.created_at) }}
               <v-icon v-if="m.telegram_id" color="success" :icon="mdiCheckAll" :size="14" />
               <v-icon v-else color="error" :icon="mdiAlertCircleOutline" :size="14" />
             </div>
-            {{ m.text }}
+            <div class="telegram-message__text" v-html="m.text" />
           </div>
         </div>
-      </transition-group>
+      </div>
     </div>
   </v-dialog>
 </template>
@@ -132,6 +122,7 @@ defineExpose({ open })
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    gap: 40px;
     padding: $padding;
     & > div {
       margin-bottom: 16px;
@@ -145,19 +136,6 @@ defineExpose({ open })
     &--no-scroll {
       &::-webkit-scrollbar {
         display: none;
-      }
-    }
-    &--loaded {
-      .new-telegram {
-        &-enter-active,
-        &-leave-active {
-          transition: all 100ms linear;
-        }
-        &-enter-from,
-        &-leave-to {
-          opacity: 0;
-          transform: translateY(20px);
-        }
       }
     }
   }
@@ -176,25 +154,15 @@ defineExpose({ open })
   &__title {
     display: flex;
     align-items: center;
-    // margin-bottom: 2px;
-    & > *:not(:last-child) {
-      margin-right: 6px;
-    }
-    & > span {
-      &:first-child {
-        font-weight: bold;
-      }
-      &:not(:first-child) {
-        color: rgb(var(--v-theme-gray));
-        font-size: 12px;
-        font-weight: normal;
-      }
-    }
-    &:hover {
-      .telegram-item__controls {
-        opacity: 1;
-      }
-    }
+    justify-content: center;
+    gap: 4px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: rgb(var(--v-theme-gray));
+    font-weight: 500;
+  }
+  &__text {
+    white-space: pre-line;
   }
 }
 </style>
