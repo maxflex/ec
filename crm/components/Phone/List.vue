@@ -51,7 +51,7 @@ const phoneDialog = ref<InstanceType<typeof PhoneDialog>>()
       <div
         class="phone-list__number"
         :class="{ 'text-gray': request && !request.is_verified }"
-        @click="phoneDialog?.open(item)"
+        @click.stop="phoneDialog?.open(item)"
       >
         {{ formatPhone(item.number) }}
       </div>

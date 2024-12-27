@@ -80,7 +80,7 @@ class Contract extends Model
                     'занятие %s, группа %d, кабинет %s',
                     $lesson->date_time->format('d.m.y в H:i'),
                     $lesson->group_id,
-                    $lesson->cabinet->value
+                    filter_var($lesson->cabinet->value, FILTER_SANITIZE_NUMBER_INT)
                 )
             ];
         }
