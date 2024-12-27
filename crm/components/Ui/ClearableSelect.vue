@@ -1,12 +1,13 @@
 <script setup lang="ts">
-const { notSet = 'не установлено ' } = defineProps<{
+const { notSet = 'не установлено', nullify } = defineProps<{
   notSet?: string
+  nullify?: boolean
 }>()
 const model = defineModel<any>({ required: true })
-const nullify = model.value === null
+const setNull = nullify || model.value === null
 const input = ref()
 function clear() {
-  model.value = nullify ? null : undefined
+  model.value = setNull ? null : undefined
   nextTick(() => input.value.blur())
 }
 </script>

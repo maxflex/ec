@@ -4,7 +4,6 @@ import { mdiAlertCircleOutline, mdiCheckAll } from '@mdi/js'
 const { dialog, width, transition } = useDialog('default')
 const telegramMessages = ref<TelegramMessageResource[]>([])
 const wrapper = ref<HTMLDivElement | null>(null)
-const noScroll = ref(false)
 const loaded = ref(false)
 const phone = ref<PhoneResource>()
 
@@ -13,7 +12,7 @@ function scrollBottom() {
     console.log(wrapper.value)
     wrapper.value?.scrollTo({
       top: 99999,
-      behavior: noScroll.value ? 'instant' : 'smooth',
+      behavior: 'instant',
     })
   })
 }
@@ -25,6 +24,7 @@ function open(p: PhoneResource) {
 }
 
 async function loadData() {
+  loaded.value = false
   const { data } = await useHttp<ApiResponse<TelegramMessageResource>>(
     'telegram-messages',
     {
@@ -34,11 +34,9 @@ async function loadData() {
     },
   )
   if (data.value) {
-    noScroll.value = true
     telegramMessages.value = data.value.data
     scrollBottom()
     setTimeout(() => {
-      noScroll.value = false
       loaded.value = true
     }, 200)
   }
@@ -52,10 +50,6 @@ defineExpose({ open })
     <div
       ref="wrapper"
       class="dialog-wrapper telegram-messages-wrapper"
-      :class="{
-        'telegram-messages-wrapper--no-scroll': noScroll,
-        'telegram-messages-wrapper--loaded': loaded,
-      }"
     >
       <v-fade-transition>
         <UiLoader v-if="!loaded" />
@@ -105,12 +99,7 @@ defineExpose({ open })
   &-wrapper {
     .loaderr {
       position: absolute;
-      z-index: 10;
-    }
-    &--no-scroll {
-      &::-webkit-scrollbar {
-        display: none;
-      }
+      z-index: 99;
     }
   }
 }

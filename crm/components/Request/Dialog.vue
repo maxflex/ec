@@ -142,12 +142,14 @@ defineExpose({ create, edit })
             v-model="request.direction"
             label="Направление"
             :items="selectItems(DirectionLabel)"
+            nullify
           />
         </div>
         <div>
           <UserSelector
             v-model="request.responsible_user_id"
             label="Ответственный"
+            nullify
           />
         </div>
         <div v-if="itemId">
