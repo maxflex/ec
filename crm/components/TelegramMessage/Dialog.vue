@@ -77,14 +77,12 @@ defineExpose({ open })
 
       <div class="telegram-messages__items">
         <div v-for="m in telegramMessages" :key="m.id" class="telegram-message">
-          <div>
-            <div class="telegram-message__title">
-              {{ formatDateTime(m.created_at) }}
-              <v-icon v-if="m.telegram_id" color="success" :icon="mdiCheckAll" :size="14" />
-              <v-icon v-else color="error" :icon="mdiAlertCircleOutline" :size="14" />
-            </div>
-            <div class="telegram-message__text" v-html="m.text" />
+          <div class="telegram-message__title">
+            {{ formatDateTime(m.created_at) }}
+            <v-icon v-if="m.telegram_id" color="success" :icon="mdiCheckAll" :size="14" />
+            <v-icon v-else color="error" :icon="mdiAlertCircleOutline" :size="14" />
           </div>
+          <div class="telegram-message__text" v-html="m.text" />
         </div>
       </div>
     </div>
@@ -93,37 +91,13 @@ defineExpose({ open })
 
 <style lang="scss">
 .telegram-messages {
-  $padding: 10px 16px;
-  &__header {
-    padding-left: 16px;
-    padding-right: 16px;
-    background: #eaf8ff;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    // border-bottom: 1px solid #e0e0e0;
-    border-bottom: 1px solid #a4cde2;
-    display: flex;
-    justify-content: space-between;
-    min-height: 40px;
-    & > span {
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      .v-icon {
-        font-size: 24px;
-      }
-    }
-  }
   &__items {
     flex: 1;
-    // height: 0px; /*here the height is set to 0px*/
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     gap: 40px;
-    padding: $padding;
+    padding: 20px;
     & > div {
       margin-bottom: 16px;
     }
@@ -141,22 +115,12 @@ defineExpose({ open })
   }
 }
 .telegram-message {
-  display: flex;
-  align-items: flex-start;
-  font-size: 14px;
-  & > div:last-child {
-    flex: 1;
-  }
-  .v-avatar {
-    margin-right: 16px;
-    margin-top: 1px;
-  }
   &__title {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    font-size: 16px;
+    gap: 8px;
+    font-size: 14px;
     margin-bottom: 20px;
     color: rgb(var(--v-theme-gray));
     font-weight: 500;
