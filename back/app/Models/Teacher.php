@@ -85,7 +85,7 @@ class Teacher extends Authenticatable implements HasTeeth, CanLogin
 
         foreach ($lessons as $lesson) {
             $balanceItems[] = (object)[
-                'dateTime' => $lesson->conducted_at,
+                'dateTime' => $lesson->date_time,
                 'sum' => $lesson->price,
                 'comment' => sprintf(
                     'занятие %s, группа %d, кабинет %s',
