@@ -493,7 +493,7 @@ declare global {
     year: Year
     method: TeacherPaymentMethod
     is_confirmed: boolean
-    purpose: ?string
+    card_number: ?string
     teacher_id?: number
     user?: PersonResource
     teacher?: PersonResource

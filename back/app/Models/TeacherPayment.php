@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class TeacherPayment extends Model
 {
     protected $fillable = [
-        'purpose', 'date', 'method', 'sum',
+        'card_number', 'date', 'method', 'sum',
         'teacher_id', 'year', 'is_confirmed'
     ];
 

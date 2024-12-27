@@ -11,7 +11,7 @@ const modelDefaults: TeacherPaymentResource = {
   year: currentAcademicYear(),
   date: today(),
   method: 'card',
-  purpose: null,
+  card_number: null,
   sum: 0,
   is_confirmed: false,
 }
@@ -149,6 +149,12 @@ defineExpose({ create, edit })
             :items="selectItems(TeacherPaymentMethodLabel)"
           />
         </div>
+        <div v-if="item.method === 'card'">
+          <v-text-field
+            v-model="item.card_number"
+            label="Номер карты"
+          />
+        </div>
         <div>
           <UiClearableSelect
             v-model="item.year"
@@ -158,14 +164,6 @@ defineExpose({ create, edit })
         </div>
         <div>
           <UiDateInput v-model="item.date" today-btn />
-        </div>
-
-        <div>
-          <v-textarea
-            v-model="item.purpose"
-            label="Назначение"
-            no-resize
-          />
         </div>
         <div>
           <v-checkbox
