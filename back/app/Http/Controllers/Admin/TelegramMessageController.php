@@ -11,6 +11,11 @@ class TelegramMessageController extends Controller
 {
     protected $filters = [
         'equals' => ['number', 'template'],
+        'null' => ['status'],
+    ];
+
+    protected $mapFilters = [
+        'status' => 'telegram_id'
     ];
 
     /**

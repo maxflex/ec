@@ -79,6 +79,7 @@ declare global {
   }
 
   interface TelegramMessageFilters {
+    status?: number
     template?: TelegramTemplate
   }
 
