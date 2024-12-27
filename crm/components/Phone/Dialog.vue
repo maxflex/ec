@@ -38,15 +38,32 @@ defineExpose({ open })
         <div>
           <div />
           <div class="phone-view__actions">
-            <v-btn
-              :size="48"
-              :icon="mdiPhone"
-              variant="text"
-              color="secondary"
-              :href="`tel:${item.number}`"
-            />
-            <v-btn :size="48" :icon="mdiHistory" variant="text" color="secondary" @click="openCallApp(item.number)" />
-            <v-btn :size="48" :icon="mdiSend" variant="text" color="secondary" @click="telegramMessageDialog?.open(item)" />
+            <v-tooltip location="bottom">
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  :size="48"
+                  :icon="mdiPhone"
+                  variant="text"
+                  color="secondary"
+                  :href="`tel:${item.number}`"
+                />
+              </template>
+              позвонить
+            </v-tooltip>
+
+            <v-tooltip location="bottom">
+              <template #activator="{ props }">
+                <v-btn :size="48" :icon="mdiHistory" variant="text" color="secondary" v-bind="props" @click="openCallApp(item.number)" />
+              </template>
+              история вызовов
+            </v-tooltip>
+            <v-tooltip location="bottom">
+              <template #activator="{ props }">
+                <v-btn :size="48" :icon="mdiSend" variant="text" color="secondary" v-bind="props" @click="telegramMessageDialog?.open(item)" />
+              </template>
+              история сообщений
+            </v-tooltip>
           </div>
         </div>
       </div>
