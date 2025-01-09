@@ -40,6 +40,9 @@ nextTick(loadData)
           дата
         </th>
         <th>
+          направление
+        </th>
+        <th>
           до 31 декабря
         </th>
         <th>
@@ -60,6 +63,9 @@ nextTick(loadData)
         </td>
         <td width="180">
           №{{ item.id }}-{{ item.seq }}
+        </td>
+        <td width="150">
+          <ContractVersionDirections :item="item" />
         </td>
         <td width="200">
           от {{ formatDate(item.date) }}

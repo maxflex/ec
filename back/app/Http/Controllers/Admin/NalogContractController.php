@@ -75,6 +75,8 @@ class NalogContractController extends Controller
                 'parent' => new PersonResource($contract->client->parent),
                 'seq' => $activeVersion->seq,
                 'date' => $activeVersion->date,
+                'directions' => $activeVersion->directions,
+                'programs_count' => $activeVersion->programs()->count(),
                 'sum1' => $sum1,
                 'sum2' => $sum1 + $sum2,
                 'paid' => $contract->payments->reduce(fn($carry, $p) => $carry + $p->realSum, 0)]);
