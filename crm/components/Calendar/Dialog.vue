@@ -73,14 +73,13 @@ function onClick(y: number, m: number, d: number) {
   }
 }
 
-function iterateMonths(y: number): Month[] {
-  if (year === undefined) {
-    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-  }
-  return y === year
-    ? [9, 10, 11, 12]
-    : [1, 2, 3, 4, 5, 6, 7, 8]
-}
+// function iterateMonths(y: number): Month[] {
+//     return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+//   }
+//   return y === year
+//     ? [9, 10, 11, 12]
+//     : [1, 2, 3, 4, 5, 6, 7, 8]
+// }
 
 watch(dialog, isOpen => !isOpen && emit('close'))
 
@@ -106,13 +105,13 @@ defineExpose({ open })
       >
         <div class="calendar">
           <div
-            v-for="m in iterateMonths(y)"
+            v-for="m in 12"
             :key="m"
             class="calendar__month"
           >
             <div class="calendar__month-label">
               <span class="text-grey-light">
-                {{ MonthLabel[m] }}
+                {{ MonthLabel[m as Month] }}
                 '{{ y - 2000 > 10 ? '' : '0' }}{{ y - 2000 }}
               </span>
             </div>
