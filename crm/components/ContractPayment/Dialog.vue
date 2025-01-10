@@ -18,6 +18,7 @@ const printOptions: PrintOption[] = [
   { id: 10, label: 'счёт на оплату' },
   { id: 11, label: 'счёт на оплату (с печатью)' },
   { id: 9, label: 'платежка (наличные)' },
+  { id: 14, label: 'платежка НДС (наличные)' },
 ]
 
 const modelDefaults: ContractPaymentResource = {

@@ -15,6 +15,7 @@ const itemId = ref<number>()
 const printDialog = ref<InstanceType<typeof PrintDialog>>()
 const printOptions: PrintOption[] = [
   { id: 9, label: 'платежка (наличные)' },
+  { id: 14, label: 'платежка НДС (наличные)' },
 ]
 
 const modelDefaults: ClientPaymentResource = {
