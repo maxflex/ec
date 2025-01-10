@@ -7,7 +7,7 @@ use App\Models\Report;
 class ReportMetric extends BaseMetric
 {
     protected $filters = [
-        'equals' => ['year', 'program', 'is_published', 'is_moderated']
+        'findInSet' => ['year', 'program', 'status'],
     ];
 
     public static function getQuery()

@@ -7,10 +7,9 @@ use App\Models\Report;
 class ReportSumMetric extends BaseMetric
 {
     protected $filters = [
-        'equals' => [
-            'year', 'program', 'is_published', 'is_moderated'
-        ]
+        'findInSet' => ['year', 'program', 'status'],
     ];
+
 
     public static function getQuery()
     {

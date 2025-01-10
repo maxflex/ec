@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 interface Filters {
   version?: number
-  year?: Year
+  year: Year[]
   company?: Company
   direction: Direction[]
 }
 
 const filters = ref<Filters>({
+  year: [],
   direction: [],
 })
 
@@ -18,6 +19,7 @@ export default {
   label: 'Сумма версий',
   width: 150,
   filters: {
+    year: [],
     direction: [],
   },
 }
@@ -25,7 +27,7 @@ export default {
 
 <template>
   <div>
-    <UiClearableSelect v-model="filters.year" :items="selectItems(YearLabel)" label="Учебный год" />
+    <UiMultipleSelect v-model="filters.year" :items="selectItems(YearLabel)" label="Учебный год" />
   </div>
   <div>
     <UiClearableSelect

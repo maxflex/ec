@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { StatsMetricsEditor } from '#build/components'
-import { mdiChevronRight, mdiPlus } from '@mdi/js'
+import { mdiPlus } from '@mdi/js'
 import { clone } from 'rambda'
 import { VueDraggableNext } from 'vue-draggable-next'
 import {
@@ -22,8 +22,10 @@ const params = ref<StatsParams>({
   metrics: [],
   mode: 'day',
   date: null,
+  date_from: null,
 })
 
+const showPresets = ref(false)
 const metricsEditor = ref<InstanceType<typeof StatsMetricsEditor>>()
 const selected = ref<number>()
 const presets = ref<StatsPreset[]>([])
@@ -79,6 +81,7 @@ function onMetricUpdated(m: StatsMetric) {
 }
 
 function onPresetSave(p: StatsPreset) {
+  showPresets.value = true
   presets.value.push(p)
   itemUpdated('stats-preset', p.id)
 }
@@ -104,7 +107,6 @@ defineExpose({ open })
     <div class="dialog-wrapper">
       <div class="dialog-header">
         Конфигуратор
-
         <div class="d-flex ga-4">
           <v-btn variant="text" @click="presetDialog?.open(params)">
             сохранить пресет
@@ -113,7 +115,6 @@ defineExpose({ open })
             отобразить
           </v-btn>
         </div>
-        <!--        <v-btn :size="48" icon="$save" variant="text" @click="save()" /> -->
       </div>
       <div class="dialog-body pa-0">
         <div class="stats-dialog">
@@ -126,7 +127,7 @@ defineExpose({ open })
                   label="Отображать"
                 />
               </div>
-              <div>
+              <div class="double-input-glued">
                 <UiDateInput
                   v-model="params.date"
                   label="Начиная с"
@@ -134,14 +135,37 @@ defineExpose({ open })
                   clearable
                   placeholder="текущего дня"
                 />
+                <UiDateInput
+                  v-model="params.date_from"
+                  label="по"
+                  clearable
+                  placeholder="год назад"
+                />
+              </div>
+              <div class="d-flex ga-3">
+                <v-btn :color="!showPresets ? 'primary' : undefined" style="flex: 1" @click="showPresets = false">
+                  метрики
+                </v-btn>
+                <v-btn :color="showPresets ? 'primary' : undefined" style="flex: 1" @click="showPresets = true">
+                  пресеты
+                </v-btn>
               </div>
             </div>
-            <v-table v-if="presets.length > 0" class="mb-8" hover>
-              <thead>
-                <tr>
-                  <th>Пресеты</th>
+            <v-table v-if="!showPresets" hover>
+              <tbody>
+                <tr v-for="(metric, key) in MetricComponents" :key="key" @click="addMetric(key)">
+                  <td>
+                    <div class="stats-dialog__metric">
+                      <span>
+                        {{ metric.label }}
+                      </span>
+                      <v-icon :icon="mdiPlus" color="gray" />
+                    </div>
+                  </td>
                 </tr>
-              </thead>
+              </tbody>
+            </v-table>
+            <v-table v-else-if="presets.length > 0" hover>
               <tbody>
                 <tr
                   v-for="preset in presets"
@@ -154,36 +178,12 @@ defineExpose({ open })
                       <span>
                         {{ preset.name }}
                       </span>
-                      <div class="d-flex ga-1 align-center">
-                        <v-icon
-                          icon="$delete"
-                          color="gray"
-                          :size="22"
-                          class="stats-dialog__remove-preset"
-                          @click.stop="deletePreset(preset)"
-                        />
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </v-table>
-            <v-table hover>
-              <thead>
-                <tr>
-                  <th>
-                    Метрики
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(metric, key) in MetricComponents" :key="key" @click="addMetric(key)">
-                  <td>
-                    <div class="stats-dialog__metric">
-                      <span>
-                        {{ metric.label }}
-                      </span>
-                      <v-icon :icon="mdiPlus" color="gray" />
+                      <v-icon
+                        :icon="mdiPlus"
+                        color="gray"
+                        class="stats-dialog__remove"
+                        @click.stop="deletePreset(preset)"
+                      />
                     </div>
                   </td>
                 </tr>
@@ -219,14 +219,12 @@ defineExpose({ open })
                       <span>
                         {{ m.label }}
                       </span>
-                      <div class="d-flex ga-1 align-center">
-                        <v-icon
-                          icon="$delete" color="gray" :size="22"
-                          class="stats-dialog__remove-preset"
-                          @click.stop="deleteMetric(m)"
-                        />
-                        <v-icon :icon="mdiChevronRight" color="gray" />
-                      </div>
+                      <v-icon
+                        :icon="mdiPlus"
+                        color="gray"
+                        class="stats-dialog__remove"
+                        @click.stop="deleteMetric(m)"
+                      />
                     </div>
                   </td>
                 </tr>
@@ -249,7 +247,8 @@ defineExpose({ open })
 
 <style lang="scss">
 .stats-dialog {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   flex: 1;
 
   &__inputs {
@@ -260,7 +259,6 @@ defineExpose({ open })
   }
 
   & > div {
-    flex: 1;
     max-height: calc(100vh - 64px);
     overflow: scroll;
     padding-bottom: 30px;
@@ -303,7 +301,7 @@ defineExpose({ open })
         }
       }
       &:hover {
-        .v-icon:not(.stats-dialog__remove-preset):last-child {
+        .v-icon:not(.stats-dialog__remove):last-child {
           opacity: 1;
         }
       }
@@ -319,11 +317,9 @@ defineExpose({ open })
       //background: #fff3d6 !important;
       background: #f5f5f5 !important;
     }
-    .v-icon:last-child {
-      opacity: 1 !important;
-    }
   }
-  &__remove-preset {
+  &__remove {
+    transform: rotate(45deg);
     &:hover {
       color: rgb(var(--v-theme-error)) !important;
     }

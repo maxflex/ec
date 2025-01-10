@@ -8,7 +8,7 @@ use App\Models\PassLog;
 class PassLogMetric extends BaseMetric
 {
     protected $filters = [
-        'equals' => ['entity_type'],
+        'findInSet' => ['entity_type'],
     ];
 
     public static function getQuery()

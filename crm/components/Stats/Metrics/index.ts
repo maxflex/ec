@@ -58,6 +58,7 @@ export interface StatsParams {
   metrics: StatsMetric[]
   mode: StatsMode
   date: string | null
+  date_from: string | null
 }
 
 export interface StatsPreset {

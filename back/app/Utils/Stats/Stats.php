@@ -7,18 +7,35 @@ use Exception;
 
 class Stats
 {
-    public static function getData(string $mode, string $date, int $page, array $metrics): array
+    public static function getData(
+        string $mode,
+        string $date,
+        string $dateFrom,
+        array  $metrics,
+        ?int   $page,
+    ): array
     {
-        $paginate = 30;
 
         $dateObj = Carbon::createFromFormat('Y-m-d', $date);
 
-        // 1st page = -0 day
-        $from = $dateObj->modify(sprintf('-%d %s', ($page - 1) * $paginate, $mode));
+        /**
+         * Если $page не указан, то без пагинации от $dateFrom до $date
+         * (нужно для экспорта)
+         */
+        if ($page === null) {
+            $from = $dateObj->copy();
+            $to = Carbon::createFromFormat('Y-m-d', $dateFrom);
+        } else {
+            // 1st page = -0 day
+            $paginate = 30;
+            $from = $dateObj->modify(sprintf('-%d %s', ($page - 1) * $paginate, $mode));
+            $to = (clone $from)->modify(sprintf("-%d %s", $paginate - 1, $mode));
+        }
+
+
         if ($mode === 'week') {
             $from->startOfWeek();
         }
-        $to = (clone $from)->modify(sprintf("-%d %s", $paginate - 1, $mode));
 
 
         switch ($mode) {
@@ -42,8 +59,8 @@ class Stats
         }
 
         /**
-         * from : "2024-06-14"
-         * to : "2024-04-26"
+         * from : "2025-06-14"
+         * to : "2025-04-26"
          */
         $result = [];
         while ($from >= $to) {
@@ -54,7 +71,7 @@ class Stats
                 if (!class_exists($metricClass)) {
                     throw new Exception("Class $metricClass not found");
                 }
-                $values[] = $metricClass::getValue($metric['filters'], $date, $sqlFormat, $mode);
+                $values[] = $metricClass::getValue($metric['filters'], $date, $dateFrom, $sqlFormat, $mode);
             }
             $result[] = [
                 'date' => $date,
@@ -64,5 +81,23 @@ class Stats
         }
 
         return $result;
+    }
+
+    public static function getTotals(
+        string $date,
+        string $dateFrom,
+        array  $metrics
+    ): array
+    {
+        $values = [];
+        foreach ($metrics as $metric) {
+            $metricClass = join('\\', [__NAMESPACE__, 'Metrics', $metric['metric']]);
+            if (!class_exists($metricClass)) {
+                throw new Exception("Class $metricClass not found");
+            }
+            $values[] = $metricClass::getTotals($metric['filters'], $date, $dateFrom);
+        }
+
+        return $values;
     }
 }

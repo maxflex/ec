@@ -7,9 +7,7 @@ use App\Models\Request as ClientRequest;
 class RequestMetric extends BaseMetric
 {
     protected $filters = [
-        'equals' => [
-            'direction', 'responsible_user_id'
-        ],
+        'findInSet' => ['direction', 'responsible_user_id'],
         'null' => ['is_from_internet'],
     ];
 

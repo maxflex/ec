@@ -1,10 +1,22 @@
 <script setup lang="ts">
-const model = defineModel<number | null>()
+const { multiple } = defineProps<{
+  multiple?: boolean
+}>()
+
+const model = defineModel<number | number[] | null>()
 const users = useUsers()
 </script>
 
 <template>
+  <UiMultipleSelect
+    v-if="multiple"
+    v-model="model"
+    :items="users"
+    :item-title="formatName"
+    item-value="id"
+  />
   <UiClearableSelect
+    v-else
     v-model="model"
     v-bind="$attrs"
     :items="users"

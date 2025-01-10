@@ -9,10 +9,10 @@ class AllPaymentsMetric extends BaseMetric
 {
     protected $filters = [
         'equals' => [
-            'year', 'company', 'is_confirmed', 'is_return'
+            'company', 'is_confirmed', 'is_return'
         ],
         'type' => ['type'],
-        'findInSet' => ['method'],
+        'findInSet' => ['method', 'year'],
     ];
 
     public static function getQuery()

@@ -7,10 +7,8 @@ use App\Models\TeacherPayment;
 class TeacherPaymentMetric extends BaseMetric
 {
     protected $filters = [
-        'equals' => [
-            'year', 'is_confirmed'
-        ],
-        'findInSet' => ['method'],
+        'equals' => ['is_confirmed'],
+        'findInSet' => ['method', 'year'],
     ];
 
     public static function getQuery()

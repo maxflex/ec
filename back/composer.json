@@ -17,6 +17,7 @@
         "laravel/scout": "^10.11",
         "laravel/tinker": "^2.8",
         "league/flysystem-aws-s3-v3": "^3.0",
+        "maatwebsite/excel": "^3.1",
         "staudenmeir/laravel-cte": "^1.10",
         "telegram-bot/api": "^2.5",
         "typesense/typesense-php": "^4.9"

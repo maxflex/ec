@@ -580,6 +580,11 @@ declare global {
     values: number[]
   }
 
+  interface StatsApiResponse {
+    data: StatsListResource[]
+    totals: number[]
+  }
+
   // утилита извлекает тип из emit-функции
   // (извлекает тип второго параметра из emit-функции)
   // TODO: delete?

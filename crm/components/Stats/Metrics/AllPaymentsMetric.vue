@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 interface Filters {
-  year?: Year
+  year: Year[]
   type?: number
   method: ContractPaymentMethod[]
   company?: Company
@@ -9,6 +9,7 @@ interface Filters {
 }
 
 const filters = ref<Filters>({
+  year: [],
   method: [],
 })
 
@@ -27,7 +28,7 @@ export default {
 
 <template>
   <div>
-    <UiClearableSelect v-model="filters.year" :items="selectItems(YearLabel)" label="Учебный год" />
+    <UiMultipleSelect v-model="filters.year" :items="selectItems(YearLabel)" label="Учебный год" />
   </div>
   <div>
     <UiClearableSelect

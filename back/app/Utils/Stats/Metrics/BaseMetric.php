@@ -7,7 +7,13 @@ use Illuminate\Http\Request;
 
 abstract class BaseMetric extends Controller implements MetricInterface
 {
-    public static function getValue(array $filters, string $date, string $sqlFormat, string $mode): int
+    public static function getValue(
+        array  $filters,
+        string $date,
+        string $dateFrom,
+        string $sqlFormat,
+        string $mode,
+    ): int
     {
         $request = new Request($filters);
         $dateField = static::getDateField();
@@ -33,6 +39,29 @@ abstract class BaseMetric extends Controller implements MetricInterface
                 $date,
             ]);
         }
+
+        $query->whereRaw("`$dateField` > ?", [$dateFrom]);
+
+        $controller = new static();
+        $controller->filter($request, $query);
+        return static::getQueryValue($query);
+    }
+
+
+    public static function getTotals(
+        array  $filters,
+        string $date,
+        string $dateFrom,
+    ): int
+    {
+        $request = new Request($filters);
+        $dateField = static::getDateField();
+        $query = static::getQuery();
+
+        $query->whereRaw("`$dateField` BETWEEN ? AND ?", [
+            $dateFrom,
+            $date,
+        ]);
 
         $controller = new static();
         $controller->filter($request, $query);

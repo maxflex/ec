@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { StatsDialog } from '#build/components'
-import { mdiTune } from '@mdi/js'
+import { mdiDownload, mdiTune } from '@mdi/js'
 import { clone } from 'rambda'
 import { MetricComponents, type StatsMetric, type StatsParams } from '~/components/Stats/Metrics'
 
@@ -9,7 +9,8 @@ const statsDialog = ref<InstanceType<typeof StatsDialog>>()
 const params = ref<StatsParams>({
   metrics: [],
   mode: 'day',
-  date: today(),
+  date: null,
+  date_from: null,
 })
 
 // сохраняем параметры ответа сервера, чтобы не зависеть от текущих параметров
@@ -17,8 +18,10 @@ const params = ref<StatsParams>({
 const responseParams = ref<StatsParams>()
 
 const loading = ref(false)
+const exporting = ref(false)
 
 const items = ref<StatsListResource[]>([])
+const totals = ref<number[]>([])
 const page = ref<number>(0)
 
 let scrollContainer: HTMLElement | null = null
@@ -34,7 +37,7 @@ async function loadMore() {
   }
   loading.value = true
   page.value++
-  const { data } = await useHttp<StatsListResource[]>(
+  const { data } = await useHttp<StatsApiResponse>(
     `stats`,
     {
       method: 'post',
@@ -47,13 +50,47 @@ async function loadMore() {
   if (data.value) {
     if (page.value === 1) {
       responseParams.value = clone(params.value)
-      items.value = data.value
+      items.value = data.value.data
+      totals.value = data.value.totals
     }
     else {
-      items.value = items.value.concat(data.value)
+      items.value = items.value.concat(data.value.data)
     }
   }
   loading.value = false
+}
+
+async function exportDownload() {
+  exporting.value = true
+  const { data } = await useHttp<Blob>(
+    `stats`,
+    {
+      method: 'post',
+      body: {
+        ...params.value,
+        page: null,
+      },
+      responseType: 'blob', // Important: Treat the response as a binary Blob
+    },
+  )
+
+  // Create a Blob from the response
+  const blob = new Blob([data.value!])
+
+  // Create a URL for the Blob
+  const url = window.URL.createObjectURL(blob)
+
+  // Create a temporary link and trigger the download
+  const link = document.createElement('a')
+  link.href = url
+  link.download = 'stats.xlsx' // Specify the file name
+  document.body.appendChild(link)
+  link.click()
+
+  // Clean up
+  document.body.removeChild(link)
+  window.URL.revokeObjectURL(url)
+  exporting.value = false
 }
 
 function loadData() {
@@ -100,10 +137,18 @@ onUnmounted(() => {
   </v-fade-transition>
   <div class="table table-stats">
     <div class="table-stats__header">
+      <div class="table-stats__header-mode">
+        <v-btn :icon="mdiTune" :size="48" variant="text" @click="statsDialog?.open()" />
+        <v-btn
+          :icon="mdiDownload"
+          :size="48"
+          :disabled="!(responseParams && responseParams.metrics.length)"
+          :loading="exporting"
+          variant="text"
+          @click="exportDownload()"
+        />
+      </div>
       <template v-if="responseParams">
-        <div class="table-stats__header-mode">
-          {{ StatsModeLabel[responseParams.mode] }}
-        </div>
         <div
           v-for="(metric, index) in responseParams.metrics"
           :key="index"
@@ -115,9 +160,6 @@ onUnmounted(() => {
           </span>
         </div>
       </template>
-      <div class="table-stats__header-apply">
-        <v-btn :icon="mdiTune" :size="48" @click="statsDialog?.open()" />
-      </div>
     </div>
     <template v-if="responseParams">
       <div v-for="{ date, values } in items" :key="date" class="table-stats__body">
@@ -133,14 +175,31 @@ onUnmounted(() => {
           {{ value ? formatPrice(value) : '' }}
         </div>
       </div>
+      <div class="table-stats__footer table-stats__body">
+        <div class="table-stats__date">
+          итого
+        </div>
+        <div
+          v-for="(total, index) in totals"
+          :key="index"
+          :style="getWidth(responseParams.metrics[index])"
+          :class="`text-${responseParams.metrics[index].color}`"
+        >
+          <span>
+            {{ total ? formatPrice(total) : '' }}
+          </span>
+        </div>
+      </div>
     </template>
   </div>
   <StatsDialog ref="statsDialog" @go="onGo" />
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .table-stats {
   $padding: 0 20px;
+  width: max-content;
+  min-width: 100%;
   & > div {
     gap: 0 !important;
     padding: 0 !important;
@@ -151,7 +210,7 @@ onUnmounted(() => {
     }
   }
   &__header {
-    position: sticky;
+    position: sticky !important;
     top: 0;
     text-transform: lowercase;
     background: white;
@@ -162,6 +221,11 @@ onUnmounted(() => {
       padding: $padding;
       display: inline-flex;
       align-items: center;
+      position: sticky;
+      left: 0;
+      background: white;
+      z-index: 1;
+      gap: 4px;
     }
     &-metric {
       position: relative;
@@ -178,9 +242,25 @@ onUnmounted(() => {
       display: flex;
       align-self: stretch;
     }
-    &-apply {
+    &-actions {
       padding: $padding;
-      text-align: right;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      justify-content: flex-end;
+    }
+  }
+  &__footer {
+    position: sticky !important;
+    bottom: 0;
+    text-transform: lowercase;
+    background: white;
+    z-index: 1;
+    border-top: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+    & > div {
+      &:not(:first-child) {
+        font-weight: 500;
+      }
     }
   }
   &__body {
@@ -195,6 +275,9 @@ onUnmounted(() => {
     display: inline-flex;
     width: 100%;
     align-items: center;
+    position: sticky;
+    left: 0;
+    background: white;
   }
 }
 .page-stats {

@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 interface Filters {
-  year?: Year
+  year: Year[]
 }
 
-const filters = ref<Filters>({ })
+const filters = ref<Filters>({
+  year: [],
+})
 
 defineExpose({ filters })
 </script>
@@ -13,13 +15,13 @@ export default {
   label: 'Допуслуги препод',
   width: 130,
   filters: {
-    method: [],
+    year: [],
   },
 }
 </script>
 
 <template>
   <div>
-    <UiClearableSelect v-model="filters.year" :items="selectItems(YearLabel)" label="Учебный год" />
+    <UiMultipleSelect v-model="filters.year" :items="selectItems(YearLabel)" label="Учебный год" />
   </div>
 </template>

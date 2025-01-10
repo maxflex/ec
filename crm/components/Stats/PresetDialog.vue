@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { StatsParams, StatsPreset } from './Metrics'
+import { clone } from 'rambda'
 import { VDialogTransition } from 'vuetify/lib/components/transitions'
 
 const emit = defineEmits<{
@@ -36,7 +37,7 @@ async function save() {
     return
   }
   saving.value = true
-  const body = { ...preset.value }
+  const body = clone(preset.value)
   // делаем ID положительными, чтобы в будущем загрузка пресета
   // не конфликтовала с добавлением новых метрик
   body.params.metrics = body.params.metrics.map(m => ({

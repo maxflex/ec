@@ -1,11 +1,14 @@
 <script lang="ts" setup>
 interface Filters {
-  direction?: Direction
-  responsible_user_id?: number
+  direction: Direction[]
+  responsible_user_id: number[]
   is_from_internet?: number
 }
 
-const filters = ref<Filters>({})
+const filters = ref<Filters>({
+  direction: [],
+  responsible_user_id: [],
+})
 
 defineExpose({ filters })
 </script>
@@ -13,13 +16,20 @@ defineExpose({ filters })
 <script lang="ts">
 export default {
   label: 'Заявки',
-  filters: {},
+  filters: {
+    direction: [],
+    responsible_user_id: [],
+  },
 }
 </script>
 
 <template>
   <div>
-    <UiClearableSelect v-model="filters.direction" :items="selectItems(DirectionLabel)" label="Направление" />
+    <UiMultipleSelect
+      v-model="filters.direction"
+      :items="selectItems(DirectionLabel)"
+      label="Направление"
+    />
   </div>
   <div>
     <UiClearableSelect
@@ -29,6 +39,6 @@ export default {
     />
   </div>
   <div>
-    <UserSelector v-model="filters.responsible_user_id" label="Ответственный" />
+    <UserSelector v-model="filters.responsible_user_id" label="Ответственный" multiple />
   </div>
 </template>

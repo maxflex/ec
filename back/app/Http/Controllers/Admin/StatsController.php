@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\StatsExport;
 use App\Http\Controllers\Controller;
 use App\Utils\Stats\Stats;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StatsController extends Controller
 {
@@ -12,19 +14,39 @@ class StatsController extends Controller
     {
         $request->validate([
             'mode' => ['required'],
-            'page' => ['required'],
-            'metrics' => ['required'],
-            'date' => ['nullable', 'date_format:Y-m-d']
+            'page' => ['nullable', 'numeric'],
+            'metrics' => ['required', 'array'],
+            'date' => ['nullable', 'date_format:Y-m-d'],
+            'date_from' => ['nullable', 'date_format:Y-m-d'],
         ]);
 
         // если дата не установлена, то сегодняшняя
         $date = $request->date ?? now()->format('Y-m-d');
 
-        return Stats::getData(
+        // если date_from не установлена, то "год назад"
+        $dateFrom = $request->input('date_from') ?? now()->subYear()->format('Y-m-d');
+
+        $data = Stats::getData(
             $request->mode,
             $date,
-            $request->page,
+            $dateFrom,
             $request->metrics,
+            $request->page,
         );
+
+        // если page не указан, то экспортируем
+        if ($request->page === null) {
+            $export = new StatsExport($data, $request->metrics);
+            return Excel::download($export, 'stats.xlsx');
+        }
+
+        return [
+            'data' => $data,
+            'totals' => $request->page === 1 ? Stats::getTotals(
+                $date,
+                $dateFrom,
+                $request->metrics,
+            ) : null,
+        ];
     }
 }

@@ -2,7 +2,7 @@
 type LocalEntityType = typeof entityTypes[number]
 
 interface Filters {
-  entity_type?: LocalEntityType
+  entity_type: LocalEntityType[]
 }
 
 const { client, clientParent, teacher, user } = EntityTypeValue
@@ -14,7 +14,9 @@ const selectItemsFiltered = Object.keys(EntityTypeLabel)
     title: EntityTypeLabel[value as EntityType],
   }))
 
-const filters = ref<Filters>({})
+const filters = ref<Filters>({
+  entity_type: [],
+})
 
 defineExpose({ filters })
 </script>
@@ -22,12 +24,14 @@ defineExpose({ filters })
 <script lang="ts">
 export default {
   label: 'Постоянные пропуски',
-  filters: {},
+  filters: {
+    entity_type: [],
+  },
 }
 </script>
 
 <template>
   <div>
-    <UiClearableSelect v-model="filters.entity_type" :items="selectItemsFiltered" label="Кто проходил" />
+    <UiMultipleSelect v-model="filters.entity_type" :items="selectItemsFiltered" label="Кто проходил" />
   </div>
 </template>

@@ -62,7 +62,10 @@ class ContractVersionMetric extends BaseMetric
 
     protected function filterContract(&$query, $value, $field)
     {
-        $query->whereHas('contract', fn($q) => $q->where($field, $value));
+        $query->whereHas('contract', fn($q) => $field === 'year'
+            ? $q->whereIn('year', $value)
+            : $q->where($field, $value)
+        );
     }
 
     protected function filterVersion(&$query, $value)
