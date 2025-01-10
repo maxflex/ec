@@ -24,7 +24,7 @@ class StatsController extends Controller
         $date = $request->date ?? now()->format('Y-m-d');
 
         // если date_from не установлена, то "год назад"
-        $dateFrom = $request->input('date_from') ?? now()->subYear()->format('Y-m-d');
+        $dateFrom = $request->input('date_from') ?? now()->subYear()->addDay()->format('Y-m-d');
 
         $data = Stats::getData(
             $request->mode,
