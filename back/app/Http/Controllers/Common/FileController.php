@@ -16,6 +16,7 @@ class FileController extends Controller
             'file' => ['file', 'max:10240'], // 10 MB
             'folder' => ['required', 'string']
         ]);
+        sleep(10);
         $file = $request->file('file');
         $folder = $request->input('folder');
         $fileName = uniqid() . '.' . $file->getClientOriginalExtension();

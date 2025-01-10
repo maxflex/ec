@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiFilePdfBox, mdiFileTableBox, mdiImage } from '@mdi/js'
+import { mdiFilePdfBox, mdiFilePowerpoint, mdiFileTableBox, mdiImage } from '@mdi/js'
 
 const { item, downloadable } = defineProps<{
   item: UploadedFile
@@ -15,6 +15,11 @@ function getIcon(file: UploadedFile): UploadedFileIcon {
       return {
         icon: mdiFilePdfBox,
         color: '#e75a5a',
+      }
+    case 'ppt':
+      return {
+        icon: mdiFilePowerpoint,
+        color: '#cb4f2e',
       }
     case 'gif':
     case 'svg':

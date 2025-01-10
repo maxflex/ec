@@ -86,6 +86,9 @@ class Controller extends BaseController
     protected function filterFindInSet(&$query, $values, $field)
     {
         if (is_array($values)) {
+            if (count($values) === 0) {
+                return;
+            }
             $query->where(function ($query) use ($values, $field) {
                 $query->where(function ($query) use ($values, $field) {
                     foreach ($values as $value) {
