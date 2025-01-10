@@ -40,7 +40,7 @@ abstract class BaseMetric extends Controller implements MetricInterface
             ]);
         }
 
-        $query->whereRaw("`$dateField` >= ?", [$dateFrom]);
+        $query->whereRaw("DATE(`$dateField`) >= ?", [$dateFrom]);
 
         $controller = new static();
         $controller->filter($request, $query);
@@ -58,7 +58,7 @@ abstract class BaseMetric extends Controller implements MetricInterface
         $dateField = static::getDateField();
         $query = static::getQuery();
 
-        $query->whereRaw("`$dateField` BETWEEN ? AND ?", [
+        $query->whereRaw("DATE(`$dateField`) BETWEEN ? AND ?", [
             $dateFrom,
             $date,
         ]);
