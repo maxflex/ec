@@ -19,6 +19,7 @@ const responseParams = ref<StatsParams>()
 
 const loading = ref(false)
 const exporting = ref(false)
+const isLastPage = ref(false)
 
 const items = ref<StatsListResource[]>([])
 const totals = ref<number[]>([])
@@ -28,6 +29,7 @@ let scrollContainer: HTMLElement | null = null
 
 function onGo(p: StatsParams) {
   params.value = clone(p)
+  isLastPage.value = false
   loadData()
 }
 
@@ -56,6 +58,7 @@ async function loadMore() {
     else {
       items.value = items.value.concat(data.value.data)
     }
+    isLastPage.value = data.value.is_last_page
   }
   loading.value = false
 }
@@ -109,7 +112,7 @@ function getWidth(m: StatsMetric) {
 }
 
 function onScroll() {
-  if (!scrollContainer || loading.value || !items.value.length) {
+  if (!scrollContainer || loading.value || isLastPage.value || !items.value.length) {
     return
   }
   const { scrollTop, scrollHeight, clientHeight } = scrollContainer
@@ -266,6 +269,9 @@ onUnmounted(() => {
   &__body {
     & > div {
       padding: $padding;
+    }
+    &:nth-last-child(2) {
+      border-bottom: none !important;
     }
   }
   &__date {

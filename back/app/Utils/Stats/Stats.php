@@ -7,6 +7,9 @@ use Exception;
 
 class Stats
 {
+    /**
+     * @return array{data: array, is_last_page: bool}
+     */
     public static function getData(
         string $mode,
         string $date,
@@ -15,8 +18,8 @@ class Stats
         ?int   $page,
     ): array
     {
-
         $dateObj = Carbon::createFromFormat('Y-m-d', $date);
+        $dateFromObj = Carbon::createFromFormat('Y-m-d', $dateFrom);
 
         /**
          * Если $page не указан, то без пагинации от $dateFrom до $date
@@ -25,18 +28,18 @@ class Stats
         if ($page === null) {
             $from = $dateObj->copy();
             $to = Carbon::createFromFormat('Y-m-d', $dateFrom);
+            $isLastPage = true;
         } else {
             // 1st page = -0 day
             $paginate = 30;
             $from = $dateObj->modify(sprintf('-%d %s', ($page - 1) * $paginate, $mode));
             $to = (clone $from)->modify(sprintf("-%d %s", $paginate - 1, $mode));
+            $isLastPage = $to->lessThan($dateFromObj);
         }
-
 
         if ($mode === 'week') {
             $from->startOfWeek();
         }
-
 
         switch ($mode) {
             case 'day':
@@ -54,6 +57,7 @@ class Stats
 //            case 'year':
             default:
                 $format = 'Y-01-01';
+                $dateFromObj->startOf('year');
                 $sqlFormat = '%Y-01-01';
                 break;
         }
@@ -62,8 +66,8 @@ class Stats
          * from : "2025-06-14"
          * to : "2025-04-26"
          */
-        $result = [];
-        while ($from >= $to) {
+        $data = [];
+        while ($from->gte($to) && $from->gte($dateFromObj)) {
             $date = $from->format($format);
             $values = [];
             foreach ($metrics as $metric) {
@@ -73,14 +77,17 @@ class Stats
                 }
                 $values[] = $metricClass::getValue($metric['filters'], $date, $dateFrom, $sqlFormat, $mode);
             }
-            $result[] = [
+            $data[] = [
                 'date' => $date,
                 'values' => $values
             ];
             $from->modify("-1 $mode");
         }
 
-        return $result;
+        return [
+            'data' => $data,
+            'is_last_page' => $isLastPage
+        ];
     }
 
     public static function getTotals(

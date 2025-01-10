@@ -26,7 +26,7 @@ class StatsController extends Controller
         // если date_from не установлена, то "год назад"
         $dateFrom = $request->input('date_from') ?? now()->subYear()->addDay()->format('Y-m-d');
 
-        $data = Stats::getData(
+        $result = Stats::getData(
             $request->mode,
             $date,
             $dateFrom,
@@ -36,12 +36,13 @@ class StatsController extends Controller
 
         // если page не указан, то экспортируем
         if ($request->page === null) {
-            $export = new StatsExport($data, $request->metrics);
+            $export = new StatsExport($result['data'], $request->metrics);
             return Excel::download($export, 'stats.xlsx');
         }
 
         return [
-            'data' => $data,
+            'data' => $result['data'],
+            'is_last_page' => $result['is_last_page'],
             'totals' => $request->page === 1 ? Stats::getTotals(
                 $date,
                 $dateFrom,

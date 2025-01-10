@@ -582,6 +582,7 @@ declare global {
 
   interface StatsApiResponse {
     data: StatsListResource[]
+    is_last_page: boolean
     totals: number[]
   }
 
