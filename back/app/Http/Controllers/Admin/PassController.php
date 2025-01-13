@@ -6,12 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PassResource;
 use App\Http\Resources\PersonResource;
 use App\Models\Pass;
+use App\Models\PassLog;
 use Illuminate\Http\Request;
 
 class PassController extends Controller
 {
     protected $filters = [
-        'equals' => ['request_id', 'type'],
+        'equals' => ['request_id', 'type', 'entity_type'],
         'status' => ['status']
     ];
 
@@ -29,6 +30,35 @@ class PassController extends Controller
         $query = $request->entity::canLogin();
 
         return $this->handleIndexRequest($request, $query, PersonResource::class);
+    }
+
+    public function stats(Request $request)
+    {
+        $year = intval($request->input('year'));
+
+        $query = PassLog::query()
+            ->with('entity')
+            ->where('entity_type', '<>', Pass::class)
+            ->groupByRaw('entity_type, entity_id')
+            ->selectRaw("
+                entity_type, entity_id, count(*) as cnt,
+                cast(sum(if(complaint is null, 0, 1)) as unsigned) as complaints_cnt
+            ")
+            ->whereRaw('DATE(used_at) BETWEEN ? AND ?', [
+                "$year-09-01",
+                ($year + 1) . '-07-01'
+            ])
+            ->orderBy('cnt', 'desc');
+
+        $this->filter($request, $query);
+
+        $data = $query->get()->map(fn($item) => extract_fields($item, [
+            'entity_id', 'entity_type', 'cnt'
+        ], [
+            'entity' => new PersonResource($item->entity)
+        ]));
+
+        return paginate($data);
     }
 
     public function store(Request $request)

@@ -81,6 +81,11 @@ const menu: Menu = [
     to: '/passes/permanent',
   },
   {
+    icon: '$pass',
+    title: 'Статистика',
+    to: '/passes/stats',
+  },
+  {
     icon: mdiFileDocumentEditOutline,
     title: 'Отчёты',
     to: '/reports',

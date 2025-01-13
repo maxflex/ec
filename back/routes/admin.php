@@ -118,6 +118,7 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::get('requests/associated/{request}', [RequestsController::class, 'associated']);
 
     Route::get('passes/permanent', [PassController::class, 'permanent']);
+    Route::get('passes/stats', [PassController::class, 'stats']);
 
     Route::get('menu-counts', MenuCountsController::class);
 
