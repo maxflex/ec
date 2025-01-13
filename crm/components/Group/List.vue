@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiAccountGroup } from '@mdi/js'
+import { mdiAccountGroup, mdiVideo } from '@mdi/js'
 
 const { items, selectable } = defineProps<{
   items: GroupListResource[]
@@ -42,21 +42,13 @@ function onClick(g: GroupListResource) {
         <NuxtLink :to="{ name: 'groups-id', params: { id: item.id } }">
           Группа {{ item.id }}
         </NuxtLink>
-        <div v-if="item.zoom.id" class="group-list__zoom">
-          <div>
-            Zoom логин: {{ item.zoom.id }}
-          </div>
-          <div>
-            Zoom пароль: {{ item.zoom.password }}
-          </div>
-        </div>
       </div>
-      <div style="width: 200px">
+      <div style="width: 180px">
         <div v-for="t in item.teachers" :key="t.id">
           <UiPerson :item="t" no-link />
         </div>
       </div>
-      <div style="width: 120px">
+      <div style="width: 150px">
         {{ ProgramShortLabel[item.program] }}
       </div>
       <div style="width: 120px">
@@ -80,9 +72,22 @@ function onClick(g: GroupListResource) {
           {{ formatDate(item.first_lesson_date) }}
         </span>
       </div>
-      <div style="width: 100px">
+      <div style="width: 60px">
         <v-icon :icon="mdiAccountGroup" class="mr-2" style="top: -3px; position: relative" />
         {{ item.client_groups_count }}
+      </div>
+      <div style="width: 50px">
+        <v-tooltip v-if="item.zoom.id" location="bottom">
+          <template #activator="{ props }">
+            <v-icon :icon="mdiVideo" v-bind="props" />
+          </template>
+          <div>
+            ZOOM логин: {{ item.zoom.id }}
+          </div>
+          <div>
+            ZOOM пароль: {{ item.zoom.password }}
+          </div>
+        </v-tooltip>
       </div>
       <div>
         <TeethAsText :items="item.teeth" />
@@ -95,10 +100,6 @@ function onClick(g: GroupListResource) {
 .group-list {
   & > div {
     align-items: flex-start !important;
-  }
-  &__zoom {
-    white-space: nowrap;
-    color: rgb(var(--v-theme-gray));
   }
   &--selectable {
     & > div {

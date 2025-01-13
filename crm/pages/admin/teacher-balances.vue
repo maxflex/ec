@@ -103,7 +103,11 @@ watch(filters.value, () => (sort.value = undefined))
         density="comfortable"
       />
     </template>
-    <v-table fixed-header height="calc(100vh - 81px)" class="teacher-balances-table">
+    <v-table
+      fixed-header
+      height="calc(100vh - 81px)"
+      class="teacher-balances-table"
+    >
       <thead>
         <tr>
           <th />
@@ -167,9 +171,22 @@ watch(filters.value, () => (sort.value = undefined))
       }
     }
   }
-  tfoot td {
-    font-weight: 500;
-    border-top-width: 1px !important;
+  tfoot {
+    tr {
+      position: sticky;
+      bottom: 0;
+    }
+    td {
+      font-weight: 500;
+      border-top: 1px solid rgb(var(--v-theme-border)) !important;
+    }
+  }
+  thead,
+  tfoot {
+    tr > th,
+    tr > td {
+      background: rgb(var(--v-theme-bg)) !important;
+    }
   }
 }
 </style>

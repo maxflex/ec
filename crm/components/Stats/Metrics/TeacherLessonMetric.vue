@@ -3,9 +3,11 @@ const { cancelled, ...LessonStatusLabelWithoutCancelled } = LessonStatusLabel
 
 interface Filters {
   status?: LessonStatus
+  direction: Direction[]
 }
 
 const filters = ref<Filters>({
+  direction: [],
 })
 
 defineExpose({ filters })
@@ -15,7 +17,9 @@ defineExpose({ filters })
 export default {
   label: 'Начисления уроки препод',
   width: 150,
-  filters: { },
+  filters: {
+    direction: [],
+  },
 }
 </script>
 
@@ -25,6 +29,13 @@ export default {
       v-model="filters.status"
       :items="selectItems(LessonStatusLabelWithoutCancelled)"
       label="Статус урока"
+    />
+  </div>
+  <div>
+    <UiMultipleSelect
+      v-model="filters.direction"
+      :items="selectItems(DirectionLabel)"
+      label="Направление"
     />
   </div>
 </template>

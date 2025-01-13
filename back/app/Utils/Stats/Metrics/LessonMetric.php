@@ -2,12 +2,14 @@
 
 namespace App\Utils\Stats\Metrics;
 
+use App\Enums\Direction;
 use App\Models\Lesson;
 
 class LessonMetric extends BaseMetric
 {
     protected $filters = [
-        'equals' => ['status'],
+        'equals' => ['status', 'is_free', 'is_unplanned'],
+        'direction' => ['direction']
     ];
 
     public static function getQuery()
@@ -23,5 +25,23 @@ class LessonMetric extends BaseMetric
     public static function getQueryValue($query): int
     {
         return $query->count();
+    }
+
+    protected function filterDirection(&$query, array $values)
+    {
+        if (count($values) === 0) {
+            return;
+        }
+
+        $programs = collect();
+        foreach ($values as $directionString) {
+            $direction = Direction::from($directionString);
+            $programs = $programs->concat(
+                Direction::toPrograms($direction)
+            );
+        }
+        $programs = $programs->unique();
+
+        $query->whereHas('group', fn($q) => $q->whereIn('program', $programs));
     }
 }

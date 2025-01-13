@@ -1,9 +1,14 @@
 <script lang="ts" setup>
 interface Filters {
   status?: LessonStatus
+  is_free?: boolean
+  is_unplanned?: boolean
+  direction: Direction[]
 }
 
-const filters = ref<Filters>({})
+const filters = ref<Filters>({
+  direction: [],
+})
 
 defineExpose({ filters })
 </script>
@@ -11,7 +16,9 @@ defineExpose({ filters })
 <script lang="ts">
 export default {
   label: 'Уроки',
-  filters: {},
+  filters: {
+    direction: [],
+  },
 }
 </script>
 
@@ -21,6 +28,27 @@ export default {
       v-model="filters.status"
       :items="selectItems(LessonStatusLabel)"
       label="Статус урока"
+    />
+  </div>
+  <div>
+    <UiMultipleSelect
+      v-model="filters.direction"
+      :items="selectItems(DirectionLabel)"
+      label="Направление"
+    />
+  </div>
+  <div>
+    <UiClearableSelect
+      v-model="filters.is_free"
+      :items="yesNo('да', 'нет')"
+      label="Бесплатное"
+    />
+  </div>
+  <div>
+    <UiClearableSelect
+      v-model="filters.is_unplanned"
+      :items="yesNo('да', 'нет')"
+      label="Внеплановое"
     />
   </div>
 </template>

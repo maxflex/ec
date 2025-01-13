@@ -9,6 +9,7 @@ import RequestMetric from './RequestMetric.vue'
 import TeacherLessonMetric from './TeacherLessonMetric.vue'
 import TeacherPaymentMetric from './TeacherPaymentMetric.vue'
 import TeacherServiceMetric from './TeacherServiceMetric.vue'
+import TelegramMessageMetric from './TelegramMessageMetric.vue'
 
 interface MetricComponentParams {
   width: number
@@ -28,6 +29,7 @@ const MetricComponentsUnsorted = {
   TeacherLessonMetric,
   ContractVersionMetric,
   ClientLessonMetric,
+  TelegramMessageMetric,
 } as unknown as { [key: string]: MetricComponentParams }
 
 export const MetricComponents = Object.fromEntries(

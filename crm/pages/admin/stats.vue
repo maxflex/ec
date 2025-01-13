@@ -216,7 +216,7 @@ onUnmounted(() => {
     position: sticky !important;
     top: 0;
     text-transform: lowercase;
-    background: white;
+    background: rgb(var(--v-theme-bg));
     z-index: 1;
     &-mode {
       height: 57px;
@@ -226,7 +226,7 @@ onUnmounted(() => {
       align-items: center;
       position: sticky;
       left: 0;
-      background: white;
+      background: rgb(var(--v-theme-bg));
       z-index: 1;
       gap: 4px;
     }
@@ -257,10 +257,13 @@ onUnmounted(() => {
     position: sticky !important;
     bottom: 0;
     text-transform: lowercase;
-    background: white;
+    background: rgb(var(--v-theme-bg));
     z-index: 1;
     border-top: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
     & > div {
+      &:first-child {
+        background: rgb(var(--v-theme-bg));
+      }
       &:not(:first-child) {
         font-weight: 500;
       }
