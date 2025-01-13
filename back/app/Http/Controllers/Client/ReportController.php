@@ -13,7 +13,10 @@ class ReportController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Report::where('client_id', auth()->id());
+        $query = Report::query()
+            ->where('client_id', auth()->id())
+            ->where('status', ReportStatus::published);
+
         return $this->handleIndexRequest($request, $query, ReportListResource::class);
     }
 
