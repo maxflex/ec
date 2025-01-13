@@ -43,27 +43,22 @@ function getFillColor(r: RealReport) {
             :to="{ name: 'reports-id-edit', params: { id: r.id } }"
           />
         </div>
-        <div style="width: 150px">
+        <div style="width: 120px">
           занятий: {{ r.lessons_count }}
         </div>
-        <div style="width: 70px">
+        <div style="flex: 1">
+          {{ ReportStatusLabel[r.status] }}
+        </div>
+        <div style="width: 50px">
           <span v-if="r.price">
-            {{ formatPrice(r.price) }} руб.
+            {{ formatPrice(r.price) }} ₽
           </span>
         </div>
-        <div style="width: 30px">
+        <div style="width: 50px">
           <span v-if="r.grade" :class="`score score--${r.grade}`">
             {{ r.grade }}
           </span>
         </div>
-
-        <div
-          style="width: 150px"
-          class="text-center d-flex ga-5"
-        >
-          {{ ReportStatusLabel[r.status] }}
-        </div>
-
         <div style="width: 100px" class="pr-2">
           <v-progress-linear
             bg-color="#92aed9"
