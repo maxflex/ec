@@ -134,12 +134,18 @@ declare global {
   interface MenuItem {
     to: string
     title: string
-    icon: string
+    icon?: string
     hide?: boolean
     count?: keyof MenuCounts
   }
 
-  type Menu = MenuItem[]
+  interface Submenu {
+    title: string
+    icon: string
+    items: MenuItem[]
+  }
+
+  type Menu = Array<MenuItem | Submenu>
 
   interface Zoom {
     id: ?string

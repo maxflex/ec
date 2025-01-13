@@ -402,3 +402,15 @@ tr.hoverable {
     margin: 0 !important;
   }
 }
+
+.v-navigation-drawer__content {
+  .v-list-group {
+    & > div:first-child {
+      user-select: none;
+    }
+
+    &__items .v-list-item {
+      padding-inline-start: 42px !important;
+    }
+  }
+}
