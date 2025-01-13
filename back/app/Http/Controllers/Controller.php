@@ -132,4 +132,18 @@ class Controller extends BaseController
 
         return $field;
     }
+
+    protected function filterGte(&$query, $value, $field)
+    {
+        if ($value) {
+            $query->where(DB::raw($this->getFieldName($field)), '>=', $value);
+        }
+    }
+
+    protected function filterLte(&$query, $value, $field)
+    {
+        if ($value) {
+            $query->where(DB::raw($this->getFieldName($field)), '<=', $value);
+        }
+    }
 }

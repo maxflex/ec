@@ -93,6 +93,11 @@ function clear() {
         top: 13px !important;
       }
     }
+    &:has(.v-input--density-comfortable) {
+      & > .v-icon {
+        top: 13px !important;
+      }
+    }
   }
   &__today {
     margin-left: 16px;

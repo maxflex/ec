@@ -1,6 +1,7 @@
 <script setup lang="ts">
 interface Filters {
-  year: Year
+  date_from?: string
+  date_to?: string
   entity_type?: EntityType
 }
 
@@ -18,9 +19,7 @@ const availableEntityTypes = [
   EntityTypeValue.user,
 ] as EntityType[]
 
-const filters = ref<Filters>(loadFilters({
-  year: currentAcademicYear(),
-}))
+const filters = ref<Filters>(loadFilters({ }))
 
 const { items, indexPageData } = useIndex<PassStats, Filters>(
   `passes/stats`,
@@ -31,12 +30,20 @@ const { items, indexPageData } = useIndex<PassStats, Filters>(
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <v-select
-        v-model="filters.year"
-        label="Учебный год"
-        :items="selectItems(YearLabel)"
-        density="comfortable"
-      />
+      <div class="double-input-glued">
+        <UiDateInput
+          v-model="filters.date_from"
+          label="Начиная с"
+          clearable
+          density="comfortable"
+        />
+        <UiDateInput
+          v-model="filters.date_to"
+          label="по"
+          clearable
+          density="comfortable"
+        />
+      </div>
       <UiClearableSelect
         v-model="filters.entity_type"
         label="Кто проходил"
@@ -77,3 +84,12 @@ const { items, indexPageData } = useIndex<PassStats, Filters>(
     </v-table>
   </UiIndexPage>
 </template>
+
+<style lang="scss">
+.page-passes-stats {
+  .date-input__today {
+    position: absolute;
+    bottom: -17px;
+  }
+}
+</style>

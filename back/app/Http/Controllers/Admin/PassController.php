@@ -12,8 +12,19 @@ use Illuminate\Http\Request;
 class PassController extends Controller
 {
     protected $filters = [
-        'equals' => ['request_id', 'type', 'entity_type'],
+        'equals' => ['request_id', 'type'],
         'status' => ['status']
+    ];
+
+    protected $statsFilters = [
+        'equals' => ['entity_type'],
+        'gte' => ['date_from'],
+        'lte' => ['date_to'],
+    ];
+
+    protected $mapFilters = [
+        'date_from' => 'DATE(used_at)',
+        'date_to' => 'DATE(used_at)',
     ];
 
     public function index(Request $request)
@@ -34,8 +45,6 @@ class PassController extends Controller
 
     public function stats(Request $request)
     {
-        $year = intval($request->input('year'));
-
         $query = PassLog::query()
             ->with('entity')
             ->where('entity_type', '<>', Pass::class)
@@ -44,13 +53,9 @@ class PassController extends Controller
                 entity_type, entity_id, count(*) as cnt,
                 cast(sum(if(complaint is null, 0, 1)) as unsigned) as complaints_cnt
             ")
-            ->whereRaw('DATE(used_at) BETWEEN ? AND ?', [
-                "$year-09-01",
-                ($year + 1) . '-07-01'
-            ])
             ->orderBy('cnt', 'desc');
 
-        $this->filter($request, $query);
+        $this->filter($request, $query, $this->statsFilters);
 
         $data = $query->get()->map(fn($item) => extract_fields($item, [
             'entity_id', 'entity_type', 'cnt'
