@@ -49,9 +49,8 @@ class ContractVersionMetric extends BaseMetric
 
         $programs = collect();
         foreach ($values as $directionString) {
-            $direction = Direction::from($directionString);
             $programs = $programs->concat(
-                Direction::toPrograms($direction)
+                Direction::from($directionString)->toPrograms()
             );
         }
         $programs = $programs->unique();
