@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import {
-  mdiAccount,
   mdiAccountGroup,
   mdiCalendar,
   mdiCash,
   mdiCurrencyRub,
   mdiFileDocumentEditOutline,
   mdiFileSign,
+  mdiHumanMaleBoard,
   mdiNumeric5BoxMultiple,
   mdiStarBoxOutline,
   mdiTrophy,
@@ -63,19 +63,22 @@ const menu: Menu = [
   },
 ]
 
-// Классный руководитель
-const headTeacherMenu: Menu = [
-  {
-    icon: mdiAccount,
-    title: 'Ученики',
-    to: '/clients',
-  },
-  {
-    icon: mdiFileDocumentEditOutline,
-    title: 'Отчёты КР',
-    to: '/head-teacher-reports',
-  },
-]
+if (user?.is_head_teacher) {
+  menu.push({
+    icon: mdiHumanMaleBoard,
+    title: 'Классрук',
+    items: [
+      {
+        title: 'Ученики',
+        to: '/clients',
+      },
+      {
+        title: 'Отчёты КР',
+        to: '/head-teacher-reports',
+      },
+    ],
+  })
+}
 
 nextTick(updateMenuCounts)
 </script>
@@ -83,13 +86,6 @@ nextTick(updateMenuCounts)
 <template>
   <v-list nav density="compact">
     <MenuList :items="menu" />
-    <template v-if="user?.is_head_teacher">
-      <!--      <v-divider /> -->
-      <!--      <v-list-subheader> -->
-      <!--        Классный руководитель -->
-      <!--      </v-list-subheader> -->
-      <MenuList :items="headTeacherMenu" />
-    </template>
     <v-list-item v-if="user" :to="{ name: 'profile' }">
       <template #prepend>
         <UiAvatar :item="user" :size="26" />

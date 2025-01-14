@@ -138,6 +138,17 @@ class ContractVersion extends Model
      */
     public function getDirectionsAttribute(): array
     {
-        return Direction::fromPrograms($this->programs->pluck('program')->all());
+        $directions = [];
+
+        // Проходим по каждой программе и определяем ее направление
+        foreach ($this->programs as $p) {
+            $direction = $p->program->getDirection();
+
+            if (!in_array($direction, $directions)) {
+                $directions[] = $direction;
+            }
+        }
+
+        return $directions;
     }
 }

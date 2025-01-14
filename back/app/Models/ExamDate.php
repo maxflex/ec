@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\JsonArrayCast;
 use App\Enums\Exam;
+use App\Enums\Program;
 use Illuminate\Database\Eloquent\Model;
 
 class ExamDate extends Model
@@ -19,8 +20,13 @@ class ExamDate extends Model
 
     protected $appends = ['programs'];
 
+    /**
+     * @return Program[]
+     */
     public function getProgramsAttribute()
     {
-        return $this->exam->getPrograms();
+        return collect(Program::cases())
+            ->filter(fn($p) => $p->getExam() === $this->exam)
+            ->all();
     }
 }

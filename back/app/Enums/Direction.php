@@ -19,54 +19,10 @@ enum Direction: string
     case python = 'python';
     case english = 'english';
     case online = 'online';
+    case coursesExtra = 'coursesExtra';
 
     /**
-     * Получить направления по заданным программам
-     *
-     * @param Program[] $programs
-     * @return self[]
-     */
-    public static function fromPrograms(array $programs): array
-    {
-        $directions = [];
-
-        // Проходим по каждой программе и определяем ее направление
-        foreach ($programs as $program) {
-            $direction = self::fromProgram($program);
-
-            if ($direction && !in_array($direction, $directions)) {
-                $directions[] = $direction;
-            }
-        }
-
-        return $directions;
-    }
-
-    /**
-     * К какому направлению относится данная программа?
-     *
-     */
-    private static function fromProgram(Program $program): ?Direction
-    {
-        $str = str($program->value);
-
-        return match (true) {
-            $str->endsWith('External') => Direction::external,
-            $str->endsWith('School8') => Direction::school8,
-            $str->endsWith('School9') => Direction::school9,
-            $str->endsWith('Oge') => Direction::school9,
-            $str->endsWith('School10') => Direction::school10,
-            $str->endsWith('School11') => Direction::school11,
-            $str->endsWith('Practicum') => Direction::practicum,
-            $str->endsWith('9') => Direction::courses9,
-            $str->endsWith('10') => Direction::courses10,
-            $str->endsWith('11') => Direction::courses11,
-            default => null,
-        };
-    }
-
-    /**
-     * Получить направление входящей заявке
+     * Получить направление входящей заявки
      * TODO: в идеале переделать фронт, чтобы отправлял значение напрямую
      */
     public static function fromIncomingRequest(Request $request): Direction
@@ -115,9 +71,14 @@ enum Direction: string
      * Из направления получить массив программ
      *
      * @return array<string>
+     *
+     * TODO: fix!
      */
     public static function toPrograms(Direction $direction): array
     {
+//        return collect(Program::cases())
+//            ->filter(fn($p) => $p->getExam() === $this->exam)
+//            ->all();
         $programs = collect(Program::cases())->map(fn($e) => str($e->name));
 
         $result = match ($direction) {
