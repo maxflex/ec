@@ -1,50 +1,15 @@
 <script setup lang="ts">
-// const { multiple } = defineProps<{
-//   multiple: boolean
-// }>()
-
 const model = defineModel<Program | Program[]>({ required: true })
 
-// const items = selectItems(ProgramLabel)
-//   .sort((a, b) => {
-//     const extractNumber = (str: string) => {
-//       const match = str.match(/^\d+/) // Extract leading number
-//       return match ? Number.parseInt(match[0], 10) : Infinity // Use Infinity if no number
-//     }
-//
-//     const numA = extractNumber(a.title)
-//     const numB = extractNumber(b.title)
-//
-//     // Compare numeric prefixes first
-//     if (numA !== numB) {
-//       return numA - numB
-//     }
-//
-//     // Fallback to alphabetical sorting
-//     return a.title.localeCompare(b.title)
-//   })
-// .sort((a, b) => a.title.localeCompare(b.title))
-
-// const extractNumber = (str: string) => {
-//   const match = str.match(/^\d+/); // Extract leading number
-//   return match ? parseInt(match[0], 10) : Infinity; // Use Infinity if no number
-// };
-//
-// const numA = extractNumber(a.title);
-// const numB = extractNumber(b.title);
-//
-// // Compare numeric prefixes first
-// if (numA !== numB) {
-//   return numA - numB;
-// }
-//
-// // Fallback to alphabetical sorting
-// return a.title.localeCompare(b.title);
+function clear() {
+  model.value = []
+}
 </script>
 
 <template>
-  <v-autocomplete
+  <v-select
     v-model="model"
+    class="program-selector"
     :items="selectItems(ProgramLabel)"
     label="Программа"
     variant="outlined"
@@ -61,5 +26,19 @@ const model = defineModel<Program | Program[]>({ required: true })
         ничего не найдено
       </v-list-item>
     </template>
-  </v-autocomplete>
+    <template v-if="Array.isArray(model) && model.length" #append>
+      <a @click="clear()">очистить</a>
+    </template>
+  </v-select>
 </template>
+
+<style lang="scss">
+.program-selector {
+  .v-input__append {
+    position: absolute;
+    bottom: 0;
+    font-size: 12px;
+    cursor: pointer;
+  }
+}
+</style>

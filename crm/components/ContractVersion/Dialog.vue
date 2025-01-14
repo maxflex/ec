@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PrintDialog, ProgramDialog } from '#build/components'
+import type { PrintDialog } from '#build/components'
 import { clone } from 'rambda'
 
 const emit = defineEmits<{
@@ -23,7 +23,6 @@ const contractId = ref<number>()
 // только для отображения в заголовке
 const seq = ref<number>()
 const { dialog, width } = useDialog('medium')
-const programDialog = ref<InstanceType<typeof ProgramDialog>>()
 const pricesInput = ref()
 const programsInput = ref()
 const saving = ref(false)
@@ -113,32 +112,21 @@ async function destroy() {
 
 function onProgramsSaved(programs: Program[]) {
   for (const program of programs) {
-    const isNewProgram = !item.value.programs.some(
-      p => p.program === program,
-    )
-    if (isNewProgram) {
-      item.value.programs.push({
-        id: newId(),
-        program,
-        contract_version_id: item.value.contract.id,
-        prices: [
-          {
-            id: newId(),
-            lessons: '',
-            price: '',
-          },
-        ],
-        lessons_planned: '',
-      })
-    }
-    nextTick(() => {
-      programsInput.value[programsInput.value.length - 1].focus()
+    item.value.programs.push({
+      id: newId(),
+      program,
+      contract_version_id: item.value.contract.id,
+      prices: [
+        {
+          id: newId(),
+          lessons: '',
+          price: '',
+        },
+      ],
+      lessons_planned: '',
     })
   }
-  // Remove programs that are not in the new programs list
-  item.value.programs = item.value.programs.filter(({ program }) =>
-    programs.includes(program),
-  )
+  nextTick(() => programsInput.value[programsInput.value.length - 1].focus())
 }
 
 function addPayment() {
@@ -246,6 +234,8 @@ const isPaymentSumValid = computed(() => {
   const contractSum = asInt(item.value.sum)
   return contractSum > 0 && contractSum === lessonsMultipliedByPriceSum.value && lessonsMultipliedByPriceSum.value === paymentSum.value
 })
+
+const preSelected = computed(() => item.value.programs.map(e => e.program))
 
 function addPrices(p: ContractVersionProgramResource) {
   const index = item.value.programs.findIndex(e => e.id === p.id)
@@ -446,9 +436,10 @@ defineExpose({ edit, newContract, newVersion })
               </tr>
               <tr>
                 <td>
-                  <UiIconLink @click="() => programDialog?.open(item.programs.map((e) => e.program))">
-                    добавить программы
-                  </UiIconLink>
+                  <ProgramSelectorMenu
+                    :pre-selected="preSelected"
+                    @saved="onProgramsSaved"
+                  />
                 </td>
                 <td class="cursor-default">
                   {{ lessonsPlannedSum || '' }}
@@ -537,7 +528,6 @@ defineExpose({ edit, newContract, newVersion })
       </div>
     </div>
   </v-dialog>
-  <ProgramDialog ref="programDialog" @saved="onProgramsSaved" />
   <LazyPrintDialog ref="printDialog" />
 </template>
 
