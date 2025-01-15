@@ -190,6 +190,7 @@ declare global {
     client_id: ?number
     created_at?: string
     associated_clients: ClientWithContractsResource[]
+    is_verified?: boolean
   }
 
   interface RequestListResource {

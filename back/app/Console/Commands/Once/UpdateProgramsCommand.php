@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Once;
 
 use App\Enums\Program;
 use Illuminate\Console\Command;
@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class UpdateProgramsCommand extends Command
 {
-    protected $signature = 'app:update-programs';
+    protected $signature = 'app:once:update-programs';
 
     protected $description = 'Command description';
 

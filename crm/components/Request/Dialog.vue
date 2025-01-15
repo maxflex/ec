@@ -16,6 +16,7 @@ const modelDefaults: RequestResource = {
   yandex_id: null,
   google_id: null,
   ip: null,
+  is_verified: true,
 }
 
 const { dialog, width } = useDialog('default')

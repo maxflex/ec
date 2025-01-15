@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Once;
 
 use App\Models\Phone;
 use App\Models\Request;
@@ -15,7 +15,7 @@ use Illuminate\Support\Collection;
  */
 class FindAssociatedRequestsCommand extends Command
 {
-    protected $signature = 'app:find-associated-requests';
+    protected $signature = 'app:once:find-associated-requests';
 
     protected $description = 'Command description';
 
