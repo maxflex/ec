@@ -25,4 +25,12 @@ class Kernel extends ConsoleKernel
     {
         $this->load(__DIR__ . '/Commands');
     }
+
+    protected function bootstrappers()
+    {
+        return array_merge(
+            [\Bugsnag\BugsnagLaravel\OomBootstrapper::class],
+            parent::bootstrappers(),
+        );
+    }
 }

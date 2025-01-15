@@ -55,4 +55,12 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequestsWithRedis::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
     ];
+
+    protected function bootstrappers()
+    {
+        return array_merge(
+            [\Bugsnag\BugsnagLaravel\OomBootstrapper::class],
+            parent::bootstrappers(),
+        );
+    }
 }
