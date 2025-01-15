@@ -49,7 +49,8 @@ class TransferRequests extends Command
             return Direction::egeTrial;
         }
         if ($comment->value() === 'онлайн') {
-            return Direction::online;
+            // снесли
+//            return Direction::online;
         }
         if ($comment->contains('старшая школа') || in_array($r->grade_id, [8, 15, 16, 17])) {
             return match ($r->grade_id) {
@@ -60,10 +61,12 @@ class TransferRequests extends Command
             };
         }
         if ($comment->value() === 'развивающие курсы (программирование на python)') {
-            return Direction::python;
+            // снесли
+//            return Direction::python;
         }
         if ($comment->value() === 'развивающие курсы (разговорный английский язык)') {
-            return Direction::english;
+            // снесли
+//            return Direction::english;
         }
 
         return match ($r->grade_id) {

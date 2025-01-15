@@ -4,11 +4,11 @@ namespace App\Models;
 
 use App\Contracts\CanLogin;
 use App\Traits\{HasName, HasPhones, HasTelegramMessages, RelationSyncable};
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Scout\Searchable;
 
-class ClientParent extends Model implements CanLogin
+class ClientParent extends Authenticatable implements CanLogin
 {
     use HasName, HasPhones, RelationSyncable, Searchable, HasTelegramMessages;
 

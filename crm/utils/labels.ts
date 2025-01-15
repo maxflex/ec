@@ -635,9 +635,9 @@ export const DirectionLabel = {
   external: 'экстернат',
   practicum: 'практикум',
   egeTrial: 'пробный ЕГЭ',
-  python: 'python',
-  english: 'английский',
-  online: 'онлайн',
+  // python: 'python',
+  // english: 'английский',
+  // online: 'онлайн',
   coursesExtra: 'курсы-доп',
 } as const
 

@@ -9,17 +9,20 @@ enum Direction: string
     case courses9 = 'courses9';
     case courses10 = 'courses10';
     case courses11 = 'courses11';
+
     case school8 = 'school8';
     case school9 = 'school9';
     case school10 = 'school10';
     case school11 = 'school11';
+
     case external = 'external';
     case practicum = 'practicum';
     case egeTrial = 'egeTrial';
-    case python = 'python';
-    case english = 'english';
-    case online = 'online';
     case coursesExtra = 'coursesExtra';
+//
+//    case python = 'python';
+//    case english = 'english';
+//    case online = 'online';
 
     /**
      * Получить направление входящей заявки
@@ -57,10 +60,7 @@ enum Direction: string
                 };
 
             case 'other':
-                return match ($request->input('otherCourse')) {
-                    'python' => Direction::python,
-                    default => Direction::english
-                };
+                return Direction::coursesExtra;
         }
 
         // не удалось получить направление

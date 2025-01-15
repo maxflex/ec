@@ -110,6 +110,10 @@ class Mango
                         cache()->tags('calls')->pull($data->entry_id);
                     }
                 }
+                break;
+
+            case CallState::onHold:
+                //
         }
     }
 

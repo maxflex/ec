@@ -26,7 +26,8 @@ class ContractController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'client_id' => ['required', 'exists:clients,id']
+            'client_id' => ['required', 'exists:clients,id'],
+            'sum' => ['required', 'numeric']
         ]);
         $contract = Contract::create([
             ...$request->contract,
