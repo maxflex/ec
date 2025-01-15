@@ -85,6 +85,8 @@ async function destroy() {
   }
 }
 
+const uploadingFiles = computed(() => lesson.value.files.some(e => !e.url))
+
 defineExpose({ create, edit })
 </script>
 
@@ -121,6 +123,7 @@ defineExpose({ create, edit })
             icon="$save"
             :size="48"
             variant="text"
+            :disabled="uploadingFiles"
             :loading="saving"
             @click="save()"
           />
