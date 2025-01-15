@@ -76,6 +76,7 @@ enum Direction: string
     {
         return collect(Program::cases())
             ->filter(fn($p) => $p->getDirection() === $this)
+            ->values()
             ->all();
     }
 }

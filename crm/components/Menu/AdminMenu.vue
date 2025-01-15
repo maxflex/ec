@@ -139,7 +139,7 @@ nextTick(updateMenuCounts)
 </script>
 
 <template>
-  <v-list nav density="compact">
+  <v-list nav density="compact" open-strategy="single">
     <v-list-item :to="{ name: 'search' }">
       <template #prepend>
         <v-icon icon="$search" />

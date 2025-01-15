@@ -27,6 +27,7 @@ class ExamDate extends Model
     {
         return collect(Program::cases())
             ->filter(fn($p) => $p->getExam() === $this->exam)
+            ->values()
             ->all();
     }
 }

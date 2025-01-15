@@ -366,7 +366,7 @@ enum Program: string
     }
 
 
-    public function getExam(): Exam
+    public function getExam(): ?Exam
     {
         return match ($this) {
             self::bio11 => Exam::egeBio,
@@ -447,7 +447,7 @@ enum Program: string
             self::engSpoken => Exam::engSpoken,
             self::izl9 => Exam::izl9,
             self::soch11 => Exam::soch11,
-            default => Exam::egeRus,
+            default => null
         };
     }
 
