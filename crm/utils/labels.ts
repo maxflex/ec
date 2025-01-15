@@ -379,6 +379,7 @@ export const LessonScoreLabel = {
 } as const
 
 export const YearLabel = {
+  2025: '2025–2026 уч. г.',
   2024: '2024–2025 уч. г.',
   2023: '2023–2024 уч. г.',
   2022: '2022–2023 уч. г.',
