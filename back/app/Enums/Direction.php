@@ -19,10 +19,6 @@ enum Direction: string
     case practicum = 'practicum';
     case egeTrial = 'egeTrial';
     case coursesExtra = 'coursesExtra';
-//
-//    case python = 'python';
-//    case english = 'english';
-//    case online = 'online';
 
     /**
      * Получить направление входящей заявки
@@ -59,12 +55,9 @@ enum Direction: string
                     default => Direction::school11
                 };
 
-            case 'other':
+            default:
                 return Direction::coursesExtra;
         }
-
-        // не удалось получить направление
-        return Direction::online;
     }
 
     /**

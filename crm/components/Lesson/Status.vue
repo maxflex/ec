@@ -6,9 +6,9 @@ const { item, size = 10, showLabel } = defineProps<{
 }>()
 
 const statusColor = (function () {
-  if (item.is_need_conduct) {
-    return 'error'
-  }
+  // if (item.is_need_conduct) {
+  //   return 'error'
+  // }
   switch (item.status) {
     case 'planned':
       return 'gray'

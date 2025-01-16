@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\Admin\{AllPaymentsController,
+use App\Http\Controllers\Admin\{AllLessonsController,
+    AllPaymentsController,
     BalanceController,
     CallController,
     ClientController,
@@ -124,7 +125,10 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::get('all-payments', AllPaymentsController::class);
 
+    // TODO: временно
     Route::get('nalog-contracts', NalogContractController::class);
+
+    Route::get('all-lessons', AllLessonsController::class);
    
     Route::apiResources([
         'telegram-lists' => TelegramListController::class,

@@ -99,7 +99,7 @@ const menu: Menu = [
     icon: mdiSeatPassenger,
     title: 'Занятия',
     items: [
-      { title: 'Все занятия', to: '/lessons', count: 'schedule' },
+      { title: 'Все занятия', to: '/all-lessons', count: 'schedule' },
       { title: 'Темы', to: '/topics' },
       { title: 'Свободные кабинеты', to: '/free-cabinets' },
     ],

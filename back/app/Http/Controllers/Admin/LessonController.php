@@ -12,7 +12,7 @@ use Illuminate\Support\Carbon;
 class LessonController extends Controller
 {
     protected $filters = [
-        'equals' => ['group_id', 'teacher_id'],
+        'equals' => ['group_id', 'teacher_id', 'date'],
         'group' => ['year'],
     ];
 
