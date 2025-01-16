@@ -189,6 +189,9 @@ nextTick(() => {
         display: flex;
         align-items: center;
         padding: 16px 20px;
+        button:not(.v-btn--loading) .v-icon {
+          transition: transform ease-in-out 0.2s;
+        }
         &:hover {
           background: rgb(var(--v-theme-bg));
         }
