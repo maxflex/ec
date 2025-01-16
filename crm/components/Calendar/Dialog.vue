@@ -1,16 +1,11 @@
 <script setup lang="ts">
-const { year, past } = defineProps<{
-  year: Year | undefined
-  // далёкие даты в прошлом. нужно для установки даты рождения
-  past?: boolean
-}>()
+const { year } = defineProps<{ year: Year | undefined }>()
 const emit = defineEmits(['close'])
 const { dialog, width, transition } = useDialog('small')
 const model = defineModel<string | string[]>({ required: true })
 
 // начиная с какой даты возможен выбор в календаре
-// для выбора даты рождения клиента нужны старые даты
-const startYear = past ? 2000 : 2015
+const startYear = 2015
 
 const years = year === undefined
   ? Array.from({ length: currentAcademicYear() - startYear + 2 }, (_, i) => startYear + i)
@@ -112,7 +107,7 @@ defineExpose({ open })
             <div class="calendar__month-label">
               <span class="text-grey-light">
                 {{ MonthLabel[m as Month] }}
-                '{{ y - 2000 > 10 ? '' : '0' }}{{ y - 2000 }}
+                '{{ y - 2000 }}
               </span>
             </div>
             <div class="calendar__month-days">

@@ -20,7 +20,7 @@ watch(items, (newVal) => {
     title: q === null ? 'без четверти' : QuarterLabel[q],
   }))
   availablePrograms.value = [...new Set(newVal.map(e => e.program))]
-  selectedQuarter.value = quarters.value[0].value
+  selectedQuarter.value = quarters.value.length ? quarters.value[0].value : null
 })
 
 const filteredItems = computed(() => items.value.filter((e) => {

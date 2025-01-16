@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ClientRequest;
 use App\Http\Resources\ClientListResource;
 use App\Http\Resources\ClientResource;
 use App\Http\Resources\PersonResource;
@@ -43,7 +44,7 @@ class ClientController extends Controller
         return new PersonResource($clientParent->client);
     }
 
-    public function store(Request $request)
+    public function store(ClientRequest $request)
     {
         $client = auth()->user()->clients()->create($request->all());
         $client->syncRelation($request->all(), 'phones');
@@ -57,7 +58,7 @@ class ClientController extends Controller
         return new ClientListResource($client);
     }
 
-    public function update(Client $client, Request $request)
+    public function update(Client $client, ClientRequest $request)
     {
         $client->update($request->all());
         $client->syncRelation($request->all(), 'phones');

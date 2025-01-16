@@ -116,7 +116,7 @@ class Controller extends BaseController
         $value ? $query->whereHas($relation) : $query->whereDoesntHave($relation);
     }
 
-    private function getFieldName($field)
+    protected function getFieldName($field)
     {
         foreach ($this->mapFilters as $originalFieldName => $mappedFieldName) {
             if ($field === $originalFieldName) {

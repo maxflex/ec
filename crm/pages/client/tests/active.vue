@@ -55,7 +55,7 @@ async function finish() {
   })
 }
 
-watch(answers, saveAnswers)
+watch(answers, saveAnswers, { deep: true })
 
 nextTick(loadData)
 </script>

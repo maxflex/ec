@@ -44,8 +44,10 @@ const modelDefaults: ClientResource = {
 const { dialog, width } = useDialog('medium')
 const client = ref<ClientResource>(clone(modelDefaults))
 const loading = ref(false)
+const saving = ref(false)
 const itemId = ref<number>()
 const requestId = ref<number>()
+const errors = ref(new Set<string>())
 
 function open(c: ClientResource) {
   client.value = clone(c)
@@ -70,18 +72,24 @@ async function edit(id: number) {
 }
 
 async function save() {
-  dialog.value = false
+  saving.value = true
+  errors.value.clear()
+
   if (itemId.value) {
-    const { data } = await useHttp<ClientResource>(`clients/${itemId.value}`, {
+    const { data, error } = await useHttp<ClientResource>(`clients/${itemId.value}`, {
       method: 'put',
       body: client.value,
     })
     if (data.value) {
       emit('updated', data.value)
+      dialog.value = false
+    }
+    if (error.value) {
+      errors.value = new Set(Object.keys(error.value.data.errors))
     }
   }
   else {
-    const { data } = await useHttp<ClientListResource>('clients', {
+    const { data, error } = await useHttp<ClientListResource>('clients', {
       method: 'post',
       body: {
         ...client.value,
@@ -90,20 +98,20 @@ async function save() {
     })
     if (data.value) {
       emit('created', data.value, requestId.value)
+      dialog.value = false
+    }
+    if (error.value) {
+      errors.value = new Set(Object.keys(error.value.data.errors))
     }
   }
-
-  // emit('saved')
+  saving.value = false
 }
 
 defineExpose({ create, edit })
 </script>
 
 <template>
-  <v-dialog
-    v-model="dialog"
-    :width="width"
-  >
+  <v-dialog v-model="dialog" :width="width">
     <div
       v-if="client"
       class="dialog-wrapper"
@@ -126,6 +134,7 @@ defineExpose({ create, edit })
         <v-btn
           icon="$save"
           :size="48"
+          :loading="saving"
           variant="text"
           @click="save()"
         />
@@ -163,7 +172,8 @@ defineExpose({ create, edit })
           <UiDateInput
             v-model="client.passport.birthdate"
             label="Дата рождения"
-            past
+            manual
+            :error="errors.has('passport.birthdate')"
           />
         </div>
         <div class="double-input">
@@ -227,7 +237,8 @@ defineExpose({ create, edit })
           <UiDateInput
             v-model="client.parent.passport.issued_date"
             label="Дата выдачи паспорта"
-            past
+            manual
+            :error="errors.has('parent.passport.issued_date')"
           />
           <v-text-field
             v-model="client.parent.email"

@@ -318,6 +318,7 @@ defineExpose({ edit, newContract, newVersion })
             :size="48"
             variant="text"
             :loading="saving"
+            :disabled="!isPaymentSumValid"
             @click="save()"
           />
         </div>
@@ -346,7 +347,14 @@ defineExpose({ edit, newContract, newVersion })
               type="number"
               hide-spin-buttons
             />
-            <v-icon v-if="isPaymentSumValid" color="success" icon="$checkAll" />
+            <a v-if="lessonsMultipliedByPriceSum" class="date-input__today cursor-default">
+              <span class="text-black">
+                рекомендуемая сумма:
+              </span>
+              <span class="cursor-pointer" @click="item.sum = lessonsMultipliedByPriceSum">
+                {{ formatPrice(lessonsMultipliedByPriceSum) }}
+              </span>
+            </a>
           </div>
           <UiDateInput v-model="item.date" today-btn />
         </div>

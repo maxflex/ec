@@ -13,6 +13,7 @@ use App\Models\Teacher;
 use App\Models\User;
 use App\Utils\SecurityVerificationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SecurityController extends Controller
 {
@@ -103,4 +104,22 @@ class SecurityController extends Controller
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, PassLogResource::class);
     }
+
+    /**
+     * Split by words and search by each word
+     */
+    protected function filterSearch(&$query, $value, $field)
+    {
+        if (strlen($value) < 2) {
+            return;
+        }
+        $words = array_unique(array_filter(explode(' ', $value), 'trim'));
+        $query->where(function ($query) use ($field, $words) {
+            foreach ($words as $word) {
+                $query->orWhere(DB::raw($this->getFieldName($field)), 'like', '%' . $word . '%');
+            }
+        });
+    }
 }
+
+
