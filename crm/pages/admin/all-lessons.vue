@@ -131,9 +131,9 @@ nextTick(() => {
         <template v-if="d in response">
           <div style="width: 200px" class="text-gray">
             {{ formatPrice(response[d].planned_count) }}
-            <span v-if="response[d].need_conduct_count" class="text-error">
-              / {{ response[d].need_conduct_count }}
-            </span>
+            <!--            <span v-if="response[d].need_conduct_count" class="text-error"> -->
+            <!--              / {{ response[d].need_conduct_count }} -->
+            <!--            </span> -->
           </div>
           <div style="width: 200px" class="text-success">
             {{ formatPrice(response[d].conducted_count) }}
