@@ -17,18 +17,7 @@ export const menuCounts = ref<MenuCounts>({
 })
 
 export async function updateMenuCounts() {
-  // у админа кружок напротив "занятий" нужно отображать в зависимости от того, какой год установлен внутри
-  const { isAdmin } = useAuthStore()
-  const params: any = {}
-  if (isAdmin) {
-    const filters = localStorage.getItem(getFiltersKey(null, 'lessons'))
-    params.year = filters
-      ? JSON.parse(filters).year
-      : currentAcademicYear()
-  }
-  const { data } = await useHttp<MenuCounts>(`menu-counts`, {
-    params,
-  })
+  const { data } = await useHttp<MenuCounts>(`menu-counts`)
   menuCounts.value = data.value!
 }
 

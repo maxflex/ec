@@ -12,7 +12,7 @@ class MenuCountsController extends Controller
     {
         return [
             'schedule' => Lesson::query()
-                ->whereHas('group', fn($q) => $q->where('year', $request->year))
+                ->whereHas('group', fn($q) => $q->where('year', current_academic_year()))
                 ->needConduct()
                 ->exists() ? 1 : 0,
         ];

@@ -84,7 +84,6 @@ async function expand(date: string) {
 watch(filters, async (newVal) => {
   await loadData()
   saveFilters(newVal)
-  await updateMenuCounts()
 }, { deep: true })
 
 nextTick(() => {
