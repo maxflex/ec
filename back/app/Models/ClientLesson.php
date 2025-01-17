@@ -16,7 +16,7 @@ class ClientLesson extends Model
 
     protected $fillable = [
         'price', 'status', 'minutes_late', 'scores',
-        'contract_version_program_id'
+        'contract_version_program_id', 'comment'
     ];
 
     protected $casts = [

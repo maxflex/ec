@@ -456,6 +456,7 @@ declare global {
     status: ClientLessonStatus
     minutes_late: ?number
     scores: ClientLessonScore[]
+    comment: ?string
   }
 
   interface LessonConductResource {

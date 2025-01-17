@@ -116,14 +116,17 @@ defineExpose({ open })
         <table class="dialog-table">
           <thead>
             <tr>
-              <th>
+              <th width="290">
                 Ученик
               </th>
-              <th>
-                Статус посещения
+              <th width="140">
+                Статус
               </th>
-              <th>
+              <th width="110">
                 Опоздание
+              </th>
+              <th width="150">
+                Комментарий
               </th>
               <th colspan="10">
                 Оценки
@@ -132,16 +135,16 @@ defineExpose({ open })
           </thead>
           <tbody>
             <tr v-for="s in item?.students" :key="s.id">
-              <td width="290">
+              <td>
                 {{ formatName(s.client) }}
               </td>
-              <td width="190">
+              <td>
                 <UiToggler
                   v-model="s.status"
                   :items="selectItems(ClientLessonStatusLabel)"
                 />
               </td>
-              <td width="110">
+              <td>
                 <v-text-field
                   v-if="['late', 'lateOnline'].includes(s.status)"
                   v-model="s.minutes_late"
@@ -150,6 +153,9 @@ defineExpose({ open })
                   hide-spin-buttons
                   placeholder="минут"
                 />
+              </td>
+              <td>
+                <v-text-field v-model="s.comment" />
               </td>
               <td width="57" class="conduct-dialog__scores">
                 <template v-if="s.status !== 'absent'">

@@ -167,7 +167,7 @@ defineExpose({ open })
       </transition-group>
       <div class="comments__input">
         <template v-if="editId">
-          <span class="text-gray">Редактировать комментарий</span>
+          <span class="text-gray">Редактирование комментария</span>
           <v-textarea
             ref="editInput"
             v-model="text"
