@@ -95,6 +95,7 @@ class Lesson extends Model
             $this->clientLessons()->create([
                 'contract_version_program_id' => $contractVersionProgram->id,
                 'status' => $s->status,
+                'comment' => $s->comment,
                 'minutes_late' => $s->status === ClientLessonStatus::late->value
                     ? $s->minutes_late
                     : null,
