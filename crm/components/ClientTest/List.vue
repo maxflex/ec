@@ -16,6 +16,15 @@ const { isAdmin, isClient } = useAuthStore()
       :id="`client-test-${t.id}`"
       :key="t.id"
     >
+      <div v-if="isAdmin && !t.is_active" class="table-actionss d-flex align-center justify-end">
+        <v-btn
+          icon="$close"
+          :size="48"
+          color="error"
+          variant="plain"
+          @click="emit('destroy', t)"
+        />
+      </div>
       <div style="width: 230px; flex: 1">
         <div v-if="t.client">
           <NuxtLink :to="{ name: 'clients-id', params: { id: t.client.id } }">
@@ -64,18 +73,6 @@ const { isAdmin, isClient } = useAuthStore()
         </b>
         <ClientTestCountDown v-else-if="t.is_active" :item="t" />
       </div>
-      <div v-if="isAdmin && !t.is_active && !t.is_finished" class="table-actionss" style="top: 12px">
-        <v-btn
-          icon="$close"
-          :size="48"
-          variant="plain"
-          color="red"
-          @click="emit('destroy', t)"
-        />
-      </div>
-      <!--      <div style="width: 140px; flex: initial" class="text-gray"> -->
-      <!--        {{ formatDateTime(t.created_at) }} -->
-      <!--      </div> -->
       <div class="text-right">
         <v-btn
           v-if="t.is_finished"
