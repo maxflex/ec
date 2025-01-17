@@ -34,6 +34,7 @@ class LessonConductResource extends JsonResource
                     'status' => ClientLessonStatus::present,
                     'is_remote' => false,
                     'minutes_late' => 10,
+                    'comment' => null,
                     'scores' => []
                 ]))
         };
