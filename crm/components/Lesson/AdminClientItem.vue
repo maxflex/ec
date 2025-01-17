@@ -18,9 +18,9 @@ const emit = defineEmits<{
 
 const isConductDisabled = item.status !== 'conducted'
 
-function deleteClientLesson() {
+function deleteFromClientLessons() {
   setTimeout(() => {
-    if (!confirm(`Удалить ученика из проводки?\nГР-${item.group.id} занятие от ${formatDate(item.date)} в ${formatTime(item.time)}?`)) {
+    if (!confirm(`Удалить ученика из проводки?\nГР-${item.group.id} занятие от ${formatDate(item.date)} в ${formatTime(item.time)}`)) {
       return
     }
     useHttp(`client-lessons/${item.client_lesson!.id}`, {
@@ -61,7 +61,7 @@ function deleteClientLesson() {
           >
             проводка занятия
           </v-list-item>
-          <v-list-item v-if="item.client_lesson" class="text-error" @click="deleteClientLesson()">
+          <v-list-item v-if="item.client_lesson" class="text-error" @click="deleteFromClientLessons()">
             удалить из проводки
           </v-list-item>
         </v-list>

@@ -90,8 +90,14 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
     {
         $schedule = collect();
 
-        // фактически проведённые
-        $fact = [];
+        // минимальная дата проведённого занятия
+        // key = group_id, value = date
+        $minConductedDate = [];
+
+        // максимальная дата проведённого занятия
+        // key = group_id, value = date
+        $maxConductedDate = [];
+
         $clientLessons = ClientLesson::query()->whereHas(
             'contractVersionProgram.contractVersion.contract',
             fn($q) => $q->where('client_id', $this->id)->where('year', $year)
@@ -102,7 +108,12 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
             // $lesson->load('clientLessons', fn ($q) => $q->whereId($clientLesson->id));
             $lesson->setAttribute('client_lesson', $clientLesson);
             $schedule->push($lesson);
-            $fact[$lesson->id] = true;
+            if (!isset($minConductedDate[$lesson->group_id]) || $lesson->date < $minConductedDate[$lesson->group_id]) {
+                $minConductedDate[$lesson->group_id] = $lesson->date;
+            }
+            if (!isset($maxConductedDate[$lesson->group_id]) || $lesson->date > $maxConductedDate[$lesson->group_id]) {
+                $maxConductedDate[$lesson->group_id] = $lesson->date;
+            }
         }
 
         $contracts = $this->contracts()->where('year', $year)->get();
@@ -112,17 +123,33 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
                 ->whereHas('clientGroup')
                 ->get();
             foreach ($programs as $program) {
-                foreach ($program->group->lessons as $lesson) {
-                    // пропускаем фактически проведённые
-                    if (isset($fact[$lesson->id])) {
-                        continue;
-                    }
-                    // пропускаем проведённые, где нет ученика
-                    if ($lesson->status === LessonStatus::conducted) {
-                        continue;
-                    }
+                $plannedLessons = $program->group->lessons()->where('status', LessonStatus::planned)->get();
+                foreach ($plannedLessons as $lesson) {
                     $schedule->push($lesson);
                 }
+            }
+        }
+
+        // Костя, [17 Jan 2025 at 15:31:17]:
+        //если проведенных занятий нет (ученик-группа) то отображаются отмены только будущие
+        //если проведенные занятия есть и человек в группе то отображаются отмены этой группы начиная с 1 проведенного занятия в группе
+        //если проведенные занятия есть и человек НЕ в группе то отображаются отмены этой группы четко между первых и последним посещением этой группы у этого человека
+        $cancelledLessons = Lesson::query()
+            ->where('status', LessonStatus::cancelled)
+            ->whereIn('group_id', $schedule->pluck('group_id')->unique()->values())
+            ->get();
+
+        foreach ($cancelledLessons as $lesson) {
+            // есть проведённые занятия
+            if (isset($minConductedDate[$lesson->group_id])) {
+                if (
+                    $lesson->date >= $minConductedDate[$lesson->group_id]
+                    && $lesson->date <= $maxConductedDate[$lesson->group_id]
+                ) {
+                    $schedule->push($lesson);
+                }
+            } elseif ($lesson->date >= now()->format('Y-m-d')) {
+                $schedule->push($lesson);
             }
         }
 
