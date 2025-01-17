@@ -25,13 +25,7 @@ defineEmits(['close'])
         принял {{ formatName(item.user) }}
       </div>
       <div v-else :key="2" class="call-banner__info">
-        <div v-if="item.phone?.comment">
-          {{ item.phone.comment }}
-        </div>
-        <CallAppPersonLink :phone="item.phone" />
-        <!--        <div v-if="item.phone.responsible_user_id"> -->
-        <!--          Ответственный: {{ users[item.phone.responsible_user_id] }} -->
-        <!--        </div> -->
+        <CallAppAon :item="item.phone" full />
       </div>
     </transition>
     <v-btn icon="$close" variant="text" :size="38" @click.stop="$emit('close')" />

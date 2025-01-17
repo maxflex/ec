@@ -361,14 +361,14 @@ export const EntityTypeValue = {
 } as const
 
 export const EntityTypeLabel = {
-  'App\\Models\\Request': 'заявка',
-  'App\\Models\\Client': 'клиент',
-  'App\\Models\\ClientParent': 'родитель',
-  'App\\Models\\Contract': 'договор',
-  'App\\Models\\Teacher': 'преподаватель',
-  'App\\Models\\User': 'администратор',
-  'App\\Models\\Group': 'группа',
-  'App\\Models\\Report': 'отчет',
+  'App\\Models\\Request': 'Заявка',
+  'App\\Models\\Client': 'Ученик',
+  'App\\Models\\ClientParent': 'Представитель',
+  'App\\Models\\Contract': 'Договор',
+  'App\\Models\\Teacher': 'Преподаватель',
+  'App\\Models\\User': 'Администратор',
+  'App\\Models\\Group': 'Группа',
+  'App\\Models\\Report': 'Отчет',
 } as const
 
 export const LessonScoreLabel = {

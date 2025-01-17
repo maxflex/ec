@@ -56,7 +56,6 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::post('tests/upload-pdf/{test}', [TestController::class, 'uploadPdf']);
     Route::post('preview', PreviewController::class);
     Route::post('photos/upload', [PhotoController::class, 'upload']);
-    Route::apiResource('photos', PhotoController::class)->only('store');
     Route::post('stats', StatsController::class);
 
     Route::get('balance', BalanceController::class);

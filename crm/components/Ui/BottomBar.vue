@@ -45,8 +45,9 @@ const model = defineModel<boolean>({
   }
   &--error {
     background: #ffebee;
-    color: rgb(var(--v-theme-error));
+    color: black;
     z-index: 9999;
+    border-color: #ffcdd2;
     //border-color: rgb(var(--v-theme-error));
   }
   &--success {

@@ -6,6 +6,7 @@ use App\Http\Controllers\Common\{AuthController,
     FileController,
     LogController,
     MangoController,
+    PhotoController,
     TeethController,
     TelegramBotController,
     VacationController};
@@ -31,6 +32,7 @@ Route::middleware(['auth:crm'])->group(function () {
     });
     Route::get('teeth', TeethController::class);
     Route::apiResource('logs', LogController::class)->only('store');
+    Route::apiResource('photos', PhotoController::class)->only('store');
     Route::apiResources([
         'exam-dates' => ExamDateController::class,
         'vacations' => VacationController::class,

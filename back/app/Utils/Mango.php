@@ -2,16 +2,10 @@
 
 namespace App\Utils;
 
-use App\Enums\CallState;
-use App\Enums\CallType;
-use App\Events\CallEvent;
-use App\Events\CallSummaryEvent;
-use App\Http\Resources\CallAppPhoneResource;
-use App\Http\Resources\PersonResource;
-use App\Models\Call;
-use App\Models\Phone;
-use App\Models\Request;
-use App\Models\User;
+use App\Enums\{CallState, CallType};
+use App\Events\{CallEvent, CallSummaryEvent};
+use App\Http\Resources\{CallAppAonResource, PersonResource};
+use App\Models\{Call, Client, ClientParent, Phone, Request, Teacher, User};
 
 class Mango
 {
@@ -58,7 +52,7 @@ class Mango
                         'user' => null,
                         'answered_at' => null,
                         'number' => $data->from->number,
-                        'phone' => $phone === null ? null : new CallAppPhoneResource($phone),
+                        'phone' => $phone === null ? null : new CallAppAonResource($phone),
                     ];
                     CallEvent::dispatch($params);
                     cache()->tags('calls')->put($data->entry_id, $params, now()->addMinutes(10));
@@ -74,7 +68,7 @@ class Mango
                         'user' => new PersonResource(User::find($data->from->extension)),
                         'answered_at' => (new Call(['answered_at' => $data->timestamp]))->answered_at,
                         'number' => $data->to->number,
-                        'phone' => $phone === null ? null : new CallAppPhoneResource($phone),
+                        'phone' => $phone === null ? null : new CallAppAonResource($phone),
                         'type' => CallType::outgoing->name,
                     ];
                 } else {
@@ -164,8 +158,21 @@ class Mango
     public static function aon(string $number): ?Phone
     {
         return Phone::where('number', $number)
-            ->where('entity_type', '<>', Request::class)
             ->where('entity_type', '<>', User::class)
+            ->orderByRaw("
+                CASE
+                    WHEN ENTITY_TYPE = ? THEN 4
+                    WHEN ENTITY_TYPE = ? THEN 3
+                    WHEN ENTITY_TYPE = ? THEN 2
+                    WHEN ENTITY_TYPE = ? THEN 1
+                END DESC
+            ", [
+                Client::class,
+                ClientParent::class,
+                Teacher::class,
+                Request::class,
+            ])
+            ->latest('id')
             ->first();
     }
 }

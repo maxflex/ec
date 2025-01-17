@@ -14,7 +14,9 @@ use Illuminate\Http\Request;
 class RequestsController extends Controller
 {
     protected $filters = [
-        'equals' => ['status', 'direction', 'client_id']
+        'equals' => [
+            'status', 'direction', 'client_id', 'id'
+        ]
     ];
 
     public function index(Request $request)

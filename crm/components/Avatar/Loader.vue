@@ -59,10 +59,13 @@ async function save() {
   formData.append('photo', blob)
   formData.append('entity_type', item.entity_type)
   formData.append('entity_id', String(item.id))
-  const { data, error } = await useHttp<HasPhoto>('photos', {
-    method: 'post',
-    body: formData,
-  })
+  const { data, error } = await useHttp<HasPhoto>(
+    `common/photos`,
+    {
+      method: 'post',
+      body: formData,
+    },
+  )
   if (data.value) {
     console.log('UPLOADED', data.value)
     // eslint-disable-next-line

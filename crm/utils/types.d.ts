@@ -968,18 +968,19 @@ declare global {
     | 'ParticipantConfirmationEvent'
     | 'TelegramListSentEvent'
 
-  interface CallAppPhoneResource {
+  interface CallAppAonResource {
     id: number
     comment: ?string
-    entity_type: EntityType
-    person: PersonResource
+    client?: PersonResource
+    entity?: PersonResource
+    request_id?: number
   }
 
   interface CallEvent {
     state: CallState
     type: CallType
     user?: PersonResource
-    phone: ?CallAppPhoneResource
+    phone: ?CallAppAonResource
     number: string
     answered_at?: string
   }
@@ -995,7 +996,7 @@ declare global {
     created_at: string
     finished_at: string
     answered_at: ?string
-    phone: ?CallAppPhoneResource
+    phone: ?CallAppAonResource
   }
 
   interface ErrorResource {
