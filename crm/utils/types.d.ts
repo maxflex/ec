@@ -971,8 +971,8 @@ declare global {
   interface CallAppAonResource {
     id: number
     comment: ?string
-    client?: PersonResource
     entity?: PersonResource
+    client_id?: number
     request_id?: number
   }
 

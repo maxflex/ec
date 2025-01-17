@@ -15,7 +15,7 @@ const { item, full } = defineProps<{
     </div>
     <div v-if="item.entity">
       {{ EntityTypeLabel[item.entity.entity_type] }}:
-      <UiPerson :item="item.entity" :no-link="full && !!item.client" />
+      <UiPerson :item="item.entity" :no-link="full && !!item.client_id" />
     </div>
     <div v-else-if="item.request_id">
       Заявка:
@@ -23,9 +23,11 @@ const { item, full } = defineProps<{
         {{ item.request_id }}
       </RouterLink>
     </div>
-    <div v-if="full && item.client">
+    <div v-if="full && item.client_id">
       Клиент:
-      <UiPerson :item="item.client" />
+      <RouterLink :to="{ name: 'clients-id', params: { id: item.client_id } }" @click.stop>
+        {{ item.client_id }}
+      </RouterLink>
     </div>
   </template>
 </template>

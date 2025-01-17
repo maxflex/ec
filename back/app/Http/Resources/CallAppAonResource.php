@@ -19,37 +19,25 @@ class CallAppAonResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        switch ($this->entity_type) {
-            case ClientParent::class:
-                $extra = [
-                    'client' => new PersonResource($this->entity->client),
-                    'entity' => new PersonResource($this->entity)
-                ];
-                break;
+        $entity = $this->entity;
 
-            case Client::class:
-                $client = new PersonResource($this->entity);
-                $extra = [
-                    'client' => $client,
-                    'entity' => $client,
-                ];
-                break;
+        $extra = match ($this->entity_type) {
+            ClientParent::class => [
+                'client_id' => $entity->client_id,
+                'entity' => new PersonResource($entity)
+            ],
+            Client::class => [
+                'client_id' => $this->entity_id,
+                'entity' => new PersonResource($entity)
+            ],
+            Teacher::class => [
+                'entity' => new PersonResource($entity)
+            ],
+            default => [
+                'request_id' => $this->entity_id,
+            ],
+        };
 
-            case Teacher::class:
-                $extra = [
-                    'entity' => new PersonResource($this->entity)
-                ];
-                break;
-
-            // Request
-            default:
-                $extra = [
-                    'request_id' => $this->entity_id,
-                ];
-        }
-
-        return extract_fields($this, [
-            'comment'
-        ], $extra);
+        return extract_fields($this, ['comment'], $extra);
     }
 }
