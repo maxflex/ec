@@ -76,8 +76,8 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
 
     public function getRequestsAttribute()
     {
-        $numbers = $this->phones->pluck('number')->unique();
-        return Request::whereHas('phones', fn($q) => $q->whereIn('number', $numbers))->get()->all();
+        $allNumbers = $this->getPhoneNumbers()->merge($this->parent->getPhoneNumbers());
+        return Request::whereHas('phones', fn($q) => $q->whereIn('number', $allNumbers))->get()->all();
     }
 
     /**

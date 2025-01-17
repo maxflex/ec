@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\{RequestListResource, RequestResource};
+use App\Models\Client;
 use App\Models\Request as ClientRequest;
 use Illuminate\Http\Request;
 
@@ -15,16 +16,27 @@ class RequestsController extends Controller
 {
     protected $filters = [
         'equals' => [
-            'status', 'direction', 'client_id', 'id'
+            'status', 'direction', 'id'
         ]
     ];
 
     public function index(Request $request)
     {
+        // временно: заявки клиента по ассоциативному механизму
+        // было устно сказано добавить так
+        if ($request->has('client_id')) {
+            $client = Client::find($request->input('client_id'));
+            return paginate(
+                RequestListResource::collection($client->requests)
+            );
+        }
+
         $query = ClientRequest::query()
             ->with('phones', 'responsibleUser', 'client')
             ->withCount('comments')
             ->latest();
+
+
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, RequestListResource::class);
     }
