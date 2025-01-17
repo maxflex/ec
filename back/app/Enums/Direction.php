@@ -24,7 +24,7 @@ enum Direction: string
      * Получить направление входящей заявки
      * TODO: в идеале переделать фронт, чтобы отправлял значение напрямую
      */
-    public static function fromIncomingRequest(Request $request): Direction
+    public static function fromIncomingRequest(Request $request): ?Direction
     {
         $grade = intval($request->input('grade'));
 
@@ -36,28 +36,22 @@ enum Direction: string
          * { value: "other", text: "Развивающие курсы" },
          * ],
          */
-        switch ($request->input('form')) {
-            case 'courses':
-                return match ($grade) {
-                    9 => Direction::courses9,
-                    10 => Direction::courses10,
-                    default => Direction::courses11
-                };
-
-            case 'external':
-                return Direction::external;
-
-            case 'school':
-                return match ($grade) {
-                    8 => Direction::school8,
-                    9 => Direction::school9,
-                    10 => Direction::school10,
-                    default => Direction::school11
-                };
-
-            default:
-                return Direction::coursesExtra;
-        }
+        return match ($request->input('form')) {
+            'courses' => match ($grade) {
+                9 => Direction::courses9,
+                10 => Direction::courses10,
+                default => Direction::courses11
+            },
+            'external' => Direction::external,
+            'school' => match ($grade) {
+                8 => Direction::school8,
+                9 => Direction::school9,
+                10 => Direction::school10,
+                default => Direction::school11
+            },
+            null => null, // форма обучения может быть не указана
+            default => Direction::coursesExtra,
+        };
     }
 
     /**

@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Pub;
 
 use App\Enums\Direction;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PubRequestRequest;
 use App\Models\Request as ClientRequest;
-use App\Utils\Phone;
 use App\Utils\VerificationService;
 use Illuminate\Http\Request;
 
@@ -24,19 +24,8 @@ class RequestsController extends Controller
      * "yandex_id": null
      * "google_id": null
      */
-    public function store(Request $request)
+    public function store(PubRequestRequest $request)
     {
-        $request->merge([
-            'phone' => Phone::autoCorrectFirstDigit($request->phone)
-        ]);
-
-        $request->validate([
-            'phone' => ['required', 'mobile']
-        ], [
-            'phone.required' => 'укажите ваш телефон',
-            'phone.mobile' => 'неверный формат номера',
-        ]);
-
         $clientRequest = new ClientRequest($request->all());
         $clientRequest->direction = Direction::fromIncomingRequest($request);
         $clientRequest->ip = $request->ip();

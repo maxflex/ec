@@ -26,18 +26,18 @@ class Phone
     }
 
     /**
-     * Если номер начинается с 8 – значит, меняем на 7
+     * Если номер начинается с 8 – значит, меняем на 7
      * Если номер НЕ начинается с 7 - значит, подставляем 7
      */
     public static function autoCorrectFirstDigit($phone): string
     {
         $phone = self::clean($phone);
 
-        if ($phone[0] === '8') {
+        if (@$phone[0] === '8') {
             $phone[0] = '7';
         }
 
-        if ($phone[0] !== '7') {
+        if (@$phone[0] !== '7') {
             $phone = '7' . $phone;
         }
 
