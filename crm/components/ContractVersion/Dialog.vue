@@ -231,8 +231,14 @@ const isPaymentSumValid = computed(() => {
   if (!item.value) {
     return false
   }
+  // в закрытых договорах нет графика платежей
+  if (!paymentSum.value) {
+    return true
+  }
   const contractSum = asInt(item.value.sum)
-  return contractSum > 0 && contractSum === lessonsMultipliedByPriceSum.value && lessonsMultipliedByPriceSum.value === paymentSum.value
+  return contractSum > 0
+    && contractSum === lessonsMultipliedByPriceSum.value
+    && lessonsMultipliedByPriceSum.value === paymentSum.value
 })
 
 const preSelected = computed(() => item.value.programs.map(e => e.program))
