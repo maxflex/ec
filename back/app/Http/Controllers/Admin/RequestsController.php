@@ -15,27 +15,16 @@ use Illuminate\Http\Request;
 class RequestsController extends Controller
 {
     protected $filters = [
-        'equals' => [
-            'status', 'direction', 'id'
-        ]
+        'equals' => ['status', 'direction', 'id'],
+        'client' => ['client_id']
     ];
 
     public function index(Request $request)
     {
-        // временно: заявки клиента по ассоциативному механизму
-        // было устно сказано добавить так
-        if ($request->has('client_id')) {
-            $client = Client::find($request->input('client_id'));
-            return paginate(
-                RequestListResource::collection($client->requests)
-            );
-        }
-
         $query = ClientRequest::query()
             ->with('phones', 'responsibleUser', 'client')
             ->withCount('comments')
             ->latest();
-
 
         $this->filter($request, $query);
         return $this->handleIndexRequest($request, $query, RequestListResource::class);
@@ -74,5 +63,13 @@ class RequestsController extends Controller
         $clientRequest = ClientRequest::findOrFail($id);
         $clientRequest->phones->each->delete();
         $clientRequest->delete();
+    }
+
+    // временно: заявки клиента по ассоциативному механизму
+    // было устно сказано добавить так
+    public function filterClient(&$query, $clientId)
+    {
+        $client = Client::find($clientId);
+        $query->whereIn('id', collect($client->requests)->pluck('id'));
     }
 }

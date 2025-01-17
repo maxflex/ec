@@ -38,6 +38,9 @@ class ContractController extends Controller
             'contract_id' => $contract->id,
         ]);
         $contractVersion->syncRelation($request->all(), 'programs');
+        foreach ($contractVersion->programs as $index => $program) {
+            $program->syncRelation($request->programs[$index], 'prices');
+        }
         $contractVersion->syncRelation($request->all(), 'payments');
         return new ContractResource($contract->fresh());
     }
