@@ -17,6 +17,18 @@ const emit = defineEmits<{
 }>()
 
 const isConductDisabled = item.status !== 'conducted'
+
+function deleteClientLesson() {
+  setTimeout(() => {
+    if (!confirm(`Удалить ученика из проводки?\nГР-${item.group.id} занятие от ${formatDate(item.date)} в ${formatTime(item.time)}?`)) {
+      return
+    }
+    useHttp(`client-lessons/${item.client_lesson!.id}`, {
+      method: 'delete',
+    })
+    item.client_lesson = undefined
+  }, 300)
+}
 </script>
 
 <template>
@@ -49,6 +61,9 @@ const isConductDisabled = item.status !== 'conducted'
           >
             проводка занятия
           </v-list-item>
+          <v-list-item v-if="item.client_lesson" class="text-error" @click="deleteClientLesson()">
+            удалить из проводки
+          </v-list-item>
         </v-list>
       </v-menu>
     </div>
@@ -79,7 +94,6 @@ const isConductDisabled = item.status !== 'conducted'
         {{ QuarterShortLabel[item.quarter] }}
       </span>
     </div>
-
     <div style="width: 100px" class="lesson-item__icons">
       <div>
         <v-icon v-if="item.topic" :icon="mdiBookOpenOutline" :class="{ 'opacity-3': !item.is_topic_verified }" />

@@ -4,8 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\{LessonConductResource, LessonListResource, LessonResource};
-use App\Models\Client;
-use App\Models\Lesson;
+use App\Models\{Client, Lesson};
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 

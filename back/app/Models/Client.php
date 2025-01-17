@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Contracts\CanLogin;
 use App\Contracts\HasTeeth;
 use App\Enums\Direction;
+use App\Enums\LessonStatus;
 use App\Traits\{HasName, HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable};
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\{Casts\Attribute,
@@ -95,6 +96,7 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
             'contractVersionProgram.contractVersion.contract',
             fn($q) => $q->where('client_id', $this->id)->where('year', $year)
         )->get();
+
         foreach ($clientLessons as $clientLesson) {
             $lesson = $clientLesson->lesson;
             // $lesson->load('clientLessons', fn ($q) => $q->whereId($clientLesson->id));
@@ -113,6 +115,10 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
                 foreach ($program->group->lessons as $lesson) {
                     // пропускаем фактически проведённые
                     if (isset($fact[$lesson->id])) {
+                        continue;
+                    }
+                    // пропускаем проведённые, где нет ученика
+                    if ($lesson->status === LessonStatus::conducted) {
                         continue;
                     }
                     $schedule->push($lesson);

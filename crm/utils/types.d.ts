@@ -437,6 +437,7 @@ declare global {
     quarter: Quarter | null
     has_files: boolean
     client_lesson?: {
+      id: number
       status: ClientLessonStatus
       scores: ClientLessonScore[]
       minutes_late: ?number

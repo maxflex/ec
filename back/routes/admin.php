@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\{AllLessonsController,
     CallController,
     ClientController,
     ClientGroupController,
+    ClientLessonController,
     ClientPaymentController,
     ClientReviewController,
     ClientTestController,
@@ -123,6 +124,8 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::get('menu-counts', MenuCountsController::class);
 
     Route::get('all-payments', AllPaymentsController::class);
+
+    Route::apiResource('client-lessons', ClientLessonController::class)->only('destroy');
 
     // TODO: временно
     Route::get('nalog-contracts', NalogContractController::class);
