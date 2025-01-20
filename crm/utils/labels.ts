@@ -639,10 +639,9 @@ export const DirectionLabel = {
 } as const
 
 export const ReportStatusLabel = {
-  new: 'новый',
+  draft: 'черновик',
   toCheck: 'на проверку',
   refused: 'возвращено',
-  moderated: 'промодерировано',
   published: 'опубликовано',
   empty: 'пустой отчет',
 } as const

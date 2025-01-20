@@ -4,6 +4,7 @@ import type { ContractVersionDialog } from '#build/components'
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
 const filters = ref<ContractVersionFilters>(loadFilters({
   year: currentAcademicYear(),
+  direction: [],
 }))
 
 const { items, indexPageData } = useIndex<ContractVersionListResource, ContractVersionFilters>(

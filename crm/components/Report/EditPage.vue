@@ -4,7 +4,7 @@ import { clone } from 'rambda'
 const modelDefaults: ReportResource = {
   id: newId(),
   year: currentAcademicYear(),
-  status: 'new',
+  status: 'draft',
   price: null,
   grade: null,
   client_lessons: [],
@@ -22,14 +22,13 @@ const deleting = ref(false)
 const saving = ref(false)
 
 const availableTeacherStatuses = [
-  'new',
+  'draft',
   'toCheck',
   'empty',
 ] as ReportStatus[]
 
 const availableAdminStatuses = [
   'refused',
-  'moderated',
   'published',
 ] as ReportStatus[]
 

@@ -89,7 +89,7 @@ const menu: Menu = [
     icon: mdiSendCircle,
     title: 'Сообщения',
     items: [
-      { title: 'Список сообщений', to: '/telegram-messages' },
+      { title: 'Отправленные', to: '/telegram-messages' },
       { title: 'Выбрать людей', to: '/people-selector' },
       { title: 'Проекты отправок', to: '/telegram-lists' },
     ],
@@ -100,7 +100,7 @@ const menu: Menu = [
     items: [
       { title: 'Все занятия', to: '/all-lessons', count: 'schedule' },
       { title: 'Темы', to: '/topics' },
-      { title: 'Кабинеты', to: '/cabinets' },
+      // { title: 'Кабинеты', to: '/cabinets' },
       { title: 'Свободные кабинеты', to: '/cabinets/free' },
     ],
   },

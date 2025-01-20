@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Direction;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ContractVersionListResource;
 use App\Http\Resources\ContractVersionResource;
@@ -13,6 +14,7 @@ class ContractVersionController extends Controller
     protected $filters = [
         'equals' => ['is_active'],
         'contract' => ['year', 'company'],
+        'direction' => ['direction'],
     ];
 
     public function index(Request $request)
@@ -91,4 +93,22 @@ class ContractVersionController extends Controller
     {
         $query->whereHas('contract', fn ($q) => $q->where($field, $value));
     }
+
+    protected function filterDirection(&$query, array $values)
+    {
+        if (count($values) === 0) {
+            return;
+        }
+
+        $programs = collect();
+        foreach ($values as $directionString) {
+            $programs = $programs->concat(
+                Direction::from($directionString)->toPrograms()
+            );
+        }
+        $programs = $programs->unique();
+
+        $query->whereHas('programs', fn($q) => $q->whereIn('program', $programs));
+    }
 }
+

@@ -13,7 +13,6 @@ class MenuCountsController extends Controller
         return [
             'schedule' => Lesson::query()
                 ->whereHas('group', fn($q) => $q->where('year', current_academic_year()))
-                ->where('date', '<', now()->format('Y-m-d')) // сегодня не учитываем
                 ->needConduct()
                 ->exists() ? 1 : 0,
         ];

@@ -30,6 +30,7 @@ const menu: Menu = [
     icon: mdiFileDocumentEditOutline,
     title: 'Отчёты',
     to: '/reports',
+    count: 'reports',
   },
   {
     icon: mdiStarBoxOutline,

@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class ContractController extends Controller
 {
     protected $filters = [
-        'equals' => ['client_id']
+        'equals' => ['client_id'],
     ];
 
     public function index(Request $request)

@@ -29,4 +29,12 @@ const model = defineModel<ContractVersionFilters>({ required: true })
       label="Версия"
     />
   </div>
+  <div>
+    <UiMultipleSelect
+      v-model="model.direction"
+      :items="selectItems(DirectionLabel)"
+      label="Направления"
+      density="comfortable"
+    />
+  </div>
 </template>

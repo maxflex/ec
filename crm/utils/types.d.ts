@@ -129,6 +129,7 @@ declare global {
 
   interface MenuCounts {
     schedule: number
+    reports: number
   }
 
   interface MenuItem {

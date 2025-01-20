@@ -15,8 +15,15 @@ const { items } = defineProps<{
           {{ formatPhone(m.number) }}
         </span>
       </div>
-      <div style="flex: 1" class="text-truncate">
-        {{ m.text }}
+      <div style="flex: 1" class="text-truncate relative">
+        <v-tooltip location="bottom start" width="500">
+          <template #activator="{ props }">
+            <span v-bind="props" class="cursor-default relative">
+              {{ m.text }}
+            </span>
+          </template>
+          <span style="white-space: pre-line" v-html="m.text" />
+        </v-tooltip>
       </div>
       <div v-if="m.list_id" style="width: 100px">
         <RouterLink :to="{ name: 'telegram-lists-id', params: { id: m.list_id } }">

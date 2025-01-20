@@ -158,8 +158,10 @@ class Lesson extends Model
 
     public function scopeNeedConduct($query)
     {
-        $query->where('status', LessonStatus::planned)->whereRaw("
-            TIMESTAMP(`date`, `time`) < NOW() - INTERVAL 1 HOUR
-        ");
+        $query
+            ->where('status', LessonStatus::planned)
+            ->whereRaw("TIMESTAMP(`date`, `time`) < NOW() - INTERVAL 1 HOUR")
+            // смотрим начиная со вчерашнего дня
+            ->where('date', '<', now()->format('Y-m-d'));
     }
 }

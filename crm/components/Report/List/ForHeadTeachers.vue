@@ -52,7 +52,7 @@ function getFillColor(r: RealReport) {
           style="width: 150px"
           class="text-center d-flex ga-5"
         >
-          {{ ReportStatusLabel[r.status] }}
+          <ReportStatus :status="r.status" />
         </div>
 
         <div style="width: 100px" class="pr-5">

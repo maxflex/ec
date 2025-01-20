@@ -92,6 +92,7 @@ declare global {
     year: Year
     company?: Company
     is_active?: number
+    direction: Direction[]
   }
 
   interface UserFilters {

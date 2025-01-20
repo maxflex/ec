@@ -47,7 +47,7 @@ function getFillColor(r: RealReport) {
           занятий: {{ r.lessons_count }}
         </div>
         <div style="flex: 1">
-          {{ ReportStatusLabel[r.status] }}
+          <ReportStatus :status="r.status" />
         </div>
         <div style="width: 50px">
           <span v-if="r.price">
