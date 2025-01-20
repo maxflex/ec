@@ -23,7 +23,6 @@ class ContractVersionResource extends JsonResource
             'user' => new PersonResource($this->user),
             'contract' => extract_fields($this->contract, [
                 'year', 'company',
-                'is_marked'
             ])
         ]);
     }

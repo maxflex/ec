@@ -127,9 +127,6 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::apiResource('client-lessons', ClientLessonController::class)->only('destroy');
 
-    // TODO: временно
-    Route::get('nalog-contracts', NalogContractController::class);
-
     Route::get('all-lessons', AllLessonsController::class);
    
     Route::apiResources([
