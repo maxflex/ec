@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\{AllLessonsController,
     AllPaymentsController,
     BalanceController,
+    CabinetsController,
     CallController,
     ClientController,
     ClientGroupController,
@@ -18,7 +19,6 @@ use App\Http\Controllers\Admin\{AllLessonsController,
     ErrorController,
     EventParticipantController,
     ExamScoreController,
-    FreeCabinetController,
     GradeController,
     GroupActController,
     GroupController,
@@ -110,7 +110,10 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::get('people-selector', PeopleSelectorController::class);
 
-    Route::get('free-cabinets', FreeCabinetController::class);
+    Route::prefix('cabinets')->controller(CabinetsController::class)->group(function () {
+        Route::get('free', 'free');
+        Route::get('/', 'index');
+    });
 
     Route::get('scholarship-scores', ScholarshipScoreController::class);
 

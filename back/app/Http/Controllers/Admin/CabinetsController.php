@@ -7,9 +7,12 @@ use App\Enums\LessonStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Lesson;
 
-class FreeCabinetController extends Controller
+class CabinetsController extends Controller
 {
-    public function __invoke()
+    /**
+     * Свободные кабинеты
+     */
+    public function free()
     {
         $date = now()->format('Y-m-d');
         $time = now()->format('H:i:s');

@@ -5,7 +5,7 @@ interface FreeCabinet {
   is_busy: boolean
 }
 
-const { indexPageData, items } = useIndex<FreeCabinet>(`free-cabinets`)
+const { indexPageData, items } = useIndex<FreeCabinet>(`cabinets/free`)
 </script>
 
 <template>

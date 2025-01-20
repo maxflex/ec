@@ -4,7 +4,6 @@ import {
   mdiAccountGroup,
   mdiCashMultiple,
   mdiFileDocumentEditOutline,
-  mdiFinance,
   mdiHumanMaleBoard,
   mdiInbox,
   mdiLockOpenOutline,
@@ -101,7 +100,8 @@ const menu: Menu = [
     items: [
       { title: 'Все занятия', to: '/all-lessons', count: 'schedule' },
       { title: 'Темы', to: '/topics' },
-      { title: 'Свободные кабинеты', to: '/free-cabinets' },
+      { title: 'Кабинеты', to: '/cabinets' },
+      { title: 'Свободные кабинеты', to: '/cabinets/free' },
     ],
   },
   {
@@ -115,14 +115,10 @@ const menu: Menu = [
     to: '/scholarship-scores',
   },
   {
-    icon: mdiFinance,
-    title: 'Итоги',
-    to: '/stats',
-  },
-  {
     icon: mdiLockOpenOutline,
     title: 'Административное',
     items: [
+      { title: 'Итоги', to: '/stats' },
       { title: 'Пользователи', to: '/users' },
       { title: 'Праздники', to: '/vacations' },
       { title: 'Экзамены', to: '/exam-dates' },
