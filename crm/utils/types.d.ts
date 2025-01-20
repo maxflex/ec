@@ -1106,7 +1106,7 @@ declare global {
 
   interface JournalResource {
     id: number
-    status: ClientLessonStatus
+    status: ?ClientLessonStatus
     minutes_late: number
     scores: ClientLessonScore[]
     program: Program

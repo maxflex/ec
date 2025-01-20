@@ -13,7 +13,10 @@ const { items } = defineProps<{
             {{ formatDate(item.lesson.date) }}
           </td>
           <td width="150">
-            <span :class="{ 'text-error': item.status === 'absent' }">
+            <span v-if="!item.status" class="text-gray">
+              до начала обучения
+            </span>
+            <span v-else :class="{ 'text-error': item.status === 'absent' }">
               {{ ClientLessonStatusLabel[item.status] }}
             </span>
             <template v-if="item.minutes_late">
@@ -111,6 +114,7 @@ const { items } = defineProps<{
     display: flex;
     flex-direction: column;
     gap: 16px;
+    word-break: break-word;
     & > div {
       display: flex;
       flex-direction: column;

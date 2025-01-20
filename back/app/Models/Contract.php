@@ -7,7 +7,6 @@ use App\Traits\HasBalance;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Contract extends Model
 {
@@ -33,17 +32,18 @@ class Contract extends Model
         return $this->hasMany(ContractVersion::class)->oldest();
     }
 
-    public function groups(): HasManyThrough
-    {
-        return $this->hasManyThrough(
-            Group::class,
-            ClientGroup::class,
-            'contract_id',
-            'id',
-            'id',
-            'group_id',
-        );
-    }
+// TODO: вроде не используется
+//    public function groups(): HasManyThrough
+//    {
+//        return $this->hasManyThrough(
+//            Group::class,
+//            ClientGroup::class,
+//            'contract_id',
+//            'id',
+//            'id',
+//            'group_id',
+//        );
+//    }
 
     public function payments(): HasMany
     {

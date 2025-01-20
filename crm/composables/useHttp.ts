@@ -15,7 +15,9 @@ export const useHttp: useFetchType = (path: string, options = {}) => {
     }
   }
 
-  const headers: any = {}
+  const headers: any = {
+    Accept: 'application/json',
+  }
 
   if (token) {
     headers.Authorization = `Bearer ${token}`
