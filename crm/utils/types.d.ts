@@ -276,6 +276,8 @@ declare global {
     lessons_planned: number | string
     prices: ContractVersionProgramPrice[]
     contract_version_id: number
+    lessons_conducted: number
+    lessons_to_be_conducted: number
   }
 
   interface ContractVersionPaymentResource {

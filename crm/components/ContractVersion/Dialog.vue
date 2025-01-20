@@ -123,6 +123,8 @@ function onProgramsSaved(programs: Program[]) {
           price: '',
         },
       ],
+      lessons_conducted: 0,
+      lessons_to_be_conducted: 0,
       lessons_planned: '',
     })
   }
@@ -204,6 +206,9 @@ const lessonsPlannedSum = computed(() => {
   return sum
 })
 
+const lessonsConductedSum = computed(() => item.value.programs.reduce((carry, p) => carry + p.lessons_conducted, 0))
+const lessonsToBeConductedSum = computed(() => item.value.programs.reduce((carry, p) => carry + p.lessons_to_be_conducted, 0))
+
 const lessonsSum = computed(() => {
   let sum = 0
   for (const p of item.value.programs) {
@@ -254,6 +259,44 @@ function addPrices(p: ContractVersionProgramResource) {
     pricesInput.value[pricesInput.value.length - 1].focus()
   })
 }
+
+interface LessonsConducted {
+  [index: number]: { // program_id
+    [index: number]: { // price_id
+      lessons_conducted: number
+      lessons_to_be_conducted: number
+    }
+  }
+}
+
+const lessonsConducted = computed<LessonsConducted>(() => {
+  const result: LessonsConducted = {}
+  for (const program of item.value.programs) {
+    result[program.id] = {}
+    let lessonsConductedLeft = program.lessons_conducted
+    let lessonsToBeConductedLeft = program.lessons_to_be_conducted
+
+    for (const price of program.prices) {
+      const lessons = asInt(price.lessons)
+      const lessonsConducted = (lessonsConductedLeft - lessons) < 0 ? lessonsConductedLeft : lessons
+      let lessonsToBeConducted = 0
+
+      if (lessonsConducted < lessons && lessonsToBeConductedLeft) {
+        const x = lessons - lessonsConducted
+        lessonsToBeConducted = Math.min(x, lessonsToBeConductedLeft)
+        lessonsToBeConductedLeft -= lessonsToBeConducted
+      }
+
+      result[program.id][price.id] = {
+        lessons_conducted: lessonsConducted,
+        lessons_to_be_conducted: lessonsToBeConducted,
+      }
+
+      lessonsConductedLeft -= lessons
+    }
+  }
+  return result
+})
 
 function removePrice(p: ContractVersionProgramResource) {
   const index = item.value.programs.findIndex(e => e.id === p.id)
@@ -381,6 +424,9 @@ defineExpose({ edit, newContract, newVersion })
                   занятий
                 </th>
                 <th width="117">
+                  проведено
+                </th>
+                <th width="117">
                   цена
                 </th>
                 <th width="48" />
@@ -409,6 +455,16 @@ defineExpose({ edit, newContract, newVersion })
                       hide-spin-buttons
                       density="compact"
                     />
+                  </div>
+                </td>
+                <td>
+                  <div v-for="price in p.prices" :key="price.id">
+                    <span v-if="lessonsConducted[p.id][price.id].lessons_conducted > 0">
+                      {{ lessonsConducted[p.id][price.id].lessons_conducted }}
+                    </span>
+                    <span v-if="lessonsConducted[p.id][price.id].lessons_to_be_conducted" class="text-gray pl-1">
+                      + {{ lessonsConducted[p.id][price.id].lessons_to_be_conducted }}
+                    </span>
                   </div>
                 </td>
                 <td>
@@ -460,6 +516,12 @@ defineExpose({ edit, newContract, newVersion })
                 </td>
                 <td class="cursor-default">
                   {{ lessonsSum || '' }}
+                </td>
+                <td class="cursor-default">
+                  {{ lessonsConductedSum || '' }}
+                  <span v-if="lessonsToBeConductedSum" class="mr-1">
+                    + {{ lessonsToBeConductedSum }}
+                  </span>
                 </td>
                 <td class="cursor-default">
                   {{ lessonsMultipliedByPriceSum || '' }}
@@ -535,10 +597,6 @@ defineExpose({ edit, newContract, newVersion })
             </tbody>
           </table>
         </div>
-
-        <div class="dialog-section">
-          <v-checkbox v-model="item.contract.is_marked" label="Пометить договор (временно)" />
-        </div>
       </div>
     </div>
   </v-dialog>
@@ -572,11 +630,22 @@ defineExpose({ edit, newContract, newVersion })
         td {
           vertical-align: top;
           &:nth-child(3),
-          &:nth-child(4) {
+          &:nth-child(4),
+          &:nth-child(5) {
             & > div {
               &:not(:last-child) {
                 border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
               }
+            }
+          }
+          &:nth-child(4) {
+            & > div {
+              cursor: default;
+              display: flex;
+              height: 51px;
+              align-items: center;
+              padding-left: 20px;
+              color: rgb(var(--v-theme-gray));
             }
           }
         }

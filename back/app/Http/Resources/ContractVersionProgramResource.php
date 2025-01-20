@@ -17,7 +17,8 @@ class ContractVersionProgramResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'program', 'lessons_planned', 'prices'
+            'program', 'lessons_planned', 'prices',
+            'lessons_conducted', 'lessons_to_be_conducted'
         ]);
     }
 }

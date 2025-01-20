@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\LessonStatus;
 use App\Enums\Program;
 use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Model;
@@ -67,6 +68,33 @@ class ContractVersionProgram extends Model
     public function getIsClosedAttribute(): bool
     {
         return $this->clientLessons()->count() >= $this->prices()->sum('lessons');
+    }
+
+    /**
+     * Сколько занятий по программе прошло
+     */
+    public function getLessonsConductedAttribute(): int
+    {
+        return $this->clientLessons()->count();
+    }
+
+    /**
+     * Сколько занятий по программе прошло, но ещё препод не отметил
+     * (сколько занятий в статусе planned сегодня и ранее в группе,
+     * в которой он находится сейчас по текущей программе)
+     */
+    public function getLessonsToBeConductedAttribute(): int
+    {
+        $group = $this->group;
+
+        if (!$group) {
+            return 0;
+        }
+
+        return $group->lessons()
+            ->where('status', LessonStatus::planned)
+            ->where('date', '<=', now()->format('Y-m-d'))
+            ->count();
     }
 
     /**
