@@ -517,7 +517,7 @@ defineExpose({ edit, newContract, newVersion })
                 <td class="cursor-default">
                   {{ lessonsSum || '' }}
                 </td>
-                <td class="cursor-default">
+                <td class="cursor-default text-gray">
                   {{ lessonsConductedSum || '' }}
                   <span v-if="lessonsToBeConductedSum" class="mr-1">
                     + {{ lessonsToBeConductedSum }}
@@ -644,7 +644,7 @@ defineExpose({ edit, newContract, newVersion })
               display: flex;
               height: 51px;
               align-items: center;
-              padding-left: 20px;
+              padding-left: 16px;
               color: rgb(var(--v-theme-gray));
             }
           }
