@@ -117,7 +117,7 @@ class Report extends Model
         $maxDates = DB::table('reports', 'r')
             ->where('year', $year)
             ->groupByRaw($groupBy)
-            ->selectRaw("$groupBy, MAX(DATE(created_at)) as max_date");
+            ->selectRaw("$groupBy, MAX(DATE(IFNULL(to_check_at, created_at))) as max_date");
 
         $courses = DB::table('lessons', 'l')
             ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
@@ -142,7 +142,11 @@ class Report extends Model
                 NULL as `id`,
                 NULL as `status`,
                 l.teacher_id, c.client_id, g.year, g.program,
-                COUNT(*) as lessons_count
+                COUNT(*) as lessons_count,
+                NULL as sum_1,
+                NULL as sum_2,
+                NULL as sum_3,
+                NULL as sum_4
             ")
             ->havingRaw(
                 "lessons_count >= ? AND SUM(IF(cl.status <> 'late', 1, 0)) >= ?",
@@ -153,6 +157,12 @@ class Report extends Model
         // сколько занятий должно пройти до требования отчета,
         // где ученик в каком-то варианте присутствовал (был/дист/опоздал)
         $lessonsNeeded = 4;
+        $periods = [
+            ["$year-10-15", "$year-10-25"],
+            ["$year-12-15", "$year-12-25"],
+            ["$nextYear-02-15", "$nextYear-02-25"],
+            ["$nextYear-04-15", "$nextYear-04-25"],
+        ];
         $schoolAndExternal = DB::table('lessons', 'l')
             ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
             ->join('contract_version_programs as cvp', 'cvp.id', '=', 'cl.contract_version_program_id')
@@ -171,24 +181,32 @@ class Report extends Model
             ->where('l.status', LessonStatus::conducted->value)
             ->whereRaw('IF(ISNULL(md.max_date), TRUE, l.date > md.max_date)')
             ->whereIn('g.program', Program::getSchoolAndExternal())
-            ->groupByRaw('l.teacher_id, c.client_id, g.year, g.program')
             ->selectRaw("
                 NULL as `id`, 
                 NULL as `status`,
                 l.teacher_id, c.client_id, g.year, g.program,
-                COUNT(*) as lessons_count
-            ")
-            ->havingRaw("
-                SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
-                OR SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
-                OR SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
-                OR SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
+                COUNT(*) as lessons_count,
+                SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ? AND NOT (md.max_date BETWEEN ? AND ?), 1, 0)) as sum_1,
+                SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ? AND NOT (md.max_date BETWEEN ? AND ?), 1, 0)) as sum_2,
+                SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ? AND NOT (md.max_date BETWEEN ? AND ?), 1, 0)) as sum_3,
+                SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ? AND NOT (md.max_date BETWEEN ? AND ?), 1, 0)) as sum_4
             ", [
-                "$year-10-15", "$year-10-25",
-                "$year-12-15", "$year-12-25",
-                "$nextYear-02-15", "$nextYear-02-25",
-                "$nextYear-04-15", "$nextYear-04-25",
-            ]);
+                $periods[0][0], $periods[0][1],
+                $periods[0][0], $periods[0][1],
+                $periods[1][0], $periods[1][1],
+                $periods[1][0], $periods[1][1],
+                $periods[2][0], $periods[2][1],
+                $periods[2][0], $periods[2][1],
+                $periods[3][0], $periods[3][1],
+                $periods[3][0], $periods[3][1],
+            ])
+            ->groupByRaw('l.teacher_id, c.client_id, g.year, g.program')
+            ->havingRaw("
+                sum_1 >= $lessonsNeeded
+                OR sum_2 >= $lessonsNeeded
+                OR sum_3 >= $lessonsNeeded
+                OR sum_4 >= $lessonsNeeded
+            ");
 
         $required = DB::table('courses')
             ->withExpression('md', $maxDates)
@@ -207,7 +225,11 @@ class Report extends Model
             client_id,
             year,
             program,
-            NULL as lessons_count
+            NULL as lessons_count,
+            NULL as sum_1,
+            NULL as sum_2,
+            NULL as sum_3,
+            NULL as sum_4
         ");
     }
 }
