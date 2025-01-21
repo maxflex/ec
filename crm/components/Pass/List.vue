@@ -42,9 +42,9 @@ function onPassDeleted(pass: PassResource) {
           {{ PassTypeLabel[item.type] }}
         </td>
         <td v-if="showRequest" width="160">
-          <span v-if="item.request_id">
+          <RouterLink v-if="item.request_id" :to="{ name: 'requests-id', params: { id: item.request_id } }">
             заявка {{ item.request_id }}
-          </span>
+          </RouterLink>
         </td>
         <td class="flex-1">
           <span v-if="item.used_at">

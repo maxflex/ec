@@ -61,7 +61,7 @@ const { items, indexPageData } = useIndex<PassStats, Filters>(
             Имя
           </th>
           <th width="300">
-            Тип
+            Кто проходил
           </th>
           <th>
             Проходов
