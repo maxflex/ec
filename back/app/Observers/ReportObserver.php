@@ -9,15 +9,26 @@ use App\Models\TelegramMessage;
 
 class ReportObserver
 {
+    public function saving(Report $report): void
+    {
+        if ($report->isDirty('status')) {
+            if ($report->status == ReportStatus::toCheck) {
+                $report->to_check_at = now();
+            }
+        }
+    }
+
     public function updated(Report $report): void
     {
-        if ($report->isDirty('status') && $report->status === ReportStatus::published) {
-            TelegramMessage::sendTemplate(
-                TelegramTemplate::reportPublished,
-                $report->client->parent,
-                ['report' => $report],
-                ['id' => $report->id]
-            );
+        if ($report->isDirty('status')) {
+            if ($report->status == ReportStatus::published) {
+                TelegramMessage::sendTemplate(
+                    TelegramTemplate::reportPublished,
+                    $report->client->parent,
+                    ['report' => $report],
+                    ['id' => $report->id]
+                );
+            }
         }
     }
 }

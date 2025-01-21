@@ -8,8 +8,8 @@ use Illuminate\Support\Carbon;
 
 class Teeth
 {
-    const MIN_SECONDS = 37200; // SEC_TO_TIME = 10:20
-    const MAX_SECONDS = 74400; // SEC_TO_TIME = 20:40
+    const MIN_SECONDS = 33000; // TIME_TO_SEC("09:10")
+    const MAX_SECONDS = 74400; // TIME_TO_SEC("20:40")
 
     public static function get(Builder $lessonsQuery, int $year): object
     {

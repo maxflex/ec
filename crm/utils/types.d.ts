@@ -682,7 +682,7 @@ declare global {
     teacher: PersonResource
     client: PersonResource
     program: Program
-    created_at: string
+    to_check_at?: string
     lessons_count: number
     price: ?number
     grade: ?LessonScore

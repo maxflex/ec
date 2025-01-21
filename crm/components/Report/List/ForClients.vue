@@ -22,7 +22,9 @@ const { items } = defineProps<{
         </span>
       </div>
       <div style="width: 100px; flex: initial" class="text-gray">
-        {{ formatTextDate(r.created_at, true) }}
+        <span v-if="r.to_check_at">
+          {{ formatTextDate(r.to_check_at, true) }}
+        </span>
       </div>
       <div class="text-right">
         <RouterLink :to="{ name: 'reports-id', params: { id: r.id } }">

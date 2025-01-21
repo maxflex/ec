@@ -5,7 +5,7 @@ const props = defineProps<{
 const { items } = toRefs(props)
 
 function isRealReport(r: ReportListResource): r is RealReport {
-  return 'created_at' in r
+  return 'status' in r
 }
 
 function getFillColor(r: RealReport) {
@@ -68,7 +68,9 @@ function getFillColor(r: RealReport) {
         </div>
 
         <div style="width: 100px; flex: 1" class="text-gray">
-          {{ formatTextDate(r.created_at, true) }}
+          <span v-if="r.to_check_at">
+            {{ formatTextDate(r.to_check_at, true) }}
+          </span>
         </div>
         <div>
           <RouterLink :to="{ name: 'reports-id', params: { id: r.id } }">
