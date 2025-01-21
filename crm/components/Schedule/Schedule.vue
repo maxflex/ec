@@ -71,6 +71,12 @@ const lessonIds = computed((): number[] => {
   }
   return result
 })
+
+const filteredLessons = computed(() => filters.value.program
+  ? lessons.value.filter(l => l.group.program === filters.value.program)
+  : lessons.value,
+)
+
 const dates = computed(() => {
   // Define the start and end months for the academic year
   const startMonth = 8 // September (0-indexed)
@@ -88,7 +94,7 @@ const dates = computed(() => {
     const dateString = format(d, 'yyyy-MM-dd')
     if (filters.value.hideEmptyDates) {
       if (
-        lessons.value.some(e => e.date === dateString)
+        filteredLessons.value.some(e => e.date === dateString)
         || events.value.some(e => e.date === dateString)
       ) {
         result.push(dateString)
@@ -104,11 +110,8 @@ const dates = computed(() => {
 const itemsByDate = computed((): {
   [index: string]: Array<LessonListResource | EventListResource>
 } => {
-  const filteredLessons = filters.value.program
-    ? lessons.value.filter(l => l.group.program === filters.value.program)
-    : lessons.value
   return groupBy(x => x.date, [
-    ...filteredLessons,
+    ...filteredLessons.value,
     ...events.value,
   ])
 })
