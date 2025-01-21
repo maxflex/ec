@@ -105,6 +105,7 @@ class Report extends Model
 
     /**
      * Запрос получает все "требуется создать"
+     * https://doc.ege-centr.ru/tasks/834
      */
     public static function required()
     {
@@ -149,6 +150,9 @@ class Report extends Model
             );
 
 
+        // сколько занятий должно пройти до требования отчета,
+        // где ученик в каком-то варианте присутствовал (был/дист/опоздал)
+        $lessonsNeeded = 4;
         $schoolAndExternal = DB::table('lessons', 'l')
             ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
             ->join('contract_version_programs as cvp', 'cvp.id', '=', 'cl.contract_version_program_id')
@@ -175,15 +179,15 @@ class Report extends Model
                 COUNT(*) as lessons_count
             ")
             ->havingRaw("
-                SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= ?
-                OR SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= ?
-                OR SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= ?
-                OR SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= ?
+                SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
+                OR SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
+                OR SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
+                OR SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
             ", [
-                "$year-10-15", "$year-10-31", 4,
-                "$year-12-15", "$year-12-31", 4,
-                "$nextYear-02-15", "$nextYear-02-29", 4,
-                "$nextYear-04-15", "$nextYear-04-30", 4
+                "$year-10-15", "$year-10-25",
+                "$year-12-15", "$year-12-25",
+                "$nextYear-02-15", "$nextYear-02-25",
+                "$nextYear-04-15", "$nextYear-04-25",
             ]);
 
         $required = DB::table('courses')
