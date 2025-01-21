@@ -6,9 +6,34 @@ use App\Enums\Cabinet;
 use App\Enums\LessonStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Lesson;
+use App\Utils\Teeth;
+use Illuminate\Http\Request;
 
 class CabinetsController extends Controller
 {
+    public function index(Request $request)
+    {
+        $request->validate([
+            'year' => ['required', 'numeric', 'min:2015']
+        ]);
+
+        $year = intval($request->input('year'));
+
+        $result = [];
+        foreach (Cabinet::cases() as $cabinet) {
+            if (str($cabinet->value)->startsWith('tur')) {
+                continue;
+            }
+            $query = Lesson::query()->where('cabinet', $cabinet);
+            $result[] = [
+                'cabinet' => $cabinet,
+                'teeth' => Teeth::get($query, $year)
+            ];
+        }
+
+        return paginate($result);
+    }
+
     /**
      * Свободные кабинеты
      */

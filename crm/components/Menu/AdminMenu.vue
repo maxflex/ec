@@ -2,17 +2,16 @@
 import {
   mdiAccount,
   mdiAccountGroup,
+  mdiCalendar,
   mdiCashMultiple,
   mdiFileDocumentEditOutline,
   mdiHumanMaleBoard,
   mdiInbox,
   mdiLockOpenOutline,
   mdiLogout,
-  mdiNumeric5CircleOutline,
   mdiSeatPassenger,
   mdiSendCircle,
   mdiStarBoxOutline,
-  mdiTrophy,
 } from '@mdi/js'
 import { missedCount, openCallApp } from '~/components/CallApp'
 
@@ -25,14 +24,6 @@ const menu: Menu = [
     to: '/requests',
   },
   {
-    icon: mdiAccountGroup,
-    title: 'Группы',
-    items: [
-      { title: 'Все группы', to: '/groups' },
-      { title: 'Болота', to: '/swamps' },
-    ],
-  },
-  {
     icon: mdiAccount,
     title: 'Клиенты',
     items: [
@@ -42,20 +33,29 @@ const menu: Menu = [
     ],
   },
   {
+    icon: mdiAccountGroup,
+    title: 'Группы',
+    items: [
+      { title: 'Все группы', to: '/groups' },
+      { title: 'Болота', to: '/swamps' },
+    ],
+  },
+  {
+    icon: mdiCalendar,
+    title: 'Занятия',
+    items: [
+      { title: 'Все занятия', to: '/all-lessons', count: 'schedule' },
+      { title: 'Темы', to: '/topics' },
+      { title: 'Итоговые оценки', to: '/grades' },
+      { title: 'Стипендия', to: '/scholarship-scores' },
+    ],
+  },
+  {
     icon: mdiHumanMaleBoard,
     title: 'Преподаватели',
     items: [
       { title: 'Все преподаватели', to: '/teachers' },
       { title: 'Инструкции', to: '/instructions' },
-    ],
-  },
-  {
-    icon: '$pass',
-    title: 'Пропуски',
-    items: [
-      { title: 'Разовые', to: '/passes' },
-      { title: 'Постоянные', to: '/passes/permanent' },
-      { title: 'Статистика', to: '/passes/stats' },
     ],
   },
   {
@@ -96,23 +96,20 @@ const menu: Menu = [
   },
   {
     icon: mdiSeatPassenger,
-    title: 'Занятия',
+    title: 'Кабинеты',
     items: [
-      { title: 'Все занятия', to: '/all-lessons', count: 'schedule' },
-      { title: 'Темы', to: '/topics' },
-      // { title: 'Кабинеты', to: '/cabinets' },
+      { title: 'Расписание', to: '/cabinets' },
       { title: 'Свободные кабинеты', to: '/cabinets/free' },
     ],
   },
   {
-    icon: mdiNumeric5CircleOutline,
-    title: 'Итоговые оценки',
-    to: '/grades',
-  },
-  {
-    icon: mdiTrophy,
-    title: 'Стипендия',
-    to: '/scholarship-scores',
+    icon: '$pass',
+    title: 'Пропуски',
+    items: [
+      { title: 'Разовые', to: '/passes' },
+      { title: 'Постоянные', to: '/passes/permanent' },
+      { title: 'Статистика', to: '/passes/stats' },
+    ],
   },
   {
     icon: mdiLockOpenOutline,

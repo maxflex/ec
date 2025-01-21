@@ -90,6 +90,6 @@ class TransferReports extends Command
         }
         return $r->is_not_moderated
             ? ReportStatus::refused
-            : ReportStatus::new;
+            : ReportStatus::draft;
     }
 }
