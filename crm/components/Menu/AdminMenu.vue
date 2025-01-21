@@ -44,7 +44,7 @@ const menu: Menu = [
     icon: mdiCalendar,
     title: 'Занятия',
     items: [
-      { title: 'Все занятия', to: '/all-lessons', count: 'schedule' },
+      { title: 'Все занятия', to: '/all-lessons' },
       { title: 'Темы', to: '/topics' },
       { title: 'Итоговые оценки', to: '/grades' },
       { title: 'Стипендия', to: '/scholarship-scores' },

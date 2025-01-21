@@ -21,7 +21,7 @@ function scrollBottom() {
   nextTick(() => {
     console.log(wrapper.value)
     wrapper.value?.scrollTo({ top: 99999, behavior: noScroll.value ? 'instant' : 'smooth' })
-    input.value.focus()
+    input.value?.focus()
   })
 }
 

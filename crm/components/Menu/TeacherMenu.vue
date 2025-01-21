@@ -24,7 +24,6 @@ const menu: Menu = [
     icon: mdiCalendar,
     title: 'Расписание',
     to: '/schedule',
-    count: 'schedule',
   },
   {
     icon: mdiFileDocumentEditOutline,

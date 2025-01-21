@@ -128,7 +128,6 @@ declare global {
   // type Time = `${number}${number}:${number}${number}:${number}${number}`
 
   interface MenuCounts {
-    schedule: number
     reports: number
   }
 
