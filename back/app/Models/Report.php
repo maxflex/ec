@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\{LessonStatus, Program, ReportStatus, TelegramTemplate};
+use App\Enums\{Direction, LessonStatus, Program, ReportStatus, TelegramTemplate};
 use App\Observers\ReportObserver;
 use Illuminate\Database\Eloquent\{Attributes\ObservedBy, Builder, Model, Relations\BelongsTo};
 use Illuminate\Support\Collection;
@@ -119,6 +119,28 @@ class Report extends Model
             ->groupByRaw($groupBy)
             ->selectRaw("$groupBy, MAX(DATE(IFNULL(to_check_at, created_at))) as max_date");
 
+        $programsCourses = [];
+        $programsSchoolAndExternal = [];
+        foreach (Program::cases() as $program) {
+            switch ($program->getDirection()) {
+                case Direction::courses9:
+                case Direction::courses10:
+                case Direction::courses11:
+                    $programsCourses[] = $program;
+                    break;
+
+                case Direction::school8:
+                case Direction::school9:
+                case Direction::school10:
+                case Direction::school11:
+                case Direction::external:
+                    $programsSchoolAndExternal[] = $program;
+                    break;
+
+                default:
+            }
+        }
+
         $courses = DB::table('lessons', 'l')
             ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
             ->join('contract_version_programs as cvp', 'cvp.id', '=', 'cl.contract_version_program_id')
@@ -136,7 +158,7 @@ class Report extends Model
             // на всякий случай, но в любом случае client_lessons должны соответствовать только проведённым
             ->where('l.status', LessonStatus::conducted->value)
             ->whereRaw('IF(ISNULL(md.max_date), TRUE, l.date > md.max_date)')
-            ->whereIn('g.program', Program::getCourses())
+            ->whereIn('g.program', $programsCourses)
             ->groupByRaw('l.teacher_id, c.client_id, g.year, g.program')
             ->selectRaw("
                 NULL as `id`,
@@ -180,7 +202,7 @@ class Report extends Model
             // на всякий случай, но в любом случае client_lessons должны соответствовать только проведённым
             ->where('l.status', LessonStatus::conducted->value)
             ->whereRaw('IF(ISNULL(md.max_date), TRUE, l.date > md.max_date)')
-            ->whereIn('g.program', Program::getSchoolAndExternal())
+            ->whereIn('g.program', $programsSchoolAndExternal)
             ->selectRaw("
                 NULL as `id`, 
                 NULL as `status`,
