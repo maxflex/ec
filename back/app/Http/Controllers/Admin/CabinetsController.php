@@ -10,7 +10,7 @@ use App\Utils\Teeth;
 
 class CabinetsController extends Controller
 {
-    public function index()
+    public function __invoke()
     {
         $result = [];
         foreach (Cabinet::cases() as $cabinet) {
@@ -31,7 +31,7 @@ class CabinetsController extends Controller
     /**
      * Свободные кабинеты
      */
-    public function getFreeCabinetData(Cabinet $cabinet)
+    private function getFreeCabinetData(Cabinet $cabinet)
     {
         $date = now()->format('Y-m-d');
         $time = now()->format('H:i:s');
