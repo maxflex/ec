@@ -97,10 +97,7 @@ const menu: Menu = [
   {
     icon: mdiSeatPassenger,
     title: 'Кабинеты',
-    items: [
-      { title: 'Расписание', to: '/cabinets' },
-      { title: 'Свободные кабинеты', to: '/cabinets/free' },
-    ],
+    to: '/cabinets',
   },
   {
     icon: '$pass',

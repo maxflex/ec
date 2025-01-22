@@ -110,10 +110,7 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::get('people-selector', PeopleSelectorController::class);
 
-    Route::prefix('cabinets')->controller(CabinetsController::class)->group(function () {
-        Route::get('free', 'free');
-        Route::get('/', 'index');
-    });
+    Route::get('cabinets', CabinetsController::class);
 
     Route::get('scholarship-scores', ScholarshipScoreController::class);
 
