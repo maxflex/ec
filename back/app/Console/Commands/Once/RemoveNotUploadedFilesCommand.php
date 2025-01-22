@@ -4,6 +4,7 @@ namespace App\Console\Commands\Once;
 
 use App\Models\Lesson;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class RemoveNotUploadedFilesCommand extends Command
 {
@@ -15,24 +16,18 @@ class RemoveNotUploadedFilesCommand extends Command
     {
         $lessonsWithFiles = Lesson::whereNotNull('files')->get();
         $bar = $this->output->createProgressBar($lessonsWithFiles->count());
-        $result = collect();
         foreach ($lessonsWithFiles as $lesson) {
-            foreach ($lesson->files as $file) {
-                if (!isset($file->url)) {
-                    $result->push($lesson);
-                    continue 2;
-                }
-            }
+            $newFiles = collect($lesson->files)
+                ->filter(fn($f) => isset($f->url))
+                ->values()
+                ->all();
+
+            DB::table('lessons')->whereId($lesson->id)->update([
+                'files' => count($newFiles) ? json_encode($newFiles) : null
+            ]);
+
             $bar->advance();
         }
 
-        $bar->finish();
-        $this->line(PHP_EOL);
-        foreach ($result->sortBy('date')->values() as $r) {
-            $this->line(implode("\t", [
-                $r->id,
-                $r->date,
-            ]));
-        }
     }
 }
