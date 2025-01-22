@@ -275,10 +275,14 @@ const lessonsConducted = computed<LessonsConducted>(() => {
     result[program.id] = {}
     let lessonsConductedLeft = program.lessons_conducted
     let lessonsToBeConductedLeft = program.lessons_to_be_conducted
+    const lastPriceId = program.prices[program.prices.length - 1].id
 
     for (const price of program.prices) {
+      const isLast = price.id === lastPriceId
       const lessons = asInt(price.lessons)
-      const lessonsConducted = (lessonsConductedLeft - lessons) < 0 ? lessonsConductedLeft : lessons
+      const lessonsConducted = (lessonsConductedLeft - lessons) < 0
+        ? lessonsConductedLeft
+        : (isLast ? lessonsConductedLeft : lessons)
       let lessonsToBeConducted = 0
 
       if (lessonsConducted < lessons && lessonsToBeConductedLeft) {
