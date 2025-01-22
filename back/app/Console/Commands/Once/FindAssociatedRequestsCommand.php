@@ -15,7 +15,7 @@ use Illuminate\Support\Collection;
  */
 class FindAssociatedRequestsCommand extends Command
 {
-    protected $signature = 'app:once:find-associated-requests';
+    protected $signature = 'once:find-associated-requests';
 
     protected $description = 'Command description';
 

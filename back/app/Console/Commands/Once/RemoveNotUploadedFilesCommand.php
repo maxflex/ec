@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 class RemoveNotUploadedFilesCommand extends Command
 {
-    protected $signature = 'app:once:remove-not-uploaded-files';
+    protected $signature = 'once:remove-not-uploaded-files';
 
     protected $description = 'Command description';
 

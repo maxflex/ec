@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class UpdateProgramsCommand extends Command
 {
-    protected $signature = 'app:once:update-programs';
+    protected $signature = 'once:update-programs';
 
     protected $description = 'Command description';
 
