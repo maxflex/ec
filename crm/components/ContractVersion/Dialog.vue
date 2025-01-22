@@ -225,7 +225,7 @@ const lessonsMultipliedByPriceSum = computed((): number => {
   let sum = 0
   for (const p of item.value.programs) {
     for (const x of p.prices) {
-      sum += asInt(x.lessons) * (asInt(x.price) || 1)
+      sum += asInt(x.lessons) * asInt(x.price)
     }
   }
   return sum
