@@ -2,10 +2,14 @@
 
 namespace App\Console\Commands\Once;
 
+use App\Enums\Program;
 use App\Models\ClientGroup;
 use App\Models\ClientLesson;
+use App\Models\Contract;
+use App\Models\ContractVersionProgram;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class FixClientGroupsCommand extends Command
 {
@@ -15,13 +19,7 @@ class FixClientGroupsCommand extends Command
 
     public function handle(): void
     {
-//        Schema::disableForeignKeyConstraints();
-//        $this->step1();
-//        Schema::enableForeignKeyConstraints();
-//        $this->step2();
-//        $this->step3();
-        $this->step4();
-        $this->step5();
+        $this->step6();
     }
 
     /**
@@ -30,6 +28,7 @@ class FixClientGroupsCommand extends Command
      */
     private function step1()
     {
+        Schema::disableForeignKeyConstraints();
         DB::transaction(function () {
             $cg12306 = ClientGroup::find(12306);
             $cg12307 = ClientGroup::find(12307);
@@ -57,6 +56,7 @@ class FixClientGroupsCommand extends Command
                 'contract_version_program_id' => $cvpId12306
             ]);
         });
+        Schema::enableForeignKeyConstraints();
     }
 
     /**
@@ -91,7 +91,8 @@ class FixClientGroupsCommand extends Command
 
 
     /**
-     * private 3
+     * Обновил в соответствии с файлом query_result (2).xlsx от 17:53
+     * Кроме тех, где есть полиморфизм (следующий файл)
      */
     private function step3()
     {
@@ -244,6 +245,105 @@ class FixClientGroupsCommand extends Command
                 ->update([
                     'contract_version_program_id' => $d->contract_version_program_id === $cvpId1 ? $cvpId2 : $cvpId1,
                 ]);
+            $bar->advance();
+        }
+        $bar->finish();
+    }
+
+    /**
+     * Автоматизация файла 379-1377.xlsx
+     * Сначала делали вручную, потом решили автоматизировать
+     */
+    private function step6()
+    {
+        $ids = DB::table('client_lessons', 'cl')
+            ->join('contract_version_programs as cvp', 'cvp.id', '=', 'cl.contract_version_program_id')
+            ->join('lessons as l', 'l.id', '=', 'cl.lesson_id')
+            ->join('groups as g', 'g.id', '=', 'l.group_id')
+            ->whereRaw('cvp.program <> g.program')
+            ->groupBy('contract_version_program_id')
+            ->pluck('contract_version_program_id');
+
+        $data = DB::table('client_lessons', 'cl')
+            ->join('contract_version_programs as cvp', 'cvp.id', '=', 'cl.contract_version_program_id')
+            ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
+            ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
+            ->join('lessons as l', 'l.id', '=', 'cl.lesson_id')
+            ->join('groups as g', 'g.id', '=', 'l.group_id')
+            ->whereIn('cl.contract_version_program_id', $ids)
+            ->selectRaw("
+            	cl.id, 
+                cl.contract_version_program_id,
+                l.group_id,
+                cvp.program as `contract_program`, 
+                g.program as `group_program`,
+                cv.contract_id,
+                c.client_id
+            ")
+            ->orderBy('cl.id')
+            ->get();
+
+        $data = $data->groupBy('contract_id');
+
+        $bar = $this->output->createProgressBar(count($data));
+
+        foreach ($data as $contractId => $contractData) {
+            $diffPrograms = $contractData->filter(
+                fn($x) => $x->contract_program <> $x->group_program
+            )->groupBy('contract_program');
+
+
+            foreach ($diffPrograms as $contractProgram => $d) {
+                $item = $d->first();
+                $groupProgram = $item->group_program;
+                $contractVersionProgramId = $item->contract_version_program_id;
+
+                $cnt = $d->count();
+
+                $this->line(
+                    "\n\ncontract_version_program_id: " . $contractVersionProgramId
+                    . "\tgroup_id: " . $item->group_id
+                    . "\tcontract_id: " . $contractId
+                    . "\tclient_id: " . $item->client_id
+                );
+                $confirmed = $this->confirm(sprintf('%s => %s (%d)?',
+                    $groupProgram,
+                    $contractProgram,
+                    $cnt,
+                ), true);
+
+                if (!$confirmed) {
+                    continue;
+                }
+
+                $activeVersion = Contract::find($contractId)->active_version;
+
+                // из этой программы нужно вычесть кол-во занятий
+                $cvpToSubtract = ContractVersionProgram::find($contractVersionProgramId);
+
+                // вычитаем из последней цены
+                $price = $cvpToSubtract->prices->last();
+
+                $newLessons = ($price->lessons - $cnt);
+
+                $price->update([
+                    'lessons' => $newLessons
+                ]);
+
+                $newCvp = $activeVersion->programs()->create([
+                    'lessons_planned' => 1,
+                    'program' => Program::from($groupProgram)
+                ]);
+
+                $newCvp->prices()->create([
+                    'lessons' => $cnt,
+                    'price' => $price->price
+                ]);
+
+                DB::table('client_lessons')->whereIn('id', $d->pluck('id'))->update([
+                    'contract_version_program_id' => $newCvp->id
+                ]);
+            }
             $bar->advance();
         }
         $bar->finish();
