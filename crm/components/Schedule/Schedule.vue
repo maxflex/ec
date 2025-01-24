@@ -27,13 +27,13 @@ const tabName = teacherId ? 'TeacherSchedule' : (groupId ? 'GroupSchedule' : 'Cl
 interface Filters {
   year: Year
   hideEmptyDates: number
-  program: Program | undefined
 }
+
+const selectedProgram = ref<Program>()
 
 const loadedFilters = loadFilters<Filters>({
   year: currentAcademicYear(),
   hideEmptyDates: 0,
-  program: undefined,
 }, tabName)
 
 const filters = ref({
@@ -72,8 +72,8 @@ const lessonIds = computed((): number[] => {
   return result
 })
 
-const filteredLessons = computed(() => filters.value.program
-  ? lessons.value.filter(l => l.group.program === filters.value.program)
+const filteredLessons = computed(() => selectedProgram.value
+  ? lessons.value.filter(l => l.group.program === selectedProgram.value)
   : lessons.value,
 )
 
@@ -213,6 +213,7 @@ function isEvent(item: LessonListResource | EventListResource): item is EventLis
 }
 
 async function loadData() {
+  selectedProgram.value = undefined
   await loadTeeth()
   await loadLessons()
   await loadEvents()
@@ -263,7 +264,7 @@ nextTick(loadData)
     />
     <UiClearableSelect
       v-if="programFilter"
-      v-model="filters.program"
+      v-model="selectedProgram"
       label="Программа"
       :items="availablePrograms.map(value => ({
         value,
