@@ -2,20 +2,20 @@
 const emit = defineEmits<{
   select: [groupId: number, cvpId: number]
 }>()
-const { dialog, width } = useDialog('large')
+const { dialog, width } = useDialog('x-large')
 const groups = ref<GroupListResource[]>([])
 const contractVersionProgramId = ref<number>(-1)
-const filters = ref<{
-  year?: Year
-  program?: Program
-}>({})
+const filters = ref<GroupFilters>({
+  year: currentAcademicYear(),
+  program: [],
+})
 
 function open(year: Year, program: Program, cvpId: number) {
   dialog.value = true
   contractVersionProgramId.value = cvpId
   filters.value = {
     year,
-    program,
+    program: [program],
   }
 }
 
@@ -49,22 +49,11 @@ defineExpose({ open })
     <div class="dialog-wrapper">
       <div class="dialog-header">
         Выберите группу
-        <!--                <v-btn icon="$close" :size="48" variant="text" @click="dialog = false" /> -->
+        <v-btn icon="$close" :size="48" variant="text" @click="dialog = false" />
       </div>
       <div class="dialog-body pt-0 ga-0">
         <UiFilters>
-          <v-select
-            v-model="filters.year"
-            label="Учебный год"
-            :items="selectItems(YearLabel)"
-            density="comfortable"
-          />
-          <UiClearableSelect
-            v-model="filters.program"
-            label="Программа"
-            :items="selectItems(ProgramLabel)"
-            density="comfortable"
-          />
+          <GroupFilters v-model="filters" disabled />
         </UiFilters>
         <GroupList
           :items="groups"

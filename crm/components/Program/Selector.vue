@@ -1,4 +1,8 @@
 <script setup lang="ts">
+const { disabled } = defineProps<{
+  disabled?: boolean
+}>()
+
 const model = defineModel<Program | Program[]>({ required: true })
 
 function clear() {
@@ -15,6 +19,7 @@ function clear() {
     variant="outlined"
     density="comfortable"
     hide-details
+    :disabled="disabled"
   >
     <template v-if="Array.isArray(model) && model.length > 1" #selection="{ index }">
       <template v-if="index === 0">
@@ -26,7 +31,7 @@ function clear() {
         ничего не найдено
       </v-list-item>
     </template>
-    <template v-if="Array.isArray(model) && model.length" #append>
+    <template v-if="!disabled && Array.isArray(model) && model.length" #append>
       <a @click="clear()">очистить</a>
     </template>
   </v-select>
