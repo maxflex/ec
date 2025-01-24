@@ -319,7 +319,7 @@ function isPriceError(price: ContractVersionProgramPrice, program: ContractVersi
     && lessonsSum !== program.lessons_total
 }
 
-function getCorrectPrice(program: Program) {
+function getCorrectPrice(program: ContractVersionProgramResource) {
   const lessonsSum = program.prices.slice(0, program.prices.length - 1).reduce((carry, x) => asInt(x.lessons) + carry, 0)
   return program.lessons_total - lessonsSum
 }
@@ -492,12 +492,10 @@ defineExpose({ edit, newContract, newVersion })
                       density="compact"
                       :class="{ 'text-error': isPriceError(price, p) }"
                     >
-                      <template #append>
-                        <v-fade-transition>
-                          <div v-if="isPriceError(price, p)" class="pr-4 text-gray">
-                            {{ getCorrectPrice(p) }}
-                          </div>
-                        </v-fade-transition>
+                      <template v-if="isPriceError(price, p)" #append>
+                        <div class="pr-4 text-gray">
+                          {{ getCorrectPrice(p) }}
+                        </div>
                       </template>
                     </v-text-field>
                   </div>
