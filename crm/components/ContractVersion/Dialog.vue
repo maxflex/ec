@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#build/components'
+import { mdiArrowRightThin } from '@mdi/js'
 import { clone } from 'rambda'
+import type { ContractVersionProgramPrice, ContractVersionProgramResource } from '~/utils/types'
 
 const emit = defineEmits<{
   updated: [m: ContractEditMode, c: ContractResource | ContractVersionListResource]
@@ -125,7 +127,9 @@ function onProgramsSaved(programs: Program[]) {
       ],
       lessons_conducted: 0,
       lessons_to_be_conducted: 0,
+      lessons_total: 0,
       lessons_planned: '',
+      group_id: null,
     })
   }
   nextTick(() => programsInput.value[programsInput.value.length - 1].focus())
@@ -263,6 +267,7 @@ function addPrices(p: ContractVersionProgramResource) {
 interface LessonsConducted {
   [index: number]: { // program_id
     [index: number]: { // price_id
+      lessons_total: number
       lessons_conducted: number
       lessons_to_be_conducted: number
     }
@@ -275,6 +280,7 @@ const lessonsConducted = computed<LessonsConducted>(() => {
     result[program.id] = {}
     let lessonsConductedLeft = program.lessons_conducted
     let lessonsToBeConductedLeft = program.lessons_to_be_conducted
+
     const lastPriceId = program.prices[program.prices.length - 1].id
 
     for (const price of program.prices) {
@@ -283,11 +289,12 @@ const lessonsConducted = computed<LessonsConducted>(() => {
       const lessonsConducted = (lessonsConductedLeft - lessons) < 0
         ? lessonsConductedLeft
         : (isLast ? lessonsConductedLeft : lessons)
+
       let lessonsToBeConducted = 0
 
-      if (lessonsConducted < lessons && lessonsToBeConductedLeft) {
+      if (lessonsToBeConductedLeft) {
         const x = lessons - lessonsConducted
-        lessonsToBeConducted = Math.min(x, lessonsToBeConductedLeft)
+        lessonsToBeConducted = isLast ? lessonsToBeConductedLeft : Math.min(x, lessonsToBeConductedLeft)
         lessonsToBeConductedLeft -= lessonsToBeConducted
       }
 
@@ -301,6 +308,21 @@ const lessonsConducted = computed<LessonsConducted>(() => {
   }
   return result
 })
+
+function isPriceError(price: ContractVersionProgramPrice, program: ContractVersionProgramResource) {
+  // нет группы и проведено 0 занятий
+  if ((!program.group_id && !program.lessons_conducted) || program.prices.some(p => p.lessons === '')) {
+    return false
+  }
+  const lessonsSum = program.prices.reduce((carry, x) => asInt(x.lessons) + carry, 0)
+  return price.id === program.prices[program.prices.length - 1].id
+    && lessonsSum !== program.lessons_total
+}
+
+function getCorrectPrice(program: Program) {
+  const lessonsSum = program.prices.slice(0, program.prices.length - 1).reduce((carry, x) => asInt(x.lessons) + carry, 0)
+  return program.lessons_total - lessonsSum
+}
 
 function removePrice(p: ContractVersionProgramResource) {
   const index = item.value.programs.findIndex(e => e.id === p.id)
@@ -439,7 +461,17 @@ defineExpose({ edit, newContract, newVersion })
             <tbody>
               <tr v-for="p in item.programs" :key="p.id">
                 <td>
-                  {{ ProgramLabel[p.program] }}
+                  <div class="d-flex align-center ga-1">
+                    <span>
+                      {{ ProgramLabel[p.program] }}
+                    </span>
+                    <template v-if="p.group_id">
+                      <v-icon :icon="mdiArrowRightThin" :size="22" />
+                      <span>
+                        ГР-{{ p.group_id }}
+                      </span>
+                    </template>
+                  </div>
                 </td>
                 <td>
                   <v-text-field
@@ -458,7 +490,16 @@ defineExpose({ edit, newContract, newVersion })
                       type="number"
                       hide-spin-buttons
                       density="compact"
-                    />
+                      :class="{ 'text-error': isPriceError(price, p) }"
+                    >
+                      <template #append>
+                        <v-fade-transition>
+                          <div v-if="isPriceError(price, p)" class="pr-4 text-gray">
+                            {{ getCorrectPrice(p) }}
+                          </div>
+                        </v-fade-transition>
+                      </template>
+                    </v-text-field>
                   </div>
                 </td>
                 <td>
@@ -469,6 +510,10 @@ defineExpose({ edit, newContract, newVersion })
                     <span v-if="lessonsConducted[p.id][price.id].lessons_to_be_conducted" class="text-gray pl-1">
                       + {{ lessonsConducted[p.id][price.id].lessons_to_be_conducted }}
                     </span>
+                    <!--                    <template v-if="lessonsConducted[p.id][price.id].lessons_total > 0"> -->
+                    <!--                      <v-icon :icon="mdiArrowRightThin" color="gray" :size="18" /> -->
+                    <!--                      {{ lessonsConducted[p.id][price.id].lessons_total }} -->
+                    <!--                    </template> -->
                   </div>
                 </td>
                 <td>

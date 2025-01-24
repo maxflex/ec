@@ -278,6 +278,8 @@ declare global {
     contract_version_id: number
     lessons_conducted: number
     lessons_to_be_conducted: number
+    lessons_total: number
+    group_id: ?number
   }
 
   interface ContractVersionPaymentResource {

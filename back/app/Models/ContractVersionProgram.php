@@ -75,7 +75,9 @@ class ContractVersionProgram extends Model
      */
     public function getLessonsConductedAttribute(): int
     {
-        return $this->clientLessons()->count();
+        return $this->clientLessons()
+            ->whereHas('lesson', fn($q) => $q->where('is_free', false))
+            ->count();
     }
 
     /**
@@ -93,12 +95,28 @@ class ContractVersionProgram extends Model
 
         return $group->lessons()
             ->where('status', LessonStatus::planned)
+            ->where('is_free', false)
             ->where('date', '<=', now()->format('Y-m-d'))
             ->count();
     }
 
+    public function getLessonsTotalAttribute(): int
+    {
+        $total = $this->lessons_conducted;
+        $group = $this->group;
+
+        if (!$group) {
+            return $total;
+        }
+
+        return $total + $group->lessons()
+                ->where('status', LessonStatus::planned)
+                ->where('is_free', false)
+                ->count();
+    }
+
     /**
-     * @param ?int $lessonsPassed это временно, для имитации, для NalogController
+     * @param ?int $lessonsPassed
      */
     public function getNextPrice(?int $lessonsPassed = null): int
     {
