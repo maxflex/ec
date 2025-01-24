@@ -85,9 +85,7 @@ function getFillColor(r: RealReport) {
           занятий: {{ r.lessons_count }}
         </div>
         <div style="width: 160px; flex: initial">
-          <span class="text-error">
-            требуется отчёт
-          </span>
+          <ReportRequirement :requirement="r.requirement" />
         </div>
       </template>
     </div>

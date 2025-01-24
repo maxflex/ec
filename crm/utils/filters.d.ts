@@ -1,3 +1,5 @@
+import type { ReportRequirement } from '~/utils/types'
+
 declare global {
   interface ClientPaymentFilters {
     year: Year
@@ -51,7 +53,7 @@ declare global {
   interface ReportFilters {
     year: Year
     program?: Program
-    type?: number
+    requirement?: ReportRequirement
     status?: ReportStatus
     teacher_id?: number
   }

@@ -19,7 +19,8 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
     {
         if (!($request->has('client_id') && auth()->user()->is_head_teacher)) {
             $request->merge([
-                'teacher_id' => auth()->id()
+                'teacher_id' => auth()->id(),
+                'exclude_not_required' => 1,
             ]);
         }
 

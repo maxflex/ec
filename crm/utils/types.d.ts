@@ -676,6 +676,8 @@ declare global {
     value: string | number | boolean
   }>
 
+  type ReportRequirement = keyof typeof ReportRequirementLabel
+
   interface RealReport {
     id: number
     year: Year
@@ -688,6 +690,7 @@ declare global {
     price: ?number
     grade: ?LessonScore
     fill: number
+    requirement: ReportRequirement
   }
 
   interface FakeReport {
@@ -697,6 +700,7 @@ declare global {
     client: PersonResource
     program: Program
     lessons_count: number
+    requirement: ReportRequirement
   }
 
   type ReportListResource = RealReport | FakeReport

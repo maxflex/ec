@@ -645,3 +645,9 @@ export const ReportStatusLabel = {
   published: 'опубликовано',
   empty: 'пустой отчет',
 } as const
+
+export const ReportRequirementLabel = {
+  created: 'созданные',
+  required: 'требуется отчёт',
+  notRequired: 'пока не требуется',
+} as const

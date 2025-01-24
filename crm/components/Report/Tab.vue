@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ReportRequirementLabel } from '~/utils/labels'
+
 const { clientId, teacherId } = defineProps<{
   clientId?: number
   teacherId?: number
@@ -10,7 +12,7 @@ const { isTeacher } = useAuthStore()
 
 const filters = ref<{
   year: Year
-  type?: number
+  requirement?: ReportRequirement
 }>(loadFilters({
   year: currentAcademicYear(),
 }, tabName))
@@ -55,9 +57,9 @@ nextTick(loadData)
         density="comfortable"
       />
       <UiClearableSelect
-        v-model="filters.type"
+        v-model="filters.requirement"
         label="Тип"
-        :items="yesNo('созданные', 'требуется отчёт')"
+        :items="selectItems(ReportRequirementLabel)"
         density="comfortable"
       />
     </template>

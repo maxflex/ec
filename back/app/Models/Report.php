@@ -107,8 +107,11 @@ class Report extends Model
      * Запрос получает все "требуется создать"
      * https://doc.ege-centr.ru/tasks/834
      */
-    public static function required()
+    public static function requirements()
     {
+        // сколько занятий должно пройти до требования отчета,
+        // где ученик в каком-то варианте присутствовал (был/дист/опоздал)
+        $lessonsNeeded = 4;
         $year = current_academic_year();
         $nextYear = $year + 1;
 
@@ -165,20 +168,13 @@ class Report extends Model
                 NULL as `status`,
                 l.teacher_id, c.client_id, g.year, g.program,
                 COUNT(*) as lessons_count,
-                NULL as sum_1,
-                NULL as sum_2,
-                NULL as sum_3,
-                NULL as sum_4
-            ")
-            ->havingRaw(
-                "lessons_count >= ? AND SUM(IF(cl.status <> 'late', 1, 0)) >= ?",
-                [6, 4]
-            );
+                IF((
+                    COUNT(*) >= 6 
+                    AND SUM(IF(cl.status <> 'late', 1, 0)) >= $lessonsNeeded
+                ), 'required', 'notRequired') as `requirement`
+            ");
 
 
-        // сколько занятий должно пройти до требования отчета,
-        // где ученик в каком-то варианте присутствовал (был/дист/опоздал)
-        $lessonsNeeded = 4;
         $periods = [
             ["$year-10-15", "$year-10-25"],
             ["$year-12-15", "$year-12-25"],
@@ -208,27 +204,22 @@ class Report extends Model
                 NULL as `status`,
                 l.teacher_id, c.client_id, g.year, g.program,
                 COUNT(*) as lessons_count,
-                SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ? AND NOT (md.max_date BETWEEN ? AND ?), 1, 0)) as sum_1,
-                SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ? AND NOT (md.max_date BETWEEN ? AND ?), 1, 0)) as sum_2,
-                SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ? AND NOT (md.max_date BETWEEN ? AND ?), 1, 0)) as sum_3,
-                SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ? AND NOT (md.max_date BETWEEN ? AND ?), 1, 0)) as sum_4
+                IF((
+                    (md.max_date < ? AND SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)))
+                    OR
+                    (md.max_date < ? AND SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)))
+                    OR
+                    (md.max_date < ? AND SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)))
+                    OR
+                    (md.max_date < ? AND SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)))
+                ), 'required', 'notRequired') as `requirement`
             ", [
-                $periods[0][0], $periods[0][1],
-                $periods[0][0], $periods[0][1],
-                $periods[1][0], $periods[1][1],
-                $periods[1][0], $periods[1][1],
-                $periods[2][0], $periods[2][1],
-                $periods[2][0], $periods[2][1],
-                $periods[3][0], $periods[3][1],
-                $periods[3][0], $periods[3][1],
+                $periods[0][0], $periods[0][0], $periods[0][1],
+                $periods[1][0], $periods[1][0], $periods[1][1],
+                $periods[2][0], $periods[2][0], $periods[2][1],
+                $periods[3][0], $periods[3][0], $periods[3][1],
             ])
-            ->groupByRaw('l.teacher_id, c.client_id, g.year, g.program')
-            ->havingRaw("
-                sum_1 >= $lessonsNeeded
-                OR sum_2 >= $lessonsNeeded
-                OR sum_3 >= $lessonsNeeded
-                OR sum_4 >= $lessonsNeeded
-            ");
+            ->groupByRaw('l.teacher_id, c.client_id, g.year, g.program');
 
         $required = DB::table('courses')
             ->withExpression('md', $maxDates)
@@ -248,10 +239,7 @@ class Report extends Model
             year,
             program,
             NULL as lessons_count,
-            NULL as sum_1,
-            NULL as sum_2,
-            NULL as sum_3,
-            NULL as sum_4
+            'created' as `requirement`
         ");
     }
 }

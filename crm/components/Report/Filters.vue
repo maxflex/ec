@@ -10,9 +10,9 @@ const model = defineModel<ReportFilters>({ required: true })
     density="comfortable"
   />
   <UiClearableSelect
-    v-model="model.type"
+    v-model="model.requirement"
     label="Тип"
-    :items="yesNo('созданные', 'требуется отчет')"
+    :items="selectItems(ReportRequirementLabel)"
     density="comfortable"
   />
   <UiClearableSelect
