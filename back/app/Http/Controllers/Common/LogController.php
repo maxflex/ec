@@ -14,6 +14,10 @@ class LogController extends Controller
         'equals' => ['row_id', 'type', 'table']
     ];
 
+    protected $mapFilters = [
+        'table' => '`table`'
+    ];
+
     public function index(Request $request)
     {
         $query = Log::query()
