@@ -11,7 +11,8 @@ use Illuminate\Http\Request;
 class LogController extends Controller
 {
     protected $filters = [
-        'equals' => ['row_id', 'type', 'table']
+        'equals' => ['type', 'table'],
+        'rowId' => ['row_id'],
     ];
 
     protected $mapFilters = [
@@ -39,5 +40,12 @@ class LogController extends Controller
                 'url' => $request->url,
             ]
         ]);
+    }
+
+    protected function filterRowId(&$query, $rowId)
+    {
+        if ($rowId) {
+            return $query->where('row_id', $rowId);
+        }
     }
 }
