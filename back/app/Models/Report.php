@@ -125,6 +125,10 @@ class Report extends Model
         $programsCourses = [];
         $programsSchoolAndExternal = [];
         foreach (Program::cases() as $program) {
+            // ОГЭ исключить
+            if (str($program->value)->contains('Oge')) {
+                continue;
+            }
             switch ($program->getDirection()) {
                 case Direction::courses9:
                 case Direction::courses10:
@@ -166,14 +170,16 @@ class Report extends Model
             ->selectRaw("
                 NULL as `id`,
                 NULL as `status`,
-                l.teacher_id, c.client_id, g.year, g.program,
+                l.teacher_id, 
+                c.client_id, 
+                g.year, 
+                g.program,
                 COUNT(*) as lessons_count,
                 IF((
                     COUNT(*) >= 6 
                     AND SUM(IF(cl.status <> 'late', 1, 0)) >= $lessonsNeeded
                 ), 'required', 'notRequired') as `requirement`
             ");
-
 
         $periods = [
             ["$year-10-15", "$year-10-25"],
@@ -202,16 +208,31 @@ class Report extends Model
             ->selectRaw("
                 NULL as `id`, 
                 NULL as `status`,
-                l.teacher_id, c.client_id, g.year, g.program,
+                l.teacher_id, 
+                c.client_id, 
+                g.year, 
+                g.program,
                 COUNT(*) as lessons_count,
                 IF((
-                    (md.max_date < ? AND SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)))
+                    (
+                        IF(ISNULL(md.max_date), TRUE, md.max_date < ?) AND 
+                        SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
+                    )
                     OR
-                    (md.max_date < ? AND SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)))
+                    (
+                        IF(ISNULL(md.max_date), TRUE, md.max_date < ?) AND 
+                        SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
+                    )
                     OR
-                    (md.max_date < ? AND SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)))
+                    (
+                        IF(ISNULL(md.max_date), TRUE, md.max_date < ?) AND 
+                        SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
+                    )
                     OR
-                    (md.max_date < ? AND SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)))
+                    (
+                        IF(ISNULL(md.max_date), TRUE, md.max_date < ?) AND 
+                        SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
+                    )
                 ), 'required', 'notRequired') as `requirement`
             ", [
                 $periods[0][0], $periods[0][0], $periods[0][1],
@@ -221,12 +242,12 @@ class Report extends Model
             ])
             ->groupByRaw('l.teacher_id, c.client_id, g.year, g.program');
 
-        $required = DB::table('courses')
+        $requirements = DB::table('courses')
             ->withExpression('md', $maxDates)
             ->withExpression('courses', $courses)
             ->union($schoolAndExternal);
 
-        return DB::table('required')->withExpression('required', $required);
+        return DB::table('requirements')->withExpression('requirements', $requirements);
     }
 
     public function scopeSelectForUnion($query)
