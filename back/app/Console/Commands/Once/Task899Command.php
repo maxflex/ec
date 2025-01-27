@@ -90,26 +90,33 @@ class Task899Command extends Command
             ))->get();
 
         $bar = $this->output->createProgressBar($clientGroups->count());
-        $csv = collect([
-            collect(['client_id', 'contract_id'])
-        ]);
+        $result = [];
         foreach ($clientGroups as $clientGroup) {
             $program = $clientGroup->contractVersionProgram;
             $lessonsSum = 0;
             foreach ($program->prices as $price) {
                 $lessonsSum += $price->lessons;
             }
-
             if ($lessonsSum !== $program->lessons_total) {
                 $contract = $program->contractVersion->contract;
-                $csv->push(collect([
-                    $contract->client_id,
-                    $contract->id,
-                ]));
+                $result[$contract->client_id] = $contract->id;
             }
             $bar->advance();
         }
         $bar->finish();
+
+
+        $csv = collect([
+            collect(['client_id', 'contract_id'])
+        ]);
+
+        foreach ($result as $clientId => $contractId) {
+            $csv->push(collect([
+                $clientId,
+                $contractId
+            ]));
+        }
+
 
         $file = $csv
             ->map(fn($arr) => $arr->join("\t"))
