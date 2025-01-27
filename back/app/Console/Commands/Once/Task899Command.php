@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Once;
 
+use App\Models\ClientGroup;
 use App\Models\ClientLesson;
 use App\Models\Contract;
 use Illuminate\Console\Command;
@@ -15,7 +16,7 @@ class Task899Command extends Command
 
     public function handle(): void
     {
-        $this->step1();
+        $this->step2();
     }
 
     private function step1()
@@ -70,6 +71,44 @@ class Task899Command extends Command
             $bar->advance();
         }
 
+        $bar->finish();
+
+        $file = $csv
+            ->map(fn($arr) => $arr->join("\t"))
+            ->join("\n");
+
+        $filename = uniqid() . '.csv';
+        Storage::put("crm/other/$filename", $file);
+        $this->line("\n" . cdn('other', $filename));
+    }
+
+
+    private function step2()
+    {
+        $clientGroups = ClientGroup::whereHas('contractVersionProgram',
+            fn($q) => $q->whereHas('contractVersion', fn($q) => $q->whereHas('contract', fn($q) => $q->where('year', 2024))
+            ))->get();
+
+        $bar = $this->output->createProgressBar($clientGroups->count());
+        $csv = collect([
+            collect(['client_id', 'contract_id'])
+        ]);
+        foreach ($clientGroups as $clientGroup) {
+            $program = $clientGroup->contractVersionProgram;
+            $lessonsSum = 0;
+            foreach ($program->prices as $price) {
+                $lessonsSum += $price->lessons;
+            }
+
+            if ($lessonsSum !== $program->lessons_total) {
+                $contract = $program->contractVersion->contract;
+                $csv->push(collect([
+                    $contract->client_id,
+                    $contract->id,
+                ]));
+            }
+            $bar->advance();
+        }
         $bar->finish();
 
         $file = $csv
