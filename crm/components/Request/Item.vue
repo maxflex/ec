@@ -25,7 +25,9 @@ const router = useRouter()
     <div style="width: 90px">
       <div class="d-flex align-center ga-2">
         <RequestStatus :item="item" />
-        {{ item.id }}
+        <RouterLink :to="{ name: 'requests-id', params: { id: item.id } }" class="black-link">
+          {{ item.id }}
+        </RouterLink>
       </div>
     </div>
     <div style="width: 140px">

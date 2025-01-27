@@ -414,3 +414,7 @@ tr.hoverable {
     }
   }
 }
+
+.black-link:not(:hover) {
+  color: #212121 !important;
+}
