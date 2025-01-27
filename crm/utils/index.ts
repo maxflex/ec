@@ -229,6 +229,13 @@ export function formatDate(dateTime: string | null): string {
   return dayjs(dateTime).format('DD.MM.YYYY')
 }
 
+export function formatDateMonth(dateTime: string | null): string {
+  if (!dateTime) {
+    return ''
+  }
+  return dayjs(dateTime).format('DD.MM')
+}
+
 export function formatTime(time: string): string {
   return time.substring(0, 5)
 }

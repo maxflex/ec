@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\{AllLessonsController,
     ContractController,
     ContractPaymentController,
     ContractVersionController,
+    ContractVersionProgramController,
     ErrorController,
     EventParticipantController,
     ExamScoreController,
@@ -125,7 +126,8 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::get('all-payments', AllPaymentsController::class);
 
-    Route::apiResource('client-lessons', ClientLessonController::class)->only('destroy');
+    Route::apiResource('client-lessons', ClientLessonController::class);
+    Route::get('contract-version-programs', ContractVersionProgramController::class);
 
     Route::get('all-lessons', AllLessonsController::class);
    

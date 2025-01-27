@@ -297,10 +297,10 @@ export const QuarterLabel = {
 } as const
 
 export const QuarterShortLabel = {
-  q1: '1 четв.',
-  q2: '2 четв.',
-  q3: '3 четв.',
-  q4: '4 четв.',
+  q1: '1-Ч',
+  q2: '2-Ч',
+  q3: '3-Ч',
+  q4: '4-Ч',
   final: 'итоговая',
 } as const
 

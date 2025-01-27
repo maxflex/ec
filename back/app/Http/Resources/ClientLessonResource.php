@@ -13,7 +13,7 @@ class ClientLessonResource extends JsonResource
     {
         return extract_fields($this, [
             'contract_version_program_id', 'minutes_late',
-            'status', 'scores', 'comment',
+            'status', 'scores', 'comment', 'price'
         ], [
             'client' => new PersonWithPhotoResource(
                 $this->contractVersionProgram->contractVersion->contract->client

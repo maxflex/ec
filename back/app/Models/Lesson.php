@@ -125,7 +125,7 @@ class Lesson extends Model
             ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
             ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
             ->where('c.client_id', $clientId)
-            ->selectRaw('client_lessons.*')
+            ->selectRaw('client_lessons.*, cv.contract_id')
             ->first();
     }
 

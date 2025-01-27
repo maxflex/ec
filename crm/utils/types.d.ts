@@ -353,6 +353,16 @@ declare global {
     payments: ContractPaymentResource[]
   }
 
+  interface ContractEditPriceResource {
+    id: number
+    program: Program
+    contract: {
+      id: number
+      company: Company
+      year: Year
+    }
+  }
+
   interface Zoom {
     id: string
     password: string
@@ -445,6 +455,8 @@ declare global {
       id: number
       status: ClientLessonStatus
       scores: ClientLessonScore[]
+      price: number
+      contract_id: number
       minutes_late: ?number
     }
     group: {
@@ -463,6 +475,7 @@ declare global {
     minutes_late: ?number
     scores: ClientLessonScore[]
     comment: ?string
+    price: number
   }
 
   interface LessonConductResource {

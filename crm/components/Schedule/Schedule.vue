@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type {
+  ClientLessonEditPriceDialog,
   EventDialog,
   LessonBulkCreateDialog,
   LessonBulkUpdateDialog,
@@ -8,6 +9,7 @@ import type {
 } from '#build/components'
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { groupBy } from 'rambda'
+import { formatDateMonth } from '~/utils'
 
 // потому что props ещё есть ниже
 const properties = defineProps<{
@@ -55,6 +57,7 @@ const teeth = ref<Teeth>()
 const lessons = ref<LessonListResource[]>([])
 const events = ref<EventListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
+const clientLessonEditPriceDialog = ref<InstanceType<typeof ClientLessonEditPriceDialog>>()
 const lessonBulkUpdateDialog = ref<InstanceType<typeof LessonBulkUpdateDialog>>()
 const lessonBulkCreateDialog = ref<InstanceType<typeof LessonBulkCreateDialog>>()
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
@@ -315,7 +318,7 @@ nextTick(loadData)
       }"
     >
       <div>
-        {{ formatTextDate(d) }}
+        {{ formatDateMonth(d) }}
         <span class="text-gray ml-1">
           {{ dayLabels[getDay(d)] }}
         </span>
@@ -343,6 +346,7 @@ nextTick(loadData)
           :checkboxes="checkboxes"
           @click="onLessonClick(item)"
           @edit="lessonDialog?.edit"
+          @edit-price="clientLessonEditPriceDialog?.edit"
           @conduct="conductDialog?.open"
         />
         <LessonTeacherItem
@@ -373,6 +377,7 @@ nextTick(loadData)
     </div>
   </div>
   <LessonDialog ref="lessonDialog" />
+  <ClientLessonEditPriceDialog v-if="clientId" ref="clientLessonEditPriceDialog" />
   <EventDialog ref="eventDialog" />
   <LessonConductDialog
     ref="conductDialog"

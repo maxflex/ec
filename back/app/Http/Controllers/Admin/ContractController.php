@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ContractResource;
 use App\Models\Contract;
+use App\Models\ContractVersionProgram;
 use Illuminate\Http\Request;
 
 class ContractController extends Controller
@@ -43,5 +44,15 @@ class ContractController extends Controller
         }
         $contractVersion->syncRelation($request->all(), 'payments');
         return new ContractResource($contract->fresh());
+    }
+
+    public function filterContractVersionProgramId(&$query, $id)
+    {
+        $program = ContractVersionProgram::find($id);
+        $query->whereHas(
+            'versions', fn($q) => $q
+            ->where('is_active', true)
+            ->whereHas('programs', fn($q) => $q->where('program', $program->program))
+        )->where('year', $program->contractVersion->contract->year);
     }
 }

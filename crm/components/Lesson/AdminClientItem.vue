@@ -12,6 +12,7 @@ const { item, checkboxes } = defineProps<{
 
 const emit = defineEmits<{
   edit: [id: number]
+  editPrice: [id: number]
   view: [id: number]
   conduct: [id: number, status: LessonStatus]
 }>()
@@ -53,25 +54,25 @@ function deleteFromClientLessons() {
         </template>
         <v-list>
           <v-list-item @click="emit('edit', item.id)">
-            редактировать
+            редактировать занятие
           </v-list-item>
-          <v-list-item
-            :disabled="isConductDisabled"
-            @click="emit('conduct', item.id, item.status)"
-          >
+          <v-list-item :disabled="isConductDisabled" @click="emit('editPrice', item.client_lesson!.id)">
+            редактировать цену
+          </v-list-item>
+          <v-list-item :disabled="isConductDisabled" @click="emit('conduct', item.id, item.status)">
             проводка занятия
           </v-list-item>
-          <v-list-item v-if="item.client_lesson" class="text-error" @click="deleteFromClientLessons()">
+          <v-list-item :disabled="isConductDisabled" class="text-error" @click="deleteFromClientLessons()">
             удалить из проводки
           </v-list-item>
         </v-list>
       </v-menu>
     </div>
-    <div style="width: 80px; position: relative;" />
-    <div style="width: 120px">
+    <div style="width: 70px; position: relative;" />
+    <div style="width: 110px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
-    <div style="width: 70px">
+    <div style="width: 50px">
       <template v-if="item.cabinet">
         {{ CabinetLabel[item.cabinet] }}
       </template>
@@ -81,7 +82,7 @@ function deleteFromClientLessons() {
         {{ formatNameInitials(item.teacher) }}
       </NuxtLink>
     </div>
-    <div style="width: 90px">
+    <div style="width: 70px">
       <NuxtLink :to="{ name: 'groups-id', params: { id: item.group.id } }" @click.stop>
         ГР-{{ item.group.id }}
       </NuxtLink>
@@ -89,11 +90,15 @@ function deleteFromClientLessons() {
     <div style="width: 100px">
       {{ ProgramShortLabel[item.group.program] }}
     </div>
-    <div style="width: 70px">
-      <span v-if="item.quarter">
-        {{ QuarterShortLabel[item.quarter] }}
+
+    <div style="width: 130px">
+      <span v-if="item.client_lesson?.price">
+        {{ item.client_lesson.price }} ₽
+        -
+        №{{ item.client_lesson.contract_id }}
       </span>
     </div>
+
     <div style="width: 100px" class="lesson-item__icons">
       <div>
         <v-icon v-if="item.topic" :icon="mdiBookOpenOutline" :class="{ 'opacity-3': !item.is_topic_verified }" />
@@ -104,11 +109,12 @@ function deleteFromClientLessons() {
       <div>
         <v-icon v-if="item.has_files" :icon="mdiPaperclip" />
       </div>
+      <div class="pl-2">
+        <LessonStatusCircles :item="item" />
+      </div>
     </div>
-    <div style="width: 50px">
-      <LessonStatusCircles :item="item" />
-    </div>
-    <div style="width: 100px">
+
+    <div style="width: 80px">
       <template v-if="item.client_lesson">
         <span :class="{ 'text-error': item.client_lesson.status === 'absent' }">
           {{ ClientLessonStatusLabel[item.client_lesson.status] }}
@@ -131,6 +137,9 @@ function deleteFromClientLessons() {
     </div>
     <div class="text-gray opacity-5 text-right pr-1">
       {{ item.seq }}
+      <span v-if="item.quarter">
+        / {{ item.quarter[1] }}
+      </span>
     </div>
   </div>
 </template>
@@ -149,7 +158,10 @@ function deleteFromClientLessons() {
     align-items: center;
     gap: 4px;
     & > div {
-      width: 26px;
+      $width: 25px;
+      width: $width;
+      max-width: $width;
+      min-width: $width;
     }
   }
   &__inline-scores {
