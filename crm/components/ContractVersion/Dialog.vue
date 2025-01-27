@@ -2,7 +2,6 @@
 import type { PrintDialog } from '#build/components'
 import { mdiArrowRightThin } from '@mdi/js'
 import { clone } from 'rambda'
-import type { ContractVersionProgramPrice, ContractVersionProgramResource } from '~/utils/types'
 
 const emit = defineEmits<{
   updated: [m: ContractEditMode, c: ContractResource | ContractVersionListResource]
@@ -309,7 +308,7 @@ const lessonsConducted = computed<LessonsConducted>(() => {
   return result
 })
 
-function isPriceError(price: ContractVersionProgramPrice, program: ContractVersionProgramResource) {
+function isPriceLessonsError(price: ContractVersionProgramPrice, program: ContractVersionProgramResource) {
   // нет группы и проведено 0 занятий
   if ((!program.group_id && !program.lessons_conducted) || program.prices.some(p => p.lessons === '')) {
     return false
@@ -319,9 +318,29 @@ function isPriceError(price: ContractVersionProgramPrice, program: ContractVersi
     && lessonsSum !== program.lessons_total
 }
 
-function getCorrectPrice(program: ContractVersionProgramResource) {
+function getCorrectedPriceLessons(program: ContractVersionProgramResource) {
   const lessonsSum = program.prices.slice(0, program.prices.length - 1).reduce((carry, x) => asInt(x.lessons) + carry, 0)
   return program.lessons_total - lessonsSum
+}
+
+function isPriceError(price: ContractVersionProgramPrice, program: ContractVersionProgramResource) {
+  // if (program.prices.some(p => p.price === '')) {
+  //   return false
+  // }
+  let skip = 0
+  for (const p of program.prices) {
+    const lessons = asInt(p.lessons)
+    const currentPrices = [...new Set(program.client_lesson_prices.slice(skip, lessons))]
+    if (currentPrices.length === 0) {
+      return false
+    }
+    if (p.id === price.id) {
+      console.log(currentPrices, asInt(price.price))
+      const isCorrectPrice = currentPrices.length === 1 && currentPrices[0] === asInt(price.price)
+      return !isCorrectPrice
+    }
+    skip += lessons
+  }
 }
 
 function removePrice(p: ContractVersionProgramResource) {
@@ -490,11 +509,11 @@ defineExpose({ edit, newContract, newVersion })
                       type="number"
                       hide-spin-buttons
                       density="compact"
-                      :class="{ 'text-error': isPriceError(price, p) }"
+                      :class="{ 'text-error': isPriceLessonsError(price, p) }"
                     >
-                      <template v-if="isPriceError(price, p)" #append>
+                      <template v-if="isPriceLessonsError(price, p)" #append>
                         <div class="pr-4 text-gray">
-                          {{ getCorrectPrice(p) }}
+                          {{ getCorrectedPriceLessons(p) }}
                         </div>
                       </template>
                     </v-text-field>
@@ -521,6 +540,7 @@ defineExpose({ edit, newContract, newVersion })
                       type="number"
                       hide-spin-buttons
                       density="compact"
+                      :class="{ 'text-error': isPriceError(price, p) }"
                     />
                   </div>
                 </td>

@@ -19,7 +19,7 @@ class ContractVersionProgramResource extends JsonResource
         return extract_fields($this, [
             'program', 'lessons_planned', 'prices',
             'lessons_conducted', 'lessons_to_be_conducted',
-            'lessons_total'
+            'lessons_total', 'client_lesson_prices'
         ], [
             'group_id' => $this->group?->id,
         ]);

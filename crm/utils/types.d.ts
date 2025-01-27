@@ -279,6 +279,7 @@ declare global {
     lessons_conducted: number
     lessons_to_be_conducted: number
     lessons_total: number
+    client_lesson_prices: number[]
     group_id: ?number
   }
 

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Illuminate\Support\Collection;
 
 class ContractVersionProgram extends Model
 {
@@ -98,6 +99,18 @@ class ContractVersionProgram extends Model
             ->where('is_free', false)
             ->where('date', '<=', now()->format('Y-m-d'))
             ->count();
+    }
+
+    /**
+     * @return Collection<int, int>
+     */
+    public function getClientLessonPricesAttribute()
+    {
+        return $this->clientLessons()
+            ->join('lessons as l', 'l.id', '=', 'client_lessons.lesson_id')
+            ->where('l.is_free', false)
+            ->orderByRaw('l.date asc, l.time asc')
+            ->pluck('client_lessons.price');
     }
 
     public function getLessonsTotalAttribute(): int
