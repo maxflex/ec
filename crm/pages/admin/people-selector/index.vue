@@ -110,8 +110,8 @@ nextTick(() => {
 <style lang="scss">
 .people-selector {
   &__filters {
-    --height: auto !important;
     padding-bottom: 24px !important;
+    overflow: hidden !important;
     .filters__inputs {
       width: 100%;
       & > div {
