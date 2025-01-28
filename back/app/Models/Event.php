@@ -38,7 +38,7 @@ class Event extends Model
         }
 
         return Carbon::parse($this->date.' '.$this->time)
-            ->addMinutes($this->duration)
+            ->addMinutes(intval($this->duration))
             ->format('H:i');
     }
 }

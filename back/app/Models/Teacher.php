@@ -88,10 +88,11 @@ class Teacher extends Authenticatable implements HasTeeth, CanLogin
                 'dateTime' => $lesson->date_time,
                 'sum' => $lesson->price,
                 'comment' => sprintf(
-                    'занятие %s, группа %d, кабинет %s',
-                    $lesson->date_time->format('d.m.y в H:i'),
+                    'занятие %s, группа %d, кабинет %s, %s',
+                    $lesson->date_time->format('в H:i'),
                     $lesson->group_id,
-                    filter_var($lesson->cabinet->value, FILTER_SANITIZE_NUMBER_INT)
+                    filter_var($lesson->cabinet->value, FILTER_SANITIZE_NUMBER_INT),
+                    $lesson->group->program->getShortName(),
                 )
             ];
         }
@@ -102,7 +103,7 @@ class Teacher extends Authenticatable implements HasTeeth, CanLogin
                 'dateTime' => $payment->created_at->format('Y-m-d H:i:s'),
                 'sum' => $payment->sum * ($payment->is_return ? 1 : -1),
                 'comment' => sprintf(
-                    '%s (обучение)',
+                    'выплата, %s',
                     $payment->method->getTitle()
                 )
             ];
@@ -123,8 +124,9 @@ class Teacher extends Authenticatable implements HasTeeth, CanLogin
                 'dateTime' => $report->created_at->format('Y-m-d H:i:s'),
                 'sum' => $report->price,
                 'comment' => sprintf(
-                    'отчет по ученику %s',
-                    $report->client->formatName()
+                    'отчет по ученику %s, %s',
+                    $report->client->formatName(),
+                    $report->program->getShortName(),
                 )
             ];
         }
