@@ -48,11 +48,11 @@ const model = defineModel<boolean>({
     color: black;
     z-index: 9999;
     border-color: #ffcdd2;
-    //border-color: rgb(var(--v-theme-error));
   }
   &--success {
-    background: rgba(var(--v-theme-success), 0.1);
-    color: rgb(var(--v-theme-success));
+    background: #eaf5f1;
+    color: black;
+    border-color: rgb(var(--v-theme-success));
     z-index: 999;
   }
 }

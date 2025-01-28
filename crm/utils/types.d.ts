@@ -1130,6 +1130,7 @@ declare global {
     minutes_late: number
     scores: ClientLessonScore[]
     program: Program
+    comment: ?string
     lesson: {
       id: number
       date: string

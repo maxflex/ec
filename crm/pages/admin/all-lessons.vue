@@ -153,11 +153,12 @@ nextTick(() => {
       </div>
 
       <Vue3SlideUpDown :model-value="expanded.date === d && !expanded.loading" :duration="200">
-        <LessonAdminItem
+        <LessonAdminTeacherItem
           v-for="lesson in lessons"
           :key="lesson.id"
           :checkboxes="[]"
-          :item="lesson" @edit="lessonDialog?.edit"
+          :item="lesson"
+          @edit="lessonDialog?.edit"
         />
       </Vue3SlideUpDown>
 
@@ -223,9 +224,6 @@ nextTick(() => {
         & > div {
           &:nth-child(2) {
             //width: 150px !important;
-          }
-          &:last-child {
-            display: none;
           }
         }
         .table-actionss {

@@ -3,7 +3,6 @@ import { clone } from 'rambda'
 
 const emit = defineEmits<{
   updated: [e: EventListResource]
-  deleted: [e: EventResource]
 }>()
 const { width, dialog } = useDialog('default')
 const timeMask = { mask: '##:##' }
@@ -21,6 +20,9 @@ const modelDefaults: EventResource = {
   is_afterclass: false,
 }
 const item = ref<EventResource>(modelDefaults)
+const route = useRoute()
+const router = useRouter()
+const { showGlobalMessage } = useGlobalMessage()
 
 function create(year: Year) {
   itemId.value = undefined
@@ -60,17 +62,22 @@ async function destroy() {
     return
   }
   deleting.value = true
-  const { data, status } = await useHttp(`common/events/${item.value.id}`, {
-    method: 'delete',
-  })
-  if (status.value === 'error') {
+  const { error } = await useHttp(
+    `common/events/${item.value.id}`,
+    {
+      method: 'delete',
+    },
+  )
+  if (error.value) {
     deleting.value = false
+    return
   }
-  else if (data.value) {
-    emit('deleted', item.value)
-    dialog.value = false
-    setTimeout(() => deleting.value = false, 300)
+  dialog.value = false
+  if (route.name === 'events-id') {
+    showGlobalMessage('Событие удалено', 'success')
+    await router.push({ name: 'events' })
   }
+  setTimeout(() => deleting.value = false, 300)
 }
 
 defineExpose({ create, edit })

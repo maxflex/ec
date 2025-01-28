@@ -26,6 +26,7 @@ class JournalController extends Controller
             ->flatten()
             ->map(fn($lesson) => (object)[
                 'lesson' => $lesson,
+                'comment' => null,
                 'status' => null,
                 'minutes_late' => null,
                 'scores' => [],

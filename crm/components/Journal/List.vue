@@ -58,17 +58,27 @@ const { items } = defineProps<{
             </div>
           </td>
           <td>
-            <div v-if="item.scores.length">
-              <div>
+            <div class="journal__data">
+              <div v-if="item.scores.length">
+                <div>
+                  Оценки:
+                </div>
                 <div class="journal__scores">
                   <div v-for="(score, i) in item.scores" :key="i">
-                    <span :class="`score score--${score.score}`">
+                    <span :class="`journal-score journal-score--${score.score}`">
                       {{ score.score }}
-                    </span>
-                    <div>
-                      {{ score.comment }}
-                    </div>
+                    </span><template v-if="score.comment">
+                      – {{ score.comment }}
+                    </template>
                   </div>
+                </div>
+              </div>
+              <div v-if="item.comment">
+                <div>
+                  Комментарий:
+                </div>
+                <div>
+                  {{ item.comment }}
                 </div>
               </div>
             </div>
@@ -102,13 +112,6 @@ const { items } = defineProps<{
   &__scores {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-top: 4px;
-    & > div {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
   }
   &__data {
     display: flex;
@@ -128,6 +131,21 @@ const { items } = defineProps<{
         }
       }
     }
+  }
+}
+.journal-score {
+  font-weight: bold;
+  &--4,
+  &--5 {
+    color: rgb(var(--v-theme-success));
+  }
+  &--3 {
+    color: #dc8f03;
+  }
+
+  &--2,
+  &--1 {
+    color: rgb(var(--v-theme-error));
   }
 }
 </style>

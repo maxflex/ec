@@ -19,6 +19,7 @@ class Event extends Model
 
     protected $casts = [
         'is_afterclass' => 'boolean',
+        'duration' => 'int',
     ];
 
     public function participants(): HasMany
@@ -38,7 +39,7 @@ class Event extends Model
         }
 
         return Carbon::parse($this->date.' '.$this->time)
-            ->addMinutes(intval($this->duration))
+            ->addMinutes($this->duration)
             ->format('H:i');
     }
 }
