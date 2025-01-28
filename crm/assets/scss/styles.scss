@@ -1,6 +1,23 @@
 main {
   height: 100vh;
   overflow-y: scroll;
+
+  // стандартная ширина MacBook Air 13" (у преподов)
+  min-width: 1440px;
+
+  // если первыми на странице идут фильтры,
+  // то они sticky
+  & > .filters:first-child {
+    z-index: 1;
+    position: sticky;
+    top: 0;
+    max-width: 100%;
+    overflow-x: scroll;
+  }
+}
+
+.v-application__wrap {
+  overflow-x: scroll;
 }
 
 a:not(.v-list-item):not(.table-item) {
@@ -74,16 +91,6 @@ a.table-item {
       }
     }
   }
-}
-
-// если первыми на странице идут фильтры,
-// то они sticky
-.v-main > .filters:first-child {
-  z-index: 1;
-  position: sticky;
-  top: 0;
-  max-width: 100%;
-  overflow-x: scroll;
 }
 
 .v-select__content {

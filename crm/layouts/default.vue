@@ -13,7 +13,7 @@ const { globalMessage } = useGlobalMessage()
 <template>
   <ClientOnly>
     <v-app>
-      <v-navigation-drawer permanent absolute>
+      <v-navigation-drawer permanent>
         <MenuBase />
       </v-navigation-drawer>
       <v-main :class="currentPageClass">
