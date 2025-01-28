@@ -102,6 +102,7 @@ nextTick(loadData)
 
 <style lang="scss">
 .report-view {
+  flex: 1;
   &__content {
     margin-top: 30px;
     display: flex;
@@ -119,6 +120,7 @@ nextTick(loadData)
     }
   }
   &__final {
+    flex: initial !important;
     border-top: 1px solid rgb(var(--v-theme-border));
     margin-top: 20px;
     padding-top: 20px;

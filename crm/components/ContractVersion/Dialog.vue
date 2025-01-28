@@ -129,6 +129,7 @@ function onProgramsSaved(programs: Program[]) {
       lessons_total: 0,
       lessons_planned: '',
       group_id: null,
+      client_lesson_prices: [],
     })
   }
   nextTick(() => programsInput.value[programsInput.value.length - 1].focus())

@@ -34,10 +34,14 @@ const availableAdminStatuses = [
 
 const availableStatuses = isTeacher ? availableTeacherStatuses : availableAdminStatuses
 
-// если статус = разрабатывается или на проверку, или пустой отчет,
-// то препод может редактировать все. Если остальные типы, то отчет нельзя редактировать
 const isDisabled = computed(() => {
-  return isTeacher && !availableTeacherStatuses.includes(item.value.status) && item.value.status !== 'refused'
+// если статус = черновик или на проверку, или пустой отчет,
+// то препод может редактировать все. Если остальные типы, то отчет нельзя редактировать
+  if (isTeacher) {
+    return !availableTeacherStatuses.includes(item.value.status) && item.value.status !== 'refused'
+  }
+  // админ не может редактировать статус "черновик"
+  return item.value.status === 'draft'
 })
 
 async function edit() {

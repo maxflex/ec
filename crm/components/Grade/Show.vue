@@ -18,6 +18,9 @@ async function loadData() {
 
 const quarter = ref<Quarter>('q1')
 const selectedQuarter = computed(() => item.value ? item.value.quarters[quarter.value] : undefined)
+// оценку может менять:
+//  – либо владелец последнего занятия в четверти
+//  – либо администратор
 const isDisabled = computed(() => isTeacher && selectedQuarter.value?.last_teacher_id !== user?.id)
 
 async function setFinalGrade(score: LessonScore) {
@@ -94,7 +97,11 @@ nextTick(loadData)
           Оценка за четверть:
         </span>
       </div>
-      <v-menu v-if="!isDisabled" :close-on-content-click="isChangeGradeSubmenu" :width="160">
+      <v-menu
+        :disabled="isDisabled"
+        :close-on-content-click="isChangeGradeSubmenu"
+        :width="160"
+      >
         <template #activator="{ props }">
           <span
             :class="`score score--${selectedQuarter.grade.grade}`"
@@ -125,6 +132,7 @@ nextTick(loadData)
       </v-menu>
       <div v-if="selectedQuarter.grade.teacher" class="text-gray pl-2 flex-1-0 text-right">
         <UiPerson :item="selectedQuarter.grade.teacher" teacher-format="full" />
+        {{ formatDateTime(selectedQuarter.grade.created_at) }}
       </div>
     </div>
     <div v-else class="grades__final">

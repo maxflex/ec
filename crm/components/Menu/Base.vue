@@ -10,6 +10,7 @@ const { isAdmin, isTeacher } = useAuthStore()
   <MenuAdminMenu v-if="isAdmin" />
   <MenuTeacherMenu v-else-if="isTeacher" />
   <MenuClientMenu v-else />
+  <AppUpdateBtn />
 </template>
 
 <style lang="scss">

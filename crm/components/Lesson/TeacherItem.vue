@@ -70,7 +70,7 @@ const isConductDisabled = item.date > today() || item.status === 'cancelled' || 
         @click="emit('view', item.id)"
       />
     </div>
-    <div style="width: 90px; position: relative;" />
+    <div style="width: 70px; position: relative;" />
     <div style="width: 120px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
@@ -82,7 +82,7 @@ const isConductDisabled = item.date > today() || item.status === 'cancelled' || 
     <div v-if="item.teacher" style="width: 150px">
       {{ formatNameInitials(item.teacher) }}
     </div>
-    <div style="width: 90px">
+    <div style="width: 70px">
       <NuxtLink :to="{ name: 'groups-id', params: { id: item.group.id } }" @click.stop>
         ГР-{{ item.group.id }}
       </NuxtLink>
@@ -90,13 +90,12 @@ const isConductDisabled = item.date > today() || item.status === 'cancelled' || 
     <div style="width: 140px">
       {{ ProgramShortLabel[item.group.program] }}
     </div>
-    <div style="width: 80px">
+    <div style="width: 70px">
       <span v-if="item.quarter">
         {{ QuarterShortLabel[item.quarter] }}
       </span>
     </div>
-
-    <div style="width: 160px" class="lesson-item__icons">
+    <div style="width: 100px" class="lesson-item__icons">
       <div>
         <v-icon v-if="item.topic" :icon="mdiBookOpenOutline" :class="{ 'opacity-3': !item.is_topic_verified }" />
       </div>
@@ -107,9 +106,11 @@ const isConductDisabled = item.date > today() || item.status === 'cancelled' || 
         <v-icon v-if="item.has_files" :icon="mdiPaperclip" />
       </div>
     </div>
-
-    <div style="width: 50px; flex: initial">
-      <LessonStatusCircles :item="item" />
+    <div style="width: 150px; flex: initial; line-height: 17px">
+      <LessonStatus2 :item="item" />
+      <div v-if="item.is_unplanned" class="text-purple">
+        внеплановое
+      </div>
     </div>
   </div>
 </template>

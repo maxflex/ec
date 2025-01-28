@@ -53,7 +53,7 @@ const { item, checkboxes } = defineProps<{
       </v-tooltip>
     </div>
     <div style="width: 120px">
-      <LessonStatus :item="item" show-label :size="8" />
+      <LessonStatus2 :item="item" show-label :size="8" />
     </div>
     <div style="flex: initial">
       <UiCircle v-if="item.is_unplanned" color="purple" :size="8">

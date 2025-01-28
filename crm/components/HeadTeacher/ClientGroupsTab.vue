@@ -23,6 +23,6 @@ const { items, indexPageData } = useIndex<GroupListResource, GroupFilters>(
     <template #filters>
       <UiYearSelector v-model="filters.year" density="comfortable" />
     </template>
-    <GroupList :items="items" />
+    <GroupHeadTeacherList :items="items" />
   </UiIndexPage>
 </template>

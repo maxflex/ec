@@ -38,6 +38,6 @@ const filteredItems = computed(() => selectedProgram.value
         density="comfortable"
       />
     </template>
-    <GroupList :items="filteredItems" blur-others />
+    <GroupTeacherList :items="filteredItems" blur-others />
   </UiIndexPage>
 </template>

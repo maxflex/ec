@@ -83,7 +83,7 @@ nextTick(loadData)
     <Schedule v-else-if="selectedTab === 'schedule'" :client-id="client.id" show-teeth head-teacher program-filter />
     <ExamScoreTab v-else-if="selectedTab === 'examScores'" :client-id="client.id" />
     <GradeTab v-else-if="selectedTab === 'grades'" :client-id="client.id" />
-    <ReportTab v-else-if="selectedTab === 'reports'" :client-id="client.id" />
+    <ReportHeadTeacherTab v-else-if="selectedTab === 'reports'" :client-id="client.id" />
     <ClientTestTab v-else-if="selectedTab === 'tests'" :client-id="client.id" />
   </template>
 </template>

@@ -91,14 +91,6 @@ function deleteFromClientLessons() {
       {{ ProgramShortLabel[item.group.program] }}
     </div>
 
-    <div style="width: 130px">
-      <span v-if="item.client_lesson?.price">
-        {{ item.client_lesson.price }} ₽
-        -
-        №{{ item.client_lesson.contract_id }}
-      </span>
-    </div>
-
     <div style="width: 100px" class="lesson-item__icons">
       <div>
         <v-icon v-if="item.topic" :icon="mdiBookOpenOutline" :class="{ 'opacity-3': !item.is_topic_verified }" />
