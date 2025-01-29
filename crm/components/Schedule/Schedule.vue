@@ -192,6 +192,8 @@ async function loadVacations() {
   }
 }
 
+const examName = ref<Exam>('egeChem')
+
 async function loadExamDates() {
   if (!program) {
     return
@@ -204,6 +206,7 @@ async function loadExamDates() {
     },
   )
   if (data.value && data.value.data.length) {
+    examName.value = data.value.data[0].exam
     const { dates } = data.value.data[0]
     for (const date of dates) {
       examDates.value[date] = true
@@ -329,6 +332,12 @@ nextTick(loadData)
           {{ dayLabels[getDay(d)] }}
         </span>
       </div>
+      <div v-if="vacations[d]" class="schedule-extra schedule-extra--vacation">
+        Государственный праздник
+      </div>
+      <div v-if="examDates[d]" class="schedule-extra schedule-extra--exam-date">
+        Экзамен ({{ ExamLabel[examName] }})
+      </div>
       <template v-for="item in itemsByDate[d]">
         <EventItem
           v-if="isEvent(item)"
@@ -389,12 +398,6 @@ nextTick(loadData)
           @select="toggleCheckboxes"
         />
       </template>
-      <div v-if="vacations[d]" class="schedule-event schedule-event--vacation">
-        Государственный праздник
-      </div>
-      <div v-if="examDates[d]" class="schedule-event schedule-event--exam">
-        Экзамен
-      </div>
     </div>
   </div>
   <LessonDialog ref="lessonDialog" />
@@ -466,28 +469,14 @@ nextTick(loadData)
       }
     }
   }
-  &-event {
-    padding: 20px 20px 20px 110px;
-    position: relative;
-    &:after {
-      content: '';
-      width: calc(100% - 90px);
-      height: 100%;
-      position: absolute;
-      left: 90px;
-      top: 0;
-      border-radius: 8px;
-      pointer-events: none;
+  &-extra {
+    padding-left: 100px;
+    font-weight: bold;
+    &--exam-date {
+      color: rgb(var(--v-theme-secondary));
     }
     &--vacation {
-      &:after {
-        background: rgba(var(--v-theme-red), 0.08);
-      }
-    }
-    &--exam {
-      &:after {
-        background: rgba(var(--v-theme-success), 0.08);
-      }
+      color: rgb(var(--v-theme-red));
     }
   }
 }
