@@ -6,14 +6,18 @@ interface Filters {
   requirement?: ReportRequirement
 }
 
+const { user } = useAuthStore()
+
 const filters = ref<Filters>(loadFilters({
   year: currentAcademicYear(),
 }))
+
 const { items, indexPageData } = useIndex<ReportListResource, Filters>(
   `reports`,
   filters,
   {
     staticFilters: {
+      teacher_id: user?.id,
       exclude_not_required: 1,
     },
   },

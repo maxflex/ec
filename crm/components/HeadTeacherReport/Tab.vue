@@ -16,6 +16,7 @@ const { items, indexPageData } = useIndex<HeadTeacherReportResource, YearFilters
     tabName,
     staticFilters: {
       teacher_id: teacherId,
+      requirement: 'created',
     },
   },
 )

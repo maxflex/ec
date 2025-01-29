@@ -17,12 +17,8 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
      */
     public function index(Request $request)
     {
-        // классрук - только созданные отчеты
-        if ($request->has('client_id') && auth()->user()->is_head_teacher) {
-            $request->merge([
-                'requirement' => 'created'
-            ]);
-        } else {
+        // классруку можно видеть не только свои отчеты
+        if (!auth()->user()->is_head_teacher) {
             $request->merge([
                 'teacher_id' => auth()->id(),
             ]);
