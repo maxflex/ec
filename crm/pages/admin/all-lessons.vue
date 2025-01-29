@@ -177,7 +177,6 @@ nextTick(() => {
     display: flex;
     flex-direction: column;
     border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
-    //gap: 20px;
 
     &.week-separator {
       border-bottom: 2px solid rgb(var(--v-theme-gray));
@@ -210,20 +209,22 @@ nextTick(() => {
     .slide-up-down__container {
       display: flex;
       flex-direction: column;
+      gap: 20px;
+
       .lesson-item {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         column-gap: 20px;
         row-gap: 10px;
         flex-wrap: wrap;
 
-        --height: 45px;
-        height: var(--height);
-        min-height: var(--height);
+        //--height: 45px;
+        //height: var(--height);
+        //min-height: var(--height);
         //padding: 16px 20px;
         & > div {
-          &:nth-child(2) {
-            //width: 150px !important;
+          &:last-child {
+            display: none;
           }
         }
         .table-actionss {

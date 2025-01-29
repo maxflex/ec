@@ -29,7 +29,6 @@ const isConductDisabled = item.date > today() || item.status === 'cancelled' || 
 <template>
   <div
     :id="`lesson-${item.id}`"
-    :class="`lesson-item--${item.status}`"
     class="lesson-item"
   >
     <div v-if="Object.keys(checkboxes).length" class="lesson-item__checkbox">
@@ -49,7 +48,7 @@ const isConductDisabled = item.date > today() || item.status === 'cancelled' || 
           />
         </template>
         <v-list>
-          <v-list-item @click="emit('edit', item.id)">
+          <v-list-item :disabled="item.teacher.id !== user?.id" @click="emit('edit', item.id)">
             редактировать
           </v-list-item>
           <v-list-item
@@ -74,7 +73,7 @@ const isConductDisabled = item.date > today() || item.status === 'cancelled' || 
     <div style="width: 120px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
-    <div style="width: 80px">
+    <div style="width: 60px">
       <template v-if="item.cabinet">
         {{ CabinetAllLabel[item.cabinet] }}
       </template>
@@ -95,7 +94,7 @@ const isConductDisabled = item.date > today() || item.status === 'cancelled' || 
         {{ QuarterShortLabel[item.quarter] }}
       </span>
     </div>
-    <div style="width: 100px" class="lesson-item__icons">
+    <div style="width: 90px" class="lesson-item__icons">
       <div>
         <v-icon v-if="item.topic" :icon="mdiBookOpenOutline" :class="{ 'opacity-3': !item.is_topic_verified }" />
       </div>
@@ -106,11 +105,14 @@ const isConductDisabled = item.date > today() || item.status === 'cancelled' || 
         <v-icon v-if="item.has_files" :icon="mdiPaperclip" />
       </div>
     </div>
-    <div style="width: 150px; flex: initial; line-height: 17px">
+    <div style="width: 150px; flex: initial; line-height: 18px; margin-top: 3px">
       <LessonStatus2 :item="item" />
       <div v-if="item.is_unplanned" class="text-purple">
         внеплановое
       </div>
+    </div>
+    <div class="text-gray opacity-5 text-right">
+      {{ item.seq }}
     </div>
   </div>
 </template>
@@ -139,9 +141,6 @@ const isConductDisabled = item.date > today() || item.status === 'cancelled' || 
     & > div {
       display: flex;
     }
-  }
-  &--cancelled {
-    opacity: 0.4;
   }
   .table-actionss {
     top: -16px;

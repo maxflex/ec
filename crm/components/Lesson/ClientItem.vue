@@ -52,13 +52,11 @@ const { item, checkboxes } = defineProps<{
         </div>
       </v-tooltip>
     </div>
-    <div style="width: 120px">
-      <LessonStatus2 :item="item" show-label :size="8" />
-    </div>
-    <div style="flex: initial">
-      <UiCircle v-if="item.is_unplanned" color="purple" :size="8">
+    <div style="width: 150px; flex: initial; line-height: 18px; margin-top: 3px">
+      <LessonStatus2 :item="item" />
+      <div v-if="item.is_unplanned" class="text-purple">
         внеплановое
-      </UiCircle>
+      </div>
     </div>
   </div>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiAccountGroup, mdiVideo } from '@mdi/js'
+import { mdiVideo } from '@mdi/js'
 
 const { items, selectable } = defineProps<{
   items: GroupListResource[]
@@ -53,19 +53,13 @@ function onClick(g: GroupListResource) {
       </div>
       <div style="width: 100px">
         <template v-if="item.lessons_count">
-          {{ item.lessons_count }}
-          <span v-if="item.lessons_free_count" class="text-deepOrange">
-            + {{ item.lessons_free_count }}
-          </span>
+          {{ item.lessons_count + item.lessons_free_count }}
           {{ plural(item.lessons_count, ['урок', 'урока', 'уроков'], false) }}
         </template>
       </div>
       <div style="width: 80px">
         <template v-if="item.lessons_conducted_count">
-          {{ item.lessons_conducted_count }}
-          <span v-if="item.lessons_conducted_free_count" class="text-deepOrange">
-            + {{ item.lessons_conducted_free_count }}
-          </span>
+          {{ item.lessons_conducted_count + item.lessons_conducted_free_count }}
           {{ plural(item.lessons_conducted_count, ['урок', 'урока', 'уроков'], false) }}
         </template>
         <span v-else-if="item.first_lesson_date" class="text-orange">
@@ -73,8 +67,7 @@ function onClick(g: GroupListResource) {
         </span>
       </div>
       <div style="width: 60px">
-        <v-icon :icon="mdiAccountGroup" class="mr-2" style="top: -3px; position: relative" />
-        {{ item.client_groups_count }}
+        {{ item.client_groups_count }} уч.
       </div>
       <div style="width: 50px">
         <v-tooltip v-if="item.zoom.id" location="bottom">

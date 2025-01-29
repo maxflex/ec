@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiAccountGroup, mdiVideo } from '@mdi/js'
+import { mdiVideo } from '@mdi/js'
 
 const { items, selectable } = defineProps<{
   items: GroupListResource[]
@@ -73,8 +73,7 @@ function onClick(g: GroupListResource) {
         </span>
       </div>
       <div style="width: 60px">
-        <v-icon :icon="mdiAccountGroup" class="mr-2" style="top: -3px; position: relative" />
-        {{ item.client_groups_count }}
+        {{ item.client_groups_count }} уч.
       </div>
       <div style="width: 50px">
         <v-tooltip v-if="item.zoom.id" location="bottom">

@@ -103,7 +103,7 @@ function deleteFromClientLessons() {
       </div>
     </div>
 
-    <div style="width: 80px">
+    <div style="width: 110px; line-height: 18px">
       <template v-if="item.client_lesson">
         <span :class="{ 'text-error': item.client_lesson.status === 'absent' }">
           {{ ClientLessonStatusLabel[item.client_lesson.status] }}
@@ -112,6 +112,9 @@ function deleteFromClientLessons() {
       <span v-else class="text-gray">
         {{ LessonStatusLabel[item.status] }}
       </span>
+      <div v-if="item.is_unplanned" class="text-purple">
+        внеплановое
+      </div>
     </div>
     <div style="flex: initial">
       <div v-if="item.client_lesson" class="lesson-item__inline-scores">

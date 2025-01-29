@@ -22,7 +22,6 @@ const isConductDisabled = item.status !== 'conducted'
 <template>
   <div
     :id="`lesson-${item.id}`"
-    :class="`lesson-item--${item.status}`"
     class="lesson-item"
   >
     <div v-if="Object.keys(checkboxes).length" class="lesson-item__checkbox">
@@ -98,7 +97,7 @@ const isConductDisabled = item.status !== 'conducted'
         бесплатное для детей
       </div>
     </div>
-    <div class="text-gray opacity-5 text-right pr-1">
+    <div class="text-gray opacity-5 text-right">
       {{ item.seq }}
       <span v-if="item.quarter">
         / {{ item.quarter[1] }}
