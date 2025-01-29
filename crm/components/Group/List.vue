@@ -10,14 +10,14 @@ const { items, selectable } = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  select: [g: GroupListResource]
+  selected: [g: GroupListResource]
 }>()
 
 const { user } = useAuthStore()
 
 function onClick(g: GroupListResource) {
   if (selectable) {
-    emit('select', g)
+    emit('selected', g)
   }
 }
 </script>

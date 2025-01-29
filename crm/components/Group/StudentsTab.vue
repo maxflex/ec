@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import type { GroupSelectorDialog } from '#build/components'
-import { mdiShuffleVariant } from '@mdi/js'
+import { mdiAccountArrowRightOutline } from '@mdi/js'
 
 const { group } = defineProps<{ group: GroupResource }>()
 
-const tab = ref<'SwampSelector' | 'StudentsTab'>('StudentsTab')
+const tab = ref<'SwampSelector' | 'GroupSelector' | 'StudentsTab'>('StudentsTab')
 const loading = ref(true)
 const items = ref<ClientGroupResource[]>([])
-const groupSelectorDialog = ref<InstanceType<typeof GroupSelectorDialog>>()
 const isEditable = useAuthStore().user?.entity_type === EntityTypeValue.user
+
+// contract_version_program_id ученика, которого переносим в другую группу
+const moveCvpId = ref<number>()
 
 // удалить из группы
 async function removeFromGroup(gc: ClientGroupResource) {
@@ -22,16 +23,22 @@ async function removeFromGroup(gc: ClientGroupResource) {
   })
 }
 
+async function groupSelectorTab(cvpId: number) {
+  moveCvpId.value = cvpId
+  tab.value = 'GroupSelector'
+}
+
 // переместить в другую группу
-function moveToAnotherGroup(groupId: number, cvpId: number) {
+function moveToAnotherGroup(g: GroupListResource) {
+  tab.value = 'StudentsTab'
   removeFromGroup(
-    items.value.find(i => i.contract_version_program_id === cvpId)!,
+    items.value.find(i => i.contract_version_program_id === moveCvpId.value)!,
   )
   useHttp(`client-groups`, {
     method: 'post',
     params: {
-      group_id: groupId,
-      contract_version_program_id: cvpId,
+      group_id: g.id,
+      contract_version_program_id: moveCvpId.value,
     },
   })
 }
@@ -63,8 +70,14 @@ nextTick(loadData)
     @back="tab = 'StudentsTab'"
     @selected="loadData()"
   />
+  <GroupSelector
+    v-else-if="tab === 'GroupSelector'"
+    :group="group"
+    @back="tab = 'StudentsTab'"
+    @selected="moveToAnotherGroup"
+  />
   <UiIndexPage v-else :data="{ loading, noData: false }">
-    <div class="table table--actions-on-hover">
+    <div class="table table--hover table--actions-on-hover">
       <div v-for="item in items" :key="item.id">
         <div style="width: 280px">
           <UiAvatar :item="item.client" :size="38" class="mr-4" />
@@ -85,38 +98,27 @@ nextTick(loadData)
               />
             </template>
             <v-list>
-              <v-list-item
-                @click="groupSelectorDialog?.open(
-                  group.year,
-                  group.program!,
-                  item.contract_version_program_id,
-                )"
-              >
+              <v-list-item @click="groupSelectorTab(item.contract_version_program_id)">
                 <template #prepend>
-                  <v-icon :icon="mdiShuffleVariant" />
+                  <v-icon :icon="mdiAccountArrowRightOutline" />
                 </template>
                 переместить в другую группу
               </v-list-item>
-              <v-list-item @click="removeFromGroup(item)">
+              <v-list-item class="text-error" @click="removeFromGroup(item)">
                 <template #prepend>
                   <v-icon icon="$delete" />
                 </template>
-                удалить из этой группы
+                удалить из текущей группы
               </v-list-item>
             </v-list>
           </v-menu>
         </div>
       </div>
-      <div v-if="isEditable" style="border-bottom: none;">
+      <div v-if="isEditable" style="border-bottom: none; background: white">
         <UiIconLink @click="tab = 'SwampSelector'">
-          добавить в текущую группу
+          добавить ученика в текущую группу
         </UiIconLink>
       </div>
     </div>
   </UiIndexPage>
-
-  <GroupSelectorDialog
-    ref="groupSelectorDialog"
-    @select="moveToAnotherGroup"
-  />
 </template>

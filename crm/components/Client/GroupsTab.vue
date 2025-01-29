@@ -103,7 +103,7 @@ nextTick(loadData)
         назад
       </v-btn>
     </template>
-    <GroupList :items="groups" selectable @select="onGroupSelected" />
+    <GroupList :items="groups" selectable @selected="onGroupSelected" />
   </UiIndexPage>
   <UiIndexPage v-else :data="{ loading, noData }">
     <template #filters>

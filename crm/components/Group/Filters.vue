@@ -19,8 +19,8 @@ const model = defineModel<GroupFilters>({ required: true })
     :disabled="disabled"
   />
   <TeacherSelector
+    v-if="!disabled"
     v-model="model.teacher_id"
     density="comfortable"
-    :disabled="disabled"
   />
 </template>
