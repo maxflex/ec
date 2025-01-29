@@ -7,12 +7,17 @@ import type {
   LessonConductDialog,
   LessonDialog,
 } from '#build/components'
+import { LessonItemAdminClient, LessonItemAdminGroup, LessonItemAdminTeacher, LessonItemClientLK, LessonItemHeadTeacherLK, LessonItemTeacherLK } from '#components'
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { groupBy } from 'rambda'
 import { formatDateMonth } from '~/utils'
 
-// потому что props ещё есть ниже
-const properties = defineProps<{
+interface Filters {
+  year: Year
+  hideEmptyDates: number
+}
+
+const { groupId, teacherId, clientId, program, showTeeth, year, programFilter, headTeacher } = defineProps<{
   groupId?: number
   teacherId?: number
   clientId?: number
@@ -23,14 +28,7 @@ const properties = defineProps<{
   headTeacher?: boolean
 }>()
 
-const { groupId, teacherId, clientId, program, showTeeth, year, programFilter } = properties
 const tabName = teacherId ? 'TeacherSchedule' : (groupId ? 'GroupSchedule' : 'ClientSchedule')
-
-interface Filters {
-  year: Year
-  hideEmptyDates: number
-}
-
 const selectedProgram = ref<Program>()
 
 const loadedFilters = loadFilters<Filters>({
@@ -250,6 +248,31 @@ function toggleCheckboxes(id: number) {
   }
 }
 
+const lessonItemComponent = (function () {
+  if (isClient) {
+    console.log('LessonItemHeadTeacher')
+    return LessonItemClientLK
+  }
+  else if (headTeacher) {
+    console.log('LessonItemHeadTeacherLK')
+    return LessonItemHeadTeacherLK
+  }
+  else if (clientId) {
+    console.log('LessonItemAdminClient')
+    return LessonItemAdminClient
+  }
+  else if (isTeacher) {
+    console.log('LessonItemTeacherLK')
+    return LessonItemTeacherLK
+  }
+  else if (teacherId) {
+    console.log('LessonItemAdminTeacher')
+    return LessonItemAdminTeacher
+  }
+  console.log('LessonItemAdminGroup')
+  return LessonItemAdminGroup
+})()
+
 watch(() => filters.value.year, loadData)
 
 watch(filters, (newVal) => {
@@ -332,10 +355,10 @@ nextTick(loadData)
           {{ dayLabels[getDay(d)] }}
         </span>
       </div>
-      <div v-if="vacations[d]" class="schedule-extra schedule-extra--vacation">
+      <div v-if="vacations[d]" class="lesson-item lesson-item__extra lesson-item__extra--vacation">
         Государственный праздник
       </div>
-      <div v-if="examDates[d]" class="schedule-extra schedule-extra--exam-date">
+      <div v-if="examDates[d]" class="lesson-item lesson-item__extra lesson-item__extra--exam-date">
         Экзамен ({{ ExamLabel[examName] }})
       </div>
       <template v-for="item in itemsByDate[d]">
@@ -345,56 +368,18 @@ nextTick(loadData)
           :item="item"
           @edit="eventDialog?.edit"
         />
-        <LessonClientItem
-          v-else-if="isClient"
-          :key="`lc-${item.id}`"
-          :item="item"
-          :checkboxes="checkboxes"
-          @edit="lessonDialog?.edit"
-          @conduct="conductDialog?.open"
-        />
-        <LessonHeadTeacherItem
-          v-else-if="headTeacher"
-          :key="`lht-${item.id}`"
-          :item="item"
-          :checkboxes="checkboxes"
-          @edit="lessonDialog?.edit"
-          @edit-price="clientLessonEditPriceDialog?.edit"
-          @conduct="conductDialog?.open"
-        />
-        <LessonAdminClientItem
-          v-else-if="clientId"
-          :key="`lac-${item.id}`"
-          :item="item"
-          :checkboxes="checkboxes"
-          @edit="lessonDialog?.edit"
-          @edit-price="clientLessonEditPriceDialog?.edit"
-          @conduct="conductDialog?.open"
-        />
-        <LessonTeacherItem
-          v-else-if="isTeacher"
-          :key="`lt-${item.id}`"
-          :item="item"
-          :checkboxes="checkboxes"
-          @edit="lessonDialog?.edit"
-          @conduct="conductDialog?.open"
-        />
-        <LessonAdminTeacherItem
-          v-else-if="teacherId"
-          :key="`lat-${item.id}`"
-          :item="item"
-          :checkboxes="checkboxes"
-          @edit="lessonDialog?.edit"
-          @conduct="conductDialog?.open"
-        />
-        <LessonAdminItem
+        <component
+          :is="lessonItemComponent"
           v-else
-          :key="`la-${item.id}`"
+          :id="`lesson-${item.id}`"
+          :key="`l-${item.id}`"
           :item="item"
           :checkboxes="checkboxes"
-          @click="onMassEditClick(item)"
+          class="lesson-item lesson-item__lesson"
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
+          @edit-price="clientLessonEditPriceDialog?.edit"
+          @click="onMassEditClick(item)"
           @select="toggleCheckboxes"
         />
       </template>
@@ -467,16 +452,6 @@ nextTick(loadData)
         top: 16px;
         left: 20px;
       }
-    }
-  }
-  &-extra {
-    padding-left: 100px;
-    font-weight: bold;
-    &--exam-date {
-      color: rgb(var(--v-theme-secondary));
-    }
-    &--vacation {
-      color: rgb(var(--v-theme-red));
     }
   }
 }

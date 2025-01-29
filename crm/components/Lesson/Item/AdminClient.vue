@@ -5,19 +5,15 @@ import {
   mdiPaperclip,
 } from '@mdi/js'
 
-const { item, checkboxes } = defineProps<{
+const { item } = defineProps<{
   item: LessonListResource
-  checkboxes: { [key: number]: boolean }
 }>()
 
 const emit = defineEmits<{
   edit: [id: number]
   editPrice: [id: number]
-  view: [id: number]
   conduct: [id: number, status: LessonStatus]
 }>()
-
-const isConductDisabled = item.status !== 'conducted'
 
 function deleteFromClientLessons() {
   setTimeout(() => {
@@ -30,14 +26,14 @@ function deleteFromClientLessons() {
     item.client_lesson = undefined
   }, 300)
 }
+
+// можно только редактировать проводку
+const isConductDisabled = item.status !== 'conducted'
 </script>
 
 <template>
-  <div :id="`lesson-${item.id}`" class="lesson-item">
-    <div v-if="Object.keys(checkboxes).length" class="lesson-item__checkbox">
-      <UiCheckbox :value="checkboxes[item.id]" />
-    </div>
-    <div v-else class="table-actionss">
+  <div>
+    <div class="table-actionss">
       <v-menu>
         <template #activator="{ props }">
           <v-btn
@@ -64,7 +60,6 @@ function deleteFromClientLessons() {
         </v-list>
       </v-menu>
     </div>
-    <div style="width: 70px; position: relative;" />
     <div style="width: 110px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
@@ -107,16 +102,13 @@ function deleteFromClientLessons() {
       </div>
     </div>
 
-    <div style="width: 110px; line-height: 18px; margin-top: 3px">
+    <div class="lesson-item__status">
       <template v-if="item.client_lesson">
         <span :class="{ 'text-error': item.client_lesson.status === 'absent' }">
           {{ ClientLessonStatusLabel[item.client_lesson.status] }}
         </span>
       </template>
-      <LessonStatus2 v-else :item="item" />
-      <div v-if="item.is_unplanned" class="text-purple">
-        внеплановое
-      </div>
+      <LessonItemStatus v-else :item="item" show-unplanned />
     </div>
     <div style="flex: initial">
       <div v-if="item.client_lesson" class="lesson-item__inline-scores">

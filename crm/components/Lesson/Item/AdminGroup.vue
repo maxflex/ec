@@ -12,18 +12,16 @@ const { item, checkboxes } = defineProps<{
 
 const emit = defineEmits<{
   edit: [id: number]
-  view: [id: number]
+  select: [id: number]
   conduct: [id: number, status: LessonStatus]
 }>()
 
+// можно только редактировать проводку
 const isConductDisabled = item.status !== 'conducted'
 </script>
 
 <template>
-  <div
-    :id="`lesson-${item.id}`"
-    class="lesson-item"
-  >
+  <div>
     <div v-if="Object.keys(checkboxes).length" class="lesson-item__checkbox">
       <UiCheckbox :value="checkboxes[item.id]" />
     </div>
@@ -48,11 +46,12 @@ const isConductDisabled = item.status !== 'conducted'
           >
             проводка занятия
           </v-list-item>
+          <v-list-item @click="emit('select', item.id)">
+            выбрать
+          </v-list-item>
         </v-list>
       </v-menu>
     </div>
-    <div style="width: 80px; position: relative;" />
-
     <div style="width: 120px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
@@ -74,6 +73,7 @@ const isConductDisabled = item.status !== 'conducted'
     <div style="width: 125px">
       {{ ProgramShortLabel[item.group.program] }}
     </div>
+
     <div style="width: 100px" class="lesson-item__icons">
       <div>
         <v-icon v-if="item.topic" :icon="mdiBookOpenOutline" :class="{ 'opacity-3': !item.is_topic_verified }" />
@@ -88,16 +88,10 @@ const isConductDisabled = item.status !== 'conducted'
     <div style="width: 60px">
       {{ item.group.students_count }} уч.
     </div>
-    <div style="width: 180px; flex: initial; line-height: 18px">
-      <LessonStatus2 :item="item" />
-      <div v-if="item.is_unplanned" class="text-purple">
-        внеплановое
-      </div>
-      <div v-if="item.is_free" class="text-orange">
-        бесплатное для детей
-      </div>
+    <div class="lesson-item__status">
+      <LessonItemStatus :item="item" show-unplanned show-free />
     </div>
-    <div class="text-gray opacity-5 text-right">
+    <div v-if="!Object.keys(checkboxes).length" class="text-gray opacity-5 text-right pr-1">
       {{ item.seq }}
       <span v-if="item.quarter">
         / {{ item.quarter[1] }}

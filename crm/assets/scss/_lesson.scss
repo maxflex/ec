@@ -1,5 +1,5 @@
 .lesson-item {
-  position: relative;
+  padding-left: 90px;
 
   &__contract-lesson {
     flex: auto !important;
@@ -42,5 +42,21 @@
   &__checkbox {
     position: absolute;
     right: 0;
+  }
+
+  &__lesson {
+    position: relative;
+  }
+
+  &__extra {
+    font-weight: bold;
+
+    &--exam-date {
+      color: rgb(var(--v-theme-secondary));
+    }
+
+    &--vacation {
+      color: rgb(var(--v-theme-red));
+    }
   }
 }

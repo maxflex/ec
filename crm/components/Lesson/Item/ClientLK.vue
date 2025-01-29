@@ -1,17 +1,13 @@
 <script setup lang="ts">
 import { mdiVideo } from '@mdi/js'
 
-const { item, checkboxes } = defineProps<{
+const { item } = defineProps<{
   item: LessonListResource
-  checkboxes: { [key: number]: boolean }
 }>()
 </script>
 
 <template>
-  <div :id="`lesson-${item.id}`" class="lesson-item">
-    <div v-if="Object.keys(checkboxes).length" class="lesson-item__checkbox">
-      <UiCheckbox :value="checkboxes[item.id]" />
-    </div>
+  <div>
     <div style="width: 90px; position: relative;" />
     <div style="width: 120px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
@@ -48,11 +44,8 @@ const { item, checkboxes } = defineProps<{
         </div>
       </v-tooltip>
     </div>
-    <div style="width: 150px; flex: initial; line-height: 18px; margin-top: 3px">
-      <LessonStatus2 :item="item" />
-      <div v-if="item.is_unplanned" class="text-purple">
-        внеплановое
-      </div>
+    <div class="lesson-item__status">
+      <LessonItemStatus :item="item" show-unplanned />
     </div>
   </div>
 </template>

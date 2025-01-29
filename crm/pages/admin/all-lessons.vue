@@ -75,7 +75,6 @@ async function expand(date: string) {
 
   if (data.value) {
     lessons.value = data.value.data.sort((a, b) => a.time.localeCompare(b.time))
-    console.log(lessons.value)
   }
 
   expanded.loading = false
@@ -153,10 +152,10 @@ nextTick(() => {
       </div>
 
       <Vue3SlideUpDown :model-value="expanded.date === d && !expanded.loading" :duration="200">
-        <LessonAdminTeacherItem
+        <LessonItemAdminTeacher
           v-for="lesson in lessons"
           :key="lesson.id"
-          :checkboxes="[]"
+          class="lesson-item lesson-item__lesson"
           :item="lesson"
           @edit="lessonDialog?.edit"
         />
@@ -232,9 +231,6 @@ nextTick(() => {
           &:last-child {
             display: none;
           }
-        }
-        .table-actionss {
-          top: 0 !important;
         }
       }
     }
