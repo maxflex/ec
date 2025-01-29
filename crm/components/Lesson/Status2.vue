@@ -7,7 +7,8 @@ const { item } = defineProps<{
 <template>
   <span
     :class="{
-      'text-gray': item.status !== 'conducted',
+      'text-error': item.status === 'cancelled',
+      'text-gray': item.status === 'planned',
     }"
   >
     {{ LessonStatusLabel[item.status] }}

@@ -12,6 +12,11 @@ const filters = ref<Filters>(loadFilters({
 const { items, indexPageData } = useIndex<ReportListResource, Filters>(
   `reports`,
   filters,
+  {
+    staticFilters: {
+      exclude_not_required: 1,
+    },
+  },
 )
 </script>
 

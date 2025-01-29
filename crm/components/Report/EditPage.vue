@@ -56,12 +56,15 @@ async function edit() {
 }
 
 async function create() {
-  const r = await useHttp<ApiResponse<ReportListResource>>(`reports`, {
-    params: {
-      ...route.query,
-      type: 0, // требуется отчет
+  const r = await useHttp<ApiResponse<ReportListResource>>(
+    `reports`,
+    {
+      params: {
+        ...route.query,
+        requirement: 'required', // требуется отчет
+      },
     },
-  })
+  )
 
   const reportListItem: ReportListResource = r.data.value!.data[0]
   const { year, program, teacher, client } = reportListItem

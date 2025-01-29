@@ -25,7 +25,6 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
         } else {
             $request->merge([
                 'teacher_id' => auth()->id(),
-                'exclude_not_required' => 1,
             ]);
         }
 

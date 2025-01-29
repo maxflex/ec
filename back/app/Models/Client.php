@@ -98,6 +98,7 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
         // key = group_id, value = date
         $maxConductedDate = [];
 
+        // проведённые занятия
         $clientLessons = ClientLesson::query()->whereHas(
             'contractVersionProgram.contractVersion.contract',
             fn($q) => $q->where('client_id', $this->id)->where('year', $year)
@@ -116,6 +117,8 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
             }
         }
 
+        // планируемые занятия (только если ученик в группе)
+        $inGroup = []; // ID групп, где сейчас ученик
         $contracts = $this->contracts()->where('year', $year)->get();
         foreach ($contracts as $contract) {
             $programs = $contract->active_version
@@ -123,7 +126,9 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
                 ->whereHas('clientGroup')
                 ->get();
             foreach ($programs as $program) {
-                $plannedLessons = $program->group->lessons()->where('status', LessonStatus::planned)->get();
+                $group = $program->group;
+                $inGroup[$group->id] = true;
+                $plannedLessons = $group->lessons()->where('status', LessonStatus::planned)->get();
                 foreach ($plannedLessons as $lesson) {
                     $schedule->push($lesson);
                 }
@@ -142,11 +147,19 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
         foreach ($cancelledLessons as $lesson) {
             // есть проведённые занятия
             if (isset($minConductedDate[$lesson->group_id])) {
-                if (
-                    $lesson->date >= $minConductedDate[$lesson->group_id]
-                    && $lesson->date <= $maxConductedDate[$lesson->group_id]
-                ) {
-                    $schedule->push($lesson);
+                // человек в группе
+                if (isset($inGroup[$lesson->group_id])) {
+                    if ($lesson->date >= $minConductedDate[$lesson->group_id]) {
+                        $schedule->push($lesson);
+                    }
+                } else {
+                    // человек НЕ в группе
+                    if (
+                        $lesson->date >= $minConductedDate[$lesson->group_id]
+                        && $lesson->date <= $maxConductedDate[$lesson->group_id]
+                    ) {
+                        $schedule->push($lesson);
+                    }
                 }
             } elseif ($lesson->date >= now()->format('Y-m-d')) {
                 $schedule->push($lesson);

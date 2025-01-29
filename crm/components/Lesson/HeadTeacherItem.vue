@@ -33,11 +33,7 @@ function deleteFromClientLessons() {
 </script>
 
 <template>
-  <div
-    :id="`lesson-${item.id}`"
-    :class="`lesson-item--${item.status}`"
-    class="lesson-item"
-  >
+  <div :id="`lesson-${item.id}`" class="lesson-item">
     <div v-if="Object.keys(checkboxes).length" class="lesson-item__checkbox">
       <UiCheckbox :value="checkboxes[item.id]" />
     </div>
@@ -103,7 +99,7 @@ function deleteFromClientLessons() {
       </div>
     </div>
 
-    <div style="width: 110px; line-height: 18px">
+    <div style="width: 110px; line-height: 18px; margin-top: 3px">
       <template v-if="item.client_lesson">
         <span :class="{ 'text-error': item.client_lesson.status === 'absent' }">
           {{ ClientLessonStatusLabel[item.client_lesson.status] }}
@@ -138,48 +134,3 @@ function deleteFromClientLessons() {
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.lesson-item {
-  position: relative;
-  &__contract-lesson {
-    flex: auto !important;
-    display: flex;
-    gap: 20px;
-    // padding-left: 650px;
-  }
-  &__icons {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    & > div {
-      $width: 25px;
-      width: $width;
-      max-width: $width;
-      min-width: $width;
-    }
-  }
-  &__inline-scores {
-    display: flex;
-    gap: 4px;
-    .score {
-      $size: 24px !important;
-      width: $size;
-      height: $size;
-      min-width: $size;
-      min-height: $size;
-    }
-  }
-  &--cancelled {
-    opacity: 0.4;
-  }
-  .table-actionss {
-    top: -16px;
-    right: -1 0px;
-  }
-  &__checkbox {
-    position: absolute;
-    right: 0;
-  }
-}
-</style>

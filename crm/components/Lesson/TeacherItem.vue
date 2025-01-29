@@ -116,39 +116,3 @@ const isConductDisabled = item.date > today() || item.status === 'cancelled' || 
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.lesson-item {
-  position: relative;
-  &__contract-lesson {
-    flex: auto !important;
-    display: flex;
-    gap: 20px;
-    // padding-left: 650px;
-  }
-  &__icons {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    & > div {
-      width: 26px;
-    }
-  }
-  &__scores {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    & > div {
-      display: flex;
-    }
-  }
-  .table-actionss {
-    top: -16px;
-    right: -1 0px;
-  }
-  &__checkbox {
-    position: absolute;
-    right: 0;
-  }
-}
-</style>

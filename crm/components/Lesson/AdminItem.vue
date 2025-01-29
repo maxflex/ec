@@ -21,11 +21,7 @@ const isConductDisabled = item.status !== 'conducted'
 </script>
 
 <template>
-  <div
-    :id="`lesson-${item.id}`"
-    :class="`lesson-item--${item.status}`"
-    class="lesson-item"
-  >
+  <div :id="`lesson-${item.id}`" class="lesson-item">
     <div v-if="Object.keys(checkboxes).length" class="lesson-item__checkbox">
       <UiCheckbox :value="checkboxes[item.id]" />
     </div>
@@ -111,45 +107,3 @@ const isConductDisabled = item.status !== 'conducted'
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.lesson-item {
-  position: relative;
-  &__contract-lesson {
-    flex: auto !important;
-    display: flex;
-    gap: 20px;
-    // padding-left: 650px;
-  }
-  &__icons {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    & > div {
-      width: 26px;
-    }
-  }
-  &__inline-scores {
-    display: flex;
-    gap: 4px;
-    .score {
-      $size: 24px !important;
-      width: $size;
-      height: $size;
-      min-width: $size;
-      min-height: $size;
-    }
-  }
-  &--cancelled {
-    opacity: 0.4;
-  }
-  .table-actionss {
-    top: -16px;
-    right: -1 0px;
-  }
-  &__checkbox {
-    position: absolute;
-    right: 0;
-  }
-}
-</style>

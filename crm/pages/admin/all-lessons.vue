@@ -212,6 +212,12 @@ nextTick(() => {
       gap: 20px;
 
       .lesson-item {
+        &:first-child {
+          padding-top: 20px;
+        }
+        &:last-child {
+          padding-bottom: 20px;
+        }
         display: flex;
         align-items: flex-start;
         column-gap: 20px;
