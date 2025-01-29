@@ -20,6 +20,7 @@ async function loadData() {
       params: {
         ...filters.value,
         client_id: clientId,
+        requirement: 'created',
       },
     },
   )
