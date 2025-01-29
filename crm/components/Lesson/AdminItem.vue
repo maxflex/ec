@@ -63,7 +63,7 @@ const isConductDisabled = item.status !== 'conducted'
     </div>
     <div style="width: 70px">
       <template v-if="item.cabinet">
-        {{ CabineAlltLabel[item.cabinet] }}
+        {{ CabinetAllLabel[item.cabinet] }}
       </template>
     </div>
     <div v-if="item.teacher" style="width: 140px">

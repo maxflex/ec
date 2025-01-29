@@ -45,7 +45,7 @@ const { items, indexPageData } = useIndex<CabinetTeeth, YearFilters>(
 .cabinets {
   & > div {
     border-bottom: 1px solid rgb(var(--v-theme-border));
-    padding: 20px 20px;
+    padding: 16px 20px;
     display: flex;
     align-items: center;
     transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
