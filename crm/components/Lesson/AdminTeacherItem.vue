@@ -59,7 +59,7 @@ const isConductDisabled = item.status !== 'conducted'
     </div>
     <div style="width: 70px">
       <template v-if="item.cabinet">
-        {{ CabinetLabel[item.cabinet] }}
+        {{ CabinetAllLabel[item.cabinet] }}
       </template>
     </div>
     <div v-if="item.teacher" style="width: 140px">
@@ -67,20 +67,14 @@ const isConductDisabled = item.status !== 'conducted'
         {{ formatNameInitials(item.teacher) }}
       </NuxtLink>
     </div>
-    <div style="width: 80px">
+    <div style="width: 90px">
       <NuxtLink :to="{ name: 'groups-id', params: { id: item.group.id } }" @click.stop>
         ГР-{{ item.group.id }}
       </NuxtLink>
     </div>
-    <div style="width: 110px">
+    <div style="width: 125px">
       {{ ProgramShortLabel[item.group.program] }}
     </div>
-    <div style="width: 70px">
-      <span v-if="item.quarter">
-        {{ QuarterShortLabel[item.quarter] }}
-      </span>
-    </div>
-
     <div style="width: 100px" class="lesson-item__icons">
       <div>
         <v-icon v-if="item.topic" :icon="mdiBookOpenOutline" :class="{ 'opacity-3': !item.is_topic_verified }" />
@@ -95,14 +89,20 @@ const isConductDisabled = item.status !== 'conducted'
     <div style="width: 60px">
       {{ item.group.students_count }} уч.
     </div>
-    <div style="width: 180px; flex: initial; line-height: 17px">
-      <LessonStatus2 :item="item" show-label :size="8" />
+    <div style="width: 180px; flex: initial; line-height: 18px">
+      <LessonStatus2 :item="item" />
       <div v-if="item.is_unplanned" class="text-purple">
         внеплановое
       </div>
       <div v-if="item.is_free" class="text-orange">
         бесплатное для детей
       </div>
+    </div>
+    <div class="text-gray opacity-5 text-right pr-1">
+      {{ item.seq }}
+      <span v-if="item.quarter">
+        / {{ item.quarter[1] }}
+      </span>
     </div>
   </div>
 </template>

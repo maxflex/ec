@@ -13,6 +13,7 @@ const { item, checkboxes } = defineProps<{
 const emit = defineEmits<{
   edit: [id: number]
   view: [id: number]
+  select: [id: number]
   conduct: [id: number, status: LessonStatus]
 }>()
 
@@ -49,6 +50,9 @@ const isConductDisabled = item.status !== 'conducted'
           >
             проводка занятия
           </v-list-item>
+          <v-list-item @click="emit('select', item.id)">
+            выбрать
+          </v-list-item>
         </v-list>
       </v-menu>
     </div>
@@ -59,7 +63,7 @@ const isConductDisabled = item.status !== 'conducted'
     </div>
     <div style="width: 70px">
       <template v-if="item.cabinet">
-        {{ CabinetLabel[item.cabinet] }}
+        {{ CabineAlltLabel[item.cabinet] }}
       </template>
     </div>
     <div v-if="item.teacher" style="width: 140px">
@@ -72,13 +76,8 @@ const isConductDisabled = item.status !== 'conducted'
         ГР-{{ item.group.id }}
       </NuxtLink>
     </div>
-    <div style="width: 100px">
+    <div style="width: 125px">
       {{ ProgramShortLabel[item.group.program] }}
-    </div>
-    <div style="width: 70px">
-      <span v-if="item.quarter">
-        {{ QuarterShortLabel[item.quarter] }}
-      </span>
     </div>
 
     <div style="width: 100px" class="lesson-item__icons">
@@ -92,11 +91,23 @@ const isConductDisabled = item.status !== 'conducted'
         <v-icon v-if="item.has_files" :icon="mdiPaperclip" />
       </div>
     </div>
-    <div style="width: 50px; flex: initial">
-      <LessonStatusCircles :item="item" />
+    <div style="width: 60px">
+      {{ item.group.students_count }} уч.
+    </div>
+    <div style="width: 180px; flex: initial; line-height: 18px">
+      <LessonStatus2 :item="item" />
+      <div v-if="item.is_unplanned" class="text-purple">
+        внеплановое
+      </div>
+      <div v-if="item.is_free" class="text-orange">
+        бесплатное для детей
+      </div>
     </div>
     <div v-if="!Object.keys(checkboxes).length" class="text-gray opacity-5 text-right pr-1">
       {{ item.seq }}
+      <span v-if="item.quarter">
+        / {{ item.quarter[1] }}
+      </span>
     </div>
   </div>
 </template>

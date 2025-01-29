@@ -102,6 +102,12 @@ a.table-item {
 .tabs {
   display: flex;
   border-bottom: 1px solid #e0e0e0;
+  white-space: nowrap;
+  overflow-x: scroll;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
   // box-shadow: 0 0 10px 20px rgba(white, 0.5);
   &-item {
     padding: 12px 20px;

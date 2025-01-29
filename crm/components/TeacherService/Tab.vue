@@ -43,7 +43,7 @@ function onUpdated(p: TeacherServiceResource) {
         color="primary"
         @click="teacherServiceDialog?.create(teacherId, filters.year)"
       >
-        добавить платеж
+        добавить допуслугу
       </v-btn>
     </template>
     <TeacherServiceList :items="items" @open="teacherServiceDialog?.edit" />

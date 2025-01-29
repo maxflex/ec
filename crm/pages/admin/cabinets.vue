@@ -15,7 +15,7 @@ const { items, indexPageData } = useIndex<CabinetTeeth, YearFilters>(
     <div class="cabinets">
       <div v-for="item in items" :key="item.cabinet">
         <div class="cabinets__title">
-          {{ CabinetLabel[item.cabinet] }}
+          {{ CabinetAllLabel[item.cabinet] }}
         </div>
         <div>
           <UiCircle v-if="item.is_busy" color="error">

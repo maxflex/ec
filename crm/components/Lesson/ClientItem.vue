@@ -22,7 +22,7 @@ const { item, checkboxes } = defineProps<{
     </div>
     <div style="width: 80px">
       <template v-if="item.cabinet">
-        {{ CabinetLabel[item.cabinet] }}
+        {{ CabinetAllLabel[item.cabinet] }}
       </template>
     </div>
     <div v-if="item.teacher" style="width: 150px">

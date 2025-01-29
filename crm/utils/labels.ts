@@ -415,6 +415,10 @@ export const CabinetLabel = {
   cab312: "К-312",
   cab314: "К-314",
   cab316: "К-316",
+} as const;
+
+export const CabinetAllLabel = {
+  ...CabinetLabel,
   tur10: "ТУР-10",
   tur35: "ТУР-35",
   tur205: "ТУР-205",

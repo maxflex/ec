@@ -161,7 +161,7 @@ nextTick(loadData)
             />
             <div style="position: relative; display: inline-block">
               <CommentBtn
-                variant="text"
+                color="gray"
                 :entity-id="id"
                 :entity-type="EntityTypeValue.report"
               />

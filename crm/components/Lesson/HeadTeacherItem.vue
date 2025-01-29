@@ -74,7 +74,7 @@ function deleteFromClientLessons() {
     </div>
     <div style="width: 50px">
       <template v-if="item.cabinet">
-        {{ CabinetLabel[item.cabinet] }}
+        {{ CabinetAllLabel[item.cabinet] }}
       </template>
     </div>
     <div v-if="item.teacher" style="width: 140px">

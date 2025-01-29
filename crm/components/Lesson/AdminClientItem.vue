@@ -74,7 +74,7 @@ function deleteFromClientLessons() {
     </div>
     <div style="width: 50px">
       <template v-if="item.cabinet">
-        {{ CabinetLabel[item.cabinet] }}
+        {{ CabinetAllLabel[item.cabinet] }}
       </template>
     </div>
     <div v-if="item.teacher" style="width: 140px">
@@ -120,6 +120,9 @@ function deleteFromClientLessons() {
       <span v-else class="text-gray">
         {{ LessonStatusLabel[item.status] }}
       </span>
+      <div v-if="item.is_unplanned" class="text-purple">
+        внеплановое
+      </div>
     </div>
     <div style="flex: initial">
       <div v-if="item.client_lesson" class="lesson-item__inline-scores">

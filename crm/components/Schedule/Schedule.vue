@@ -229,15 +229,21 @@ function onBulkUpdated() {
   checkboxes.value = {}
 }
 
-function onLessonClick(item: LessonListResource) {
-  if (!isMassEditable || item.status === 'cancelled') {
+function onMassEditClick(item: LessonListResource) {
+  if (!isMassEditable || item.status === 'cancelled' || !lessonIds.value.length) {
     return
   }
-  if (checkboxes.value[item.id]) {
-    delete checkboxes.value[item.id]
-  }
-  else {
-    checkboxes.value[item.id] = true
+  toggleCheckboxes(item.id)
+}
+
+function toggleCheckboxes(id: number) {
+  if (checkboxes.value) {
+    if (checkboxes.value[id]) {
+      delete checkboxes.value[id]
+    }
+    else {
+      checkboxes.value[id] = true
+    }
   }
 }
 
@@ -276,7 +282,7 @@ nextTick(loadData)
       density="comfortable"
     />
     <template #buttons>
-      <div v-if="Object.keys(checkboxes).length" class="d-flex ga-4">
+      <div v-if="lessonIds.length" class="d-flex ga-4">
         <v-btn variant="text" @click="checkboxes = {}">
           отмена
         </v-btn>
@@ -335,16 +341,14 @@ nextTick(loadData)
           :key="`lc-${item.id}`"
           :item="item"
           :checkboxes="checkboxes"
-          @click="onLessonClick(item)"
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
         />
         <LessonHeadTeacherItem
           v-else-if="headTeacher"
-          :key="`lac-${item.id}`"
+          :key="`lht-${item.id}`"
           :item="item"
           :checkboxes="checkboxes"
-          @click="onLessonClick(item)"
           @edit="lessonDialog?.edit"
           @edit-price="clientLessonEditPriceDialog?.edit"
           @conduct="conductDialog?.open"
@@ -354,7 +358,6 @@ nextTick(loadData)
           :key="`lac-${item.id}`"
           :item="item"
           :checkboxes="checkboxes"
-          @click="onLessonClick(item)"
           @edit="lessonDialog?.edit"
           @edit-price="clientLessonEditPriceDialog?.edit"
           @conduct="conductDialog?.open"
@@ -364,16 +367,14 @@ nextTick(loadData)
           :key="`lt-${item.id}`"
           :item="item"
           :checkboxes="checkboxes"
-          @click="onLessonClick(item)"
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
         />
         <LessonAdminTeacherItem
           v-else-if="teacherId"
-          :key="`la-${item.id}`"
+          :key="`lat-${item.id}`"
           :item="item"
           :checkboxes="checkboxes"
-          @click="onLessonClick(item)"
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
         />
@@ -382,9 +383,10 @@ nextTick(loadData)
           :key="`la-${item.id}`"
           :item="item"
           :checkboxes="checkboxes"
-          @click="onLessonClick(item)"
+          @click="onMassEditClick(item)"
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
+          @select="toggleCheckboxes"
         />
       </template>
       <div v-if="vacations[d]" class="schedule-event schedule-event--vacation">
@@ -444,7 +446,7 @@ nextTick(loadData)
     & > div {
       &:not(:first-child) {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         column-gap: 20px;
         row-gap: 10px;
         flex-wrap: wrap;

@@ -13,6 +13,7 @@ const tabs = {
   clientReviews: 'отзывы',
   webReviews: 'отзывы на сайте',
   tests: 'тесты',
+  logs: 'логи',
 } as const
 
 const selectedTab = ref<keyof typeof tabs>('requests')
@@ -115,6 +116,7 @@ nextTick(loadData)
     <GradeTab v-else-if="selectedTab === 'grades'" :client-id="client.id" />
     <ClientGroupsTab v-else-if="selectedTab === 'groups'" :client-id="client.id" />
     <ClientTestTab v-else-if="selectedTab === 'tests'" :client-id="client.id" />
+    <LogTab v-else-if="selectedTab === 'logs'" :client-id="client.id" />
     <Schedule v-else :client-id="client.id" show-teeth program-filter />
     <ClientDialog ref="clientDialog" @updated="onClientUpdated" />
   </template>

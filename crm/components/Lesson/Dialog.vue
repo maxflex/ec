@@ -138,6 +138,7 @@ defineExpose({ create, edit })
           <TeacherSelector
             v-model="lesson.teacher_id"
             label="Преподаватель"
+            :disabled="isConducted"
           />
         </div>
         <div v-if="isAdmin">
@@ -145,6 +146,7 @@ defineExpose({ create, edit })
             v-model="lesson.cabinet"
             :items="selectItems(CabinetLabel)"
             label="Кабинет"
+            :disabled="isConducted"
           />
         </div>
         <div v-if="isAdmin">
@@ -152,6 +154,7 @@ defineExpose({ create, edit })
             v-model="lesson.quarter"
             :items="selectItems(QuarterLabel, ['final' as Quarter])"
             label="Четверть"
+            :disabled="isConducted"
           />
         </div>
         <div v-if="isAdmin">
@@ -168,6 +171,7 @@ defineExpose({ create, edit })
             label="Цена"
             type="number"
             hide-spin-buttons
+            :disabled="isConducted"
           />
         </div>
 
@@ -175,12 +179,14 @@ defineExpose({ create, edit })
           <UiDateInput
             v-model="lesson.date"
             :year="year"
+            :disabled="isConducted"
           />
           <div>
             <v-text-field
               v-model="lesson.time"
               v-maska:[timeMask]
               label="Время"
+              :disabled="isConducted"
             />
           </div>
         </div>

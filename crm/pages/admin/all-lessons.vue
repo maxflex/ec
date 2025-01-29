@@ -217,7 +217,7 @@ nextTick(() => {
         row-gap: 10px;
         flex-wrap: wrap;
 
-        --height: 57px;
+        --height: 45px;
         height: var(--height);
         min-height: var(--height);
         //padding: 16px 20px;

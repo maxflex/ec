@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class LogController extends Controller
 {
     protected $filters = [
-        'equals' => ['type', 'table'],
+        'equals' => ['type', 'table', 'entity_id', 'entity_type'],
         'rowId' => ['row_id'],
     ];
 
