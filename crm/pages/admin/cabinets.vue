@@ -3,7 +3,10 @@ interface CabinetTeeth {
   cabinet: Cabinet
   teeth: Teeth
   free_until: string | null
-  is_busy: boolean
+  busy_by: {
+    teacher: PersonResource
+    program: Program
+  } | null
 }
 const { items, indexPageData } = useIndex<CabinetTeeth, YearFilters>(
   `cabinets`,
@@ -18,23 +21,32 @@ const { items, indexPageData } = useIndex<CabinetTeeth, YearFilters>(
           {{ CabinetAllLabel[item.cabinet] }}
         </div>
         <div>
-          <UiCircle v-if="item.is_busy" color="error">
+          <UiCircle v-if="item.busy_by" color="error">
             занят
           </UiCircle>
           <UiCircle v-else color="success">
             свободен
           </UiCircle>
         </div>
-        <div>
-          <template v-if="!item.is_busy">
+        <template v-if="item.busy_by">
+          <div>
+            <UiPerson :item="item.busy_by.teacher" />
+          </div>
+          <div>
+            {{ ProgramShortLabel[item.busy_by.program] }}
+          </div>
+        </template>
+        <template v-else>
+          <div>
             <template v-if="item.free_until">
               до {{ formatTime(item.free_until) }}
             </template>
             <template v-else>
               до конца дня
             </template>
-          </template>
-        </div>
+          </div>
+          <div />
+        </template>
         <TeethBar :items="item.teeth" />
       </div>
     </div>
@@ -60,6 +72,9 @@ const { items, indexPageData } = useIndex<CabinetTeeth, YearFilters>(
         width: 180px;
       }
       &:nth-child(3) {
+        width: 200px;
+      }
+      &:nth-child(4) {
         flex: 1;
       }
       &:last-child {

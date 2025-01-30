@@ -87,8 +87,6 @@ const isConductDisabled = isEditDisabled || item.date > today() || item.status =
     <div class="lesson-item__status">
       <LessonItemStatus :item="item" show-unplanned />
     </div>
-    <div class="text-gray opacity-5 text-right">
-      {{ item.seq }}
-    </div>
+    <LessonItemSeqQuarter :item="item" hide-quarter />
   </div>
 </template>

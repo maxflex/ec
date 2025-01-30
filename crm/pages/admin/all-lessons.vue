@@ -222,15 +222,8 @@ nextTick(() => {
         column-gap: 20px;
         row-gap: 10px;
         flex-wrap: wrap;
-
-        //--height: 45px;
-        //height: var(--height);
-        //min-height: var(--height);
-        //padding: 16px 20px;
-        & > div {
-          &:last-child {
-            display: none;
-          }
+        &__seq-quarter {
+          display: none;
         }
       }
     }

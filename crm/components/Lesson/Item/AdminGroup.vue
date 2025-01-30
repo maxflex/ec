@@ -91,11 +91,6 @@ const isConductDisabled = item.status !== 'conducted'
     <div class="lesson-item__status">
       <LessonItemStatus :item="item" show-unplanned show-free />
     </div>
-    <div v-if="!Object.keys(checkboxes).length" class="text-gray opacity-5 text-right pr-1">
-      {{ item.seq }}
-      <span v-if="item.quarter">
-        / {{ item.quarter[1] }}
-      </span>
-    </div>
+    <LessonItemSeqQuarter v-if="!Object.keys(checkboxes).length" :item="item" />
   </div>
 </template>

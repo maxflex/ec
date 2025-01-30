@@ -52,7 +52,7 @@ const { item } = defineProps<{
           {{ ClientLessonStatusLabel[item.client_lesson.status] }}
         </span>
       </template>
-      <LessonItemStatus :item="item" show-unplanned />
+      <LessonItemStatus v-else :item="item" show-unplanned />
     </div>
     <div style="flex: initial">
       <div v-if="item.client_lesson" class="lesson-item__inline-scores">
@@ -68,11 +68,6 @@ const { item } = defineProps<{
         </div>
       </div>
     </div>
-    <div class="text-gray opacity-5 text-right pr-1">
-      {{ item.seq }}
-      <span v-if="item.quarter">
-        / {{ item.quarter[1] }}
-      </span>
-    </div>
+    <LessonItemSeqQuarter :item="item" />
   </div>
 </template>

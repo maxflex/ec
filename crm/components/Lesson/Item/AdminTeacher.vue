@@ -81,11 +81,6 @@ const isConductDisabled = item.status !== 'conducted'
     <div class="lesson-item__status">
       <LessonItemStatus :item="item" show-unplanned show-free />
     </div>
-    <div class="text-gray opacity-5 text-right">
-      {{ item.seq }}
-      <span v-if="item.quarter">
-        / {{ item.quarter[1] }}
-      </span>
-    </div>
+    <LessonItemSeqQuarter :item="item" />
   </div>
 </template>

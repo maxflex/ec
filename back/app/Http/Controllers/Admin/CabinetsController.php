@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\Cabinet;
 use App\Enums\LessonStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PersonResource;
 use App\Models\Lesson;
 use App\Utils\Teeth;
 
@@ -46,17 +47,21 @@ class CabinetsController extends Controller
             ->min('time');
 
         // кабинет занят
-        $isBusy = (clone $query)
+        $busyBy = (clone $query)
             ->join('groups as g', 'g.id', '=', 'lessons.group_id')
             ->where('time', '<', $time)
             ->whereRaw("
                 NOW() < `time` + INTERVAL IF(g.program LIKE '%School8' OR g.program LIKE '%School9', 55, 125) MINUTE
             ")
-            ->exists();
+            ->first();
 
         return [
             'free_until' => $freeUntil,
-            'is_busy' => $isBusy,
+            'busy_by' => $busyBy ? extract_fields($busyBy, [
+                'program'
+            ], [
+                'teacher' => new PersonResource($busyBy->teacher)
+            ]) : null,
         ];
     }
 }
