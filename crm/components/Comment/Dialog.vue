@@ -32,17 +32,24 @@ function open() {
 }
 
 async function send() {
+  if (editId.value) {
+    await saveEdit()
+    return
+  }
   if (!text.value.length) {
     return
   }
-  const { data } = await useHttp<CommentResource>(`comments`, {
-    method: 'post',
-    body: {
-      text: text.value,
-      entity_id: entityId,
-      entity_type: entityType,
+  const { data } = await useHttp<CommentResource>(
+    `comments`,
+    {
+      method: 'post',
+      body: {
+        text: text.value,
+        entity_id: entityId,
+        entity_type: entityType,
+      },
     },
-  })
+  )
   if (data.value) {
     noScroll.value = true
     comments.value.push(data.value)
@@ -89,6 +96,9 @@ function startEdit(c: CommentResource) {
 }
 
 async function saveEdit() {
+  if (!text.value.length) {
+    return
+  }
   const index = comments.value.findIndex(e => e.id === editId.value)
   const { data } = await useHttp<CommentResource>(`comments/${editId.value}`, {
     method: 'put',
