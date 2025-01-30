@@ -32,8 +32,18 @@ class Controller extends BaseController
 
         $result = ($resource ?? $this->getResource($request))::collection($result);
         if ($request->has('pluck')) {
+            $value = $request->input('pluck');
             $result->additional([
-                'ids' => $query->whereNotNull($request->pluck)->pluck($request->pluck)->values()->all(),
+                'ids' => $query->whereNotNull($value)->pluck($value)->values()->all(),
+            ]);
+        }
+
+        if ($request->has('unique') && intval($request->page) === 1) {
+            $value = $request->input('unique');
+            $result->additional([
+                'extra' => [
+                    $value => $query->whereNotNull($value)->pluck($value)->unique()->values()->all(),
+                ]
             ]);
         }
 

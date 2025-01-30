@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Once;
 
 use App\Enums\Program;
+use App\Models\ContractVersionProgram;
 use App\Models\Group;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
@@ -28,7 +29,7 @@ class UpdateProgramsCommand extends Command
 
     public function handle(): void
     {
-//        $this->updateDbStructure();
+        $this->updateDbStructure();
         $this->mathBaseAndProfSplitUp();
     }
 
@@ -78,6 +79,7 @@ class UpdateProgramsCommand extends Command
             ->get();
 
         $bar = $this->output->createProgressBar(count($groups));
+        $updatedIds = collect();
 
         foreach ($groups as $g) {
             $newProgram = match ($g->program) {
@@ -96,16 +98,51 @@ class UpdateProgramsCommand extends Command
                 ->pluck('cl.contract_version_program_id')
                 ->unique();
 
-//            $this->line($g->id . ": " . $ids->join(', '));
+            $ids2 = DB::table('client_groups', 'cg')
+                ->where('cg.group_id', $g->id)
+                ->pluck('cg.contract_version_program_id')
+                ->unique();
+
+            $allIds = $ids->concat($ids2)->unique();
+            $updatedIds = $updatedIds->concat($allIds)->unique();
 
             DB::table('contract_version_programs')
-                ->whereIn('id', $ids)
+                ->whereIn('id', $allIds)
                 ->update([
                     'program' => $newProgram->value
                 ]);
 
             $bar->advance();
         }
+
+        $data = ContractVersionProgram::whereNotIn('id', $updatedIds)
+            ->whereIn('program', [
+                Program::mathBaseSchool10,
+                Program::mathBaseSchool11,
+                Program::mathBaseExternal,
+            ])
+//            ->where('lessons_planned', 96)
+            ->whereIn('lessons_planned', [96, 32, 44])
+            ->get();
+
+
+        $bar = $this->output->createProgressBar(count($data));
+        foreach ($data as $cvp) {
+            $newProgram = match ($cvp->program) {
+                Program::mathBaseSchool10 => Program::mathProfSchool10,
+                Program::mathBaseSchool11 => Program::mathProfSchool11,
+                Program::mathBaseExternal => Program::mathProfExternal,
+            };
+
+            DB::table('contract_version_programs')
+                ->where('id', $cvp->id)
+                ->update([
+                    'program' => $newProgram->value
+                ]);
+
+            $bar->advance();
+        }
+
         $bar->finish();
     }
 
@@ -130,7 +167,8 @@ class UpdateProgramsCommand extends Command
             });
 
             DB::table($table)->update([
-                'program_new' => DB::raw('program')
+                'program_new' => DB::raw('program'),
+                'program_old' => DB::raw('program'),
             ]);
 
             // обновление значений

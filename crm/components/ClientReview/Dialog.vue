@@ -98,18 +98,17 @@ defineExpose({ edit, create })
       <div class="dialog-header">
         <div v-if="itemId">
           <template v-if="isEditable">
-            Редактирование
+            Редактирование отзыва
+            <div class="dialog-subheader">
+              <template v-if="item.created_at && item.user">
+                {{ formatName(item.user) }}
+                {{ formatDateTime(item.created_at) }}
+              </template>
+            </div>
           </template>
           <template v-else>
-            Просмотр
+            Просмотр отзыва
           </template>
-          отзыва
-          <div class="dialog-subheader">
-            <template v-if="item.created_at && item.user">
-              {{ formatName(item.user) }}
-              {{ formatDateTime(item.created_at) }}
-            </template>
-          </div>
         </div>
         <template v-else>
           Новый отзыв
