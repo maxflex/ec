@@ -155,7 +155,7 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
             </tbody>
           </table>
         </div>
-        <div v-if="selectedContract.year === currentAcademicYear()">
+        <div v-if="selectedContract.year >= currentAcademicYear()">
           <VueQrcode :value="qrValue" :options="{ width: qrSize, height: qrSize }" class="billing__qr" />
           <p>
             Откройте приложение вашего банка. Выберите в меню "Оплата по QR-коду".
