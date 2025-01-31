@@ -29,7 +29,36 @@ class UpdateProgramsCommand extends Command
 
     public function handle(): void
     {
-        $this->updateReports();
+        $this->updateReports2();
+    }
+
+    private function updateReports2()
+    {
+        $data = [
+            (object)['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
+            (object)['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
+            (object)['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
+            (object)['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
+            (object)['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
+            (object)['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
+            (object)['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
+            (object)['teacher_id' => 20787, 'client_id' => 8109, 'year' => 2023, 'program' => 'mathProfExternal', 'new_program' => 'mathBaseExternal'],
+        ];
+
+
+        $bar = $this->output->createProgressBar(count($data));
+        foreach ($data as $d) {
+            DB::table('reports')
+                ->where('teacher_id', $d->teacher_id)
+                ->where('client_id', $d->client_id)
+                ->where('year', $d->year)
+                ->where('program', $d->program)
+                ->update([
+                    'program' => $d->new_program
+                ]);
+            $bar->advance();
+        }
+        $bar->finish();
     }
 
     private function updateReports()
@@ -68,7 +97,6 @@ select x.*, (
 ) as `new_program`
 from x;
         ");
-
 
         $bar = $this->output->createProgressBar(count($data));
         foreach ($data as $d) {
