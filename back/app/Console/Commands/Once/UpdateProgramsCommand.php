@@ -45,7 +45,6 @@ class UpdateProgramsCommand extends Command
             (object)['teacher_id' => 20787, 'client_id' => 8109, 'year' => 2023, 'program' => 'mathProfExternal', 'new_program' => 'mathBaseExternal'],
         ];
 
-
         $bar = $this->output->createProgressBar(count($data));
         foreach ($data as $d) {
             DB::table('reports')

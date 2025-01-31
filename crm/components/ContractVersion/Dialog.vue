@@ -19,6 +19,7 @@ const modelDefaults: ContractVersionResource = {
     company: 'ooo',
   },
 }
+const { user } = useAuthStore()
 const item = ref<ContractVersionResource>(modelDefaults)
 const contractId = ref<number>()
 // только для отображения в заголовке
@@ -413,7 +414,7 @@ defineExpose({ edit, newContract, newVersion })
             :size="48"
             variant="text"
             :loading="saving"
-            :disabled="!isPaymentSumValid"
+            :disabled="user?.id !== 1 && !isPaymentSumValid"
             @click="save()"
           />
         </div>
