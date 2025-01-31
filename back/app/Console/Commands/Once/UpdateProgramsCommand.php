@@ -61,16 +61,10 @@ class UpdateProgramsCommand extends Command
      */
     private function mathBaseAndProfSplitUp()
     {
-        $this->info(PHP_EOL . 'mathBaseAndProfSplitUp');
-
-        // группы, которые нужно перевести в мат-профиль
-        $groups = Group::whereIn('program', [
-            Program::mathBaseSchool10,
-            Program::mathBaseSchool11,
-            Program::mathBaseExternal,
-        ])
-            // исключить мат база
-            ->whereNotIn('id', [
+        // группы, которые нужно перевести в мат-базу
+        $groups = Group::query()
+            // мат база
+            ->whereIn('id', [
                 595, 264, 404, 294, 1501, 1253, 1500, 1499, 1498, 1495, 1494, 1493, 1471, 1470, 1469,
                 1256, 1603, 1533, 1534, 1590, 1604, 1608, 1629, 1630, 1749, 1318, 1496, 1581, 1588, 903,
                 403, 584, 585, 765, 780, 898, 899, 900, 901, 902, 1247, 1109, 1110, 1111, 1112, 1113, 1188,
@@ -78,26 +72,25 @@ class UpdateProgramsCommand extends Command
             ])
             ->get();
 
+        $this->info("\n\nClientLessons & ClientGroups...");
         $bar = $this->output->createProgressBar(count($groups));
         $updatedIds = collect();
 
         foreach ($groups as $g) {
-            $newProgram = match ($g->program) {
-                Program::mathBaseSchool10 => Program::mathProfSchool10,
-                Program::mathBaseSchool11 => Program::mathProfSchool11,
-                Program::mathBaseExternal => Program::mathProfExternal,
-            };
+            $newProgram = $this->getNewProgram($g->program);
 
             DB::table('groups')->whereId($g->id)->update([
                 'program' => $newProgram->value
             ]);
 
+            // client_lessons
             $ids = DB::table('lessons', 'l')
                 ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
                 ->where('l.group_id', $g->id)
                 ->pluck('cl.contract_version_program_id')
                 ->unique();
 
+            // client_groups
             $ids2 = DB::table('client_groups', 'cg')
                 ->where('cg.group_id', $g->id)
                 ->pluck('cg.contract_version_program_id')
@@ -117,22 +110,19 @@ class UpdateProgramsCommand extends Command
 
         $data = ContractVersionProgram::whereNotIn('id', $updatedIds)
             ->whereIn('program', [
-                Program::mathBaseSchool10,
-                Program::mathBaseSchool11,
-                Program::mathBaseExternal,
+                Program::mathProfSchool10,
+                Program::mathProfSchool11,
+                Program::mathProfExternal,
             ])
-//            ->where('lessons_planned', 96)
-            ->whereIn('lessons_planned', [96, 32, 44])
+            ->where('lessons_planned', [32, 44])
+//            ->whereIn('lessons_planned', [96, 32, 44])
             ->get();
 
 
+        $this->info("\n\nLeftovers...");
         $bar = $this->output->createProgressBar(count($data));
         foreach ($data as $cvp) {
-            $newProgram = match ($cvp->program) {
-                Program::mathBaseSchool10 => Program::mathProfSchool10,
-                Program::mathBaseSchool11 => Program::mathProfSchool11,
-                Program::mathBaseExternal => Program::mathProfExternal,
-            };
+            $newProgram = $this->getNewProgram($cvp->program);
 
             DB::table('contract_version_programs')
                 ->where('id', $cvp->id)
@@ -157,9 +147,19 @@ class UpdateProgramsCommand extends Command
         }
     }
 
+    private function getNewProgram(Program $program): Program
+    {
+        return match ($program) {
+            Program::mathProfSchool10 => Program::mathBaseSchool10,
+            Program::mathProfSchool11 => Program::mathBaseSchool11,
+            Program::mathProfExternal => Program::mathBaseExternal,
+            default => throw new \Exception("Cannot get new program from " . $program->value)
+        };
+    }
+
     private function updateDbStructure()
     {
-        $this->info("Updating DB structure...");
+        $this->info("\nUpdating DB structure...");
         $bar = $this->output->createProgressBar(count(self::TABLES));
         foreach (self::TABLES as $table) {
             Schema::table($table, function (Blueprint $table) {
@@ -168,26 +168,25 @@ class UpdateProgramsCommand extends Command
 
             DB::table($table)->update([
                 'program_new' => DB::raw('program'),
-                'program_old' => DB::raw('program'),
             ]);
 
             // обновление значений
             DB::table($table)
                 ->where('program', 'mathSchool10')
                 ->update([
-                    'program_new' => Program::mathBaseSchool10->value
+                    'program_new' => Program::mathProfSchool10->value
                 ]);
 
             DB::table($table)
                 ->where('program', 'mathSchool11')
                 ->update([
-                    'program_new' => Program::mathBaseSchool11->value
+                    'program_new' => Program::mathProfSchool11->value
                 ]);
 
             DB::table($table)
                 ->where('program', 'mathExternal')
                 ->update([
-                    'program_new' => Program::mathBaseExternal->value
+                    'program_new' => Program::mathProfExternal->value
                 ]);
             // конец обновление значений
 
