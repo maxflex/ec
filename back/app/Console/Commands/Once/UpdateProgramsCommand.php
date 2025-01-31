@@ -29,8 +29,60 @@ class UpdateProgramsCommand extends Command
 
     public function handle(): void
     {
-        $this->updateDbStructure();
-        $this->mathBaseAndProfSplitUp();
+        $this->updateReports();
+    }
+
+    private function updateReports()
+    {
+        $data = DB::select("
+        with d as (
+select 
+	l.teacher_id, c.client_id, g.year, g.program
+from client_lessons cl
+join `lessons` l on l.id = cl.lesson_id
+join `groups` g on g.id = l.group_id
+join contract_version_programs cvp on cvp.id = cl.contract_version_program_id
+join contract_versions cv on cv.id = cvp.contract_version_id
+join contracts c on c.id = cv.contract_id
+group by 
+	l.teacher_id, c.client_id, g.year, g.program
+),
+x as (
+select r.teacher_id, r.client_id, r.year, r.program, (
+	select count(distinct d.program)
+	from d
+	where d.teacher_id = r.teacher_id
+	and d.client_id = r.client_id
+	and d.year = r.year
+) as `cnt`
+from reports r
+where r.program like '%Prof%'
+having `cnt` = 1
+)
+select x.*, (
+	select group_concat(d.program)
+	from d
+	where d.teacher_id = x.teacher_id
+	and d.client_id = x.client_id
+	and d.year = x.year
+) as `new_program`
+from x;
+        ");
+
+
+        $bar = $this->output->createProgressBar(count($data));
+        foreach ($data as $d) {
+            DB::table('reports')
+                ->where('teacher_id', $d->teacher_id)
+                ->where('client_id', $d->client_id)
+                ->where('year', $d->year)
+                ->where('program', $d->program)
+                ->update([
+                    'program' => $d->new_program
+                ]);
+            $bar->advance();
+        }
+        $bar->finish();
     }
 
     /**
