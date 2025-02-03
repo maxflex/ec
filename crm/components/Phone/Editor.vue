@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { mdiEmailOffOutline, mdiEmailOutline } from '@mdi/js'
+
 const model = defineModel<PhoneResource[]>({ default: () => [] })
 const phoneMask = { mask: '+7 (###) ###-##-##' }
 
@@ -9,6 +11,8 @@ function addPhone() {
     comment: '',
     telegram_id: null,
     entity_type: EntityTypeValue.request,
+    entity_id: -1,
+    is_telegram_disabled: false,
   })
 }
 
@@ -32,10 +36,25 @@ function removePhone(p: PhoneResource) {
         v-maska:[phoneMask]
         label="Телефон"
       />
-      <v-icon
-        icon="$close"
-        @click="removePhone(p)"
-      />
+      <div class="phone-editor__actions">
+        <v-icon
+          :class="{
+            'phone-editor__telegram--has-telegram': !!p.telegram_id,
+          }"
+          icon="$send"
+        />
+        <v-icon
+          :icon="p.is_telegram_disabled ? mdiEmailOffOutline : mdiEmailOutline"
+          :class="{
+            'phone-editor__telegram--disabled': p.is_telegram_disabled,
+          }"
+          @click="p.is_telegram_disabled = !p.is_telegram_disabled"
+        />
+        <v-icon
+          icon="$close"
+          @click="removePhone(p)"
+        />
+      </div>
     </div>
     <v-text-field
       v-model="p.comment"
@@ -59,18 +78,47 @@ function removePhone(p: PhoneResource) {
       position: relative;
     }
   }
-  .v-icon {
+  &__actions {
     position: absolute;
     right: 10px;
     top: 19px;
-    opacity: 0.25;
-    z-index: 1;
-    // transition: all ease-in-out 0.1s;
-    cursor: pointer;
-    font-size: 20px !important;
-    &:hover {
-      opacity: 1;
-      color: rgb(var(--v-theme-error));
+    display: flex;
+    gap: 10px;
+
+    .v-icon {
+      font-size: 20px !important;
+
+      &:first-child {
+        color: #bfbfbf;
+        cursor: default !important;
+      }
+
+      &:nth-child(2) {
+        opacity: 0.25;
+        &:hover {
+          opacity: 1;
+          color: rgb(var(--v-theme-gray));
+        }
+      }
+
+      &:last-child {
+        z-index: 1;
+        cursor: pointer;
+        opacity: 0.25;
+        &:hover {
+          color: rgb(var(--v-theme-error));
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  &__telegram {
+    &--has-telegram {
+      color: rgb(var(--v-theme-secondary)) !important;
+    }
+    &--disabled {
+      color: rgb(var(--v-theme-error)) !important;
     }
   }
 }

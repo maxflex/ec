@@ -19,7 +19,8 @@ class PhoneResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'number', 'comment', 'telegram_id', 'entity_type', 'entity_id'
+            'number', 'comment', 'telegram_id',
+            'entity_type', 'entity_id', 'is_telegram_disabled'
         ]);
     }
 }

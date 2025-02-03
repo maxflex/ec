@@ -175,6 +175,7 @@ declare global {
     telegram_id: ?number
     entity_type: EntityType
     entity_id: number
+    is_telegram_disabled: boolean
   }
 
   interface RequestResource {
