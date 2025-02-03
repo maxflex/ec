@@ -33,6 +33,9 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             'throttle:crm',
         ],
+        'pub' => [
+            'throttle:pub'
+        ],
     ];
 
     /**
