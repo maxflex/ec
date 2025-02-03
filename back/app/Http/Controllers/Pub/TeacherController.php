@@ -10,8 +10,9 @@ use Illuminate\Http\Request;
 class TeacherController extends Controller
 {
     protected $filters = [
-        'findInSet' => ['subject'],
+        'subject' => ['subject'],
         'ids' => ['ids'],
+        'limit' => ['limit'],
     ];
 
     public function index(Request $request)
@@ -27,5 +28,17 @@ class TeacherController extends Controller
     {
         $idsString = implode(',', $ids);
         $query->whereIn('id', $ids)->orderByRaw("FIELD(id, $idsString)");
+    }
+
+    protected function filterLimit(&$query, $limit)
+    {
+        $query->take($limit);
+    }
+
+    protected function filterSubject(&$query, string $subject)
+    {
+        $query->whereRaw("FIND_IN_SET(?, `subjects`)", [
+            $subject
+        ]);
     }
 }
