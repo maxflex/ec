@@ -12,7 +12,8 @@ class TeacherPubResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'first_name', 'last_name', 'middle_name'
+            'first_name', 'last_name', 'middle_name',
+            'subjects', 'photo_desc', 'photo_url'
         ]);
     }
 }

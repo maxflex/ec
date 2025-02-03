@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Group extends Model implements HasTeeth
 {
     protected $fillable = [
-        'program', 'year', 'zoom'
+        'program', 'year', 'zoom', 'lessons_planned'
     ];
 
     protected $casts = [

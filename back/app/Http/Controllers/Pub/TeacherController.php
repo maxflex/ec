@@ -16,7 +16,7 @@ class TeacherController extends Controller
 
     public function index(Request $request)
     {
-        $query = Teacher::query();
+        $query = Teacher::where('is_published', true);
         $this->filter($request, $query);
         return TeacherPubResource::collection(
             $query->get()

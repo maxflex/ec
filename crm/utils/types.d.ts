@@ -392,8 +392,9 @@ declare global {
     created_at?: string
     user?: PersonResource
     zoom: Zoom
-    lessons_count: number
-    lessons_free_count: number
+    lessons_planned?: number
+    lessons_count?: number
+    lessons_free_count?: number
   }
 
   interface UploadedFile {
