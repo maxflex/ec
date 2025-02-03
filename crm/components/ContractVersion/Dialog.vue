@@ -451,6 +451,13 @@ defineExpose({ edit, newContract, newVersion })
                 {{ formatPrice(lessonsMultipliedByPriceSum) }}
               </span>
             </a>
+            <div v-if="item.free_lessons_count" style="font-size: 14px" class="text-orange date-input__today cursor-default">
+              в договоре {{ plural(item.free_lessons_count, [
+                'бесплатное занятие',
+                'бесплатных занятия',
+                'бесплатных занятий',
+              ]) }}
+            </div>
           </div>
           <UiDateInput v-model="item.date" today-btn />
         </div>
@@ -599,14 +606,6 @@ defineExpose({ edit, newContract, newVersion })
               </tr>
             </tbody>
           </table>
-        </div>
-
-        <div v-if="item.free_lessons_count" style="font-size: 14px" class="text-gray">
-          В договоре есть {{ plural(item.free_lessons_count, [
-            'бесплатное занятие',
-            'бесплатных занятия',
-            'бесплатных занятий',
-          ]) }}
         </div>
 
         <div class="dialog-section">

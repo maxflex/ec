@@ -79,8 +79,6 @@ class ContractVersionProgram extends Model
     {
         return $this->clientLessons()
             ->where('price', '>', 0)
-            // price > 0 уже включает is_free = false
-            // ->whereHas('lesson', fn($q) => $q->where('is_free', false))
             ->count();
     }
 
@@ -112,7 +110,6 @@ class ContractVersionProgram extends Model
         return $this->clientLessons()
             ->join('lessons as l', 'l.id', '=', 'client_lessons.lesson_id')
             ->where('client_lessons.price', '>', 0)
-            ->where('l.is_free', false)
             ->orderByRaw('l.date asc, l.time asc')
             ->pluck('client_lessons.price');
     }
