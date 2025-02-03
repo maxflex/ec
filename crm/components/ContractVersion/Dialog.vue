@@ -601,6 +601,14 @@ defineExpose({ edit, newContract, newVersion })
           </table>
         </div>
 
+        <div v-if="item.free_lessons_count" style="font-size: 14px" class="text-gray">
+          В договоре есть {{ plural(item.free_lessons_count, [
+            'бесплатное занятие',
+            'бесплатных занятия',
+            'бесплатных занятий',
+          ]) }}
+        </div>
+
         <div class="dialog-section">
           <table class="dialog-table contract-version-dialog__payments">
             <thead v-if="item.payments.length">

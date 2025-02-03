@@ -94,6 +94,7 @@ class Request extends Model
         }
 
         return Request::where('id', '<>', $this->id)
+            ->withCount('comments')
             ->where(fn($q) => $q->whereHas('phones', fn($q) => $q->whereIn('number', $numbers))
                 ->when($clientIds->count(), fn($q) => $q->orWhereIn('client_id', $clientIds))
             )

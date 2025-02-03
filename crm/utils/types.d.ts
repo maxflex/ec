@@ -309,6 +309,7 @@ declare global {
       company: Company
       client?: PersonResource
     }
+    free_lessons_count?: number
     created_at?: string
     user?: PersonResource
   }

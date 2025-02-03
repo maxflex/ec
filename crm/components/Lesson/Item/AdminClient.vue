@@ -83,7 +83,7 @@ const isConductDisabled = item.status !== 'conducted'
     </div>
 
     <div style="width: 130px">
-      <span v-if="item.client_lesson?.price">
+      <span v-if="item.client_lesson">
         {{ item.client_lesson.price }} ₽
         -
         №{{ item.client_lesson.contract_id }}

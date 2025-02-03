@@ -90,6 +90,16 @@ class ContractVersion extends Model
     }
 
     /**
+     * Кол-во бесплатных занятий в договоре
+     */
+    public function getFreeLessonsCountAttribute(): int
+    {
+        return $this->programs->reduce(
+            fn($carry, $p) => $carry + $p->free_lessons_count
+            , 0);
+    }
+
+    /**
      * Обновляем связи contract_version_program_id
      * новая версия – $this, старая $old
      *

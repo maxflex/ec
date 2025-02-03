@@ -21,6 +21,7 @@ class ContractVersionResource extends JsonResource
             'programs' => ContractVersionProgramResource::collection($this->programs),
             'payments' => $this->payments,
             'user' => new PersonResource($this->user),
+            'free_lessons_count' => $this->free_lessons_count,
             'contract' => extract_fields($this->contract, [
                 'year', 'company',
             ])

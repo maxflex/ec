@@ -22,6 +22,7 @@ class AllLessonsController extends Controller
                  CAST(SUM(IF(`status` = 'planned', 1, 0)) AS UNSIGNED) as planned_count,
                  CAST(SUM(IF(`status` = 'conducted', 1, 0)) AS UNSIGNED) as conducted_count,
                  CAST(SUM(IF(`status` = 'cancelled', 1, 0)) AS UNSIGNED) as cancelled_count,
+                 CAST(SUM(IF(is_unplanned, 1, 0)) AS UNSIGNED) as unplanned_count,
                  CAST(SUM(IF(
                     `status` = 'planned' AND TIMESTAMP(`date`, `time`) < NOW() - INTERVAL 1 HOUR
                  , 1, 0)) AS UNSIGNED) as need_conduct_count

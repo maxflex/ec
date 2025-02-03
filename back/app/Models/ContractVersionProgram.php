@@ -73,11 +73,14 @@ class ContractVersionProgram extends Model
 
     /**
      * Сколько занятий по программе прошло
+     * бесплатные и price=0 не учитываем ("слепой режим")
      */
     public function getLessonsConductedAttribute(): int
     {
         return $this->clientLessons()
-            ->whereHas('lesson', fn($q) => $q->where('is_free', false))
+            ->where('price', '>', 0)
+            // price > 0 уже включает is_free = false
+            // ->whereHas('lesson', fn($q) => $q->where('is_free', false))
             ->count();
     }
 
@@ -108,6 +111,7 @@ class ContractVersionProgram extends Model
     {
         return $this->clientLessons()
             ->join('lessons as l', 'l.id', '=', 'client_lessons.lesson_id')
+            ->where('client_lessons.price', '>', 0)
             ->where('l.is_free', false)
             ->orderByRaw('l.date asc, l.time asc')
             ->pluck('client_lessons.price');
@@ -129,8 +133,23 @@ class ContractVersionProgram extends Model
     }
 
     /**
-     * @param ?int $lessonsPassed
+     * Кол-во бесплатных занятий
      */
+    public function getFreeLessonsCountAttribute(): int
+    {
+        $total = $this->clientLessons()->where('price', 0)->count();
+        $group = $this->group;
+
+        if (!$group) {
+            return $total;
+        }
+
+        return $total + $group->lessons()
+                ->where('status', LessonStatus::planned)
+                ->where('is_free', true)
+                ->count();
+    }
+
     public function getNextPrice(?int $lessonsPassed = null): int
     {
         if ($lessonsPassed === null) {
