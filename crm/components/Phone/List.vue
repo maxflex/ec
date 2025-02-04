@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { PhoneDialog } from '#build/components'
+import { mdiEmailOffOutline, mdiSendCircle } from '@mdi/js'
 
 const { items, q, request } = defineProps<{
   items: PhoneResource[]
   request?: RequestListResource
   showComment?: boolean
+  showIcons?: boolean
   q?: string
 }>()
 
@@ -58,6 +60,10 @@ const phoneDialog = ref<InstanceType<typeof PhoneDialog>>()
       <div v-if="showComment" class="phone-list__comment">
         {{ item.comment }}
       </div>
+      <div v-if="showIcons" class="phone-list__icons">
+        <v-icon v-if="item.telegram_id" color="secondary" :icon="mdiSendCircle" :size="16" />
+        <v-icon v-if="item.is_telegram_disabled" color="error" :icon="mdiEmailOffOutline" />
+      </div>
     </div>
   </div>
   <PhoneDialog ref="phoneDialog" />
@@ -82,6 +88,14 @@ const phoneDialog = ref<InstanceType<typeof PhoneDialog>>()
     display: inline-block;
     white-space: nowrap;
     width: 120px;
+  }
+  &__icons {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    left: -20px;
+    position: relative;
   }
 }
 </style>

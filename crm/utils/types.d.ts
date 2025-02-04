@@ -1073,6 +1073,7 @@ declare global {
     is_sent: boolean
     is_parent: boolean
     number: string
+    is_telegram_disabled?: boolean
   }
 
   interface TelegramListResource {

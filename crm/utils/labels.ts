@@ -604,9 +604,9 @@ export const SwampFilterStatusLabel = {
 } as const
 
 export const SendToLabel = {
-  studentsAndParents: 'ученикам и родителям',
-  students: 'только ученикам',
-  parents: 'только родителям',
+  studentsAndParents: 'ученикам, родителям и преподавателям',
+  students: 'ученикам и преподавателям',
+  parents: 'родителям и преподавателям',
 } as const
 
 export const EventParticipantConfirmationLabel = {

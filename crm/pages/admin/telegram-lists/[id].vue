@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { mdiEmailOffOutline } from '@mdi/js'
+
 const route = useRoute()
 
 const { $addSseListener, $removeSseListener } = useNuxtApp()
@@ -70,7 +72,7 @@ nextTick(loadData)
           </div>
         </div>
         <div>
-          <div> Отправка клиенту </div>
+          <div> Кому отправлять </div>
           <div> {{ SendToLabel[item.send_to] }} </div>
         </div>
         <div v-if="item.event">
@@ -125,6 +127,7 @@ nextTick(loadData)
                         }"
                       >
                         {{ formatPhone(r.number) }}
+                        <v-icon v-if="r.is_telegram_disabled" :icon="mdiEmailOffOutline" :size="14" color="error" class="vfn-1" />
                       </div>
                     </template>
                   </div>
@@ -149,6 +152,7 @@ nextTick(loadData)
                         }"
                       >
                         {{ formatPhone(r.number) }}
+                        <v-icon v-if="r.is_telegram_disabled" :icon="mdiEmailOffOutline" :size="14" color="error" class="vfn-1" />
                       </div>
                     </template>
                   </div>

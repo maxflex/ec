@@ -112,6 +112,7 @@ class TelegramList extends Model
                         'is_sent' => $phone->telegram_id !== null,
                         'is_parent' => $phone->entity_type === ClientParent::class,
                         'number' => $phone->number,
+                        'is_telegram_disabled' => $phone->is_telegram_disabled,
                     ];
                 }
             }

@@ -1,93 +1,130 @@
 <script setup lang="ts">
-import type { TelegramMessageDialog } from '#build/components'
-import { mdiHistory, mdiPhone, mdiSend } from '@mdi/js'
-import { openCallApp } from '~/components/CallApp'
+import {
+  mdiEmailOffOutline,
+  mdiPhone,
+} from '@mdi/js'
 
-const telegramMessageDialog = ref<InstanceType<typeof TelegramMessageDialog>>()
 const { dialog, width } = useDialog('default')
 const item = ref<PhoneResource>()
+const callsList = ref<CallListResource[]>([])
+const telegramMessages = ref<TelegramMessageResource[]>([])
+const tabs = {
+  calls: 'история звонков',
+  telegramMessages: 'история сообщений',
+} as const
+const selectedTab = ref<keyof typeof tabs>('calls')
+const loading = ref(true)
 
 function open(p: PhoneResource) {
   item.value = p
   dialog.value = true
+  loadCalls()
 }
+
+async function loadCalls() {
+  loading.value = true
+  const { data } = await useHttp<ApiResponse<CallListResource>>(`calls`, {
+    params: {
+      q: item.value!.number,
+    },
+  })
+  callsList.value = data.value!.data
+  loading.value = false
+}
+
+async function loadTelegramMessages() {
+  loading.value = true
+  const { data } = await useHttp<ApiResponse<TelegramMessageResource>>(
+    `telegram-messages`,
+    {
+      params: {
+        number: item.value!.number,
+      },
+    },
+  )
+  telegramMessages.value = data.value!.data
+  loading.value = false
+}
+
+watch(selectedTab, (newVal) => {
+  if (newVal === 'telegramMessages') {
+    loadTelegramMessages()
+  }
+})
 
 defineExpose({ open })
 </script>
 
 <template>
   <v-dialog v-model="dialog" :width="width">
-    <div class="dialog-wrapper">
-      <div v-if="item" class="dialog-body phone-view pt-5">
-        <div>
-          <div>
-            Телефон:
-          </div>
-          <div>
-            {{ formatPhone(item.number) }}
+    <div v-if="item" class="dialog-wrapper phone-dialog">
+      <div class="dialog-header">
+        <div class="d-flex ga-2 align-center">
+          {{ formatPhone(item.number) }}
+          <div v-if="item.comment" class="dialog-subheader">
+            {{ item.comment }}
           </div>
         </div>
         <div>
-          <div>
-            Комментарий:
-          </div>
-          <div>
-            {{ item.comment || 'не установлено' }}
+          <v-btn v-if="item.telegram_id" color="secondary" icon="$send" :size="48" variant="text" class="no-pointer-events" />
+          <v-btn v-if="item.is_telegram_disabled" color="error" :icon="mdiEmailOffOutline" :size="48" variant="text" class="no-pointer-events" />
+          <!--          <v-btn -->
+          <!--            :size="48" -->
+          <!--            variant="text" -->
+          <!--            :disabled="!item.telegram_id" -->
+          <!--            icon="$send" -->
+          <!--            class="no-pointer-events" -->
+          <!--          /> -->
+          <!--          <v-btn -->
+          <!--            :icon="item.is_telegram_disabled ? mdiEmailOffOutline : mdiEmailOutline" -->
+          <!--            :color="item.is_telegram_disabled ? 'error' : 'black'" -->
+          <!--            :size="48" -->
+          <!--            variant="text" -->
+          <!--            class="no-pointer-events" -->
+          <!--          /> -->
+          <v-btn
+            :size="48"
+            :icon="mdiPhone"
+            variant="text"
+            color="black"
+            :href="`tel:${item.number}`"
+          />
+        </div>
+      </div>
+      <div class="dialog-body pa-0 ga-0">
+        <div class="tabs">
+          <div
+            v-for="(label, key) in tabs"
+            :key="key"
+            class="tabs-item"
+            :class="{ 'tabs-item--active': selectedTab === key }"
+            @click="selectedTab = key"
+          >
+            {{ label }}
           </div>
         </div>
-        <div>
-          <div />
-          <div class="phone-view__actions">
-            <v-tooltip location="bottom">
-              <template #activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  :size="48"
-                  :icon="mdiPhone"
-                  variant="text"
-                  color="secondary"
-                  :href="`tel:${item.number}`"
-                />
-              </template>
-              позвонить
-            </v-tooltip>
-
-            <v-tooltip location="bottom">
-              <template #activator="{ props }">
-                <v-btn :size="48" :icon="mdiHistory" variant="text" color="secondary" v-bind="props" @click="openCallApp(item.number)" />
-              </template>
-              история вызовов
-            </v-tooltip>
-            <v-tooltip location="bottom">
-              <template #activator="{ props }">
-                <v-btn :size="48" :icon="mdiSend" variant="text" color="secondary" v-bind="props" @click="telegramMessageDialog?.open(item)" />
-              </template>
-              история сообщений
-            </v-tooltip>
-          </div>
-        </div>
+        <UiLoader v-if="loading" />
+        <template v-else-if="selectedTab === 'calls'">
+          <UiNoData v-if="callsList.length === 0" />
+          <CallAppCallsList v-else :items="callsList" />
+        </template>
+        <template v-else>
+          <UiNoData v-if="telegramMessages.length === 0" />
+          <TelegramMessageHistoryList :items="telegramMessages" />
+        </template>
       </div>
     </div>
   </v-dialog>
-  <TelegramMessageDialog ref="telegramMessageDialog" />
 </template>
 
 <style lang="scss">
-.phone-view {
-  & > div {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-
-    & > div {
-      &:first-child {
-        font-weight: bold;
-      }
-    }
-  }
-  &__actions {
-    display: flex;
-    gap: 12px;
+.phone-dialog {
+  .tabs {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    min-height: min-content;
+    background: white;
   }
 }
 </style>

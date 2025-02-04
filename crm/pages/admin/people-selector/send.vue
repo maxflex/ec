@@ -158,7 +158,7 @@ nextTick(async () => {
           <v-select
             v-model="item.send_to"
             :items="selectItems(SendToLabel)"
-            label="Отправка клиенту"
+            label="Кому отправлять"
           />
         </div>
         <div>
