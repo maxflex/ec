@@ -112,7 +112,7 @@ class Teacher extends Authenticatable implements HasTeeth, CanLogin
         $services = $this->services()->where('year', $year)->get();
         foreach ($services as $service) {
             $balanceItems[] = (object)[
-                'dateTime' => $service->created_at->format('Y-m-d H:i:s'),
+                'dateTime' => $service->date . ' 15:00:00',
                 'sum' => $service->sum,
                 'comment' => $service->purpose,
             ];
