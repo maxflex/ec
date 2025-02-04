@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiEmailOffOutline, mdiEmailOutline } from '@mdi/js'
+import { mdiEmailOffOutline, mdiEmailOutline, mdiSendCircle } from '@mdi/js'
 
 const model = defineModel<PhoneResource[]>({ default: () => [] })
 const phoneMask = { mask: '+7 (###) ###-##-##' }
@@ -41,7 +41,8 @@ function removePhone(p: PhoneResource) {
           :class="{
             'phone-editor__telegram--has-telegram': !!p.telegram_id,
           }"
-          icon="$send"
+          style="transform: scale(1.1)"
+          :icon="mdiSendCircle"
         />
         <v-icon
           :icon="p.is_telegram_disabled ? mdiEmailOffOutline : mdiEmailOutline"

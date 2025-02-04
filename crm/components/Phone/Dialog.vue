@@ -2,6 +2,7 @@
 import {
   mdiEmailOffOutline,
   mdiPhone,
+  mdiSendCircle,
 } from '@mdi/js'
 
 const { dialog, width } = useDialog('default')
@@ -66,7 +67,7 @@ defineExpose({ open })
           </div>
         </div>
         <div>
-          <v-btn v-if="item.telegram_id" color="secondary" icon="$send" :size="48" variant="text" class="no-pointer-events" />
+          <v-btn v-if="item.telegram_id" color="secondary" :icon="mdiSendCircle" :size="48" variant="text" class="no-pointer-events" style="transform: scale(1.1)" />
           <v-btn v-if="item.is_telegram_disabled" color="error" :icon="mdiEmailOffOutline" :size="48" variant="text" class="no-pointer-events" />
           <!--          <v-btn -->
           <!--            :size="48" -->
