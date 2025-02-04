@@ -193,7 +193,7 @@ defineExpose({ create, edit })
           />
         </div>
 
-        <PhoneEditor v-model="client.phones" />
+        <PhoneEditor v-model="client.phones" edit-telegram />
 
         <div>
           <v-checkbox
@@ -264,7 +264,7 @@ defineExpose({ create, edit })
           no-resize
           rows="3"
         />
-        <PhoneEditor v-model="client.parent.phones" />
+        <PhoneEditor v-model="client.parent.phones" edit-telegram />
       </div>
     </div>
   </v-dialog>

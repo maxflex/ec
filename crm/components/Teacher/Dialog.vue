@@ -184,7 +184,7 @@ defineExpose({ create, edit })
             multiple
           />
         </div>
-        <PhoneEditor v-model="teacher.phones" />
+        <PhoneEditor v-model="teacher.phones" edit-telegram />
 
         <div class="double-input">
           <v-text-field

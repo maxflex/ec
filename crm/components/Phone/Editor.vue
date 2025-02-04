@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { mdiEmailOffOutline, mdiEmailOutline, mdiSendCircle } from '@mdi/js'
-
+const { editTelegram } = defineProps<{
+  editTelegram?: boolean
+}>()
 const model = defineModel<PhoneResource[]>({ default: () => [] })
 const phoneMask = { mask: '+7 (###) ###-##-##' }
-
 function addPhone() {
   model.value.push({
     id: newId(),
@@ -34,27 +34,22 @@ function removePhone(p: PhoneResource) {
       <v-text-field
         v-model="p.number"
         v-maska:[phoneMask]
-        label="Телефон"
+        :label="p.telegram_id ? 'Телефон / Телеграм' : 'Телефон'"
+        :class="{
+          'phone-editor--has-telegram': !!p.telegram_id,
+        }"
       />
-      <div class="phone-editor__actions">
-        <v-icon
-          :class="{
-            'phone-editor__telegram--has-telegram': !!p.telegram_id,
-          }"
-          style="transform: scale(1.1)"
-          :icon="mdiSendCircle"
-        />
-        <v-icon
-          :icon="p.is_telegram_disabled ? mdiEmailOffOutline : mdiEmailOutline"
-          :class="{
-            'phone-editor__telegram--disabled': p.is_telegram_disabled,
-          }"
+      <div class="input-actions">
+        <span
+          v-if="editTelegram"
+          :class="p.is_telegram_disabled ? 'text-error' : 'text-gray'"
           @click="p.is_telegram_disabled = !p.is_telegram_disabled"
-        />
-        <v-icon
-          icon="$close"
-          @click="removePhone(p)"
-        />
+        >
+          без рассылки
+        </span>
+        <span class="phone-editor__remove" @click="removePhone(p)">
+          удалить
+        </span>
       </div>
     </div>
     <v-text-field
@@ -113,13 +108,16 @@ function removePhone(p: PhoneResource) {
       }
     }
   }
-
-  &__telegram {
-    &--has-telegram {
-      color: rgb(var(--v-theme-secondary)) !important;
+  &__remove {
+    color: rgb(var(--v-theme-gray));
+    &:hover {
+      color: rgb(var(--v-theme-error));
     }
-    &--disabled {
-      color: rgb(var(--v-theme-error)) !important;
+  }
+  &--has-telegram {
+    .v-field__outline__notch label {
+      opacity: 1;
+      color: rgb(var(--v-theme-secondary)) !important;
     }
   }
 }

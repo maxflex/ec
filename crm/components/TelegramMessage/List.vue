@@ -14,7 +14,7 @@ const readDialog = ref()
         <UiPerson :item="m.entity" />
       </div>
       <div style="width: 170px">
-        <span :class="m.telegram_id ? 'text-success' : 'text-error'">
+        <span :class="m.telegram_id ? 'text-secondary' : 'text-black'">
           {{ formatPhone(m.number) }}
         </span>
       </div>

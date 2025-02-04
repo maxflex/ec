@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { PhoneDialog } from '#build/components'
-import { mdiEmailOffOutline, mdiSendCircle } from '@mdi/js'
 
 const { items, q, request } = defineProps<{
   items: PhoneResource[]
@@ -50,19 +49,17 @@ const phoneDialog = ref<InstanceType<typeof PhoneDialog>>()
 <template>
   <div class="phone-list">
     <div v-for="item in items" :key="item.id">
-      <div
+      <PhoneNumber
+        :item="item"
         class="phone-list__number"
-        :class="{ 'text-gray': request && !request.is_verified }"
-        @click.stop="phoneDialog?.open(item)"
+        :request="request"
+        @click.native.stop="phoneDialog?.open(item)"
+      />
+      <div
+        v-if="showComment"
+        class="phone-list__comment"
       >
-        {{ formatPhone(item.number) }}
-      </div>
-      <div v-if="showComment" class="phone-list__comment">
         {{ item.comment }}
-      </div>
-      <div v-if="showIcons" class="phone-list__icons">
-        <v-icon v-if="item.telegram_id" color="secondary" :icon="mdiSendCircle" :size="16" />
-        <v-icon v-if="item.is_telegram_disabled" color="error" :icon="mdiEmailOffOutline" />
       </div>
     </div>
   </div>
@@ -77,9 +74,9 @@ const phoneDialog = ref<InstanceType<typeof PhoneDialog>>()
   &__number {
     cursor: pointer;
     width: 160px;
-    &:hover {
-      color: rgb(var(--v-theme-secondary)) !important;
-    }
+    //&:hover {
+    //  color: rgb(var(--v-theme-secondary)) !important;
+    //}
   }
   &__comment {
     color: rgb(var(--v-theme-gray));
@@ -88,14 +85,6 @@ const phoneDialog = ref<InstanceType<typeof PhoneDialog>>()
     display: inline-block;
     white-space: nowrap;
     width: 120px;
-  }
-  &__icons {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 10px;
-    left: -20px;
-    position: relative;
   }
 }
 </style>
