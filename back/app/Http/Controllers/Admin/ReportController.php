@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Program;
 use App\Enums\ReportStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReportListResource;
@@ -82,8 +83,8 @@ class ReportController extends Controller
             $params = [
                 'teacher_id' => $request->input('teacher_id'),
                 'client_id' => $request->input('client_id'),
-                'program' => $request->input('program'),
-                'year' => $request->input('year'),
+                'program' => Program::from($request->input('program')),
+                'year' => intval($request->input('year')),
             ];
         }
 
