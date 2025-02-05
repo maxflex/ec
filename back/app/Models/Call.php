@@ -120,7 +120,6 @@ class Call extends Model
         cache()->tags('missed')->put($this->id, 1, now()->addMonth());
     }
 
-
     /**
      * АОН – автоматический определитель номера.
      * Определяем модель по номеру телефона

@@ -6,6 +6,7 @@ use App\Contracts\CanLogin;
 use App\Contracts\HasTeeth;
 use App\Enums\Direction;
 use App\Enums\LessonStatus;
+use App\Utils\Swamp;
 use App\Traits\{HasName, HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable};
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\{Casts\Attribute,
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\{Casts\Attribute,
     Relations\MorphMany};
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Laravel\Scout\Searchable;
 
 class Client extends Authenticatable implements HasTeeth, CanLogin
@@ -200,17 +202,69 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
         return Teeth::get($query, $year);
     }
 
+    // Upd. По результату телефонного разговора:
+    //  1) договоры только текущий год
+    //  2) нет в группах
+    //  3) услуги по договору оказаны
     public function scopeCanLogin($query)
     {
-        $query->whereHas('contracts', fn($q) => $q->whereRaw("
-            IF(
-                MONTH(CURDATE()) BETWEEN 1 AND 7, 
-                -- январь-июль
-                `year` BETWEEN YEAR(CURDATE()) - 1 AND YEAR(CURDATE()),
-                -- август-декабрь
-                `year` = YEAR(CURDATE())
+        // tmp duplication
+        // сумма занятий и цен из ContractVersionProgramPrice
+        $totals = DB::table('contract_version_program_prices')
+            ->selectRaw("
+                contract_version_program_id,
+                CAST(SUM(`lessons`) AS UNSIGNED) AS total_lessons,
+                CAST(SUM(`price` * `lessons`) AS UNSIGNED) AS total_price
+            ")
+            ->groupBy('contract_version_program_id');
+
+        // сумма цен за проведённые занятия из ClientLesson
+        $totalPassed = DB::table('client_lessons')
+            ->selectRaw("
+                contract_version_program_id,
+                CAST(SUM(`price`) AS UNSIGNED) AS total_price_passed
+            ")
+            ->groupBy('contract_version_program_id');
+
+        /**
+         * Программы последней версии договора
+         */
+        $swampsCte = DB::table('contract_version_programs', 'cvp')
+            ->join('contract_versions as cv', fn($join) => $join
+                ->on('cv.id', '=', 'cvp.contract_version_id')
+                ->where('cv.is_active', true)
             )
-        "));
+            ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
+            ->joinSub($totals, 't', 't.contract_version_program_id', '=', 'cvp.id')
+            ->leftJoinSub($totalPassed, 'tp', 'tp.contract_version_program_id', '=', 'cvp.id')
+            ->leftJoin(
+                'client_groups as cg',
+                'cg.contract_version_program_id',
+                '=',
+                'cvp.id'
+            )
+            ->selectRaw("
+                cvp.id,
+                t.total_lessons,
+                t.total_price,
+                CAST(IFNULL(tp.total_price_passed, 0) AS UNSIGNED) AS `total_price_passed`,
+                `group_id`,
+                cv.contract_id,
+                c.year,
+                c.client_id,
+                cvp.program
+            ");
+
+        $query->whereHas('contracts', fn ($q) => $q
+            ->where('contracts.year', current_academic_year())
+            ->whereRaw("EXISTS (
+                SELECT 1 FROM s
+                WHERE s.contract_id = contracts.id
+                AND (s.group_id IS NOT NULL OR total_price_passed < total_price)
+            )")
+        )
+        ->withExpression('s', $swampsCte)
+        ->groupByRaw('clients.id');
     }
 
     public function searchableAs()
