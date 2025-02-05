@@ -45,6 +45,9 @@ function getFillColor(r: RealReport) {
         </div>
         <div style="width: 120px">
           занятий: {{ r.lessons_count }}
+          <div v-if="r.count" class="text-gray text-caption">
+            +{{ plural(r.count, ['отчёт', 'отчёта', 'отчётов']) }}
+          </div>
         </div>
         <div style="flex: 1">
           <ReportStatus :status="r.status" />
@@ -82,6 +85,9 @@ function getFillColor(r: RealReport) {
       <template v-else>
         <div style="width: 100px; flex: 1">
           занятий: {{ r.lessons_count }}
+          <div v-if="r.count" class="text-gray text-caption">
+            +{{ plural(r.count, ['отчёт', 'отчёта', 'отчётов']) }}
+          </div>
         </div>
         <div style="width: 160px; flex: initial">
           <ReportRequirement :requirement="r.requirement" />

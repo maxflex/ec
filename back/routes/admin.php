@@ -134,6 +134,8 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::get('all-lessons', AllLessonsController::class);
 
+    Route::get('reports/tabs', [ReportController::class, 'tabs']);
+
     Route::apiResources([
         'telegram-lists' => TelegramListController::class,
         'requests' => RequestsController::class,

@@ -738,6 +738,7 @@ declare global {
     program?: Program
     created_at?: string
     client_lessons: JournalResource[]
+    count: number
   }
 
   interface BillingResource {

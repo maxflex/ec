@@ -36,6 +36,7 @@ Route::middleware(['auth:crm'])->group(function () {
     });
     Route::apiResource('instructions', InstructionController::class)->only('index', 'show');
     Route::apiResource('clients', ClientController::class)->only('index', 'show');
+    Route::get('reports/tabs', [ReportController::class, 'tabs']);
     Route::get('reports/lessons', [ReportController::class, 'lessons']);
     Route::apiResources([
         'reports' => ReportController::class,

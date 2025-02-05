@@ -1,26 +1,14 @@
 <script setup lang="ts">
-import { clone } from 'rambda'
-
-const modelDefaults: ReportResource = {
-  id: newId(),
-  year: currentAcademicYear(),
-  status: 'draft',
-  price: null,
-  grade: null,
-  client_lessons: [],
-}
-
 const route = useRoute()
 const router = useRouter()
-
 const id = Number.parseInt(route.params.id as string)
-
 const { isTeacher } = useAuthStore()
-const item = ref<ReportResource>(modelDefaults)
 const loading = ref(true)
 const deleting = ref(false)
 const saving = ref(false)
-const associatedReports = ref<RealReport[]>([])
+const items = ref<ReportResource[]>([])
+const index = ref<number>(-1)
+const item = computed<ReportResource>(() => items.value[index.value])
 
 const tabs = {
   edit: 'редактирование отчёта',
@@ -43,7 +31,7 @@ const availableAdminStatuses = [
 const availableStatuses = isTeacher ? availableTeacherStatuses : availableAdminStatuses
 
 const isDisabled = computed(() => {
-// если статус = черновик или на проверку, или пустой отчет,
+// Если статус = черновик или на проверку, или пустой отчет,
 // то препод может редактировать все. Если остальные типы, то отчет нельзя редактировать
   if (isTeacher) {
     return !availableTeacherStatuses.includes(item.value.status) && item.value.status !== 'refused'
@@ -51,52 +39,6 @@ const isDisabled = computed(() => {
   // админ не может редактировать статус "черновик"
   return item.value.status === 'draft'
 })
-
-async function edit() {
-  loading.value = true
-  const { data } = await useHttp<ReportResource>(
-    `reports/${id}`,
-  )
-  if (data.value) {
-    item.value = data.value
-  }
-  loading.value = false
-}
-
-async function create() {
-  const r = await useHttp<ApiResponse<ReportListResource>>(
-    `reports`,
-    {
-      params: {
-        ...route.query,
-        requirement: 'required', // требуется отчет
-      },
-    },
-  )
-
-  const reportListItem: ReportListResource = r.data.value!.data[0]
-  const { year, program, teacher, client } = reportListItem
-
-  item.value = clone({
-    ...modelDefaults,
-    year,
-    program,
-    teacher,
-    client,
-  })
-
-  const { data } = await useHttp<JournalResource[]>(
-    `reports/lessons`,
-    {
-      params: {
-        year,
-        program,
-        client_id: client.id,
-      },
-    },
-  )
-  item.value.client_lessons = data.value!
-}
 
 async function destroy() {
   if (!confirm('Вы уверены, что хотите удалить отчёт?')) {
@@ -116,11 +58,14 @@ async function destroy() {
 
 async function save() {
   saving.value = true
-  if (id) {
-    await useHttp<RealReport>(`reports/${id}`, {
-      method: 'put',
-      body: item.value,
-    })
+  if (item.value.id > 0) {
+    await useHttp<RealReport>(
+      `reports/${id}`,
+      {
+        method: 'put',
+        body: item.value,
+      },
+    )
     saving.value = false
   }
   else {
@@ -138,46 +83,51 @@ async function save() {
   }
 }
 
-async function loadAssociatedReports() {
-  const { year, program, teacher, client } = item.value
-  const { data } = await useHttp<ApiResponse<RealReport>>(
-    `reports`,
-    {
-      params: {
-        requirement: 'created',
-        year,
-        program,
-        teacher_id: teacher!.id,
-        client_id: client!.id,
-      },
-    },
-  )
-  associatedReports.value = data.value!.data
-}
-
 async function loadData() {
   loading.value = true
-  id ? await edit() : await create()
-  await loadAssociatedReports()
+  const { data } = await useHttp<ReportResource[]>(`reports/tabs`, {
+    params: {
+      id: id || undefined,
+      ...route.query,
+    },
+  })
+  items.value = data.value!
+  index.value = items.value.findIndex(r => r.id === (id || -1))
   loading.value = false
 }
 
+watch(index, () => smoothScroll('main', 'top', 'instant'))
+
+// async function loadData() {
+//   loading.value = true
+//   id ? await edit() : await create()
+//   await loadAssociatedReports()
+//   loading.value = false
+// }
+//
 nextTick(loadData)
 </script>
 
 <template>
-  <v-fade-transition group>
-    <div v-if="!loading" class="tabs report-edit-page__tabs">
-      <RouterLink
-        v-for="r in associatedReports" :key="r.id" class="tabs-item report-edit-page__tabs-item"
-        :class="{ 'tabs-item--active': r.id === id }"
-        :to="{ name: 'reports-id-edit', params: { id: r.id } }"
+  <div v-if="!loading && item">
+    <div class="tabs report-edit-page__tabs">
+      <div
+        v-for="(r, i) in items"
+        :key="r.id"
+        class="tabs-item report-edit-page__tabs-item"
+        :class="{ 'tabs-item--active': index === i }"
+        @click="index = i"
       >
-        отчёт от {{ formatDate(r.created_at) }}
-        на {{ r.lessons_count }} занятий
-      </RouterLink>
+        <template v-if="r.id === -1">
+          новый отчёт
+        </template>
+        <template v-else>
+          отчёт от {{ formatDate(r.created_at!) }}
+          на {{ r.client_lessons.length }} занятий
+        </template>
+      </div>
     </div>
-    <div v-if="!loading" class="report-edit-page">
+    <div :key="index" class="report-edit-page">
       <div class="report-edit-page__btn-tabs">
         <v-btn
           v-for="(label, tab) in tabs"
@@ -190,42 +140,37 @@ nextTick(loadData)
         >
           {{ label }}
         </v-btn>
-      </div>
-
-      <div v-if="selectedTab === 'edit'" class="report-edit-page__inputs">
-        <div class="report-edit-page__header">
-          <h2>
-            {{ id ? 'Редактирование отчёта' : 'Новый отчёт' }}
-          </h2>
-          <div class="report-edit-page__actions">
-            <template v-if="id">
-              <v-btn
-                v-if="!isDisabled"
-                icon="$delete"
-                :size="48"
-                variant="text"
-                :loading="deleting"
-                class="remove-btn"
-                @click="destroy()"
-              />
-              <div style="position: relative; display: inline-block">
-                <CommentBtn
-                  color="gray"
-                  :entity-id="id"
-                  :entity-type="EntityTypeValue.report"
-                />
-              </div>
-            </template>
+        <v-spacer />
+        <div class="report-edit-page__actions">
+          <template v-if="item.id > 0">
             <v-btn
-              icon="$save"
+              v-if="!isDisabled"
+              icon="$delete"
               :size="48"
               variant="text"
-              :disabled="isDisabled"
-              :loading="saving"
-              @click="save()"
+              :loading="deleting"
+              class="remove-btn"
+              @click="destroy()"
             />
-          </div>
+            <div style="position: relative; display: inline-block">
+              <CommentBtn
+                color="gray"
+                :entity-id="id"
+                :entity-type="EntityTypeValue.report"
+              />
+            </div>
+          </template>
+          <v-btn
+            icon="$save"
+            :size="48"
+            variant="text"
+            :disabled="isDisabled"
+            :loading="saving"
+            @click="save()"
+          />
         </div>
+      </div>
+      <div v-if="selectedTab === 'edit'" class="report-edit-page__inputs">
         <div class="double-input">
           <div v-if="item.teacher">
             <v-text-field
@@ -353,7 +298,7 @@ nextTick(loadData)
         <JournalList v-else :items="item.client_lessons" class="pt-6" />
       </div>
     </div>
-  </v-fade-transition>
+  </div>
 </template>
 
 <style lang="scss">
@@ -369,19 +314,11 @@ nextTick(loadData)
     gap: 30px;
   }
 
-  &__header {
-    padding: 0 0 $padding $padding;
-    max-width: $width;
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    justify-content: space-between;
-  }
-
   &__btn-tabs {
     display: flex;
     gap: 20px;
     padding: 20px;
+    max-width: $width;
   }
 
   &__tabs {

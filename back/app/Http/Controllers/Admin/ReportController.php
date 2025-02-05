@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\ReportStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReportListResource;
 use App\Http\Resources\ReportResource;
 use App\Models\Report;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -64,6 +66,40 @@ class ReportController extends Controller
     public function destroy(Report $report)
     {
         $report->delete();
+    }
+
+    public function tabs(Request $request)
+    {
+        if ($request->has('id')) {
+            $report = Report::find($request->input('id'));
+            $params = [
+                'teacher_id' => $report->teacher_id,
+                'client_id' => $report->client_id,
+                'program' => $report->program,
+                'year' => $report->year,
+            ];
+        } else {
+            $params = [
+                'teacher_id' => $request->input('teacher_id'),
+                'client_id' => $request->input('client_id'),
+                'program' => $request->input('program'),
+                'year' => $request->input('year'),
+            ];
+        }
+
+        $items = Report::where($params)->get();
+
+        if (get_class(auth()->user()) === Teacher::class) {
+            $newReport = new Report([
+                ...$params,
+                'status' => ReportStatus::draft,
+            ]);
+            $newReport->id = -1;
+            $newReport->setCreatedAt(now());
+            $items->push($newReport);
+        }
+
+        return ReportResource::collection($items);
     }
 
     protected function filterExcludeNotRequired(&$query)

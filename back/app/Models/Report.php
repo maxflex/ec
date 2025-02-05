@@ -13,7 +13,7 @@ class Report extends Model
 {
     protected $fillable = [
         'year', 'program', 'price', 'client_id', 'status', 'grade',
-        'recommendation_comment', 'knowledge_level_comment',
+        'recommendation_comment', 'knowledge_level_comment', 'teacher_id',
         'cognitive_ability_comment', 'homework_comment',
     ];
 
