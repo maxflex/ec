@@ -44,14 +44,16 @@ class Mango
             // новый звонок
             case CallState::appeared:
                 // обрабатываем только входящие, исходящие игнорируем
+                $number = $data->from->number;
                 if ($data->location === 'ivr') {
                     $params = [
                         'state' => $data->call_state,
                         'type' => CallType::incoming->value,
                         'user' => null,
                         'answered_at' => null,
-                        'number' => $data->from->number,
-                        'aon' => Call::aon($data->from->number),
+                        'number' => $number,
+                        'aon' => Call::aon($number),
+                        'last_interaction' => Call::getLastInteraction($number),
                     ];
                     CallEvent::dispatch($params);
                     cache()->tags('calls')->put($data->entry_id, $params, now()->addMinutes(10));
@@ -61,12 +63,13 @@ class Mango
             // исходящий
             case CallState::connected:
                 if (isset($data->from->extension)) {
+                    $number = $data->to->number;
                     $params = [
                         'state' => $data->call_state,
                         'user' => new PersonResource(User::find($data->from->extension)),
                         'answered_at' => (new Call(['answered_at' => $data->timestamp]))->answered_at,
-                        'number' => $data->to->number,
-                        'aon' => Call::aon($data->to->number),
+                        'number' => $number,
+                        'aon' => Call::aon($number),
                         'type' => CallType::outgoing->name,
                     ];
                 } else {

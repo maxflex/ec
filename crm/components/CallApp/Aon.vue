@@ -18,9 +18,12 @@ const { item, full } = defineProps<{
       ({{ EntityTypeLabel[item.entity.entity_type] }})
     </div>
     <div v-else-if="item.request_id">
-      <RouterLink :to="{ name: 'requests-id', params: { id: item.request_id } }" @click.stop>
+      <RouterLink v-if="full" :to="{ name: 'requests-id', params: { id: item.request_id } }" @click.stop>
         {{ item.request_id }}
       </RouterLink>
+      <span v-else>
+        {{ item.request_id }}
+      </span>
       (Заявка)
     </div>
   </template>

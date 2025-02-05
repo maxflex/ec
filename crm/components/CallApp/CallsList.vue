@@ -80,10 +80,10 @@ function onDelete(e: MouseEvent, call: CallListResource) {
           <v-icon :icon="mdiChevronDown" />
         </div>
       </div>
-      <CallAppAon :item="call.phone" />
+      <CallAppAon :item="call.aon" />
       <Vue3SlideUpDown :model-value="expanded[call.id]" :duration="200">
-        <div v-if="call.phone?.comment">
-          {{ call.phone.comment }}
+        <div v-if="call.aon?.comment">
+          {{ call.aon.comment }}
         </div>
         <div v-if="call.user">
           {{ call.type === 'incoming' ? 'Принял' : 'Позвонил' }}

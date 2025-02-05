@@ -1010,8 +1010,20 @@ declare global {
     type: CallType
     user?: PersonResource
     aon: ?CallAppAonResource
+    last_interaction: ?CallAppLastInteractionResource
     number: string
     answered_at?: string
+  }
+
+  interface CallAppLastInteractionResource {
+    id: string
+    user: ?PersonResource
+    type: CallType
+    is_missed: boolean
+    is_missed_callback: boolean
+    created_at: string
+    finished_at: string
+    answered_at: ?string
   }
 
   interface CallListResource {
@@ -1025,7 +1037,7 @@ declare global {
     created_at: string
     finished_at: string
     answered_at: ?string
-    phone: ?CallAppAonResource
+    aon: ?CallAppAonResource
   }
 
   interface ErrorResource {

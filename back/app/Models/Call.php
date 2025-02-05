@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Casts\Timestamp;
 use App\Http\Resources\CallAppAonResource;
+use App\Http\Resources\CallAppLastInteractionResource;
 use App\Enums\{CallType};
-use App\Utils\Mango;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -125,7 +125,7 @@ class Call extends Model
      * АОН – автоматический определитель номера.
      * Определяем модель по номеру телефона
      */
-    public static function aon(string $number): CallAppAonResource
+    public static function aon(string $number): ?CallAppAonResource
     {
         // Кто звонит?
          $phone = Phone::where('number', $number)
@@ -146,7 +146,16 @@ class Call extends Model
             ->latest('id')
             ->first();
 
-         return new CallAppAonResource($phone);
+         return $phone ? new CallAppAonResource($phone) : null;
+    }
+
+    /**
+     * Когда было последнее взаимодействие с номером (отображается при входящем)
+     */
+    public static function getLastInteraction(string $number): ?CallAppLastInteractionResource
+    {
+        $call = Call::where('number', \App\Utils\Phone::clean($number))->latest()->first();
+        return $call ? new CallAppLastInteractionResource($call) : null;
     }
 
 //    public static function getCounts()

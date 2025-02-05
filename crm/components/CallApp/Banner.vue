@@ -28,6 +28,9 @@ defineEmits(['close'])
         <CallAppAon :item="item.aon" full />
       </div>
     </transition>
+    <div v-if="item.last_interaction">
+      <pre>{{ item.last_interaction }}</pre>
+    </div>
     <v-btn icon="$close" variant="text" :size="38" @click.stop="$emit('close')" />
   </div>
 </template>

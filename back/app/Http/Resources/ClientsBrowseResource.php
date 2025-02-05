@@ -27,8 +27,9 @@ class ClientsBrowseResource extends JsonResource
         return extract_fields($this, [
             'first_name', 'last_name', 'middle_name',
         ], [
+            ...$extra,
             'phones' => PhoneResource::collection($this->phones),
             'entity_type' => $entityType,
-        ], $extra);
+        ]);
     }
 }
