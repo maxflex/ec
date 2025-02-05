@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { mdiChevronDown, mdiPhoneIncoming, mdiPhoneMissed, mdiPhoneOutgoing } from '@mdi/js'
-import { differenceInSeconds, differenceInWeeks, format, isSameDay, parse } from 'date-fns'
+import { differenceInWeeks, format, isSameDay, parse } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 
@@ -12,12 +12,6 @@ const emit = defineEmits<{
 }>()
 const dateFormat = 'yyyy-MM-dd HH:mm:ss'
 const expanded = ref<{ [key: string]: boolean }>({})
-function getCallDuration(call: CallListResource) {
-  const answeredAt = parse(call.answered_at!, dateFormat, new Date())
-  const finishedAt = parse(call.finished_at, dateFormat, new Date())
-  const seconds = differenceInSeconds(finishedAt, answeredAt)
-  return format(new Date(seconds * 1000), 'mm:ss')
-}
 
 function formatCallDate(call: CallListResource) {
   const date = parse(call.created_at, dateFormat, new Date())
@@ -73,7 +67,7 @@ function onDelete(e: MouseEvent, call: CallListResource) {
           </span>
         </div>
         <div v-if="call.answered_at">
-          {{ getCallDuration(call) }}
+          <CallAppDuration :item="call" />
         </div>
         <div class="calls-list__date">
           {{ formatCallDate(call) }}

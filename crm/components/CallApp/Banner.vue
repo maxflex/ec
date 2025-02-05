@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { mdiPhoneIncoming, mdiPhoneMissed, mdiPhoneOutgoing } from '@mdi/js'
 import { isMissed } from '.'
 
 const { item } = defineProps<{
@@ -26,11 +27,26 @@ defineEmits(['close'])
       </div>
       <div v-else :key="2" class="call-banner__info">
         <CallAppAon :item="item.aon" full />
+        <div v-if="item.last_interaction" class="call-banner__last-interaction">
+          <v-icon
+            v-if="item.last_interaction.is_missed"
+            :icon="mdiPhoneMissed"
+            :color="item.last_interaction.is_missed_callback ? 'orange' : 'error'"
+          />
+          <v-icon v-else-if="item.last_interaction.type === 'incoming'" color="black" :icon="mdiPhoneIncoming" />
+          <v-icon v-else color="black" :icon="mdiPhoneOutgoing" />
+          <template v-if="item.last_interaction.user">
+            {{ formatName(item.last_interaction.user) }},
+          </template>
+          <template v-else>
+            Пропущенный,
+          </template>
+          {{ formatDateAgo(item.last_interaction.created_at) }} назад
+          <CallAppDuration v-if="item.last_interaction.answered_at" :item="item.last_interaction" class="text-label pl-2" />
+        </div>
       </div>
     </transition>
-    <div v-if="item.last_interaction">
-      <pre>{{ item.last_interaction }}</pre>
-    </div>
+
     <v-btn icon="$close" variant="text" :size="38" @click.stop="$emit('close')" />
   </div>
 </template>
@@ -80,7 +96,6 @@ defineEmits(['close'])
     display: flex;
     align-items: center;
     .v-icon {
-      margin-right: 6px;
       color: black;
     }
   }
@@ -94,9 +109,20 @@ defineEmits(['close'])
     position: absolute;
     right: 10px;
   }
+  .v-icon {
+    margin-right: 6px;
+  }
   &:hover {
     & > .v-btn {
       opacity: 1;
+    }
+  }
+  &__last-interaction {
+    display: flex;
+    align-items: center;
+    padding-left: 50px;
+    .v-icon {
+      font-size: 22px;
     }
   }
 }

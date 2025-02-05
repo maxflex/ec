@@ -7,6 +7,7 @@ use App\Http\Resources\CallAppAonResource;
 use App\Http\Resources\CallAppLastInteractionResource;
 use App\Enums\{CallType};
 use Illuminate\Database\Eloquent\Model;
+use App\Utils\Phone as UtilsPhone;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -153,7 +154,7 @@ class Call extends Model
      */
     public static function getLastInteraction(string $number): ?CallAppLastInteractionResource
     {
-        $call = Call::where('number', \App\Utils\Phone::clean($number))->latest()->first();
+        $call = Call::where('number', UtilsPhone::clean($number))->latest()->first();
         return $call ? new CallAppLastInteractionResource($call) : null;
     }
 

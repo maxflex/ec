@@ -204,8 +204,9 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
 
     // Upd. По результату телефонного разговора:
     //  1) договоры только текущий год
-    //  2) нет в группах
-    //  3) услуги по договору оказаны
+    //  2) отсеять: нет в группах
+    //  3) отсеять: услуги по договору оказаны
+    // 2-3 => оставить тех, кто: либо в группе, либо услуги по договору не оказаны
     public function scopeCanLogin($query)
     {
         // tmp duplication
@@ -262,6 +263,7 @@ class Client extends Authenticatable implements HasTeeth, CanLogin
                 WHERE s.contract_id = contracts.id
                 AND (s.group_id IS NOT NULL OR total_price_passed < total_price)
             )")
+            // 2-3 => оставить тех, кто: либо в группе, либо услуги по договору не оказаны
         )
         ->withExpression('s', $swampsCte)
         ->groupByRaw('clients.id');
