@@ -35,9 +35,9 @@ const timerKey = computed(() => items.filter(e => e.state === 'Connected').lengt
           </div>
         </transition>
       </div>
-      <CallAppAon :item="item.phone" />
-      <div v-if="item.phone?.comment">
-        {{ item.phone.comment }}
+      <CallAppAon :item="item.aon" />
+      <div v-if="item.aon?.comment">
+        {{ item.aon.comment }}
       </div>
     </div>
   </div>

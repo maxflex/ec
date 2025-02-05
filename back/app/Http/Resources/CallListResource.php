@@ -20,7 +20,6 @@ class CallListResource extends JsonResource
             'is_missed', 'is_missed_callback', 'has_recording'
         ], [
             'user' => new PersonResource($this->user),
-            'aon' => Mango::aon()
         ]);
     }
 }

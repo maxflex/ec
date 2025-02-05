@@ -25,7 +25,7 @@ defineEmits(['close'])
         принял {{ formatName(item.user) }}
       </div>
       <div v-else :key="2" class="call-banner__info">
-        <CallAppAon :item="item.phone" full />
+        <CallAppAon :item="item.aon" full />
       </div>
     </transition>
     <v-btn icon="$close" variant="text" :size="38" @click.stop="$emit('close')" />

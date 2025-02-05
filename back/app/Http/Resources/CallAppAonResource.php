@@ -2,10 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Client;
-use App\Models\ClientParent;
 use App\Models\Phone;
-use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,24 +16,12 @@ class CallAppAonResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $entity = $this->entity;
-
         $extra = match ($this->entity_type) {
-            Request::class
-
-            ClientParent::class => [
-                'client_id' => $entity->client_id,
-                'entity' => new PersonResource($entity)
-            ],
-            Client::class => [
-                'client_id' => $this->entity_id,
-                'entity' => new PersonResource($entity)
-            ],
-            Teacher::class => [
-                'entity' => new PersonResource($entity)
+            \App\Models\Request::class => [
+                'request_id' => $this->entity_id,
             ],
             default => [
-                'request_id' => $this->entity_id,
+                'entity' => new PersonResource($this->entity)
             ],
         };
 

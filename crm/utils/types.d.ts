@@ -1002,7 +1002,6 @@ declare global {
     id: number
     comment: ?string
     entity?: PersonResource
-    client_id?: number
     request_id?: number
   }
 
@@ -1010,7 +1009,7 @@ declare global {
     state: CallState
     type: CallType
     user?: PersonResource
-    phone: ?CallAppAonResource
+    aon: ?CallAppAonResource
     number: string
     answered_at?: string
   }

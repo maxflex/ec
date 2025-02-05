@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\Timestamp;
+use App\Http\Resources\CallAppAonResource;
 use App\Enums\{CallType};
 use App\Utils\Mango;
 use Illuminate\Database\Eloquent\Model;
@@ -123,13 +124,11 @@ class Call extends Model
     /**
      * АОН – автоматический определитель номера.
      * Определяем модель по номеру телефона
-     *
-     * @return
      */
-    public static function aon(string $number)
+    public static function aon(string $number): CallAppAonResource
     {
         // Кто звонит?
-        $phone = Phone::where('number', $number)
+         $phone = Phone::where('number', $number)
             ->where('entity_type', '<>', User::class)
             ->orderByRaw("
                 CASE
@@ -147,15 +146,7 @@ class Call extends Model
             ->latest('id')
             ->first();
 
-        // Последнее взаимодействие
-        $lastInteraction = Call::where('number', $number)
-            ->latest()
-            ->first();
-
-        return (object) [
-            'phone' => $phone,
-            'lastInteraction' => $lastInteraction,
-        ];
+         return new CallAppAonResource($phone);
     }
 
 //    public static function getCounts()
