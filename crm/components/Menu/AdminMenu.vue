@@ -30,6 +30,7 @@ const menu: Menu = [
       { title: 'Все клиенты', to: '/clients' },
       { title: 'Договоры', to: '/contracts' },
       { title: 'Пройденные тесты', to: '/client-tests' },
+      { title: 'Обзор', to: '/clients/browse' },
     ],
   },
   {

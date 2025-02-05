@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Utils\Mango;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,7 +20,7 @@ class CallListResource extends JsonResource
             'is_missed', 'is_missed_callback', 'has_recording'
         ], [
             'user' => new PersonResource($this->user),
-            'phone' => new CallAppAonResource($this->phone),
+            'aon' => Mango::aon()
         ]);
     }
 }

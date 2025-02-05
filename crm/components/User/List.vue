@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const { items } = defineProps<{ items: UserResource[] }>()
-const emit = defineEmits<{ (e: 'edit', u: UserResource): void }>()
+const emit = defineEmits<{
+  edit: [userId: number]
+}>()
 </script>
 
 <template>
@@ -15,7 +17,7 @@ const emit = defineEmits<{ (e: 'edit', u: UserResource): void }>()
           :size="48"
           variant="plain"
           color="gray"
-          @click="emit('edit', item)"
+          @click="emit('edit', item.id)"
         />
       </div>
       <div style="width: 30px">

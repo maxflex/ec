@@ -151,28 +151,4 @@ class Mango
         ]);
     }
 
-    /**
-     * АОН – автоматический определитель номера
-     * Определяем модель по номеру телефона
-     */
-    public static function aon(string $number): ?Phone
-    {
-        return Phone::where('number', $number)
-            ->where('entity_type', '<>', User::class)
-            ->orderByRaw("
-                CASE
-                    WHEN ENTITY_TYPE = ? THEN 4
-                    WHEN ENTITY_TYPE = ? THEN 3
-                    WHEN ENTITY_TYPE = ? THEN 2
-                    WHEN ENTITY_TYPE = ? THEN 1
-                END DESC
-            ", [
-                Client::class,
-                ClientParent::class,
-                Teacher::class,
-                Request::class,
-            ])
-            ->latest('id')
-            ->first();
-    }
 }

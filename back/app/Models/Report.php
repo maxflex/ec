@@ -170,13 +170,13 @@ class Report extends Model
             ->selectRaw("
                 NULL as `id`,
                 NULL as `status`,
-                l.teacher_id, 
-                c.client_id, 
-                g.year, 
+                l.teacher_id,
+                c.client_id,
+                g.year,
                 g.program,
                 COUNT(*) as lessons_count,
                 IF((
-                    COUNT(*) >= 6 
+                    COUNT(*) >= 6
                     AND SUM(IF(cl.status <> 'late', 1, 0)) >= $lessonsNeeded
                 ), 'required', 'notRequired') as `requirement`
             ");
@@ -206,31 +206,31 @@ class Report extends Model
             ->whereRaw('IF(ISNULL(md.max_date), TRUE, l.date > md.max_date)')
             ->whereIn('g.program', $programsSchoolAndExternal)
             ->selectRaw("
-                NULL as `id`, 
+                NULL as `id`,
                 NULL as `status`,
-                l.teacher_id, 
-                c.client_id, 
-                g.year, 
+                l.teacher_id,
+                c.client_id,
+                g.year,
                 g.program,
                 COUNT(*) as lessons_count,
                 IF((
                     (
-                        IF(ISNULL(md.max_date), TRUE, md.max_date < ?) AND 
+                        IF(ISNULL(md.max_date), TRUE, md.max_date < ?) AND
                         SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
                     )
                     OR
                     (
-                        IF(ISNULL(md.max_date), TRUE, md.max_date < ?) AND 
+                        IF(ISNULL(md.max_date), TRUE, md.max_date < ?) AND
                         SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
                     )
                     OR
                     (
-                        IF(ISNULL(md.max_date), TRUE, md.max_date < ?) AND 
+                        IF(ISNULL(md.max_date), TRUE, md.max_date < ?) AND
                         SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
                     )
                     OR
                     (
-                        IF(ISNULL(md.max_date), TRUE, md.max_date < ?) AND 
+                        IF(ISNULL(md.max_date), TRUE, md.max_date < ?) AND
                         SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
                     )
                 ), 'required', 'notRequired') as `requirement`

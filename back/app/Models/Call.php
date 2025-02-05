@@ -7,6 +7,7 @@ use App\Enums\{CallType};
 use App\Utils\Mango;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Call extends Model
 {
@@ -28,9 +29,9 @@ class Call extends Model
     }
 
     /**
-     * TODO: переделать
+     * Используется при поиске в whereHas('phone')
      */
-    public function phonee()
+    public function phone(): HasOne
     {
         return $this->hasOne(Phone::class, 'number', 'number');
     }
@@ -48,11 +49,6 @@ class Call extends Model
     public function getHasRecordingAttribute(): bool
     {
         return $this->recording !== null;
-    }
-
-    public function getPhoneAttribute(): ?Phone
-    {
-        return Mango::aon($this->number);
     }
 
     // перезвоны
@@ -121,6 +117,45 @@ class Call extends Model
     public function hide()
     {
         cache()->tags('missed')->put($this->id, 1, now()->addMonth());
+    }
+
+
+    /**
+     * АОН – автоматический определитель номера.
+     * Определяем модель по номеру телефона
+     *
+     * @return
+     */
+    public static function aon(string $number)
+    {
+        // Кто звонит?
+        $phone = Phone::where('number', $number)
+            ->where('entity_type', '<>', User::class)
+            ->orderByRaw("
+                CASE
+                    WHEN ENTITY_TYPE = ? THEN 4
+                    WHEN ENTITY_TYPE = ? THEN 3
+                    WHEN ENTITY_TYPE = ? THEN 2
+                    WHEN ENTITY_TYPE = ? THEN 1
+                END DESC
+            ", [
+                Client::class,
+                ClientParent::class,
+                Teacher::class,
+                Request::class,
+            ])
+            ->latest('id')
+            ->first();
+
+        // Последнее взаимодействие
+        $lastInteraction = Call::where('number', $number)
+            ->latest()
+            ->first();
+
+        return (object) [
+            'phone' => $phone,
+            'lastInteraction' => $lastInteraction,
+        ];
     }
 
 //    public static function getCounts()

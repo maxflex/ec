@@ -26,10 +26,9 @@ function getRouteName(log: LogResource) {
           <a
             v-if="log.entity_type === EntityTypeValue.user"
             class="cursor-pointer"
-            @click="userDialog?.edit(log.entity as UserResource)"
+            @click="userDialog?.edit(log.entity.id)"
           >
             {{ formatName(log.entity) }}
-
           </a>
           <NuxtLink v-else :to="{ name: getRouteName(log), params: { id: log.entity.id } }">
             {{ formatName(log.entity) }}

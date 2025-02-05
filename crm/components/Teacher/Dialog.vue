@@ -44,11 +44,11 @@ function create() {
   open(modelDefaults)
 }
 
-async function edit(c: TeacherResource) {
-  itemId.value = c.id
+async function edit(teacherId: number) {
+  itemId.value = teacherId
   loading.value = true
   dialog.value = true
-  const { data } = await useHttp<TeacherResource>(`teachers/${c.id}`)
+  const { data } = await useHttp<TeacherResource>(`teachers/${teacherId}`)
   if (data.value) {
     open(data.value)
   }

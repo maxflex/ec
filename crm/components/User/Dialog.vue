@@ -29,10 +29,10 @@ function create() {
   openDialog(modelDefaults)
 }
 
-async function edit(u: UserResource) {
-  itemId.value = u.id
+async function edit(userId: number) {
+  itemId.value = userId
   loading.value = true
-  const { data } = await useHttp<UserResource>(`users/${u.id}`)
+  const { data } = await useHttp<UserResource>(`users/${userId}`)
   if (data.value) {
     openDialog(data.value)
   }

@@ -20,6 +20,14 @@ const item = ref<ReportResource>(modelDefaults)
 const loading = ref(true)
 const deleting = ref(false)
 const saving = ref(false)
+const associatedReports = ref<RealReport[]>([])
+
+const tabs = {
+  edit: 'редактирование отчёта',
+  lessons: 'посещаемость и пройденные темы',
+} as const
+
+const selectedTab = ref<keyof typeof tabs>('edit')
 
 const availableTeacherStatuses = [
   'draft',
@@ -130,9 +138,27 @@ async function save() {
   }
 }
 
+async function loadAssociatedReports() {
+  const { year, program, teacher, client } = item.value
+  const { data } = await useHttp<ApiResponse<RealReport>>(
+    `reports`,
+    {
+      params: {
+        requirement: 'created',
+        year,
+        program,
+        teacher_id: teacher!.id,
+        client_id: client!.id,
+      },
+    },
+  )
+  associatedReports.value = data.value!.data
+}
+
 async function loadData() {
   loading.value = true
   id ? await edit() : await create()
+  await loadAssociatedReports()
   loading.value = false
 }
 
@@ -140,47 +166,66 @@ nextTick(loadData)
 </script>
 
 <template>
-  <v-fade-transition>
+  <v-fade-transition group>
+    <div v-if="!loading" class="tabs report-edit-page__tabs">
+      <RouterLink
+        v-for="r in associatedReports" :key="r.id" class="tabs-item report-edit-page__tabs-item"
+        :class="{ 'tabs-item--active': r.id === id }"
+        :to="{ name: 'reports-id-edit', params: { id: r.id } }"
+      >
+        отчёт от {{ formatDate(r.created_at) }}
+        на {{ r.lessons_count }} занятий
+      </RouterLink>
+    </div>
     <div v-if="!loading" class="report-edit-page">
-      <div class="report-edit-page__header">
-        <h2>
-          <template v-if="id">
-            Редактирование отчёта
-          </template>
-          <template v-else>
-            Новый отчёт
-          </template>
-        </h2>
-        <div class="report-edit-page__actions">
-          <template v-if="id">
+      <div class="report-edit-page__btn-tabs">
+        <v-btn
+          v-for="(label, tab) in tabs"
+          :key="tab"
+          class="tab-btn"
+          :class="{ 'tab-btn--active': selectedTab === tab }"
+          variant="plain"
+          :ripple="false"
+          @click="selectedTab = tab"
+        >
+          {{ label }}
+        </v-btn>
+      </div>
+
+      <div v-if="selectedTab === 'edit'" class="report-edit-page__inputs">
+        <div class="report-edit-page__header">
+          <h2>
+            {{ id ? 'Редактирование отчёта' : 'Новый отчёт' }}
+          </h2>
+          <div class="report-edit-page__actions">
+            <template v-if="id">
+              <v-btn
+                v-if="!isDisabled"
+                icon="$delete"
+                :size="48"
+                variant="text"
+                :loading="deleting"
+                class="remove-btn"
+                @click="destroy()"
+              />
+              <div style="position: relative; display: inline-block">
+                <CommentBtn
+                  color="gray"
+                  :entity-id="id"
+                  :entity-type="EntityTypeValue.report"
+                />
+              </div>
+            </template>
             <v-btn
-              v-if="!isDisabled"
-              icon="$delete"
+              icon="$save"
               :size="48"
               variant="text"
-              :loading="deleting"
-              class="remove-btn"
-              @click="destroy()"
+              :disabled="isDisabled"
+              :loading="saving"
+              @click="save()"
             />
-            <div style="position: relative; display: inline-block">
-              <CommentBtn
-                color="gray"
-                :entity-id="id"
-                :entity-type="EntityTypeValue.report"
-              />
-            </div>
-          </template>
-          <v-btn
-            icon="$save"
-            :size="48"
-            variant="text"
-            :disabled="isDisabled"
-            :loading="saving"
-            @click="save()"
-          />
+          </div>
         </div>
-      </div>
-      <div class="report-edit-page__inputs">
         <div class="double-input">
           <div v-if="item.teacher">
             <v-text-field
@@ -303,11 +348,9 @@ nextTick(loadData)
           />
         </div>
       </div>
-      <div v-if="item.client_lessons.length" class="mt-4">
-        <h2 class="page-title">
-          Посещаемость и пройденные темы
-        </h2>
-        <JournalList :items="item.client_lessons" />
+      <div v-else>
+        <UiNoData v-if="item.client_lessons.length === 0" />
+        <JournalList v-else :items="item.client_lessons" class="pt-6" />
       </div>
     </div>
   </v-fade-transition>
@@ -327,12 +370,41 @@ nextTick(loadData)
   }
 
   &__header {
-    padding: $padding;
+    padding: 0 0 $padding $padding;
     max-width: $width;
     display: flex;
     gap: 6px;
     align-items: center;
     justify-content: space-between;
+  }
+
+  &__btn-tabs {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  &__tabs {
+    position: sticky;
+    top: 0;
+    min-height: 51px;
+    z-index: 1;
+    background: white;
+    a {
+      color: black !important;
+    }
+    &-item {
+      background: white;
+      & > div {
+        text-align: center;
+        //&:last-child {
+        //  font-size: 13px;
+        //}
+      }
+      &--active {
+        background: #e4e4e4 !important;
+      }
+    }
   }
 }
 </style>

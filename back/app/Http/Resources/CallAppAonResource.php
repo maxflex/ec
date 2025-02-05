@@ -22,6 +22,8 @@ class CallAppAonResource extends JsonResource
         $entity = $this->entity;
 
         $extra = match ($this->entity_type) {
+            Request::class
+
             ClientParent::class => [
                 'client_id' => $entity->client_id,
                 'entity' => new PersonResource($entity)
@@ -38,6 +40,8 @@ class CallAppAonResource extends JsonResource
             ],
         };
 
-        return extract_fields($this, ['comment'], $extra);
+        return extract_fields($this, [
+            'comment'
+        ], $extra);
     }
 }

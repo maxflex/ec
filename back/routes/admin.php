@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\{AllLessonsController,
     BalanceController,
     CabinetsController,
     CallController,
+    ClientsBrowseController,
     ClientController,
     ClientGroupController,
     ClientLessonController,
@@ -61,6 +62,8 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::post('stats', StatsController::class);
 
     Route::get('balance', BalanceController::class);
+
+    Route::get('clients-browse', ClientsBrowseController::class);
 
     Route::apiResource('logs', LogController::class)->only('index');
     Route::apiResource('topics', TopicController::class)->only('index');
@@ -130,7 +133,7 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::get('contract-version-programs', ContractVersionProgramController::class);
 
     Route::get('all-lessons', AllLessonsController::class);
-   
+
     Route::apiResources([
         'telegram-lists' => TelegramListController::class,
         'requests' => RequestsController::class,

@@ -24,8 +24,8 @@ class ReportListResource extends JsonResource
         if ($this->id) {
             $report = Report::find($this->id);
             return extract_fields($report, [
-                'year', 'program', 'status', 'fill',
-                'price', 'grade', 'to_check_at', 'requirement'
+                'year', 'program', 'status', 'fill', 'price',
+                'grade', 'to_check_at', 'requirement', 'created_at',
             ], [
                 'lessons_count' => $report->lessons->count(),
                 'teacher' => new PersonResource($report->teacher),

@@ -50,7 +50,7 @@ class CallController extends Controller
         if (is_numeric($value)) {
             $query->where('number', 'like', '%' . $value . '%');
         } else {
-            $query->whereHas('phonee', fn($q) => $q
+            $query->whereHas('phone', fn($q) => $q
                 ->whereHasMorph('entity', [
                     Client::class,
                     ClientParent::class,

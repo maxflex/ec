@@ -708,6 +708,7 @@ declare global {
     grade: ?LessonScore
     fill: number
     requirement: ReportRequirement
+    created_at: string
   }
 
   interface FakeReport {

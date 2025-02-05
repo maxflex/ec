@@ -78,7 +78,7 @@ nextTick(loadData)
             icon="$edit"
             :size="48"
             variant="plain"
-            @click="teacherDialog?.edit(teacher!)"
+            @click="teacherDialog?.edit(teacher!.id)"
           />
         </div>
       </div>
