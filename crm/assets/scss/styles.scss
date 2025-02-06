@@ -447,21 +447,22 @@ tr.hoverable {
   cursor: default;
   font-size: 20px;
 
+  &--small {
+    font-size: 16px;
+  }
+
   &--5 {
     color: rgb(var(--v-theme-success));
   }
 
   &--4 {
-    color: #62b44b;
+    color: #e28f2d;
+    //color: #62b44b;
     //color: #4cb02f;
     //color: #48ad36;
   }
 
-  &--3 {
-    //color: #d1a13a;
-    color: #e28f2d;
-  }
-
+  &--3,
   &--2,
   &--1 {
     color: rgb(var(--v-theme-error));

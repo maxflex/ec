@@ -151,7 +151,7 @@ defineExpose({ open })
               </div>
               <template v-if="s.status !== 'absent'">
                 <div v-for="(score, i) in s.scores" :key="i">
-                  <span :class="`cl-score cl-score--${score.score}`">
+                  <span :class="`text-score text-score--small text-score--${score.score}`">
                     {{ score.score }}
                   </span>
                   – {{ score.comment || 'комментария нет' }}
@@ -180,28 +180,15 @@ defineExpose({ open })
     display: none !important;
   }
 
-  .cl-score {
-    font-weight: bold;
-
-    &--4,
-    &--5 {
-      color: rgb(var(--v-theme-success));
-    }
-
-    &--3 {
-      color: #dc8f03;
-    }
-
-    &--2,
-    &--1 {
-      color: rgb(var(--v-theme-error));
-    }
-  }
-
   &__scores {
     & > div:nth-child(2) {
       margin-top: 8px;
     }
+  }
+  .table-actionss {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
   }
 }
 </style>
