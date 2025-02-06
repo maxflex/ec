@@ -21,7 +21,8 @@ class SecurityVerificationService
         $code = self::generateCode();
         self::storeCode($code);
         // 5808892115 акк охраны
-        foreach ([5808892115, 84626120, 1254789772] as $chatId) {
+        $chatIds = is_localhost() ? [84626120] : [5808892115, 84626120, 1254789772];
+        foreach ($chatIds as $chatId) {
             Telegram::sendMessage($chatId, "*{$code}* – охрана", 'MarkdownV2');
         }
     }
