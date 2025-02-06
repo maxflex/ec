@@ -48,10 +48,7 @@ nextTick(loadData)
             занятий
           </div>
           <div>
-            {{ group.lessons_count }}
-            <span v-if="group.lessons_free_count" class="text-deepOrange">
-              + {{ group.lessons_free_count }}
-            </span>
+            <GroupLessonCounts :item="group" />
           </div>
         </div>
       </div>

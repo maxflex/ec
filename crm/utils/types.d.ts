@@ -72,7 +72,7 @@ declare global {
   type ContractEditMode = 'new-contract' | 'new-version' | 'edit'
 
   interface ClientLessonScore {
-    score: LessonScore
+    score: ?LessonScore
     comment: ?string
   }
 
@@ -372,10 +372,13 @@ declare global {
 
   interface GroupListResource {
     id: number
-    lessons_count: number
-    lessons_conducted_count: number
-    lessons_conducted_free_count: number
-    lessons_free_count: number
+    lessons_planned: number
+    lessons: {
+      conducted: number
+      conducted_free: number
+      planned: number
+      planned_free: number
+    }
     client_groups_count: number
     first_lesson_date?: string
     program: Program
@@ -393,9 +396,13 @@ declare global {
     created_at?: string
     user?: PersonResource
     zoom: Zoom
-    lessons_planned?: number
-    lessons_count?: number
-    lessons_free_count?: number
+    lessons_planned: number
+    lessons: {
+      conducted: number
+      conducted_free: number
+      planned: number
+      planned_free: number
+    }
   }
 
   interface UploadedFile {

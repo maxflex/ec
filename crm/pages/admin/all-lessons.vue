@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { LessonDialog } from '#build/components'
+import type { LessonConductDialog, LessonDialog } from '#build/components'
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 
@@ -23,6 +23,7 @@ const filters = ref<YearFilters>(loadFilters({
 const loading = ref(false)
 const lessons = ref<LessonListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
+const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 
 const dates = computed(() => {
   // Define the start and end months for the academic year
@@ -162,6 +163,7 @@ nextTick(() => {
           class="lesson-item lesson-item__lesson"
           :item="lesson"
           @edit="lessonDialog?.edit"
+          @conduct="conductDialog?.open"
         />
       </Vue3SlideUpDown>
 
@@ -171,6 +173,7 @@ nextTick(() => {
     </div>
   </div>
   <LessonDialog ref="lessonDialog" />
+  <LessonConductDialog ref="conductDialog" />
 </template>
 
 <style lang="scss">
@@ -217,6 +220,9 @@ nextTick(() => {
       .lesson-item {
         &:first-child {
           padding-top: 20px;
+          .table-actionss {
+            top: 4px !important;
+          }
         }
         &:last-child {
           padding-bottom: 20px;

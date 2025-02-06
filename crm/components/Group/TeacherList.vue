@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { mdiVideo } from '@mdi/js'
-
 const { items, selectable } = defineProps<{
   items: GroupListResource[]
   selectable?: boolean
@@ -38,7 +36,7 @@ function onClick(g: GroupListResource) {
       }"
       @click="onClick(item)"
     >
-      <div style="width: 100px">
+      <div style="width: 80px">
         <NuxtLink :to="{ name: 'groups-id', params: { id: item.id } }">
           ГР-{{ item.id }}
         </NuxtLink>
@@ -48,42 +46,25 @@ function onClick(g: GroupListResource) {
           <UiPerson :item="t" no-link />
         </div>
       </div>
-      <div style="width: 130px">
+      <div style="width: 120px">
         {{ ProgramShortLabel[item.program] }}
       </div>
-      <div style="width: 100px">
-        <template v-if="item.lessons_count">
-          {{ item.lessons_count + item.lessons_free_count }}
-          {{ plural(item.lessons_count, ['урок', 'урока', 'уроков'], false) }}
-        </template>
-      </div>
-      <div style="width: 80px">
-        <template v-if="item.lessons_conducted_count">
-          {{ item.lessons_conducted_count + item.lessons_conducted_free_count }}
-          {{ plural(item.lessons_conducted_count, ['урок', 'урока', 'уроков'], false) }}
-        </template>
-        <span v-else-if="item.first_lesson_date" class="text-orange">
-          {{ formatDate(item.first_lesson_date) }}
-        </span>
+      <div style="width: 140px">
+        <GroupLessonCounts :item="item" />
       </div>
       <div style="width: 60px">
         {{ item.client_groups_count }} уч.
       </div>
-      <div style="width: 50px">
-        <v-tooltip v-if="item.zoom.id" location="bottom">
-          <template #activator="{ props }">
-            <v-icon :icon="mdiVideo" v-bind="props" class="vfn-1" />
-          </template>
-          <div>
-            ZOOM логин: {{ item.zoom.id }}
-          </div>
-          <div>
-            ZOOM пароль: {{ item.zoom.password }}
-          </div>
-        </v-tooltip>
-      </div>
-      <div>
+      <div style="flex: 1">
         <TeethAsText :items="item.teeth" />
+      </div>
+      <div style="width: 130px; flex: initial">
+        <div>
+          {{ item.zoom.id }}
+        </div>
+        <div>
+          {{ item.zoom.password }}
+        </div>
       </div>
     </div>
   </div>

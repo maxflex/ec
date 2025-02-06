@@ -67,9 +67,8 @@ const { items } = defineProps<{
                   <div v-for="(score, i) in item.scores" :key="i">
                     <span :class="`journal-score journal-score--${score.score}`">
                       {{ score.score }}
-                    </span><template v-if="score.comment">
-                      – {{ score.comment }}
-                    </template>
+                    </span>
+                    – {{ score.comment || 'комментария нет' }}
                   </div>
                 </div>
               </div>

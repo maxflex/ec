@@ -235,4 +235,20 @@
   th:first-child {
     padding-left: 26px;
   }
+
+}
+
+.dialog-fullwidth {
+  .dialog {
+    transition: none !important;
+    width: calc(100vw - 256px) !important;
+    box-shadow: none !important;
+    right: 0 !important;
+  }
+  .v-overlay__scrim {
+    display: none;
+  }
+  .dialog-header {
+    background: white !important;
+  }
 }
