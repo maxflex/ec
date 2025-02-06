@@ -94,7 +94,7 @@ nextTick(loadData)
     <div class="report-view__final-title">
       Оценка:
     </div>
-    <span :class="`score score--${item.grade}`">
+    <span :class="`text-score text-score--${item.grade}`">
       {{ item.grade }}
     </span>
   </div>

@@ -104,7 +104,7 @@ nextTick(loadData)
       >
         <template #activator="{ props }">
           <span
-            :class="`score score--${selectedQuarter.grade.grade}`"
+            :class="`text-score text-score--${selectedQuarter.grade.grade}`"
             v-bind="props"
             @click="isChangeGradeSubmenu = false"
           >
@@ -114,7 +114,7 @@ nextTick(loadData)
         <v-list v-if="isChangeGradeSubmenu" class="grades__final-selector">
           <v-list-item v-for="(label, score) in LessonScoreLabel" :key="score" @click="updateFinalGrade(score)">
             <template #title>
-              <span :class="`score score--${score}`" class="mr-2">
+              <span :class="`text-score text-score--${score}`" class="mr-2">
                 {{ score }}
               </span>
               {{ label }}
@@ -154,7 +154,7 @@ nextTick(loadData)
         <v-list class="grades__final-selector">
           <v-list-item v-for="(label, score) in LessonScoreLabel" :key="score" @click="setFinalGrade(score)">
             <template #title>
-              <span :class="`score score--${score}`" class="mr-2">
+              <span :class="`text-score text-score--${score}`" class="mr-2">
                 {{ score }}
               </span>
               {{ label }}

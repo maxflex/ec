@@ -17,7 +17,7 @@ const { items } = defineProps<{
         занятий: {{ r.lessons_count }}
       </div>
       <div style="width: 50px">
-        <span v-if="r.grade" :class="`score score--${r.grade}`">
+        <span v-if="r.grade" :class="`text-score text-score--${r.grade}`">
           {{ r.grade }}
         </span>
       </div>

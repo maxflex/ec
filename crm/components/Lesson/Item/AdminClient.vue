@@ -115,7 +115,7 @@ const isConductDisabled = item.status !== 'conducted'
         <div v-for="(score, i) in item.client_lesson.scores" :key="i">
           <v-tooltip location="bottom">
             <template #activator="{ props }">
-              <span :class="`score score--${score.score}`" v-bind="props">
+              <span :class="`text-score text-score--${score.score}`" v-bind="props">
                 {{ score.score }}
               </span>
             </template>

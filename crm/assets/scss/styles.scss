@@ -441,3 +441,29 @@ tr.hoverable {
     cursor: pointer;
   }
 }
+
+.text-score {
+  font-weight: bold;
+  cursor: default;
+  font-size: 20px;
+
+  &--5 {
+    color: rgb(var(--v-theme-success));
+  }
+
+  &--4 {
+    color: #62b44b;
+    //color: #4cb02f;
+    //color: #48ad36;
+  }
+
+  &--3 {
+    //color: #d1a13a;
+    color: #e28f2d;
+  }
+
+  &--2,
+  &--1 {
+    color: rgb(var(--v-theme-error));
+  }
+}

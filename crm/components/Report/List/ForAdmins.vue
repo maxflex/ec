@@ -52,13 +52,13 @@ function getFillColor(r: RealReport) {
         <div style="flex: 1">
           <ReportStatus :status="r.status" />
         </div>
-        <div style="width: 50px">
+        <div style="width: 70px">
           <span v-if="r.price">
             {{ formatPrice(r.price) }} ₽
           </span>
         </div>
-        <div style="width: 50px">
-          <span v-if="r.grade" :class="`score score--${r.grade}`">
+        <div style="width: 30px">
+          <span v-if="r.grade" :class="`text-score text-score--${r.grade}`">
             {{ r.grade }}
           </span>
         </div>

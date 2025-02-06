@@ -160,14 +160,12 @@ defineExpose({ open })
             </div>
           </div>
         </div>
-        <template v-if="isConducted">
-          <v-btn v-if="isTeacher" color="primary" :loading="saving" width="300" @click="conduct()">
-            провести занятие
-          </v-btn>
-        </template>
-        <template v-else>
-          <v-btn color="primary" :loading="saving" width="300" @click="save()">
+        <template v-if="isTeacher">
+          <v-btn v-if="isConducted" color="primary" :loading="saving" width="300" @click="save()">
             сохранить
+          </v-btn>
+          <v-btn v-else color="primary" :loading="saving" width="300" @click="conduct()">
+            провести занятие
           </v-btn>
         </template>
       </div>

@@ -37,7 +37,7 @@ const router = useRouter()
           {{ ProgramShortLabel[g.program] }}
         </td>
         <td v-for="(q, key) in g.quarters" :key="key" width="160" class="text-center">
-          <span v-if="q.grade" :class="`score score--${q.grade.grade}`">
+          <span v-if="q.grade" :class="`text-score text-score--${q.grade.grade}`">
             {{ q.grade.grade }}
           </span>
           <v-icon v-else-if="q.is_grade_needed" :icon="mdiExclamationThick" color="error" />

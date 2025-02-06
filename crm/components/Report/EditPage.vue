@@ -222,17 +222,17 @@ nextTick(loadData)
             :disabled="isDisabled"
           >
             <template #selection="{ item: { raw: { value } } }">
-              <span :class="`score score--${value}`" style="position: absolute;">
+              <span :class="`text-score text-score--${value}`" style="position: absolute;">
                 {{ value }}
               </span>
-              <span class="ml-10">
+              <span class="ml-5">
                 {{ LessonScoreLabel[value as LessonScore] }}
               </span>
             </template>
             <template #item="{ props, item: { raw: { value } } }">
               <v-list-item v-bind="props">
                 <template #title>
-                  <span :class="`score score--${value}`" class="mr-2">
+                  <span :class="`text-score text-score--${value}`" class="mr-2">
                     {{ value }}
                   </span>
                   {{ LessonScoreLabel[value as LessonScore] }}
