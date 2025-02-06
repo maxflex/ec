@@ -146,15 +146,15 @@ defineExpose({ open })
               />
             </div>
             <div class="conduct-dialog__scores">
+              <div v-if="s.comment">
+                {{ s.comment }}
+              </div>
               <template v-if="s.status !== 'absent'">
                 <div v-for="(score, i) in s.scores" :key="i">
                   <span :class="`cl-score cl-score--${score.score}`">
                     {{ score.score }}
                   </span>
                   – {{ score.comment || 'комментария нет' }}
-                </div>
-                <div v-if="s.comment">
-                  {{ s.comment }}
                 </div>
               </template>
             </div>
@@ -178,57 +178,32 @@ defineExpose({ open })
 
 <style lang="scss">
 .conduct-dialog {
-  $height: 56px;
-  .dialog-table {
-    td {
-      height: $height;
-      vertical-align: top;
-      &:first-child {
-        padding-top: 16px;
-      }
-      a {
-        cursor: pointer;
-        display: inline-flex;
-        //align-items: center;
-        height: 100%;
-        width: 100%;
-        padding: 16px 16px;
-        position: relative;
-        &:hover {
-          //background: rgb(var(--v-theme-bg));
-          &:before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(var(--v-theme-gray), 0.05);
-            //background: rgba(black, 0.1);
-          }
-        }
-      }
-    }
-  }
   .v-field__outline {
     display: none !important;
   }
-}
-.cl-score {
-  font-weight: bold;
 
-  &--4,
-  &--5 {
-    color: rgb(var(--v-theme-success));
+  .cl-score {
+    font-weight: bold;
+
+    &--4,
+    &--5 {
+      color: rgb(var(--v-theme-success));
+    }
+
+    &--3 {
+      color: #dc8f03;
+    }
+
+    &--2,
+    &--1 {
+      color: rgb(var(--v-theme-error));
+    }
   }
 
-  &--3 {
-    color: #dc8f03;
-  }
-
-  &--2,
-  &--1 {
-    color: rgb(var(--v-theme-error));
+  &__scores {
+    & > div:nth-child(2) {
+      margin-top: 8px;
+    }
   }
 }
 </style>

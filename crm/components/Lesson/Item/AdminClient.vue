@@ -119,7 +119,7 @@ const isConductDisabled = item.status !== 'conducted'
                 {{ score.score }}
               </span>
             </template>
-            {{ score.comment }}
+            {{ score.comment || 'нет комментария' }}
           </v-tooltip>
         </div>
       </div>

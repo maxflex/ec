@@ -63,7 +63,7 @@ const { item } = defineProps<{
                 {{ score.score }}
               </span>
             </template>
-            {{ score.comment }}
+            {{ score.comment || 'нет комментария' }}
           </v-tooltip>
         </div>
       </div>
