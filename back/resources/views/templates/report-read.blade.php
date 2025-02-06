@@ -4,19 +4,21 @@
 
 <b>Посещаемость и пройденные темы:</b>
 @foreach ($report->clientLessons as $cl)
-    {{ date('d.m.Y', strtotime($cl->lesson->date)) }} –@if ($cl->status === \App\Enums\ClientLessonStatus::absent)
-        <b>не был</b>
-    @elseif ($cl->status === \App\Enums\ClientLessonStatus::late)
-        опоздал на {{ $cl->minutes_late }} мин.
-    @else
-        был
-    @endif
-
-    @if ($cl->lesson->topic)
-        <i>{{ $cl->lesson->topic }}</i>
-    @endif
+{{ date('d.m.Y', strtotime($cl->lesson->date)) }} – @if ($cl->status === \App\Enums\ClientLessonStatus::absent) <b>не был</b> @elseif ($cl->status === \App\Enums\ClientLessonStatus::late) опоздал на {{ $cl->minutes_late }} мин. @else был @endif @if ($cl->lesson->topic)({{ $cl->lesson->topic }})@endif
 
 @endforeach
 
-<b>Отчёт:</b>
+
+<b>Выполнение домашнего задания:</b>
 {{ $report->homework_comment }}
+
+<b>Способность усваивать новый материал:</b>
+{{ $report->cognitive_ability_comment }}
+
+<b>Текущий уровень знаний:</b>
+{{ $report->knowledge_level_comment }}
+
+<b>Рекомендации родителям:</b>
+{{ $report->recommendation_comment }}
+
+<b>Общая оценка по отчёту: {{$report->grade}} </b>
