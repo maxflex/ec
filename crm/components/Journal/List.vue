@@ -65,7 +65,7 @@ const { items } = defineProps<{
                 </div>
                 <div class="journal__scores">
                   <div v-for="(score, i) in item.scores" :key="i">
-                    <span :class="`journal-score journal-score--${score.score}`">
+                    <span :class="`text-score text-score--small text-score--${score.score}`">
                       {{ score.score }}
                     </span>
                     – {{ score.comment || 'комментария нет' }}
@@ -130,21 +130,6 @@ const { items } = defineProps<{
         }
       }
     }
-  }
-}
-.journal-score {
-  font-weight: bold;
-  &--4,
-  &--5 {
-    color: rgb(var(--v-theme-success));
-  }
-  &--3 {
-    color: #dc8f03;
-  }
-
-  &--2,
-  &--1 {
-    color: rgb(var(--v-theme-error));
   }
 }
 </style>
