@@ -1,6 +1,46 @@
 <script lang="ts" setup>
 const model = defineModel<LogFilters>({ required: true })
 const rowId = ref(model.value.row_id)
+
+const tables = [
+  'client_groups',
+  'client_lessons',
+  'client_parents',
+  'client_payments',
+  'client_tests',
+  'clients',
+  'comments',
+  'contract_payments',
+  'contract_version_payments',
+  'contract_version_program_prices',
+  'contract_version_programs',
+  'contract_versions',
+  'contracts',
+  'event_participants',
+  'events',
+  'exam_dates',
+  'grades',
+  'group_acts',
+  'groups',
+  'head_teacher_reports',
+  'lessons',
+  'macros',
+  'pass_logs',
+  'passes',
+  'phones',
+  'reports',
+  'requests',
+  'scholarship_scores',
+  'stats_presets',
+  'teacher_payments',
+  'teacher_services',
+  'teachers',
+  'telegram_lists',
+  'telegram_messages',
+  'tests',
+  'users',
+  'vacations',
+]
 </script>
 
 <template>
@@ -13,7 +53,7 @@ const rowId = ref(model.value.row_id)
   <UiClearableSelect
     v-model="model.table"
     label="Таблица"
-    :items="selectItems(LogTableLabel)"
+    :items="tables"
     density="comfortable"
   />
   <v-text-field

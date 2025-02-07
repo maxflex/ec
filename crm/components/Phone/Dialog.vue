@@ -13,6 +13,7 @@ const tabs = {
 } as const
 const selectedTab = ref<keyof typeof tabs>('calls')
 const loading = ref(true)
+const wrapper = ref<HTMLDivElement | null>(null)
 
 function open(p: PhoneResource) {
   item.value = p
@@ -43,6 +44,7 @@ async function loadTelegramMessages() {
   )
   telegramMessages.value = data.value!.data
   loading.value = false
+  scrollBottom()
 }
 
 watch(selectedTab, (newVal) => {
@@ -50,6 +52,16 @@ watch(selectedTab, (newVal) => {
     loadTelegramMessages()
   }
 })
+
+function scrollBottom() {
+  nextTick(() => {
+    console.log(wrapper.value)
+    wrapper.value?.scrollTo({
+      top: 99999,
+      behavior: 'instant',
+    })
+  })
+}
 
 defineExpose({ open })
 </script>
@@ -65,23 +77,6 @@ defineExpose({ open })
           </div>
         </div>
         <div>
-          <!--          <v-btn v-if="item.telegram_id" color="secondary" :icon="mdiSendCircle" :size="48" variant="text" class="no-pointer-events" style="transform: scale(1.1)" > -->
-          <!--          </v-btn> -->
-          <!--          <v-btn v-if="item.is_telegram_disabled" color="error" :icon="mdiEmailOffOutline" :size="48" variant="text" class="no-pointer-events" /> -->
-          <!--          <v-btn -->
-          <!--            :size="48" -->
-          <!--            variant="text" -->
-          <!--            :disabled="!item.telegram_id" -->
-          <!--            icon="$send" -->
-          <!--            class="no-pointer-events" -->
-          <!--          /> -->
-          <!--          <v-btn -->
-          <!--            :icon="item.is_telegram_disabled ? mdiEmailOffOutline : mdiEmailOutline" -->
-          <!--            :color="item.is_telegram_disabled ? 'error' : 'black'" -->
-          <!--            :size="48" -->
-          <!--            variant="text" -->
-          <!--            class="no-pointer-events" -->
-          <!--          /> -->
           <v-btn
             :size="48"
             :icon="mdiPhone"
@@ -91,7 +86,7 @@ defineExpose({ open })
           />
         </div>
       </div>
-      <div class="dialog-body pa-0 ga-0">
+      <div ref="wrapper" class="dialog-body pa-0 ga-0">
         <div class="tabs">
           <div
             v-for="(label, key) in tabs"

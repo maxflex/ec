@@ -28,21 +28,24 @@ defineEmits(['close'])
       <div v-else :key="2" class="call-banner__info">
         <CallAppAon :item="item.aon" full />
         <div v-if="item.last_interaction" class="call-banner__last-interaction">
-          <v-icon
-            v-if="item.last_interaction.is_missed"
-            :icon="mdiPhoneMissed"
-            :color="item.last_interaction.is_missed_callback ? 'orange' : 'error'"
-          />
-          <v-icon v-else-if="item.last_interaction.type === 'incoming'" color="black" :icon="mdiPhoneIncoming" />
-          <v-icon v-else color="black" :icon="mdiPhoneOutgoing" />
-          <template v-if="item.last_interaction.user">
-            {{ formatName(item.last_interaction.user) }},
-          </template>
-          <template v-else>
-            Пропущенный,
-          </template>
-          {{ formatDateAgo(item.last_interaction.created_at) }} назад
-          <CallAppDuration v-if="item.last_interaction.answered_at" :item="item.last_interaction" class="text-label pl-2" />
+          <span>
+            <v-icon
+              v-if="item.last_interaction.is_missed"
+              :icon="mdiPhoneMissed"
+              :color="item.last_interaction.is_missed_callback ? 'orange' : 'error'"
+            />
+            <v-icon v-else-if="item.last_interaction.type === 'incoming'" color="black" :icon="mdiPhoneIncoming" />
+            <v-icon v-else color="black" :icon="mdiPhoneOutgoing" />
+            <template v-if="item.last_interaction.user">
+              {{ formatName(item.last_interaction.user) }}
+            </template>
+            <template v-else>
+              Пропущенный
+            </template>
+          </span>
+          <CallAppDuration v-if="item.last_interaction.answered_at" :item="item.last_interaction" class="text-label" />
+          <span v-else class="text-gray">00:00</span>
+          {{ formatDateAgo(item.last_interaction.created_at) }}
         </div>
       </div>
     </transition>
@@ -121,6 +124,7 @@ defineEmits(['close'])
     display: flex;
     align-items: center;
     padding-left: 50px;
+    gap: 16px;
     .v-icon {
       font-size: 22px;
     }

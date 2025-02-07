@@ -178,7 +178,8 @@ class Report extends Model
                 IF((
                     COUNT(*) >= 6
                     AND SUM(IF(cl.status <> 'late', 1, 0)) >= $lessonsNeeded
-                ), 'required', 'notRequired') as `requirement`
+                ), 'required', 'notRequired') as `requirement`,
+                NULL as `created_at`
             ");
 
         $periods = [
@@ -233,7 +234,8 @@ class Report extends Model
                         IF(ISNULL(md.max_date), TRUE, md.max_date < ?) AND
                         SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
                     )
-                ), 'required', 'notRequired') as `requirement`
+                ), 'required', 'notRequired') as `requirement`,
+                NULL as `created_at`
             ", [
                 $periods[0][0], $periods[0][0], $periods[0][1],
                 $periods[1][0], $periods[1][0], $periods[1][1],
@@ -260,7 +262,8 @@ class Report extends Model
             year,
             program,
             NULL as lessons_count,
-            'created' as `requirement`
+            'created' as `requirement`,
+            created_at
         ");
     }
 }

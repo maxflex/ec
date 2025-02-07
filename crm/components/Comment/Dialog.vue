@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { mdiSendVariant } from '@mdi/js'
+import dayjs from 'dayjs'
 
 const { entityId, entityType } = defineProps<{
   entityId: number
@@ -115,6 +116,10 @@ function quitEdit() {
   text.value = ''
 }
 
+function formatDateLocal(dateTime: string): string {
+  return dayjs(dateTime).format('DD.MM.YY в HH:mm')
+}
+
 defineExpose({ open })
 </script>
 
@@ -153,23 +158,24 @@ defineExpose({ open })
             <div class="comment__title">
               <span>
                 {{ formatName(c.user) }}
+                <v-menu v-if="c.user.id === user?.id">
+                  <template #activator="{ props }">
+                    <v-icon icon="$more" v-bind="props" />
+                  </template>
+                  <v-list density="comfortable">
+                    <v-list-item @click="startEdit(c)">
+                      редактировать
+                    </v-list-item>
+                    <v-list-item @click="destroy(c)">
+                      удалить
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
               </span>
+
               <span v-if="c.created_at">
-                {{ formatDateTime(c.created_at) }}
+                {{ formatDateLocal(c.created_at) }}
               </span>
-              <v-menu v-if="c.user.id === user?.id">
-                <template #activator="{ props }">
-                  <v-icon icon="$more" v-bind="props" />
-                </template>
-                <v-list density="comfortable">
-                  <v-list-item @click="startEdit(c)">
-                    редактировать
-                  </v-list-item>
-                  <v-list-item @click="destroy(c)">
-                    удалить
-                  </v-list-item>
-                </v-list>
-              </v-menu>
             </div>
             {{ c.text }}
           </div>
@@ -232,7 +238,7 @@ defineExpose({ open })
     justify-content: flex-end;
     padding: $padding;
     & > div {
-      margin-bottom: 16px;
+      margin-bottom: 24px;
     }
   }
   &__input {
@@ -316,6 +322,7 @@ defineExpose({ open })
   &__title {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     // margin-bottom: 2px;
     & > *:not(:last-child) {
       margin-right: 6px;

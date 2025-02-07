@@ -108,7 +108,7 @@ declare global {
 
   interface LogFilters {
     type?: LogType
-    table?: LogTable
+    table?: string
     row_id?: string
   }
 

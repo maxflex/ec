@@ -23,7 +23,13 @@ class TelegramMessageController extends Controller
      */
     public function index(Request $request)
     {
-        $query = TelegramMessage::with(['entity'])->latest();
+        $query = TelegramMessage::with(['entity']);
+
+        if ($request->has('number')) {
+            $query->oldest();
+        } else {
+            $query->latest();
+        }
 
         $this->filter($request, $query);
         return $this->handleIndexRequest(

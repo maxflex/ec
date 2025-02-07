@@ -37,7 +37,15 @@ class ReportController extends Controller
             Report::selectForUnion()->union(Report::requirements())
         );
 
-        $query->orderByRaw("IF(requirement = 'created', 0, 1) desc");
+//        $query->orderByRaw("");
+        $query->orderByRaw("
+            IF(
+                requirement = 'required', 2,
+                IF(requirement = 'created', 1, 0)
+            ) DESC,
+            `status` ASC,
+            `created_at` DESC
+        ");
 
         $this->filter($request, $query);
 

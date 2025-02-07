@@ -29,8 +29,6 @@ declare global {
 
   type Quarter = keyof typeof QuarterLabel
 
-  type LogTable = keyof typeof LogTableLabel
-
   type LogType = keyof typeof LogTypeLabel
 
   type StatsMode = keyof typeof StatsModeLabel
@@ -686,7 +684,7 @@ declare global {
   interface LogResource {
     id: number
     type: LogType
-    table: LogTable | null
+    table: string | null
     created_at: string
     entity: PersonResource | null
     row_id: ?number

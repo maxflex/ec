@@ -560,27 +560,6 @@ export const LogTypeLabel = {
   auth: 'авторизация',
 } as const
 
-export const LogTableLabel = {
-  client_payments: 'client_payments',
-  client_reviews: 'client_reviews',
-  client_tests: 'client_tests',
-  comments: 'comments',
-  client_lessons: 'client_lessons',
-  contract_version_payments: 'contract_version_payments',
-  contract_version_programs: 'contract_version_programs',
-  contract_versions: 'contract_versions',
-  contracts: 'contracts',
-  event_participants: 'event_participants',
-  events: 'events',
-  grades: 'grades',
-  groups: 'groups',
-  lessons: 'lessons',
-  reports: 'reports',
-  telegram_messages: 'telegram_messages',
-  tests: 'tests',
-  vacations: 'vacations',
-} as const
-
 export const ClientTestStatusLabel = {
   new: 'не пройден',
   active: 'активен',

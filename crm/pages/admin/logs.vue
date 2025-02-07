@@ -1,6 +1,9 @@
 <script setup lang="ts">
 const filters = ref<LogFilters>(loadFilters({}))
-const { items, indexPageData } = useIndex<LogResource, LogFilters>(`logs`, filters)
+const { items, indexPageData } = useIndex<LogResource, LogFilters>(
+  `logs`,
+  filters,
+)
 </script>
 
 <template>
