@@ -43,7 +43,7 @@ class ReportController extends Controller
                 requirement = 'required', 2,
                 IF(requirement = 'created', 1, 0)
             ) DESC,
-            `status` ASC,
+            `status` DESC,
             `created_at` DESC
         ");
 
