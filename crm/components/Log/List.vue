@@ -23,7 +23,7 @@ const userDialog = ref<InstanceType<typeof UserDialog>>()
           >
             {{ formatName(log.entity) }}
           </a>
-          <UiPerson :item="log.entity" />
+          <UiPerson v-else :item="log.entity" />
           <div style="font-size: 14px" class="text-gray">
             {{ EntityTypeLabel[log.entity.entity_type] }}
           </div>
