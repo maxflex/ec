@@ -6,35 +6,26 @@ const { items } = defineProps<{
   items: LogResource[]
 }>()
 const userDialog = ref<InstanceType<typeof UserDialog>>()
-
-function getRouteName(log: LogResource) {
-  if (log.entity_type === EntityTypeValue.client) {
-    return 'clients-id'
-  }
-  return 'teachers-id'
-}
 </script>
 
 <template>
   <div class="table log-list">
     <div v-for="log in items" :key="log.id">
-      <div style="width: 170px" class="text-gray">
+      <div style="width: 150px" class="text-gray">
         {{ formatDateTime(log.created_at) }}
       </div>
       <div style="width: 180px">
         <template v-if="log.entity">
           <a
-            v-if="log.entity_type === EntityTypeValue.user"
+            v-if="log.entity.entity_type === EntityTypeValue.user"
             class="cursor-pointer"
             @click="userDialog?.edit(log.entity.id)"
           >
             {{ formatName(log.entity) }}
           </a>
-          <NuxtLink v-else :to="{ name: getRouteName(log), params: { id: log.entity.id } }">
-            {{ formatName(log.entity) }}
-          </NuxtLink>
+          <UiPerson :item="log.entity" />
           <div style="font-size: 14px" class="text-gray">
-            {{ EntityTypeLabel[log.entity_type!] }}
+            {{ EntityTypeLabel[log.entity.entity_type] }}
           </div>
         </template>
         <template v-else>
@@ -43,6 +34,12 @@ function getRouteName(log: LogResource) {
       </div>
       <div style="width: 130px">
         {{ LogTypeLabel[log.type] }}
+        <v-tooltip v-if="log.emulation_user" location="bottom">
+          <template #activator="{ props }">
+            <v-icon icon="$preview" :size="20" color="gray" class="ml-1" v-bind="props" />
+          </template>
+          {{ formatName(log.emulation_user) }}
+        </v-tooltip>
       </div>
       <div v-if="log.type === 'view'">
         <RouterLink :to="log.data.url!">

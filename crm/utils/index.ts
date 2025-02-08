@@ -13,7 +13,7 @@ import dayjs from 'dayjs'
 import { curry } from 'rambda'
 
 export const menuCounts = ref<MenuCounts>({
-  schedule: 0,
+  reports: 0,
 })
 
 export async function updateMenuCounts() {
@@ -241,7 +241,7 @@ export function formatTime(time: string): string {
 }
 
 export function formatDateTime(dateTime: string | null): string {
-  return dayjs(dateTime).format('DD.MM.YYYY в HH:mm')
+  return dayjs(dateTime).format('DD.MM.YY в HH:mm')
 }
 
 export function formatDateMode(date: string, mode: StatsMode) {

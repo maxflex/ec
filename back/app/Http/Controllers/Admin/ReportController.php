@@ -37,7 +37,6 @@ class ReportController extends Controller
             Report::selectForUnion()->union(Report::requirements())
         );
 
-//        $query->orderByRaw("");
         $query->orderByRaw("
             IF(
                 requirement = 'required', 2,

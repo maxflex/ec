@@ -32,6 +32,9 @@ class LogController extends Controller
         );
     }
 
+    /**
+     * Логирование просмотров URL
+     */
     public function store(Request $request)
     {
         Log::create([

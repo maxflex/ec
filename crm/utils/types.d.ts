@@ -684,12 +684,12 @@ declare global {
   interface LogResource {
     id: number
     type: LogType
-    table: string | null
+    table: ?string
     created_at: string
-    entity: PersonResource | null
+    entity: ?PersonResource
+    emulation_user: ?PersonResource
     row_id: ?number
     ip: string
-    entity_type: ?EntityType
     data: any
   }
 

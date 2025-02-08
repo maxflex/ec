@@ -6,6 +6,7 @@ export const useAuthStore = defineStore('auth', () => {
   const token = useCookie('token', forever)
   const previewToken = useCookie('preview-token')
   const rememberUser = useCookie<RememberUser | undefined>('remember-user', forever)
+  const clientParentId = useCookie<number | undefined>('client-parent-id', forever)
   const isAdmin = ref(false)
   const isClient = ref(false)
   const isTeacher = ref(false)
@@ -37,16 +38,22 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * @param u Пользователь будет записан в useAuthStore
    * @param t Токен для сохранения в Cookies
-   * @param number Номер телефона для rememberUser
+   * @param phone Номер телефона для rememberUser
    */
-  function logInAndRemember(u: AuthResource, t: string, number: string) {
+  function logInAndRemember(u: AuthResource, t: string, phone: PhoneResource) {
     // учителя не сохраняем в rememberUser
     if (u.entity_type !== EntityTypeValue.teacher) {
       rememberUser.value = {
         ...u,
-        number,
+        number: phone.number,
       }
     }
+
+    // ID родителя должен сохраняться, чтобы было видно в логах
+    clientParentId.value = phone.entity_type === EntityTypeValue.clientParent
+      ? phone.entity_id
+      : undefined
+
     logIn(u, t)
   }
 
@@ -83,6 +90,7 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     user,
     rememberUser,
+    clientParentId,
     isAdmin,
     isClient,
     isTeacher,

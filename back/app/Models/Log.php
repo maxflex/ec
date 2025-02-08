@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use App\Enums\LogType;
+use App\Utils\Session;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Log extends Model
 {
@@ -23,6 +24,16 @@ class Log extends Model
     public function entity()
     {
         return $this->morphTo();
+    }
+
+    public function clientParent(): BelongsTo
+    {
+        return $this->belongsTo(ClientParent::class);
+    }
+
+    public function emulationUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'emulation_user_id');
     }
 
     public static function add(LogType $type, $model)
@@ -57,16 +68,21 @@ class Log extends Model
         }
     }
 
-    public static function boot()
+    public static function booted()
     {
-        parent::boot();
-
         static::creating(function ($model) {
             if (auth()->user()) {
                 $model->entity_type = get_class(auth()->user());
                 $model->entity_id = auth()->id();
             }
-            $model->ip = Request::ip();
+            if (request()->header('Preview')) {
+                $user = Session::get(request()->header('Preview'));
+                $model->emulation_user_id = $user->id;
+            }
+            if (request()->header('Client-Parent-Id')) {
+                $model->client_parent_id = request()->header('Client-Parent-Id');
+            }
+            $model->ip = request()->ip();
         });
     }
 }
