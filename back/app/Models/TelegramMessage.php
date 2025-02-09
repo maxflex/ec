@@ -58,8 +58,9 @@ class TelegramMessage extends Model
 
         if ($phone->telegram_id) {
             try {
+                $telegramId = is_localhost() ? 84626120 : $phone->telegram_id;
                 Telegram::sendMessage(
-                    $phone->telegram_id,
+                    $telegramId,
                     $text,
                     'HTML',
                     replyMarkup: $replyMarkup
