@@ -26,16 +26,12 @@ class ContractVersionProgram extends Model
         'program' => Program::class,
     ];
 
-    public function prices(): HasMany
+    public static function booted()
     {
-        return $this->hasMany(ContractVersionProgramPrice::class);
+        static::deleting(function (ContractVersionProgram $contractVersionProgram) {
+            $contractVersionProgram->prices->each->delete();
+        });
     }
-
-    public function clientLessons(): HasMany
-    {
-        return $this->hasMany(ClientLesson::class);
-    }
-
 
     public function contractVersion(): BelongsTo
     {
@@ -69,6 +65,16 @@ class ContractVersionProgram extends Model
     public function getIsClosedAttribute(): bool
     {
         return $this->clientLessons()->count() >= $this->prices()->sum('lessons');
+    }
+
+    public function clientLessons(): HasMany
+    {
+        return $this->hasMany(ClientLesson::class);
+    }
+
+    public function prices(): HasMany
+    {
+        return $this->hasMany(ContractVersionProgramPrice::class);
     }
 
     /**
@@ -123,10 +129,12 @@ class ContractVersionProgram extends Model
             return $total;
         }
 
-        return $total + $group->lessons()
-                ->where('status', LessonStatus::planned)
+        $groupLessons = $group->lessons_planned - $group->lessons()
+                ->where('status', LessonStatus::conducted)
                 ->where('is_free', false)
                 ->count();
+
+        return $total + $groupLessons;
     }
 
     /**
@@ -168,12 +176,5 @@ class ContractVersionProgram extends Model
 
         // If no match, return last price by default (fallback case)
         return $this->prices->last()->price;
-    }
-
-    public static function booted()
-    {
-        static::deleting(function (ContractVersionProgram $contractVersionProgram) {
-            $contractVersionProgram->prices->each->delete();
-        });
     }
 }

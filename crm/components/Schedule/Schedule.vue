@@ -7,15 +7,17 @@ import type {
   LessonConductDialog,
   LessonDialog,
 } from '#build/components'
-import { LessonItemAdminClient, LessonItemAdminGroup, LessonItemAdminTeacher, LessonItemClientLK, LessonItemHeadTeacherLK, LessonItemTeacherLK } from '#components'
+import {
+  LessonItemAdminClient,
+  LessonItemAdminGroup,
+  LessonItemAdminTeacher,
+  LessonItemClientLK,
+  LessonItemHeadTeacherLK,
+  LessonItemTeacherLK,
+} from '#components'
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { groupBy } from 'rambda'
 import { formatDateMonth } from '~/utils'
-
-interface Filters {
-  year: Year
-  hideEmptyDates: number
-}
 
 const { groupId, teacherId, clientId, program, showTeeth, year, programFilter, headTeacher } = defineProps<{
   groupId?: number
@@ -28,18 +30,12 @@ const { groupId, teacherId, clientId, program, showTeeth, year, programFilter, h
   headTeacher?: boolean
 }>()
 
-const tabName = teacherId ? 'TeacherSchedule' : (groupId ? 'GroupSchedule' : 'ClientSchedule')
+// const tabName = teacherId ? 'TeacherSchedule' : groupId ? 'GroupSchedule' : 'ClientSchedule'
 const selectedProgram = ref<Program>()
+const selectedYear = ref<Year>()
+const hideEmptyDates = ref<number>(1)
 
-const loadedFilters = loadFilters<Filters>({
-  year: currentAcademicYear(),
-  hideEmptyDates: 0,
-}, tabName)
-
-const filters = ref({
-  ...loadedFilters,
-  year: year || loadedFilters.year,
-})
+const availableYears = ref<Year[]>([])
 
 const { user, isTeacher, isClient } = useAuthStore()
 const isMassEditable = user?.entity_type === EntityTypeValue.user && !!groupId
@@ -73,19 +69,24 @@ const lessonIds = computed((): number[] => {
   return result
 })
 
-const filteredLessons = computed(() => selectedProgram.value
-  ? lessons.value.filter(l => l.group.program === selectedProgram.value)
-  : lessons.value,
+const filteredLessons = computed(() =>
+  selectedProgram.value
+    ? lessons.value.filter(l => l.group.program === selectedProgram.value)
+    : lessons.value,
 )
 
 const dates = computed(() => {
+  if (!selectedYear.value) {
+    return []
+  }
+
   // Define the start and end months for the academic year
   const startMonth = 8 // September (0-indexed)
   const endMonth = 5 // June (0-indexed)
 
   // Define start and end dates for the academic year
-  const startDate = startOfMonth(new Date(filters.value.year, startMonth, 1)) // September 1st
-  const endDate = endOfMonth(new Date(filters.value.year + 1, endMonth, 31)) // May 31st
+  const startDate = startOfMonth(new Date(selectedYear.value, startMonth, 1)) // September 1st
+  const endDate = endOfMonth(new Date(selectedYear.value + 1, endMonth, 31)) // May 31st
 
   // Generate array of all dates between startDate and endDate
   const allDates = eachDayOfInterval({ start: startDate, end: endDate })
@@ -93,7 +94,7 @@ const dates = computed(() => {
   const result = []
   for (const d of allDates) {
     const dateString = format(d, 'yyyy-MM-dd')
-    if (filters.value.hideEmptyDates) {
+    if (hideEmptyDates.value) {
       if (
         filteredLessons.value.some(e => e.date === dateString)
         || events.value.some(e => e.date === dateString)
@@ -108,30 +109,24 @@ const dates = computed(() => {
   return result
 })
 
-const itemsByDate = computed((): {
-  [index: string]: Array<LessonListResource | EventListResource>
-} => {
-  return groupBy(x => x.date, [
-    ...filteredLessons.value,
-    ...events.value,
-  ])
-})
+const itemsByDate = computed(
+  (): {
+    [index: string]: Array<LessonListResource | EventListResource>
+  } => {
+    return groupBy(x => x.date, [...filteredLessons.value, ...events.value])
+  },
+)
 
-const availablePrograms = computed(() => [...new Set(
-  lessons.value.map(l => l.group.program),
-)])
+const availablePrograms = computed(() => [...new Set(lessons.value.map(l => l.group.program))])
 
 async function loadLessons() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<LessonListResource>>(
-    `lessons`,
-    {
-      params: {
-        ...params,
-        year: groupId ? undefined : filters.value.year,
-      },
+  const { data } = await useHttp<ApiResponse<LessonListResource>>(`lessons`, {
+    params: {
+      ...params,
+      year: groupId ? undefined : selectedYear.value,
     },
-  )
+  })
   if (data.value) {
     lessons.value = data.value.data
   }
@@ -143,15 +138,12 @@ async function loadEvents() {
   if (groupId) {
     return
   }
-  const { data } = await useHttp<ApiResponse<EventListResource>>(
-    `common/events`,
-    {
-      params: {
-        ...params,
-        year: filters.value.year,
-      },
+  const { data } = await useHttp<ApiResponse<EventListResource>>(`common/events`, {
+    params: {
+      ...params,
+      year: selectedYear.value,
     },
-  )
+  })
   if (data.value) {
     events.value = data.value.data
   }
@@ -161,15 +153,12 @@ async function loadTeeth() {
   if (!showTeeth) {
     return
   }
-  const { data } = await useHttp<Teeth>(
-    `common/teeth`,
-    {
-      params: {
-        ...params,
-        year: filters.value.year,
-      },
+  const { data } = await useHttp<Teeth>(`common/teeth`, {
+    params: {
+      ...params,
+      year: selectedYear.value,
     },
-  )
+  })
   if (data.value) {
     teeth.value = data.value
   }
@@ -177,12 +166,9 @@ async function loadTeeth() {
 
 async function loadVacations() {
   vacations.value = {}
-  const { data } = await useHttp<ApiResponse<VacationResource>>(
-    `common/vacations`,
-    {
-      params: { year: filters.value.year },
-    },
-  )
+  const { data } = await useHttp<ApiResponse<VacationResource>>(`common/vacations`, {
+    params: { year: selectedYear.value },
+  })
   if (data.value) {
     for (const { date } of data.value.data) {
       vacations.value[date] = true
@@ -197,12 +183,9 @@ async function loadExamDates() {
     return
   }
   examDates.value = {}
-  const { data } = await useHttp<ApiResponse<ExamDateResource>>(
-    `common/exam-dates`,
-    {
-      params: { program },
-    },
-  )
+  const { data } = await useHttp<ApiResponse<ExamDateResource>>(`common/exam-dates`, {
+    params: { program },
+  })
   if (data.value && data.value.data.length) {
     examName.value = data.value.data[0].exam
     const { dates } = data.value.data[0]
@@ -228,6 +211,36 @@ async function loadData() {
 function onBulkUpdated() {
   loadLessons()
   checkboxes.value = {}
+}
+
+async function loadAvailableYears() {
+  if (selectedYear.value) {
+    return
+  }
+  if (clientId || teacherId) {
+    const { data } = await useHttp<Year[]>(
+      `common/years`,
+      {
+        params: {
+          client_id: clientId,
+          teacher_id: teacherId,
+        },
+      },
+    )
+    if (data.value && data.value.length) {
+      availableYears.value = data.value
+      selectedYear.value = data.value[data.value.length - 1]
+    }
+  }
+  else if (year) {
+    availableYears.value = [year]
+    selectedYear.value = year
+  }
+  else {
+    availableYears.value = Object.keys(YearLabel).map(e => Number.parseInt(e) as Year)
+  }
+
+  watch(selectedYear, loadData)
 }
 
 function onMassEditClick(item: LessonListResource) {
@@ -273,38 +286,37 @@ const lessonItemComponent = (function () {
   return LessonItemAdminGroup
 })()
 
-watch(() => filters.value.year, loadData)
-
-watch(filters, (newVal) => {
-  saveFilters(newVal, tabName)
-}, { deep: true })
-
-nextTick(loadData)
+nextTick(async () => {
+  await loadAvailableYears()
+  await loadData()
+})
 </script>
 
 <template>
   <UiFilters>
     <v-select
-      v-model="filters.year"
-      :disabled="!!groupId"
+      v-model="selectedYear"
+      :disabled="availableYears.length === 1"
+      :loading="selectedYear === undefined"
       label="Учебный год"
-      :items="selectItems(YearLabel)"
-      density="comfortable"
-    />
-    <v-select
-      v-model="filters.hideEmptyDates"
-      label="Даты"
-      :items="yesNo('скрыть пустые', 'показывать все', true)"
+      :items="
+        availableYears.map((value) => ({
+          value,
+          title: YearLabel[value],
+        }))
+      "
       density="comfortable"
     />
     <UiClearableSelect
       v-if="programFilter"
       v-model="selectedProgram"
       label="Программа"
-      :items="availablePrograms.map(value => ({
-        value,
-        title: ProgramLabel[value],
-      }))"
+      :items="
+        availablePrograms.map((value) => ({
+          value,
+          title: ProgramLabel[value],
+        }))
+      "
       density="comfortable"
     />
     <template #buttons>
@@ -312,10 +324,7 @@ nextTick(loadData)
         <v-btn variant="text" @click="checkboxes = {}">
           отмена
         </v-btn>
-        <v-btn
-          color="primary" :width="216"
-          @click="lessonBulkUpdateDialog?.open(lessonIds)"
-        >
+        <v-btn color="primary" :width="216" @click="lessonBulkUpdateDialog?.open(lessonIds)">
           редактировать
           {{ lessonIds.length }}/{{ lessons.length }}
         </v-btn>
@@ -346,7 +355,7 @@ nextTick(loadData)
       v-for="d in dates"
       :key="d"
       :class="{
-        'week-separator': !filters.hideEmptyDates && getDay(d) === 0,
+        'week-separator': !hideEmptyDates && getDay(d) === 0,
       }"
     >
       <div>
@@ -388,19 +397,10 @@ nextTick(loadData)
   <LessonDialog ref="lessonDialog" />
   <ClientLessonEditPriceDialog v-if="clientId" ref="clientLessonEditPriceDialog" />
   <EventDialog ref="eventDialog" />
-  <LessonConductDialog
-    ref="conductDialog"
-    @updated="loadLessons"
-  />
+  <LessonConductDialog ref="conductDialog" @updated="loadLessons" />
   <template v-if="isMassEditable">
-    <LessonBulkUpdateDialog
-      ref="lessonBulkUpdateDialog"
-      @updated="onBulkUpdated"
-    />
-    <LessonBulkCreateDialog
-      ref="lessonBulkCreateDialog"
-      @updated="loadLessons"
-    />
+    <LessonBulkUpdateDialog ref="lessonBulkUpdateDialog" @updated="onBulkUpdated" />
+    <LessonBulkCreateDialog ref="lessonBulkCreateDialog" @updated="loadLessons" />
   </template>
 </template>
 

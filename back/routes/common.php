@@ -9,7 +9,8 @@ use App\Http\Controllers\Common\{AuthController,
     PhotoController,
     TeethController,
     TelegramBotController,
-    VacationController};
+    VacationController,
+    YearController};
 use Illuminate\Support\Facades\Route;
 
 Route::post('telegram', TelegramBotController::class);
@@ -24,6 +25,8 @@ Route::post('mango/events/{event}', MangoController::class)
     ->name('mango');
 
 Route::post('files', FileController::class);
+
+Route::apiResource('years', YearController::class)->only(['index']);
 
 Route::middleware(['auth:crm'])->group(function () {
     Route::controller(AuthController::class)->prefix('auth')->group(function () {

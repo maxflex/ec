@@ -8,10 +8,7 @@ const { item } = defineProps<{
 
 <template>
   <div>
-    <div style="width: 90px; position: relative;" />
-    <div style="width: 120px">
-      {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
-    </div>
+    <div style="width: 120px">{{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}</div>
     <div style="width: 80px">
       <template v-if="item.cabinet">
         {{ CabinetAllLabel[item.cabinet] }}
@@ -20,9 +17,7 @@ const { item } = defineProps<{
     <div v-if="item.teacher" style="width: 150px">
       {{ formatNameInitials(item.teacher) }}
     </div>
-    <div style="width: 90px">
-      ГР-{{ item.group.id }}
-    </div>
+    <div style="width: 90px">ГР-{{ item.group.id }}</div>
     <div style="width: 140px">
       {{ ProgramShortLabel[item.group.program] }}
     </div>
@@ -31,21 +26,16 @@ const { item } = defineProps<{
         {{ QuarterShortLabel[item.quarter] }}
       </span>
     </div>
-    <div style="width: 70px">
-      <v-tooltip location="bottom">
-        <template #activator="{ props }">
-          <v-icon :icon="mdiVideo" v-bind="props" />
-        </template>
-        <div>
-          ZOOM логин: {{ item.group.zoom.id }}
-        </div>
-        <div>
-          ZOOM пароль: {{ item.group.zoom.password }}
-        </div>
-      </v-tooltip>
-    </div>
-    <div class="lesson-item__status">
+    <div class="lesson-item__status" style="flex: 1">
       <LessonItemStatus :item="item" show-unplanned />
+    </div>
+    <div style="width: 130px; flex: initial">
+      <div>
+        {{ item.group.zoom.id }}
+      </div>
+      <div>
+        {{ item.group.zoom.password }}
+      </div>
     </div>
   </div>
 </template>
