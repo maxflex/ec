@@ -47,6 +47,7 @@ const params = {
   group_id: groupId,
 }
 const loading = ref(true)
+const yearsLoaded = ref(false)
 const teeth = ref<Teeth>()
 const lessons = ref<LessonListResource[]>([])
 const events = ref<EventListResource[]>([])
@@ -201,6 +202,9 @@ function isEvent(item: LessonListResource | EventListResource): item is EventLis
 
 async function loadData() {
   selectedProgram.value = undefined
+  if (!selectedYear.value) {
+    return
+  }
   await loadTeeth()
   await loadLessons()
   await loadEvents()
@@ -217,6 +221,7 @@ async function loadAvailableYears() {
   if (selectedYear.value) {
     return
   }
+  yearsLoaded.value = false
   if (clientId || teacherId) {
     const { data } = await useHttp<Year[]>(
       `common/years`,
@@ -239,7 +244,7 @@ async function loadAvailableYears() {
   else {
     availableYears.value = Object.keys(YearLabel).map(e => Number.parseInt(e) as Year)
   }
-
+  yearsLoaded.value = true
   watch(selectedYear, loadData)
 }
 
@@ -296,8 +301,8 @@ nextTick(async () => {
   <UiFilters>
     <v-select
       v-model="selectedYear"
-      :disabled="availableYears.length === 1"
-      :loading="selectedYear === undefined"
+      :disabled="availableYears.length <= 1"
+      :loading="!yearsLoaded"
       label="Учебный год"
       :items="
         availableYears.map((value) => ({
@@ -349,7 +354,8 @@ nextTick(async () => {
       </v-fade-transition>
     </template>
   </UiFilters>
-  <UiLoader v-if="loading" />
+  <UiNoData v-if="yearsLoaded && !selectedYear" />
+  <UiLoader v-else-if="loading" />
   <div v-else class="schedule">
     <div
       v-for="d in dates"

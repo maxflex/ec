@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Common;
 
 use App\Http\Controllers\Controller;
-use App\Models\Client;
-use App\Models\Teacher;
+use App\Models\Lesson;
+use DB;
 use Illuminate\Http\Request;
 
 /**
@@ -14,23 +14,25 @@ class YearController extends Controller
 {
     public function index(Request $request)
     {
-        $years = collect();
         if ($request->has('client_id')) {
-            $client = Client::findOrFail($request->client_id);
-            foreach ($client->contracts as $contract) {
-                foreach ($contract->active_version->programs as $program) {
-                    if ($program->group) {
-                        $years->push($program->group->year);
-                    }
-                    foreach ($program->clientLessons as $clientLesson) {
-                        $years->push($clientLesson->lesson->group->year);
-                    }
-                }
-            }
+            $clientId = intval($request->client_id);
+            $years = collect(DB::select("
+                select distinct(c.year) from client_lessons cl
+                join contract_version_programs cvp on cvp.id = cl.contract_version_program_id
+                join contract_versions cv on cv.id = cvp.contract_version_id
+                join contracts c on c.id = cv.contract_id
+                where c.client_id = $clientId
+                union
+                select distinct(c.year) from `client_groups` cg
+                join contract_version_programs cvp on cvp.id = cg.contract_version_program_id
+                join contract_versions cv on cv.id = cvp.contract_version_id
+                join contracts c on c.id = cv.contract_id
+                where c.client_id = $clientId
+            "))->pluck('year');
         }
         if ($request->has('teacher_id')) {
-            $teacher = Teacher::findOrFail($request->teacher_id);
-            $years = $teacher->lessons()
+            $years = Lesson::query()
+                ->where('teacher_id', $request->teacher_id)
                 ->join('groups', 'groups.id', '=', 'lessons.group_id')
                 ->select('year')
                 ->groupBy('year')
