@@ -18,7 +18,6 @@ class ClientsBrowseResource extends JsonResource
                 'directions' => $this->directions
             ],
             ClientParent::class => [
-                'id' => $this->client_id,
                 'directions' => $this->client->directions
             ],
             default => [],
