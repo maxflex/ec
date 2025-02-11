@@ -1,21 +1,13 @@
 <script setup lang="ts">
-import { ReportRequirementLabel } from '~/utils/labels'
-
 const { clientId, teacherId } = defineProps<{
   clientId?: number
   teacherId?: number
 }>()
-const tabName = clientId ? 'ClientReportTab' : 'TeacherReportTab'
 
 // isHeadTeacher
 const { isTeacher } = useAuthStore()
+const year = ref<Year>()
 
-const filters = ref<{
-  year: Year
-  requirement?: ReportRequirement
-}>(loadFilters({
-  year: currentAcademicYear(),
-}, tabName))
 const loading = ref(true)
 const items = ref<ReportListResource[]>([])
 
@@ -25,7 +17,6 @@ async function loadData() {
     `reports`,
     {
       params: {
-        ...filters.value,
         client_id: clientId,
         teacher_id: teacherId,
       },
@@ -37,10 +28,9 @@ async function loadData() {
   loading.value = false
 }
 
-watch(filters, (newVal) => {
-  saveFilters(newVal, tabName)
-  loadData()
-}, { deep: true })
+// watch(filters, (newVal) => {
+//   loadData()
+// }, { deep: true })
 
 const noData = computed(() => !loading.value && items.value.length === 0)
 
@@ -50,18 +40,13 @@ nextTick(loadData)
 <template>
   <UiIndexPage :data="{ loading, noData }">
     <template #filters>
-      <v-select
-        v-model="filters.year"
-        :items="selectItems(YearLabel)"
-        label="Год"
-        density="comfortable"
-      />
-      <UiClearableSelect
+      <YearSelector v-model="year" :client-id="clientId" mode="reports" />
+      <!-- <UiClearableSelect
         v-model="filters.requirement"
         label="Тип"
         :items="selectItems(ReportRequirementLabel)"
         density="comfortable"
-      />
+      /> -->
     </template>
 
     <ReportListForHeadTeachers v-if="isTeacher" :items="items" />

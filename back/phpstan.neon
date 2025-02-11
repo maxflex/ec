@@ -1,21 +1,17 @@
 includes:
-    - ./vendor/nunomaduro/larastan/extension.neon
+    - vendor/larastan/larastan/extension.neon
+    - vendor/nesbot/carbon/extension.neon
 
 parameters:
+
     paths:
         - app/
 
+    # Level 10 is the highest level
     level: 5
-
-    ignoreErrors:
-        -
-            identifier: match.unhandled # необязательно default в match / switch-case
-
 
 #    ignoreErrors:
 #        - '#PHPDoc tag @var#'
 #
 #    excludePaths:
 #        - ./*/*/FileToBeExcluded.php
-#
-#    checkMissingIterableValueType: false
