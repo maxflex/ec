@@ -126,4 +126,12 @@ enum Cabinet: string
             default => null,
         };
     }
+
+    /**
+     * cab422 => 422
+     */
+    public function getName()
+    {
+        return filter_var($this->value, FILTER_SANITIZE_NUMBER_INT);
+    }
 }

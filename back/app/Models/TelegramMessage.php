@@ -14,31 +14,41 @@ use TelegramBot\Api\Types\ReplyKeyboardRemove;
 class TelegramMessage extends Model
 {
     protected $fillable = [
-        'text', 'list_id', 'template', 'number', 'telegram_id'
+        'text', 'list_id', 'template', 'number', 'telegram_id',
     ];
 
     protected $casts = [
-        'template' => TelegramTemplate::class
+        'template' => TelegramTemplate::class,
     ];
 
-    public function entity(): MorphTo
-    {
-        return $this->morphTo();
+    public static function sendTemplate(
+        TelegramTemplate $template,
+        $receiver,
+        array $viewVariables = [],
+        array $callbackData = []
+    ) {
+        foreach ($receiver->phones as $phone) {
+            $text = $template->getText($viewVariables);
+            TelegramMessage::send($phone, $text, $template->getReplyMarkup($callbackData), $template);
+        }
     }
 
     /**
      * Отправить сообщение и сохранить TelegramMessage
      * Неудачные попытки будут отображаться красным в истории сообщений
      *
-     * @param InlineKeyboardMarkup|ReplyKeyboardMarkup|ReplyKeyboardRemove|ForceReply|null $replyMarkup
+     * @param  InlineKeyboardMarkup|ReplyKeyboardMarkup|ReplyKeyboardRemove|ForceReply|null  $replyMarkup
      */
     public static function send(
-        Phone               $phone,
+        Phone $phone,
         string|TelegramList $textOrList,
-                            $replyMarkup = null,
-        ?TelegramTemplate   $template = null,
-    ): bool
-    {
+        $replyMarkup = null,
+        ?TelegramTemplate $template = null,
+    ): bool {
+        if ($phone->is_telegram_disabled) {
+            return false;
+        }
+
         if ($textOrList instanceof TelegramList) {
             $listId = $textOrList->id;
             $text = $textOrList->text;
@@ -66,24 +76,21 @@ class TelegramMessage extends Model
                     replyMarkup: $replyMarkup
                 );
             } catch (\Exception $e) {
-                logger("Cant send telegram message", $phone->toArray());
-//                "message": "Bad Request: chat not found",
-//                "exception": "TelegramBot\\Api\\HttpException",
+                logger('Cant send telegram message', $phone->toArray());
+                //                "message": "Bad Request: chat not found",
+                //                "exception": "TelegramBot\\Api\\HttpException",
             }
+
+            sleep(1);
+
             return true;
         }
+
         return false;
     }
 
-    public static function sendTemplate(
-        TelegramTemplate $template,
-        $receiver,
-        array $viewVariables = [],
-        array $callbackData = []
-    ) {
-        foreach ($receiver->phones as $phone) {
-            $text = $template->getText($viewVariables);
-            TelegramMessage::send($phone, $text, $template->getReplyMarkup($callbackData), $template);
-        }
+    public function entity(): MorphTo
+    {
+        return $this->morphTo();
     }
 }

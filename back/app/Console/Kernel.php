@@ -12,10 +12,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
+        $schedule->command('notification:teacher-conduct-missing')->dailyAt('10:00');
+        $schedule->command('notification:payment-reminder')->dailyAt('19:50');
+        $schedule->command('notification:unplanned-or-cancelled')->dailyAt('20:00');
+
         $schedule->command('app:check-errors')->dailyAt('03:00');
         $schedule->command('app:send-telegram-messages')->everyMinute();
         $schedule->command('scout:reimport-all')->dailyAt('01:00');
-        // $schedule->command('inspire')->hourly();
     }
 
     /**
@@ -23,7 +26,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__ . '/Commands');
+        $this->load(__DIR__.'/Commands');
     }
 
     protected function bootstrappers()

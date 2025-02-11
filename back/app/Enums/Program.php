@@ -492,7 +492,6 @@ enum Program: string
         };
     }
 
-
     public function getExam(): ?Exam
     {
         return match ($this) {
@@ -525,8 +524,8 @@ enum Program: string
             self::litPract => Exam::egeLit,
             self::litExternal => Exam::egeLit,
             self::math11 => Exam::egeMathProf,
-            self::mathBaseSchool11 => Exam::egeMathProf,
-            self::mathProfSchool11 => Exam::egeMathBase,
+            self::mathBaseSchool11 => Exam::egeMathBase,
+            self::mathProfSchool11 => Exam::egeMathProf,
             self::mathPract => Exam::egeMathProf,
             self::mathBaseExternal => Exam::egeMathBase,
             self::mathProfExternal => Exam::egeMathProf,

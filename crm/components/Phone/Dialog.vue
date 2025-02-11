@@ -71,9 +71,9 @@ defineExpose({ open })
     <div v-if="item" class="dialog-wrapper phone-dialog">
       <div class="dialog-header">
         <div class="d-flex ga-2 align-center">
-          <PhoneNumber :item="item" />
-          <div v-if="item.comment" class="dialog-subheader">
-            {{ item.comment }}
+          <PhoneNumber style="white-space: nowrap;" :item="item" />
+          <div v-if="item.comment" class="dialog-subheader px-3">
+            {{ filterTruncate(item.comment, 55) }}
           </div>
         </div>
         <div>

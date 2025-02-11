@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use App\Casts\JsonArrayCast;
-use App\Enums\{Cabinet, ClientLessonStatus, LessonStatus};
+use App\Enums\Cabinet;
+use App\Enums\ClientLessonStatus;
+use App\Enums\LessonStatus;
 use App\Http\Resources\LessonListResource;
-use Illuminate\Database\{Eloquent\Model, Eloquent\Relations\BelongsTo, Eloquent\Relations\HasMany};
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +19,7 @@ class Lesson extends Model
     protected $fillable = [
         'teacher_id', 'group_id', 'price', 'cabinet', 'date', 'time',
         'status', 'topic', 'conducted_at', 'is_topic_verified', 'is_unplanned',
-        'quarter', 'homework', 'files', 'is_free'
+        'quarter', 'homework', 'files', 'is_free',
     ];
 
     protected $casts = [
@@ -26,6 +30,25 @@ class Lesson extends Model
         'cabinet' => Cabinet::class,
         'files' => JsonArrayCast::class,
     ];
+
+    /**
+     * @param  Collection<int, Lesson>  $lessons
+     */
+    public static function withSequenceNumber(Collection $lessons)
+    {
+        foreach ($lessons->groupBy('group.program') as $programLessons) {
+            $seq = 1;
+            foreach ($programLessons->sortBy(['date', 'time'])->values()->all() as $lesson) {
+                if ($lesson->status === LessonStatus::cancelled) {
+                    continue;
+                }
+                $lesson->setAttribute('seq', $seq);
+                $seq++;
+            }
+        }
+
+        return paginate(LessonListResource::collection($lessons));
+    }
 
     public function teacher(): BelongsTo
     {
@@ -42,16 +65,6 @@ class Lesson extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function clientLessons(): HasMany
-    {
-        return $this->hasMany(ClientLesson::class);
-    }
-
-    public function chain(): HasMany
-    {
-        return $this->hasMany(Lesson::class, 'group_id', 'group_id');
-    }
-
     public function scopeConducted($query)
     {
         return $query->where('status', LessonStatus::conducted);
@@ -59,7 +72,18 @@ class Lesson extends Model
 
     public function getDateTimeAttribute(): Carbon
     {
-        return Carbon::parse(join(' ', [$this->date, $this->time]));
+        return Carbon::parse(implode(' ', [$this->date, $this->time]));
+    }
+
+    public function getTimeFormattedAttribute(): string
+    {
+        if (! $this->attributes['time']) {
+            return '';
+        }
+
+        [$h, $m, $s] = explode(':', $this->attributes['time']);
+
+        return "$h:$m";
     }
 
     /**
@@ -77,9 +101,14 @@ class Lesson extends Model
      */
     public function isFirst(): bool
     {
-        return !$this->chain()
+        return ! $this->chain()
             ->where(DB::raw("concat(`date`, ' ', `time`)"), '<', $this->date_time->format('Y-m-d H:i:s'))
             ->exists();
+    }
+
+    public function chain(): HasMany
+    {
+        return $this->hasMany(Lesson::class, 'group_id', 'group_id');
     }
 
     /**
@@ -88,7 +117,7 @@ class Lesson extends Model
     public function conduct($students)
     {
         foreach ($students as $s) {
-            $s = (object)$s;
+            $s = (object) $s;
 
             $contractVersionProgram = ContractVersionProgram::find($s->contract_version_program_id);
 
@@ -106,8 +135,13 @@ class Lesson extends Model
 
         $this->update([
             'conducted_at' => now(),
-            'status' => LessonStatus::conducted
+            'status' => LessonStatus::conducted,
         ]);
+    }
+
+    public function clientLessons(): HasMany
+    {
+        return $this->hasMany(ClientLesson::class);
     }
 
     /**
@@ -138,29 +172,16 @@ class Lesson extends Model
             && $this->date_time->addHour()->isPast();
     }
 
-    /**
-     * @param Collection<int, Lesson> $lessons
-     */
-    public static function withSequenceNumber(Collection $lessons)
+    public function getDateObjAttribute(): Carbon
     {
-        foreach ($lessons->groupBy('group.program') as $programLessons) {
-            $seq = 1;
-            foreach ($programLessons->sortBy(['date', 'time'])->values()->all() as $lesson) {
-                if ($lesson->status === LessonStatus::cancelled) {
-                    continue;
-                }
-                $lesson->setAttribute('seq', $seq);
-                $seq++;
-            }
-        }
-        return paginate(LessonListResource::collection($lessons));
+        return Carbon::parse($this->date);
     }
 
     public function scopeNeedConduct($query)
     {
         $query
             ->where('status', LessonStatus::planned)
-            ->whereRaw("TIMESTAMP(`date`, `time`) < NOW() - INTERVAL 1 HOUR")
+            ->whereRaw('TIMESTAMP(`date`, `time`) < NOW() - INTERVAL 1 HOUR')
             // смотрим начиная со вчерашнего дня
             ->where('date', '<', now()->format('Y-m-d'));
     }

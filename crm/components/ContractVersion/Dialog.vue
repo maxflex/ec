@@ -414,7 +414,7 @@ defineExpose({ edit, newContract, newVersion })
             :size="48"
             variant="text"
             :loading="saving"
-            :disabled="user?.id !== 1 && !isPaymentSumValid"
+            :disabled="![1, 5].includes(user!.id) && !isPaymentSumValid"
             @click="save()"
           />
         </div>

@@ -5,17 +5,20 @@ namespace App\Enums;
 use App\Models\Report;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
-
 enum TelegramTemplate: string
 {
     case reportPublished = 'reportPublished';
     case reportRead = 'reportRead';
     case clientLessonStatus = 'clientLessonStatus';
+    case teacherConductMissing = 'teacherConductMissing';
+    case paymentReminder = 'paymentReminder';
+    case unplannedOrCancelled = 'unplannedOrCancelled';
 
     public function getText(array $viewVariables = [])
     {
-        $viewName = str($this->value)->snake("-")->value();
-        return view('templates.' .  $viewName, $viewVariables);
+        $viewName = str($this->value)->snake('-')->value();
+
+        return view('templates.'.$viewName, $viewVariables);
     }
 
     public function getReplyMarkup(array $callbackData = [])
@@ -24,12 +27,13 @@ enum TelegramTemplate: string
             ...$callbackData,
             'template' => $this->value,
         ]);
+
         return match ($this) {
             self::reportPublished => new InlineKeyboardMarkup([
                 [[
                     'text' => 'Посмотреть отчёт',
-                    'callback_data' => $callbackData
-                ]]
+                    'callback_data' => $callbackData,
+                ]],
             ]),
             default => null
         };

@@ -5,7 +5,10 @@ namespace App\Console\Commands;
 use App\Enums\EventParticipantConfirmation;
 use App\Enums\SendTo;
 use App\Enums\TelegramListStatus;
-use App\Models\{Client, Teacher, TelegramList, TelegramMessage};
+use App\Models\Client;
+use App\Models\Teacher;
+use App\Models\TelegramList;
+use App\Models\TelegramMessage;
 use DB;
 use Illuminate\Console\Command;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
@@ -41,7 +44,7 @@ class SendTelegramMessages extends Command
         $sent = 0;
         $lists = TelegramList::query()
             ->where('status', TelegramListStatus::scheduled)
-            ->whereRaw("ifnull(scheduled_at, created_at) <= now()")
+            ->whereRaw('ifnull(scheduled_at, created_at) <= now()')
             ->get();
 
         foreach ($lists as $list) {
@@ -75,22 +78,21 @@ class SendTelegramMessages extends Command
                                 'event_id' => $list->event_id,
                                 'phone_id' => $phone->id,
                                 'confirmation' => EventParticipantConfirmation::confirmed->value,
-                            ])
+                            ]),
                         ]], [[
                             'text' => 'отказаться',
                             'callback_data' => json_encode([
                                 'event_id' => $list->event_id,
                                 'phone_id' => $phone->id,
                                 'confirmation' => EventParticipantConfirmation::rejected->value,
-                            ])
+                            ]),
                         ]]]);
                 } else {
-                    $replyMarkup = new ReplyKeyboardRemove();
+                    $replyMarkup = new ReplyKeyboardRemove;
                 }
                 $wasSent = TelegramMessage::send($phone, $list, $replyMarkup);
                 if ($wasSent) {
                     $sent++;
-                    sleep(1);
                 }
             }
             $list->update(['status' => TelegramListStatus::sent]);
@@ -98,5 +100,4 @@ class SendTelegramMessages extends Command
 
         $this->info("Sent: $sent");
     }
-
 }
