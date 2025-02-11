@@ -1,16 +1,16 @@
 <?php
 
-use App\Http\Controllers\Common\{AuthController,
-    EventController,
-    ExamDateController,
-    FileController,
-    LogController,
-    MangoController,
-    PhotoController,
-    TeethController,
-    TelegramBotController,
-    VacationController,
-    YearController};
+use App\Http\Controllers\Common\AuthController;
+use App\Http\Controllers\Common\AvailableYearsController;
+use App\Http\Controllers\Common\EventController;
+use App\Http\Controllers\Common\ExamDateController;
+use App\Http\Controllers\Common\FileController;
+use App\Http\Controllers\Common\LogController;
+use App\Http\Controllers\Common\MangoController;
+use App\Http\Controllers\Common\PhotoController;
+use App\Http\Controllers\Common\TeethController;
+use App\Http\Controllers\Common\TelegramBotController;
+use App\Http\Controllers\Common\VacationController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('telegram', TelegramBotController::class);
@@ -26,7 +26,7 @@ Route::post('mango/events/{event}', MangoController::class)
 
 Route::post('files', FileController::class);
 
-Route::apiResource('years', YearController::class)->only(['index']);
+Route::get('available-years', AvailableYearsController::class);
 
 Route::middleware(['auth:crm'])->group(function () {
     Route::controller(AuthController::class)->prefix('auth')->group(function () {

@@ -4,16 +4,19 @@ namespace App\Http\Controllers\Common;
 
 use App\Http\Controllers\Controller;
 use App\Models\Lesson;
+use App\Utils\AvailableYears;
 use DB;
 use Illuminate\Http\Request;
 
 /**
  * Получить все возможные годы для срезки
  */
-class YearController extends Controller
+class AvailableYearsController extends Controller
 {
-    public function index(Request $request)
+    public function __invoke(Request $request)
     {
+        return AvailableYears::get($request);
+
         if ($request->has('client_id')) {
             $clientId = intval($request->client_id);
             $years = collect(DB::select("
@@ -38,8 +41,9 @@ class YearController extends Controller
                 ->groupBy('year')
                 ->pluck('year');
         }
+
         return $years->unique()->sort()->values()->all();
-//        return [2015, 2016, 2017, 2018 2019, 2020, 2021];
-//        $request->user()->authorizeRoles(['admin']);
+        //        return [2015, 2016, 2017, 2018 2019, 2020, 2021];
+        //        $request->user()->authorizeRoles(['admin']);
     }
 }
