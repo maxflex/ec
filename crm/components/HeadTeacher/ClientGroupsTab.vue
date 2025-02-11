@@ -1,16 +1,12 @@
 <script setup lang="ts">
 const { clientId } = defineProps<{ clientId: number }>()
-const tabName = 'GroupsTabForHeadTeacher'
 
-const filters = ref<YearFilters>(loadFilters({
-  year: currentAcademicYear(),
-}, tabName))
-
-const { items, indexPageData } = useIndex<GroupListResource, GroupFilters>(
+const filters = ref<AvailableYearsFilter>({})
+const { items, indexPageData } = useIndex<GroupListResource, AvailableYearsFilter>(
   `groups`,
   filters,
   {
-    tabName,
+    instantLoad: false,
     staticFilters: {
       client_id: clientId,
     },
@@ -21,7 +17,11 @@ const { items, indexPageData } = useIndex<GroupListResource, GroupFilters>(
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <UiYearSelector v-model="filters.year" density="comfortable" />
+      <AvailableYearsSelector
+        v-model="filters.year"
+        :client-id="clientId"
+        mode="groups"
+      />
     </template>
     <GroupTeacherList :items="items" />
   </UiIndexPage>

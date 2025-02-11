@@ -32,7 +32,12 @@ async function loadData() {
   loading.value = false
 }
 
-const noData = computed(() => availableYearsLoaded.value && !selectedYear.value)
+const noData = computed(() => {
+  if (selectedYear.value) {
+    return !loading.value && items.value.length === 0
+  }
+  return availableYearsLoaded.value && !selectedYear.value
+})
 
 function onAvailableYearsLoaded() {
   availableYearsLoaded.value = true
@@ -47,7 +52,7 @@ function onAvailableYearsLoaded() {
 <template>
   <UiIndexPage :data="{ loading, noData }">
     <template #filters>
-      <YearSelector
+      <AvailableYearsSelector
         v-model="selectedYear"
         :client-id="clientId"
         :teacher-id="teacherId"

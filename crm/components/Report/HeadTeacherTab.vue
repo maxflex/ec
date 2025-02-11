@@ -1,14 +1,10 @@
 <script setup lang="ts">
 const { clientId } = defineProps<{
-  clientId?: number
+  clientId: number
 }>()
-const tabName = 'HeadTeacherReportTab'
 
-const filters = ref<{
-  year: Year
-}>(loadFilters({
-  year: currentAcademicYear(),
-}, tabName))
+const selectedYear = ref<Year>()
+const availableYearsLoaded = ref(false)
 const loading = ref(true)
 const items = ref<ReportListResource[]>([])
 
@@ -18,9 +14,9 @@ async function loadData() {
     `reports`,
     {
       params: {
-        ...filters.value,
         client_id: clientId,
         requirement: 'created',
+        year: selectedYear.value,
       },
     },
   )
@@ -30,24 +26,31 @@ async function loadData() {
   loading.value = false
 }
 
-watch(filters, (newVal) => {
-  saveFilters(newVal, tabName)
-  loadData()
-}, { deep: true })
+function onAvailableYearsLoaded() {
+  availableYearsLoaded.value = true
+  // подгружаем данные только если есть какой-то год
+  if (selectedYear.value) {
+    loadData()
+    watch(selectedYear, loadData)
+  }
+}
 
-const noData = computed(() => !loading.value && items.value.length === 0)
-
-nextTick(loadData)
+const noData = computed(() => {
+  if (selectedYear.value) {
+    return !loading.value && items.value.length === 0
+  }
+  return availableYearsLoaded.value && !selectedYear.value
+})
 </script>
 
 <template>
   <UiIndexPage :data="{ loading, noData }">
     <template #filters>
-      <v-select
-        v-model="filters.year"
-        :items="selectItems(YearLabel)"
-        label="Год"
-        density="comfortable"
+      <AvailableYearsSelector
+        v-model="selectedYear"
+        :client-id="clientId"
+        mode="reports"
+        @loaded="onAvailableYearsLoaded()"
       />
     </template>
     <ReportListForHeadTeachers :items="items" />

@@ -27,11 +27,11 @@ function open(c: TeacherPaymentResource) {
   dialog.value = true
 }
 
-function create(teacherId: number, year: Year) {
+function create(teacherId: number) {
   itemId.value = undefined
   open({
     ...modelDefaults,
-    year,
+    year: currentAcademicYear(),
     teacher_id: teacherId,
   })
   nextTick(() => {

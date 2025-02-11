@@ -1,13 +1,15 @@
 <script setup lang="ts">
-const filters = ref<YearFilters>(loadFilters({
-  year: currentAcademicYear(),
-}))
-
+const filters = ref<AvailableYearsFilter>({ })
+const { user } = useAuthStore()
 const selectedProgram = ref<Program>()
 
-const { items, indexPageData } = useIndex<GroupListResource, YearFilters>(`groups`, filters)
-
-watch(filters.value, () => (selectedProgram.value = undefined))
+const { items, indexPageData } = useIndex<GroupListResource, AvailableYearsFilter>(
+  `groups`,
+  filters,
+  {
+    instantLoad: false,
+  },
+)
 
 const availablePrograms = computed(() => {
   return [...new Set(items.value.map(e => e.program))].map(p => ({
@@ -20,16 +22,19 @@ const filteredItems = computed(() => selectedProgram.value
   ? items.value.filter(e => e.program === selectedProgram.value)
   : items.value,
 )
+
+watch(filters.value, () => {
+  selectedProgram.value = undefined
+})
 </script>
 
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <v-select
+      <AvailableYearsSelector
         v-model="filters.year"
-        label="Учебный год"
-        :items="selectItems(YearLabel)"
-        density="comfortable"
+        :teacher-id="user!.id"
+        mode="groups"
       />
       <UiClearableSelect
         v-model="selectedProgram"

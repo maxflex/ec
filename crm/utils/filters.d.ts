@@ -105,6 +105,10 @@ declare global {
     year: Year
   }
 
+  interface AvailableYearsFilter {
+    year?: Year
+  }
+
   interface LogFilters {
     type?: LogType
     table?: string

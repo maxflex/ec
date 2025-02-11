@@ -3,15 +3,17 @@
 namespace App\Utils;
 
 use App\Models\Grade;
+use App\Models\Group;
 use App\Models\Lesson;
 use App\Models\Report;
+use App\Models\TeacherPayment;
+use App\Models\TeacherService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class AvailableYears
 {
-    /** @var 'reports'|'schedule'|'grades' */
     public string $mode;
 
     private ?int $clientId;
@@ -35,6 +37,22 @@ class AvailableYears
         $years = collect();
 
         switch ($this->mode) {
+            case 'teacher-services':
+                $years = TeacherService::where('teacher_id', $this->teacherId)->distinct()->pluck('year');
+                break;
+
+            case 'teacher-payments':
+                $years = TeacherPayment::where('teacher_id', $this->teacherId)->distinct()->pluck('year');
+                break;
+
+            case 'teacher-balance':
+                $years = $this->forTeacherBalance();
+                break;
+
+            case 'groups':
+                $years = $this->forGroups();
+                break;
+
             case 'reports':
                 $years = $this->forReports();
                 break;
@@ -53,6 +71,28 @@ class AvailableYears
         }
 
         return $years->unique()->sortDesc()->values()->all();
+    }
+
+    private function forTeacherBalance(): Collection
+    {
+        return Lesson::where('teacher_id', $this->teacherId)
+            ->join('groups', 'groups.id', '=', 'lessons.group_id')
+            ->conducted()
+            ->distinct()
+            ->pluck('groups.year');
+    }
+
+    private function forGroups(): Collection
+    {
+        $query = Group::distinct();
+
+        if ($this->clientId) {
+            $query->whereClient($this->clientId);
+        } else {
+            $query->whereTeacher($this->teacherId);
+        }
+
+        return $query->pluck('year');
     }
 
     private function forReports(): Collection
@@ -90,8 +130,9 @@ class AvailableYears
 
     private function forTeacherSchedule(): Collection
     {
-        return Lesson::distinct()
-            ->where('teacher_id', $this->teacherId)
-            ->pluck('year');
+        return Lesson::where('teacher_id', $this->teacherId)
+            ->join('groups', 'groups.id', '=', 'lessons.group_id')
+            ->distinct()
+            ->pluck('groups.year');
     }
 }

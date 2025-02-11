@@ -4,13 +4,10 @@ const { contractId, teacherId } = defineProps<{
   teacherId?: number
 }>()
 
-const tabName = contractId ? 'ContractBalance' : 'TeacherBalance'
-
-const filters = ref<YearFilters>(loadFilters({
-  year: currentAcademicYear(),
-}, tabName))
 const balance = ref<Balance[]>([])
 const loading = ref(true)
+const availableYearsLoaded = ref(false)
+const selectedYear = ref<Year>()
 
 async function loadData() {
   loading.value = true
@@ -18,7 +15,7 @@ async function loadData() {
     `balance`,
     {
       params: {
-        year: teacherId ? filters.value.year : undefined,
+        year: teacherId ? selectedYear.value : undefined,
         teacher_id: teacherId,
         contract_id: contractId,
       },
@@ -32,22 +29,25 @@ async function loadData() {
 
 const noData = computed(() => !loading.value && balance.value.length === 0)
 
-watch(filters, (newVal) => {
-  loadData()
-  saveFilters(newVal, tabName)
-}, { deep: true })
+function onAvailableYearsLoaded() {
+  availableYearsLoaded.value = true
+  if (selectedYear.value) {
+    loadData()
+    watch(selectedYear, loadData)
+  }
+}
 
-nextTick(loadData)
+nextTick(() => contractId && loadData())
 </script>
 
 <template>
   <UiIndexPage :data="{ loading, noData }" :testy="true" class="balance">
     <template v-if="teacherId" #filters>
-      <v-select
-        v-model="filters.year"
-        label="Учебный год"
-        :items="selectItems(YearLabel)"
-        density="comfortable"
+      <AvailableYearsSelector
+        v-model="selectedYear"
+        :teacher-id="teacherId"
+        mode="teacher-balance"
+        @loaded="onAvailableYearsLoaded()"
       />
     </template>
     <div class="table balance-table">

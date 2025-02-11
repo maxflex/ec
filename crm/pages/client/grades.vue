@@ -1,14 +1,9 @@
 <script setup lang="ts">
-interface Filters {
-  year?: Year
-}
 const { user } = useAuthStore()
 const availableYearsLoaded = ref(false)
-const filters = ref<Filters>({
-  year: undefined,
-})
+const filters = ref<AvailableYearsFilter>({ })
 
-const { items, indexPageData } = useIndex<QuartersGradesResource, Filters>(
+const { items, indexPageData } = useIndex<QuartersGradesResource, AvailableYearsFilter>(
   `grades`,
   filters,
   {
@@ -24,7 +19,7 @@ function onAvailableYearsLoaded() {
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <YearSelector v-model="filters.year" mode="grades" :client-id="user!.id" @loaded="onAvailableYearsLoaded()" />
+      <AvailableYearsSelector v-model="filters.year" mode="grades" :client-id="user!.id" @loaded="onAvailableYearsLoaded()" />
     </template>
     <GradeListForClients :items="items" />
   </UiIndexPage>

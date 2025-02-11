@@ -276,10 +276,11 @@ const lessonItemComponent = (function () {
 <template>
   <UiFilters>
     <!-- v-if="!year" на странице группы год передаётся явно, там селектор не нужен -->
-    <YearSelector
+    <AvailableYearsSelector
       v-if="!year"
       v-model="selectedYear"
       :client-id="clientId"
+      :teacher-id="teacherId"
       mode="schedule"
       @loaded="onAvailableYearsLoaded()"
     />

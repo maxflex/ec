@@ -1,21 +1,18 @@
 <script setup lang="ts">
-import { ReportRequirementLabel } from '~/utils/labels'
-
 interface Filters {
-  year: Year
+  year?: undefined
   requirement?: ReportRequirement
 }
-
 const { user } = useAuthStore()
-
-const filters = ref<Filters>(loadFilters({
-  year: currentAcademicYear(),
-}))
+const availableYearsLoaded = ref(false)
+const filters = ref<Filters>({})
+const noData = computed(() => availableYearsLoaded.value && !filters.value.year)
 
 const { items, indexPageData } = useIndex<ReportListResource, Filters>(
   `reports`,
   filters,
   {
+    instantLoad: false,
     staticFilters: {
       teacher_id: user?.id,
       exclude_not_required: 1,
@@ -25,13 +22,13 @@ const { items, indexPageData } = useIndex<ReportListResource, Filters>(
 </script>
 
 <template>
-  <UiIndexPage :data="indexPageData">
+  <UiIndexPage :data="noData ? { noData, loading: false } : indexPageData">
     <template #filters>
-      <v-select
+      <AvailableYearsSelector
         v-model="filters.year"
-        :items="selectItems(YearLabel)"
-        label="Год"
-        density="comfortable"
+        :teacher-id="user!.id"
+        mode="reports"
+        @loaded="availableYearsLoaded = true"
       />
       <UiClearableSelect
         v-model="filters.requirement"

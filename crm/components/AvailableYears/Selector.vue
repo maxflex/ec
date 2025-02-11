@@ -2,7 +2,7 @@
 const { clientId, teacherId, mode } = defineProps<{
   clientId?: number
   teacherId?: number
-  mode: 'reports' | 'schedule' | 'grades'
+  mode: 'reports' | 'schedule' | 'grades' | 'groups' | 'teacher-payments' | 'teacher-balance' | 'teacher-services'
 }>()
 const emit = defineEmits(['loaded'])
 const model = defineModel<Year>()

@@ -3,15 +3,13 @@ import type { TeacherServiceDialog } from '#build/components'
 
 const { teacherId } = defineProps<{ teacherId: number }>()
 const teacherServiceDialog = ref<InstanceType<typeof TeacherServiceDialog>>()
-const tabName = 'TeacherServiceTab'
-const filters = ref<YearFilters>(loadFilters({
-  year: currentAcademicYear(),
-}, tabName))
-const { items, indexPageData } = useIndex<TeacherServiceResource, YearFilters>(
+const filters = ref<AvailableYearsFilter>({ })
+const availableYearsLoaded = ref(false)
+const { items, indexPageData } = useIndex<TeacherServiceResource, AvailableYearsFilter>(
   `teacher-services`,
   filters,
   {
-    tabName,
+    instantLoad: false,
     staticFilters: {
       teacher_id: teacherId,
     },
@@ -28,20 +26,28 @@ function onUpdated(p: TeacherServiceResource) {
   }
   itemUpdated('teacher-services', p.id)
 }
+
+const noData = computed(() => availableYearsLoaded.value && !filters.value.year)
+
+function onAvailableYearsLoaded() {
+  availableYearsLoaded.value = true
+}
 </script>
 
 <template>
-  <UiIndexPage :data="indexPageData">
+  <UiIndexPage :data="availableYearsLoaded && noData ? { noData, loading: false } : indexPageData">
     <template #filters>
-      <v-select
-        v-model="filters.year" :items="selectItems(YearLabel)" label="Год"
-        density="comfortable"
+      <AvailableYearsSelector
+        v-model="filters.year"
+        mode="teacher-services"
+        :teacher-id="teacherId"
+        @loaded="onAvailableYearsLoaded()"
       />
     </template>
     <template #buttons>
       <v-btn
         color="primary"
-        @click="teacherServiceDialog?.create(teacherId, filters.year)"
+        @click="teacherServiceDialog?.create(teacherId)"
       >
         добавить допуслугу
       </v-btn>

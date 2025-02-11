@@ -25,7 +25,7 @@ function onAvailableYearsLoaded() {
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <YearSelector v-model="filters.year" mode="grades" @loaded="onAvailableYearsLoaded()" />
+      <AvailableYearsSelector v-model="filters.year" mode="grades" @loaded="onAvailableYearsLoaded()" />
     </template>
     <GradeListForClients :items="items" />
   </UiIndexPage>
