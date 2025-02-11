@@ -86,7 +86,6 @@ declare global {
   }
 
   interface WebReviewFilters {
-    is_published?: number
     has_exam_score?: number
   }
 

@@ -4,12 +4,6 @@ const model = defineModel<WebReviewFilters>({ required: true })
 
 <template>
   <UiClearableSelect
-    v-model="model.is_published"
-    :items="yesNo()"
-    density="comfortable"
-    label="Опубликован"
-  />
-  <UiClearableSelect
     v-model="model.has_exam_score"
     :items="yesNo()"
     density="comfortable"

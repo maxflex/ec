@@ -1,19 +1,32 @@
 <script setup lang="ts">
-const filters = ref<GradeFilters>(loadFilters({
-  year: currentAcademicYear(),
-}))
+interface Filters {
+  year?: Year
+}
 
-const { items, indexPageData } = useIndex<QuartersGradesResource, GradeFilters>(
+const availableYearsLoaded = ref(false)
+
+const filters = ref<Filters>({
+  year: undefined,
+})
+
+const { items, indexPageData } = useIndex<QuartersGradesResource, Filters>(
   `grades`,
   filters,
+  {
+    instantLoad: false,
+  },
 )
+
+function onAvailableYearsLoaded() {
+  availableYearsLoaded.value = true
+}
 </script>
 
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <GradeFilters v-model="filters" />
+      <YearSelector v-model="filters.year" mode="grades" @loaded="onAvailableYearsLoaded()" />
     </template>
-    <GradeList :items="items" />
+    <GradeListForClients :items="items" />
   </UiIndexPage>
 </template>

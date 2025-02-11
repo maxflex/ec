@@ -12,7 +12,6 @@ const modelDefaults: WebReviewResource = {
   text: '',
   exam_scores: [],
   signature: '',
-  is_published: false,
   rating: 0,
 }
 const item = ref<WebReviewResource>(modelDefaults)
@@ -160,14 +159,6 @@ defineExpose({ edit, create })
             :model-value="formatFullName(item.client)"
             label="Клиент"
             disabled
-          />
-        </div>
-        <div>
-          <v-select
-            v-model="item.is_published" :items="[
-              { value: false, title: 'не опубликован' },
-              { value: true, title: 'опубликован' },
-            ]" label="Публикация"
           />
         </div>
         <div>

@@ -601,7 +601,6 @@ declare global {
     id: number
     client_id: number
     exam_scores: number[]
-    is_published: boolean
     text: string
     signature: string
     rating: number

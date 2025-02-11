@@ -9,11 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class WebReview extends Model
 {
     protected $fillable = [
-        'text', 'signature', 'rating', 'is_published', 'client_id'
-    ];
-
-    protected $casts = [
-        'is_published' => 'bool'
+        'text', 'signature', 'rating', 'client_id',
     ];
 
     public function user(): BelongsTo

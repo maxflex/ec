@@ -26,6 +26,7 @@ const availableTeacherStatuses = [
 const availableAdminStatuses = [
   'refused',
   'published',
+  'empty',
 ] as ReportStatus[]
 
 const availableStatuses = isTeacher ? availableTeacherStatuses : availableAdminStatuses

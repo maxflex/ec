@@ -34,9 +34,7 @@ const { groupId, teacherId, clientId, program, showTeeth, year, programFilter, h
 const selectedProgram = ref<Program>()
 const selectedYear = ref<Year>()
 const hideEmptyDates = ref<number>(1)
-
-const availableYears = ref<Year[]>([])
-
+const availableYearsLoaded = ref(false)
 const { user, isTeacher, isClient } = useAuthStore()
 const isMassEditable = user?.entity_type === EntityTypeValue.user && !!groupId
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
@@ -47,7 +45,6 @@ const params = {
   group_id: groupId,
 }
 const loading = ref(true)
-const yearsLoaded = ref(false)
 const teeth = ref<Teeth>()
 const lessons = ref<LessonListResource[]>([])
 const events = ref<EventListResource[]>([])
@@ -69,6 +66,11 @@ const lessonIds = computed((): number[] => {
   }
   return result
 })
+
+if (year) {
+  selectedYear.value = year
+  loadData()
+}
 
 const filteredLessons = computed(() =>
   selectedProgram.value
@@ -218,37 +220,6 @@ function onBulkUpdated() {
   checkboxes.value = {}
 }
 
-async function loadAvailableYears() {
-  if (selectedYear.value) {
-    return
-  }
-  yearsLoaded.value = false
-  if (clientId || teacherId) {
-    const { data } = await useHttp<Year[]>(
-      `common/years`,
-      {
-        params: {
-          client_id: clientId,
-          teacher_id: teacherId,
-        },
-      },
-    )
-    if (data.value && data.value.length) {
-      availableYears.value = data.value
-      selectedYear.value = data.value[data.value.length - 1]
-    }
-  }
-  else if (year) {
-    availableYears.value = [year]
-    selectedYear.value = year
-  }
-  else {
-    availableYears.value = Object.keys(YearLabel).map(e => Number.parseInt(e) as Year)
-  }
-  yearsLoaded.value = true
-  watch(selectedYear, loadData)
-}
-
 function onMassEditClick(item: LessonListResource) {
   if (!isMassEditable || item.status === 'cancelled' || !lessonIds.value.length) {
     return
@@ -264,6 +235,15 @@ function toggleCheckboxes(id: number) {
     else {
       checkboxes.value[id] = true
     }
+  }
+}
+
+function onAvailableYearsLoaded() {
+  availableYearsLoaded.value = true
+  // подгружаем данные только если есть какой-то год
+  if (selectedYear.value) {
+    loadData()
+    watch(selectedYear, loadData)
   }
 }
 
@@ -291,27 +271,17 @@ const lessonItemComponent = (function () {
   console.log('LessonItemAdminGroup')
   return LessonItemAdminGroup
 })()
-
-nextTick(async () => {
-  await loadAvailableYears()
-  await loadData()
-})
 </script>
 
 <template>
   <UiFilters>
-    <v-select
+    <!-- v-if="!year" на странице группы год передаётся явно, там селектор не нужен -->
+    <YearSelector
+      v-if="!year"
       v-model="selectedYear"
-      :disabled="availableYears.length <= 1"
-      :loading="!yearsLoaded"
-      label="Учебный год"
-      :items="
-        availableYears.map((value) => ({
-          value,
-          title: YearLabel[value],
-        }))
-      "
-      density="comfortable"
+      :client-id="clientId"
+      mode="schedule"
+      @loaded="onAvailableYearsLoaded()"
     />
     <UiClearableSelect
       v-if="programFilter"
@@ -355,7 +325,7 @@ nextTick(async () => {
       </v-fade-transition>
     </template>
   </UiFilters>
-  <UiNoData v-if="yearsLoaded && !selectedYear" />
+  <UiNoData v-if="availableYearsLoaded && !selectedYear" />
   <UiLoader v-else-if="loading" />
   <div v-else class="schedule">
     <div

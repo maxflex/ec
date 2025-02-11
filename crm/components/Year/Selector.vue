@@ -1,38 +1,60 @@
 <script setup lang="ts">
-const { clientId, mode } = defineProps<{
+const { clientId, teacherId, mode } = defineProps<{
   clientId?: number
-  mode: 'reports' | 'schedule'
+  teacherId?: number
+  mode: 'reports' | 'schedule' | 'grades'
 }>()
-
+const emit = defineEmits(['loaded'])
 const model = defineModel<Year>()
-const loaded = ref(false)
+const loading = ref(true)
 const availableYears = ref<Year[]>([])
 
-async function loadYears() {
-  const { data } = await useHttp<Year[]>(
-    `common/years`,
+async function loadAvailableYears() {
+  const { data } = await useHttp<ApiResponse<Year>>(
+    `common/available-years`,
     {
       params: {
         mode,
         client_id: clientId,
+        teacher_id: teacherId,
       },
     },
   )
-  availableYears.value = data.value!
-  loaded.value = true
+  availableYears.value = data.value!.data
+  // если что-то есть, выбираем первый
+  if (availableYears.value.length) {
+    model.value = availableYears.value[0]
+  }
+  loading.value = false
+  emit('loaded')
 }
 
-nextTick(loadYears)
+nextTick(loadAvailableYears)
 </script>
 
 <template>
   <v-select
     v-model="model"
-    :loading="!loaded"
+    :loading="loading"
     :items="availableYears.map(year => ({
       value: year,
-      text: YearLabel[year],
+      title: YearLabel[year],
     }))"
     label="Год"
+    density="comfortable"
+    :disabled="!loading && availableYears.length <= 1"
   />
+  <!-- <v-select
+      v-model="selectedYear"
+      :disabled="availableYears.length <= 1"
+      :loading="!yearsLoaded"
+      label="Учебный год"
+      :items="
+        availableYears.map((value) => ({
+          value,
+          title: YearLabel[value],
+        }))
+      "
+      density="comfortable"
+    /> -->
 </template>

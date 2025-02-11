@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiNumeric5BoxMultiple, mdiWeb } from '@mdi/js'
+import { mdiNumeric5Circle } from '@mdi/js'
 
 const { items } = defineProps<{ items: WebReviewResource[] }>()
 defineEmits<{
@@ -50,19 +50,13 @@ defineEmits<{
         class="text-center"
       >
         <v-icon
-          :class="{ 'opacity-2': !item.is_published }"
-          :icon="mdiWeb"
-          :color="item.is_published ? 'secondary' : 'gray'"
-          class="mr-3"
-        />
-        <v-icon
           v-if="item.exam_scores.length"
-          :icon="mdiNumeric5BoxMultiple"
+          :icon="mdiNumeric5Circle"
           color="secondary"
         />
         <v-icon
           v-else
-          :icon="mdiNumeric5BoxMultiple"
+          :icon="mdiNumeric5Circle"
           class="opacity-2"
           color="gray"
         />

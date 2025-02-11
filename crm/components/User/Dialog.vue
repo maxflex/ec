@@ -134,7 +134,7 @@ defineExpose({ create, edit })
             label="Имя"
           />
         </div>
-        <PhoneEditor v-model="item.phones" />
+        <PhoneEditor v-model="item.phones" :disabled="!!itemId" />
         <div>
           <v-checkbox
             v-model="item.is_active"

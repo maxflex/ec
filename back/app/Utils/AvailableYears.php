@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use App\Models\Grade;
 use App\Models\Lesson;
 use App\Models\Report;
 use Illuminate\Http\Request;
@@ -10,49 +11,64 @@ use Illuminate\Support\Facades\DB;
 
 class AvailableYears
 {
-    /** @var 'reports'|'schedule' */
+    /** @var 'reports'|'schedule'|'grades' */
     public string $mode;
 
-    private int $clientId;
+    private ?int $clientId;
 
-    private int $teacherId;
+    private ?int $teacherId;
 
     public function __construct(Request $request)
     {
-        $this->clientId = $request->client_id;
-        $this->teacherId = $request->teacher_id;
-        $this->mode = $request->mode;
+        $this->clientId = $request->input('client_id');
+        $this->teacherId = $request->input('teacher_id');
+        $this->mode = $request->input('mode');
     }
 
     public static function get(Request $request): array
     {
-        return (new AvailableYears($request))->getData();
+        return (new AvailableYears($request))->handle();
     }
 
-    public function getData(): array
+    public function handle(): array
     {
         $years = collect();
 
-        if ($this->clientId) {
-            switch ($this->mode) {
-                case 'schedule':
-                    $years = $this->forClientSchedule();
-                    break;
+        switch ($this->mode) {
+            case 'reports':
+                $years = $this->forReports();
+                break;
 
-                case 'reports':
-                    $years = $this->forClientReports();
-                    break;
-            }
-        } elseif ($this->teacherId) {
-            switch ($this->mode) {
-                case 'schedule':
+            case 'grades':
+                $years = $this->forGrades();
+                break;
+
+            case 'schedule':
+                if ($this->clientId) {
+                    $years = $this->forClientSchedule();
+                } elseif ($this->teacherId) {
                     $years = $this->forTeacherSchedule();
-                    break;
-                case 'reports':
-            }
+                }
+                break;
         }
 
-        return $years->unique()->sort()->values()->all();
+        return $years->unique()->sortDesc()->values()->all();
+    }
+
+    private function forReports(): Collection
+    {
+        return Report::distinct()
+            ->when($this->clientId, fn ($q) => $q->where('client_id', $this->clientId))
+            ->when($this->teacherId, fn ($q) => $q->where('teacher_id', $this->teacherId))
+            ->pluck('year');
+    }
+
+    private function forGrades(): Collection
+    {
+        return Grade::distinct()
+            ->when($this->clientId, fn ($q) => $q->where('client_id', $this->clientId))
+            ->when($this->teacherId, fn ($q) => $q->where('teacher_id', $this->teacherId))
+            ->pluck('year');
     }
 
     private function forClientSchedule(): Collection
@@ -72,17 +88,10 @@ class AvailableYears
         "))->pluck('year');
     }
 
-    private function forClientReports(): Collection
-    {
-        return Report::where('client_id', $this->clientId)
-            ->distinct()
-            ->pluck('year');
-    }
-
     private function forTeacherSchedule(): Collection
     {
-        return Lesson::where('teacher_id', $this->teacherId)
-            ->distinct()
+        return Lesson::distinct()
+            ->where('teacher_id', $this->teacherId)
             ->pluck('year');
     }
 }

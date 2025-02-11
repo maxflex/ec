@@ -1,6 +1,7 @@
 <script setup lang="ts">
-const { editTelegram } = defineProps<{
+const { editTelegram, disabled } = defineProps<{
   editTelegram?: boolean
+  disabled?: boolean
 }>()
 const model = defineModel<PhoneResource[]>({ default: () => [] })
 const phoneMask = { mask: '+7 (###) ###-##-##' }
@@ -35,11 +36,12 @@ function removePhone(p: PhoneResource) {
         v-model="p.number"
         v-maska:[phoneMask]
         :label="p.telegram_id ? 'Телефон / Телеграм' : 'Телефон'"
+        :disabled="disabled"
         :class="{
           'phone-editor--has-telegram': !!p.telegram_id,
         }"
       />
-      <div class="input-actions">
+      <div v-if="!disabled" class="input-actions">
         <span
           v-if="editTelegram"
           :class="p.is_telegram_disabled ? 'text-error' : 'text-gray'"
@@ -55,9 +57,10 @@ function removePhone(p: PhoneResource) {
     <v-text-field
       v-model="p.comment"
       label="Комментарий"
+      :disabled="disabled"
     />
   </div>
-  <div style="position: relative; top: -10px">
+  <div v-if="!disabled" style="position: relative; top: -10px">
     <a
       class="cursor-pointer"
       @click="addPhone()"
