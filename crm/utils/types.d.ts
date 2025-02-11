@@ -989,7 +989,10 @@ declare global {
     id: number
     exam: Exam
     programs: Program[]
-    dates: string[]
+    dates: {
+      date: string
+      is_reserve: number
+    }[]
   }
 
   type CallState = 'Appeared' | 'Connected' | 'Disconnected'

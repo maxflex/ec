@@ -58,7 +58,7 @@ const lessonBulkCreateDialog = ref<InstanceType<typeof LessonBulkCreateDialog>>(
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 const vacations = ref<Record<string, boolean>>({})
-const examDates = ref<Record<string, boolean>>({})
+const examDates = ref<Record<string, number>>({})
 const checkboxes = ref<{ [key: number]: boolean }>({})
 const lessonIds = computed((): number[] => {
   const result = []
@@ -99,6 +99,7 @@ const dates = computed(() => {
       if (
         filteredLessons.value.some(e => e.date === dateString)
         || events.value.some(e => e.date === dateString)
+        || (dateString in examDates.value)
       ) {
         result.push(dateString)
       }
@@ -191,7 +192,7 @@ async function loadExamDates() {
     examName.value = data.value.data[0].exam
     const { dates } = data.value.data[0]
     for (const date of dates) {
-      examDates.value[date] = true
+      examDates.value[date.date] = date.is_reserve
     }
   }
 }
@@ -373,8 +374,17 @@ nextTick(async () => {
       <div v-if="vacations[d]" class="lesson-item lesson-item__extra lesson-item__extra--vacation">
         Государственный праздник
       </div>
-      <div v-if="examDates[d]" class="lesson-item lesson-item__extra lesson-item__extra--exam-date">
+      <div
+        v-if="d in examDates"
+        class="lesson-item lesson-item__extra lesson-item__extra--exam-date"
+        :class="{
+          'lesson-item__extra--exam-date-reserved': examDates[d] === 1,
+        }"
+      >
         Экзамен ({{ ExamLabel[examName] }})
+        <template v-if="examDates[d] === 1">
+          – резервная дата
+        </template>
       </div>
       <template v-for="item in itemsByDate[d]">
         <EventItem

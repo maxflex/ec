@@ -53,6 +53,9 @@
 
     &--exam-date {
       color: rgb(var(--v-theme-secondary));
+      &-reserved {
+        color: #7b1fa2 !important;
+      }
     }
 
     &--vacation {
