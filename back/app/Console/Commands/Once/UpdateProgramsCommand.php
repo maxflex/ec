@@ -12,10 +12,6 @@ use Illuminate\Support\Facades\Schema;
 
 class UpdateProgramsCommand extends Command
 {
-    protected $signature = 'once:update-programs';
-
-    protected $description = 'Command description';
-
     const TABLES = [
         'groups',
         'client_reviews',
@@ -24,8 +20,13 @@ class UpdateProgramsCommand extends Command
         'reports',
         'grades',
         'scholarship_scores',
-        'contract_version_programs'
+        'contract_version_programs',
+        'web_review_program',
     ];
+
+    protected $signature = 'once:update-programs';
+
+    protected $description = 'Command description';
 
     public function handle(): void
     {
@@ -35,14 +36,14 @@ class UpdateProgramsCommand extends Command
     private function updateReports2()
     {
         $data = [
-            (object)['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
-            (object)['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
-            (object)['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
-            (object)['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
-            (object)['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
-            (object)['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
-            (object)['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
-            (object)['teacher_id' => 20787, 'client_id' => 8109, 'year' => 2023, 'program' => 'mathProfExternal', 'new_program' => 'mathBaseExternal'],
+            (object) ['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
+            (object) ['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
+            (object) ['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
+            (object) ['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
+            (object) ['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
+            (object) ['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
+            (object) ['teacher_id' => 20787, 'client_id' => 6862, 'year' => 2022, 'program' => 'mathProfSchool10', 'new_program' => 'mathBaseSchool10'],
+            (object) ['teacher_id' => 20787, 'client_id' => 8109, 'year' => 2023, 'program' => 'mathProfExternal', 'new_program' => 'mathBaseExternal'],
         ];
 
         $bar = $this->output->createProgressBar(count($data));
@@ -53,7 +54,7 @@ class UpdateProgramsCommand extends Command
                 ->where('year', $d->year)
                 ->where('program', $d->program)
                 ->update([
-                    'program' => $d->new_program
+                    'program' => $d->new_program,
                 ]);
             $bar->advance();
         }
@@ -64,7 +65,7 @@ class UpdateProgramsCommand extends Command
     {
         $data = DB::select("
         with d as (
-select 
+select
 	l.teacher_id, c.client_id, g.year, g.program
 from client_lessons cl
 join `lessons` l on l.id = cl.lesson_id
@@ -72,7 +73,7 @@ join `groups` g on g.id = l.group_id
 join contract_version_programs cvp on cvp.id = cl.contract_version_program_id
 join contract_versions cv on cv.id = cvp.contract_version_id
 join contracts c on c.id = cv.contract_id
-group by 
+group by
 	l.teacher_id, c.client_id, g.year, g.program
 ),
 x as (
@@ -105,7 +106,7 @@ from x;
                 ->where('year', $d->year)
                 ->where('program', $d->program)
                 ->update([
-                    'program' => $d->new_program
+                    'program' => $d->new_program,
                 ]);
             $bar->advance();
         }
@@ -126,13 +127,24 @@ from x;
         foreach ($practicumPrograms as $p) {
             // mathPracticumPract11 => math
             $subject = str($p)->before('Pract')->value();
-            $newProgram = $subject . "Pract";
+            $newProgram = $subject.'Pract';
             $this->updateProgram($p, $newProgram);
         }
 
         // -----
 
         $this->updateProgram('soch10', Program::soch11->value);
+    }
+
+    private function updateProgram(string $oldProgram, string $newProgram)
+    {
+        foreach (self::TABLES as $table) {
+            DB::table($table)
+                ->where('program_new', $oldProgram)
+                ->update([
+                    'program_new' => $newProgram,
+                ]);
+        }
     }
 
     /**
@@ -147,7 +159,7 @@ from x;
                 595, 264, 404, 294, 1501, 1253, 1500, 1499, 1498, 1495, 1494, 1493, 1471, 1470, 1469,
                 1256, 1603, 1533, 1534, 1590, 1604, 1608, 1629, 1630, 1749, 1318, 1496, 1581, 1588, 903,
                 403, 584, 585, 765, 780, 898, 899, 900, 901, 902, 1247, 1109, 1110, 1111, 1112, 1113, 1188,
-                1189, 1244, 1245, 1246, 763, 764, 1181
+                1189, 1244, 1245, 1246, 763, 764, 1181,
             ])
             ->get();
 
@@ -159,7 +171,7 @@ from x;
             $newProgram = $this->getNewProgram($g->program);
 
             DB::table('groups')->whereId($g->id)->update([
-                'program' => $newProgram->value
+                'program' => $newProgram->value,
             ]);
 
             // client_lessons
@@ -181,7 +193,7 @@ from x;
             DB::table('contract_version_programs')
                 ->whereIn('id', $allIds)
                 ->update([
-                    'program' => $newProgram->value
+                    'program' => $newProgram->value,
                 ]);
 
             $bar->advance();
@@ -197,7 +209,6 @@ from x;
 //            ->whereIn('lessons_planned', [96, 32, 44])
             ->get();
 
-
         $this->info("\n\nLeftovers...");
         $bar = $this->output->createProgressBar(count($data));
         foreach ($data as $cvp) {
@@ -206,7 +217,7 @@ from x;
             DB::table('contract_version_programs')
                 ->where('id', $cvp->id)
                 ->update([
-                    'program' => $newProgram->value
+                    'program' => $newProgram->value,
                 ]);
 
             $bar->advance();
@@ -215,24 +226,13 @@ from x;
         $bar->finish();
     }
 
-    private function updateProgram(string $oldProgram, string $newProgram)
-    {
-        foreach (self::TABLES as $table) {
-            DB::table($table)
-                ->where('program_new', $oldProgram)
-                ->update([
-                    'program_new' => $newProgram
-                ]);
-        }
-    }
-
     private function getNewProgram(Program $program): Program
     {
         return match ($program) {
             Program::mathProfSchool10 => Program::mathBaseSchool10,
             Program::mathProfSchool11 => Program::mathBaseSchool11,
             Program::mathProfExternal => Program::mathBaseExternal,
-            default => throw new \Exception("Cannot get new program from " . $program->value)
+            default => throw new \Exception('Cannot get new program from '.$program->value)
         };
     }
 
@@ -253,19 +253,19 @@ from x;
             DB::table($table)
                 ->where('program', 'mathSchool10')
                 ->update([
-                    'program_new' => Program::mathProfSchool10->value
+                    'program_new' => Program::mathProfSchool10->value,
                 ]);
 
             DB::table($table)
                 ->where('program', 'mathSchool11')
                 ->update([
-                    'program_new' => Program::mathProfSchool11->value
+                    'program_new' => Program::mathProfSchool11->value,
                 ]);
 
             DB::table($table)
                 ->where('program', 'mathExternal')
                 ->update([
-                    'program_new' => Program::mathProfExternal->value
+                    'program_new' => Program::mathProfExternal->value,
                 ]);
             // конец обновление значений
 
@@ -276,7 +276,7 @@ from x;
             });
 
             DB::table($table)->update([
-                'program' => DB::raw('program_new')
+                'program' => DB::raw('program_new'),
             ]);
 
             Schema::table($table, function (Blueprint $table) {

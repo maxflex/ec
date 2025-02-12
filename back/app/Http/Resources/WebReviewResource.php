@@ -18,6 +18,7 @@ class WebReviewResource extends JsonResource
     {
         return extract_fields($this, [
             'text', 'signature', 'rating', 'client_id', 'created_at',
+            'programs',
         ], [
             'exam_scores' => $this->examScores->pluck('id'),
             'client' => new PersonResource($this->client),

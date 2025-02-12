@@ -11,7 +11,8 @@ class WebReviewController extends Controller
 {
     protected $filters = [
         'equals' => ['client_id', 'is_published'],
-        'has' => ['has_exam_score'],
+        'program' => ['program'],
+        'has' => ['has_exam_scores'],
     ];
 
     public function index(Request $request)
@@ -21,6 +22,7 @@ class WebReviewController extends Controller
             ->latest();
 
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, WebReviewResource::class);
     }
 
@@ -28,6 +30,7 @@ class WebReviewController extends Controller
     {
         $webReview = auth()->user()->webReviews()->create($request->all());
         $webReview->examScores()->sync($request->exam_scores);
+
         return new WebReviewResource($webReview);
     }
 
@@ -35,6 +38,7 @@ class WebReviewController extends Controller
     {
         $webReview->update($request->all());
         $webReview->examScores()->sync($request->exam_scores);
+
         return new WebReviewResource($webReview);
     }
 
@@ -45,7 +49,20 @@ class WebReviewController extends Controller
 
     public function destroy(WebReview $webReview)
     {
-        $webReview->scores->each->delete();
+        $webReview->examScores->each->delete();
         $webReview->delete();
+    }
+
+    protected function filterProgram(&$query, $programs)
+    {
+        $query->where(function ($q) use ($programs) {
+            foreach ($programs as $program) {
+                $q->orWhereRaw('exists(
+                    select 1 from web_review_program
+                    where web_review_id = web_reviews.id
+                    and program = ?
+                )', [$program]);
+            }
+        });
     }
 }

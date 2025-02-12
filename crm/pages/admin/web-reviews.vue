@@ -2,7 +2,9 @@
 import type { WebReviewDialog } from '#components'
 
 const webReviewDialog = ref<InstanceType<typeof WebReviewDialog>>()
-const filters = ref<WebReviewFilters>(loadFilters({}))
+const filters = ref<WebReviewFilters>(loadFilters({
+  program: [],
+}))
 const { items, indexPageData } = useIndex<WebReviewResource, WebReviewFilters>(
   `web-reviews`,
   filters,

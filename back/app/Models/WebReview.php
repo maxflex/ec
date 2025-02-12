@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Enums\Program;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\DB;
 
 class WebReview extends Model
 {
     protected $fillable = [
         'text', 'signature', 'rating', 'client_id',
+        'programs',
     ];
 
     public function user(): BelongsTo
@@ -25,5 +28,26 @@ class WebReview extends Model
     public function examScores(): BelongsToMany
     {
         return $this->belongsToMany(ExamScore::class);
+    }
+
+    /**
+     * @return Program[]
+     */
+    public function getProgramsAttribute()
+    {
+        return DB::table('web_review_program')
+            ->where('web_review_id', $this->id)
+            ->pluck('program')
+            ->map(fn ($program) => Program::from($program))
+            ->all();
+    }
+
+    public function setProgramsAttribute(array $programs)
+    {
+        DB::table('web_review_program')->where('web_review_id', $this->id)->delete();
+        DB::table('web_review_program')->insert(collect($programs)->map(fn ($program) => [
+            'web_review_id' => $this->id,
+            'program' => $program,
+        ])->all());
     }
 }

@@ -86,7 +86,8 @@ declare global {
   }
 
   interface WebReviewFilters {
-    has_exam_score?: number
+    has_exam_scores?: number
+    program: Program[]
   }
 
   interface ContractVersionFilters {

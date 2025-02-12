@@ -11,6 +11,7 @@ const modelDefaults: WebReviewResource = {
   client_id: newId(),
   text: '',
   exam_scores: [],
+  programs: [],
   signature: '',
   rating: 0,
 }
@@ -174,6 +175,13 @@ defineExpose({ edit, create })
             no-resize
             auto-grow
             label="Текст отзыва"
+          />
+        </div>
+        <div>
+          <UiMultipleSelect
+            v-model="item.programs"
+            :items="selectItems(ProgramLabel)"
+            label="Программы"
           />
         </div>
 

@@ -604,6 +604,7 @@ declare global {
     text: string
     signature: string
     rating: number
+    programs: Program[]
     client?: PersonResource
     user?: PersonResource
     created_at?: string

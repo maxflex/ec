@@ -119,6 +119,9 @@ export const TelegramTemplateLabel = {
   reportPublished: 'отчёт отправлен',
   reportRead: 'отчёт прочитан',
   clientLessonStatus: 'опоздал/не пришёл',
+  teacherConductMissing: 'занятие не проведено',
+  paymentReminder: 'напоминание об оплате',
+  unplannedOrCancelled: 'изменения в расписании',
 }
 
 export const ProgramShortLabel = {
