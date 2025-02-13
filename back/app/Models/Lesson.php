@@ -36,6 +36,7 @@ class Lesson extends Model
      */
     public static function withSequenceNumber(Collection $lessons)
     {
+        $result = [];
         foreach ($lessons->groupBy('group.program') as $programLessons) {
             $seq = 1;
             foreach ($programLessons->sortBy(['date', 'time'])->values()->all() as $lesson) {
@@ -43,11 +44,12 @@ class Lesson extends Model
                     continue;
                 }
                 $lesson->setAttribute('seq', $seq);
+                $result[] = $lesson;
                 $seq++;
             }
         }
 
-        return paginate(LessonListResource::collection($lessons));
+        return paginate(LessonListResource::collection($result));
     }
 
     public function teacher(): BelongsTo

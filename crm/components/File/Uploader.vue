@@ -72,16 +72,17 @@ function onFileSelected(e: Event) {
       {
         method: 'post',
         body: formData,
+        onResponse: ({ response }) => {
+          if (response.ok) {
+            newFile.url = response._data
+          }
+          else {
+            showGlobalMessage(`Файл ${newFile.name} слишком большой (${formatFileSize(newFile)}). Максимально допустимый размер 20 Мб`, 'error')
+            removeFile(newFile)
+          }
+        },
       },
-    ).then(({ data, error }) => {
-      if (error.value) {
-        showGlobalMessage(`Файл ${newFile.name} слишком большой (${formatFileSize(newFile)}). Максимально допустимый размер 20 Мб`, 'error')
-        removeFile(newFile)
-      }
-      if (data.value) {
-        newFile.url = data.value
-      }
-    })
+    )
   }
 
   // Reset input value to allow re-uploading the same file

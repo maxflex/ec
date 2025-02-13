@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Common;
 
 use App\Enums\LogType;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\{SubmitPhoneRequest, VerifyCodeRequest};
-use App\Http\Resources\{AuthResource, PhoneResource};
-use App\Models\{Log, Phone};
-use App\Utils\{Session, VerificationService};
+use App\Http\Requests\SubmitPhoneRequest;
+use App\Http\Requests\VerifyCodeRequest;
+use App\Http\Resources\AuthResource;
+use App\Http\Resources\PhoneResource;
+use App\Models\Log;
+use App\Models\Phone;
+use App\Utils\Session;
+use App\Utils\VerificationService;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -21,6 +25,7 @@ class AuthController extends Controller
         if ($phone->telegram_id) {
             VerificationService::sendCode($phone);
         }
+
         return [
             'user' => new AuthResource($phone->entity),
             'phone' => new PhoneResource($phone),
@@ -36,20 +41,11 @@ class AuthController extends Controller
         $phone = Phone::find($request->phone_id);
         $token = Session::logIn($phone);
         $this->logSuccess($phone);
+
         return [
             'user' => new AuthResource($phone->entity),
             'token' => $token,
         ];
-    }
-
-    public function user()
-    {
-        return new AuthResource(auth()->user());
-    }
-
-    public function logout(Request $request)
-    {
-        Session::logout($request->bearerToken());
     }
 
     private function logSuccess(Phone $phone)
@@ -63,5 +59,15 @@ class AuthController extends Controller
                 'ua' => $_SERVER['HTTP_USER_AGENT'],
             ],
         ]);
+    }
+
+    public function user()
+    {
+        return new AuthResource(auth()->user());
+    }
+
+    public function logout(Request $request)
+    {
+        Session::logout($request->bearerToken());
     }
 }

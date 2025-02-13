@@ -11,12 +11,31 @@ class Phone extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'number', 'comment', 'telegram_id', 'is_telegram_disabled'
+        'number', 'comment', 'telegram_id', 'is_telegram_disabled',
     ];
 
     protected $casts = [
-        'is_telegram_disabled' => 'bool'
+        'is_telegram_disabled' => 'bool',
     ];
+
+    public static function auth($number): ?Phone
+    {
+        $candidates = Phone::query()
+            ->whereIn('entity_type', [
+                User::class,
+                Client::class,
+                ClientParent::class,
+                Teacher::class,
+            ])
+            ->whereNumber($number)
+            ->get()
+            ->filter(
+                fn ($phone) => $phone->entity_type::whereId($phone->entity_id)->canLogin()->exists()
+            );
+
+        // должен быть в итоге единственный кандидат к логину
+        return $candidates->count() === 1 ? $candidates->first() : null;
+    }
 
     public function entity(): MorphTo
     {
@@ -31,29 +50,5 @@ class Phone extends Model
     public function scopeWithTelegram($query)
     {
         return $query->whereNotNull('telegram_id');
-    }
-
-    public static function auth($number): ?Phone
-    {
-        $candidates = Phone::query()
-            ->whereIn('entity_type', [
-                User::class,
-                Client::class,
-                ClientParent::class,
-                Teacher::class,
-            ])
-            ->whereNumber($number)
-            ->get()
-            ->filter(
-                fn($phone) => $phone->entity_type::whereId($phone->entity_id)->canLogin()->exists()
-            );
-
-        // должен быть в итоге единственный кандидат к логину
-        return $candidates->count() === 1 ? $candidates->first() : null;
-    }
-
-    public static function booted()
-    {
-        static::saving(fn ($phone) => $phone->number = UtilsPhone::clean($phone->number));
     }
 }

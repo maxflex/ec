@@ -7,6 +7,7 @@ use App\Models\ClientPayment;
 use App\Models\ContractPayment;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 
 function extract_fields($object, $fields, $merge = []): ?array
 {
@@ -31,18 +32,20 @@ function extract_fields($object, $fields, $merge = []): ?array
             $return[$field] = $object->{$field};
         }
     }
+
     return array_merge($return, $merge);
 }
 
-function extract_fields_array(array | Collection $items, $fields, $merge = []): array
+function extract_fields_array(array|Collection $items, $fields, $merge = []): array
 {
-    if (!$items instanceof Collection) {
+    if (! $items instanceof Collection) {
         $items = collect($items);
     }
+
     return $items->map(fn ($e) => extract_fields($e, $fields, $merge))->all();
 }
 
-function key_by($data, string $field, string $field2 = null, $value = null): array
+function key_by($data, string $field, ?string $field2 = null, $value = null): array
 {
     $result = [];
     if ($field2 === null) {
@@ -68,6 +71,7 @@ function key_by($data, string $field, string $field2 = null, $value = null): arr
             }
         }
     }
+
     return $result;
 }
 
@@ -93,7 +97,7 @@ function get_max_pko_number(Company $company, string $date)
         ->max('pko_number'));
 
     $contractPaymentsMaxPko = intval(ContractPayment::query()
-        ->whereHas('contract', fn($q) => $q->where('company', $company))
+        ->whereHas('contract', fn ($q) => $q->where('company', $company))
         ->where('method', ContractPaymentMethod::cash)
         ->where('is_return', false)
         ->whereRaw('YEAR(`date`) = ?', [$year])
@@ -106,13 +110,14 @@ function get_max_pko_number(Company $company, string $date)
  * Получить академический год по дате
  * Новый академический год начинается с 1 сентября
  *
- * @param string $date Дата в формате 'Y-m-d'
+ * @param  string  $date  Дата в формате 'Y-m-d'
  * @return int Академический год
  */
 function get_academic_year(string $date): int
 {
-    $year = (int)date('Y', strtotime($date));
-    $month = (int)date('m', strtotime($date));
+    $year = (int) date('Y', strtotime($date));
+    $month = (int) date('m', strtotime($date));
+
     return ($month >= 9) ? $year : $year - 1;
 }
 
@@ -138,7 +143,7 @@ function format_date(string $date, string $format = 'd.m.Y'): string
 
 function num_to_text(int $number)
 {
-    return (new NumberFormatter("ru", NumberFormatter::SPELLOUT))->format($number);
+    return (new NumberFormatter('ru', NumberFormatter::SPELLOUT))->format($number);
 }
 
 function paginate($data, $extra = null)
@@ -148,8 +153,8 @@ function paginate($data, $extra = null)
         'meta' => [
             'current_page' => 1,
             'last_page' => 1,
-            'total' => count($data)
-        ]
+            'total' => count($data),
+        ],
     ];
 
     if ($extra) {
@@ -163,7 +168,21 @@ function get_preview_user(): ?User
 {
     if (request()->hasHeader('Preview')) {
         $user = \App\Utils\Session::get(request()->header('Preview'));
+
         return $user instanceof User ? $user : null;
     }
+
     return null;
+}
+
+function save_csv(Collection $csv): string
+{
+    $file = $csv
+        ->map(fn ($row) => implode("\t", $row))
+        ->join("\n");
+
+    $filename = uniqid().'.csv';
+    Storage::put("crm/other/$filename", $file);
+
+    return cdn('other', $filename);
 }

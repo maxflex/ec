@@ -19,15 +19,23 @@ defineEmits<{
       <div style="width: 300px">
         {{ ExamLabel[item.exam] }}
       </div>
-      <div style="width: 300px">
+      <div style="width: 400px">
         {{ item.programs.map(e => ProgramShortLabel[e]).join(', ') }}
       </div>
-      <div>
-        <span v-if="item.dates.length === 0" class="text-gray">
+      <div style="width: 150px">
+        <span v-if="item.dates.filter(e => e.is_reserve === 0).length === 0" class="text-gray">
           не установлено
         </span>
-        <span v-else>
-          {{ plural(item.dates.length, ['дата', 'даты', 'дат']) }}
+        <span v-else class="text-deepOrange">
+          {{ plural(item.dates.filter(e => e.is_reserve === 0).length, ['дата', 'даты', 'дат']) }}
+        </span>
+      </div>
+      <div>
+        <span v-if="item.dates.filter(e => e.is_reserve === 1).length === 0" class="text-gray">
+          не установлено
+        </span>
+        <span v-else class="text-purple">
+          {{ plural(item.dates.filter(e => e.is_reserve === 1).length, ['дата', 'даты', 'дат']) }}
         </span>
       </div>
     </div>
