@@ -7,6 +7,7 @@ use App\Utils\Phone as UtilsPhone;
 
 class PhoneObserver
 {
+    // TODO: отправить телеграм
     // public function updated(Phone $phone): void
     // {
     //     if ($phone->isDirty('telegram_id')) {

@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Observers\PhoneObserver;
 use App\Utils\Phone as UtilsPhone;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+#[ObservedBy(PhoneObserver::class)]
 class Phone extends Model
 {
     public $timestamps = false;
