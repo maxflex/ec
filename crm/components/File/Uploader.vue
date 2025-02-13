@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { mdiDownload } from '@mdi/js'
-import { formatFileSize } from '~/utils'
 
 const { folder } = defineProps<{
   folder: 'lessons' | 'tests'
 }>()
+const { showGlobalMessage } = useGlobalMessage()
 
-const fileInput = ref()
+const fileInput = ref<HTMLInputElement>()
 
 const model = defineModel<null | UploadedFile | UploadedFile[]>({ required: true })
 
 function selectFile() {
-  fileInput.value.click()
+  fileInput.value?.click()
 }
 
 function removeFile(file: UploadedFile) {
@@ -24,35 +24,68 @@ function removeFile(file: UploadedFile) {
   }
 }
 
-async function onFileSelected(e: Event) {
+/**
+ * Ensures the filename is correctly encoded in UTF-8
+ */
+function fixFileNameEncoding(name: string): string {
+  try {
+    // Convert to bytes and back to UTF-8 to fix potential misinterpretation
+    const bytes = new TextEncoder().encode(name)
+    const decoded = new TextDecoder('utf-8').decode(bytes)
+
+    // Normalize Unicode to NFC (fixes issues with different encodings of diacritics)
+    return decoded.normalize('NFC')
+  }
+  catch {
+    return name // Fallback in case of an error
+  }
+}
+
+function onFileSelected(e: Event) {
   const target = e.target as HTMLInputElement
   if (!target.files?.length) {
     return
   }
-  const formData = new FormData()
-  const file = target.files[0]
-  formData.append('file', file)
-  formData.append('folder', folder)
-  const newFile = reactive<UploadedFile>({
-    name: file.name,
-    size: file.size,
-  })
-  if (Array.isArray(model.value)) {
-    model.value.push(newFile)
+
+  const files = Array.from(target.files)
+
+  for (const file of files) {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('folder', folder)
+
+    const newFile = reactive<UploadedFile>({
+      name: fixFileNameEncoding(file.name),
+      size: file.size,
+      url: '',
+    })
+
+    if (Array.isArray(model.value)) {
+      model.value.push(newFile)
+    }
+    else {
+      model.value = newFile
+    }
+
+    useHttp<string>(
+      `common/files`,
+      {
+        method: 'post',
+        body: formData,
+      },
+    ).then(({ data, error }) => {
+      if (error.value) {
+        showGlobalMessage(`Файл ${newFile.name} слишком большой (${formatFileSize(newFile)}). Максимально допустимый размер 20 Мб`, 'error')
+        removeFile(newFile)
+      }
+      if (data.value) {
+        newFile.url = data.value
+      }
+    })
   }
-  else {
-    model.value = newFile
-  }
-  const { data } = await useHttp<string>(
-    `common/files`,
-    {
-      method: 'post',
-      body: formData,
-    },
-  )
-  if (data.value) {
-    newFile.url = data.value
-  }
+
+  // Reset input value to allow re-uploading the same file
+  target.value = ''
 }
 </script>
 
@@ -87,13 +120,19 @@ async function onFileSelected(e: Event) {
     </template>
     <div v-if="model === null || Array.isArray(model)" class="mt-2">
       <UiIconLink icon="$file" prepend @click="selectFile()">
-        прикрепить файл
+        <template v-if="Array.isArray(model)">
+          прикрепить файлы
+        </template>
+        <template v-else>
+          прикрепить файл
+        </template>
       </UiIconLink>
     </div>
     <input
       ref="fileInput"
       style="display: none"
       type="file"
+      :multiple="Array.isArray(model)"
       :accept="folder === 'tests' ? 'application/pdf' : undefined"
       @change="onFileSelected"
     >

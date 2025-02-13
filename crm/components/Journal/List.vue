@@ -99,6 +99,7 @@ const { items } = defineProps<{
     vertical-align: top;
   }
   .file-item {
+    max-width: 500px;
     .v-icon {
       font-size: 32px !important;
     }
