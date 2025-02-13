@@ -1,7 +1,9 @@
 <script setup lang="ts">
 const { clientId } = defineProps<{ clientId: number }>()
 
+const availableYearsLoaded = ref(false)
 const filters = ref<AvailableYearsFilter>({})
+const noData = computed(() => availableYearsLoaded.value && !filters.value.year)
 const { items, indexPageData } = useIndex<GroupListResource, AvailableYearsFilter>(
   `groups`,
   filters,
@@ -15,12 +17,13 @@ const { items, indexPageData } = useIndex<GroupListResource, AvailableYearsFilte
 </script>
 
 <template>
-  <UiIndexPage :data="indexPageData">
+  <UiIndexPage :data="availableYearsLoaded && noData ? { noData, loading: false } : indexPageData">
     <template #filters>
       <AvailableYearsSelector
         v-model="filters.year"
         :client-id="clientId"
         mode="groups"
+        @loaded="availableYearsLoaded = true"
       />
     </template>
     <GroupTeacherList :items="items" />

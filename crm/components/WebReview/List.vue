@@ -34,16 +34,16 @@ defineEmits<{
         </NuxtLink>
       </div>
       <div
-        style="width: 200px"
-        class="text-truncate"
-      >
-        {{ item.signature }}
-      </div>
-      <div
         style="flex: 1"
         class="text-truncate"
       >
         {{ item.text }}
+      </div>
+      <div
+        style="width: 200px"
+        class="text-truncate"
+      >
+        {{ item.signature }}
       </div>
       <div
         style="width: 100px"
