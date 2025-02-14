@@ -11,7 +11,10 @@ use Illuminate\Http\Request;
 class ClientReviewController extends Controller
 {
     protected $filters = [
-        'equals' => ['client_id', 'teacher_id', 'rating', 'program'],
+        'equals' => [
+            'client_id', 'teacher_id', 'rating', 'program',
+        ],
+        'isWebReviewCreate' => ['is_web_review_create'],
         'type' => ['type'],
     ];
 
@@ -46,5 +49,10 @@ class ClientReviewController extends Controller
     protected function filterType(&$query, $type)
     {
         $type ? $query->whereNotNull('id') : $query->whereNull('id');
+    }
+
+    protected function filterIsWebReviewCreate(&$query, $value)
+    {
+        $query->having('is_web_review_create', $value);
     }
 }

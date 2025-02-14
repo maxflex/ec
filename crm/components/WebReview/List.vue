@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiNumeric5Circle } from '@mdi/js'
+import { mdiNumeric5Circle, mdiWeb } from '@mdi/js'
 
 const { items } = defineProps<{ items: WebReviewResource[] }>()
 defineEmits<{
@@ -46,7 +46,7 @@ defineEmits<{
         {{ item.signature }}
       </div>
       <div
-        style="width: 100px"
+        style="width: 30px"
         class="text-center"
       >
         <v-icon
@@ -55,11 +55,14 @@ defineEmits<{
           color="secondary"
         />
         <v-icon
-          v-else
+          v-else-if="item.has_available_exam_scores"
           :icon="mdiNumeric5Circle"
           class="opacity-2"
           color="gray"
         />
+      </div>
+      <div style="width: 30px">
+        <v-icon :icon="mdiWeb" :class="item.is_published ? 'text-secondary' : 'opacity-2 text-gray'" />
       </div>
       <div
         style="width: 100px; flex: initial !important"

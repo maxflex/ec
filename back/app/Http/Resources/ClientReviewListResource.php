@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\ClientReview;
+use App\Models\ExamScore;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -24,7 +25,9 @@ class ClientReviewListResource extends JsonResource
         if ($this->id) {
             return extract_fields($this, [
                 'program', 'rating', 'created_at', 'lessons_count', 'text',
+                'is_web_review_create',
             ], [
+                'has_exam_scores' => ExamScore::where('client_id', $this->client_id)->exists(),
                 'years' => $years,
                 'teacher' => new PersonResource($this->teacher),
                 'client' => new PersonResource($this->client),
@@ -33,7 +36,7 @@ class ClientReviewListResource extends JsonResource
 
         // fake
         return extract_fields($this, [
-            'program', 'lessons_count',
+            'program', 'lessons_count', 'is_web_review_create',
         ], [
             'id' => uniqid(),
             'years' => $years,

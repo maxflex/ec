@@ -161,10 +161,16 @@ defineExpose({ open })
           </div>
         </div>
         <template v-if="isTeacher">
+          <div v-if="!item.topic">
+            <v-alert type="error" variant="outlined">
+              Тема урока не указана. Чтобы провести занятие, необходимо добавить тему урока.
+            </v-alert>
+          </div>
+
           <v-btn v-if="isConducted" color="primary" :loading="saving" width="300" @click="save()">
             сохранить
           </v-btn>
-          <v-btn v-else color="primary" :loading="saving" width="300" @click="conduct()">
+          <v-btn v-else color="primary" :loading="saving" width="300" :disabled="!item.topic" @click="conduct()">
             провести занятие
           </v-btn>
         </template>

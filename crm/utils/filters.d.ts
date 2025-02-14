@@ -68,6 +68,7 @@ declare global {
     program?: Program
     teacher_id?: number
     rating?: number
+    is_web_review_create?: number
   }
 
   interface ReportTeacherFilters {
@@ -86,8 +87,8 @@ declare global {
   }
 
   interface WebReviewFilters {
-    has_exam_scores?: number
     program: Program[]
+    exam_scores?: keyof typeof WebReviewExamScoreFilterLabel
   }
 
   interface ContractVersionFilters {

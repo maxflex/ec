@@ -1,5 +1,16 @@
 <script lang="ts" setup>
-const model = defineModel<TopicFilters>({ required: true })
+const StatusLabel = {
+  noTopic: 'тема не установлена',
+  notVerified: 'тема не подтверждена',
+  verified: 'тема подтверждена',
+} as const
+
+export interface Filters {
+  year: Year
+  status?: keyof typeof StatusLabel
+}
+
+const model = defineModel<Filters>({ required: true })
 </script>
 
 <template>
@@ -10,9 +21,9 @@ const model = defineModel<TopicFilters>({ required: true })
     density="comfortable"
   />
   <UiClearableSelect
-    v-model="model.is_topic_verified"
-    :items="yesNo()"
-    label="Тема подтверждена"
+    v-model="model.status"
+    :items="selectItems(StatusLabel)"
+    label="Статус"
     density="comfortable"
   />
 </template>

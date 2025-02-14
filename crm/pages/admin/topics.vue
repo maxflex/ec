@@ -1,8 +1,10 @@
 <script setup lang="ts">
-const filters = ref<TopicFilters>(loadFilters({
+import type { Filters } from '~/components/Topic/Filters.vue'
+
+const filters = ref<Filters>(loadFilters({
   year: currentAcademicYear(),
 }))
-const { items, indexPageData } = useIndex<TopicListResource, TopicFilters>(`topics`, filters)
+const { items, indexPageData } = useIndex<TopicListResource, Filters>(`topics`, filters)
 </script>
 
 <template>

@@ -488,6 +488,7 @@ declare global {
 
   interface LessonConductResource {
     id: number
+    topic: ?string
     status: LessonStatus
     conducted_at: ?string
     // внимание: client_lesson или client_group, но структура одинаковая
@@ -574,7 +575,9 @@ declare global {
     program: Program
     teacher: PersonResource
     client: PersonResource
+    is_web_review_create: boolean
     created_at: string
+    has_exam_scores: boolean
   }
 
   interface FakeClientReview {
@@ -583,6 +586,7 @@ declare global {
     years: Year[]
     program: Program
     teacher: PersonResource
+    is_web_review_create: boolean
     client: PersonResource
   }
 
@@ -610,6 +614,8 @@ declare global {
     client?: PersonResource
     user?: PersonResource
     created_at?: string
+    has_available_exam_scores: boolean
+    is_published: boolean
   }
 
   interface StatsListResource {
@@ -812,7 +818,7 @@ declare global {
     id: number
     teacher: PersonResource
     is_topic_verified: boolean
-    topic: string
+    topic: ?string
     date: string
     time: string
   }

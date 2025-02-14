@@ -12,7 +12,7 @@ class WebReviewController extends Controller
     protected $filters = [
         'equals' => ['client_id', 'is_published'],
         'program' => ['program'],
-        'has' => ['has_exam_scores'],
+        'examScores' => ['exam_scores'],
     ];
 
     public function index(Request $request)
@@ -64,5 +64,39 @@ class WebReviewController extends Controller
                 )', [$program]);
             }
         });
+    }
+
+    protected function filterExamScores(&$query, $status)
+    {
+        switch ($status) {
+            case 'notExists':
+                // нет доступных оценок к выбору
+                $query->whereRaw('NOT EXISTS (
+                    select 1 from exam_scores es
+                    where web_reviews.client_id = es.client_id and not exists (
+                        select 1 from exam_score_web_review es_wr
+                        where es_wr.exam_score_id = es.id
+                        and es_wr.web_review_id <> web_reviews.id
+                    )
+                )');
+                break;
+
+            case 'existsNotSelected':
+                // есть доступные к выбору, но ничего не выбрано
+                $query->whereDoesntHave('examScores')->whereRaw('EXISTS (
+                    select 1 from exam_scores es
+                    where web_reviews.client_id = es.client_id
+                    and not exists (
+                        select 1 from exam_score_web_review es_wr
+                        where es_wr.exam_score_id = es.id
+                    )
+                )');
+                break;
+
+            case 'existsSelected':
+                // есть выбранные
+                $query->whereHas('examScores');
+                break;
+        }
     }
 }

@@ -5,8 +5,14 @@ const model = defineModel<ClientReviewFilters>({ required: true })
 <template>
   <UiClearableSelect
     v-model="model.type"
-    label="Тип"
+    label="Требование отзыва"
     :items="yesNo('созданные', 'требуется создание')"
+    density="comfortable"
+  />
+  <UiClearableSelect
+    v-model="model.is_web_review_create"
+    label="Отзыв на сайте"
+    :items="yesNo('можно создать', 'есть созданные')"
     density="comfortable"
   />
   <UiClearableSelect

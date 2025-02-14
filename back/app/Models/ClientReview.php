@@ -42,7 +42,8 @@ class ClientReview extends Model
                 NULL AS `created_at`,
                 NULL AS `text`,
                 GROUP_CONCAT(DISTINCT g.year) as `years`,
-                COUNT(DISTINCT cl.id) as `lessons_count`
+                COUNT(DISTINCT cl.id) as `lessons_count`,
+                0 as `is_web_review_create`
             ')
             ->where('l.status', LessonStatus::conducted->value)
             ->whereNull('cr.id')
@@ -100,7 +101,11 @@ class ClientReview extends Model
                 client_reviews.created_at,
                 client_reviews.text,
                 cte.years,
-                cte.lessons_count
+                cte.lessons_count,
+                not exists (
+                    select 1 from `web_reviews` wr
+                    where wr.client_id = client_reviews.client_id
+                ) as `is_web_review_create`
         ');
     }
 }

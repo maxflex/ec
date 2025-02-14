@@ -643,3 +643,9 @@ export const ReportRequirementLabel = {
   required: 'требуется отчёт',
   notRequired: 'пока не требуется',
 } as const
+
+export const WebReviewExamScoreFilterLabel = {
+  notExists: 'нет доступных оценок',
+  existsNotSelected: 'есть доступные + ничего не выбрано',
+  existsSelected: 'есть доступные + есть выбранные',
+}

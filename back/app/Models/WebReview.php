@@ -20,14 +20,27 @@ class WebReview extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function examScores(): BelongsToMany
+    {
+        return $this->belongsToMany(ExamScore::class);
+    }
+
+    public function getIsPublishedAttribute(): bool
+    {
+        return $this->client->photo !== null;
+    }
+
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
     }
 
-    public function examScores(): BelongsToMany
+    public function scopePublished($query)
     {
-        return $this->belongsToMany(ExamScore::class);
+        $query
+            ->whereNotNull('text')
+            ->whereNotNull('signature')
+            ->whereHas('client.photo');
     }
 
     /**

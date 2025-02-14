@@ -25,8 +25,8 @@ class LessonConductResource extends JsonResource
             // если урок не проведён, берём из clientGroups
             default => $this->group->clientGroups()
                 ->get()
-                ->map(fn($cg) => extract_fields($cg, [
-                    'contract_version_program_id'
+                ->map(fn ($cg) => extract_fields($cg, [
+                    'contract_version_program_id',
                 ], [
                     'client' => new PersonWithPhotoResource(
                         $cg->contractVersionProgram->contractVersion->contract->client
@@ -35,14 +35,14 @@ class LessonConductResource extends JsonResource
                     'is_remote' => false,
                     'minutes_late' => 10,
                     'comment' => null,
-                    'scores' => []
+                    'scores' => [],
                 ]))
         };
 
         return extract_fields($this, [
-            'status', 'conducted_at'
+            'status', 'conducted_at', 'topic',
         ], [
-            'students' => $students
+            'students' => $students,
         ]);
     }
 }

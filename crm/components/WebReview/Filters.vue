@@ -10,9 +10,9 @@ const model = defineModel<WebReviewFilters>({ required: true })
     density="comfortable"
   />
   <UiClearableSelect
-    v-model="model.has_exam_scores"
-    :items="yesNo()"
+    v-model="model.exam_scores"
+    :items="selectItems(WebReviewExamScoreFilterLabel)"
     density="comfortable"
-    label="Присвоен к оценке"
+    label="Оценка"
   />
 </template>

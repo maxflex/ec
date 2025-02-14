@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ClientReviewDialog } from '#build/components'
+import { mdiNumeric5Circle, mdiTextBoxOutline, mdiWebPlus } from '@mdi/js'
 
 const props = defineProps<{
   items: ClientReviewListResource[]
@@ -44,14 +45,14 @@ function onDeleted(r: ClientReviewResource) {
       <div v-if="!isTeacher" style="width: 150px">
         <UiPerson :item="r.teacher" />
       </div>
-      <div style="width: 150px">
+      <div style="width: 170px">
         <UiPerson :item="r.client" />
       </div>
       <div style="width: 100px">
         {{ ProgramShortLabel[r.program] }}
       </div>
-      <div style="width: 170px">
-        прошло занятий: {{ r.lessons_count }}
+      <div style="width: 100px">
+        занятий: {{ r.lessons_count }}
       </div>
       <div style="width: 140px">
         <div v-for="year in r.years" :key="year">
@@ -67,13 +68,19 @@ function onDeleted(r: ClientReviewResource) {
             @click="clientReviewDialog?.edit(r.id)"
           />
         </div>
-        <div style="width: 150px">
-          {{ filterTruncate(r.text, 15) }}
+        <div style="flex: 1">
+          {{ filterTruncate(r.text, 10) }}
         </div>
         <div class="text-gray" style="width: 100px">
           {{ formatDate(r.created_at) }}
         </div>
-        <div style="justify-content: flex-end;" class="d-flex">
+        <div style="width: 30px">
+          <v-icon v-if="r.is_web_review_create" :icon="mdiWebPlus" class="text-gray" />
+        </div>
+        <div style="width: 30px">
+          <v-icon v-if="r.has_exam_scores" :icon="mdiNumeric5Circle" class="text-gray" />
+        </div>
+        <div style="width: 106px; flex: initial" class="d-flex">
           <UiRating v-model="r.rating" />
         </div>
       </template>

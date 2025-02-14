@@ -38,11 +38,17 @@ function onUpdated(item: TopicListResource) {
           {{ formatNameInitials(l.teacher) }}
         </nuxtlink>
       </div>
-      <div style="flex: 1" class="text-truncate">
-        {{ l.topic }}
+      <div style="flex: 1" class="text-truncate pr-10">
+        <span v-if="l.topic">
+          {{ l.topic }}
+        </span>
+        <span v-else class="text-error">
+          тема не установлена
+        </span>
       </div>
-      <div style="width: 100px; flex: initial">
+      <div style="width: 30px; flex: initial">
         <v-icon
+          v-if="l.topic"
           :class="{
             'opacity-2': !l.is_topic_verified,
           }"
