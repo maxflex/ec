@@ -18,21 +18,25 @@ class ClientReviewListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $years = array_map('intval', explode(',', $this->years));
+
         // real
         if ($this->id) {
             return extract_fields($this, [
-                'program', 'rating', 'created_at', 'lessons_count',
-                'text'
+                'program', 'rating', 'created_at', 'lessons_count', 'text',
             ], [
+                'years' => $years,
                 'teacher' => new PersonResource($this->teacher),
                 'client' => new PersonResource($this->client),
             ]);
         }
+
         // fake
         return extract_fields($this, [
             'program', 'lessons_count',
         ], [
             'id' => uniqid(),
+            'years' => $years,
             'teacher' => new PersonResource($this->teacher),
             'client' => new PersonResource($this->client),
         ]);

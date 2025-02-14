@@ -13,7 +13,7 @@ class PassController extends Controller
 {
     protected $filters = [
         'equals' => ['request_id', 'type'],
-        'status' => ['status']
+        'status' => ['status'],
     ];
 
     protected $statsFilters = [
@@ -29,8 +29,9 @@ class PassController extends Controller
 
     public function index(Request $request)
     {
-        $query = Pass::orderBy('date', 'desc')->latest();
+        $query = Pass::orderBy('date', 'desc')->with('request')->latest();
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, PassResource::class);
     }
 
@@ -49,18 +50,18 @@ class PassController extends Controller
             ->with('entity')
             ->where('entity_type', '<>', Pass::class)
             ->groupByRaw('entity_type, entity_id')
-            ->selectRaw("
+            ->selectRaw('
                 entity_type, entity_id, count(*) as cnt,
                 cast(sum(if(complaint is null, 0, 1)) as unsigned) as complaints_cnt
-            ")
+            ')
             ->orderBy('cnt', 'desc');
 
         $this->filter($request, $query, $this->statsFilters);
 
-        $data = $query->get()->map(fn($item) => extract_fields($item, [
-            'entity_id', 'entity_type', 'cnt'
+        $data = $query->get()->map(fn ($item) => extract_fields($item, [
+            'entity_id', 'entity_type', 'cnt',
         ], [
-            'entity' => new PersonResource($item->entity)
+            'entity' => new PersonResource($item->entity),
         ]));
 
         return paginate($data);
@@ -71,12 +72,14 @@ class PassController extends Controller
         $pass = auth()->user()->passes()->create(
             $request->all()
         );
+
         return new PassResource($pass);
     }
 
     public function update(Pass $pass, Request $request)
     {
         $pass->update($request->all());
+
         return new PassResource($pass);
     }
 

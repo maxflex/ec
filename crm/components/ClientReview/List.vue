@@ -41,17 +41,22 @@ function onDeleted(r: ClientReviewResource) {
 <template>
   <div class="table">
     <div v-for="r in items" :id="`client-review-${r.id}`" :key="r.id">
-      <div v-if="!isTeacher" style="width: 170px">
+      <div v-if="!isTeacher" style="width: 150px">
         <UiPerson :item="r.teacher" />
       </div>
-      <div style="width: 210px">
+      <div style="width: 150px">
         <UiPerson :item="r.client" />
       </div>
       <div style="width: 100px">
         {{ ProgramShortLabel[r.program] }}
       </div>
-      <div style="width: 180px">
+      <div style="width: 170px">
         прошло занятий: {{ r.lessons_count }}
+      </div>
+      <div style="width: 140px">
+        <div v-for="year in r.years" :key="year">
+          {{ YearLabel[year] }}
+        </div>
       </div>
       <template v-if="isRealClientReview(r)">
         <div class="table-actionss">
@@ -62,8 +67,8 @@ function onDeleted(r: ClientReviewResource) {
             @click="clientReviewDialog?.edit(r.id)"
           />
         </div>
-        <div style="width: 220px">
-          {{ filterTruncate(r.text, 20) }}
+        <div style="width: 150px">
+          {{ filterTruncate(r.text, 15) }}
         </div>
         <div class="text-gray" style="width: 100px">
           {{ formatDate(r.created_at) }}

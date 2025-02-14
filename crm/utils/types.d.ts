@@ -569,6 +569,7 @@ declare global {
     id: number
     rating: number
     lessons_count: number
+    years: Year[]
     text: string
     program: Program
     teacher: PersonResource
@@ -579,6 +580,7 @@ declare global {
   interface FakeClientReview {
     id: string
     lessons_count: number
+    years: Year[]
     program: Program
     teacher: PersonResource
     client: PersonResource
@@ -1121,9 +1123,13 @@ declare global {
     comment: string
     used_at: ?string
     is_expired: boolean
-    request_id: ?number
+    request_id?: number
     user?: PersonResource
     created_at?: string
+    request?: {
+      id: number
+      direction: Direction
+    }
   }
 
   interface HeadTeacherReportResource {

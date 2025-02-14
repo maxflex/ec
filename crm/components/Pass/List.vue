@@ -32,19 +32,24 @@ function onPassDeleted(pass: PassResource) {
   <v-table class="pass-list">
     <tbody>
       <tr v-for="item in items" :id="`pass-${item.id}`" :key="item.id">
-        <td width="320">
+        <td width="350">
           {{ item.comment }}
         </td>
-        <td width="150">
+        <td width="160">
           {{ formatDate(item.date) }}
         </td>
-        <td width="160">
+        <!-- <td width="160">
           {{ PassTypeLabel[item.type] }}
+        </td> -->
+        <td v-if="showRequest" width="150">
+          <RouterLink v-if="item.request" :to="{ name: 'requests-id', params: { id: item.request.id } }">
+            заявка {{ item.request.id }}
+          </RouterLink>
         </td>
         <td v-if="showRequest" width="160">
-          <RouterLink v-if="item.request_id" :to="{ name: 'requests-id', params: { id: item.request_id } }">
-            заявка {{ item.request_id }}
-          </RouterLink>
+          <div v-if="item.request">
+            {{ DirectionLabel[item.request.direction] }}
+          </div>
         </td>
         <td class="flex-1">
           <span v-if="item.used_at">
@@ -57,7 +62,7 @@ function onPassDeleted(pass: PassResource) {
             не использован
           </span>
         </td>
-        <td class="text-gray" style="flex: initial; width: 180px">
+        <td class="text-gray" style="flex: initial; width: 160px">
           {{ formatDateTime(item.created_at!) }}
           <div class="table-actionss">
             <v-btn

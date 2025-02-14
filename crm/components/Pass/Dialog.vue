@@ -12,7 +12,6 @@ const modelDefaults: PassResource = {
   type: 'person',
   date: '',
   comment: '',
-  request_id: null,
   used_at: null,
   is_expired: false,
 }
@@ -22,7 +21,7 @@ const deleting = ref(false)
 const item = ref<PassResource>(modelDefaults)
 const isDisabled = computed(() => item.value.is_expired || !!item.value.used_at)
 
-function create(requestId: number | null = null) {
+function create(requestId: number | undefined = undefined) {
   dialog.value = true
   item.value = {
     ...modelDefaults,
