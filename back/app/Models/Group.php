@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Group extends Model implements HasTeeth
 {
     protected $fillable = [
-        'program', 'year', 'zoom', 'lessons_planned'
+        'program', 'year', 'zoom', 'lessons_planned',
     ];
 
     protected $casts = [
@@ -31,12 +31,6 @@ class Group extends Model implements HasTeeth
         return $this->hasMany(ClientGroup::class);
     }
 
-    public function lessons(): HasMany
-    {
-        return $this->hasMany(Lesson::class);
-    }
-
-
     public function getZoomAttribute($value)
     {
         return $value === null ? [
@@ -47,7 +41,7 @@ class Group extends Model implements HasTeeth
 
     public function scopeWhereTeacher($query, $teacherId)
     {
-        return $query->whereHas(
+        $query->whereHas(
             'lessons',
             fn ($q) => $q->where('teacher_id', $teacherId)
         );
@@ -55,9 +49,9 @@ class Group extends Model implements HasTeeth
 
     public function scopeWhereClient($query, $clientId)
     {
-        return $query->whereHas(
+        $query->whereHas(
             'clientGroups.contractVersionProgram.contractVersion.contract',
-            fn($q) => $q->where('client_id', $clientId)
+            fn ($q) => $q->where('client_id', $clientId)
         );
     }
 
@@ -89,6 +83,11 @@ class Group extends Model implements HasTeeth
         return Teeth::get($this->lessons()->getQuery(), $year);
     }
 
+    public function lessons(): HasMany
+    {
+        return $this->hasMany(Lesson::class);
+    }
+
     public function getTeacherAttribute(): ?Teacher
     {
         return $this->teachers[0];
@@ -109,7 +108,7 @@ class Group extends Model implements HasTeeth
         // https://doc.ege-centr.ru/doc/49
         if ($ids->count() === 0) {
             $ids = [
-                $this->lessons()->latest('date')->value('teacher_id')
+                $this->lessons()->latest('date')->value('teacher_id'),
             ];
         }
 

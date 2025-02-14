@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { mdiLockOpenOutline } from '@mdi/js'
 
-const filters = ref<YearFilters>(loadFilters({
-  year: currentAcademicYear(),
-}))
-const { items, indexPageData, reloadData } = useIndex<TeacherPaymentResource, YearFilters>(
+const filters = ref<AvailableYearsFilter>({
+  year: undefined,
+})
+
+const { items, indexPageData, availableYears } = useIndex<TeacherPaymentResource, AvailableYearsFilter>(
   `teacher-payments`,
   filters,
   {
-    instantLoad: false,
+    loadAvailableYears: true,
   },
 )
 
@@ -20,9 +21,6 @@ async function checkVerification() {
   const { data } = await useHttp<{ seconds: number }>(`balance-verification/check`)
   loading.value = false
   seconds.value = data.value!.seconds
-  if (seconds.value > 0) {
-    reloadData()
-  }
 }
 
 nextTick(checkVerification)
@@ -33,12 +31,7 @@ nextTick(checkVerification)
   <template v-else-if="seconds > 0">
     <UiIndexPage :data="indexPageData">
       <template #filters>
-        <v-select
-          v-model="filters.year"
-          label="Учебный год"
-          :items="selectItems(YearLabel)"
-          density="comfortable"
-        />
+        <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
       </template>
       <TeacherPaymentList :items="items" />
     </UiIndexPage>

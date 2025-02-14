@@ -1,14 +1,14 @@
 <script setup lang="ts">
 const { clientId } = defineProps<{ clientId: number }>()
 
-const availableYearsLoaded = ref(false)
-const filters = ref<AvailableYearsFilter>({})
-const noData = computed(() => availableYearsLoaded.value && !filters.value.year)
-const { items, indexPageData } = useIndex<GroupListResource, AvailableYearsFilter>(
+const filters = ref<AvailableYearsFilter>({
+  year: undefined,
+})
+const { items, indexPageData, availableYears } = useIndex<GroupListResource, AvailableYearsFilter>(
   `groups`,
   filters,
   {
-    instantLoad: false,
+    loadAvailableYears: true,
     staticFilters: {
       client_id: clientId,
     },
@@ -17,14 +17,9 @@ const { items, indexPageData } = useIndex<GroupListResource, AvailableYearsFilte
 </script>
 
 <template>
-  <UiIndexPage :data="availableYearsLoaded && noData ? { noData, loading: false } : indexPageData">
+  <UiIndexPage :data="indexPageData">
     <template #filters>
-      <AvailableYearsSelector
-        v-model="filters.year"
-        :client-id="clientId"
-        mode="groups"
-        @loaded="availableYearsLoaded = true"
-      />
+      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
     </template>
     <GroupTeacherList :items="items" />
   </UiIndexPage>

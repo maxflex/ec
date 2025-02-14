@@ -162,18 +162,6 @@ export function loadFilters<T>(defaultFilters: T, tabName: string | null = null)
   return filters === null ? defaultFilters : JSON.parse(filters)
 }
 
-// status=math&status=eng ===> status[]=math&status[]=eng
-
-export function filtersToQuery(filters: { [key: string]: any }) {
-  const result: typeof filters = {}
-  for (const key in filters) {
-    const value = filters[key]
-    const newKey = Array.isArray(value) ? `${key}[]` : key
-    result[newKey] = value
-  }
-  return result
-}
-
 export function highlight(entity: string, id: number, className: 'item-updated' | 'item-deleted') {
   nextTick(() => {
     const el = document?.querySelector(`#${entity}-${id}`)

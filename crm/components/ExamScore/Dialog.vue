@@ -17,11 +17,11 @@ const modelDefaults: ExamScoreResource = {
 }
 const item = ref<ExamScoreResource>(modelDefaults)
 
-function create(clientId: number, year: Year) {
+function create(clientId: number) {
   itemId.value = undefined
   item.value = clone(modelDefaults)
   item.value.client_id = clientId
-  item.value.year = year
+  item.value.year = currentAcademicYear()
   dialog.value = true
 }
 

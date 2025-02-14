@@ -1,9 +1,7 @@
 <script setup lang="ts">
-const { clientId, teacherId, mode } = defineProps<{
-  clientId?: number
-  teacherId?: number
-  mode: 'reports' | 'schedule' | 'grades' | 'groups' | 'teacher-payments' | 'teacher-balance' | 'teacher-services'
-}>()
+import type { AvailableYearsParams } from '.'
+
+const { clientId, teacherId, mode } = defineProps<AvailableYearsParams>()
 const emit = defineEmits(['loaded'])
 const model = defineModel<Year>()
 const loading = ref(true)

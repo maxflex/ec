@@ -1,25 +1,21 @@
 <script setup lang="ts">
-const { user } = useAuthStore()
-const availableYearsLoaded = ref(false)
-const filters = ref<AvailableYearsFilter>({ })
+const filters = ref<AvailableYearsFilter>({
+  year: undefined,
+})
 
-const { items, indexPageData } = useIndex<QuartersGradesResource, AvailableYearsFilter>(
+const { items, indexPageData, availableYears } = useIndex<QuartersGradesResource, AvailableYearsFilter>(
   `grades`,
   filters,
   {
-    instantLoad: false,
+    loadAvailableYears: true,
   },
 )
-
-function onAvailableYearsLoaded() {
-  availableYearsLoaded.value = true
-}
 </script>
 
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <AvailableYearsSelector v-model="filters.year" mode="grades" :client-id="user!.id" @loaded="onAvailableYearsLoaded()" />
+      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
     </template>
     <GradeListForClients :items="items" />
   </UiIndexPage>

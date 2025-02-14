@@ -2,36 +2,21 @@
 import type { ExamScoreDialog } from '#build/components'
 
 const { clientId } = defineProps<{ clientId: number }>()
-const tabName = 'ExamScoreTab'
-const filters = ref<YearFilters>(loadFilters({
-  year: currentAcademicYear(),
-}, tabName))
-const loading = ref(true)
-const items = ref<ExamScoreResource[]>([])
 const examScoreDialog = ref<InstanceType<typeof ExamScoreDialog>>()
+const filters = ref<AvailableYearsFilter>({
+  year: undefined,
+})
 
-async function loadData() {
-  loading.value = true
-  const { data } = await useHttp<ApiResponse<ExamScoreResource>>(
-    'exam-scores',
-    {
-      params: {
-        ...filters.value,
-        client_id: clientId,
-      },
+const { items, indexPageData, availableYears } = useIndex<ExamScoreResource, AvailableYearsFilter>(
+  `exam-scores`,
+  filters,
+  {
+    loadAvailableYears: true,
+    staticFilters: {
+      client_id: clientId,
     },
-  )
-  if (data.value) {
-    const { data: newItems } = data.value
-    items.value = newItems
-  }
-  loading.value = false
-}
-
-watch(filters, (newVal) => {
-  saveFilters(newVal, tabName)
-  loadData()
-}, { deep: true })
+  },
+)
 
 function onUpdated(es: ExamScoreResource) {
   const index = items.value.findIndex(e => e.id === es.id)
@@ -43,26 +28,17 @@ function onUpdated(es: ExamScoreResource) {
   }
   itemUpdated('exam-score', es.id)
 }
-
-const noData = computed(() => !loading.value && items.value.length === 0)
-
-nextTick(loadData)
 </script>
 
 <template>
-  <UiIndexPage :data="{ loading, noData }">
+  <UiIndexPage :data="indexPageData">
     <template #filters>
-      <v-select
-        v-model="filters.year"
-        :items="selectItems(YearLabel)"
-        label="Год"
-        density="comfortable"
-      />
+      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
     </template>
     <template #buttons>
       <v-btn
         color="primary"
-        @click="examScoreDialog?.create(clientId, filters.year)"
+        @click="examScoreDialog?.create(clientId)"
       >
         добавить баллы
       </v-btn>

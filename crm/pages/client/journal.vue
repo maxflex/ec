@@ -1,13 +1,19 @@
 <script setup lang="ts">
-const filters = ref<YearFilters>({
-  year: currentAcademicYear(),
+const filters = ref<AvailableYearsFilter>({
+  year: undefined,
 })
 
 const selectedQuarter = ref<Quarter | null>(null)
 const selectedProgram = ref<Program | undefined>(undefined)
 const availablePrograms = ref<Program[]>([])
 
-const { items, indexPageData } = useIndex<JournalResource, YearFilters>(`journal`, filters)
+const { items, indexPageData, availableYears } = useIndex<JournalResource, AvailableYearsFilter>(
+  `journal`,
+  filters,
+  {
+    loadAvailableYears: true,
+  },
+)
 
 const quarters = ref<{
   title: string
@@ -15,7 +21,7 @@ const quarters = ref<{
 }[]>([])
 
 watch(items, (newVal) => {
-  quarters.value = [...new Set(newVal.map(e => e.lesson.quarter))].map(q => ({
+  quarters.value = [...new Set(newVal.map(e => e.lesson.quarter))].sort().map(q => ({
     value: q,
     title: q === null ? 'без четверти' : QuarterLabel[q],
   }))
@@ -33,7 +39,7 @@ const filteredItems = computed(() => items.value.filter((e) => {
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <UiYearSelector v-model="filters.year" density="comfortable" />
+      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
       <v-select v-model="selectedQuarter" :items="quarters" label="Четверть" density="comfortable" />
       <UiClearableSelect
         v-model="selectedProgram" :items="availablePrograms.map(e => ({

@@ -29,7 +29,7 @@ declare global {
   }
 
   interface GradeFilters {
-    year: Year
+    year?: Year
     program?: Program
   }
 

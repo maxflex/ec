@@ -2,39 +2,20 @@
 import type { ClientPaymentDialog } from '#build/components'
 
 const { clientId } = defineProps<{ clientId: number }>()
-
-const tabName = 'ClientPaymentTab'
-
-const filters = ref<YearFilters>(loadFilters({
-  year: currentAcademicYear(),
-}, tabName))
-
-const loading = ref(true)
-const items = ref<ClientPaymentResource[]>([])
+const filters = ref<AvailableYearsFilter>({
+  year: undefined,
+})
 const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()
-
-async function loadData() {
-  loading.value = true
-  const { data } = await useHttp<ApiResponse<ClientPaymentResource>>(
-    'client-payments',
-    {
-      params: {
-        ...filters.value,
-        client_id: clientId,
-      },
+const { items, indexPageData, availableYears } = useIndex<ClientPaymentResource, AvailableYearsFilter>(
+  `client-payments`,
+  filters,
+  {
+    loadAvailableYears: true,
+    staticFilters: {
+      client_id: clientId,
     },
-  )
-  if (data.value) {
-    const { data: newItems } = data.value
-    items.value = newItems
-  }
-  loading.value = false
-}
-
-watch(filters, (newVal) => {
-  saveFilters(newVal, tabName)
-  loadData()
-}, { deep: true })
+  },
+)
 
 function onUpdated(p: ClientPaymentResource) {
   const index = items.value.findIndex(e => e.id === p.id)
@@ -53,24 +34,17 @@ function onDeleted(p: ClientPaymentResource) {
     items.value.splice(index, 1)
   }
 }
-
-const noData = computed(() => !loading.value && items.value.length === 0)
-
-nextTick(loadData)
 </script>
 
 <template>
-  <UiIndexPage :data="{ loading, noData }">
+  <UiIndexPage :data="indexPageData">
     <template #filters>
-      <v-select
-        v-model="filters.year" :items="selectItems(YearLabel)" label="Год"
-        density="comfortable"
-      />
+      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
     </template>
     <template #buttons>
       <v-btn
         color="primary"
-        @click="clientPaymentDialog?.create(clientId, filters.year)"
+        @click="clientPaymentDialog?.create(clientId)"
       >
         добавить платеж
       </v-btn>

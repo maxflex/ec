@@ -1,13 +1,16 @@
+interface UseIndexOptions {
+  instantLoad?: boolean
+  scrollContainerSelector?: string
+  staticFilters?: object
+  tabName?: string | null
+  disableSaveFilters?: boolean
+  loadAvailableYears?: boolean
+}
+
 export default function<T, F extends object = object, E extends object = object>(
   apiUrl: string,
   filters: Ref<F> = ref({}) as Ref<F>,
-  options: {
-    instantLoad?: boolean
-    scrollContainerSelector?: string
-    staticFilters?: object
-    tabName?: string | null
-    disableSaveFilters?: boolean
-  } = {},
+  options: UseIndexOptions = {},
 ) {
   const {
     instantLoad = true,
@@ -15,6 +18,7 @@ export default function<T, F extends object = object, E extends object = object>
     staticFilters = {},
     tabName = null,
     disableSaveFilters = false,
+    loadAvailableYears = false,
   } = options
 
   // данные для компонента UiIndexPage
@@ -28,7 +32,7 @@ export default function<T, F extends object = object, E extends object = object>
 
   // любая загрузка
   const loading = ref(false)
-
+  const availableYears = ref<Year[]>()
   const items = ref<T[]>([]) as Ref<T[]>
   let scrollContainer: HTMLElement | null = null
   let page = 0
@@ -79,6 +83,26 @@ export default function<T, F extends object = object, E extends object = object>
     setScrollContainer()
   }
 
+  async function loadAvailableYearsGo() {
+    const params = transformArrayKeys({
+      ...staticFilters,
+      available_years: 1,
+    })
+    const { data } = await useHttp<Year[]>(apiUrl, { params })
+    availableYears.value = data.value!
+    // это установит самый первый год, если есть доступные год
+    // + запустит watcher на фильтры и загрузит данные loadData
+    if ('year' in filters.value && availableYears.value.length > 0) {
+      filters.value.year = availableYears.value[0]
+    }
+    else {
+      indexPageData.value = {
+        loading: false,
+        noData: true,
+      }
+    }
+  }
+
   function reloadData() {
     page = 0
     isLastPage = false
@@ -115,7 +139,12 @@ export default function<T, F extends object = object, E extends object = object>
     scrollContainer?.removeEventListener('scroll', onScroll)
   })
 
-  instantLoad && nextTick(loadData)
+  if (loadAvailableYears) {
+    nextTick(loadAvailableYearsGo)
+  }
+  else {
+    instantLoad && nextTick(loadData)
+  }
 
   return {
     items,
@@ -123,6 +152,7 @@ export default function<T, F extends object = object, E extends object = object>
     loading,
     total,
     indexPageData,
+    availableYears,
     reloadData,
   }
 }

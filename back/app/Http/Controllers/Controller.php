@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class Controller extends BaseController
@@ -14,12 +15,19 @@ class Controller extends BaseController
     use AuthorizesRequests, ValidatesRequests;
 
     protected $filters = [];
+
     protected $filterTablePrefix = [];
+
     protected $mapFilters = []; // e.g. test_client_id => tests.client_id
+
     protected $resources = [];
 
     protected function handleIndexRequest(Request $request, $query, $resource = null)
     {
+        if ($request->has('available_years')) {
+            return $this->getAvailableYears($query->distinct()->reorder())->unique()->sortDesc()->values()->all();
+        }
+
         if ($request->has('count')) {
             return $query->count();
         }
@@ -43,11 +51,16 @@ class Controller extends BaseController
             $result->additional([
                 'extra' => [
                     $value => $query->whereNotNull($value)->pluck($value)->unique()->values()->all(),
-                ]
+                ],
             ]);
         }
 
         return $result;
+    }
+
+    protected function getAvailableYears($query): Collection
+    {
+        return $query->pluck('year');
     }
 
     protected function getResource(Request $request)
@@ -61,17 +74,18 @@ class Controller extends BaseController
                 $resource = $this->resources[$key];
             }
         }
+
         return $resource;
     }
 
-    protected function filter(Request $request, &$query, array $filters = null)
+    protected function filter(Request $request, &$query, ?array $filters = null)
     {
         $filters = $filters ?? $this->filters;
         foreach ($filters as $type => $fields) {
             foreach ($fields as $key_field => $field) {
                 $f = is_array($field) ? $key_field : $field;
                 if ($request->has($f)) {
-                    $this->{'filter' . ucfirst($type)}($query, $request->input($f), $field);
+                    $this->{'filter'.ucfirst($type)}($query, $request->input($f), $field);
                 }
             }
         }
@@ -82,16 +96,33 @@ class Controller extends BaseController
         $query->where(DB::raw($this->getFieldName($field)), $value);
     }
 
+    // protected function filterNotNull(string $field, $value, &$query)
+    // {
+    //     $query->whereNotNull($this->getFieldName($field));
+    // }
+
+    protected function getFieldName($field)
+    {
+        foreach ($this->mapFilters as $originalFieldName => $mappedFieldName) {
+            if ($field === $originalFieldName) {
+                $field = $mappedFieldName;
+            }
+        }
+
+        foreach ($this->filterTablePrefix as $table => $fields) {
+            if (in_array($field, $fields)) {
+                $field = "{$table}.{$field}";
+            }
+        }
+
+        return $field;
+    }
+
     protected function filterNull(&$query, $value, $field)
     {
         $field = $this->getFieldName($field);
         $value ? $query->whereNotNull($field) : $query->whereNull($field);
     }
-
-    // protected function filterNotNull(string $field, $value, &$query)
-    // {
-    //     $query->whereNotNull($this->getFieldName($field));
-    // }
 
     protected function filterFindInSet(&$query, $values, $field)
     {
@@ -122,25 +153,8 @@ class Controller extends BaseController
 
     protected function filterHas(&$query, $value, $field)
     {
-        $relation = str($field)->after("has_")->camel()->value();
+        $relation = str($field)->after('has_')->camel()->value();
         $value ? $query->whereHas($relation) : $query->whereDoesntHave($relation);
-    }
-
-    protected function getFieldName($field)
-    {
-        foreach ($this->mapFilters as $originalFieldName => $mappedFieldName) {
-            if ($field === $originalFieldName) {
-                $field = $mappedFieldName;
-            }
-        }
-
-        foreach ($this->filterTablePrefix as $table => $fields) {
-            if (in_array($field, $fields)) {
-                $field = "{$table}.{$field}";
-            }
-        }
-
-        return $field;
     }
 
     protected function filterGte(&$query, $value, $field)

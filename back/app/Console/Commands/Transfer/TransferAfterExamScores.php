@@ -14,6 +14,7 @@ class TransferAfterExamScores extends Command
     use TransferTrait;
 
     protected $signature = 'app:transfer:after:exam-scores';
+
     protected $description = 'Transfer after exam scores';
 
     public function handle()
@@ -24,15 +25,15 @@ class TransferAfterExamScores extends Command
             ->table('reviews')
             ->where('score', '>', 0)
             ->where('max_score', '>', 0)
-            ->selectRaw("
+            ->selectRaw('
                 reviews.*, (
-                    select created_email_id 
+                    select created_email_id
                     from review_comments as rc
                     where rc.review_id = reviews.id
                     order by rc.id desc
                     limit 1
                 ) as created_email_id
-            ")
+            ')
             ->get();
         $bar = $this->output->createProgressBar($items->count());
         foreach ($items as $r) {
@@ -52,9 +53,8 @@ class TransferAfterExamScores extends Command
         $bar->finish();
     }
 
-
     /**
-     * есть несколько записей, которые нужно обработать
+     * Есть несколько записей, которые нужно обработать
      * 12/сочинение - 2
      * 26/МАТ ПРАКТИКУМ – 7
      * 27/ОБЩ ПРАКТИКУМ – 5
@@ -87,11 +87,11 @@ class TransferAfterExamScores extends Command
                 }
                 break;
 
-            // case 20:
+                // case 20:
             default:
                 return Exam::egeMathBase;
         }
 
-        return Exam::from($prefix . $subject);
+        return Exam::from($prefix.$subject);
     }
 }
