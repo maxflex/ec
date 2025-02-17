@@ -16,7 +16,7 @@ class User extends Authenticatable implements CanLogin
 
     protected $fillable = [
         'first_name', 'last_name',
-        'is_active', 'is_call_notifications'
+        'is_active', 'is_call_notifications',
     ];
 
     protected $casts = [

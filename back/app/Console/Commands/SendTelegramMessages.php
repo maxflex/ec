@@ -90,8 +90,8 @@ class SendTelegramMessages extends Command
                 } else {
                     $replyMarkup = new ReplyKeyboardRemove;
                 }
-                $wasSent = TelegramMessage::send($phone, $list, $replyMarkup);
-                if ($wasSent) {
+                $telegramMessage = TelegramMessage::send($phone, $list, $replyMarkup);
+                if ($telegramMessage?->telegram_id) {
                     $sent++;
                 }
             }

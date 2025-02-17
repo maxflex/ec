@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   mdiPhone,
+  mdiSendVariant,
 } from '@mdi/js'
 
 const { dialog, width } = useDialog('default')
@@ -14,11 +15,37 @@ const tabs = {
 const selectedTab = ref<keyof typeof tabs>('calls')
 const loading = ref(true)
 const wrapper = ref<HTMLDivElement | null>(null)
+const text = ref('')
+const input = ref<HTMLInputElement | null>(null)
+const sending = ref(false)
 
 function open(p: PhoneResource) {
   item.value = p
   dialog.value = true
   loadCalls()
+}
+
+async function send() {
+  if (!text.value.length) {
+    return
+  }
+  sending.value = true
+  const { data } = await useHttp<TelegramMessageResource>(
+    `telegram-messages`,
+    {
+      method: 'post',
+      body: {
+        text: text.value,
+        phone_id: item.value?.id,
+      },
+    },
+  )
+  if (data.value) {
+    telegramMessages.value.push(data.value)
+    text.value = ''
+    scrollBottom()
+  }
+  sending.value = false
 }
 
 async function loadCalls() {
@@ -106,6 +133,33 @@ defineExpose({ open })
         <template v-else>
           <UiNoData v-if="telegramMessages.length === 0" />
           <TelegramMessageHistoryList :items="telegramMessages" />
+          <div class="comments__input">
+            <v-textarea
+              ref="input"
+              v-model="text"
+              rows="1"
+              placeholder="Введите сообщение..."
+              auto-grow
+              hide-details
+              maxlength="1000"
+              max-height="100"
+              :disabled="sending"
+              @keydown.enter.exact.prevent
+              @keyup.enter.exact="send()"
+            />
+            <transition name="comment-btn">
+              <v-btn
+                v-if="text.length > 0"
+                :icon="mdiSendVariant"
+                height="48"
+                width="48"
+                variant="text"
+                color="secondary"
+                :loading="sending"
+                @click="send()"
+              />
+            </transition>
+          </div>
         </template>
       </div>
     </div>
@@ -114,6 +168,9 @@ defineExpose({ open })
 
 <style lang="scss">
 .phone-dialog {
+  .dialog-header {
+    background: white !important;
+  }
   .tabs {
     position: sticky;
     top: 0;
