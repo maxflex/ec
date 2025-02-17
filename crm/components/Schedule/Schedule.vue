@@ -55,7 +55,7 @@ const lessonBulkCreateDialog = ref<InstanceType<typeof LessonBulkCreateDialog>>(
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 const vacations = ref<Record<string, boolean>>({})
-const examDates = ref<Record<string, number>>({})
+const examDates = ref<ExamDateResource[]>([])
 const checkboxes = ref<{ [key: number]: boolean }>({})
 const lessonIds = computed((): number[] => {
   const result = []
@@ -71,6 +71,34 @@ if (year) {
   selectedYear.value = year
   loadData()
 }
+
+interface AvailableExamDates {
+  [key: string]: Array<{
+    id: number
+    exam: Exam
+    is_reserve: number
+  }>
+}
+
+const availableExamDates = computed<AvailableExamDates>(() => {
+  const result = {} as AvailableExamDates
+  for (const examDate of examDates.value) {
+    if (selectedProgram.value && !examDate.programs.includes(selectedProgram.value)) {
+      continue
+    }
+    for (const d of examDate.dates) {
+      if (!(d.date in result)) {
+        result[d.date] = []
+      }
+      result[d.date].push({
+        id: examDate.id,
+        exam: examDate.exam,
+        is_reserve: d.is_reserve,
+      })
+    }
+  }
+  return result
+})
 
 const filteredLessons = computed(() =>
   selectedProgram.value
@@ -101,7 +129,7 @@ const dates = computed(() => {
       if (
         filteredLessons.value.some(e => e.date === dateString)
         || events.value.some(e => e.date === dateString)
-        || (dateString in examDates.value)
+        || (dateString in availableExamDates.value)
       ) {
         result.push(dateString)
       }
@@ -180,22 +208,15 @@ async function loadVacations() {
   }
 }
 
-const examName = ref<Exam>('egeChem')
-
 async function loadExamDates() {
-  if (!program) {
-    return
-  }
-  examDates.value = {}
+  const programs = program ? [program] : availablePrograms.value
   const { data } = await useHttp<ApiResponse<ExamDateResource>>(`common/exam-dates`, {
-    params: { program },
+    params: {
+      'programs[]': programs,
+    },
   })
-  if (data.value && data.value.data.length) {
-    examName.value = data.value.data[0].exam
-    const { dates } = data.value.data[0]
-    for (const date of dates) {
-      examDates.value[date.date] = date.is_reserve
-    }
+  if (data.value) {
+    examDates.value = data.value.data
   }
 }
 
@@ -210,8 +231,8 @@ async function loadData() {
   }
   await loadTeeth()
   await loadLessons()
-  await loadEvents()
   await loadExamDates()
+  await loadEvents()
   await loadVacations()
 }
 
@@ -345,18 +366,24 @@ const lessonItemComponent = (function () {
       <div v-if="vacations[d]" class="lesson-item lesson-item__extra lesson-item__extra--vacation">
         Государственный праздник
       </div>
-      <div
-        v-if="d in examDates"
-        class="lesson-item lesson-item__extra lesson-item__extra--exam-date"
-        :class="{
-          'lesson-item__extra--exam-date-reserved': examDates[d] === 1,
-        }"
-      >
-        Экзамен ({{ ExamLabel[examName] }})
-        <template v-if="examDates[d] === 1">
-          – резервная дата
-        </template>
-      </div>
+      <template v-if="d in availableExamDates">
+        <div
+          v-for="ed in availableExamDates[d]"
+          :key="ed.id"
+          class="lesson-item lesson-item__extra lesson-item__extra--exam-date"
+          :class="{
+            'lesson-item__extra--exam-date-reserved': ed.is_reserve,
+          }"
+        >
+          Экзамен ({{ ExamLabel[ed.exam] }})
+          <template v-if="ed.is_reserve">
+            – резервная дата
+          </template>
+          <template v-else>
+            – основная дата
+          </template>
+        </div>
+      </template>
       <template v-for="item in itemsByDate[d]">
         <EventItem
           v-if="isEvent(item)"
