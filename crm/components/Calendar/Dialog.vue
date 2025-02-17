@@ -9,7 +9,7 @@ const startYear = 2015
 
 const years = year === undefined
   ? Array.from({ length: currentAcademicYear() - startYear + 2 }, (_, i) => startYear + i)
-  : [year - 1, year, year + 1]
+  : [year - 1, year, year + 1, year + 2]
 
 function open() {
   dialog.value = true
