@@ -40,12 +40,11 @@ class Lesson extends Model
         foreach ($lessons->groupBy('group.program') as $programLessons) {
             $seq = 1;
             foreach ($programLessons->sortBy(['date', 'time'])->values()->all() as $lesson) {
-                if ($lesson->status === LessonStatus::cancelled) {
-                    continue;
+                if ($lesson->status !== LessonStatus::cancelled) {
+                    $lesson->setAttribute('seq', $seq);
+                    $seq++;
                 }
-                $lesson->setAttribute('seq', $seq);
                 $result[] = $lesson;
-                $seq++;
             }
         }
 
