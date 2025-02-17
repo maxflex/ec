@@ -1,13 +1,23 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
+namespace App\Console\Commands\Once;
+
+use App\Enums\TelegramTemplate;
+use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class UpdateTelegramTemplatesCommand extends Command
 {
-    public function up(): void
+    protected $signature = 'once:update-telegram-templates';
+
+    protected $description = 'Обновить enum для TelegramTemplate';
+
+    public function handle(): void
     {
+        $this->line('Updating telegram templates...');
+
         Schema::table('telegram_messages', function (Blueprint $table) {
             $table->string('template_new')->nullable();
         });
@@ -18,7 +28,7 @@ return new class extends Migration
 
         Schema::table('telegram_messages', function (Blueprint $table) {
             $table->dropColumn('template');
-            $table->enum('template', array_column(\App\Enums\TelegramTemplate::cases(), 'value'))
+            $table->enum('template', array_column(TelegramTemplate::cases(), 'value'))
                 ->nullable();
         });
 
@@ -29,12 +39,7 @@ return new class extends Migration
         Schema::table('telegram_messages', function (Blueprint $table) {
             $table->dropColumn('template_new');
         });
-    }
 
-    public function down(): void
-    {
-        Schema::table('telegram_messages', function (Blueprint $table) {
-            //
-        });
+        $this->info('Telegram templates updated');
     }
-};
+}

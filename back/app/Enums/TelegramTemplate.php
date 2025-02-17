@@ -13,6 +13,7 @@ enum TelegramTemplate: string
     case teacherConductMissing = 'teacherConductMissing';
     case paymentReminder = 'paymentReminder';
     case unplannedOrCancelled = 'unplannedOrCancelled';
+    case firstLogin = 'firstLogin';
 
     public function getText(array $viewVariables = [])
     {
