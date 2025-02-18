@@ -22,9 +22,16 @@ class ClientReviewController extends Controller
 
     public function index(Request $request)
     {
-        $query = DB::table('cr')->withExpression('cr',
-            ClientReview::requirements()->union(ClientReview::selectForUnion())
-        );
+        // для быстродействия, если выбран конкретный requirement, то без union
+        if ($request->has('requirement')) {
+            $query = $request->input('requirement')
+                ? ClientReview::selectForUnion()
+                : ClientReview::requirements();
+        } else {
+            $query = DB::table('cr')->withExpression('cr',
+                ClientReview::requirements()->union(ClientReview::selectForUnion())
+            );
+        }
 
         $query->latest();
         $this->filter($request, $query);
