@@ -25,7 +25,6 @@ class ClientReview extends Model
     {
         // GROUP_CONCAT(DISTINCT g.year) as `years`,
         $requirements = DB::table('lessons', 'l')
-            ->join('groups as g', 'g.id', '=', 'l.group_id')
             ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
             ->join('contract_version_programs as cvp', 'cvp.id', '=', 'cl.contract_version_program_id')
             ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
@@ -34,7 +33,7 @@ class ClientReview extends Model
                 NULL AS id,
                 l.teacher_id,
                 c.client_id,
-                g.program,
+                cvp.program,
                 NULL AS `rating`,
                 NULL AS `created_at`,
                 NULL AS `text`
@@ -44,9 +43,9 @@ class ClientReview extends Model
                 select 1 from client_reviews as cr
                 where cr.teacher_id = l.id
                 and cr.client_id = c.id
-                and cr.program = g.program
+                and cr.program = cvp.program
             )')
-            ->groupBy('l.teacher_id', 'c.client_id', 'g.program');
+            ->groupBy('l.teacher_id', 'c.client_id', 'cvp.program');
 
         return DB::table('requirements')->withExpression('requirements', $requirements);
     }

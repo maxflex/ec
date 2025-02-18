@@ -17,21 +17,21 @@ class ClientReviewController extends Controller
         ],
         'examScores' => ['exam_scores'],
         'webReviewExists' => ['web_review_exists'],
-        'requirement' => ['requirement'],
+        'year' => ['year'],
     ];
 
     public function index(Request $request)
     {
+        $requirement = $request->has('requirement') ? intval($request->input('requirement')) : null;
+
         // для быстродействия, если выбран конкретный requirement, то без union
-        if ($request->has('requirement')) {
-            $query = $request->input('requirement')
-                ? ClientReview::selectForUnion()
-                : ClientReview::requirements();
-        } else {
-            $query = DB::table('cr')->withExpression('cr',
-                ClientReview::requirements()->union(ClientReview::selectForUnion())
-            );
-        }
+        $cr = match (true) {
+            $requirement === 0 => ClientReview::requirements(),
+            $requirement === 1 => ClientReview::selectForUnion(),
+            default => ClientReview::requirements()->union(ClientReview::selectForUnion())
+        };
+
+        $query = DB::table('cr')->withExpression('cr', $cr);
 
         $query->latest();
         $this->filter($request, $query);
@@ -49,11 +49,6 @@ class ClientReviewController extends Controller
     public function show(ClientReview $clientReview)
     {
         return new ClientReviewResource($clientReview);
-    }
-
-    protected function filterRequirement(&$query, $value)
-    {
-        $value ? $query->whereNotNull('id') : $query->whereNull('id');
     }
 
     protected function filterWebReviewExists(&$query, $value)
@@ -92,5 +87,23 @@ class ClientReviewController extends Controller
                 )");
                 break;
         }
+    }
+
+    protected function filterYear(&$query, $year)
+    {
+        $query->whereRaw("EXISTS (
+            select 1 from client_lessons cl
+            join contract_version_programs cvp
+                on cvp.id = cl.contract_version_program_id
+                and cvp.program = cr.program
+            join contract_versions cv on cv.id = cvp.contract_version_id
+            join contracts c
+                on c.id = cv.contract_id
+                and c.year = $year
+                and c.client_id = cr.client_id
+            join lessons l
+                on l.id = cl.lesson_id
+                and l.teacher_id = cr.teacher_id
+        )");
     }
 }

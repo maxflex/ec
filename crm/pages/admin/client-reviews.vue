@@ -9,10 +9,25 @@ const { items, indexPageData } = useIndex<ClientReviewListResource, ClientReview
 </script>
 
 <template>
-  <UiIndexPage :data="indexPageData">
+  <UiIndexPage :data="indexPageData" class="client-reviews">
     <template #filters>
       <ClientReviewFilters v-model="filters" />
     </template>
     <ClientReviewList :items="items" />
   </UiIndexPage>
 </template>
+
+<style lang="scss">
+.page-client-reviews {
+  .filters {
+    max-width: 100vw !important;
+    &__inputs {
+      width: 100%;
+      & > div {
+        flex: 1;
+        width: auto !important;
+      }
+    }
+  }
+}
+</style>

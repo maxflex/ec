@@ -26,10 +26,9 @@ class ClientReviewListResource extends JsonResource
             ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
             ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
             ->join('lessons as l', 'l.id', '=', 'cl.lesson_id')
-            ->join('groups as g', 'g.id', '=', 'l.group_id')
             ->selectRaw('
                 COUNT(DISTINCT cl.id) as lessons_count,
-                GROUP_CONCAT(DISTINCT g.year) as years
+                GROUP_CONCAT(DISTINCT c.year) as years
             ')
             ->where('c.client_id', $this->client_id)
             ->where('l.teacher_id', $this->teacher_id)

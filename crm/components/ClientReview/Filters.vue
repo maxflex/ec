@@ -11,12 +11,19 @@ export interface ClientReviewFilters {
   rating?: number
   web_review_exists?: number
   exam_scores?: keyof typeof ClientReviewExamScoreFilterLabel
+  year?: Year
 }
 
 const model = defineModel<ClientReviewFilters>({ required: true })
 </script>
 
 <template>
+  <UiClearableSelect
+    v-model="model.year"
+    label="Учебный год"
+    density="comfortable"
+    :items="selectItems(YearLabel)"
+  />
   <UiClearableSelect
     v-model="model.requirement"
     label="Требование отзыва"
@@ -35,6 +42,7 @@ const model = defineModel<ClientReviewFilters>({ required: true })
     :items="selectItems(ProgramLabel)"
     density="comfortable"
   />
+
   <UiClearableSelect
     v-model="model.exam_scores"
     :items="selectItems(ClientReviewExamScoreFilterLabel)"
