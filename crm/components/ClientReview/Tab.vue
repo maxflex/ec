@@ -1,6 +1,6 @@
 <script setup lang="ts">
 interface Filters {
-  type?: number
+  requirement?: number
 }
 
 const { clientId, teacherId } = defineProps<{
@@ -28,8 +28,8 @@ const { items, indexPageData } = useIndex<ClientReviewListResource, Filters>(
   <UiIndexPage :data="indexPageData">
     <template #filters>
       <UiClearableSelect
-        v-model="filters.type"
-        label="Тип"
+        v-model="filters.requirement"
+        label="Требование отзыва"
         :items="yesNo('созданные', 'требуется создание')"
         density="comfortable"
       />
