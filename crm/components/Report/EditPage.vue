@@ -86,12 +86,15 @@ async function save() {
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<ReportResource[]>(`reports/tabs`, {
-    params: {
-      id: id || undefined,
-      ...route.query,
+  const { data } = await useHttp<ReportResource[]>(
+    `reports/tabs`,
+    {
+      params: {
+        id: id || undefined,
+        ...route.query,
+      },
     },
-  })
+  )
   items.value = data.value!
   index.value = items.value.findIndex(r => r.id === (id || -1))
   loading.value = false

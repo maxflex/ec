@@ -1,4 +1,15 @@
 <script lang="ts" setup>
+const WebReviewExamScoreFilterLabel = {
+  notExists: 'нет доступных баллов',
+  existsNotSelected: 'есть доступные + ничего не выбрано',
+  existsSelected: 'есть доступные + есть выбранные',
+} as const
+
+export interface WebReviewFilters {
+  program: Program[]
+  exam_scores?: keyof typeof WebReviewExamScoreFilterLabel
+}
+
 const model = defineModel<WebReviewFilters>({ required: true })
 </script>
 
@@ -13,6 +24,6 @@ const model = defineModel<WebReviewFilters>({ required: true })
     v-model="model.exam_scores"
     :items="selectItems(WebReviewExamScoreFilterLabel)"
     density="comfortable"
-    label="Оценка"
+    label="Балл"
   />
 </template>

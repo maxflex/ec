@@ -7,6 +7,7 @@ use App\Http\Resources\ClientReviewListResource;
 use App\Http\Resources\ClientReviewResource;
 use App\Models\ClientReview;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ClientReviewController extends Controller
 {
@@ -14,22 +15,19 @@ class ClientReviewController extends Controller
         'equals' => [
             'client_id', 'teacher_id', 'rating', 'program',
         ],
-        'isWebReviewCreate' => ['is_web_review_create'],
-        'type' => ['type'],
+        'examScores' => ['exam_scores'],
+        'webReviewExists' => ['web_review_exists'],
+        'requirement' => ['requirement'],
     ];
 
     public function index(Request $request)
     {
-        $query = ClientReview::query()
-            ->selectForUnion()
-            ->with(['teacher', 'client']);
+        $query = DB::table('cr')->withExpression('cr',
+            ClientReview::requirements()->union(ClientReview::selectForUnion())
+        );
 
-        $fakeQuery = ClientReview::fakeQuery();
-
+        $query->latest();
         $this->filter($request, $query);
-        $this->filter($request, $fakeQuery);
-
-        $query->union($fakeQuery)->latest();
 
         return $this->handleIndexRequest($request, $query, ClientReviewListResource::class);
     }
@@ -46,13 +44,46 @@ class ClientReviewController extends Controller
         return new ClientReviewResource($clientReview);
     }
 
-    protected function filterType(&$query, $type)
+    protected function filterRequirement(&$query, $value)
     {
-        $type ? $query->whereNotNull('id') : $query->whereNull('id');
+        $value ? $query->whereNotNull('id') : $query->whereNull('id');
     }
 
-    protected function filterIsWebReviewCreate(&$query, $value)
+    protected function filterWebReviewExists(&$query, $value)
     {
-        $query->having('is_web_review_create', $value);
+        $condition = $value ? 'NOT EXISTS' : 'EXISTS';
+
+        $query->whereRaw("$condition (
+            select 1 from `web_reviews` wr
+            where wr.client_id = cr.client_id
+        )");
+    }
+
+    protected function filterExamScores(&$query, $status)
+    {
+        switch ($status) {
+            // нет баллов = по текущему client_ID вообще нет баллов
+            case 'notExists':
+                $query->whereRaw('NOT EXISTS (
+                    select 1 from exam_scores es
+                    where es.client_id = cr.client_id
+                )');
+                break;
+
+            default:
+                $condition = $status === 'existsAvailable' ? 'EXISTS' : 'NOT EXISTS';
+                $query->whereRaw('EXISTS (
+                    select 1 from exam_scores es
+                    where es.client_id = cr.client_id
+                )')->whereRaw("$condition (
+                    select 1 from exam_scores es
+                    where es.client_id = cr.client_id
+                    and not exists (
+                        select 1 from exam_score_web_review es_wr
+                        where es_wr.exam_score_id = es.id
+                    )
+                )");
+                break;
+        }
     }
 }

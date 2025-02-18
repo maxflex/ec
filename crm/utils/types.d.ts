@@ -566,8 +566,8 @@ declare global {
     created_at?: string
   }
 
-  interface RealClientReview {
-    id: number
+  interface ClientReviewListResource {
+    id: number | string
     rating: number
     lessons_count: number
     years: Year[]
@@ -575,22 +575,8 @@ declare global {
     program: Program
     teacher: PersonResource
     client: PersonResource
-    is_web_review_create: boolean
     created_at: string
-    has_exam_scores: boolean
   }
-
-  interface FakeClientReview {
-    id: string
-    lessons_count: number
-    years: Year[]
-    program: Program
-    teacher: PersonResource
-    is_web_review_create: boolean
-    client: PersonResource
-  }
-
-  type ClientReviewListResource = RealClientReview | FakeClientReview
 
   interface ClientReviewResource {
     id: number

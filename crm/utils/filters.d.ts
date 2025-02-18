@@ -63,14 +63,6 @@ declare global {
     is_topic_verified?: boolean
   }
 
-  interface ClientReviewFilters {
-    type?: number
-    program?: Program
-    teacher_id?: number
-    rating?: number
-    is_web_review_create?: number
-  }
-
   interface ReportTeacherFilters {
     year: Year
     type?: number
@@ -84,11 +76,6 @@ declare global {
   interface TelegramMessageFilters {
     status?: number
     template?: TelegramTemplate
-  }
-
-  interface WebReviewFilters {
-    program: Program[]
-    exam_scores?: keyof typeof WebReviewExamScoreFilterLabel
   }
 
   interface ContractVersionFilters {

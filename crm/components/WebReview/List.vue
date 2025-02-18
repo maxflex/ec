@@ -45,22 +45,7 @@ defineEmits<{
       >
         {{ item.signature }}
       </div>
-      <div
-        style="width: 30px"
-        class="text-center"
-      >
-        <v-icon
-          v-if="item.exam_scores.length"
-          :icon="mdiNumeric5Circle"
-          color="secondary"
-        />
-        <v-icon
-          v-else-if="item.has_available_exam_scores"
-          :icon="mdiNumeric5Circle"
-          class="opacity-2"
-          color="gray"
-        />
-      </div>
+
       <div style="width: 30px">
         <v-icon :icon="mdiWeb" :class="item.is_published ? 'text-secondary' : 'opacity-2 text-gray'" />
       </div>

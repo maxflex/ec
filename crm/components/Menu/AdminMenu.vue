@@ -71,7 +71,7 @@ const menu: Menu = [
     icon: mdiStarBoxOutline,
     title: 'Отзывы',
     items: [
-      { title: 'Все отзывы', to: '/client-reviews' },
+      { title: 'Отзывы клиентов', to: '/client-reviews' },
       { title: 'Отзывы на сайте', to: '/web-reviews' },
     ],
   },

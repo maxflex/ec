@@ -163,12 +163,6 @@ defineExpose({ edit, create })
           />
         </div>
         <div>
-          <v-text-field
-            v-model="item.signature"
-            label="Подпись"
-          />
-        </div>
-        <div>
           <v-textarea
             v-model="item.text"
             rows="3"
@@ -177,6 +171,13 @@ defineExpose({ edit, create })
             label="Текст отзыва"
           />
         </div>
+        <div>
+          <v-text-field
+            v-model="item.signature"
+            label="Подпись"
+          />
+        </div>
+
         <div>
           <UiMultipleSelect
             v-model="item.programs"

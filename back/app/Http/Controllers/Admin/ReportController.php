@@ -17,9 +17,9 @@ class ReportController extends Controller
     protected $filters = [
         'equals' => [
             'year', 'program', 'status', 'client_id', 'teacher_id',
-            'requirement'
+            'requirement',
         ],
-        'excludeNotRequired' => ['exclude_not_required']
+        'excludeNotRequired' => ['exclude_not_required'],
     ];
 
     /**
@@ -28,11 +28,9 @@ class ReportController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            'year' => ['required']
+            'year' => ['required'],
         ]);
 
-        // для быстродействия не делаем union, если выбран фильтр созданные/требуется
-        // хотя улучшение сомнительно
         $query = DB::table('r')->withExpression('r',
             Report::selectForUnion()->union(Report::requirements())
         );
@@ -65,6 +63,7 @@ class ReportController extends Controller
     public function update(Request $request, Report $report)
     {
         $report->update($request->all());
+
         return new ReportListResource($report);
     }
 
