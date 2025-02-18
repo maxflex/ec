@@ -13,28 +13,13 @@ class Log extends Model
     const DISABLE_LOGS = true;
 
     protected $fillable = [
-        'table', 'row_id', 'data', 'type', 'entity_type', 'entity_id'
+        'table', 'row_id', 'data', 'type', 'entity_type', 'entity_id',
     ];
 
     protected $casts = [
         'data' => 'array',
-        'type' => LogType::class
+        'type' => LogType::class,
     ];
-
-    public function entity()
-    {
-        return $this->morphTo();
-    }
-
-    public function clientParent(): BelongsTo
-    {
-        return $this->belongsTo(ClientParent::class);
-    }
-
-    public function emulationUser(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'emulation_user_id');
-    }
 
     public static function add(LogType $type, $model)
     {
@@ -77,12 +62,29 @@ class Log extends Model
             }
             if (request()->header('Preview')) {
                 $user = Session::get(request()->header('Preview'));
-                $model->emulation_user_id = $user->id;
+                if ($user) {
+                    $model->emulation_user_id = $user->id;
+                }
             }
             if (request()->header('Client-Parent-Id')) {
                 $model->client_parent_id = request()->header('Client-Parent-Id');
             }
             $model->ip = request()->ip();
         });
+    }
+
+    public function entity()
+    {
+        return $this->morphTo();
+    }
+
+    public function clientParent(): BelongsTo
+    {
+        return $this->belongsTo(ClientParent::class);
+    }
+
+    public function emulationUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'emulation_user_id');
     }
 }

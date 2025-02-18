@@ -61,7 +61,7 @@ async function save() {
   saving.value = true
   if (item.value.id > 0) {
     await useHttp<RealReport>(
-      `reports/${id}`,
+      `reports/${item.value.id}`,
       {
         method: 'put',
         body: item.value,
