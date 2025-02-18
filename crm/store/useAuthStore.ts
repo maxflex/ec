@@ -4,9 +4,9 @@ export const useAuthStore = defineStore('auth', () => {
   const forever = { maxAge: 60 * 60 * 24 * 1000 }
   const user = ref<AuthResource>()
   const token = useCookie('token', forever)
-  const previewToken = useCookie('preview-token')
   const rememberUser = useCookie<RememberUser | undefined>('remember-user', forever)
-  const clientParentId = useCookie<number | undefined>('client-parent-id', forever)
+  const previewToken = useCookie('preview-token')
+  const clientParentId = useCookie<number | undefined>('client-parent-id')
   const isAdmin = ref(false)
   const isClient = ref(false)
   const isTeacher = ref(false)
