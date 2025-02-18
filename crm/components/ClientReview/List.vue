@@ -3,8 +3,11 @@ import type { ClientReviewDialog } from '#build/components'
 
 const props = defineProps<{
   items: ClientReviewListResource[]
+  clientId?: number
+  teacherId?: number
 }>()
 const { items } = toRefs(props)
+const { clientId, teacherId } = props
 const clientReviewDialog = ref<InstanceType<typeof ClientReviewDialog>>()
 const { isTeacher } = useAuthStore()
 
@@ -37,10 +40,10 @@ function onDeleted(r: ClientReviewResource) {
 <template>
   <div class="table">
     <div v-for="r in items" :id="`client-review-${r.id}`" :key="r.id">
-      <div v-if="!isTeacher" style="width: 150px">
+      <div v-if="!isTeacher && !teacherId" style="width: 150px">
         <UiPerson :item="r.teacher" />
       </div>
-      <div style="width: 180px">
+      <div v-if="!clientId" style="width: 180px">
         <UiPerson :item="r.client" />
       </div>
       <div style="width: 110px">

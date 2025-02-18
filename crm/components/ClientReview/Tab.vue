@@ -19,7 +19,6 @@ const { items, indexPageData } = useIndex<ClientReviewListResource, Filters>(
     staticFilters: {
       client_id: clientId,
       teacher_id: teacherId,
-      with: clientId ? 'client' : 'teacher',
     },
   },
 )
@@ -35,6 +34,6 @@ const { items, indexPageData } = useIndex<ClientReviewListResource, Filters>(
         density="comfortable"
       />
     </template>
-    <ClientReviewList :items="items" />
+    <ClientReviewList :items="items" :client-id="clientId" :teacher-id="teacherId" />
   </UiIndexPage>
 </template>
