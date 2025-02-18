@@ -50,9 +50,9 @@ const model = defineModel<boolean>({
     border-color: #ffcdd2;
   }
   &--success {
-    background: #eaf5f1;
+    border-color: #c8e6c9;
+    background: #e8f5e9;
     color: black;
-    border-color: rgb(var(--v-theme-success));
     z-index: 999;
   }
 }

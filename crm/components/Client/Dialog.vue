@@ -42,15 +42,15 @@ const modelDefaults: ClientResource = {
 }
 
 const { dialog, width } = useDialog('medium')
-const client = ref<ClientResource>(clone(modelDefaults))
+const item = ref<ClientResource>(clone(modelDefaults))
+const itemId = ref<number>()
 const loading = ref(false)
 const saving = ref(false)
-const itemId = ref<number>()
 const requestId = ref<number>()
 const errors = ref(new Set<string>())
 
 function open(c: ClientResource) {
-  client.value = clone(c)
+  item.value = clone(c)
   dialog.value = true
 }
 
@@ -78,7 +78,7 @@ async function save() {
   if (itemId.value) {
     const { data, error } = await useHttp<ClientResource>(`clients/${itemId.value}`, {
       method: 'put',
-      body: client.value,
+      body: item.value,
     })
     if (data.value) {
       emit('updated', data.value)
@@ -92,7 +92,7 @@ async function save() {
     const { data, error } = await useHttp<ClientListResource>('clients', {
       method: 'post',
       body: {
-        ...client.value,
+        ...item.value,
         request_id: requestId.value,
       },
     })
@@ -107,22 +107,26 @@ async function save() {
   saving.value = false
 }
 
+function onDeleted() {
+  dialog.value = false
+}
+
 defineExpose({ create, edit })
 </script>
 
 <template>
   <v-dialog v-model="dialog" :width="width">
     <div
-      v-if="client"
+      v-if="item"
       class="dialog-wrapper"
     >
       <div class="dialog-header">
-        <div v-if="client.id > 0">
+        <div v-if="item.id > 0">
           Редактирование клиента
           <div class="dialog-subheader">
-            {{ client.user ? formatName(client.user) : 'неизвестно' }}
-            <template v-if="client.created_at">
-              {{ formatDateTime(client.created_at) }}
+            {{ item.user ? formatName(item.user) : 'неизвестно' }}
+            <template v-if="item.created_at">
+              {{ formatDateTime(item.created_at) }}
             </template>
           </div>
         </div>
@@ -131,46 +135,55 @@ defineExpose({ create, edit })
             к заявке {{ requestId }}
           </template>
         </span>
-        <v-btn
-          icon="$save"
-          :size="48"
-          :loading="saving"
-          variant="text"
-          @click="save()"
-        />
+        <div>
+          <DialogDeleteBtn
+            v-if="itemId"
+            :id="itemId"
+            confirm-text="Вы уверены, что хотите удалить клиента?"
+            api-url="clients"
+            @deleted="onDeleted()"
+          />
+          <v-btn
+            icon="$save"
+            :size="48"
+            :loading="saving"
+            variant="text"
+            @click="save()"
+          />
+        </div>
       </div>
       <div class="dialog-body">
         <!-- <div class="dialog-section__title">
             Ученик
           </div> -->
         <div style="margin-bottom: 49px;">
-          <AvatarLoader :key="client.id" :item="client" />
+          <AvatarLoader :key="item.id" :item="item" />
         </div>
         <div class="double-input">
           <v-text-field
-            v-model="client.last_name"
+            v-model="item.last_name"
             label="Фамилия"
           />
           <v-text-field
-            v-model="client.first_name"
+            v-model="item.first_name"
             label="Имя"
           />
           <v-text-field
-            v-model="client.middle_name"
+            v-model="item.middle_name"
             label="Отчество"
           />
         </div>
         <div class="double-input">
           <v-text-field
-            v-model="client.passport.series"
+            v-model="item.passport.series"
             label="Серия паспорта"
           />
           <v-text-field
-            v-model="client.passport.number"
+            v-model="item.passport.number"
             label="Номер паспорта"
           />
           <UiDateInput
-            v-model="client.passport.birthdate"
+            v-model="item.passport.birthdate"
             label="Дата рождения"
             manual
             :error="errors.has('passport.birthdate')"
@@ -178,26 +191,26 @@ defineExpose({ create, edit })
         </div>
         <div class="double-input">
           <v-select
-            v-model="client.branches"
+            v-model="item.branches"
             label="Филиалы"
             multiple
             :items="selectItems(BranchLabel)"
           />
           <TeacherSelector
-            v-model="client.head_teacher_id"
+            v-model="item.head_teacher_id"
             label="Куратор"
           />
           <v-text-field
-            v-model="client.email"
+            v-model="item.email"
             label="E-mail"
           />
         </div>
 
-        <PhoneEditor v-model="client.phones" edit-telegram />
+        <PhoneEditor v-model="item.phones" edit-telegram />
 
         <div>
           <v-checkbox
-            v-model="client.is_remote"
+            v-model="item.is_remote"
             label="Учится удалённо"
           />
         </div>
@@ -207,64 +220,64 @@ defineExpose({ create, edit })
         </div>
         <div class="double-input">
           <v-text-field
-            v-model="client.parent.last_name"
+            v-model="item.parent.last_name"
             label="Фамилия"
           />
           <v-text-field
-            v-model="client.parent.first_name"
+            v-model="item.parent.first_name"
             label="Имя"
           />
           <v-text-field
-            v-model="client.parent.middle_name"
+            v-model="item.parent.middle_name"
             label="Отчество"
           />
         </div>
         <div class="double-input">
           <v-text-field
-            v-model="client.parent.passport.series"
+            v-model="item.parent.passport.series"
             label="Серия паспорта"
           />
           <v-text-field
-            v-model="client.parent.passport.number"
+            v-model="item.parent.passport.number"
             label="Номер паспорта"
           />
           <v-text-field
-            v-model="client.parent.passport.code"
+            v-model="item.parent.passport.code"
             label="Код подразделения"
           />
         </div>
         <div class="double-input">
           <UiDateInput
-            v-model="client.parent.passport.issued_date"
+            v-model="item.parent.passport.issued_date"
             label="Дата выдачи паспорта"
             manual
             :error="errors.has('parent.passport.issued_date')"
           />
           <v-text-field
-            v-model="client.parent.email"
+            v-model="item.parent.email"
             label="E-mail"
           />
         </div>
 
         <v-textarea
-          v-model="client.parent.passport.issued_by"
+          v-model="item.parent.passport.issued_by"
           label="Кем выдан"
           no-resize
           rows="3"
         />
         <v-textarea
-          v-model="client.parent.passport.address"
+          v-model="item.parent.passport.address"
           label="Адрес регистрации"
           no-resize
           rows="3"
         />
         <v-textarea
-          v-model="client.parent.passport.fact_address"
+          v-model="item.parent.passport.fact_address"
           label="Фактический адрес"
           no-resize
           rows="3"
         />
-        <PhoneEditor v-model="client.parent.phones" edit-telegram />
+        <PhoneEditor v-model="item.parent.phones" edit-telegram />
       </div>
     </div>
   </v-dialog>

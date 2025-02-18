@@ -11,6 +11,7 @@ use App\Models\Client;
 use App\Models\ClientParent;
 use App\Models\Phone;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ClientController extends Controller
 {
@@ -26,6 +27,7 @@ class ClientController extends Controller
     {
         $query = Client::orderBy('id', 'desc');
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, ClientListResource::class);
     }
 
@@ -55,6 +57,7 @@ class ClientController extends Controller
                 'client_id' => $client->id,
             ]);
         }
+
         return new ClientListResource($client);
     }
 
@@ -64,7 +67,18 @@ class ClientController extends Controller
         $client->syncRelation($request->all(), 'phones');
         $client->parent->update($request->parent);
         $client->parent->syncRelation($request->parent, 'phones');
+
         return new ClientResource($client);
+    }
+
+    public function destroy(Client $client)
+    {
+        DB::transaction(function () use ($client) {
+            $client->parent->phones->each->delete();
+            $client->parent->delete();
+            $client->phones->each->delete();
+            $client->delete();
+        });
     }
 
     protected function filterSearch(&$query, $value)
@@ -89,18 +103,17 @@ class ClientController extends Controller
         $numbers = Phone::where('entity_id', $requestId)
             ->where('entity_type', \App\Models\Request::class)
             ->pluck('number');
-        $query->where(fn($q) => $q
-            ->whereHas('phones', fn($q) => $q->whereIn('number', $numbers))
-            ->orWhereHas('parent.phones', fn($q) => $q->whereIn('number', $numbers))
+        $query->where(fn ($q) => $q
+            ->whereHas('phones', fn ($q) => $q->whereIn('number', $numbers))
+            ->orWhereHas('parent.phones', fn ($q) => $q->whereIn('number', $numbers))
         );
     }
-
 
     // https://doc.ege-centr.ru/tasks/834
     protected function filterHeadTeacher($query, $headTeacherId)
     {
         $query
             ->where('head_teacher_id', $headTeacherId)
-            ->whereHas('contracts', fn($q) => $q->where('year', current_academic_year()));
+            ->whereHas('contracts', fn ($q) => $q->where('year', current_academic_year()));
     }
 }
