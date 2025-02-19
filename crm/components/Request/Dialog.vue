@@ -1,27 +1,14 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
+import { apiUrl, modelDefaults, type RequestListResource, type RequestResource } from '.'
 
 const emit = defineEmits<{
   updated: [r: RequestListResource]
   deleted: [r: RequestResource]
 }>()
 
-const modelDefaults: RequestResource = {
-  status: 'new',
-  direction: null,
-  responsible_user_id: null,
-  phones: [],
-  associated_clients: [],
-  client_id: null,
-  yandex_id: null,
-  google_id: null,
-  ip: null,
-  is_verified: true,
-}
-
 const { dialog, width } = useDialog('default')
 const loading = ref(false)
-const deleting = ref(false)
 const itemId = ref<number>()
 const request = ref<RequestResource>(modelDefaults)
 
@@ -39,7 +26,7 @@ async function edit(r: RequestListResource) {
   itemId.value = r.id
   loading.value = true
   dialog.value = true
-  const { data } = await useHttp<RequestResource>(`requests/${r.id}`)
+  const { data } = await useHttp<RequestResource>(`${apiUrl}/${r.id}`)
   if (data.value) {
     open(data.value)
   }
@@ -49,7 +36,7 @@ async function edit(r: RequestListResource) {
 async function save() {
   dialog.value = false
   if (itemId.value) {
-    const { data } = await useHttp<RequestListResource>(`requests/${itemId.value}`, {
+    const { data } = await useHttp<RequestListResource>(`${apiUrl}/${itemId.value}`, {
       method: 'put',
       body: request.value,
     })
@@ -59,7 +46,7 @@ async function save() {
     }
   }
   else {
-    const { data } = await useHttp<RequestListResource>('requests', {
+    const { data } = await useHttp<RequestListResource>(apiUrl, {
       method: 'post',
       body: request.value,
     })
@@ -70,22 +57,9 @@ async function save() {
   // emit('saved')
 }
 
-async function destroy() {
-  if (!confirm('Вы уверены, что хотите удалить заявку?')) {
-    return
-  }
-  deleting.value = true
-  const { status } = await useHttp(`requests/${request.value.id}`, {
-    method: 'delete',
-  })
-  if (status.value === 'error') {
-    deleting.value = false
-  }
-  else {
-    emit('deleted', request.value)
-    dialog.value = false
-    setTimeout(() => (deleting.value = false), 300)
-  }
+function onDeleted() {
+  emit('deleted', request.value)
+  dialog.value = false
 }
 
 defineExpose({ create, edit })
@@ -114,14 +88,11 @@ defineExpose({ create, edit })
           Добавить заявку
         </template>
         <div>
-          <v-btn
-            v-if="itemId"
-            :loading="deleting"
-            :size="48"
-            class="remove-btn"
-            icon="$delete"
-            variant="text"
-            @click="destroy()"
+          <DialogDeleteBtn
+            :id="request.id"
+            :api-url="apiUrl"
+            confirm-text="Вы уверены, что хотите удалить заявку?"
+            @deleted="onDeleted()"
           />
           <v-btn
             :size="48"

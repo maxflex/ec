@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { RequestListResource } from '.'
+
 const { item } = defineProps<{ item: RequestListResource }>()
 const status = ref<RequestStatus>(item.status)
 const statuses = Object.keys(RequestStatusLabel) as RequestStatus[]

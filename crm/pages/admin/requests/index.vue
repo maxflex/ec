@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { RequestDialog } from '#components'
+import { apiUrl, type RequestListResource } from '~/components/Request'
+import type { Filters } from '~/components/Request/Filters.vue'
 
-const filters = ref<RequestFilters>(loadFilters({}))
-const { items, indexPageData } = useIndex<RequestListResource, RequestFilters>(
-  `requests`,
+const filters = ref<Filters>(loadFilters({}))
+const { items, indexPageData } = useIndex<RequestListResource, Filters>(
+  apiUrl,
   filters,
 )
 
@@ -33,8 +35,5 @@ function onRequestUpdated(r: RequestListResource) {
     </template>
     <RequestList v-model="items" />
   </UiIndexPage>
-  <RequestDialog
-    ref="requestDialog"
-    @updated="onRequestUpdated"
-  />
+  <RequestDialog ref="requestDialog" @updated="onRequestUpdated" />
 </template>

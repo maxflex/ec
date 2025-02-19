@@ -32,8 +32,6 @@ class HeadTeacherReportController extends Controller
     public function destroy(HeadTeacherReport $headTeacherReport)
     {
         $headTeacherReport->delete();
-
-        return response()->json();
     }
 
     protected function getAvailableYears($query): Collection

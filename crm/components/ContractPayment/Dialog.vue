@@ -2,36 +2,18 @@
 import type { PrintDialog } from '#components'
 import { clone } from 'rambda'
 import { ContractPaymentMethodLabel } from '~/utils/labels'
+import { apiUrl, type ContractPaymentResource, modelDefaults, printOptions } from '.'
 
 const emit = defineEmits<{
   updated: [e: ContractPaymentResource]
   deleted: [e: ContractPaymentResource]
 }>()
 const { width, dialog } = useDialog('default')
-const deleting = ref(false)
 const saving = ref(false)
 const loading = ref(false)
 const itemId = ref<number>()
 
 const printDialog = ref<InstanceType<typeof PrintDialog>>()
-const printOptions: PrintOption[] = [
-  { id: 10, label: 'счёт на оплату' },
-  { id: 11, label: 'счёт на оплату (с печатью)' },
-  { id: 9, label: 'платежка (наличные)' },
-  { id: 14, label: 'платежка НДС (наличные)' },
-]
-
-const modelDefaults: ContractPaymentResource = {
-  id: newId(),
-  sum: 0,
-  date: today(),
-  method: 'card',
-  is_confirmed: false,
-  is_return: false,
-  contract_id: newId(),
-  pko_number: null,
-  card_number: null,
-}
 const item = ref<ContractPaymentResource>(modelDefaults)
 
 function create(c: ContractResource) {
@@ -42,11 +24,10 @@ function create(c: ContractResource) {
 }
 
 async function edit(id: number) {
-  console.log('edit', id)
   itemId.value = id
   loading.value = true
   dialog.value = true
-  const { data } = await useHttp<ContractPaymentResource>(`contract-payments/${id}`)
+  const { data } = await useHttp<ContractPaymentResource>(`${apiUrl}/${id}`)
   if (data.value) {
     item.value = data.value
   }
@@ -56,7 +37,7 @@ async function edit(id: number) {
 async function save() {
   saving.value = true
   const method = itemId.value ? `put` : `post`
-  const url = itemId.value ? `contract-payments/${itemId.value}` : `contract-payments`
+  const url = itemId.value ? `${apiUrl}/${itemId.value}` : apiUrl
   const { data } = await useHttp<ContractPaymentResource>(url, {
     method,
     body: item.value,
@@ -68,22 +49,9 @@ async function save() {
   setTimeout(() => saving.value = false, 300)
 }
 
-async function destroy() {
-  if (!confirm('Вы уверены, что хотите удалить платеж?')) {
-    return
-  }
-  deleting.value = true
-  const { data, status } = await useHttp(`contract-payments/${item.value.id}`, {
-    method: 'delete',
-  })
-  if (status.value === 'error') {
-    deleting.value = false
-  }
-  else if (data.value) {
-    emit('deleted', item.value)
-    dialog.value = false
-    setTimeout(() => deleting.value = false, 300)
-  }
+function onDeleted() {
+  dialog.value = false
+  emit('deleted', item.value)
 }
 
 defineExpose({ create, edit })
@@ -109,13 +77,11 @@ defineExpose({ create, edit })
           <template
             v-if="itemId"
           >
-            <v-btn
-              icon="$delete"
-              :size="48"
-              variant="text"
-              :loading="deleting"
-              class="remove-btn"
-              @click="destroy()"
+            <DialogDeleteBtn
+              :id="itemId"
+              :api-url="apiUrl"
+              confirm-text="Вы уверены, что хотите удалить платеж?"
+              @deleted="onDeleted()"
             />
             <v-menu>
               <template #activator="{ props }">

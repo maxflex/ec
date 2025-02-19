@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { RequestListResource } from '.'
 import { mdiInbox, mdiWeb } from '@mdi/js'
 
 const { item, expanding } = defineProps<{

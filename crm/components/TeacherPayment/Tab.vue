@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { TeacherPaymentDialog } from '#build/components'
+import { apiUrl, type TeacherPaymentResource } from '.'
 
 const { teacherId } = defineProps<{ teacherId: number }>()
 
@@ -8,7 +9,7 @@ const teacherPaymentDialog = ref<InstanceType<typeof TeacherPaymentDialog>>()
 const availableYearsLoaded = ref(false)
 
 const { items, indexPageData } = useIndex<TeacherPaymentResource, AvailableYearsFilter>(
-  `teacher-payments`,
+  apiUrl,
   filters,
   {
     instantLoad: false,
@@ -17,6 +18,11 @@ const { items, indexPageData } = useIndex<TeacherPaymentResource, AvailableYears
     },
   },
 )
+
+function onDeleted(p: TeacherPaymentResource) {
+  const index = items.value.findIndex(e => e.id === p.id)
+  items.value.splice(index, 1)
+}
 
 function onUpdated(p: TeacherPaymentResource) {
   const index = items.value.findIndex(e => e.id === p.id)
@@ -56,5 +62,5 @@ function onAvailableYearsLoaded() {
     </template>
     <TeacherPaymentList :items="items" @open="teacherPaymentDialog?.edit" />
   </UiIndexPage>
-  <TeacherPaymentDialog ref="teacherPaymentDialog" @updated="onUpdated" />
+  <TeacherPaymentDialog ref="teacherPaymentDialog" @updated="onUpdated" @deleted="onDeleted" />
 </template>

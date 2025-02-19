@@ -1,22 +1,18 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
+import { apiUrl, modelDefaults, type TeacherServiceResource } from '.'
 
-const emit = defineEmits<{ (e: 'updated' | 'deleted', c: TeacherServiceResource): void }>()
-
-const modelDefaults: TeacherServiceResource = {
-  id: newId(),
-  year: currentAcademicYear(),
-  date: today(),
-  purpose: null,
-  sum: 0,
-}
+const emit = defineEmits<{
+  updated: [ts: TeacherServiceResource]
+  deleted: [ts: TeacherServiceResource]
+}>()
 
 const { dialog, width } = useDialog('default')
 const item = ref<TeacherServiceResource>(modelDefaults)
 const loading = ref(false)
 const itemId = ref<number>()
 const sumInput = ref()
-const deleting = ref(false)
+
 function open(c: TeacherServiceResource) {
   item.value = clone(c)
   dialog.value = true
@@ -34,11 +30,12 @@ function create(teacherId: number) {
     sumInput.value.focus()
   })
 }
+
 async function edit(c: TeacherServiceResource) {
   itemId.value = c.id
   loading.value = true
   dialog.value = true
-  const { data } = await useHttp<TeacherServiceResource>(`teacher-services/${c.id}`)
+  const { data } = await useHttp<TeacherServiceResource>(`${apiUrl}/${c.id}`)
   if (data.value) {
     open(data.value)
   }
@@ -48,7 +45,7 @@ async function edit(c: TeacherServiceResource) {
 async function save() {
   dialog.value = false
   if (itemId.value) {
-    const { data } = await useHttp<TeacherServiceResource>(`teacher-services/${itemId.value}`, {
+    const { data } = await useHttp<TeacherServiceResource>(`${apiUrl}/${itemId.value}`, {
       method: 'put',
       body: item.value,
     })
@@ -57,7 +54,7 @@ async function save() {
     }
   }
   else {
-    const { data } = await useHttp<TeacherServiceResource>('teacher-services', {
+    const { data } = await useHttp<TeacherServiceResource>(apiUrl, {
       method: 'post',
       body: item.value,
     })
@@ -67,22 +64,9 @@ async function save() {
   }
 }
 
-async function destroy() {
-  if (!confirm('Вы уверены, что хотите удалить допуслугу?')) {
-    return
-  }
-  deleting.value = true
-  const { status } = await useHttp(`teacher-services/${item.value.id}`, {
-    method: 'delete',
-  })
-  if (status.value === 'error') {
-    deleting.value = false
-  }
-  else {
-    emit('deleted', item.value)
-    dialog.value = false
-    setTimeout(() => deleting.value = false, 300)
-  }
+function onDeleted() {
+  emit('deleted', item.value)
+  dialog.value = false
 }
 
 defineExpose({ create, edit })
@@ -109,14 +93,11 @@ defineExpose({ create, edit })
         </div>
         <span v-else> Добавить допуслугу </span>
         <div>
-          <v-btn
-            v-if="item.id > 0"
-            icon="$delete"
-            :size="48"
-            class="remove-btn"
-            variant="text"
-            :loading="deleting"
-            @click="destroy()"
+          <DialogDeleteBtn
+            :id="item.id"
+            :api-url="apiUrl"
+            confirm-text="Вы уверены, что хотите удалить допуслугу?"
+            @deleted="onDeleted()"
           />
           <v-btn
             icon="$save"

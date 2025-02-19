@@ -1,5 +1,10 @@
 <script lang="ts" setup>
-const model = defineModel<RequestFilters>({ required: true })
+export interface Filters {
+  status?: RequestStatus
+  direction?: Direction
+}
+
+const model = defineModel<Filters>({ required: true })
 </script>
 
 <template>

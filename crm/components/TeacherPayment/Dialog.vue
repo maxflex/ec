@@ -1,27 +1,17 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
+import { apiUrl, modelDefaults, type TeacherPaymentResource } from '.'
 
 const emit = defineEmits<{
   updated: [item: TeacherPaymentResource]
   deleted: [item: TeacherPaymentResource]
 }>()
 
-const modelDefaults: TeacherPaymentResource = {
-  id: newId(),
-  year: currentAcademicYear(),
-  date: today(),
-  method: 'card',
-  card_number: null,
-  sum: 0,
-  is_confirmed: false,
-}
-
 const { dialog, width } = useDialog('default')
 const item = ref<TeacherPaymentResource>(modelDefaults)
 const loading = ref(false)
 const itemId = ref<number>()
 const sumInput = ref()
-const deleting = ref(false)
 function open(c: TeacherPaymentResource) {
   item.value = clone(c)
   dialog.value = true
@@ -43,7 +33,7 @@ async function edit(c: TeacherPaymentResource) {
   itemId.value = c.id
   loading.value = true
   dialog.value = true
-  const { data } = await useHttp<TeacherPaymentResource>(`teacher-payments/${c.id}`)
+  const { data } = await useHttp<TeacherPaymentResource>(`${apiUrl}/${c.id}`)
   if (data.value) {
     open(data.value)
   }
@@ -53,7 +43,7 @@ async function edit(c: TeacherPaymentResource) {
 async function save() {
   dialog.value = false
   if (itemId.value) {
-    const { data } = await useHttp<TeacherPaymentResource>(`teacher-payments/${itemId.value}`, {
+    const { data } = await useHttp<TeacherPaymentResource>(`${apiUrl}/${itemId.value}`, {
       method: 'put',
       body: item.value,
     })
@@ -62,7 +52,7 @@ async function save() {
     }
   }
   else {
-    const { data } = await useHttp<TeacherPaymentResource>('teacher-payments', {
+    const { data } = await useHttp<TeacherPaymentResource>(apiUrl, {
       method: 'post',
       body: item.value,
     })
@@ -72,36 +62,18 @@ async function save() {
   }
 }
 
-async function destroy() {
-  if (!confirm('Вы уверены, что хотите удалить платеж?')) {
-    return
-  }
-  deleting.value = true
-  const { status } = await useHttp(`teacher-payments/${item.value.id}`, {
-    method: 'delete',
-  })
-  if (status.value === 'error') {
-    deleting.value = false
-  }
-  else {
-    emit('deleted', item.value)
-    dialog.value = false
-    setTimeout(() => deleting.value = false, 300)
-  }
+function onDeleted() {
+  console.log('deleted 1111', item.value)
+  emit('deleted', item.value)
+  dialog.value = false
 }
 
 defineExpose({ create, edit })
 </script>
 
 <template>
-  <v-dialog
-    v-model="dialog"
-    :width="width"
-  >
-    <div
-      v-if="item"
-      class="dialog-wrapper"
-    >
+  <v-dialog v-model="dialog" :width="width">
+    <div v-if="item" class="dialog-wrapper">
       <div class="dialog-header">
         <div v-if="item.id > 0">
           Редактирование платежа
@@ -114,14 +86,11 @@ defineExpose({ create, edit })
         </div>
         <span v-else> Добавить платеж </span>
         <div>
-          <v-btn
-            v-if="item.id > 0"
-            icon="$delete"
-            :size="48"
-            class="remove-btn"
-            variant="text"
-            :loading="deleting"
-            @click="destroy()"
+          <DialogDeleteBtn
+            :id="item.id"
+            :api-url="apiUrl"
+            confirm-text="Вы уверены, что хотите удалить платеж?"
+            @deleted="onDeleted()"
           />
           <v-btn
             icon="$save"

@@ -29,7 +29,7 @@ async function destroy() {
 
 <template>
   <v-btn
-    v-if="id"
+    v-if="!!id"
     :loading="deleting"
     :size="48"
     class="remove-btn"

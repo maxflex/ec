@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { RequestDialog } from '#build/components'
+import type { RequestListResource, RequestResource } from '.'
 import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 
 const model = defineModel<RequestListResource[]>({ default: () => [] })

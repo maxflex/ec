@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ContractPaymentResource } from '.'
+
 const { items } = defineProps<{ items: ContractPaymentResource[] }>()
 const emit = defineEmits<{
   edit: [id: number]

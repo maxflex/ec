@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PassDialog } from '#components'
+import type { PassResource } from '~/components/Pass'
 
 const passDialog = ref<InstanceType<typeof PassDialog>>()
 const filters = ref<PassFilters>(loadFilters({}))

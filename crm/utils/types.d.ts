@@ -1,3 +1,5 @@
+import type { ContractPaymentResource } from '~/components/ContractPayment'
+
 declare global {
   type Direction = keyof typeof DirectionLabel
 
@@ -176,38 +178,6 @@ declare global {
     is_telegram_disabled: boolean
   }
 
-  interface RequestResource {
-    id?: number
-    status: RequestStatus
-    direction: ?Direction
-    responsible_user_id: ?number
-    yandex_id: ?string
-    google_id: ?string
-    ip: ?string
-    phones: PhoneResource[]
-    user?: PersonResource
-    client_id: ?number
-    created_at?: string
-    associated_clients: ClientWithContractsResource[]
-    is_verified?: boolean
-  }
-
-  interface RequestListResource {
-    id: number
-    status: RequestStatus
-    direction: ?Direction
-    responsible_user: ?PersonResource
-    client: ?PersonResource
-    phones: PhoneResource[]
-    created_at: string
-    comments_count: number
-    passes: PassResource[]
-    user_id: ?number
-    is_verified: boolean
-    associated_clients: PersonResource[]
-    associated_requests_count: number
-  }
-
   interface ParentResource extends HasName, HasPhones {
     id: number
     email?: string
@@ -327,20 +297,6 @@ declare global {
       year: Year
       client: PersonResource
     }
-  }
-
-  interface ContractPaymentResource {
-    id: number
-    contract_id: number
-    sum: number
-    date: string
-    method: ContractPaymentMethod
-    is_return: boolean
-    is_confirmed: boolean
-    pko_number: ?number
-    card_number: ?string
-    created_at?: string
-    user?: PersonResource
   }
 
   interface ContractResource {
@@ -520,32 +476,6 @@ declare global {
     so?: number
     created_at?: string
     user?: PersonResource
-  }
-
-  interface TeacherPaymentResource {
-    id: number
-    sum: number
-    date: string
-    year: Year
-    method: TeacherPaymentMethod
-    is_confirmed: boolean
-    card_number: ?string
-    teacher_id?: number
-    user?: PersonResource
-    teacher?: PersonResource
-    created_at?: string
-  }
-
-  interface TeacherServiceResource {
-    id: number
-    sum: number
-    purpose: ?string
-    year: Year
-    date: string
-    teacher_id?: number
-    user?: PersonResource
-    teacher?: PersonResource
-    created_at?: string
   }
 
   interface BalanceItem {
@@ -1068,31 +998,6 @@ declare global {
     }
     text: string
     results?: { [key: string]: TelegramListResult[] }
-  }
-
-  interface PassResource {
-    id: number
-    type: PassType
-    date: string
-    comment: string
-    used_at: ?string
-    is_expired: boolean
-    request_id?: number
-    user?: PersonResource
-    created_at?: string
-    request?: {
-      id: number
-      direction: Direction
-    }
-  }
-
-  interface HeadTeacherReportResource {
-    id: number
-    year: Year
-    month: Month
-    text: string
-    teacher?: PersonResource
-    created_at?: string
   }
 
   interface GroupActResource {

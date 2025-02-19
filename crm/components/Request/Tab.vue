@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { RequestListResource } from '.'
+
 const { clientId } = defineProps<{ clientId: number }>()
 const loading = ref(true)
 const items = ref<RequestListResource[]>([])

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { TeacherServiceDialog } from '#build/components'
+import type { TeacherServiceResource } from '.'
 
 const { items, teacherId } = defineProps<{
   items: TeacherServiceResource[]
@@ -7,21 +8,21 @@ const { items, teacherId } = defineProps<{
 }>()
 const teacherServiceDialog = ref<InstanceType<typeof TeacherServiceDialog>>()
 
-function onTeacherServiceUpdated(tp: TeacherServiceResource) {
-  const index = items.findIndex(e => e.id === tp.id)
+function onTeacherServiceUpdated(ts: TeacherServiceResource) {
+  const index = items.findIndex(e => e.id === ts.id)
   if (index !== -1) {
     // eslint-disable-next-line
-    items.splice(index, 1, tp)
+    items.splice(index, 1, ts)
   }
   else {
     // eslint-disable-next-line
-    items.push(tp)
+    items.push(ts)
     smoothScroll('main', 'bottom')
   }
 }
 
-function onTeacherServiceDeleted(tp: TeacherServiceResource) {
-  const index = items.findIndex(e => e.id === tp.id)
+function onTeacherServiceDeleted(ts: TeacherServiceResource) {
+  const index = items.findIndex(e => e.id === ts.id)
   if (index !== -1) {
     // eslint-disable-next-line
     items.splice(index, 1)
@@ -30,13 +31,8 @@ function onTeacherServiceDeleted(tp: TeacherServiceResource) {
 </script>
 
 <template>
-  <div
-    class="table"
-  >
-    <div
-      v-for="payment in items"
-      :key="payment.id"
-    >
+  <div class="table">
+    <div v-for="payment in items" :key="payment.id">
       <div class="table-actionss">
         <v-btn
           icon="$edit"

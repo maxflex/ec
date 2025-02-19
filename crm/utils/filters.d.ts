@@ -6,11 +6,6 @@ declare global {
     method?: ClientPaymentMethod
   }
 
-  interface RequestFilters {
-    status?: RequestStatus
-    direction?: Direction
-  }
-
   interface CallAppFilters {
     q: string
     status: CallAppStatusFilter

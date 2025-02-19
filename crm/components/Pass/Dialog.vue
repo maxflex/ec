@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
+import { apiUrl, modelDefaults, type PassResource } from '.'
 
 const emit = defineEmits<{
   updated: [pass: PassResource]
@@ -7,17 +8,7 @@ const emit = defineEmits<{
   deleted: [pass: PassResource]
 }>()
 const { dialog, width } = useDialog('default')
-const modelDefaults: PassResource = {
-  id: newId(),
-  type: 'person',
-  date: '',
-  comment: '',
-  used_at: null,
-  is_expired: false,
-}
-
 const saving = ref(false)
-const deleting = ref(false)
 const item = ref<PassResource>(modelDefaults)
 const isDisabled = computed(() => item.value.is_expired || !!item.value.used_at)
 
@@ -38,7 +29,7 @@ async function save() {
   saving.value = true
   if (item.value.id > 0) {
     const { data } = await useHttp<PassResource>(
-      `passes/${item.value.id}`,
+      `${apiUrl}/${item.value.id}`,
       {
         method: 'put',
         body: item.value,
@@ -49,13 +40,10 @@ async function save() {
     }
   }
   else {
-    const { data } = await useHttp<PassResource>(
-      `passes`,
-      {
-        method: 'post',
-        body: item.value,
-      },
-    )
+    const { data } = await useHttp<PassResource>(apiUrl, {
+      method: 'post',
+      body: item.value,
+    })
     if (data.value) {
       emit('created', data.value)
     }
@@ -64,14 +52,7 @@ async function save() {
   saving.value = false
 }
 
-async function destroy() {
-  if (!confirm('Вы уверены, что хотите удалить пропуск?')) {
-    return
-  }
-  deleting.value = true
-  await useHttp(`passes/${item.value.id}`, {
-    method: 'delete',
-  })
+function onDeleted() {
   emit('deleted', item.value)
   dialog.value = false
 }
@@ -97,14 +78,11 @@ defineExpose({ create, edit })
           </template>
         </template>
         <div v-if="!isDisabled">
-          <v-btn
-            v-if="item.id > 0"
-            :loading="deleting"
-            :size="48"
-            class="remove-btn"
-            icon="$delete"
-            variant="text"
-            @click="destroy()"
+          <DialogDeleteBtn
+            :id="item.id"
+            :api-url="apiUrl"
+            confirm-text="Вы уверены, что хотите удалить пропуск?"
+            @deleted="onDeleted()"
           />
           <v-btn icon="$save" variant="text" :size="48" :loading="saving" @click="save()" />
         </div>

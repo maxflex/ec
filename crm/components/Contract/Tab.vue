@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ContractPaymentDialog, ContractVersionDialog } from '#build/components'
+import type { ContractPaymentResource } from '~/components/ContractPayment'
 
 const { clientId } = defineProps <{ clientId: number }>()
 const items = ref<ContractResource[]>([])
@@ -62,7 +63,7 @@ function onContractPaymentUpdated(cp: ContractPaymentResource) {
   else {
     items.value[contractIndex].payments[index] = cp
   }
-  itemUpdated('client-payment', cp.id)
+  itemUpdated('contract-payment', cp.id)
 }
 
 function onContractPaymentDeleted(cp: ContractPaymentResource) {

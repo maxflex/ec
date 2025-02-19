@@ -1,19 +1,13 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
+import { apiUrl, type HeadTeacherReportResource, modelDefaults } from '.'
 
 const emit = defineEmits<{
   updated: [item: HeadTeacherReportResource]
   deleted: [item: HeadTeacherReportResource]
 }>()
 const { dialog, width } = useDialog('medium')
-const modelDefaults: HeadTeacherReportResource = {
-  id: newId(),
-  text: '',
-  month: currentMonth(),
-  year: currentAcademicYear(),
-}
 const saving = ref(false)
-const deleting = ref(false)
 
 const item = ref<HeadTeacherReportResource>({ ...modelDefaults })
 
@@ -36,14 +30,14 @@ async function save() {
   saving.value = true
   const { data } = isEditMode.value
     ? await useHttp<HeadTeacherReportResource>(
-      `head-teacher-reports/${item.value.id}`,
+      `${apiUrl}/${item.value.id}`,
       {
         method: 'put',
         body: { ...item.value },
       },
     )
     : await useHttp<HeadTeacherReportResource>(
-      `head-teacher-reports`,
+      apiUrl,
       {
         method: 'post',
         body: { ...item.value },
@@ -54,20 +48,9 @@ async function save() {
   emit('updated', data.value!)
 }
 
-async function destroy() {
-  if (!confirm('Вы уверены, что хотите удалить отчёт?')) {
-    return
-  }
-  deleting.value = true
-  await useHttp(
-    `head-teacher-reports/${item.value.id}`,
-    {
-      method: 'delete',
-    },
-  )
+async function onDeleted() {
   emit('deleted', item.value)
   dialog.value = false
-  deleting.value = false
 }
 
 function create() {
@@ -92,14 +75,11 @@ defineExpose({ edit, create })
           Создать отчёт
         </template>
         <div>
-          <v-btn
-            v-if="isEditMode"
-            icon="$delete"
-            :size="48"
-            variant="text"
-            :loading="deleting"
-            class="remove-btn"
-            @click="destroy()"
+          <DialogDeleteBtn
+            :id="item.id"
+            :api-url="apiUrl"
+            confirm-text="Вы уверены, что хотите удалить отчёт?"
+            @deleted="onDeleted"
           />
           <v-btn
             icon="$save"

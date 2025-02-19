@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PassDialog } from '#components'
+import type { PassResource } from '~/components/Pass'
 
 const route = useRoute()
 const id = Number.parseInt(route.params.id as string)

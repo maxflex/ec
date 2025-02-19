@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PassDialog } from '#components'
+import type { PassResource } from '.'
 
 const { items } = defineProps<{
   items: PassResource[]

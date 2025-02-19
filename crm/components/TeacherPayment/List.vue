@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { TeacherPaymentDialog } from '#build/components'
+import type { TeacherPaymentResource } from '.'
 
 const { items } = defineProps<{
   items: TeacherPaymentResource[]
