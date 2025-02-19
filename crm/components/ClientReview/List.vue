@@ -41,28 +41,27 @@ function onDeleted(id: number) {
 <template>
   <div class="table table--padding">
     <div v-for="cr in items" :id="`client-review-${cr.id}`" :key="cr.id">
-      <div v-if="!isTeacher && !teacherId" style="width: 150px">
+      <div v-if="!isTeacher && !teacherId" style="width: 180px">
         <UiPerson :item="cr.teacher" />
       </div>
       <div v-if="!clientId" style="width: 180px">
         <UiPerson :item="cr.client" />
       </div>
-      <div style="width: 90px">
+      <div style="width: 110px">
         {{ ProgramShortLabel[cr.program] }}
       </div>
       <div style="width: 120px">
         занятий: {{ cr.lessons_count }}
       </div>
-      <div style="width: 150px">
+      <div style="width: 180px">
         <div v-for="year in cr.years" :key="year">
           {{ YearLabel[year] }}
         </div>
       </div>
-      <div style="width: 100px">
-        {{ cr.exam_scores.map(es => es.score).join(', ') }}
-        <!-- <div v-for="es in cr.exam_scores" :key="es.id">
-          {{ ExamLabel[es.exam] }}: {{ es.score }} / {{ es.max_score }}
-        </div> -->
+      <div style="flex: 1">
+        <div v-for="es in cr.exam_scores" :key="es.id">
+          {{ ExamLabel[es.exam] }}: {{ es.score }}
+        </div>
       </div>
       <template v-if="typeof (cr.id) === 'number'">
         <div class="table-actionss">
@@ -72,9 +71,6 @@ function onDeleted(id: number) {
             variant="plain"
             @click="clientReviewDialog?.edit(cr.id)"
           />
-        </div>
-        <div style="flex: 1" class="text-truncate pr-2">
-          {{ cr.text }}
         </div>
         <div style="width: 30px; flex: initial">
           <span :class="`text-score text-score--${cr.rating}`">
