@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\DB;
 class ClientReviewController extends Controller
 {
     protected $filters = [
-        'equals' => [
-            'client_id', 'teacher_id', 'rating', 'program',
-        ],
+        'equals' => ['client_id', 'teacher_id', 'program', 'is_marked'],
         'examScores' => ['exam_scores'],
         'webReviewExists' => ['web_review_exists'],
         'year' => ['year'],

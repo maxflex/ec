@@ -12,10 +12,12 @@ class ClientReview extends Model
 {
     protected $fillable = [
         'program', 'text', 'rating', 'client_id', 'teacher_id',
+        'is_marked',
     ];
 
     protected $casts = [
         'program' => Program::class,
+        'is_marked' => 'boolean',
     ];
 
     /**
@@ -36,7 +38,8 @@ class ClientReview extends Model
                 cvp.program,
                 NULL AS `rating`,
                 NULL AS `created_at`,
-                NULL AS `text`
+                NULL AS `text`,
+                0 AS `is_marked`
             ')
             ->where('l.status', LessonStatus::conducted->value)
             ->whereRaw('NOT EXISTS (
@@ -59,7 +62,8 @@ class ClientReview extends Model
             program,
             rating,
             created_at,
-            text
+            text,
+            is_marked
         ');
     }
 

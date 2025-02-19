@@ -8,6 +8,12 @@ export interface ClientReviewListResource {
   teacher: PersonResource
   client: PersonResource
   created_at: string
+  exam_scores: Array<{
+    id: number
+    exam: Exam
+    score: number
+    max_score: number
+  }>
 }
 
 export interface ClientReviewResource {
@@ -19,12 +25,14 @@ export interface ClientReviewResource {
   client?: PersonResource
   program?: Program
   created_at?: string
+  is_marked: boolean
 }
 
 export const modelDefaults: ClientReviewResource = {
   id: newId(),
   text: '',
   rating: 0,
+  is_marked: false,
 }
 
 export const apiUrl = 'client-reviews'

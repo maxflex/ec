@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ClientReviewDialog } from '#build/components'
-import type { ClientReviewListResource, ClientReviewResource } from '.'
+import type { ClientReviewListResource } from '.'
 
 const props = defineProps<{
   items: ClientReviewListResource[]
@@ -39,7 +39,7 @@ function onDeleted(id: number) {
 </script>
 
 <template>
-  <div class="table">
+  <div class="table table--padding">
     <div v-for="cr in items" :id="`client-review-${cr.id}`" :key="cr.id">
       <div v-if="!isTeacher && !teacherId" style="width: 150px">
         <UiPerson :item="cr.teacher" />
@@ -47,16 +47,22 @@ function onDeleted(id: number) {
       <div v-if="!clientId" style="width: 180px">
         <UiPerson :item="cr.client" />
       </div>
-      <div style="width: 110px">
+      <div style="width: 90px">
         {{ ProgramShortLabel[cr.program] }}
       </div>
-      <div style="width: 110px">
+      <div style="width: 120px">
         занятий: {{ cr.lessons_count }}
       </div>
       <div style="width: 150px">
         <div v-for="year in cr.years" :key="year">
           {{ YearLabel[year] }}
         </div>
+      </div>
+      <div style="width: 120px">
+        {{ cr.exam_scores.map(es => es.score).join(', ') }}
+        <!-- <div v-for="es in cr.exam_scores" :key="es.id">
+          {{ ExamLabel[es.exam] }}: {{ es.score }} / {{ es.max_score }}
+        </div> -->
       </div>
       <template v-if="typeof (cr.id) === 'number'">
         <div class="table-actionss">
@@ -67,11 +73,13 @@ function onDeleted(id: number) {
             @click="clientReviewDialog?.edit(cr.id)"
           />
         </div>
-        <div style="flex: 1" class="text-truncate">
+        <div style="flex: 1" class="text-truncate pr-2">
           {{ cr.text }}
         </div>
-        <div style="width: 106px; flex: initial" class="d-flex">
-          <UiRating v-model="cr.rating" />
+        <div style="width: 30px; flex: initial">
+          <span :class="`text-score text-score--${cr.rating}`">
+            {{ cr.rating }}
+          </span>
         </div>
       </template>
       <template v-else>
@@ -87,9 +95,6 @@ function onDeleted(id: number) {
           <span class="text-error">
             требуется создание
           </span>
-          <!-- <v-chip class="text-error">
-            требуется отзыв
-          </v-chip> -->
         </div>
       </template>
     </div>

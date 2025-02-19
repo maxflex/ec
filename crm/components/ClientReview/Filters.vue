@@ -12,6 +12,7 @@ export interface ClientReviewFilters {
   web_review_exists?: number
   exam_scores?: keyof typeof ClientReviewExamScoreFilterLabel
   year?: Year
+  is_marked?: number
 }
 
 const model = defineModel<ClientReviewFilters>({ required: true })
@@ -42,7 +43,6 @@ const model = defineModel<ClientReviewFilters>({ required: true })
     :items="selectItems(ProgramLabel)"
     density="comfortable"
   />
-
   <UiClearableSelect
     v-model="model.exam_scores"
     :items="selectItems(ClientReviewExamScoreFilterLabel)"
@@ -50,12 +50,9 @@ const model = defineModel<ClientReviewFilters>({ required: true })
     label="Баллы"
   />
   <UiClearableSelect
-    v-model="model.rating"
-    label="Рейтинг"
+    v-model="model.is_marked"
+    label="Проводка"
+    :items="yesNo('проведено', 'не проведено')"
     density="comfortable"
-    :items="[5, 4, 3, 2, 1].map(e => ({
-      value: e,
-      title: `${e}`,
-    }))"
   />
 </template>

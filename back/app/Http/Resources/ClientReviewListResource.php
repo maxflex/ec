@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use App\Models\Client;
 use App\Models\ClientReview;
+use App\Models\ExamScore;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -45,6 +46,9 @@ class ClientReviewListResource extends JsonResource
             'years' => $years,
             'teacher' => new PersonResource(Teacher::find($this->teacher_id)),
             'client' => new PersonResource(Client::find($this->client_id)),
+            'exam_scores' => ExamScore::where('client_id', $this->client_id)->select(
+                'id', 'score', 'max_score', 'exam'
+            )->get(),
         ]);
     }
 }

@@ -18,6 +18,7 @@ class ClientReviewResource extends JsonResource
     {
         return extract_fields($this, [
             'program', 'text', 'rating', 'created_at',
+            'is_marked',
         ], [
             'user' => new PersonResource($this->user),
             'teacher' => new PersonResource($this->teacher),
