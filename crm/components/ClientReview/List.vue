@@ -58,7 +58,7 @@ function onDeleted(id: number) {
           {{ YearLabel[year] }}
         </div>
       </div>
-      <div style="width: 110px">
+      <div style="width: 100px">
         {{ cr.exam_scores.map(es => es.score).join(', ') }}
         <!-- <div v-for="es in cr.exam_scores" :key="es.id">
           {{ ExamLabel[es.exam] }}: {{ es.score }} / {{ es.max_score }}
