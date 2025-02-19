@@ -4,10 +4,11 @@ import { clone } from 'rambda'
 
 const emit = defineEmits<{
   updated: [e: ClientPaymentResource]
-  deleted: [e: ClientPaymentResource]
 }>()
+
+const apiUrl = 'client-payments'
+
 const { width, dialog } = useDialog('default')
-const deleting = ref(false)
 const saving = ref(false)
 const loading = ref(false)
 const itemId = ref<number>()
@@ -46,7 +47,7 @@ async function edit(id: number) {
   itemId.value = id
   loading.value = true
   dialog.value = true
-  const { data } = await useHttp<ClientPaymentResource>(`client-payments/${id}`)
+  const { data } = await useHttp<ClientPaymentResource>(`${apiUrl}/${id}`)
   if (data.value) {
     item.value = data.value
   }
@@ -56,7 +57,7 @@ async function edit(id: number) {
 async function save() {
   saving.value = true
   const method = itemId.value ? `put` : `post`
-  const url = itemId.value ? `client-payments/${itemId.value}` : `client-payments`
+  const url = itemId.value ? `${apiUrl}/${itemId.value}` : apiUrl
   const { data } = await useHttp<ClientPaymentResource>(url, {
     method,
     body: item.value,
@@ -66,19 +67,6 @@ async function save() {
   }
   dialog.value = false
   setTimeout(() => saving.value = false, 300)
-}
-
-async function destroy() {
-  if (!confirm('Вы уверены, что хотите удалить платеж?')) {
-    return
-  }
-  deleting.value = true
-  await useHttp(`client-payments/${item.value.id}`, {
-    method: 'delete',
-  })
-  emit('deleted', item.value)
-  dialog.value = false
-  setTimeout(() => deleting.value = false, 300)
 }
 
 defineExpose({ create, edit })
@@ -104,13 +92,11 @@ defineExpose({ create, edit })
           <template
             v-if="itemId"
           >
-            <v-btn
-              icon="$delete"
-              :size="48"
-              variant="text"
-              :loading="deleting"
-              class="remove-btn"
-              @click="destroy()"
+            <DialogDeleteBtn
+              :id="itemId"
+              :api-url="apiUrl"
+              confirm-text="Вы уверены, что хотите удалить платеж?"
+              @deleted="dialog = false"
             />
             <v-menu>
               <template #activator="{ props }">

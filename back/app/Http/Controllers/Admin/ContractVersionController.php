@@ -24,6 +24,7 @@ class ContractVersionController extends Controller
             ->withCount(['payments', 'programs'])
             ->latest();
         $this->filter($request, $query);
+
         return $this->handleIndexRequest(
             $request,
             $query,
@@ -43,7 +44,7 @@ class ContractVersionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'contract.id' => ['required', 'exists:contracts,id']
+            'contract.id' => ['required', 'exists:contracts,id'],
         ]);
         $request->merge(['contract_id' => $request->contract['id']]);
         $contractVersion = auth()->user()->contractVersions()->create($request->all());
@@ -56,13 +57,14 @@ class ContractVersionController extends Controller
             $contractVersion->prev
         );
 
-        if (!$isRelinked) {
+        if (! $isRelinked) {
             $contractVersion->programs->each->delete();
             $contractVersion->delete();
             abort(422);
         }
 
         $contractVersion->syncRelation($request->all(), 'payments');
+
         return new ContractVersionListResource($contractVersion);
     }
 
@@ -83,9 +85,10 @@ class ContractVersionController extends Controller
         // если сносим активную и она не последняя
         if ($contractVersion->is_active && $contractVersion->prev) {
             $isRelinked = $contractVersion->prev->relinkIds($contractVersion);
-            abort_if(!$isRelinked, 422);
+            abort_if(! $isRelinked, 422);
         }
         $contractVersion->delete();
+
         return new ContractVersionListResource($contractVersion);
     }
 
@@ -108,7 +111,6 @@ class ContractVersionController extends Controller
         }
         $programs = $programs->unique();
 
-        $query->whereHas('programs', fn($q) => $q->whereIn('program', $programs));
+        $query->whereHas('programs', fn ($q) => $q->whereIn('program', $programs));
     }
 }
-

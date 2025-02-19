@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
+import { API_URL } from '.'
 
 const emit = defineEmits<{
   updated: [e: ExamScoreResource ]
-  deleted: [e: ExamScoreResource]
 }>()
+
 const { width, dialog } = useDialog('default')
-const deleting = ref(false)
 const saving = ref(false)
 const loading = ref(false)
 const itemId = ref<number>()
@@ -29,7 +29,7 @@ async function edit(id: number) {
   itemId.value = id
   loading.value = true
   dialog.value = true
-  const { data } = await useHttp<ExamScoreResource>(`exam-scores/${id}`)
+  const { data } = await useHttp<ExamScoreResource>(`${API_URL}/${id}`)
   if (data.value) {
     item.value = data.value
   }
@@ -39,7 +39,7 @@ async function edit(id: number) {
 async function save() {
   saving.value = true
   const method = itemId.value ? `put` : `post`
-  const url = itemId.value ? `exam-scores/${itemId.value}` : `exam-scores`
+  const url = itemId.value ? `${API_URL}/${itemId.value}` : API_URL
   const { data } = await useHttp<ExamScoreResource >(url, {
     method,
     body: item.value,
@@ -49,24 +49,6 @@ async function save() {
   }
   dialog.value = false
   setTimeout(() => saving.value = false, 300)
-}
-
-async function destroy() {
-  if (!confirm('Вы уверены, что хотите удалить оценку?')) {
-    return
-  }
-  deleting.value = true
-  const { data, status } = await useHttp(`exam-scores/${item.value.id}`, {
-    method: 'delete',
-  })
-  if (status.value === 'error') {
-    deleting.value = false
-  }
-  else if (data.value) {
-    emit('deleted', item.value)
-    dialog.value = false
-    setTimeout(() => deleting.value = false, 300)
-  }
 }
 
 defineExpose({ create, edit })
@@ -89,14 +71,11 @@ defineExpose({ create, edit })
           Добавить баллы
         </template>
         <div>
-          <v-btn
-            v-if="itemId"
-            :loading="deleting"
-            :size="48"
-            class="remove-btn"
-            icon="$delete"
-            variant="text"
-            @click="destroy()"
+          <DialogDeleteBtn
+            :id="itemId"
+            :api-url="API_URL"
+            confirm-text="Вы уверены, что хотите удалить балл?"
+            @deleted="dialog = false"
           />
           <v-btn
             :loading="saving"

@@ -10,19 +10,21 @@ use Illuminate\Http\Request;
 class GroupActController extends Controller
 {
     protected $filters = [
-        'equals' => ['group_id']
+        'equals' => ['group_id'],
     ];
 
     public function index(Request $request)
     {
         $query = GroupAct::with(['user', 'teacher']);
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, GroupActResource::class);
     }
 
     public function store(Request $request)
     {
         $groupAct = auth()->user()->groupActs()->create($request->all());
+
         return new GroupActResource($groupAct);
     }
 
@@ -41,6 +43,5 @@ class GroupActController extends Controller
     public function destroy(GroupAct $groupAct)
     {
         $groupAct->delete();
-        return response()->json();
     }
 }

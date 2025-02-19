@@ -1,14 +1,14 @@
 <script setup lang="ts">
-const { confirmText, apiUrl, id } = defineProps<{
+const { confirmText = 'Вы уверены, что хотите удалить запись?', apiUrl, id } = defineProps<{
   confirmText?: string
   apiUrl: string
-  id: number
+  id: number | undefined
 }>()
 const emit = defineEmits(['deleted'])
 const { showGlobalMessage } = useGlobalMessage()
 const deleting = ref(false)
 async function destroy() {
-  if (confirmText && !confirm(confirmText)) {
+  if (!confirm(confirmText)) {
     return
   }
   deleting.value = true
@@ -29,6 +29,7 @@ async function destroy() {
 
 <template>
   <v-btn
+    v-if="id"
     :loading="deleting"
     :size="48"
     class="remove-btn"

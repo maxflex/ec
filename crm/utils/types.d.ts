@@ -566,44 +566,6 @@ declare global {
     created_at?: string
   }
 
-  interface ClientReviewListResource {
-    id: number | string
-    rating: number
-    lessons_count: number
-    years: Year[]
-    text: string
-    program: Program
-    teacher: PersonResource
-    client: PersonResource
-    created_at: string
-  }
-
-  interface ClientReviewResource {
-    id: number
-    text: string
-    rating: number
-    user?: PersonResource
-    teacher?: PersonResource
-    client?: PersonResource
-    program?: Program
-    created_at?: string
-  }
-
-  interface WebReviewResource {
-    id: number
-    client_id: number
-    exam_scores: number[]
-    text: string
-    signature: string
-    rating: number
-    programs: Program[]
-    client?: PersonResource
-    user?: PersonResource
-    created_at?: string
-    has_available_exam_scores: boolean
-    is_published: boolean
-  }
-
   interface StatsListResource {
     date: string
     values: number[]

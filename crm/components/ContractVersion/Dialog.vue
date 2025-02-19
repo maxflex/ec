@@ -28,7 +28,6 @@ const { dialog, width } = useDialog('medium')
 const pricesInput = ref()
 const programsInput = ref()
 const saving = ref(false)
-const deleting = ref(false)
 const loading = ref(false)
 const mode = ref<ContractEditMode>('edit')
 
@@ -92,24 +91,6 @@ async function edit(cv: ContractVersionListResource, m: ContractEditMode = 'edit
     }
   }
   loading.value = false
-}
-
-async function destroy() {
-  if (!confirm('Вы уверены, что хотите удалить договор?')) {
-    return
-  }
-  deleting.value = true
-  const { status } = await useHttp(`contract-versions/${item.value.id}`, {
-    method: 'delete',
-  })
-  if (status.value === 'error') {
-    deleting.value = false
-  }
-  else {
-    emit('deleted', item.value)
-    dialog.value = false
-    setTimeout(() => (deleting.value = false), 300)
-  }
 }
 
 function onProgramsSaved(programs: Program[]) {
@@ -268,7 +249,6 @@ function addPrices(p: ContractVersionProgramResource) {
 interface LessonsConducted {
   [index: number]: { // program_id
     [index: number]: { // price_id
-      lessons_total: number
       lessons_conducted: number
       lessons_to_be_conducted: number
     }
@@ -382,13 +362,11 @@ defineExpose({ edit, newContract, newVersion })
         </span>
         <div>
           <template v-if="mode === 'edit'">
-            <v-btn
-              icon="$delete"
-              :size="48"
-              variant="text"
-              :loading="deleting"
-              class="remove-btn"
-              @click="destroy()"
+            <DialogDeleteBtn
+              :id="item.id"
+              api-url="contract-versions"
+              confirm-text="Вы уверены, что хотите удалить договор?"
+              @deleted="dialog = false"
             />
             <v-menu>
               <template #activator="{ props }">

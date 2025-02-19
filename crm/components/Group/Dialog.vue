@@ -19,7 +19,6 @@ const modelDefaults: GroupResource = {
 
 const { dialog, width } = useDialog('default')
 const loading = ref(false)
-const deleting = ref(false)
 const itemId = ref<number>()
 const group = ref<GroupResource>(modelDefaults)
 
@@ -56,31 +55,13 @@ async function save() {
     }
   }
   else {
-    const { data } = await useHttp<GroupListResource>('groups', {
+    const { data } = await useHttp<GroupListResource>(`groups`, {
       method: 'post',
       body: group.value,
     })
     if (data.value) {
       emit('created', data.value)
     }
-  }
-}
-
-async function destroy() {
-  if (!confirm('Вы уверены, что хотите удалить группу?')) {
-    return
-  }
-  deleting.value = true
-  const { status } = await useHttp(`groups/${group.value.id}`, {
-    method: 'delete',
-  })
-  if (status.value === 'error') {
-    deleting.value = false
-  }
-  else {
-    emit('deleted', group.value)
-    dialog.value = false
-    setTimeout(() => (deleting.value = false), 300)
   }
 }
 
@@ -110,14 +91,11 @@ defineExpose({ create, edit })
           Новая группа
         </template>
         <div>
-          <v-btn
-            v-if="itemId"
-            :loading="deleting"
-            :size="48"
-            class="remove-btn"
-            icon="$delete"
-            variant="text"
-            @click="destroy()"
+          <DialogDeleteBtn
+            :id="itemId"
+            api-url="groups"
+            confirm-text="Вы уверены, что хотите удалить группу?"
+            @deleted="dialog = false"
           />
           <v-btn
             :size="48"

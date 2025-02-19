@@ -103,13 +103,15 @@ nextTick(loadData)
         :width="160"
       >
         <template #activator="{ props }">
-          <span
-            :class="`text-score text-score--${selectedQuarter.grade.grade}`"
+          <v-btn
             v-bind="props"
+            :size="48"
             @click="isChangeGradeSubmenu = false"
           >
-            {{ selectedQuarter.grade.grade }}
-          </span>
+            <span :class="`text-score text-score--${selectedQuarter.grade.grade}`" class="no-pointer-events">
+              {{ selectedQuarter.grade.grade }}
+            </span>
+          </v-btn>
         </template>
         <v-list v-if="isChangeGradeSubmenu" class="grades__final-selector">
           <v-list-item v-for="(label, score) in LessonScoreLabel" :key="score" @click="updateFinalGrade(score)">
@@ -179,7 +181,6 @@ nextTick(loadData)
     min-height: 70px;
     display: flex;
     align-items: center;
-    gap: 10px;
     &-selector {
       display: flex;
       flex-direction: column-reverse;

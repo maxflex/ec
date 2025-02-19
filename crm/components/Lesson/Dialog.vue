@@ -3,7 +3,6 @@ import { clone } from 'rambda'
 
 const emit = defineEmits<{
   updated: [l: LessonListResource]
-  destroyed: [l: LessonListResource]
 }>()
 
 const { isAdmin, isTeacher } = useAuthStore()
@@ -25,7 +24,6 @@ const { dialog, width } = useDialog('default')
 const loading = ref(false)
 const itemId = ref<number | undefined>()
 const lesson = ref<LessonResource>(clone(modelDefaults))
-const deleting = ref(false)
 const year = ref<Year>()
 // если занятие проведено, нельзя менять статус на "отмена"
 const isConducted = ref(false)
@@ -67,24 +65,6 @@ async function save() {
   setTimeout(() => saving.value = false, 300)
 }
 
-async function destroy() {
-  if (!confirm('Вы уверены, что хотите удалить урок?')) {
-    return
-  }
-  deleting.value = true
-  const { data, status } = await useHttp<LessonListResource>(`lessons/${lesson.value.id}`, {
-    method: 'delete',
-  })
-  if (status.value === 'error') {
-    deleting.value = false
-  }
-  else if (data.value) {
-    emit('destroyed', data.value)
-    dialog.value = false
-    setTimeout(() => deleting.value = false, 300)
-  }
-}
-
 const uploadingFiles = computed(() => lesson.value.files.some(e => !e.url))
 
 defineExpose({ create, edit })
@@ -110,14 +90,12 @@ defineExpose({ create, edit })
           Добавить занятие
         </template>
         <div>
-          <v-btn
+          <DialogDeleteBtn
             v-if="itemId && lesson.conducted_at === null"
-            icon="$delete"
-            :size="48"
-            class="remove-btn"
-            variant="text"
-            :loading="deleting"
-            @click="destroy()"
+            :id="itemId"
+            api-url="lessons"
+            confirm-text="Вы уверены, что хотите удалить занятие?"
+            @deleted="dialog = false"
           />
           <v-btn
             icon="$save"
@@ -130,10 +108,7 @@ defineExpose({ create, edit })
         </div>
       </div>
       <UiLoader v-if="loading" />
-      <div
-        v-else
-        class="dialog-body"
-      >
+      <div v-else class="dialog-body">
         <div v-if="isAdmin">
           <TeacherSelector
             v-model="lesson.teacher_id"

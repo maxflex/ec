@@ -1,23 +1,17 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
+import { apiUrl, type ClientReviewResource, modelDefaults } from '.'
 
 const emit = defineEmits<{
-  deleted: [r: ClientReviewResource]
-  updated: [r: RealClientReview]
-  created: [r: RealClientReview, fakeItemId: string]
+  updated: [r: ClientReviewResource]
+  created: [r: ClientReviewResource, fakeItemId: string]
 }>()
-const modelDefaults: ClientReviewResource = {
-  id: newId(),
-  text: '',
-  rating: 0,
-}
 const { isTeacher } = useAuthStore()
 const { dialog, width } = useDialog('default')
 const itemId = ref<number>()
 let fakeItemId: string = ''
 const item = ref<ClientReviewResource>(modelDefaults)
 const loading = ref(false)
-const deleting = ref(false)
 // созданные отзывы препод может только просматривать
 const isEditable = computed(() => isTeacher ? itemId.value === undefined : true)
 
@@ -26,7 +20,7 @@ async function edit(clientReviewId: number) {
   dialog.value = true
   loading.value = true
   const { data } = await useHttp<ClientReviewResource>(
-    `client-reviews/${clientReviewId}`,
+    `${apiUrl}/${clientReviewId}`,
   )
   if (data.value) {
     item.value = data.value
@@ -34,7 +28,7 @@ async function edit(clientReviewId: number) {
   loading.value = false
 }
 
-async function create(r: FakeClientReview) {
+async function create(r: ClientReviewResource) {
   itemId.value = undefined
   fakeItemId = r.id
   item.value = clone({
@@ -46,43 +40,31 @@ async function create(r: FakeClientReview) {
   dialog.value = true
 }
 
-async function destroy() {
-  if (!confirm('Вы уверены, что хотите удалить отзыв?')) {
-    return
-  }
-  deleting.value = true
-  const { status } = await useHttp(`reports/${item.value.id}`, {
-    method: 'delete',
-  })
-  if (status.value === 'error') {
-    deleting.value = false
-  }
-  else {
-    emit('deleted', item.value)
-    dialog.value = false
-    setTimeout(() => (deleting.value = false), 300)
-  }
-}
-
 async function save() {
   dialog.value = false
   if (itemId.value) {
-    const { data } = await useHttp<RealClientReview>(`reports/${itemId.value}`, {
-      method: 'put',
-      body: item.value,
-    })
+    const { data } = await useHttp<ClientReviewResource>(
+      `${apiUrl}/${itemId.value}`,
+      {
+        method: 'put',
+        body: item.value,
+      },
+    )
     if (data.value) {
       emit('updated', data.value)
     }
   }
   else {
-    const { data } = await useHttp<RealClientReview>('reports', {
-      method: 'post',
-      body: {
-        ...item.value,
-        client_id: item.value.client?.id,
+    const { data } = await useHttp<ClientReviewResource>(
+      `${apiUrl}`,
+      {
+        method: 'post',
+        body: {
+          ...item.value,
+          client_id: item.value.client?.id,
+        },
       },
-    })
+    )
     if (data.value) {
       emit('created', data.value, fakeItemId)
     }
@@ -114,14 +96,11 @@ defineExpose({ edit, create })
           Новый отзыв
         </template>
         <div v-if="isEditable">
-          <v-btn
-            v-if="itemId"
-            icon="$delete"
-            :size="48"
-            class="remove-btn"
-            variant="text"
-            :loading="deleting"
-            @click="destroy()"
+          <DialogDeleteBtn
+            :id="itemId"
+            :api-url="apiUrl"
+            confirm-text="Вы уверены, что хотите удалить отзыв?"
+            @deleted="dialog = false"
           />
           <v-btn
             icon="$save"

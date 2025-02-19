@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { apiUrl, type ClientReviewListResource } from '.'
+
 interface Filters {
   requirement?: number
 }
@@ -12,7 +14,7 @@ const tabName = clientId ? 'ClientReviewTab' : 'TeacherClientReviewTab'
 const filters = ref<Filters>(loadFilters({}, tabName))
 
 const { items, indexPageData } = useIndex<ClientReviewListResource, Filters>(
-  `client-reviews`,
+  apiUrl,
   filters,
   {
     tabName,

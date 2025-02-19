@@ -1,32 +1,23 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
+import { apiUrl, modelDefaults, type WebReviewResource } from '.'
 
 const emit = defineEmits<{
   updated: [item: WebReviewResource, deleted: boolean]
 }>()
 const { width, dialog } = useDialog('default')
 
-const modelDefaults: WebReviewResource = {
-  id: newId(),
-  client_id: newId(),
-  text: '',
-  exam_scores: [],
-  programs: [],
-  signature: '',
-  rating: 0,
-}
 const item = ref<WebReviewResource>(modelDefaults)
 const itemId = ref<number>()
 const examScores = ref<ExamScoreResource[]>([])
 const saving = ref(false)
-const deleting = ref(false)
 const loading = ref(false)
 
 async function edit(id: number) {
   itemId.value = id
   loading.value = true
   dialog.value = true
-  const { data } = await useHttp<WebReviewResource>(`web-reviews/${id}`)
+  const { data } = await useHttp<WebReviewResource>(`${apiUrl}/${id}`)
   if (data.value) {
     item.value = data.value
   }
@@ -47,7 +38,7 @@ function create(clientId: number) {
 async function save() {
   saving.value = true
   if (item.value.id > 0) {
-    const { data } = await useHttp<WebReviewResource>(`web-reviews/${item.value.id}`, {
+    const { data } = await useHttp<WebReviewResource>(`${apiUrl}/${item.value.id}`, {
       method: 'put',
       body: item.value,
     })
@@ -56,7 +47,7 @@ async function save() {
     }
   }
   else {
-    const { data } = await useHttp<WebReviewResource>(`web-reviews`, {
+    const { data } = await useHttp<WebReviewResource>(apiUrl, {
       method: 'post',
       body: item.value,
     })
@@ -83,19 +74,6 @@ async function loadExamScores() {
   if (data.value) {
     examScores.value = data.value.data
   }
-}
-
-async function destroy() {
-  if (!confirm('Вы уверены, что хотите удалить отзыв?')) {
-    return
-  }
-  deleting.value = true
-  await useHttp(`web-reviews/${item.value.id}`, {
-    method: 'delete',
-  })
-  emit('updated', item.value, true)
-  dialog.value = false
-  setTimeout(() => deleting.value = false, 300)
 }
 
 function selectExamScore({ id }: ExamScoreResource) {
@@ -128,14 +106,11 @@ defineExpose({ edit, create })
           Добавить отзыв
         </template>
         <div>
-          <v-btn
-            v-if="itemId"
-            :loading="deleting"
-            :size="48"
-            class="remove-btn"
-            icon="$delete"
-            variant="text"
-            @click="destroy()"
+          <DialogDeleteBtn
+            :id="itemId"
+            :api-url="apiUrl"
+            confirm-text="Вы уверены, что хотите удалить отзыв?"
+            @deleted="dialog = false"
           />
           <v-btn
             :size="48"

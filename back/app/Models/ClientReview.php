@@ -41,8 +41,8 @@ class ClientReview extends Model
             ->where('l.status', LessonStatus::conducted->value)
             ->whereRaw('NOT EXISTS (
                 select 1 from client_reviews as cr
-                where cr.teacher_id = l.id
-                and cr.client_id = c.id
+                where cr.teacher_id = l.teacher_id
+                and cr.client_id = c.client_id
                 and cr.program = cvp.program
             )')
             ->groupBy('l.teacher_id', 'c.client_id', 'cvp.program');

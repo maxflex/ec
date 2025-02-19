@@ -17,6 +17,6 @@ const { items, indexPageData, availableYears } = useIndex<QuartersGradesResource
     <template #filters>
       <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
     </template>
-    <GradeListForClients :items="items" />
+    <GradeList :items="items" />
   </UiIndexPage>
 </template>

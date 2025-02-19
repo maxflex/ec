@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class ExamScoreController extends Controller
 {
     protected $filters = [
-        'equals' => ['year', 'client_id']
+        'equals' => ['year', 'client_id'],
     ];
 
     public function index(Request $request)
@@ -20,12 +20,13 @@ class ExamScoreController extends Controller
             ->latest();
         if ($request->has('web_review_id')) {
             $query->with('webReviews',
-                fn($q) => $q->where('id', '<>', $request->web_review_id)
+                fn ($q) => $q->where('id', '<>', $request->web_review_id)
             );
         } else {
             $query->with('webReviews');
         }
         $this->filter($request, $query);
+
         return $this->handleIndexRequest(
             $request,
             $query,
@@ -36,6 +37,7 @@ class ExamScoreController extends Controller
     public function store(Request $request)
     {
         $examScore = auth()->user()->examScores()->create($request->all());
+
         return new ExamScoreResource($examScore);
     }
 
@@ -47,6 +49,7 @@ class ExamScoreController extends Controller
     public function update(Request $request, ExamScore $examScore)
     {
         $examScore->update($request->all());
+
         return new ExamScoreResource($examScore);
     }
 

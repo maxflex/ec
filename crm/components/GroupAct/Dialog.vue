@@ -4,8 +4,8 @@ import { clone } from 'rambda'
 
 const emit = defineEmits<{
   updated: [e: GroupActResource]
-  deleted: [e: GroupActResource]
 }>()
+const apiUrl = 'group-acts'
 
 const modelDefaults: GroupActResource = {
   id: newId(),
@@ -23,7 +23,6 @@ const printOptions: PrintOption[] = [
 const { dialog, width } = useDialog('default')
 const item = ref<GroupActResource>(modelDefaults)
 const saving = ref(false)
-const deleting = ref(false)
 
 function edit(groupAct: GroupActResource) {
   item.value = clone(groupAct)
@@ -41,14 +40,14 @@ function create(groupId: number) {
 async function save() {
   saving.value = true
   if (item.value.id > 0) {
-    const { data } = await useHttp<GroupActResource>(`group-acts/${item.value.id}`, {
+    const { data } = await useHttp<GroupActResource>(`${apiUrl}/${item.value.id}`, {
       method: 'put',
       body: { ...item.value },
     })
     emit('updated', data.value!)
   }
   else {
-    const { data } = await useHttp<GroupActResource>(`group-acts`, {
+    const { data } = await useHttp<GroupActResource>(apiUrl, {
       method: 'post',
       body: { ...item.value },
     })
@@ -58,18 +57,6 @@ async function save() {
   saving.value = false
 }
 
-async function destroy() {
-  if (!confirm(`Удалить акт №${item.value.id}?`)) {
-    return
-  }
-  deleting.value = true
-  await useHttp(`group-acts/${item.value.id}`, {
-    method: 'delete',
-  })
-  dialog.value = false
-  deleting.value = false
-  emit('deleted', item.value)
-}
 defineExpose({ edit, create })
 </script>
 
@@ -89,13 +76,11 @@ defineExpose({ edit, create })
         </div>
         <div>
           <template v-if="item.id > 0">
-            <v-btn
-              :loading="deleting"
-              :size="48"
-              class="remove-btn"
-              icon="$delete"
-              variant="text"
-              @click="destroy()"
+            <DialogDeleteBtn
+              :id="item.id"
+              :api-url="apiUrl"
+              confirm-text="Вы уверены, что хотите удалить акт?"
+              @deleted="dialog = false"
             />
             <v-menu>
               <template #activator="{ props }">
