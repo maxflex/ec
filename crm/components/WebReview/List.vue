@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { mdiNumeric5Circle, mdiWeb } from '@mdi/js'
+import type { WebReviewResource } from '.'
+import { mdiAccount, mdiAccountCircleOutline, mdiWeb } from '@mdi/js'
 
 const { items } = defineProps<{ items: WebReviewResource[] }>()
 defineEmits<{
@@ -46,8 +47,9 @@ defineEmits<{
         {{ item.signature }}
       </div>
 
-      <div style="width: 30px">
+      <div style="width: 60px" class="d-flex align-center ga-2">
         <v-icon :icon="mdiWeb" :class="item.is_published ? 'text-secondary' : 'opacity-2 text-gray'" />
+        <v-icon :icon="mdiAccountCircleOutline" :class="item.has_photo ? 'text-secondary' : 'opacity-2 text-gray'" />
       </div>
       <div
         style="width: 100px; flex: initial !important"

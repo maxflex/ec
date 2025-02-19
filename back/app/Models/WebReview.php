@@ -6,13 +6,16 @@ use App\Enums\Program;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class WebReview extends Model
 {
     protected $fillable = [
-        'text', 'signature', 'rating', 'client_id',
-        'programs',
+        'text', 'signature', 'rating', 'client_id', 'is_published',
+    ];
+
+    protected $casts = [
+        'is_published' => 'boolean',
     ];
 
     public function user(): BelongsTo
@@ -25,22 +28,9 @@ class WebReview extends Model
         return $this->belongsToMany(ExamScore::class);
     }
 
-    public function getIsPublishedAttribute(): bool
-    {
-        return $this->client->photo !== null;
-    }
-
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
-    }
-
-    public function scopePublished($query)
-    {
-        $query
-            ->whereNotNull('text')
-            ->whereNotNull('signature')
-            ->whereHas('client.photo');
     }
 
     /**
@@ -48,19 +38,19 @@ class WebReview extends Model
      */
     public function getProgramsAttribute()
     {
-        return DB::table('web_review_program')
-            ->where('web_review_id', $this->id)
-            ->pluck('program')
-            ->map(fn ($program) => Program::from($program))
-            ->all();
+        return $this->webReviewPrograms->pluck('program')->all();
     }
 
-    public function setProgramsAttribute(array $programs)
+    public function savePrograms(array $programs): void
     {
-        DB::table('web_review_program')->where('web_review_id', $this->id)->delete();
-        DB::table('web_review_program')->insert(collect($programs)->map(fn ($program) => [
-            'web_review_id' => $this->id,
+        $this->webReviewPrograms()->delete();
+        $this->webReviewPrograms()->createMany(collect($programs)->map(fn ($program) => [
             'program' => $program,
-        ])->all());
+        ]));
+    }
+
+    public function webReviewPrograms(): HasMany
+    {
+        return $this->hasMany(WebReviewProgram::class);
     }
 }

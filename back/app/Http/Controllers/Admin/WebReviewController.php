@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\WebReviewResource;
 use App\Models\WebReview;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class WebReviewController extends Controller
 {
@@ -30,6 +31,7 @@ class WebReviewController extends Controller
     {
         $webReview = auth()->user()->webReviews()->create($request->all());
         $webReview->examScores()->sync($request->exam_scores);
+        $webReview->savePrograms($request->programs);
 
         return new WebReviewResource($webReview);
     }
@@ -38,6 +40,7 @@ class WebReviewController extends Controller
     {
         $webReview->update($request->all());
         $webReview->examScores()->sync($request->exam_scores);
+        $webReview->savePrograms($request->programs);
 
         return new WebReviewResource($webReview);
     }
@@ -49,19 +52,17 @@ class WebReviewController extends Controller
 
     public function destroy(WebReview $webReview)
     {
-        $webReview->examScores->each->delete();
-        $webReview->delete();
+        DB::transaction(function () use ($webReview) {
+            $webReview->examScores()->detach();
+            $webReview->delete();
+        });
     }
 
     protected function filterProgram(&$query, $programs)
     {
         $query->where(function ($q) use ($programs) {
             foreach ($programs as $program) {
-                $q->orWhereRaw('exists(
-                    select 1 from web_review_program
-                    where web_review_id = web_reviews.id
-                    and program = ?
-                )', [$program]);
+                $q->orWhereHas('webReviewPrograms', fn ($q) => $q->where('program', $program));
             }
         });
     }

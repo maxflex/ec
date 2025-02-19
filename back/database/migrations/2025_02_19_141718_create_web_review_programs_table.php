@@ -10,15 +10,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('web_review_program', function (Blueprint $table) {
-            $table->foreignIdFor(WebReview::class)->constrained('web_reviews');
+        Schema::dropIfExists('web_review_program');
+        Schema::create('web_review_programs', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(WebReview::class)->constrained()->cascadeOnDelete();
             $table->enum('program', array_column(Program::cases(), 'value'))->index();
-            $table->primary(['web_review_id', 'program']);
+            $table->unique(['web_review_id', 'program']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('web_review_program');
+        Schema::dropIfExists('web_review_programs');
     }
 };

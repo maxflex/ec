@@ -8,6 +8,7 @@ const WebReviewExamScoreFilterLabel = {
 export interface WebReviewFilters {
   program: Program[]
   exam_scores?: keyof typeof WebReviewExamScoreFilterLabel
+  is_published?: number
 }
 
 const model = defineModel<WebReviewFilters>({ required: true })
@@ -25,5 +26,11 @@ const model = defineModel<WebReviewFilters>({ required: true })
     :items="selectItems(WebReviewExamScoreFilterLabel)"
     density="comfortable"
     label="Балл"
+  />
+  <UiClearableSelect
+    v-model="model.is_published"
+    label="Публикация"
+    :items="yesNo('опубликован', 'не опубликован')"
+    density="comfortable"
   />
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { WebReviewDialog } from '#components'
+import type { WebReviewResource } from '~/components/WebReview'
 import type { WebReviewFilters } from '~/components/WebReview/Filters.vue'
 
 const webReviewDialog = ref<InstanceType<typeof WebReviewDialog>>()

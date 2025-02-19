@@ -83,6 +83,11 @@ function selectExamScore({ id }: ExamScoreResource) {
     : item.value.exam_scores.splice(index, 1)
 }
 
+function onDeleted() {
+  dialog.value = false
+  emit('updated', item.value, true)
+}
+
 defineExpose({ edit, create })
 </script>
 
@@ -110,7 +115,7 @@ defineExpose({ edit, create })
             :id="itemId"
             :api-url="apiUrl"
             confirm-text="Вы уверены, что хотите удалить отзыв?"
-            @deleted="dialog = false"
+            @deleted="onDeleted()"
           />
           <v-btn
             :size="48"
@@ -158,6 +163,13 @@ defineExpose({ edit, create })
             v-model="item.programs"
             :items="selectItems(ProgramLabel)"
             label="Программы"
+          />
+        </div>
+
+        <div>
+          <v-checkbox
+            v-model="item.is_published"
+            label="Опубликован"
           />
         </div>
 

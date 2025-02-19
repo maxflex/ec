@@ -10,6 +10,7 @@ export interface WebReviewResource {
   user?: PersonResource
   created_at?: string
   is_published: boolean
+  has_photo?: boolean
 }
 
 export const modelDefaults: WebReviewResource = {
