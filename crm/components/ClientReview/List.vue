@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ClientReviewDialog } from '#build/components'
+import type { ClientReviewListResource, ClientReviewResource } from '.'
 
 const props = defineProps<{
   items: ClientReviewListResource[]
@@ -11,26 +12,26 @@ const { clientId, teacherId } = props
 const clientReviewDialog = ref<InstanceType<typeof ClientReviewDialog>>()
 const { isTeacher } = useAuthStore()
 
-function onUpdated(r: ClientReviewResource) {
-  const index = items.value.findIndex(e => e.id === r.id)
+function onUpdated(cr: ClientReviewListResource) {
+  const index = items.value.findIndex(e => e.id === cr.id)
   if (index === -1) {
     return
   }
-  // items.value[index] = r
-  itemUpdated('clientReview', r.id)
+  items.value[index] = cr
+  itemUpdated('client-review', cr.id as number)
 }
 
-function onCreated(r: ClientReviewResource, fakeItemId: string) {
+function onCreated(cr: ClientReviewListResource, fakeItemId: string) {
   const index = items.value.findIndex(e => e.id === fakeItemId)
   if (index === -1) {
     return
   }
-  // items.value[index] = r
-  itemUpdated('clientReview', r.id)
+  items.value[index] = cr
+  itemUpdated('client-review', cr.id as number)
 }
 
-function onDeleted(r: ClientReviewResource) {
-  const index = items.value.findIndex(e => e.id === r.id)
+function onDeleted(id: number) {
+  const index = items.value.findIndex(e => e.id === id)
   if (index !== -1) {
     items.value.splice(index, 1)
   }
@@ -39,38 +40,38 @@ function onDeleted(r: ClientReviewResource) {
 
 <template>
   <div class="table">
-    <div v-for="r in items" :id="`client-review-${r.id}`" :key="r.id">
+    <div v-for="cr in items" :id="`client-review-${cr.id}`" :key="cr.id">
       <div v-if="!isTeacher && !teacherId" style="width: 150px">
-        <UiPerson :item="r.teacher" />
+        <UiPerson :item="cr.teacher" />
       </div>
       <div v-if="!clientId" style="width: 180px">
-        <UiPerson :item="r.client" />
+        <UiPerson :item="cr.client" />
       </div>
       <div style="width: 110px">
-        {{ ProgramShortLabel[r.program] }}
+        {{ ProgramShortLabel[cr.program] }}
       </div>
       <div style="width: 110px">
-        занятий: {{ r.lessons_count }}
+        занятий: {{ cr.lessons_count }}
       </div>
       <div style="width: 150px">
-        <div v-for="year in r.years" :key="year">
+        <div v-for="year in cr.years" :key="year">
           {{ YearLabel[year] }}
         </div>
       </div>
-      <template v-if="typeof (r.id) === 'number'">
+      <template v-if="typeof (cr.id) === 'number'">
         <div class="table-actionss">
           <v-btn
             icon="$edit"
             :size="48"
             variant="plain"
-            @click="clientReviewDialog?.edit(r.id)"
+            @click="clientReviewDialog?.edit(cr.id)"
           />
         </div>
         <div style="flex: 1" class="text-truncate">
-          {{ r.text }}
+          {{ cr.text }}
         </div>
         <div style="width: 106px; flex: initial" class="d-flex">
-          <UiRating v-model="r.rating" />
+          <UiRating v-model="cr.rating" />
         </div>
       </template>
       <template v-else>
@@ -79,7 +80,7 @@ function onDeleted(r: ClientReviewResource) {
             icon="$edit"
             :size="48"
             variant="plain"
-            @click="clientReviewDialog?.create(r)"
+            @click="clientReviewDialog?.create(cr)"
           />
         </div>
         <div class="text-right">

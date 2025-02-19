@@ -43,12 +43,24 @@ class ClientReviewController extends Controller
     {
         $clientReview->update($request->all());
 
-        return $clientReview;
+        return new ClientReviewListResource($clientReview);
     }
 
     public function show(ClientReview $clientReview)
     {
         return new ClientReviewResource($clientReview);
+    }
+
+    public function store(Request $request)
+    {
+        $clientReview = auth()->user()->clientReviews()->create($request->all());
+
+        return new ClientReviewListResource($clientReview);
+    }
+
+    public function destroy(ClientReview $clientReview)
+    {
+        $clientReview->delete();
     }
 
     protected function filterWebReviewExists(&$query, $value)

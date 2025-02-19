@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
-import { apiUrl, type ClientReviewResource, modelDefaults } from '.'
+import { apiUrl, type ClientReviewListResource, type ClientReviewResource, modelDefaults } from '.'
 
 const emit = defineEmits<{
-  updated: [r: ClientReviewResource]
-  created: [r: ClientReviewResource, fakeItemId: string]
+  deleted: [id: number]
+  updated: [cr: ClientReviewListResource]
+  created: [cr: ClientReviewListResource, fakeItemId: string]
 }>()
 const { isTeacher } = useAuthStore()
 const { dialog, width } = useDialog('default')
@@ -28,14 +29,14 @@ async function edit(clientReviewId: number) {
   loading.value = false
 }
 
-async function create(r: ClientReviewResource) {
+async function create(cr: ClientReviewListResource) {
   itemId.value = undefined
-  fakeItemId = r.id
+  fakeItemId = cr.id as string
   item.value = clone({
     ...modelDefaults,
-    teacher: r.teacher,
-    client: r.client,
-    program: r.program,
+    teacher: cr.teacher,
+    client: cr.client,
+    program: cr.program,
   })
   dialog.value = true
 }
@@ -43,7 +44,7 @@ async function create(r: ClientReviewResource) {
 async function save() {
   dialog.value = false
   if (itemId.value) {
-    const { data } = await useHttp<ClientReviewResource>(
+    const { data } = await useHttp<ClientReviewListResource>(
       `${apiUrl}/${itemId.value}`,
       {
         method: 'put',
@@ -55,13 +56,14 @@ async function save() {
     }
   }
   else {
-    const { data } = await useHttp<ClientReviewResource>(
+    const { data } = await useHttp<ClientReviewListResource>(
       `${apiUrl}`,
       {
         method: 'post',
         body: {
           ...item.value,
           client_id: item.value.client?.id,
+          teacher_id: item.value.teacher?.id,
         },
       },
     )
@@ -69,6 +71,11 @@ async function save() {
       emit('created', data.value, fakeItemId)
     }
   }
+}
+
+function onDeleted() {
+  emit('deleted', item.value.id)
+  dialog.value = false
 }
 
 defineExpose({ edit, create })
@@ -100,7 +107,7 @@ defineExpose({ edit, create })
             :id="itemId"
             :api-url="apiUrl"
             confirm-text="Вы уверены, что хотите удалить отзыв?"
-            @deleted="dialog = false"
+            @deleted="onDeleted()"
           />
           <v-btn
             icon="$save"

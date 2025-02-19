@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class ClientReview extends Model
 {
     protected $fillable = [
-        'program', 'text', 'rating',
+        'program', 'text', 'rating', 'client_id', 'teacher_id',
     ];
 
     protected $casts = [
