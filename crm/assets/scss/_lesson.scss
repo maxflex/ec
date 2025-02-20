@@ -24,6 +24,8 @@
   &__inline-scores {
     display: flex;
     gap: 4px;
+    top: -1px;
+    position: relative;
 
     .score {
       $size: 24px !important;
