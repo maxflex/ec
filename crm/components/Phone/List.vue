@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { PhoneDialog } from '#build/components'
+import type { RequestListResource } from '../Request'
 
-const { items, q, request } = defineProps<{
+const { items, request } = defineProps<{
   items: PhoneResource[]
   request?: RequestListResource
   showComment?: boolean
   showIcons?: boolean
-  q?: string
 }>()
 
 const phoneDialog = ref<InstanceType<typeof PhoneDialog>>()

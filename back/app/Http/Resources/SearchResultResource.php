@@ -17,43 +17,44 @@ class SearchResultResource extends JsonResource
         $class = "App\\Models\\$className";
         $model = $class::find($id);
 
-        $extra = [
+        $common = [
             'is_active' => $document['is_active'],
             'entity_type' => $class,
-            'phones' => PhoneResource::collection($model->phones)
+            'phones' => PhoneResource::collection($model->phones),
         ];
 
         switch ($class) {
             case ClientParent::class:
-                $contracts = $model->client->contracts;
+                $model = $model->client;
 
             case Client::class:
-                $contracts = $contracts ?? $model->contracts;
                 $extra = [
-                    ...$extra,
-                    'contract_versions' => ContractVersionResource::collection(
-                        $contracts->sortByDesc('id')->values()->map(fn($c) => $c->active_version)
-                    ),
+                    'client' => [
+                        'directions' => $model->directions,
+                        'contract_versions' => ContractVersionListResource::collection(
+                            $model->contracts->map(fn ($c) => $c->active_version)
+                        ),
+                    ],
                 ];
                 break;
 
             case Teacher::class:
                 $extra = [
-                    ...$extra,
-                    'status' => $model->status,
-                    'subjects' => $model->subjects,
+                    'teacher' => [
+                        'status' => $model->status,
+                        'subjects' => $model->subjects,
+                    ],
                 ];
                 break;
 
-            case \App\Models\Request::class:
+            default:
                 $extra = [
-                    ...$extra,
                     'request' => new RequestListResource($model),
                 ];
         }
 
         return extract_fields($model, [
-            'first_name', 'last_name', 'middle_name', 'photo_url',
-        ], $extra);
+            'first_name', 'last_name', 'middle_name',
+        ], array_merge($common, $extra));
     }
 }

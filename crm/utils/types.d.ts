@@ -296,6 +296,7 @@ declare global {
       id: number
       year: Year
       client: PersonResource
+      company: Company
     }
   }
 
@@ -941,18 +942,6 @@ declare global {
     entity_type: EntityType
     number?: string
     person?: PersonResource
-  }
-
-  interface SearchResultResource extends PersonWithPhotoResource, HasPhones {
-    entity_type: EntityType
-    is_active: boolean
-    // у ученика
-    contract_versions?: ContractVersionResource[]
-    // у препода
-    status?: TeacherStatus
-    subjects?: Subject[]
-    // у заявки
-    request?: RequestListResource
   }
 
   interface PrintOption {

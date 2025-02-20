@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { mdiTextBoxSearchOutline } from '@mdi/js'
+import type { SearchResultResource } from '~/components/Search'
 
 const key = ref(0)
 const q = ref('')
@@ -37,18 +38,16 @@ onMounted(() => input.value.focus())
 </script>
 
 <template>
-  <UiFilters>
+  <UiFilters class="search-input">
     <v-text-field
       ref="input"
       v-model="q"
       placeholder="Поиск"
       prepend-inner-icon="$search"
-      style="width: 40vw !important"
-      class="search__input"
-      rounded
+      variant="underlined"
     >
       <template #append-inner>
-        <div v-if="total !== undefined" class="search-total">
+        <div v-if="total !== undefined" class="search-input__total">
           {{ total }} найдено
         </div>
       </template>
@@ -56,25 +55,45 @@ onMounted(() => input.value.focus())
   </UiFilters>
 
   <UiNoData v-if="total === 0" class="search-no-data" :icon="mdiTextBoxSearchOutline" label="ничего не найдено" />
-  <SearchList v-else :key="key" :q="q" :items="items" />
+  <SearchResults v-else :items="items" />
 </template>
 
 <style lang="scss">
 .search {
-  &-total {
-    color: rgb(var(--v-theme-placeholder));
-    white-space: nowrap;
-    padding-right: 8px;
-  }
   &-no-data {
+    font-size: 20px;
     .v-icon {
       font-size: 120px !important;
       opacity: 0.2 !important;
+      left: -8px;
     }
   }
-  &__input {
-    .v-field__outline {
-      border-radius: 50px !important;
+  &-input {
+    // justify-content: center;
+    .filters__inputs {
+      width: 100% !important;
+      // width: 50% !important;
+    }
+
+    .v-field__prepend-inner {
+      padding-top: 10px !important;
+      font-size: 18px;
+    }
+
+    .v-field__input {
+      padding: 0px 10px !important;
+      font-size: 20px;
+    }
+
+    .v-field__append-inner {
+      padding: 10px 10px 0 !important;
+    }
+
+    &__total {
+      color: rgb(var(--v-theme-gray));
+      white-space: nowrap;
+      font-size: 20px;
+      opacity: 0.5;
     }
   }
 }
