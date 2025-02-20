@@ -11,7 +11,7 @@ class ClientReviewController extends \App\Http\Controllers\Admin\ClientReviewCon
         $request->merge([
             'teacher_id' => auth()->id(),
             'unique' => 'program',
-            'type' => 1,
+            'requirement' => 1,
         ]);
 
         return parent::index($request);

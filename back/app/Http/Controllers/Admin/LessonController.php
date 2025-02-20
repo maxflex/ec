@@ -24,7 +24,7 @@ class LessonController extends Controller
             $client = Client::find($request->client_id);
             $lessons = $client->getSchedule($request->year);
         } else {
-            $query = Lesson::with(['teacher', 'group', 'clientLessons']);
+            $query = Lesson::with(['teacher', 'group']);
             $this->filter($request, $query);
             $lessons = $query->get();
         }

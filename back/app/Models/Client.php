@@ -95,10 +95,13 @@ class Client extends Authenticatable implements CanLogin, HasTeeth
         $maxConductedDate = [];
 
         // проведённые занятия
-        $clientLessons = ClientLesson::query()->whereHas(
-            'contractVersionProgram.contractVersion.contract',
-            fn ($q) => $q->where('client_id', $this->id)->where('year', $year)
-        )->get();
+        $clientLessons = ClientLesson::query()
+            ->whereHas(
+                'contractVersionProgram.contractVersion.contract',
+                fn ($q) => $q->where('client_id', $this->id)->where('year', $year)
+            )
+            ->with('lesson')
+            ->get();
 
         foreach ($clientLessons as $clientLesson) {
             $lesson = $clientLesson->lesson;
@@ -114,21 +117,23 @@ class Client extends Authenticatable implements CanLogin, HasTeeth
         }
 
         // планируемые занятия (только если ученик в группе)
+        $clientGroups = ClientGroup::query()
+            ->whereHas(
+                'contractVersionProgram.contractVersion.contract',
+                fn ($q) => $q->where('client_id', $this->id)->where('year', $year)
+            )
+            ->with('group.lessons',
+                fn ($q) => $q->with('teacher')->where('status', LessonStatus::planned)
+            )
+            ->get();
+
         $inGroup = []; // ID групп, где сейчас ученик
-        $contracts = $this->contracts()->where('year', $year)->get();
-        foreach ($contracts as $contract) {
-            $programs = $contract->active_version
-                ->programs()
-                ->whereHas('clientGroup')
-                ->get();
-            foreach ($programs as $program) {
-                $group = $program->group;
-                $inGroup[$group->id] = true;
-                $plannedLessons = $group->lessons()->where('status', LessonStatus::planned)->get();
-                foreach ($plannedLessons as $lesson) {
-                    $schedule->push($lesson);
-                }
-            }
+        foreach ($clientGroups as $clientGroup) {
+            $group = $clientGroup->group;
+            $inGroup[$group->id] = true;
+
+            // Пушим все запланированные занятия группы в расписание
+            $schedule->push(...$group->lessons);
         }
 
         // Костя, [17 Jan 2025 at 15:31:17]:
@@ -165,11 +170,6 @@ class Client extends Authenticatable implements CanLogin, HasTeeth
         return $schedule;
     }
 
-    public function contracts(): HasMany
-    {
-        return $this->hasMany(Contract::class)->orderBy('id', 'desc');
-    }
-
     public function getTeeth(int $year): object
     {
         $query = Lesson::query()
@@ -200,6 +200,11 @@ class Client extends Authenticatable implements CanLogin, HasTeeth
                 'cv.id'
             )
             ->pluck('cvp.id');
+    }
+
+    public function contracts(): HasMany
+    {
+        return $this->hasMany(Contract::class)->orderBy('id', 'desc');
     }
 
     public function scopeCanLogin($query)

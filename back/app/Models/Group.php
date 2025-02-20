@@ -98,20 +98,20 @@ class Group extends Model implements HasTeeth
      */
     public function getTeachersAttribute(): array
     {
-        $ids = $this->lessons()
+        $teacherIds = $this->lessons
             ->where('status', LessonStatus::planned)
-            ->where('is_unplanned', 0)
-            ->groupBy('teacher_id')
-            ->pluck('teacher_id');
+            ->where('is_unplanned', false)
+            ->pluck('teacher_id')
+            ->unique();
 
         // если запланированных занятий нет, берём из последнего
         // https://doc.ege-centr.ru/doc/49
-        if ($ids->count() === 0) {
-            $ids = [
-                $this->lessons()->latest('date')->value('teacher_id'),
+        if ($teacherIds->count() === 0) {
+            $teacherIds = [
+                $this->lessons->sortByDesc('date')->first()->teacher_id,
             ];
         }
 
-        return Teacher::whereIn('id', $ids)->get()->all();
+        return Teacher::whereIn('id', $teacherIds)->get()->all();
     }
 }
