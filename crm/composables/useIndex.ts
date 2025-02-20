@@ -4,6 +4,7 @@ interface UseIndexOptions {
   staticFilters?: object
   tabName?: string | null
   disableSaveFilters?: boolean
+  watchFilters?: boolean
   loadAvailableYears?: boolean
 }
 
@@ -18,12 +19,13 @@ export default function<T, F extends object = object, E extends object = object>
     staticFilters = {},
     tabName = null,
     disableSaveFilters = false,
+    watchFilters = true,
     loadAvailableYears = false,
   } = options
 
   // данные для компонента UiIndexPage
   const indexPageData = ref<IndexPageData>({
-    loading: true,
+    loading: instantLoad,
     noData: false,
   })
 
@@ -109,7 +111,7 @@ export default function<T, F extends object = object, E extends object = object>
     loadData()
   }
 
-  watch(filters, (newVal) => {
+  watchFilters && watch(filters, (newVal) => {
     reloadData()
     !disableSaveFilters && saveFilters(newVal, tabName)
   }, { deep: true })

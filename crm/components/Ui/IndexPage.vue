@@ -16,7 +16,9 @@ const { data } = defineProps<{ data: IndexPageData }>()
   <div class="index-page" v-bind="$attrs">
     <v-fade-transition>
       <UiLoader v-if="data.loading" />
-      <UiNoData v-else-if="data.noData" />
+      <slot v-else-if="data.noData" name="no-data">
+        <UiNoData />
+      </slot>
       <div v-else class="index-page__content">
         <slot />
       </div>
