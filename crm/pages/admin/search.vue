@@ -78,14 +78,13 @@ onMounted(() => input.value.focus())
     }
 
     .v-field__append-inner {
-      padding: 10px 10px 0 !important;
+      padding: 14px 10px 0 !important;
     }
   }
 
   &__total {
     color: rgb(var(--v-theme-gray));
     white-space: nowrap;
-    font-size: 20px;
     opacity: 0.5;
   }
 
