@@ -42,6 +42,7 @@ class ClientReviewListResource extends JsonResource
 
         return extract_fields($this, ['*'], [
             'id' => $this->id ?? uniqid(),
+            'is_marked' => (bool) $this->is_marked,
             'lessons_count' => $lessonsCount,
             'years' => $years,
             'teacher' => new PersonResource(Teacher::find($this->teacher_id)),

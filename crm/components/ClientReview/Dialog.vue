@@ -162,12 +162,6 @@ defineExpose({ edit, create })
             label="Текст отзыва"
           />
         </div>
-        <div>
-          <v-checkbox
-            v-model="item.is_marked"
-            label="Проведено"
-          />
-        </div>
       </div>
     </div>
   </v-dialog>

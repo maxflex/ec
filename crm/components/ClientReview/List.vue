@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ClientReviewDialog } from '#build/components'
-import type { ClientReviewListResource } from '.'
+import { apiUrl, type ClientReviewListResource } from '.'
 
 const props = defineProps<{
   items: ClientReviewListResource[]
@@ -36,15 +36,32 @@ function onDeleted(id: number) {
     items.value.splice(index, 1)
   }
 }
+
+function toggleMarked(cr: ClientReviewListResource, value: boolean) {
+  useHttp(`${apiUrl}/${cr.id}`, {
+    method: 'put',
+    body: {
+      is_marked: value,
+    },
+  })
+}
 </script>
 
 <template>
   <div class="table table--padding">
     <div v-for="cr in items" :id="`client-review-${cr.id}`" :key="cr.id">
-      <div v-if="!isTeacher && !teacherId" style="width: 180px">
+      <div style="width: 30px">
+        <v-checkbox
+          v-model="cr.is_marked"
+          style="position: absolute; top: calc(50% - 24px)"
+          color="secondary"
+          @update:model-value="(val) => toggleMarked(cr, val as boolean)"
+        />
+      </div>
+      <div v-if="!isTeacher && !teacherId" style="width: 170px">
         <UiPerson :item="cr.teacher" />
       </div>
-      <div v-if="!clientId" style="width: 180px">
+      <div v-if="!clientId" style="width: 170px">
         <UiPerson :item="cr.client" />
       </div>
       <div style="width: 110px">
@@ -64,6 +81,9 @@ function onDeleted(id: number) {
         </div>
       </div>
       <template v-if="typeof (cr.id) === 'number'">
+        <div v-if="clientId" style="width: 200px" class="text-truncate pr-2">
+          {{ cr.text }}
+        </div>
         <div class="table-actionss">
           <v-btn
             icon="$edit"
@@ -72,6 +92,7 @@ function onDeleted(id: number) {
             @click="clientReviewDialog?.edit(cr.id)"
           />
         </div>
+
         <div style="width: 30px; flex: initial">
           <span :class="`text-score text-score--${cr.rating}`">
             {{ cr.rating }}

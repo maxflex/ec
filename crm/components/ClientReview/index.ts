@@ -8,6 +8,7 @@ export interface ClientReviewListResource {
   teacher: PersonResource
   client: PersonResource
   created_at: string
+  is_marked: boolean
   exam_scores: Array<{
     id: number
     exam: Exam
@@ -25,14 +26,12 @@ export interface ClientReviewResource {
   client?: PersonResource
   program?: Program
   created_at?: string
-  is_marked: boolean
 }
 
 export const modelDefaults: ClientReviewResource = {
   id: newId(),
   text: '',
   rating: 0,
-  is_marked: false,
 }
 
 export const apiUrl = 'client-reviews'
