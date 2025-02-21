@@ -68,12 +68,13 @@ deploy_backend:
   script:
     - |
       ssh root@$REMOTE_ADDRESS << 'EOF'
-      cd $DEPLOY_DIR/back
-      echo "📂 Current directory: $(pwd)"
-      git pull origin $BRANCH
-      composer install --no-dev --optimize-autoloader
-      php artisan config:cache
-      php artisan route:cache
-      php artisan view:cache
-      php artisan migrate --force
+      cd $DEPLOY_DIR/back && {
+        echo "✅ Now in $(pwd)"
+        git pull origin $BRANCH
+        composer install --no-dev --optimize-autoloader
+        php artisan config:cache
+        php artisan route:cache
+        php artisan view:cache
+        php artisan migrate --force
+      }
       EOF
