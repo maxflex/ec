@@ -325,10 +325,9 @@ class Client extends Authenticatable implements CanLogin, HasTeeth
      */
     public function getDirectionsAttribute(): array
     {
-        $contracts = $this->contracts;
-        $maxYear = $contracts->max('year');
+        $maxYear = $this->contracts->max('year');
 
-        return $contracts
+        return $this->contracts
             ->where('year', $maxYear)
             ->map(fn ($c) => $c->active_version)
             ->map(fn ($activeVersion) => $activeVersion->directions)

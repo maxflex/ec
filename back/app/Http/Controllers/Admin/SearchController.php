@@ -16,7 +16,7 @@ class SearchController extends Controller
             'q' => ['required', 'string', 'min:3'],
         ]);
 
-        $page = $request->page;
+        $page = (int) $request->page;
         $perPage = 30;
 
         $raw = Client::search(mb_strtolower($request->q))

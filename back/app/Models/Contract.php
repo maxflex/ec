@@ -27,37 +27,37 @@ class Contract extends Model
         return $this->belongsTo(Client::class);
     }
 
-    public function versions(): HasMany
-    {
-        return $this->hasMany(ContractVersion::class)->oldest();
-    }
-
-// TODO: вроде не используется
-//    public function groups(): HasManyThrough
-//    {
-//        return $this->hasManyThrough(
-//            Group::class,
-//            ClientGroup::class,
-//            'contract_id',
-//            'id',
-//            'id',
-//            'group_id',
-//        );
-//    }
-
     public function payments(): HasMany
     {
         return $this->hasMany(ContractPayment::class);
     }
 
+    // TODO: вроде не используется
+    //    public function groups(): HasManyThrough
+    //    {
+    //        return $this->hasManyThrough(
+    //            Group::class,
+    //            ClientGroup::class,
+    //            'contract_id',
+    //            'id',
+    //            'id',
+    //            'group_id',
+    //        );
+    //    }
+
     public function getActiveVersionAttribute(): ContractVersion
     {
-        return $this->versions()->active()->first();
+        return $this->versions->where('is_active', true)->first();
     }
 
     public function getFirstVersionAttribute(): ContractVersion
     {
         return $this->versions()->first();
+    }
+
+    public function versions(): HasMany
+    {
+        return $this->hasMany(ContractVersion::class)->oldest();
     }
 
     protected function getBalanceItems(): array
@@ -72,7 +72,7 @@ class Contract extends Model
 
         foreach ($clientLessons as $clientLesson) {
             $lesson = $clientLesson->lesson;
-            $balanceItems[] = (object)[
+            $balanceItems[] = (object) [
                 'dateTime' => $lesson->conducted_at,
                 'sum' => $clientLesson->price * -1,
                 'comment' => sprintf(
@@ -80,18 +80,18 @@ class Contract extends Model
                     $lesson->date_time->format('d.m.y в H:i'),
                     $lesson->group_id,
                     filter_var($lesson->cabinet->value, FILTER_SANITIZE_NUMBER_INT)
-                )
+                ),
             ];
         }
 
         foreach ($this->payments as $payment) {
-            $balanceItems[] = (object)[
+            $balanceItems[] = (object) [
                 'dateTime' => $payment->created_at->format('Y-m-d H:i:s'),
                 'sum' => $payment->sum * ($payment->is_return ? -1 : 1),
                 'comment' => sprintf(
                     '%s (обучение)',
                     $payment->method->getTitle()
-                )
+                ),
             ];
         }
 

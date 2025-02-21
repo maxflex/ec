@@ -31,9 +31,9 @@ class SearchResultResource extends JsonResource
                 $extra = [
                     'client' => [
                         'directions' => $model->directions,
-                        'contract_versions' => ContractVersionListResource::collection(
-                            $model->contracts->map(fn ($c) => $c->active_version)
-                        ),
+                        'contracts' => extract_fields_array($model->contracts, [
+                            'year',
+                        ]),
                     ],
                 ];
                 break;

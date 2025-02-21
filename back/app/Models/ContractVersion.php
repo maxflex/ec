@@ -16,11 +16,11 @@ class ContractVersion extends Model
     use RelationSyncable;
 
     protected $fillable = [
-        'contract_id', 'date', 'sum', 'is_active'
+        'contract_id', 'date', 'sum', 'is_active',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
     ];
 
     public function programs(): HasMany
@@ -38,11 +38,6 @@ class ContractVersion extends Model
         return $this->belongsTo(Contract::class);
     }
 
-    public function chain(): HasMany
-    {
-        return $this->hasMany(ContractVersion::class, 'contract_id', 'contract_id');
-    }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -54,7 +49,7 @@ class ContractVersion extends Model
      */
     public function scopeLastVersions($query)
     {
-        $sub = self::selectRaw(<<<SQL
+        $sub = self::selectRaw(<<<'SQL'
             contract_id as max_contract_id,
             MAX(version) as max_version
         SQL)->groupBy('contract_id');
@@ -78,6 +73,11 @@ class ContractVersion extends Model
             ->count();
     }
 
+    public function chain(): HasMany
+    {
+        return $this->hasMany(ContractVersion::class, 'contract_id', 'contract_id');
+    }
+
     /**
      * Пред версия
      */
@@ -95,8 +95,7 @@ class ContractVersion extends Model
     public function getFreeLessonsCountAttribute(): int
     {
         return $this->programs->reduce(
-            fn($carry, $p) => $carry + $p->free_lessons_count
-            , 0);
+            fn ($carry, $p) => $carry + $p->free_lessons_count, 0);
     }
 
     /**
@@ -116,7 +115,7 @@ class ContractVersion extends Model
                 // есть что обновлять
                 if ($query->exists()) {
                     // ... но нет нужной программы в новой версии
-                    if (!$newProgram) {
+                    if (! $newProgram) {
                         return false;
                     }
                     $result[] = [$query, $newProgram->id];
@@ -148,17 +147,9 @@ class ContractVersion extends Model
      */
     public function getDirectionsAttribute(): array
     {
-        $directions = [];
-
-        // Проходим по каждой программе и определяем ее направление
-        foreach ($this->programs as $p) {
-            $direction = $p->program->getDirection();
-
-            if (!in_array($direction, $directions)) {
-                $directions[] = $direction;
-            }
-        }
-
-        return $directions;
+        return $this->programs
+            ->map(fn ($p) => $p->program->getDirection())
+            ->unique()
+            ->all();
     }
 }

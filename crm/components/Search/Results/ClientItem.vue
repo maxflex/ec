@@ -25,8 +25,8 @@ const client = item.client!
       </span>
     </div>
     <div style="width: 250px">
-      <div v-for="cv in client.contract_versions" :key="cv.id">
-        договор на {{ YearLabel[cv.contract.year] }}
+      <div v-for="c in client.contracts" :key="c.id">
+        договор на {{ YearLabel[c.year] }}
       </div>
     </div>
     <div style="flex: 1">

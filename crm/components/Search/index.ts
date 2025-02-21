@@ -5,7 +5,10 @@ export interface SearchResultResource extends PersonWithPhotoResource, HasPhones
   is_active: boolean
   client?: {
     directions: Direction[]
-    contract_versions: ContractVersionListResource[]
+    contracts: Array<{
+      id: number
+      year: Year
+    }>
   }
   teacher?: {
     status: TeacherStatus
