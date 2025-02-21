@@ -55,7 +55,7 @@ deploy_frontend:
     - chmod 600 ~/.ssh/id_rsa
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - rsync -a crm/.output root@$REMOTE_ADDRESS:$DEPLOY_DIR/crm
+    - rsync -a --delete crm/.output root@$REMOTE_ADDRESS:$DEPLOY_DIR/crm
     - ssh root@$REMOTE_ADDRESS "cd $DEPLOY_DIR/crm && pm2 reload ecosystem.config.js --update-env || pm2 start ecosystem.config.js"
 
 
@@ -69,6 +69,7 @@ deploy_backend:
     - |
       ssh root@$REMOTE_ADDRESS << 'EOF'
       cd $DEPLOY_DIR/back
+      echo "📂 Current directory: $(pwd)"
       git pull origin $BRANCH
       composer install --no-dev --optimize-autoloader
       php artisan config:cache
