@@ -68,7 +68,7 @@ deploy_backend:
   script:
     - |
       ssh root@$REMOTE_ADDRESS << 'EOF'
-      cd $DEPLOY_DIR/back && {
+      cd "$DEPLOY_DIR/back" && {
         echo "✅ Now in $(pwd)"
         git pull origin $BRANCH
         composer install --no-dev --optimize-autoloader
