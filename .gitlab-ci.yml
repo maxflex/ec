@@ -5,8 +5,6 @@ stages:
 variables:
   BRANCH: main
   REMOTE_ADDRESS: 104.248.88.1
-  DEPLOY_DIR: /var/www/ec
-
 
 workflow:
   rules:
@@ -69,7 +67,7 @@ deploy_backend:
     - |
       ssh root@$REMOTE_ADDRESS << 'EOF'
       cd $DEPLOY_DIR/back &&
-      echo "✅ Now in $(pwd)" &&
+      echo "📂 Current directory: $(pwd)" &&
       git pull origin $BRANCH &&
       composer install --no-dev --optimize-autoloader &&
       php artisan config:cache &&
