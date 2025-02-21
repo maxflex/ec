@@ -14,7 +14,7 @@ class AppUpdatedCommand extends Command
     public function handle(): void
     {
         AppUpdatedEvent::dispatch([
-            // TODO: clear filters3
+            // TODO: clear filters4
             'filters-strings',
         ]);
     }
