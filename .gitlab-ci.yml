@@ -55,7 +55,7 @@ deploy_frontend:
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
     - rsync -a --delete crm/.output root@$REMOTE_ADDRESS:$DEPLOY_DIR/crm
-    - ssh root@$REMOTE_ADDRESS "cd $DEPLOY_DIR/crm && pm2 reload ecosystem.config.js --update-env || pm2 start ecosystem.config.js"
+    - ssh root@$REMOTE_ADDRESS "source ~/.bashrc && cd $DEPLOY_DIR/crm && pm2 reload ecosystem.config.js --update-env || pm2 start ecosystem.config.js"
 
 
 ### 🚀 DEPLOY BACKEND (Laravel) ###
