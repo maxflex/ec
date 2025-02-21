@@ -34,11 +34,13 @@ class RouteServiceProvider extends ServiceProvider
             foreach (['common', 'admin', 'client', 'teacher'] as $r) {
                 Route::middleware('crm')
                     ->prefix($r)
-                    ->group(base_path("routes/{$r}.php"));
+                    ->name("$r.")
+                    ->group(base_path("routes/$r.php"));
             }
             Route::middleware('pub')
                 ->prefix('pub')
-                ->group(base_path("routes/pub.php"));
+                ->name('pub.')
+                ->group(base_path('routes/pub.php'));
         });
     }
 }

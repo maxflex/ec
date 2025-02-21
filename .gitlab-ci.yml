@@ -5,6 +5,7 @@ stages:
 variables:
   BRANCH: main
   REMOTE_ADDRESS: 104.248.88.1
+  DEPLOY_DIR: /var/www/ec
 
 workflow:
   rules:
