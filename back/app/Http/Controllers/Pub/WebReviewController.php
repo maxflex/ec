@@ -31,8 +31,6 @@ class WebReviewController extends Controller
 
             $exam = $program->getExam();
 
-            logger("YEP: $exam->value");
-
             $query->with('examScores', fn ($q) => $q->where('exam', $exam))
                 ->selectRaw('web_reviews.*')
                 ->join(

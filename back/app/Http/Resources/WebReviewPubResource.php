@@ -11,7 +11,7 @@ class WebReviewPubResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $examScore = $this->examScores?->first();
+        $examScore = $this->relationLoaded('examScores') ? $this->examScores?->first() : null;
 
         return extract_fields($this, [
             'text', 'signature', 'rating',
