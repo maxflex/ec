@@ -3,10 +3,8 @@ stages:
   - deploy
 
 variables:
-  NODE_ENV: "production"
-  BUN_INSTALL: "true"
   BRANCH: main
-  REMOTE_ADDRESS: root@104.248.88.1
+  REMOTE_ADDRESS: 104.248.88.1
   DEPLOY_DIR: /var/www/ec
 
 
@@ -22,6 +20,7 @@ before_script:
   - chmod 700 ~/.ssh
   - ssh-keyscan -H $REMOTE_ADDRESS >> ~/.ssh/known_hosts
   - chmod 644 ~/.ssh/known_hosts
+
 
 ### 🏗 BUILD FRONTEND (Nuxt 3) ###
 build_frontend:
@@ -39,6 +38,7 @@ build_frontend:
     paths:
       - crm/.output/
 
+
 ### 🚀 DEPLOY FRONTEND ###
 deploy_frontend:
   stage: deploy
@@ -55,8 +55,9 @@ deploy_frontend:
     - chmod 600 ~/.ssh/id_rsa
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - rsync -a crm/.output $REMOTE_ADDRESS:$DEPLOY_DIR/crm
-    - ssh $REMOTE_ADDRESS "cd $DEPLOY_DIR/crm && pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js"
+    - rsync -a crm/.output root@$REMOTE_ADDRESS:$DEPLOY_DIR/crm
+    - ssh root@$REMOTE_ADDRESS "cd $DEPLOY_DIR/crm && pm2 reload ecosystem.config.js --update-env || pm2 start ecosystem.config.js"
+
 
 ### 🚀 DEPLOY BACKEND (Laravel) ###
 deploy_backend:
@@ -66,7 +67,7 @@ deploy_backend:
       - back/**/*
   script:
     - |
-      ssh $REMOTE_ADDRESS << 'EOF'
+      ssh root@$REMOTE_ADDRESS << 'EOF'
       cd $DEPLOY_DIR/back
       git pull origin $BRANCH
       composer install --no-dev --optimize-autoloader
