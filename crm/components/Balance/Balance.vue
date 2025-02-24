@@ -4,59 +4,32 @@ const { contractId, teacherId } = defineProps<{
   teacherId?: number
 }>()
 
-const balance = ref<Balance[]>([])
-const loading = ref(true)
-const availableYearsLoaded = ref(false)
-const selectedYear = ref<Year>()
+const filters = ref<AvailableYearsFilter>({
+  year: undefined,
+})
 
-async function loadData() {
-  loading.value = true
-  const { data } = await useHttp<Balance[]>(
-    `balance`,
-    {
-      params: {
-        year: teacherId ? selectedYear.value : undefined,
-        teacher_id: teacherId,
-        contract_id: contractId,
-      },
+const { indexPageData, availableYears, items } = useIndex<Balance>(
+  `balance`,
+  filters,
+  {
+    loadAvailableYears: !!teacherId,
+    staticFilters: {
+      teacher_id: teacherId,
+      contract_id: contractId,
     },
-  )
-  if (data.value) {
-    balance.value = data.value
-  }
-  loading.value = false
-}
-
-const noData = computed(() => !loading.value && balance.value.length === 0)
-
-function onAvailableYearsLoaded() {
-  availableYearsLoaded.value = true
-  if (selectedYear.value) {
-    loadData()
-    watch(selectedYear, loadData)
-  }
-}
-
-nextTick(() => contractId && loadData())
+  },
+)
 </script>
 
 <template>
-  <UiIndexPage :data="{ loading, noData }" :testy="true" class="balance">
+  <UiIndexPage :data="indexPageData" class="balance">
     <template v-if="teacherId" #filters>
-      <AvailableYearsSelector
-        v-model="selectedYear"
-        :teacher-id="teacherId"
-        mode="teacher-balance"
-        @loaded="onAvailableYearsLoaded()"
-      />
+      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
     </template>
     <div class="table balance-table">
-      <div
-        v-for="b in balance"
-        :key="b.date"
-      >
+      <div v-for="item in items" :key="item.date">
         <div style="width: 200px">
-          {{ formatDate(b.date) }}
+          {{ formatDate(item.date) }}
         </div>
         <div class="balance-items">
           <table>
@@ -65,12 +38,12 @@ nextTick(() => contractId && loadData())
                 <td width="140" />
                 <td width="140" />
                 <td width="180">
-                  {{ formatPrice(b.balance, true) }} руб.
+                  {{ formatPrice(item.balance, true) }} руб.
                 </td>
                 <td />
               </tr>
               <tr
-                v-for="(balanceItem, i) in b.items"
+                v-for="(balanceItem, i) in item.items"
                 :key="i"
               >
                 <td>

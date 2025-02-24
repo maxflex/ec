@@ -107,6 +107,9 @@ class Group extends Model implements HasTeeth
         // если запланированных занятий нет, берём из последнего
         // https://doc.ege-centr.ru/doc/49
         if ($teacherIds->count() === 0) {
+            if ($this->lessons->count() === 0) {
+                return [];
+            }
             $teacherIds = [
                 $this->lessons->sortByDesc('date')->first()->teacher_id,
             ];
