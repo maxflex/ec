@@ -10,7 +10,7 @@ class ContractPayment extends Model
 {
     protected $fillable = [
         'contract_id', 'sum', 'date', 'is_confirmed', 'is_return',
-        'card_number', 'pko_number', 'method'
+        'card_number', 'pko_number', 'method',
     ];
 
     protected $casts = [
@@ -18,6 +18,21 @@ class ContractPayment extends Model
         'is_confirmed' => 'boolean',
         'is_return' => 'boolean',
     ];
+
+    public static function booted()
+    {
+        static::creating(function ($payment) {
+            if (
+                $payment->method === ContractPaymentMethod::cash
+                && ! $payment->is_return
+            ) {
+                $payment->pko_number = get_max_pko_number(
+                    $payment->contract->company,
+                    $payment->date,
+                );
+            }
+        });
+    }
 
     public function user(): BelongsTo
     {
@@ -34,18 +49,8 @@ class ContractPayment extends Model
         return $this->is_return ? $this->sum * -1 : $this->sum;
     }
 
-    public static function booted()
+    public function setCardNumberAttribute($value)
     {
-        static::creating(function ($payment) {
-            if (
-                $payment->method === ContractPaymentMethod::cash
-                && !$payment->is_return
-            ) {
-                $payment->pko_number = get_max_pko_number(
-                    $payment->contract->company,
-                    $payment->date,
-                );
-            }
-        });
+        $this->attributes['card_number'] = $value ? preg_replace('/\D/', '', $value) : null;
     }
 }

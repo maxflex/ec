@@ -8,8 +8,10 @@ const { item } = defineProps<{
 
 <template>
   <div>
-    <div style="width: 120px">{{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}</div>
-    <div style="width: 80px">
+    <div style="width: 110px">
+      {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
+    </div>
+    <div style="width: 60px">
       <template v-if="item.cabinet">
         {{ CabinetAllLabel[item.cabinet] }}
       </template>
@@ -17,11 +19,13 @@ const { item } = defineProps<{
     <div v-if="item.teacher" style="width: 150px">
       {{ formatNameInitials(item.teacher) }}
     </div>
-    <div style="width: 90px">ГР-{{ item.group.id }}</div>
+    <div style="width: 70px">
+      ГР-{{ item.group.id }}
+    </div>
     <div style="width: 140px">
       {{ ProgramShortLabel[item.group.program] }}
     </div>
-    <div style="width: 70px">
+    <div style="width: 60px">
       <span v-if="item.quarter">
         {{ QuarterShortLabel[item.quarter] }}
       </span>
@@ -29,13 +33,13 @@ const { item } = defineProps<{
     <div class="lesson-item__status" style="flex: 1">
       <LessonItemStatus :item="item" show-unplanned />
     </div>
-    <div style="width: 130px; flex: initial">
-      <div>
+    <div class="group-list__zoom">
+      <span>
         {{ item.group.zoom.id }}
-      </div>
-      <div>
+      </span>
+      <span>
         {{ item.group.zoom.password }}
-      </div>
+      </span>
     </div>
   </div>
 </template>

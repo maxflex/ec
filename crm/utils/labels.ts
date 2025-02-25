@@ -508,11 +508,13 @@ export const ContractPaymentMethodLabel = {
   cash: 'наличные',
   bill: 'счёт',
   matcap: 'маткапитал',
+  sbp: 'СБП',
 } as const
 
 export const ClientPaymentMethodLabel = {
   card: 'карта',
   cash: 'наличные',
+  sbp: 'СБП',
 } as const
 
 export const CompanyLabel = {

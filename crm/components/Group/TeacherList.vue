@@ -58,37 +58,14 @@ function onClick(g: GroupListResource) {
       <div style="flex: 1">
         <TeethAsText :items="item.teeth" />
       </div>
-      <div style="width: 130px; flex: initial">
-        <div>
+      <div class="group-list__zoom">
+        <span>
           {{ item.zoom.id }}
-        </div>
-        <div>
+        </span>
+        <span>
           {{ item.zoom.password }}
-        </div>
+        </span>
       </div>
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.group-list {
-  & > div {
-    align-items: flex-start !important;
-  }
-  &--selectable {
-    & > div {
-      cursor: pointer;
-      & > div:first-child {
-        width: 120px !important;
-      }
-    }
-  }
-  &__item {
-    &--blur {
-      & > div {
-        opacity: 0.4;
-      }
-    }
-  }
-}
-</style>

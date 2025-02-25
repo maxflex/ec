@@ -5,6 +5,7 @@ import { clone } from 'rambda'
 const emit = defineEmits<{
   updated: [e: ClientPaymentResource]
 }>()
+const cardNumberMask = { mask: '#∗∗∗ ∗∗∗∗ ∗∗∗∗ ####' }
 
 const apiUrl = 'client-payments'
 
@@ -157,6 +158,8 @@ defineExpose({ create, edit })
         <div v-if="item.method === 'card'">
           <v-text-field
             v-model="item.card_number"
+            v-maska:[cardNumberMask]
+            placeholder="∗∗∗∗ ∗∗∗∗ ∗∗∗∗ ∗∗∗∗"
             label="Номер карты"
           />
         </div>

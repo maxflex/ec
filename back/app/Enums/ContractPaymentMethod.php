@@ -8,6 +8,7 @@ enum ContractPaymentMethod: string
     case cash = 'cash';
     case bill = 'bill';
     case matcap = 'matcap';
+    case sbp = 'sbp';
 
     public static function fromOld(string $method): self
     {
@@ -26,6 +27,7 @@ enum ContractPaymentMethod: string
             self::cash => 'наличные',
             self::bill => 'счёт',
             self::matcap => 'маткапитал',
+            self::sbp => 'СБП',
         };
     }
 }

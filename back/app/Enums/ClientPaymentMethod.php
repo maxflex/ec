@@ -6,6 +6,7 @@ enum ClientPaymentMethod: string
 {
     case card = 'card';
     case cash = 'cash';
+    case sbp = 'sbp';
 
     public static function fromOld(string $method): self
     {
@@ -19,6 +20,7 @@ enum ClientPaymentMethod: string
     {
         return match ($this) {
             self::card => 'карта',
+            self::sbp => 'СБП',
             self::cash => 'наличные',
         };
     }

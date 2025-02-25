@@ -10,7 +10,7 @@ class ClientPayment extends Model
 {
     protected $fillable = [
         'sum', 'date', 'purpose', 'company', 'method', 'year',
-        'client_id', 'card_number', 'pko_number', 'is_confirmed', 'is_return'
+        'client_id', 'card_number', 'pko_number', 'is_confirmed', 'is_return',
     ];
 
     protected $casts = [
@@ -19,6 +19,21 @@ class ClientPayment extends Model
         'is_confirmed' => 'boolean',
         'is_return' => 'boolean',
     ];
+
+    public static function booted()
+    {
+        static::creating(function ($payment) {
+            if (
+                $payment->method === ClientPaymentMethod::cash
+                && ! $payment->is_return
+            ) {
+                $payment->pko_number = get_max_pko_number(
+                    $payment->company,
+                    $payment->date,
+                );
+            }
+        });
+    }
 
     public function user()
     {
@@ -30,18 +45,8 @@ class ClientPayment extends Model
         return $this->belongsTo(Client::class);
     }
 
-    public static function booted()
+    public function setCardNumberAttribute($value)
     {
-        static::creating(function ($payment) {
-            if (
-                $payment->method === ClientPaymentMethod::cash
-                && !$payment->is_return
-            ) {
-                $payment->pko_number = get_max_pko_number(
-                    $payment->company,
-                    $payment->date,
-                );
-            }
-        });
+        $this->attributes['card_number'] = $value ? preg_replace('/\D/', '', $value) : null;
     }
 }

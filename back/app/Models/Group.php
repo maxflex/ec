@@ -80,7 +80,7 @@ class Group extends Model implements HasTeeth
      */
     public function getTeeth(int $year): object
     {
-        return Teeth::get($this->lessons()->getQuery(), $year);
+        return Teeth::get($this->lessons()->getQuery(), $year, true);
     }
 
     public function lessons(): HasMany

@@ -6,6 +6,7 @@ const emit = defineEmits<{
   updated: [item: TeacherPaymentResource]
   deleted: [item: TeacherPaymentResource]
 }>()
+const cardNumberMask = { mask: '#∗∗∗ ∗∗∗∗ ∗∗∗∗ ####' }
 
 const { dialog, width } = useDialog('default')
 const item = ref<TeacherPaymentResource>(modelDefaults)
@@ -121,6 +122,8 @@ defineExpose({ create, edit })
         <div v-if="item.method === 'card'">
           <v-text-field
             v-model="item.card_number"
+            v-maska:[cardNumberMask]
+            placeholder="∗∗∗∗ ∗∗∗∗ ∗∗∗∗ ∗∗∗∗"
             label="Номер карты"
           />
         </div>

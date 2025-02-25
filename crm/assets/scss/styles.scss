@@ -468,3 +468,35 @@ tr.hoverable {
     color: rgb(var(--v-theme-error));
   }
 }
+
+.group-list {
+  & > div {
+    align-items: flex-start !important;
+  }
+  &--selectable {
+    & > div {
+      cursor: pointer;
+      & > div:first-child {
+        width: 120px !important;
+      }
+    }
+  }
+  &__item {
+    &--blur {
+      & > div {
+        opacity: 0.4;
+      }
+    }
+  }
+  &__zoom {
+    flex: initial;
+    display: flex;
+    width: 200px;
+    & > span {
+      &:first-child {
+        width: 150px;
+        display: inline-block;
+      }
+    }
+  }
+}

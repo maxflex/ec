@@ -11,9 +11,9 @@ const { items } = defineProps<{
         {{ WeekdayLabel[weekday] }}
       </span>
       <div class="teeth-as-text__times">
-        <span v-for="(t, index) in teeth.sort((a, b) => a.left - b.left)" :key="index">
+        <div v-for="(t, index) in teeth.sort((a, b) => a.left - b.left)" :key="index">
           {{ formatTime(t.time) }} – {{ formatTime(t.time_end) }}
-        </span>
+        </div>
       </div>
     </div>
   </div>
@@ -32,7 +32,7 @@ const { items } = defineProps<{
   }
   &__times {
     display: flex;
-    gap: 4px;
+    flex-direction: column;
     & > span {
       &:not(:last-child):after {
         content: ',';
