@@ -19,14 +19,21 @@ class Teeth
             ->where('is_unplanned', 0)
             ->where('g.year', $year);
 
-        $maxLessonsDate = Carbon::parse($query->max('lessons.date'))->subMonth();
+        // Смысл в чём: если группа приближается к концу, расписание в ней не должно меняться
+        // (исчезать и т.д), поэтому мы анализируем (максимальная дата занятия – 1 месяц)
+        // и занятия во всех статусах. Иначе только занятия в статусе planned
+        $flag = false;
+        if ($isGroup) {
+            $maxLessonDateSubMonth = Carbon::parse($query->max('lessons.date'))->subMonth();
+            if (now()->gt($maxLessonDateSubMonth)) {
+                $flag = true;
+                $query
+                    ->where('status', '<>', LessonStatus::cancelled) // conducted | planned
+                    ->where('lessons.date', '>=', $maxLessonDateSubMonth->format('Y-m-d'));
+            }
+        }
 
-        if ($isGroup && now()->gt($maxLessonsDate)) {
-            $query->whereIn('status', [
-                LessonStatus::conducted,
-                LessonStatus::planned,
-            ]);
-        } else {
+        if (! $flag) {
             $query->where('status', LessonStatus::planned);
         }
 
@@ -38,7 +45,7 @@ class Teeth
                 count(*) as cnt
             ")
             ->groupBy('weekday', 'time', 'duration')
-            ->having('cnt', '>', 1);
+            ->having('cnt', '>', 1); // должно быть более 1 совпадения
 
         $lessons = $query->get();
 
