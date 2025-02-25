@@ -16,11 +16,11 @@ const teacher = item.teacher!
     <div style="width: 140px" class="text-lowercase">
       {{ EntityTypeLabel[item.entity_type] }}
     </div>
-    <div style="width: 200px" :class="{ 'text-gray': teacher.status !== 'active' }">
-      {{ TeacherStatusLabel[teacher.status] }}
-    </div>
-    <div style="width: 250px">
+    <div style="width: 200px">
       {{ teacher.subjects.map(s => SubjectLabel[s]).join(', ') }}
+    </div>
+    <div style="width: 250px" :class="{ 'text-success': item.is_active }">
+      {{ TeacherStatusLabel[teacher.status] }}
     </div>
     <div style="flex: 1">
       <PhoneList :items="item.phones" show-comment />

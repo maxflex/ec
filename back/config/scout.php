@@ -1,6 +1,9 @@
 <?php
 
-use App\Models\{Client, ClientParent, Request, Teacher};
+use App\Models\Client;
+use App\Models\ClientParent;
+use App\Models\Request;
+use App\Models\Teacher;
 
 $schema = [
     'collection-schema' => [
@@ -28,11 +31,11 @@ $schema = [
             ],
             [
                 'name' => 'is_active',
-                'type' => 'bool'
+                'type' => 'bool',
             ],
             [
                 'name' => 'weight',
-                'type' => 'int32'
+                'type' => 'int32',
             ],
         ],
     ],
@@ -210,6 +213,7 @@ return [
             'healthcheck_interval_seconds' => env('TYPESENSE_HEALTHCHECK_INTERVAL_SECONDS', 30),
             'num_retries' => env('TYPESENSE_NUM_RETRIES', 3),
             'retry_interval_seconds' => env('TYPESENSE_RETRY_INTERVAL_SECONDS', 1),
+            'num_typos' => 0,
         ],
         'model-settings' => [
             Teacher::class => $schema,

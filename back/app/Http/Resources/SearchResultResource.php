@@ -31,9 +31,7 @@ class SearchResultResource extends JsonResource
                 $extra = [
                     'client' => [
                         'directions' => $model->directions,
-                        'contracts' => extract_fields_array($model->contracts, [
-                            'year',
-                        ]),
+                        'max_contract_year' => $model->contracts->max('year'),
                     ],
                 ];
                 break;

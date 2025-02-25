@@ -41,15 +41,9 @@ onMounted(() => input.value.focus())
       <v-text-field
         ref="input"
         v-model="filters.q"
-        placeholder="Поиск"
-        prepend-inner-icon="$search"
+        placeholder="Введите текст..."
         variant="underlined"
       >
-        <template #append-inner>
-          <div v-if="total !== undefined" class="page-search__total">
-            {{ total }} найдено
-          </div>
-        </template>
       </v-text-field>
     </template>
     <template #no-data>
@@ -74,7 +68,11 @@ onMounted(() => input.value.focus())
 
     .v-field__input {
       padding: 0px 10px !important;
-      font-size: 20px;
+      font-size: 30px;
+    }
+
+    .v-field__outline {
+      display: none !important;
     }
 
     .v-field__append-inner {

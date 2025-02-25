@@ -4,8 +4,28 @@ import type { SearchResultResource } from '..'
 const { item } = defineProps<{
   item: SearchResultResource
 }>()
+const currentYear = currentAcademicYear()
 
 const client = item.client!
+
+function getYearAgo(year: Year): string {
+  const diff = currentYear - year
+  switch (diff) {
+    case 0:
+      return 'учился в этом году'
+
+    case 1:
+      return 'учился в прошлом году'
+
+    case 2:
+    case 3:
+    case 4:
+      return `учился ${diff} года назад`
+
+    default:
+      return `учился ${diff} лет назад`
+  }
+}
 </script>
 
 <template>
@@ -25,9 +45,12 @@ const client = item.client!
       </span>
     </div>
     <div style="width: 250px">
-      <div v-for="c in client.contracts" :key="c.id">
-        договор на {{ YearLabel[c.year] }}
-      </div>
+      <span v-if="item.is_active" class="text-success">
+        активный клиент
+      </span>
+      <span v-else-if="client.max_contract_year">
+        {{ getYearAgo(client.max_contract_year) }}
+      </span>
     </div>
     <div style="flex: 1">
       <PhoneList :items="item.phones" show-comment />
