@@ -11,12 +11,12 @@ let to: string
 let format: NameFormat
 
 switch (item.entity_type) {
-  case 'App\\Models\\Teacher':
+  case EntityTypeValue.teacher:
     to = 'teachers-id'
     format = teacherFormat ?? 'initials'
     break
 
-  case 'App\\Models\\ClientParent':
+  case EntityTypeValue.clientParent:
     to = 'parents-id'
     format = 'last-first'
     break

@@ -29,9 +29,15 @@ function getYearAgo(year: Year): string {
 </script>
 
 <template>
-  <div class="align-start">
+  <RouterLink
+    :to="{
+      name: item.entity_type === EntityTypeValue.client ? 'clients-id' : 'parents-id',
+      params: { id: item.id },
+    }"
+    class="align-start search-client-item"
+  >
     <div style="width: 200px">
-      <UiPerson :item="item" />
+      <UiPerson :item="item" no-link />
     </div>
     <div style="width: 140px" class="text-lowercase">
       {{ EntityTypeLabel[item.entity_type] }}
@@ -55,8 +61,19 @@ function getYearAgo(year: Year): string {
     <div style="flex: 1">
       <PhoneList :items="item.phones" show-comment />
     </div>
+    <div>
+      {{ item.entity_type }}
+    </div>
     <!-- <div style="width: 130px; flex: initial" class="text-lowercase text-gray opacity-5">
       {{ EntityTypeLabel[item.entity_type] }}
     </div> -->
-  </div>
+  </RouterLink>
 </template>
+
+<style lang="scss">
+.search-client-item {
+  & > div {
+    padding: 16px 0;
+  }
+}
+</style>

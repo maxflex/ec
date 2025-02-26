@@ -13,6 +13,7 @@ use App\Traits\HasPhoto;
 use App\Traits\HasTelegramMessages;
 use App\Traits\RelationSyncable;
 use App\Utils\Teeth;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -88,8 +89,7 @@ class Teacher extends Authenticatable implements CanLogin, HasTeeth
             'first_name' => $this->first_name ? mb_strtolower($this->first_name) : '',
             'last_name' => $this->last_name ? mb_strtolower($this->last_name) : '',
             'middle_name' => $this->middle_name ? mb_strtolower($this->middle_name) : '',
-            'phones' => $this->phones()->pluck('number'),
-            'contract_ids' => [],
+            'phones' => $this->phonesToSearchIndex(),
             'is_active' => Teacher::canLogin()->whereId($this->id)->exists(),
             'weight' => 499 + intval($this->lessons()->count() / 3),
         ];
@@ -98,6 +98,11 @@ class Teacher extends Authenticatable implements CanLogin, HasTeeth
     public function lessons(): HasMany
     {
         return $this->hasMany(Lesson::class);
+    }
+
+    public function makeAllSearchableUsing(Builder $query): Builder
+    {
+        return $query->with('phones');
     }
 
     /**

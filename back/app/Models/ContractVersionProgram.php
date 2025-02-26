@@ -19,7 +19,7 @@ class ContractVersionProgram extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'program', 'lessons_planned'
+        'program', 'lessons_planned',
     ];
 
     protected $casts = [
@@ -45,7 +45,6 @@ class ContractVersionProgram extends Model
 
     /**
      * Есть ли группа по этой программе договора
-     *
      */
     public function group(): HasOneThrough
     {
@@ -97,7 +96,7 @@ class ContractVersionProgram extends Model
     {
         $group = $this->group;
 
-        if (!$group) {
+        if (! $group) {
             return 0;
         }
 
@@ -125,14 +124,14 @@ class ContractVersionProgram extends Model
         $total = $this->lessons_conducted;
         $group = $this->group;
 
-        if (!$group) {
+        if (! $group) {
             return $total;
         }
 
         $groupLessons = $group->lessons_planned - $group->lessons()
-                ->where('status', LessonStatus::conducted)
-                ->where('is_free', false)
-                ->count();
+            ->where('status', LessonStatus::conducted)
+            ->where('is_free', false)
+            ->count();
 
         return $total + $groupLessons;
     }
@@ -145,14 +144,14 @@ class ContractVersionProgram extends Model
         $total = $this->clientLessons()->where('price', 0)->count();
         $group = $this->group;
 
-        if (!$group) {
+        if (! $group) {
             return $total;
         }
 
         return $total + $group->lessons()
-                ->where('status', LessonStatus::planned)
-                ->where('is_free', true)
-                ->count();
+            ->where('status', LessonStatus::planned)
+            ->where('is_free', true)
+            ->count();
     }
 
     public function getNextPrice(?int $lessonsPassed = null): int

@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use App\Models\Client;
 use App\Models\ClientParent;
+use App\Models\Contract;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -20,18 +21,31 @@ class SearchResultResource extends JsonResource
         $common = [
             'is_active' => $document['is_active'],
             'entity_type' => $class,
-            'phones' => PhoneResource::collection($model->phones),
+            'phones' => is_array($model->phones) ? PhoneResource::collection($model->phones) : [],
         ];
 
         switch ($class) {
+            case Contract::class:
+                $extra = [
+                    'contract' => extract_fields($model, [
+                        'year', 'company', 'client_id',
+                    ], [
+                        'programs_count' => $model->activeVersion->programs()->count(),
+                        'directions' => $model->activeVersion->directions,
+                    ]),
+                ];
+                break;
+
             case ClientParent::class:
-                $model = $model->client;
+                $client = $model->client;
 
             case Client::class:
+                $client = $client ?? $model;
                 $extra = [
                     'client' => [
-                        'directions' => $model->directions,
-                        'max_contract_year' => $model->contracts->max('year'),
+                        'id' => $client->id,
+                        'directions' => $client->directions,
+                        'max_contract_year' => $client->contracts->max('year'),
                     ],
                 ];
                 break;

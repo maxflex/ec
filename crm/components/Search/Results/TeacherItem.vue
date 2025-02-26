@@ -9,9 +9,9 @@ const teacher = item.teacher!
 </script>
 
 <template>
-  <div>
+  <RouterLink :to="{ name: 'teachers-id', params: { id: item.id } }" class="search-teacher-item">
     <div style="width: 200px">
-      <UiPerson :item="item" />
+      <UiPerson :item="item" no-link />
     </div>
     <div style="width: 140px" class="text-lowercase">
       {{ EntityTypeLabel[item.entity_type] }}
@@ -28,5 +28,13 @@ const teacher = item.teacher!
     <!-- <div style="width: 130px; flex: initial" class="text-lowercase text-right text-gray opacity-5">
       {{ EntityTypeLabel[item.entity_type] }}
     </div> -->
-  </div>
+  </RouterLink>
 </template>
+
+<style lang="scss">
+.search-teacher-item {
+  & > div {
+    padding: 16px 0;
+  }
+}
+</style>

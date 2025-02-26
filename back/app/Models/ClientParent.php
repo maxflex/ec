@@ -3,24 +3,28 @@
 namespace App\Models;
 
 use App\Contracts\CanLogin;
-use App\Traits\{HasName, HasPhones, HasTelegramMessages, RelationSyncable};
+use App\Traits\HasName;
+use App\Traits\HasPhones;
+use App\Traits\HasTelegramMessages;
+use App\Traits\RelationSyncable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Scout\Searchable;
 
 class ClientParent extends Authenticatable implements CanLogin
 {
-    use HasName, HasPhones, RelationSyncable, Searchable, HasTelegramMessages;
+    use HasName, HasPhones, HasTelegramMessages, RelationSyncable, Searchable;
 
     public $timestamps = false;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name',
-        'passport', 'email'
+        'passport', 'email',
     ];
 
     protected $casts = [
-        'passport' => 'array'
+        'passport' => 'array',
     ];
 
     public function client(): BelongsTo
@@ -44,14 +48,24 @@ class ClientParent extends Authenticatable implements CanLogin
             'first_name' => $this->first_name ? mb_strtolower($this->first_name) : '',
             'last_name' => $this->last_name ? mb_strtolower($this->last_name) : '',
             'middle_name' => $this->middle_name ? mb_strtolower($this->middle_name) : '',
-            'phones' => $this->phones()->pluck('number'),
-            'weight' => intval($array['weight'] / 2)
+            'phones' => $this->phonesToSearchIndex(),
+            'weight' => intval($array['weight'] / 2),
         ];
+    }
+
+    public function makeAllSearchableUsing(Builder $query): Builder
+    {
+        return $query
+            ->with('phones')
+            ->whereHas(
+                'client',
+                fn ($q) => $q->whereRaw('`created_at` >= NOW() - INTERVAL 3 YEAR')
+            );
     }
 
     public function scopeCanLogin($query)
     {
-        $query->whereHas('client', fn($q) => $q->canLogin());
+        $query->whereHas('client', fn ($q) => $q->canLogin());
     }
 
     public function getPassportAttribute($value)

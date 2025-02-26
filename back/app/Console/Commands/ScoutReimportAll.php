@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Client;
 use App\Models\ClientParent;
+use App\Models\Contract;
 use App\Models\Request;
 use App\Models\Teacher;
 use Illuminate\Console\Command;
@@ -35,15 +36,18 @@ class ScoutReimportAll extends Command
             Teacher::class,
             Client::class,
             ClientParent::class,
+            Contract::class,
         ];
+
         // Это снесёт весь persons индекс, т.к. у всех он одинаковый
         Artisan::call('scout:flush', [
-            'model' => Client::class
+            'model' => Client::class,
         ]);
+
         $this->info('Index has been flushed');
         foreach ($models as $model) {
             $this->line(PHP_EOL);
-            $this->info('Importing ' . $model);
+            $this->info('Importing '.$model);
             Artisan::call('scout:import', ['model' => $model]);
             $this->line(Artisan::output());
         }

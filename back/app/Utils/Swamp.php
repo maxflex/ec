@@ -10,7 +10,7 @@ class Swamp
     {
         // сумма занятий и цен из ContractVersionProgramPrice
         $totals = DB::table('contract_version_program_prices')
-            ->selectRaw(<<<SQL
+            ->selectRaw(<<<'SQL'
                 contract_version_program_id,
                 CAST(SUM(`lessons`) AS UNSIGNED) AS total_lessons,
                 CAST(SUM(`price` * `lessons`) AS UNSIGNED) AS total_price
@@ -20,7 +20,7 @@ class Swamp
 
         // сумма цен за проведённые занятия из ClientLesson
         $totalPassed = DB::table('client_lessons')
-            ->selectRaw(<<<SQL
+            ->selectRaw(<<<'SQL'
                 contract_version_program_id,
                 CAST(SUM(`price`) AS UNSIGNED) AS total_price_passed
             SQL
@@ -31,7 +31,7 @@ class Swamp
          * Программы последней версии договора
          */
         $swampsCte = DB::table('contract_version_programs', 'cvp')
-            ->join('contract_versions as cv', fn($join) => $join
+            ->join('contract_versions as cv', fn ($join) => $join
                 ->on('cv.id', '=', 'cvp.contract_version_id')
                 ->where('cv.is_active', true)
             )
@@ -44,7 +44,7 @@ class Swamp
                 '=',
                 'cvp.id'
             )
-            ->selectRaw(<<<SQL
+            ->selectRaw(<<<'SQL'
                 cvp.id,
                 t.total_lessons,
                 t.total_price,
@@ -64,31 +64,31 @@ class Swamp
     {
         switch ($status) {
             case 'toFulfil':
-                $query->whereRaw("group_id IS NULL AND total_price_passed < total_price");
+                $query->whereRaw('group_id IS NULL AND total_price_passed < total_price');
                 break;
 
             case 'exceedNoGroup':
-                $query->whereRaw("group_id IS NULL AND total_price_passed > total_price");
+                $query->whereRaw('group_id IS NULL AND total_price_passed > total_price');
                 break;
 
             case 'completeNoGroup':
-                $query->whereRaw("group_id IS NULL AND total_price_passed = total_price");
+                $query->whereRaw('group_id IS NULL AND total_price_passed = total_price');
                 break;
 
             case 'inProcess':
-                $query->whereRaw("group_id IS NOT NULL AND total_price_passed < total_price");
+                $query->whereRaw('group_id IS NOT NULL AND total_price_passed < total_price');
                 break;
 
             case 'exceedInGroup':
-                $query->whereRaw("group_id IS NOT NULL AND total_price_passed > total_price");
+                $query->whereRaw('group_id IS NOT NULL AND total_price_passed > total_price');
                 break;
 
             case 'completeInGroup':
-                $query->whereRaw("group_id IS NOT NULL AND total_price_passed = total_price");
+                $query->whereRaw('group_id IS NOT NULL AND total_price_passed = total_price');
                 break;
 
             case 'noGroup':
-                $query->whereRaw("group_id IS NULL");
+                $query->whereRaw('group_id IS NULL');
                 break;
         }
     }

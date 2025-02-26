@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
-use App\Enums\{Direction, RequestStatus};
-use App\Traits\{HasComments, HasPhones, RelationSyncable};
+use App\Enums\Direction;
+use App\Enums\RequestStatus;
+use App\Traits\HasComments;
+use App\Traits\HasPhones;
+use App\Traits\RelationSyncable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,11 +16,11 @@ use Laravel\Scout\Searchable;
 
 class Request extends Model
 {
-    use HasPhones, HasComments, RelationSyncable, Searchable;
+    use HasComments, HasPhones, RelationSyncable, Searchable;
 
     protected $fillable = [
         'responsible_user_id', 'direction', 'status', 'client_id',
-        'is_verified', 'yandex_id', 'google_id'
+        'is_verified', 'yandex_id', 'google_id',
     ];
 
     protected $casts = [
@@ -24,6 +28,13 @@ class Request extends Model
         'status' => RequestStatus::class,
         'direction' => Direction::class,
     ];
+
+    public static function booted()
+    {
+        self::creating(function ($request) {
+            $request->ip = request()->ip();
+        });
+    }
 
     public function responsibleUser(): BelongsTo
     {
@@ -46,6 +57,27 @@ class Request extends Model
     }
 
     /**
+     * @return Collection<int, Request>
+     *
+     * TODO: remove $clients param after once()
+     */
+    public function getAssociatedRequests()
+    {
+        $numbers = $this->phones->pluck('number');
+        $clientIds = $this->getAssociatedClients()->pluck('id');
+        if ($this->client_id) {
+            $clientIds->push($this->client_id);
+        }
+
+        return Request::where('id', '<>', $this->id)
+            ->withCount('comments')
+            ->where(fn ($q) => $q->whereHas('phones', fn ($q) => $q->whereIn('number', $numbers))
+                ->when($clientIds->count(), fn ($q) => $q->orWhereIn('client_id', $clientIds))
+            )
+            ->get();
+    }
+
+    /**
      * @return Collection<int, Client>
      *
      * TODO: use once()
@@ -57,7 +89,7 @@ class Request extends Model
         $query = Phone::whereIn('number', $numbers)
             ->whereIn('entity_type', [
                 Client::class,
-                ClientParent::class
+                ClientParent::class,
             ])
             ->with('entity');
 
@@ -80,27 +112,6 @@ class Request extends Model
         return $clients->unique('id');
     }
 
-    /**
-     * @return Collection<int, Request>
-     *
-     * TODO: remove $clients param after once()
-     */
-    public function getAssociatedRequests()
-    {
-        $numbers = $this->phones->pluck('number');
-        $clientIds = $this->getAssociatedClients()->pluck('id');
-        if ($this->client_id) {
-            $clientIds->push($this->client_id);
-        }
-
-        return Request::where('id', '<>', $this->id)
-            ->withCount('comments')
-            ->where(fn($q) => $q->whereHas('phones', fn($q) => $q->whereIn('number', $numbers))
-                ->when($clientIds->count(), fn($q) => $q->orWhereIn('client_id', $clientIds))
-            )
-            ->get();
-    }
-
     public function searchableAs()
     {
         return 'people';
@@ -116,17 +127,17 @@ class Request extends Model
             'first_name' => '',
             'last_name' => '',
             'middle_name' => '',
-            'phones' => $this->phones()->pluck('number'),
-            'contract_ids' => [],
+            'phones' => $this->phonesToSearchIndex(),
             'is_active' => false,
             'weight' => $weight,
         ];
     }
 
-    public static function booted()
+    public function makeAllSearchableUsing(Builder $query): Builder
     {
-        self::creating(function ($request) {
-            $request->ip = request()->ip();
-        });
+        return $query
+            ->with('phones')
+            ->where('status', '<>', RequestStatus::trash)
+            ->whereRaw('`created_at` >= NOW() - INTERVAL 2 YEAR');
     }
 }

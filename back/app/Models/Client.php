@@ -12,6 +12,7 @@ use App\Traits\HasPhoto;
 use App\Traits\HasTelegramMessages;
 use App\Traits\RelationSyncable;
 use App\Utils\Teeth;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -291,11 +292,17 @@ class Client extends Authenticatable implements CanLogin, HasTeeth
             'first_name' => $this->first_name ? mb_strtolower($this->first_name) : '',
             'last_name' => $this->last_name ? mb_strtolower($this->last_name) : '',
             'middle_name' => $this->middle_name ? mb_strtolower($this->middle_name) : '',
-            'phones' => $this->phones()->pluck('number'),
-            'contract_ids' => $this->contracts()->pluck('id')->map(fn ($e) => (string) $e)->all(),
+            'phones' => $this->phonesToSearchIndex(),
             'is_active' => Client::canLogin()->whereId($this->id)->exists(),
             'weight' => $weight,
         ];
+    }
+
+    public function makeAllSearchableUsing(Builder $query): Builder
+    {
+        return $query
+            ->with('phones')
+            ->whereRaw('`created_at` >= NOW() - INTERVAL 3 YEAR');
     }
 
     public function getPassportAttribute($value)

@@ -2,6 +2,7 @@
 
 use App\Models\Client;
 use App\Models\ClientParent;
+use App\Models\Contract;
 use App\Models\Request;
 use App\Models\Teacher;
 
@@ -22,11 +23,6 @@ $schema = [
             ],
             [
                 'name' => 'phones',
-                'type' => 'string[]',
-                'infix' => true,
-            ],
-            [
-                'name' => 'contract_ids',
                 'type' => 'string[]',
             ],
             [
@@ -220,6 +216,7 @@ return [
             Client::class => $schema,
             Request::class => $schema,
             ClientParent::class => $schema,
+            Contract::class => $schema,
         ],
     ],
 

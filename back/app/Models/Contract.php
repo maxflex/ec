@@ -4,13 +4,15 @@ namespace App\Models;
 
 use App\Enums\Company;
 use App\Traits\HasBalance;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Scout\Searchable;
 
 class Contract extends Model
 {
-    use HasBalance;
+    use HasBalance, Searchable;
 
     public $timestamps = false;
 
@@ -58,6 +60,34 @@ class Contract extends Model
     public function versions(): HasMany
     {
         return $this->hasMany(ContractVersion::class)->oldest();
+    }
+
+    public function searchableAs()
+    {
+        return 'people';
+    }
+
+    public function toSearchableArray()
+    {
+        $class = class_basename(self::class);
+        $weight = 150;
+
+        return [
+            'id' => implode('-', [$class, $this->id]),
+            'first_name' => '',
+            'last_name' => '',
+            'middle_name' => '',
+            'phones' => [
+                (string) $this->id,
+            ],
+            'is_active' => $this->year >= current_academic_year(),
+            'weight' => $weight,
+        ];
+    }
+
+    public function makeAllSearchableUsing(Builder $query): Builder
+    {
+        return $query->where('year', '>=', current_academic_year() - 3);
     }
 
     protected function getBalanceItems(): array
