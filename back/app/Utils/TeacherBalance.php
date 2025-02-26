@@ -56,34 +56,35 @@ class TeacherBalance
                 'teacher' => new PersonResource($teacher),
             ];
             foreach ($queries as $q) {
+                $query = $q->query->clone();
+
                 if (! isset($q->table)) {
-                    $q->table = $q->name ?? $q->query->getModel()->getTable();
+                    $q->table = $q->name ?? $query->getModel()->getTable();
                 }
 
                 if (@$q->name === 'paid_lessons') {
                     if ($teacher->is_split_balance) {
-                        $q->query->where('method', TeacherPaymentMethod::bill);
+                        $query->where('method', TeacherPaymentMethod::bill);
                     } else {
-                        $q->query->where('id', -1);
+                        $query->where('id', -1);
                     }
                 }
 
                 if (@$q->name === 'paid_other') {
                     if ($teacher->is_split_balance) {
-                        $q->query->where('method', '<>', TeacherPaymentMethod::bill);
+                        $query->where('method', '<>', TeacherPaymentMethod::bill);
                     }
                 }
 
-                $value = $q->query
-                    ->clone()
+                $value = $query
                     ->where('year', $year)
                     ->where('teacher_id', $teacher->id)
                     ->sum($q->sum);
 
                 $resultItem[$q->table] = intval($value);
             }
-            $total = $resultItem['lessons_conducted'] + $resultItem['reports'] + $resultItem['teacher_services'];
 
+            $total = $resultItem['lessons_conducted'] + $resultItem['reports'] + $resultItem['teacher_services'];
             $totalLessons = $teacher->is_split_balance ? $resultItem['lessons_conducted'] : 0;
             $totalOther = $teacher->is_split_balance ? $resultItem['reports'] + $resultItem['teacher_services'] : $total;
 
