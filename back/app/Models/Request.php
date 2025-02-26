@@ -126,8 +126,7 @@ class Request extends Model
             'id' => implode('-', [$class, $this->id]),
             'first_name' => '',
             'last_name' => '',
-            'middle_name' => '',
-            'phones' => $this->phonesToSearchIndex(),
+            'phones' => $this->phones->pluck('number')->toArray(),
             'is_active' => false,
             'weight' => $weight,
         ];

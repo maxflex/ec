@@ -21,7 +21,7 @@ class SearchResultResource extends JsonResource
         $common = [
             'is_active' => $document['is_active'],
             'entity_type' => $class,
-            'phones' => is_array($model->phones) ? PhoneResource::collection($model->phones) : [],
+            'phones' => $model->phones ? PhoneResource::collection($model->phones) : [],
         ];
 
         switch ($class) {
@@ -60,6 +60,7 @@ class SearchResultResource extends JsonResource
                 break;
 
             default:
+                $model->loadCount('comments');
                 $extra = [
                     'request' => new RequestListResource($model),
                 ];

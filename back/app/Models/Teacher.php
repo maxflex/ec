@@ -88,8 +88,7 @@ class Teacher extends Authenticatable implements CanLogin, HasTeeth
             'id' => implode('-', [$class, $this->id]),
             'first_name' => $this->first_name ? mb_strtolower($this->first_name) : '',
             'last_name' => $this->last_name ? mb_strtolower($this->last_name) : '',
-            'middle_name' => $this->middle_name ? mb_strtolower($this->middle_name) : '',
-            'phones' => $this->phonesToSearchIndex(),
+            'phones' => $this->phones->pluck('number')->toArray(),
             'is_active' => Teacher::canLogin()->whereId($this->id)->exists(),
             'weight' => 499 + intval($this->lessons()->count() / 3),
         ];

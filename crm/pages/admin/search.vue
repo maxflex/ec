@@ -67,7 +67,7 @@ onMounted(() => input.value.focus())
     }
 
     .v-field__input {
-      padding: 0px 10px !important;
+      padding: 0px 10px 0 0 !important;
       font-size: 30px;
     }
 

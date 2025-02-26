@@ -28,22 +28,24 @@ trait HasPhones
      *  7210,
      *
      * @return string[]
+     *
+     * @deprecated
      */
-    public function phonesToSearchIndex(): array
-    {
-        return $this->phones
-            ->pluck('number')
-            ->map(function ($number) {
-                $str = str($number)->substr(1);
-
-                return [
-                    $str->value(),                           // 9252727210
-                    $str->substr(0, 3)->value(), // 925
-                    $str->substr(3)->value(),           // 2727210
-                    $str->substr(6)->value(),           // 7210
-                ];
-            })
-            ->flatten()
-            ->all();
-    }
+    // public function phonesToSearchIndex(): array
+    // {
+    //     return $this->phones
+    //         ->pluck('number')
+    //         ->map(function ($number) {
+    //             $str = str($number)->substr(1);
+    //
+    //             return [
+    //                 $str->value(),                           // 9252727210
+    //                 $str->substr(0, 3)->value(), // 925
+    //                 $str->substr(3)->value(),           // 2727210
+    //                 $str->substr(6)->value(),           // 7210
+    //             ];
+    //         })
+    //         ->flatten()
+    //         ->all();
+    // }
 }

@@ -18,12 +18,9 @@ $schema = [
                 'type' => 'string',
             ],
             [
-                'name' => 'middle_name',
-                'type' => 'string',
-            ],
-            [
                 'name' => 'phones',
                 'type' => 'string[]',
+                'infix' => true,
             ],
             [
                 'name' => 'is_active',

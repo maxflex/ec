@@ -22,8 +22,8 @@ class SearchController extends Controller
         $raw = Client::search(mb_strtolower($request->q))
             ->options([
                 'include_fields' => 'id,is_active',
-                'query_by' => 'last_name,first_name,middle_name,phones',
-                'infix' => 'off,off,off,fallback',
+                'query_by' => 'last_name,first_name,phones',
+                'infix' => 'off,off,fallback',
                 'sort_by' => 'is_active:desc,weight:desc,_text_match:desc',
                 'num_typos' => 0,
                 'typo_tokens_threshold' => 0,

@@ -76,7 +76,6 @@ class Contract extends Model
             'id' => implode('-', [$class, $this->id]),
             'first_name' => '',
             'last_name' => '',
-            'middle_name' => '',
             'phones' => [
                 (string) $this->id,
             ],
