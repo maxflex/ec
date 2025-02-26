@@ -36,7 +36,7 @@ const { indexPageData, availableYears, items } = useIndex<Balance>(
         v-if="split"
         v-model="filters.split"
         density="comfortable"
-        label="Отображать баланс"
+        label="Разделение баланса"
         :items="yesNo('по занятиям', 'по остальным начислениям')"
       />
     </template>

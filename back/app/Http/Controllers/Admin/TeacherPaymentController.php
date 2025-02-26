@@ -58,33 +58,44 @@ class TeacherPaymentController extends Controller
             'year' => ['required', 'numeric', 'min:2015'],
         ]);
 
-        $lessonsConducted = $teacher->lessons()
+        $lessonsConducted = (int) $teacher->lessons()
             ->where('status', LessonStatus::conducted)
             ->join('groups as g', 'g.id', '=', 'lessons.group_id')
             ->where('g.year', $request->year)
             ->sum('price');
 
-        $paidLessons = $teacher->payments()
-            ->where('method', TeacherPaymentMethod::bill)
-            ->where('year', $request->year)
-            ->sum('sum');
-
-        $paidOther = $teacher->payments()
-            ->where('method', '<>', TeacherPaymentMethod::bill)
-            ->where('year', $request->year)
-            ->sum('sum');
-
-        $reports = $teacher->reports()
+        $reports = (int) $teacher->reports()
             ->where('year', $request->year)
             ->sum('price');
 
-        $services = $teacher->services()
+        $services = (int) $teacher->services()
             ->where('year', $request->year)
             ->sum('sum');
 
+        $paidLessons = $teacher->payments()->where('year', $request->year);
+        $paidOther = $teacher->payments()->where('year', $request->year);
+
+        if ($teacher->is_split_balance) {
+            $paidLessons->where('method', TeacherPaymentMethod::bill);
+            $paidOther->where('method', '<>', TeacherPaymentMethod::bill);
+        } else {
+            $paidLessons->where('id', -1);
+        }
+
+        $paidLessons = (int) $paidLessons->sum('sum');
+        $paidOther = (int) $paidOther->sum('sum');
+
+        $totalLessons = $teacher->is_split_balance ? $lessonsConducted : 0;
+        $totalOther = $teacher->is_split_balance ? ($reports + $services) : ($lessonsConducted + $reports + $services);
+
         return [
-            'to_pay_lessons' => $lessonsConducted - $paidLessons,
-            'to_pay_other' => $reports + $services - $paidOther,
+            // 'lessonsConducted' => $lessonsConducted,
+            // 'reports' => $reports,
+            // 'services' => $services,
+            // 'paidOther' => $paidOther,
+            // 'paidLessons' => $paidLessons,
+            'to_pay_lessons' => $totalLessons - $paidLessons,
+            'to_pay_other' => $totalOther - $paidOther,
         ];
     }
 }

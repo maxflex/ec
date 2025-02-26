@@ -93,6 +93,26 @@ class TelegramMessage extends Model
         return $telegramMessage;
     }
 
+    public static function sendNumberChanged(Phone $phone)
+    {
+        $buttons = [[
+            ['text' => 'Отправить мой номер телефона', 'request_contact' => true],
+        ]];
+
+        $replyMarkup = new ReplyKeyboardMarkup(
+            $buttons,
+            oneTimeKeyboard: true,
+            resizeKeyboard: true,
+            isPersistent: true
+        );
+
+        TelegramMessage::send(
+            $phone,
+            view('bot.number-changed'),
+            $replyMarkup,
+        );
+    }
+
     public function entity(): MorphTo
     {
         return $this->morphTo();

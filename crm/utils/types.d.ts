@@ -466,6 +466,7 @@ declare global {
     subjects: Subject[]
     is_published: boolean
     is_head_teacher: boolean
+    is_split_balance: boolean
     desc?: string
     photo_desc?: string
     passport: {

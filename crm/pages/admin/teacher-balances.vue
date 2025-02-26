@@ -32,10 +32,10 @@ const tableFields: Array<{
   { title: 'начислено<br>(отчёты)', field: 'reports' },
   { title: 'начислено<br>(допуслуги)', field: 'teacher_services' },
   { title: 'начислено<br>(итого)', field: 'total' },
-  { title: 'выплачено<br>(занятия)', field: 'paid_lessons' },
-  { title: 'выплачено<br>(остальное)', field: 'paid_other' },
-  { title: 'к выплате<br>(занятия)', field: 'to_pay_lessons' },
-  { title: 'к выплате<br>(остальное)', field: 'to_pay_other' },
+  { title: 'выплачено<br>(офф)', field: 'paid_lessons' },
+  { title: 'выплачено<br>(неофф)', field: 'paid_other' },
+  { title: 'к выплате<br>(офф)', field: 'to_pay_lessons' },
+  { title: 'к выплате<br>(неофф)', field: 'to_pay_other' },
 ]
 
 const sort = ref<{

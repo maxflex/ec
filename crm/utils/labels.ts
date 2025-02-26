@@ -122,7 +122,6 @@ export const TelegramTemplateLabel = {
   teacherConductMissing: 'занятие не проведено',
   paymentReminder: 'напоминание об оплате',
   unplannedOrCancelled: 'изменения в расписании',
-  firstLogin: 'первый вход в ЛК',
 }
 
 export const ProgramShortLabel = {

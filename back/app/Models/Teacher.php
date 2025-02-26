@@ -26,11 +26,12 @@ class Teacher extends Authenticatable implements CanLogin, HasTeeth
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'status', 'subjects',
-        'so', 'desc', 'photo_desc', 'passport', 'is_published',
+        'so', 'desc', 'photo_desc', 'passport', 'is_published', 'is_split_balance',
     ];
 
     protected $casts = [
         'status' => TeacherStatus::class,
+        'is_split_balance' => 'bool',
         'is_published' => 'bool',
         'passport' => 'array',
     ];

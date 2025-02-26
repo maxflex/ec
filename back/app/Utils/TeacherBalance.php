@@ -36,12 +36,12 @@ class TeacherBalance
             ],
             (object) [
                 'name' => 'paid_lessons',
-                'query' => TeacherPayment::where('method', TeacherPaymentMethod::bill),
+                'query' => TeacherPayment::query(),
                 'sum' => 'sum',
             ],
             (object) [
                 'name' => 'paid_other',
-                'query' => TeacherPayment::where('method', '<>', TeacherPaymentMethod::bill),
+                'query' => TeacherPayment::query(),
                 'sum' => 'sum',
             ],
             (object) [
@@ -60,6 +60,20 @@ class TeacherBalance
                     $q->table = $q->name ?? $q->query->getModel()->getTable();
                 }
 
+                if (@$q->name === 'paid_lessons') {
+                    if ($teacher->is_split_balance) {
+                        $q->query->where('method', TeacherPaymentMethod::bill);
+                    } else {
+                        $q->query->where('id', -1);
+                    }
+                }
+
+                if (@$q->name === 'paid_other') {
+                    if ($teacher->is_split_balance) {
+                        $q->query->where('method', '<>', TeacherPaymentMethod::bill);
+                    }
+                }
+
                 $value = $q->query
                     ->clone()
                     ->where('year', $year)
@@ -69,11 +83,15 @@ class TeacherBalance
                 $resultItem[$q->table] = intval($value);
             }
             $total = $resultItem['lessons_conducted'] + $resultItem['reports'] + $resultItem['teacher_services'];
+
+            $totalLessons = $teacher->is_split_balance ? $resultItem['lessons_conducted'] : 0;
+            $totalOther = $teacher->is_split_balance ? $resultItem['reports'] + $resultItem['teacher_services'] : $total;
+
             $resultItem = [
                 ...$resultItem,
                 'total' => $total,
-                'to_pay_lessons' => $resultItem['lessons_conducted'] - $resultItem['paid_lessons'],
-                'to_pay_other' => $resultItem['reports'] + $resultItem['teacher_services'] - $resultItem['paid_other'],
+                'to_pay_lessons' => $totalLessons - $resultItem['paid_lessons'],
+                'to_pay_other' => $totalOther - $resultItem['paid_other'],
             ];
             $result->push($resultItem);
         }

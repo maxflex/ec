@@ -131,15 +131,15 @@ defineExpose({ create, edit })
             label="Сумма"
             suffix="руб."
           />
-          <a v-if="item.id < 0 && suggestions !== undefined" class="date-input__today">
-            <span class="text-black">
-              по занятиям:
+          <a v-if="item.id < 0 && suggestions !== undefined" class="date-input__today d-flex ga-4">
+            <span v-if="suggestions.to_pay_lessons" class="text-black">
+              офф:
               <a @click="item.sum = suggestions.to_pay_lessons">
                 {{ formatPrice(suggestions.to_pay_lessons) }}
               </a>
             </span>
-            <span class="ml-2 text-black">
-              остальное:
+            <span v-if="suggestions.to_pay_other" class="text-black">
+              неофф:
               <a @click="item.sum = suggestions.to_pay_other">
                 {{ formatPrice(suggestions.to_pay_other) }}
               </a>
