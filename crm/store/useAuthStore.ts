@@ -10,6 +10,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isAdmin = ref(false)
   const isClient = ref(false)
   const isTeacher = ref(false)
+  const isPreviewMode = !!previewToken.value
 
   /**
    *
@@ -28,9 +29,12 @@ export const useAuthStore = defineStore('auth', () => {
       setTimeout(() => window.location.href = '/')
     }
     else {
+      const redirectTo = isPreviewMode
+        ? (sessionStorage.getItem('redirect') || '/')
+        : '/'
       previewToken.value = undefined
       token.value = t
-      setTimeout(() => window.location.href = sessionStorage.getItem('redirect') || '/')
+      setTimeout(() => window.location.href = redirectTo)
       // navigateTo({ path })
     }
   }
@@ -65,8 +69,9 @@ export const useAuthStore = defineStore('auth', () => {
     return previewToken.value ? previewToken : token
   }
 
-  function getPreviewModeToken() {
-    return previewToken.value ? token.value : null
+  // Если в режиме просмотра, получить исходный токен (под кем мы сидим в режиме просмота?)
+  function getOriginalToken() {
+    return token.value
   }
 
   async function logOut() {
@@ -94,12 +99,13 @@ export const useAuthStore = defineStore('auth', () => {
     isAdmin,
     isClient,
     isTeacher,
+    isPreviewMode,
     logIn,
     logInAndRemember,
     logOut,
     getCurrentToken,
     clearCurrentToken,
     getLoggedUser,
-    getPreviewModeToken,
+    getOriginalToken,
   }
 })

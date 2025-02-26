@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const router = useRouter()
-const { rememberUser } = useAuthStore()
+const { rememberUser, isPreviewMode } = useAuthStore()
 const showGreeting = ref(false)
 
 async function redirect() {
@@ -13,7 +13,7 @@ async function ok() {
 }
 
 nextTick(async () => {
-  if (localStorage.getItem('show-greeting')) {
+  if (localStorage.getItem('show-greeting') || isPreviewMode) {
     await redirect()
     return
   }

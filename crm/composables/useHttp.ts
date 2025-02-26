@@ -3,7 +3,7 @@ import { useFetch } from '#app'
 type useFetchType = typeof useFetch
 
 export const useHttp: useFetchType = (path: string, options = {}) => {
-  const { getCurrentToken, clearCurrentToken, getPreviewModeToken, clientParentId } = useAuthStore()
+  const { getCurrentToken, clearCurrentToken, getOriginalToken, isPreviewMode, clientParentId } = useAuthStore()
   const { showGlobalMessage } = useGlobalMessage()
   let baseURL = useRuntimeConfig().public.baseUrl
   const token = getCurrentToken().value
@@ -23,8 +23,8 @@ export const useHttp: useFetchType = (path: string, options = {}) => {
     headers.Authorization = `Bearer ${token}`
   }
 
-  if (getPreviewModeToken()) {
-    headers.Preview = getPreviewModeToken()
+  if (isPreviewMode) {
+    headers.Preview = getOriginalToken()
   }
 
   if (clientParentId) {
