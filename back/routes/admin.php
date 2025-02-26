@@ -62,6 +62,8 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::get('balance', BalanceController::class);
 
+    Route::get('teacher-payments/get-suggestions/{teacher}', [TeacherPaymentController::class, 'getSuggestions']);
+
     Route::get('clients-browse', ClientsBrowseController::class);
 
     Route::apiResource('logs', LogController::class)->only('index');

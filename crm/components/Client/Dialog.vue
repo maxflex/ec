@@ -199,6 +199,7 @@ defineExpose({ create, edit })
           <TeacherSelector
             v-model="item.head_teacher_id"
             label="Куратор"
+            head-teachers
           />
           <v-text-field
             v-model="item.email"
@@ -274,6 +275,12 @@ defineExpose({ create, edit })
         <v-textarea
           v-model="item.parent.passport.fact_address"
           label="Фактический адрес"
+          no-resize
+          rows="3"
+        />
+        <v-textarea
+          v-model="item.how_found"
+          label="Как вы о нас узнали?"
           no-resize
           rows="3"
         />

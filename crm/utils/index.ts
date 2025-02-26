@@ -317,6 +317,10 @@ export function formatName(
       name = [person.last_name, person.first_name, person.middle_name]
       break
 
+    case 'first-middle':
+      name = [person.first_name, person.middle_name]
+      break
+
     case 'initials':
       name = [person.last_name]
       if (person.first_name) {

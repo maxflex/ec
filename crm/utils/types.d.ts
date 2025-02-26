@@ -95,7 +95,7 @@ declare global {
 
   type GlobalMessageColor = 'error' | 'success' | undefined
 
-  type NameFormat = 'last-first' | 'full' | 'initials'
+  type NameFormat = 'last-first' | 'full' | 'initials' | 'first-middle'
 
   interface HasPhoto {
     photo_url: ?string
@@ -207,6 +207,7 @@ declare global {
     user?: PersonResource
     created_at?: string
     email?: string
+    how_found?: string
     passport: {
       series: ?string
       number: ?string

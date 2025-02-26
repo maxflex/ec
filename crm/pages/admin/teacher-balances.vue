@@ -4,10 +4,12 @@ interface TeacherBalance {
   lessons_planned: number
   lessons_conducted: number
   reports: number
-  teacher_payments: number
   teacher_services: number
   total: number
-  to_pay: number
+  paid_lessons: number
+  paid_other: number
+  to_pay_lessons: number
+  to_pay_other: number
 }
 
 type TeacherBalanceField = keyof TeacherBalance
@@ -30,8 +32,10 @@ const tableFields: Array<{
   { title: 'начислено<br>(отчёты)', field: 'reports' },
   { title: 'начислено<br>(допуслуги)', field: 'teacher_services' },
   { title: 'начислено<br>(итого)', field: 'total' },
-  { title: 'выплачено', field: 'teacher_payments' },
-  { title: 'к выплате', field: 'to_pay' },
+  { title: 'выплачено<br>(занятия)', field: 'paid_lessons' },
+  { title: 'выплачено<br>(остальное)', field: 'paid_other' },
+  { title: 'к выплате<br>(занятия)', field: 'to_pay_lessons' },
+  { title: 'к выплате<br>(остальное)', field: 'to_pay_other' },
 ]
 
 const sort = ref<{
@@ -127,9 +131,9 @@ watch(filters.value, () => (sort.value = undefined))
       </thead>
       <tbody>
         <tr v-for="item in sortedItems" :key="item.teacher.id">
-          <td>
+          <td width="250">
             <RouterLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }">
-              {{ formatNameInitials(item.teacher) }}
+              {{ formatName(item.teacher, 'initials') }}
             </RouterLink>
           </td>
           <td v-for="{ field } in tableFields" :key="field">
@@ -155,7 +159,7 @@ watch(filters.value, () => (sort.value = undefined))
     td,
     th {
       &:not(:first-child) {
-        width: 150px;
+        width: 140px;
       }
       &:nth-child(6),
       &:nth-child(7) {

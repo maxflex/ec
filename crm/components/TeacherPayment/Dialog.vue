@@ -2,11 +2,19 @@
 import { clone } from 'rambda'
 import { apiUrl, modelDefaults, type TeacherPaymentResource } from '.'
 
+interface Suggestions {
+  to_pay_lessons: number
+  to_pay_other: number
+}
+
 const emit = defineEmits<{
   updated: [item: TeacherPaymentResource]
   deleted: [item: TeacherPaymentResource]
 }>()
-const cardNumberMask = { mask: '#∗∗∗ ∗∗∗∗ ∗∗∗∗ ####' }
+
+const suggestions = ref<Suggestions>()
+
+const cardNumberMask = { mask: '#####' }
 
 const { dialog, width } = useDialog('default')
 const item = ref<TeacherPaymentResource>(modelDefaults)
@@ -29,6 +37,7 @@ function create(teacherId: number) {
     sumInput.value.reset()
     sumInput.value.focus()
   })
+  loadPresetSuggestions()
 }
 async function edit(c: TeacherPaymentResource) {
   itemId.value = c.id
@@ -63,8 +72,19 @@ async function save() {
   }
 }
 
+async function loadPresetSuggestions() {
+  const { data } = await useHttp<Suggestions>(
+    `${apiUrl}/get-suggestions/${item.value.teacher_id}`,
+    {
+      params: {
+        year: item.value.year,
+      },
+    },
+  )
+  suggestions.value = data.value!
+}
+
 function onDeleted() {
-  console.log('deleted 1111', item.value)
   emit('deleted', item.value)
   dialog.value = false
 }
@@ -111,6 +131,20 @@ defineExpose({ create, edit })
             label="Сумма"
             suffix="руб."
           />
+          <a v-if="item.id < 0 && suggestions !== undefined" class="date-input__today">
+            <span class="text-black">
+              по занятиям:
+              <a @click="item.sum = suggestions.to_pay_lessons">
+                {{ formatPrice(suggestions.to_pay_lessons) }}
+              </a>
+            </span>
+            <span class="ml-2 text-black">
+              остальное:
+              <a @click="item.sum = suggestions.to_pay_other">
+                {{ formatPrice(suggestions.to_pay_other) }}
+              </a>
+            </span>
+          </a>
         </div>
         <div>
           <v-select
@@ -123,7 +157,8 @@ defineExpose({ create, edit })
           <v-text-field
             v-model="item.card_number"
             v-maska:[cardNumberMask]
-            placeholder="∗∗∗∗ ∗∗∗∗ ∗∗∗∗ ∗∗∗∗"
+            hide-spin-buttons
+            type="number"
             label="Номер карты"
           />
         </div>

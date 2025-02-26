@@ -14,7 +14,8 @@ class ClientResource extends JsonResource
         return extract_fields($this, [
             'first_name', 'last_name', 'middle_name', 'branches',
             'head_teacher_id', 'photo_url', 'created_at',
-            'passport', 'is_remote', 'directions', 'email'
+            'passport', 'is_remote', 'directions', 'email',
+            'how_found',
         ], [
             'entity_type' => Client::class,
             'head_teacher' => new PersonResource($this->headTeacher),

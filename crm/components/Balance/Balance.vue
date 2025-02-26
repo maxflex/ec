@@ -1,11 +1,18 @@
 <script setup lang="ts">
-const { contractId, teacherId } = defineProps<{
+const { contractId, teacherId, split } = defineProps<{
   contractId?: number
   teacherId?: number
+  split?: boolean
 }>()
 
-const filters = ref<AvailableYearsFilter>({
+interface Filters {
+  year?: Year
+  split?: number
+}
+
+const filters = ref<Filters>({
   year: undefined,
+  split: undefined,
 })
 
 const { indexPageData, availableYears, items } = useIndex<Balance>(
@@ -25,6 +32,13 @@ const { indexPageData, availableYears, items } = useIndex<Balance>(
   <UiIndexPage :data="indexPageData" class="balance">
     <template v-if="teacherId" #filters>
       <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
+      <UiClearableSelect
+        v-if="split"
+        v-model="filters.split"
+        density="comfortable"
+        label="Отображать баланс"
+        :items="yesNo('по занятиям', 'по остальным начислениям')"
+      />
     </template>
     <div class="table balance-table">
       <div v-for="item in items" :key="item.date">

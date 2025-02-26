@@ -2,21 +2,30 @@
 
 namespace App\Models;
 
-use App\Contracts\{CanLogin, HasTeeth};
+use App\Contracts\CanLogin;
+use App\Contracts\HasTeeth;
+use App\Enums\TeacherPaymentMethod;
 use App\Enums\TeacherStatus;
-use App\Traits\{HasBalance, HasName, HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable};
+use App\Traits\HasBalance;
+use App\Traits\HasName;
+use App\Traits\HasPhones;
+use App\Traits\HasPhoto;
+use App\Traits\HasTelegramMessages;
+use App\Traits\RelationSyncable;
 use App\Utils\Teeth;
-use Illuminate\Database\Eloquent\{Casts\Attribute, Relations\BelongsTo, Relations\HasMany};
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Scout\Searchable;
 
-class Teacher extends Authenticatable implements HasTeeth, CanLogin
+class Teacher extends Authenticatable implements CanLogin, HasTeeth
 {
-    use HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable, Searchable, HasName, HasBalance;
+    use HasBalance, HasName, HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable, Searchable;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'status', 'subjects',
-        'so', 'desc', 'photo_desc', 'passport', 'is_published'
+        'so', 'desc', 'photo_desc', 'passport', 'is_published',
     ];
 
     protected $casts = [
@@ -30,34 +39,14 @@ class Teacher extends Authenticatable implements HasTeeth, CanLogin
         return $this->hasMany(ScholarshipScore::class);
     }
 
-    public function payments(): HasMany
-    {
-        return $this->hasMany(TeacherPayment::class)->latest();
-    }
-
-    public function services(): HasMany
-    {
-        return $this->hasMany(TeacherService::class)->latest();
-    }
-
     public function signs(): HasMany
     {
         return $this->hasMany(InstructionSign::class);
     }
 
-    public function reports(): HasMany
-    {
-        return $this->hasMany(Report::class);
-    }
-
     public function headTeacherReports(): HasMany
     {
         return $this->hasMany(HeadTeacherReport::class);
-    }
-
-    public function lessons(): HasMany
-    {
-        return $this->hasMany(Lesson::class);
     }
 
     public function user(): BelongsTo
@@ -69,69 +58,8 @@ class Teacher extends Authenticatable implements HasTeeth, CanLogin
     {
         return Attribute::make(
             fn ($value) => $value ? explode(',', $value) : [],
-            fn ($value) => $value ? join(',', $value) : null
+            fn ($value) => $value ? implode(',', $value) : null
         );
-    }
-
-    protected function getBalanceItems($year): array
-    {
-        $balanceItems = [];
-
-        $lessons = Lesson::query()
-            ->conducted()
-            ->whereHas('group', fn($q) => $q->where('year', $year))
-            ->where('teacher_id', $this->id)
-            ->get();
-
-        foreach ($lessons as $lesson) {
-            $balanceItems[] = (object)[
-                'dateTime' => $lesson->date_time,
-                'sum' => $lesson->price,
-                'comment' => sprintf(
-                    'занятие %s, группа %d, кабинет %s, %s',
-                    $lesson->date_time->format('в H:i'),
-                    $lesson->group_id,
-                    filter_var($lesson->cabinet->value, FILTER_SANITIZE_NUMBER_INT),
-                    $lesson->group->program->getShortName(),
-                )
-            ];
-        }
-
-        $payments = $this->payments()->where('year', $year)->get();
-        foreach ($payments as $payment) {
-            $balanceItems[] = (object)[
-                'dateTime' => $payment->created_at->format('Y-m-d H:i:s'),
-                'sum' => $payment->sum * ($payment->is_return ? 1 : -1),
-                'comment' => sprintf(
-                    'выплата, %s',
-                    $payment->method->getTitle()
-                )
-            ];
-        }
-
-        $services = $this->services()->where('year', $year)->get();
-        foreach ($services as $service) {
-            $balanceItems[] = (object)[
-                'dateTime' => $service->date . ' 15:00:00',
-                'sum' => $service->sum,
-                'comment' => $service->purpose,
-            ];
-        }
-
-        $reports = $this->reports()->where('year', $year)->where('price', '>', 0)->get();
-        foreach ($reports as $report) {
-            $balanceItems[] = (object)[
-                'dateTime' => $report->created_at->format('Y-m-d H:i:s'),
-                'sum' => $report->price,
-                'comment' => sprintf(
-                    'отчет по ученику %s, %s',
-                    $report->client->formatName(),
-                    $report->program->getShortName(),
-                )
-            ];
-        }
-
-        return $balanceItems;
     }
 
     public function scopeCanLogin($query)
@@ -142,6 +70,7 @@ class Teacher extends Authenticatable implements HasTeeth, CanLogin
     public function getTeeth(int $year): object
     {
         $query = Lesson::query()->where('teacher_id', $this->id);
+
         return Teeth::get($query, $year);
     }
 
@@ -166,10 +95,13 @@ class Teacher extends Authenticatable implements HasTeeth, CanLogin
         ];
     }
 
+    public function lessons(): HasMany
+    {
+        return $this->hasMany(Lesson::class);
+    }
 
     /**
      * Получить преподов, у которых есть хоть какие-то платежи
-     *
      */
     public function scopeWithPayments($query, int $year)
     {
@@ -177,7 +109,7 @@ class Teacher extends Authenticatable implements HasTeeth, CanLogin
             Lesson::join('groups', 'groups.id', '=', 'lessons.group_id'),
             Report::query(),
             TeacherPayment::query(),
-            TeacherService::query()
+            TeacherService::query(),
         ];
 
         $teacherIds = collect();
@@ -204,5 +136,93 @@ class Teacher extends Authenticatable implements HasTeeth, CanLogin
             'code' => null,
             'issued_by' => null,
         ] : json_decode($value);
+    }
+
+    protected function getBalanceItems($year, ?bool $split = null): array
+    {
+        $balanceItems = [];
+
+        if ($split !== false) {
+            $lessons = Lesson::query()
+                ->conducted()
+                ->whereHas('group', fn ($q) => $q->where('year', $year))
+                ->where('teacher_id', $this->id)
+                ->get();
+
+            foreach ($lessons as $lesson) {
+                $balanceItems[] = (object) [
+                    'dateTime' => $lesson->date_time,
+                    'sum' => $lesson->price,
+                    'comment' => sprintf(
+                        'занятие %s, группа %d, кабинет %s, %s',
+                        $lesson->date_time->format('в H:i'),
+                        $lesson->group_id,
+                        filter_var($lesson->cabinet->value, FILTER_SANITIZE_NUMBER_INT),
+                        $lesson->group->program->getShortName(),
+                    ),
+                ];
+            }
+        }
+
+        $query = $this->payments()->where('year', $year);
+
+        if ($split === true) {
+            $query->where('method', TeacherPaymentMethod::bill);
+        }
+        if ($split === false) {
+            $query->where('method', '<>', TeacherPaymentMethod::bill);
+        }
+
+        foreach ($query->get() as $payment) {
+            $balanceItems[] = (object) [
+                'dateTime' => $payment->created_at->format('Y-m-d H:i:s'),
+                'sum' => $payment->sum * ($payment->is_return ? 1 : -1),
+                'comment' => sprintf(
+                    'выплата, %s',
+                    $payment->method->getTitle()
+                ),
+            ];
+        }
+
+        if ($split !== true) {
+            $services = $this->services()->where('year', $year)->get();
+            foreach ($services as $service) {
+                $balanceItems[] = (object) [
+                    'dateTime' => $service->date.' 15:00:00',
+                    'sum' => $service->sum,
+                    'comment' => $service->purpose,
+                ];
+            }
+
+            $reports = $this->reports()->where('year', $year)->where('price', '>', 0)->get();
+            foreach ($reports as $report) {
+                $balanceItems[] = (object) [
+                    'dateTime' => $report->created_at->format('Y-m-d H:i:s'),
+                    'sum' => $report->price,
+                    'comment' => sprintf(
+                        'отчет по ученику %s, %s',
+                        $report->client->formatName(),
+                        $report->program->getShortName(),
+                    ),
+                ];
+            }
+        }
+
+        return $balanceItems;
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(TeacherPayment::class)->latest();
+    }
+
+    public function services(): HasMany
+    {
+        return $this->hasMany(TeacherService::class)->latest();
+    }
+
+    public function reports(): HasMany
+    {
+        return $this->hasMany(Report::class);
     }
 }

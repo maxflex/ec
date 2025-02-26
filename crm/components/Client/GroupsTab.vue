@@ -1,11 +1,9 @@
 <script setup lang="ts">
 const { clientId } = defineProps<{ clientId: number }>()
 
-const tabName = 'GroupsTab'
-
-const filters = ref<YearFilters>(loadFilters({
-  year: currentAcademicYear(),
-}, tabName))
+const filters = ref<AvailableYearsFilter>({
+  year: undefined,
+})
 
 const groupFilters = ref<GroupFilters>({
   year: currentAcademicYear(),
@@ -16,7 +14,8 @@ const loading = ref(true)
 const selectedSwampId = ref<number>()
 const swamps = ref<SwampListResource[]>([])
 const clientGroups = ref<GroupListResource[]>([])
-const noData = computed(() => !loading.value && clientGroups.value.length === 0 && swamps.value.length === 0)
+const availableYears = ref<Year[]>()
+const noData = computed(() => availableYears.value?.length === 0)
 
 const { items: groups } = useIndex<GroupListResource, GroupFilters>(
   `groups`,
@@ -26,10 +25,27 @@ const { items: groups } = useIndex<GroupListResource, GroupFilters>(
     disableSaveFilters: true,
   },
 )
+
 async function loadData() {
   loading.value = true
   await loadGroups()
   await loadSwamps()
+  loading.value = false
+}
+
+async function loadAvailableYears() {
+  loading.value = true
+  const { data } = await useHttp<Year[]>(`contracts`, {
+    params: {
+      client_id: clientId,
+      available_years: 1,
+    },
+  })
+  availableYears.value = data.value!
+
+  if (availableYears.value.length > 0) {
+    filters.value.year = availableYears.value[0]
+  }
   loading.value = false
 }
 
@@ -50,7 +66,7 @@ async function loadSwamps() {
 function onAttachStart(swamp: SwampListResource) {
   selectedSwampId.value = swamp.id
   groupFilters.value = {
-    year: filters.value.year,
+    year: filters.value.year!,
     program: [swamp.program],
   }
 }
@@ -82,12 +98,9 @@ function back() {
   selectedSwampId.value = undefined
 }
 
-watch(filters, (newVal) => {
-  loadData()
-  saveFilters(newVal, tabName)
-}, { deep: true })
+watch(filters, loadData, { deep: true })
 
-nextTick(loadData)
+nextTick(loadAvailableYears)
 </script>
 
 <template>
@@ -107,12 +120,7 @@ nextTick(loadData)
   </UiIndexPage>
   <UiIndexPage v-else :data="{ loading, noData }">
     <template #filters>
-      <v-select
-        v-model="filters.year"
-        :items="selectItems(YearLabel)"
-        label="Учебный год"
-        density="comfortable"
-      />
+      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
     </template>
     <GroupList :items="clientGroups" />
     <SwampList :items="swamps" @attach="onAttachStart" />

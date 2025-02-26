@@ -3,49 +3,60 @@
 namespace App\Utils;
 
 use App\Enums\LessonStatus;
+use App\Enums\TeacherPaymentMethod;
 use App\Http\Resources\PersonResource;
-use App\Models\{Lesson, Report, Teacher, TeacherPayment, TeacherService};
+use App\Models\Lesson;
+use App\Models\Report;
+use App\Models\Teacher;
+use App\Models\TeacherPayment;
+use App\Models\TeacherService;
 
 class TeacherBalance
 {
     public static function getData($year): array
     {
         $queries = [
-            (object)[
+            (object) [
                 'name' => 'lessons_planned',
                 'query' => Lesson::query()
                     ->where('status', LessonStatus::planned)
                     ->join('groups as g', 'g.id', '=', 'lessons.group_id'),
                 'sum' => 'price',
             ],
-            (object)[
+            (object) [
                 'name' => 'lessons_conducted',
                 'query' => Lesson::query()
                     ->where('status', LessonStatus::conducted)
                     ->join('groups as g', 'g.id', '=', 'lessons.group_id'),
                 'sum' => 'price',
             ],
-            (object)[
+            (object) [
                 'query' => Report::query(),
-                'sum' => 'price'
+                'sum' => 'price',
             ],
-            (object)[
-                'query' => TeacherPayment::query(),
+            (object) [
+                'name' => 'paid_lessons',
+                'query' => TeacherPayment::where('method', TeacherPaymentMethod::bill),
                 'sum' => 'sum',
             ],
-            (object)[
+            (object) [
+                'name' => 'paid_other',
+                'query' => TeacherPayment::where('method', '<>', TeacherPaymentMethod::bill),
+                'sum' => 'sum',
+            ],
+            (object) [
                 'query' => TeacherService::query(),
-                'sum' => 'sum'
-            ]
+                'sum' => 'sum',
+            ],
         ];
 
         $result = collect();
         foreach (Teacher::withPayments($year)->get() as $teacher) {
             $resultItem = [
-                'teacher' => new PersonResource($teacher)
+                'teacher' => new PersonResource($teacher),
             ];
             foreach ($queries as $q) {
-                if (!isset($q->table)) {
+                if (! isset($q->table)) {
                     $q->table = $q->name ?? $q->query->getModel()->getTable();
                 }
 
@@ -61,13 +72,14 @@ class TeacherBalance
             $resultItem = [
                 ...$resultItem,
                 'total' => $total,
-                'to_pay' => $total - $resultItem['teacher_payments']
+                'to_pay_lessons' => $resultItem['lessons_conducted'] - $resultItem['paid_lessons'],
+                'to_pay_other' => $resultItem['reports'] + $resultItem['teacher_services'] - $resultItem['paid_other'],
             ];
             $result->push($resultItem);
         }
 
         return $result->sortBy([
-            'teacher.last_name', 'teacher.first_name', 'teacher.middle_name'
+            'teacher.last_name', 'teacher.first_name', 'teacher.middle_name',
         ])->values()->all();
     }
 }

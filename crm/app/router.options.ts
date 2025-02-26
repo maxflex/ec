@@ -5,6 +5,7 @@ export default <RouterConfig>{
   routes(routes) {
     // if (import.meta.client) return
     // routes in root /pages (index.vue, login.vue)
+    // upd. index.vue - removed (actually moved to each entity's root folder)
     const myRoutes = routes.filter(
       // @ts-expect-error
       r => !r.name.includes('-'),
@@ -15,7 +16,16 @@ export default <RouterConfig>{
       routes
         // @ts-expect-error
         .filter(r => r.name.startsWith(entityString))
-        .forEach(r =>
+        .forEach((r) => {
+          // handle index.vue for each entity
+          if (r.name === entityString) {
+            myRoutes.push({
+              ...r,
+              name: 'index',
+              path: '/',
+            })
+            return
+          }
           myRoutes.push({
             ...r,
             // admin-clients-id => clients-id
@@ -23,10 +33,9 @@ export default <RouterConfig>{
             name: r.name.replace(`${entityString}-`, ''),
             // /admin/clients/:id() => /clients/:id()
             path: r.path.replace(`${entityString}/`, ''),
-          }),
-        )
+          })
+        })
     }
-    // console.log(myRoutes)
     return myRoutes
   },
 }

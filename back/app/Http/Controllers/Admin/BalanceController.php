@@ -27,7 +27,10 @@ class BalanceController extends Controller
             $request->has('teacher_id') => Teacher::find($request->teacher_id)
         };
 
-        return paginate($entity->getBalance($request->year));
+        return paginate($entity->getBalance(
+            $request->year,
+            $request->has('split') ? (bool) $request->split : null
+        ));
     }
 
     protected function availableYears()
