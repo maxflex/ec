@@ -61,9 +61,6 @@ function getYearAgo(year: Year): string {
     <div style="flex: 1">
       <PhoneList :items="item.phones" show-comment />
     </div>
-    <div>
-      {{ item.entity_type }}
-    </div>
     <!-- <div style="width: 130px; flex: initial" class="text-lowercase text-gray opacity-5">
       {{ EntityTypeLabel[item.entity_type] }}
     </div> -->
