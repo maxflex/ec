@@ -18,6 +18,18 @@ const modelDefaults: LessonResource = {
   files: [],
 }
 
+interface BusyCabinet {
+  cabinet: Cabinet
+  is_busy: boolean
+}
+
+function getAllCabinets(): BusyCabinet[] {
+  return Object.keys(CabinetLabel).map(id => ({
+    cabinet: id as Cabinet,
+    is_busy: false,
+  }))
+}
+
 const saving = ref(false)
 const timeMask = { mask: '##:##' }
 const { dialog, width } = useDialog('default')
@@ -27,16 +39,26 @@ const lesson = ref<LessonResource>(clone(modelDefaults))
 const year = ref<Year>()
 // если занятие проведено, нельзя менять статус на "отмена"
 const isConducted = ref(false)
+const cabinets = ref<BusyCabinet[]>(getAllCabinets())
+const watchers = []
 
 function create(groupId: number, y: Year) {
+  cabinets.value = getAllCabinets()
   itemId.value = undefined
   year.value = y
   lesson.value = clone(modelDefaults)
   lesson.value.group_id = groupId
   dialog.value = true
+  watchers.push(
+    watch(() => lesson.value.date, loadFreeCabinets),
+  )
+  watchers.push(
+    watch(() => lesson.value.time, loadFreeCabinets),
+  )
 }
 
 async function edit(lessonId: number) {
+  cabinets.value = getAllCabinets()
   itemId.value = lessonId
   loading.value = true
   dialog.value = true
@@ -66,6 +88,29 @@ async function save() {
 }
 
 const uploadingFiles = computed(() => lesson.value.files.some(e => !e.url))
+
+// при установке даты и времени, загружаем свободные кабинеты
+async function loadFreeCabinets() {
+  if (lesson.value.date && lesson.value.time && lesson.value.time.length === 5) {
+    const { data } = await useHttp<BusyCabinet[]>(`cabinets/free`, {
+      params: {
+        group_id: lesson.value.group_id,
+        date: lesson.value.date,
+        time: lesson.value.time,
+      },
+    })
+    cabinets.value = data.value!
+  }
+  else {
+    cabinets.value = getAllCabinets()
+  }
+}
+
+watch(dialog, (isOpen) => {
+  if (!isOpen) {
+    watchers.forEach(unwatch => unwatch())
+  }
+})
 
 defineExpose({ create, edit })
 </script>
@@ -117,10 +162,9 @@ defineExpose({ create, edit })
           />
         </div>
         <div v-if="isAdmin">
-          <UiClearableSelect
+          <CabinetSelector
             v-model="lesson.cabinet"
-            :items="selectItems(CabinetLabel)"
-            label="Кабинет"
+            :items="cabinets"
             :disabled="isConducted"
           />
         </div>

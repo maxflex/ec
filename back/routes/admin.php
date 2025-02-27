@@ -3,7 +3,7 @@
 use App\Http\Controllers\Admin\AllLessonsController;
 use App\Http\Controllers\Admin\AllPaymentsController;
 use App\Http\Controllers\Admin\BalanceController;
-use App\Http\Controllers\Admin\CabinetsController;
+use App\Http\Controllers\Admin\CabinetController;
 use App\Http\Controllers\Admin\CallController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\ClientGroupController;
@@ -115,7 +115,8 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::get('people-selector', PeopleSelectorController::class);
 
-    Route::get('cabinets', CabinetsController::class);
+    Route::get('cabinets/free', [CabinetController::class, 'free']);
+    Route::get('cabinets', [CabinetController::class, 'index']);
 
     Route::get('scholarship-scores', ScholarshipScoreController::class);
 
