@@ -21,6 +21,7 @@
     "@pinia/nuxt": "^0.6.0",
     "@types/express": "^4.17.21",
     "@vueup/vue-quill": "latest",
+    "@vueuse/core": "^12.7.0",
     "codemirror": "5.x",
     "codemirror-editor-vue3": "^2.4.1",
     "date-fns": "^4.1.0",

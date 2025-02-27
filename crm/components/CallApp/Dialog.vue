@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDebounceFn } from '@vueuse/core'
 import { CallAppStatusFilterLabel } from '~/utils/labels'
 import { callAppDialog, filters, missedCount, player } from '.'
 
@@ -18,7 +19,7 @@ const { items, loading } = useIndex<CallListResource>('calls', filters, {
 
 const showActiveCalls = computed(() => !filters.value.q && ['all', 'active'].includes(filters.value.status))
 
-const debounceSearch = debounce(300, () => (filters.value.q = q.value))
+const debounceSearch = useDebounceFn(() => (filters.value.q = q.value), 300)
 
 watch(q, debounceSearch)
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { mdiTextBoxSearchOutline } from '@mdi/js'
+import { useDebounceFn } from '@vueuse/core'
 import type { SearchResultResource } from '~/components/Search'
 
 interface Filters {
@@ -10,9 +11,9 @@ const input = ref()
 
 const filters = ref<Filters>({ q: '' })
 
-const debounceKeydown = debounce(300, onKeydown)
+const debounceKeydown = useDebounceFn(onKeydown, 300)
 
-const { items, total, indexPageData, reloadData } = useIndex<SearchResultResource, Filters>(
+const { items, indexPageData, reloadData } = useIndex<SearchResultResource, Filters>(
   `search`,
   filters,
   {
@@ -23,7 +24,6 @@ const { items, total, indexPageData, reloadData } = useIndex<SearchResultResourc
 
 async function onKeydown() {
   if (filters.value.q.length < 3) {
-    total.value = undefined
     items.value = []
     return
   }

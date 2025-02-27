@@ -10,7 +10,6 @@ import {
   getYear,
 } from 'date-fns'
 import dayjs from 'dayjs'
-import { curry } from 'rambda'
 
 export const menuCounts = ref<MenuCounts>({
   reports: 0,
@@ -181,16 +180,6 @@ export async function itemDeleted(entity: string, id: number) {
     setTimeout(resolve, 2000)
   })
 }
-
-export const debounce = curry((delay: number, fn: (...args: any[]) => void) => {
-  let timeout: ReturnType<typeof setTimeout> | null = null
-  return (...args: any[]) => {
-    if (timeout) {
-      clearTimeout(timeout)
-    }
-    timeout = setTimeout(() => fn(...args), delay)
-  }
-})
 
 export function plural(
   number: number,
