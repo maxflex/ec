@@ -20,6 +20,7 @@ const input = ref<HTMLInputElement | null>(null)
 const sending = ref(false)
 
 function open(p: PhoneResource) {
+  selectedTab.value = 'calls'
   item.value = p
   dialog.value = true
   loadCalls()
@@ -113,7 +114,7 @@ defineExpose({ open })
           />
         </div>
       </div>
-      <div ref="wrapper" class="dialog-body pa-0 ga-0">
+      <div ref="wrapper" :key="item.id" class="dialog-body pa-0 ga-0">
         <div class="tabs">
           <div
             v-for="(label, key) in tabs"
