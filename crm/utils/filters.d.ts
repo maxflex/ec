@@ -97,6 +97,7 @@ declare global {
     type?: LogType
     table?: string
     row_id?: string
+    q?: string
   }
 
   interface PeopleSelectorFilters {

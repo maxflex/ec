@@ -13,10 +13,11 @@ class LogController extends Controller
     protected $filters = [
         'equals' => ['type', 'table', 'entity_id', 'entity_type'],
         'rowId' => ['row_id'],
+        'q' => ['q'],
     ];
 
     protected $mapFilters = [
-        'table' => '`table`'
+        'table' => '`table`',
     ];
 
     public function index(Request $request)
@@ -25,6 +26,7 @@ class LogController extends Controller
             ->with(['entity'])
             ->latest();
         $this->filter($request, $query);
+
         return $this->handleIndexRequest(
             $request,
             $query,
@@ -41,8 +43,15 @@ class LogController extends Controller
             'type' => LogType::view,
             'data' => [
                 'url' => $request->url,
-            ]
+            ],
         ]);
+    }
+
+    protected function filterQ(&$query, $q)
+    {
+        if ($q) {
+            return $query->where('data', 'like', '%'.$q.'%');
+        }
     }
 
     protected function filterRowId(&$query, $rowId)

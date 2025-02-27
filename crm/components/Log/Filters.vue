@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 const model = defineModel<LogFilters>({ required: true })
 const rowId = ref(model.value.row_id)
+const q = ref('')
 
 const tables = [
   'client_groups',
@@ -63,5 +64,11 @@ const tables = [
     hide-spin-buttons
     type="number"
     @keydown.enter="model.row_id = rowId"
+  />
+  <v-text-field
+    v-model="q"
+    label="Поиск"
+    density="comfortable"
+    @keydown.enter="model.q = (q || undefined)"
   />
 </template>
