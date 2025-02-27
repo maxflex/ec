@@ -601,6 +601,7 @@ declare global {
     price: ?number
     grade: ?LessonScore
     fill: number
+    delivery: 'delivered' | 'read' | null
     requirement: ReportRequirement
     created_at: string
   }

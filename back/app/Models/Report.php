@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\Direction;
 use App\Enums\LessonStatus;
 use App\Enums\Program;
+use App\Enums\ReportDelivery;
 use App\Enums\ReportStatus;
 use App\Enums\TelegramTemplate;
 use App\Observers\ReportObserver;
@@ -21,12 +22,13 @@ class Report extends Model
     protected $fillable = [
         'year', 'program', 'price', 'client_id', 'status', 'grade',
         'recommendation_comment', 'knowledge_level_comment', 'teacher_id',
-        'cognitive_ability_comment', 'homework_comment',
+        'cognitive_ability_comment', 'homework_comment', 'delivery',
     ];
 
     protected $casts = [
         'program' => Program::class,
         'status' => ReportStatus::class,
+        'delivery' => ReportDelivery::class,
     ];
 
     /**
@@ -258,6 +260,10 @@ class Report extends Model
             $this->client->parent,
             ['report' => $this]
         );
+
+        $this->update([
+            'delivery' => ReportDelivery::read,
+        ]);
     }
 
     public function scopeSelectForUnion($query)

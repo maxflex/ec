@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Enums\ReportDelivery;
 use App\Enums\ReportStatus;
 use App\Enums\TelegramTemplate;
 use App\Models\Report;
@@ -18,17 +19,16 @@ class ReportObserver
         }
     }
 
-    public function updated(Report $report): void
+    public function updating(Report $report)
     {
-        if ($report->isDirty('status')) {
-            if ($report->status == ReportStatus::published) {
-                TelegramMessage::sendTemplate(
-                    TelegramTemplate::reportPublished,
-                    $report->client->parent,
-                    ['report' => $report],
-                    ['id' => $report->id]
-                );
-            }
+        if ($report->isDirty('status') && $report->status === ReportStatus::published) {
+            TelegramMessage::sendTemplate(
+                TelegramTemplate::reportPublished,
+                $report->client->parent,
+                ['report' => $report],
+                ['id' => $report->id]
+            );
+            $report->delivery = ReportDelivery::delivered;
         }
     }
 }

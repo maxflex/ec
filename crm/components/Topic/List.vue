@@ -46,15 +46,13 @@ function onUpdated(item: TopicListResource) {
           тема не установлена
         </span>
       </div>
-      <div style="width: 30px; flex: initial">
-        <v-icon
-          v-if="l.topic"
-          :class="{
-            'opacity-2': !l.is_topic_verified,
-          }"
-          :icon="mdiCheckAll"
-          :color="l.is_topic_verified ? 'secondary' : 'gray'"
-        />
+      <div style="width: 140px; flex: initial">
+        <span v-if="l.is_topic_verified" class="text-success">
+          подтверждена
+        </span>
+        <span v-else class="text-gray">
+          не подтверждена
+        </span>
       </div>
     </div>
   </div>

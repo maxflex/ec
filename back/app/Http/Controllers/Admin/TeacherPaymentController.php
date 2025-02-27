@@ -58,17 +58,17 @@ class TeacherPaymentController extends Controller
             'year' => ['required', 'numeric', 'min:2015'],
         ]);
 
-        $lessonsConducted = (int) $teacher->lessons()
+        $lessonsConducted = $teacher->lessons()
             ->where('status', LessonStatus::conducted)
             ->join('groups as g', 'g.id', '=', 'lessons.group_id')
             ->where('g.year', $request->year)
             ->sum('price');
 
-        $reports = (int) $teacher->reports()
+        $reports = $teacher->reports()
             ->where('year', $request->year)
             ->sum('price');
 
-        $services = (int) $teacher->services()
+        $services = $teacher->services()
             ->where('year', $request->year)
             ->sum('sum');
 
@@ -82,18 +82,13 @@ class TeacherPaymentController extends Controller
             $paidLessons->where('id', -1);
         }
 
-        $paidLessons = (int) $paidLessons->sum('sum');
-        $paidOther = (int) $paidOther->sum('sum');
+        $paidLessons = $paidLessons->sum('sum');
+        $paidOther = $paidOther->sum('sum');
 
         $totalLessons = $teacher->is_split_balance ? $lessonsConducted : 0;
         $totalOther = $teacher->is_split_balance ? ($reports + $services) : ($lessonsConducted + $reports + $services);
 
         return [
-            // 'lessonsConducted' => $lessonsConducted,
-            // 'reports' => $reports,
-            // 'services' => $services,
-            // 'paidOther' => $paidOther,
-            // 'paidLessons' => $paidLessons,
             'to_pay_lessons' => $totalLessons - $paidLessons,
             'to_pay_other' => $totalOther - $paidOther,
         ];

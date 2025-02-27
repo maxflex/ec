@@ -31,9 +31,10 @@ class ReportListResource extends JsonResource
         // real report
         if ($this->id) {
             $report = Report::find($this->id);
+
             return extract_fields($report, [
                 'year', 'program', 'status', 'fill', 'price',
-                'grade', 'to_check_at', 'requirement',
+                'grade', 'to_check_at', 'requirement', 'delivery',
             ], [
                 'lessons_count' => $report->lessons->count(),
                 'teacher' => new PersonResource($report->teacher),
@@ -41,9 +42,10 @@ class ReportListResource extends JsonResource
                 'count' => $count - 1,
             ]);
         }
+
         // fake report
         return extract_fields($this, [
-            'year', 'program', 'lessons_count', 'requirement'
+            'year', 'program', 'lessons_count', 'requirement',
         ], [
             'id' => uniqid(),
             'teacher' => new PersonResource(Teacher::find($this->teacher_id)),

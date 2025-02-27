@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { mdiCheckAll } from '@mdi/js'
+
 const props = defineProps<{
   items: ReportListResource[]
 }>()
@@ -51,6 +53,13 @@ function getFillColor(r: RealReport) {
         </div>
         <div style="flex: 1">
           <ReportStatus :status="r.status" />
+          <v-icon
+            v-if="r.delivery !== null"
+            class="ml-2"
+            :icon="mdiCheckAll"
+            size="20"
+            :color="r.delivery === 'read' ? 'secondary' : 'gray'"
+          />
         </div>
         <div style="width: 70px">
           <span v-if="r.price">
