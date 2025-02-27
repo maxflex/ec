@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const model = defineModel<LogFilters>({ required: true })
 const rowId = ref(model.value.row_id)
-const q = ref('')
+const q = ref(model.value.q)
 
 const tables = [
   'client_groups',

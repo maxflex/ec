@@ -18,6 +18,10 @@ class UpdateTelegramTemplatesCommand extends Command
     {
         $this->line('Updating telegram templates...');
 
+        DB::table('telegram_messages')
+            ->where('template', 'firstLogin')
+            ->delete();
+
         Schema::table('telegram_messages', function (Blueprint $table) {
             $table->string('template_new')->nullable();
         });

@@ -22,12 +22,12 @@ const { items, indexPageData, reloadData } = useIndex<SearchResultResource, Filt
   },
 )
 
-async function onKeydown() {
+function onKeydown() {
   if (filters.value.q.length < 3) {
     items.value = []
     return
   }
-  await reloadData()
+  reloadData()
 }
 
 watch(() => filters.value.q, debounceKeydown)
