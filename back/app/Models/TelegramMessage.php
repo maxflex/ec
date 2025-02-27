@@ -25,11 +25,13 @@ class TelegramMessage extends Model
 
     public static function sendTemplate(
         TelegramTemplate $template,
-        $receiver,
+        $receiverOrPhone,
         array $viewVariables = [],
         array $callbackData = []
     ) {
-        foreach ($receiver->phones as $phone) {
+        $phones = $receiverOrPhone instanceof Phone ? [$receiverOrPhone] : $receiverOrPhone->phones;
+
+        foreach ($phones as $phone) {
             $text = $template->getText($viewVariables);
             TelegramMessage::send($phone, $text, $template->getReplyMarkup($callbackData), $template);
         }

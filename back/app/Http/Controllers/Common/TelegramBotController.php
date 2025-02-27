@@ -8,14 +8,17 @@ use App\Http\Controllers\Controller;
 use App\Models\EventParticipant;
 use App\Models\Phone;
 use Illuminate\Http\Request;
-use TelegramBot\Api\{Client, Exception};
-use TelegramBot\Api\Types\{ReplyKeyboardMarkup, ReplyKeyboardRemove, Update};
+use TelegramBot\Api\Client;
+use TelegramBot\Api\Exception;
+use TelegramBot\Api\Types\ReplyKeyboardMarkup;
+use TelegramBot\Api\Types\ReplyKeyboardRemove;
+use TelegramBot\Api\Types\Update;
 
 class TelegramBotController extends Controller
 {
     public function __invoke(Request $request)
     {
-        logger("TELEGRAM: " . json_encode($request->all(), JSON_PRETTY_PRINT));
+        logger('TELEGRAM: '.json_encode($request->all(), JSON_PRETTY_PRINT));
 
         if ($request->has('my_chat_member')) {
             $botDeleted = $this->onBotDeleted($request);
@@ -27,14 +30,14 @@ class TelegramBotController extends Controller
         try {
             $bot = new Client(config('telegram.key'));
 
-            //Handle /ping command
+            // Handle /ping command
             $bot->command('ping', function ($message) use ($bot) {
                 $bot->sendMessage($message->getChat()->getId(), 'pong!');
             });
 
             $bot->command('start', function ($message) use ($bot) {
                 $buttons = [[
-                    ['text' => 'Отправить мой номер телефона', 'request_contact' => true]
+                    ['text' => 'Отправить мой номер телефона', 'request_contact' => true],
                 ]];
                 $replyMarkup = new ReplyKeyboardMarkup(
                     $buttons,
@@ -46,12 +49,12 @@ class TelegramBotController extends Controller
                 $bot->sendMessage(
                     $telegramId,
                     view('bot.hello'),
-                    "HTML",
+                    'HTML',
                     replyMarkup: $replyMarkup
                 );
             });
 
-            //Handle text messages
+            // Handle text messages
             $bot->on(function (Update $update) use ($bot) {
 
                 $callback = $update->getCallbackQuery();
@@ -62,7 +65,8 @@ class TelegramBotController extends Controller
                     $message = $callback->getMessage();
                     $chatId = $message->getChat()->getId();
                     $data = json_decode($callback->getData());
-                    logger("Callback data:", (array)$data);
+                    logger('Callback data:', (array) $data);
+
                     /**
                      * Обработка шаблонов
                      */
@@ -73,7 +77,8 @@ class TelegramBotController extends Controller
                         );
 
                         $template = TelegramTemplate::from($data->template);
-                        $template->callback($data);
+                        $template->callback($data, (int) $chatId);
+
                         return;
                     }
                     /**
@@ -81,6 +86,7 @@ class TelegramBotController extends Controller
                      */
                     if (isset($data->event_id)) {
                         EventParticipant::confirm($data, $bot, $callback);
+
                         return;
                     }
 
@@ -110,16 +116,17 @@ class TelegramBotController extends Controller
                         $bot->sendMessage($telegramId, view('bot.auth-fail', compact('number')));
                     } else {
                         $phone->update([
-                            'telegram_id' => $contact->getUserId()
+                            'telegram_id' => $contact->getUserId(),
                         ]);
                         TelegramBotAdded::dispatch($phone);
                         $bot->sendMessage(
                             $telegramId,
                             view('bot.auth-success', compact('phone')),
                             'HTML',
-                            replyMarkup: new ReplyKeyboardRemove()
+                            replyMarkup: new ReplyKeyboardRemove
                         );
                     }
+
                     return;
                 }
 
@@ -148,10 +155,12 @@ class TelegramBotController extends Controller
         if (isset($myChatMember['new_chat_member']) && $myChatMember['new_chat_member']['status'] === 'kicked') {
             $telegramId = $myChatMember['chat']['id'];
             Phone::where('telegram_id', $telegramId)->update([
-                'telegram_id' => null
+                'telegram_id' => null,
             ]);
+
             return true;
         }
+
         return false;
     }
 }

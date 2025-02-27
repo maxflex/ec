@@ -39,12 +39,12 @@ enum TelegramTemplate: string
         };
     }
 
-    public function callback($callbackData)
+    public function callback($callbackData, ?int $telegramId = null)
     {
         switch ($this) {
             case self::reportPublished:
                 $report = Report::find($callbackData->id);
-                $report->read();
+                $report->read($telegramId);
                 break;
         }
     }
