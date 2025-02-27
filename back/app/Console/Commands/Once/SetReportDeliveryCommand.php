@@ -25,6 +25,12 @@ class SetReportDeliveryCommand extends Command
 
     public function handle(): void
     {
+        $this->step1();
+        $this->step2();
+    }
+
+    private function step1()
+    {
         DB::table('reports')->update([
             'delivery' => null,
         ]);
@@ -115,6 +121,92 @@ class SetReportDeliveryCommand extends Command
         }
 
         return null;
+    }
+
+    private function step2()
+    {
+        $cnt0 = 0;
+        $cnt1 = 0;
+        $cnt2 = 0;
+
+        $telegramMessages = TelegramMessage::where('template', TelegramTemplate::reportPublished)
+            ->whereNotNull('telegram_id')
+            ->get();
+
+        $errors = 0;
+        foreach ($telegramMessages as $telegramMessage) {
+            $parent = ClientParent::find($telegramMessage->entity_id);
+
+            preg_match('/Преподаватель ([А-ЯЁ][а-яё]+) [А-ЯЁ]\. [А-ЯЁ]\./u', $telegramMessage->text, $matchesTeacher);
+            $lastName = $matchesTeacher[1] ?? '';
+            $teacher = Teacher::query()
+                ->where('status', TeacherStatus::active)
+                ->where('last_name', $lastName)
+                ->first();
+
+            preg_match('/по программе (.+?) об ученике/u', $telegramMessage->text, $matchesProgram);
+            $programText = trim($matchesProgram[1] ?? '');
+            $programLayer = $this->getProgramLayer($programText);
+
+            $dateLimit = Carbon::parse($telegramMessage->created_at)->subWeeks(2)->format('Y-m-d H:i:s');
+
+            $reports = Report::query()
+                ->whereRaw('created_at BETWEEN ? AND ?', [$dateLimit, $telegramMessage->created_at])
+                ->where('year', 2024)
+                ->where('client_id', $parent->client->id)
+                ->where('teacher_id', $teacher->id)
+                ->get();
+
+            $text = implode("\t", [
+                $telegramMessage->id,
+                $parent->client->id,
+                $teacher->id,
+                $reports->count(),
+            ]);
+
+            if ($reports->count() > 1) {
+                $cnt = 0;
+                $correctReport = null;
+                foreach ($reports as $report) {
+                    $layer = $this->getProgramLayer($report->program->getName());
+                    if ($layer === $programLayer) {
+                        $cnt++;
+                        $correctReport = $report;
+                    }
+                }
+                if ($cnt !== 1) {
+                    $this->error($text);
+                    $this->info("Program layer: $programLayer\tReport layer: $layer");
+                    $this->info(PHP_EOL);
+                    $cnt2++;
+                } else {
+                    $cnt1++;
+                    $this->line($text);
+                    DB::table('reports')
+                        ->whereId($correctReport->id)
+                        ->whereNull('delivery')
+                        ->update([
+                            'delivery' => ReportDelivery::delivered,
+                        ]);
+                }
+            } else {
+                $this->line($text);
+                if ($reports->count() === 1) {
+                    $cnt1++;
+                    DB::table('reports')
+                        ->whereNull('delivery')
+                        ->whereId($reports->first()->id)
+                        ->update([
+                            'delivery' => ReportDelivery::delivered,
+                        ]);
+                } else {
+                    $cnt0++;
+                }
+            }
+        }
+
+        $this->line(PHP_EOL);
+        $this->line('0: '.$cnt0."\n1: ".$cnt1."\n2: ".$cnt2);
     }
 
     private function getProgram(string $programText): ?Program
