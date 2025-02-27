@@ -22,13 +22,15 @@ class ReportObserver
     public function updating(Report $report)
     {
         if ($report->isDirty('status') && $report->status === ReportStatus::published) {
-            TelegramMessage::sendTemplate(
+            $delivered = TelegramMessage::sendTemplate(
                 TelegramTemplate::reportPublished,
                 $report->client->parent,
                 ['report' => $report],
                 ['id' => $report->id]
             );
-            $report->delivery = ReportDelivery::delivered;
+            if ($delivered && $report->delivery === null) {
+                $report->delivery = ReportDelivery::delivered;
+            }
         }
     }
 }

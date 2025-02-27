@@ -23,23 +23,36 @@ class TelegramMessage extends Model
         'template' => TelegramTemplate::class,
     ];
 
+    /**
+     * @return bool хотя бы одно сообщение доставлено
+     */
     public static function sendTemplate(
         TelegramTemplate $template,
         $receiverOrPhone,
         array $viewVariables = [],
         array $callbackData = []
-    ) {
+    ): bool {
         $phones = $receiverOrPhone instanceof Phone ? [$receiverOrPhone] : $receiverOrPhone->phones;
+
+        $atLeastOneDelivered = false;
 
         foreach ($phones as $phone) {
             $text = $template->getText($viewVariables);
-            TelegramMessage::send($phone, $text, $template->getReplyMarkup($callbackData), $template);
+            $telegramMessage = TelegramMessage::send($phone, $text, $template->getReplyMarkup($callbackData), $template);
+            if ($telegramMessage && $phone->telegram_id && ! $atLeastOneDelivered) {
+                $atLeastOneDelivered = true;
+            }
         }
+
+        return $atLeastOneDelivered;
     }
 
     /**
      * Отправить сообщение и сохранить TelegramMessage
      * Неудачные попытки будут отображаться красным в истории сообщений
+     *
+     * TODO: возвращать null только если сообщение не отправлено (запретить переписку, если telegram_id = null)
+     * TODO: после нужно будет обновить код выше $atLeastOneDelivered
      */
     public static function send(
         Phone $phone,
@@ -85,8 +98,8 @@ class TelegramMessage extends Model
                 //                "exception": "TelegramBot\\Api\\HttpException",
             }
 
-            // когда отправляет пользователь, это не массовое отправление
-            // ждать не нужно
+            // когда отправляет пользователь, это не массовое отправление ждать не нужно
+            // TODO: улучшить это условие? Когда ещё не нужно ждать?
             if (! $user) {
                 sleep(1);
             }

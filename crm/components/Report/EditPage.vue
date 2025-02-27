@@ -64,7 +64,7 @@ async function save() {
       `reports/${item.value.id}`,
       {
         method: 'put',
-        body: item.value,
+        body: { ...item.value },
       },
     )
     saving.value = false

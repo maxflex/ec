@@ -598,6 +598,7 @@ declare global {
     program: Program
     to_check_at?: string
     lessons_count: number
+    count: number
     price: ?number
     grade: ?LessonScore
     fill: number
@@ -613,6 +614,7 @@ declare global {
     client: PersonResource
     program: Program
     lessons_count: number
+    count: number
     requirement: ReportRequirement
   }
 

@@ -59,6 +59,9 @@ function getFillColor(r: RealReport) {
             :icon="mdiCheckAll"
             size="20"
             :color="r.delivery === 'read' ? 'secondary' : 'gray'"
+            :class="{
+              'opacity-5': r.delivery === 'delivered',
+            }"
           />
         </div>
         <div style="width: 70px">
