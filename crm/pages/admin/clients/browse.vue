@@ -99,10 +99,15 @@ function onEdit(p: ClientsBrowseResource) {
     </template>
     <div class="table table--padding">
       <div v-for="item in items" :key="item.id">
-        <div style="width: 400px">
+        <div style="width: 250px">
           <UiPerson :item="item" :no-link="filters.entity === EntityTypeValue.user" />
         </div>
-        <div style="width: 500px">
+        <div style="width: 200px">
+          <span v-if="item.last_seen_at">
+            {{ formatDateAgo(item.last_seen_at) }} назад
+          </span>
+        </div>
+        <div style="width: 450px">
           <PhoneList :items="item.phones" show-comment />
         </div>
         <div>

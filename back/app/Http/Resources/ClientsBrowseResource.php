@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use App\Models\Client;
 use App\Models\ClientParent;
+use App\Models\Log;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -15,12 +16,16 @@ class ClientsBrowseResource extends JsonResource
 
         $extra = match ($entityType) {
             Client::class => [
-                'directions' => $this->directions
+                'last_seen_at' => $this->logs()->max('created_at'),
+                'directions' => $this->directions,
             ],
             ClientParent::class => [
-                'directions' => $this->client->directions
+                'last_seen_at' => Log::where('client_parent_id', $this->id)->max('created_at'),
+                'directions' => $this->client->directions,
             ],
-            default => [],
+            default => [
+                'last_seen_at' => $this->logs()->max('created_at'),
+            ],
         };
 
         return extract_fields($this, [
