@@ -8,6 +8,7 @@ interface Filters {
 }
 
 interface ClientsBrowseResource extends PersonResource {
+  last_seen_at: string | null
   directions?: Direction[]
   phones: PhoneResource[]
 }
@@ -103,9 +104,7 @@ function onEdit(p: ClientsBrowseResource) {
           <UiPerson :item="item" :no-link="filters.entity === EntityTypeValue.user" />
         </div>
         <div style="width: 200px">
-          <span v-if="item.last_seen_at">
-            {{ formatDateAgo(item.last_seen_at) }} назад
-          </span>
+          <UiLastSeenAt :item="item" />
         </div>
         <div style="width: 450px">
           <PhoneList :items="item.phones" show-comment />

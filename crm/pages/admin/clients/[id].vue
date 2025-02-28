@@ -44,6 +44,7 @@ nextTick(loadData)
           <div>ученик</div>
           <div class="text-truncate">
             {{ formatName(client) }}
+            <UiLastSeenAt :item="client" />
             <div v-if="client.phones">
               <PhoneList :items="client.phones" show-icons />
             </div>
@@ -53,6 +54,7 @@ nextTick(loadData)
           <div>представитель</div>
           <div class="text-truncate">
             {{ formatName(client.parent) }}
+            <UiLastSeenAt :item="client.parent" />
             <div v-if="client.parent.phones">
               <PhoneList :items="client.parent.phones" show-icons />
             </div>
@@ -121,3 +123,12 @@ nextTick(loadData)
     <ClientDialog ref="clientDialog" @updated="onClientUpdated" />
   </template>
 </template>
+
+<style lang="scss">
+.page-clients-id {
+  .last-seen-at {
+    font-size: 14px;
+    margin-left: 2px;
+  }
+}
+</style>

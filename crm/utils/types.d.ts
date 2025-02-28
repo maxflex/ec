@@ -181,6 +181,7 @@ declare global {
   interface ParentResource extends HasName, HasPhones {
     id: number
     email?: string
+    last_seen_at: ?string
     passport: {
       series: ?string
       number: ?string
@@ -208,6 +209,7 @@ declare global {
     created_at?: string
     email?: string
     how_found?: string
+    last_seen_at: ?string
     passport: {
       series: ?string
       number: ?string
