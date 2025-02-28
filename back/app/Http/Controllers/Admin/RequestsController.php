@@ -17,7 +17,8 @@ use Illuminate\Support\Facades\DB;
 class RequestsController extends Controller
 {
     protected $filters = [
-        'equals' => ['status', 'direction', 'id'],
+        'equals' => ['status', 'id'],
+        'findInSet' => ['direction'],
         'client' => ['client_id'],
     ];
 

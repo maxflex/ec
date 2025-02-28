@@ -146,7 +146,7 @@ function getFiltersKey(
     routeName = String(route.name)
   }
   return [
-    'filters-1',
+    'filters-2',
     getEntityStringFromToken(),
     `${tabName || ''}${routeName}`,
   ].join('-')

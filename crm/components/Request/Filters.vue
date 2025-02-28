@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 export interface Filters {
   status?: RequestStatus
-  direction?: Direction
+  direction?: Direction[]
 }
 
 const model = defineModel<Filters>({ required: true })
@@ -14,7 +14,7 @@ const model = defineModel<Filters>({ required: true })
     :items="selectItems(RequestStatusLabel)"
     density="comfortable"
   />
-  <UiClearableSelect
+  <UiMultipleSelect
     v-model="model.direction"
     label="Направление"
     :items="selectItems(DirectionLabel)"

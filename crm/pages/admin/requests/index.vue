@@ -3,7 +3,10 @@ import type { RequestDialog } from '#components'
 import { apiUrl, type RequestListResource } from '~/components/Request'
 import type { Filters } from '~/components/Request/Filters.vue'
 
-const filters = ref<Filters>(loadFilters({}))
+const filters = ref<Filters>(loadFilters({
+  direction: [],
+}))
+
 const { items, indexPageData } = useIndex<RequestListResource, Filters>(
   apiUrl,
   filters,
