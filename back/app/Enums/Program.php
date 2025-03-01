@@ -584,12 +584,39 @@ enum Program: string
      */
     public function getDuration(): int
     {
-        $str = str($this->value);
-
-        if ($str->endsWith('School8') || $str->endsWith('School9')) {
-            return 55;
-        }
-
-        return 125;
+        return match ($this) {
+            self::mathSchool8 => 55,
+            self::physSchool8 => 55,
+            self::chemSchool8 => 55,
+            self::bioSchool8 => 55,
+            self::hisSchool8 => 55,
+            self::socSchool8 => 55,
+            self::rusSchool8 => 55,
+            self::litSchool8 => 55,
+            self::engSchool8 => 55,
+            self::infSchool8 => 55,
+            self::geoSchool8 => 55,
+            self::mathSchool9 => 55,
+            self::physSchool9 => 55,
+            self::chemSchool9 => 55,
+            self::bioSchool9 => 55,
+            self::hisSchool9 => 55,
+            self::socSchool9 => 55,
+            self::rusSchool9 => 55,
+            self::litSchool9 => 55,
+            self::engSchool9 => 55,
+            self::infSchool9 => 55,
+            self::geoSchool9 => 55,
+            self::physOgeSchool9 => 55,
+            self::chemOgeSchool9 => 55,
+            self::bioOgeSchool9 => 55,
+            self::hisOgeSchool9 => 55,
+            self::socOgeSchool9 => 55,
+            self::litOgeSchool9 => 55,
+            self::engOgeSchool9 => 55,
+            self::infOgeSchool9 => 55,
+            self::geoOgeSchool9 => 55,
+            default => 125
+        };
     }
 }

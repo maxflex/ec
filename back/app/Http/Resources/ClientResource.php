@@ -17,7 +17,7 @@ class ClientResource extends JsonResource
             'passport', 'is_remote', 'directions', 'email',
             'how_found',
         ], [
-            'last_seen_at' => $this->logs()->max('created_at'),
+            'last_seen_at' => $this->logs()->whereNull('emulation_user_id')->max('created_at'),
             'entity_type' => Client::class,
             'head_teacher' => new PersonResource($this->headTeacher),
             'user' => new PersonResource($this->user),

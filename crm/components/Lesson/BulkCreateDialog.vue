@@ -141,10 +141,14 @@ defineExpose({ create })
                 />
               </td>
               <td width="180">
-                <UiClearableSelect
+                <CabinetSelector
                   v-model="bulk.cabinets[i]"
-                  :items="selectItems(CabinetLabel)"
                   placeholder="Кабинет"
+                  :date="bulk.start_date"
+                  :date-end="bulk.end_date"
+                  :time="bulk.weekdays[i]"
+                  :weekday="i"
+                  :group-id="lesson.group_id"
                 />
               </td>
             </tr>

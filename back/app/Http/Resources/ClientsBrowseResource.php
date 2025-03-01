@@ -16,15 +16,15 @@ class ClientsBrowseResource extends JsonResource
 
         $extra = match ($entityType) {
             Client::class => [
-                'last_seen_at' => $this->logs()->max('created_at'),
+                'last_seen_at' => $this->logs()->whereNull('emulation_user_id')->max('created_at'),
                 'directions' => $this->directions,
             ],
             ClientParent::class => [
-                'last_seen_at' => Log::where('client_parent_id', $this->id)->max('created_at'),
+                'last_seen_at' => Log::where('client_parent_id', $this->id)->whereNull('emulation_user_id')->max('created_at'),
                 'directions' => $this->client->directions,
             ],
             default => [
-                'last_seen_at' => $this->logs()->max('created_at'),
+                'last_seen_at' => $this->logs()->whereNull('emulation_user_id')->max('created_at'),
             ],
         };
 

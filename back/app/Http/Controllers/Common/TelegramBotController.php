@@ -154,7 +154,7 @@ class TelegramBotController extends Controller
         $myChatMember = $request->input('my_chat_member');
         if (isset($myChatMember['new_chat_member']) && $myChatMember['new_chat_member']['status'] === 'kicked') {
             $telegramId = $myChatMember['chat']['id'];
-            Phone::where('telegram_id', $telegramId)->update([
+            Phone::where('telegram_id', $telegramId)->first()?->update([
                 'telegram_id' => null,
             ]);
 

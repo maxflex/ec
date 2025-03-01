@@ -119,6 +119,7 @@ defineExpose({ create, edit })
         <div v-if="isAdmin">
           <CabinetSelector
             v-model="lesson.cabinet"
+            label="Кабинет"
             :date="lesson.date"
             :time="lesson.time"
             :group-id="lesson.group_id!"

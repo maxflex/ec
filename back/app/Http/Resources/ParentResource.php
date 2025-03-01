@@ -19,7 +19,7 @@ class ParentResource extends JsonResource
     {
         return extract_fields($this, ['*'], [
             'phones' => PhoneResource::collection($this->phones),
-            'last_seen_at' => Log::where('client_parent_id', $this->id)->max('created_at'),
+            'last_seen_at' => Log::where('client_parent_id', $this->id)->whereNull('emulation_user_id')->max('created_at'),
         ]);
     }
 }

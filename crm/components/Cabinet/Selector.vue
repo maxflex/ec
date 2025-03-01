@@ -4,12 +4,12 @@ interface BusyCabinet {
   is_busy: boolean
 }
 
-const { label = 'Кабинет', date, dateEnd, time, groupId } = defineProps<{
+const { date, dateEnd, time, groupId, weekday } = defineProps<{
   groupId: number
-  label?: string
   date?: string
   dateEnd?: string
   time?: string
+  weekday?: Weekday
 }>()
 
 const modelDefaults: BusyCabinet[] = Object.keys(CabinetLabel).map(id => ({
@@ -31,6 +31,7 @@ async function loadFreeCabinets() {
         params: {
           date,
           time,
+          weekday,
           date_end: dateEnd,
           group_id: groupId,
         },
@@ -55,7 +56,6 @@ watch(() => dateEnd, loadFreeCabinets)
     :items="items"
     item-value="cabinet"
     :item-title="({ cabinet }) => CabinetLabel[cabinet]"
-    :label="label"
   >
     <template #item="{ props, item }">
       <v-list-item v-bind="props" :class="{ 'text-gray': item.raw.is_busy }">

@@ -10,6 +10,7 @@ use App\Models\Group;
 use App\Models\Lesson;
 use App\Utils\Teeth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class CabinetController extends Controller
 {
@@ -76,13 +77,31 @@ class CabinetController extends Controller
             'date' => ['required', 'date_format:Y-m-d'],
             'time' => ['required', 'date_format:H:i'],
             'group_id' => ['required', 'exists:groups,id'],
+            'date_end' => ['sometimes', 'date_format:Y-m-d'],
+            'weekday' => ['sometimes', 'numeric'],
         ]);
 
         $date = $request->input('date');
         $time = $request->input('time').':00';
         $group = Group::find($request->input('group_id'));
         $duration = $group->program->getDuration();
-        $endTime = date('H:i:s', strtotime($time) + ($duration * 60));
+        $timeEnd = date('H:i:s', strtotime($time) + ($duration * 60));
+        $dates = [];
+
+        if ($request->has('date_end')) {
+            $weekday = (int) $request->input('weekday');
+            $from = Carbon::parse($date);
+            $to = Carbon::parse($request->input('date_end'));
+            while ($from->lessThanOrEqualTo($to)) {
+                $dayOfWeek = ($from->dayOfWeek + 6) % 7;
+                if ($dayOfWeek === $weekday) {
+                    $dates[] = $from->format('Y-m-d');
+                }
+                $from->addDay();
+            }
+        } else {
+            $dates = [$date];
+        }
 
         $result = collect();
 
@@ -90,19 +109,13 @@ class CabinetController extends Controller
             if (str($cabinet->value)->startsWith('tur')) {
                 continue;
             }
-
-            // Проверяем, есть ли занятия, которые пересекаются с новым
-            $isBusy = Lesson::where('date', $date)
-                ->where('cabinet', $cabinet)
-                ->where('status', LessonStatus::planned)
-                ->join('groups as g', 'g.id', '=', 'lessons.group_id')
-                ->whereRaw("(
-                    (`time` BETWEEN ? AND ?)
-                    OR
-                    (`time` + INTERVAL IF(g.program LIKE '%School8' OR g.program LIKE '%School9', 55, 125) MINUTE BETWEEN ? AND ?)
-                )", [$time, $endTime, $time, $endTime])
-                ->exists();
-
+            $isBusy = false;
+            foreach ($dates as $d) {
+                if ($this->isCabinetBusy($cabinet, $d, $time, $timeEnd)) {
+                    $isBusy = true;
+                    break;
+                }
+            }
             $result->push([
                 'cabinet' => $cabinet->value,
                 'is_busy' => $isBusy,
@@ -110,5 +123,20 @@ class CabinetController extends Controller
         }
 
         return $result->sortBy('is_busy')->values()->all();
+    }
+
+    // Проверяем, есть ли занятия, которые пересекаются с новым
+    private function isCabinetBusy(Cabinet $cabinet, $date, $time, $timeEnd): bool
+    {
+        return Lesson::where('date', $date)
+            ->where('cabinet', $cabinet)
+            ->where('status', LessonStatus::planned)
+            ->join('groups as g', 'g.id', '=', 'lessons.group_id')
+            ->whereRaw("(
+                    (`time` BETWEEN ? AND ?)
+                    OR
+                    (`time` + INTERVAL IF(g.program LIKE '%School8' OR g.program LIKE '%School9', 55, 125) MINUTE BETWEEN ? AND ?)
+                )", [$time, $timeEnd, $time, $timeEnd])
+            ->exists();
     }
 }
