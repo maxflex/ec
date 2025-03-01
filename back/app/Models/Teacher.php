@@ -7,9 +7,6 @@ use App\Contracts\HasTeeth;
 use App\Enums\TeacherPaymentMethod;
 use App\Enums\TeacherStatus;
 use App\Traits\HasBalance;
-use App\Traits\HasName;
-use App\Traits\HasPhones;
-use App\Traits\HasPhoto;
 use App\Traits\HasTelegramMessages;
 use App\Traits\RelationSyncable;
 use App\Utils\Teeth;
@@ -17,12 +14,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Scout\Searchable;
 
-class Teacher extends Authenticatable implements CanLogin, HasTeeth
+class Teacher extends Person implements CanLogin, HasTeeth
 {
-    use HasBalance, HasName, HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable, Searchable;
+    use HasBalance, HasTelegramMessages, RelationSyncable, Searchable;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'status', 'subjects',

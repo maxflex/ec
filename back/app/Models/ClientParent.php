@@ -3,18 +3,15 @@
 namespace App\Models;
 
 use App\Contracts\CanLogin;
-use App\Traits\HasName;
-use App\Traits\HasPhones;
 use App\Traits\HasTelegramMessages;
 use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Scout\Searchable;
 
-class ClientParent extends Authenticatable implements CanLogin
+class ClientParent extends Person implements CanLogin
 {
-    use HasName, HasPhones, HasTelegramMessages, RelationSyncable, Searchable;
+    use HasTelegramMessages, RelationSyncable, Searchable;
 
     public $timestamps = false;
 
@@ -50,6 +47,14 @@ class ClientParent extends Authenticatable implements CanLogin
             'phones' => $this->phones->pluck('number')->toArray(),
             'weight' => intval($array['weight'] / 2),
         ];
+    }
+
+    public function getLastSeenAtAttribute(): ?string
+    {
+        return Log::query()
+            ->where('client_parent_id', $this->id)
+            ->whereNull('emulation_user_id')
+            ->max('created_at');
     }
 
     public function makeAllSearchableUsing(Builder $query): Builder

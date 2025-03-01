@@ -6,9 +6,6 @@ use App\Contracts\CanLogin;
 use App\Contracts\HasTeeth;
 use App\Enums\Direction;
 use App\Enums\LessonStatus;
-use App\Traits\HasName;
-use App\Traits\HasPhones;
-use App\Traits\HasPhoto;
 use App\Traits\HasTelegramMessages;
 use App\Traits\RelationSyncable;
 use App\Utils\Teeth;
@@ -18,14 +15,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Laravel\Scout\Searchable;
 
-class Client extends Authenticatable implements CanLogin, HasTeeth
+class Client extends Person implements CanLogin, HasTeeth
 {
-    use HasName, HasPhones, HasPhoto, HasTelegramMessages, RelationSyncable, Searchable;
+    use HasTelegramMessages, RelationSyncable, Searchable;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'branches',
@@ -209,6 +205,11 @@ class Client extends Authenticatable implements CanLogin, HasTeeth
         return $this->hasMany(Contract::class)->orderBy('id', 'desc');
     }
 
+    // Upd. По результату телефонного разговора:
+    //  1) договоры только текущий год
+    //  2) отсеять: нет в группах
+    //  3) отсеять: услуги по договору оказаны
+    // 2-3 => оставить тех, кто: либо в группе, либо услуги по договору не оказаны
     public function scopeCanLogin($query)
     {
         // tmp duplication
@@ -269,17 +270,6 @@ class Client extends Authenticatable implements CanLogin, HasTeeth
         )
             ->withExpression('s', $swampsCte)
             ->groupByRaw('clients.id');
-    }
-
-    // Upd. По результату телефонного разговора:
-    //  1) договоры только текущий год
-    //  2) отсеять: нет в группах
-    //  3) отсеять: услуги по договору оказаны
-    // 2-3 => оставить тех, кто: либо в группе, либо услуги по договору не оказаны
-
-    public function searchableAs()
-    {
-        return 'people';
     }
 
     public function toSearchableArray()

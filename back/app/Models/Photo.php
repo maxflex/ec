@@ -13,24 +13,14 @@ class Photo extends Model
     const DISABLE_LOGS = true;
 
     public $incrementing = false;
+
     public $timestamps = false;
 
     protected $keyType = 'string';
+
     protected $fillable = [
-        'entity_type', 'entity_id'
+        'entity_type', 'entity_id',
     ];
-
-    public function getUrlAttribute()
-    {
-        return cdn('photos', $this->id . '.jpg');
-    }
-
-    public function upload(UploadedFile $file)
-    {
-        $file = Image::make($file)->fit(300)->stream('jpg');
-        $name = join('/', ['crm', 'photos', $this->id . ".jpg"]);
-        return Storage::put($name, $file);
-    }
 
     /**
      * Свободная загрузка.
@@ -39,15 +29,10 @@ class Photo extends Model
     public static function arbitraryUpload(UploadedFile $file)
     {
         $file = Image::make($file)->stream('jpg');
-        $fileName = uniqid('instruction_') . ".jpg";
-        Storage::put(join('/', ['crm', 'photos', $fileName]), $file);
-        return cdn('photos', $fileName);
-    }
+        $fileName = uniqid('instruction_').'.jpg';
+        Storage::put(implode('/', ['crm', 'photos', $fileName]), $file);
 
-    public function deleteFromCdn()
-    {
-        $name = join('/', ['crm', 'photos', $this->id . ".jpg"]);
-        Storage::delete($name);
+        return cdn('photos', $fileName);
     }
 
     public static function booted()
@@ -58,5 +43,24 @@ class Photo extends Model
         static::deleting(function ($photo) {
             $photo->deleteFromCdn();
         });
+    }
+
+    public function deleteFromCdn()
+    {
+        $name = implode('/', ['crm', 'photos', $this->id.'.jpg']);
+        Storage::delete($name);
+    }
+
+    public function getUrlAttribute(): string
+    {
+        return cdn('photos', $this->id.'.jpg');
+    }
+
+    public function upload(UploadedFile $file)
+    {
+        $file = Image::make($file)->fit(300)->stream('jpg');
+        $name = implode('/', ['crm', 'photos', $this->id.'.jpg']);
+
+        return Storage::put($name, $file);
     }
 }
