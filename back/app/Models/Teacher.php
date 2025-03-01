@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Contracts\CanLogin;
 use App\Contracts\HasTeeth;
 use App\Enums\TeacherPaymentMethod;
 use App\Enums\TeacherStatus;
@@ -16,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Scout\Searchable;
 
-class Teacher extends Person implements CanLogin, HasTeeth
+class Teacher extends Person implements HasTeeth
 {
     use HasBalance, HasTelegramMessages, RelationSyncable, Searchable;
 

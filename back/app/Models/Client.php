@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Contracts\CanLogin;
 use App\Contracts\HasTeeth;
 use App\Enums\Direction;
 use App\Enums\LessonStatus;
@@ -19,7 +18,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Laravel\Scout\Searchable;
 
-class Client extends Person implements CanLogin, HasTeeth
+class Client extends Person implements HasTeeth
 {
     use HasTelegramMessages, RelationSyncable, Searchable;
 

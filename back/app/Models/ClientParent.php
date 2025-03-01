@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use App\Contracts\CanLogin;
 use App\Traits\HasTelegramMessages;
 use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Scout\Searchable;
 
-class ClientParent extends Person implements CanLogin
+class ClientParent extends Person
 {
     use HasTelegramMessages, RelationSyncable, Searchable;
 

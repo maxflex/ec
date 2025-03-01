@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Contracts\CanLogin;
 use App\Traits\HasPhones;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Person extends Authenticatable
+abstract class Person extends Authenticatable implements CanLogin
 {
     use HasPhones;
 

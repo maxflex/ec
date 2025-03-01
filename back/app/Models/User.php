@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-use App\Contracts\CanLogin;
 use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class User extends Person implements CanLogin
+class User extends Person
 {
     use RelationSyncable;
 
