@@ -49,9 +49,11 @@ class ClientController extends Controller
     public function store(ClientRequest $request)
     {
         $client = auth()->user()->clients()->create($request->all());
-        $client->syncRelation($request->all(), 'phones');
         $parent = $client->parent()->create($request->parent);
-        $parent->syncRelation($request->parent, 'phones');
+
+        sync_relation($client, 'phones', $request->all());
+        sync_relation($parent, 'phones', $request->parent);
+
         if ($request->has('request_id')) {
             \App\Models\Request::find($request->request_id)->update([
                 'client_id' => $client->id,
@@ -64,9 +66,10 @@ class ClientController extends Controller
     public function update(Client $client, ClientRequest $request)
     {
         $client->update($request->all());
-        $client->syncRelation($request->all(), 'phones');
         $client->parent->update($request->parent);
-        $client->parent->syncRelation($request->parent, 'phones');
+
+        sync_relation($client, 'phones', $request->all());
+        sync_relation($client->parent, 'phones', $request->parent);
 
         return new ClientResource($client);
     }

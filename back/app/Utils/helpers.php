@@ -6,8 +6,26 @@ use App\Enums\ContractPaymentMethod;
 use App\Models\ClientPayment;
 use App\Models\ContractPayment;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
+
+function sync_relation(Model $model, string $relation, array $requestInput): void
+{
+    if (! isset($requestInput[$relation])) {
+        return;
+    }
+    $data = $requestInput[$relation];
+    $actualIds = array_filter(array_column($data, 'id'), fn ($val) => ! is_null($val));
+    $model->{$relation}()->whereNotIn('id', $actualIds)->each(fn ($model) => $model->delete());
+    foreach ($data as $item) {
+        if (isset($item['id']) && floor($item['id']) > 0) {
+            $model->{$relation}()->find($item['id'])->update($item);
+        } else {
+            $model->{$relation}()->create($item);
+        }
+    }
+}
 
 function extract_fields($object, $fields, $merge = []): ?array
 {

@@ -12,6 +12,8 @@ abstract class Person extends Authenticatable implements CanLogin
 {
     use HasPhones;
 
+    const DISABLE_LOGS = true;
+
     public function photo(): MorphOne
     {
         return $this->morphOne(Photo::class, 'entity');

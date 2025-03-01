@@ -6,7 +6,6 @@ use App\Contracts\HasTeeth;
 use App\Enums\Direction;
 use App\Enums\LessonStatus;
 use App\Traits\HasTelegramMessages;
-use App\Traits\RelationSyncable;
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -20,7 +19,7 @@ use Laravel\Scout\Searchable;
 
 class Client extends Person implements HasTeeth
 {
-    use HasTelegramMessages, RelationSyncable, Searchable;
+    use HasTelegramMessages, Searchable;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'branches',

@@ -18,6 +18,7 @@ class ContractController extends Controller
     {
         $query = Contract::with('client')->latest('id');
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, ContractResource::class);
     }
 
@@ -38,11 +39,12 @@ class ContractController extends Controller
             ...$request->all(),
             'contract_id' => $contract->id,
         ]);
-        $contractVersion->syncRelation($request->all(), 'programs');
+        sync_relation($contractVersion, 'programs', $request->all());
         foreach ($contractVersion->programs as $index => $program) {
-            $program->syncRelation($request->programs[$index], 'prices');
+            sync_relation($program, 'prices', $request->programs[$index]);
         }
-        $contractVersion->syncRelation($request->all(), 'payments');
+        sync_relation($contractVersion, 'payments', $request->all());
+
         return new ContractResource($contract->fresh());
     }
 
@@ -50,9 +52,9 @@ class ContractController extends Controller
     {
         $program = ContractVersionProgram::find($id);
         $query->whereHas(
-            'versions', fn($q) => $q
-            ->where('is_active', true)
-            ->whereHas('programs', fn($q) => $q->where('program', $program->program))
+            'versions', fn ($q) => $q
+                ->where('is_active', true)
+                ->whereHas('programs', fn ($q) => $q->where('program', $program->program))
         )->where('year', $program->contractVersion->contract->year);
     }
 }

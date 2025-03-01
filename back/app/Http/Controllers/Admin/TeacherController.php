@@ -13,7 +13,7 @@ class TeacherController extends Controller
     protected $filters = [
         'equals' => ['status'],
         'findInSet' => ['subjects'],
-        'search' => ['q']
+        'search' => ['q'],
     ];
 
     public function index(Request $request)
@@ -24,6 +24,7 @@ class TeacherController extends Controller
                 concat(last_name, first_name, middle_name) asc
             ");
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, TeacherListResource::class);
     }
 
@@ -35,7 +36,8 @@ class TeacherController extends Controller
     public function update(Teacher $teacher, Request $request)
     {
         $teacher->update($request->all());
-        $teacher->syncRelation($request->all(), 'phones');
+        sync_relation($teacher, 'phones', $request->all());
+
         return new TeacherResource($teacher);
     }
 
@@ -44,7 +46,8 @@ class TeacherController extends Controller
         $teacher = auth()->user()->teachers()->create(
             $request->all()
         );
-        $teacher->syncRelation($request->all(), 'phones');
+        sync_relation($teacher, 'phones', $request->all());
+
         return new TeacherResource($teacher);
     }
 

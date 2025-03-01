@@ -48,9 +48,9 @@ class ContractVersionController extends Controller
         ]);
         $request->merge(['contract_id' => $request->contract['id']]);
         $contractVersion = auth()->user()->contractVersions()->create($request->all());
-        $contractVersion->syncRelation($request->all(), 'programs');
+        sync_relation($contractVersion, 'programs', $request->all());
         foreach ($contractVersion->programs as $index => $program) {
-            $program->syncRelation($request->programs[$index], 'prices');
+            sync_relation($program, 'prices', $request->programs[$index]);
         }
 
         $isRelinked = $contractVersion->relinkIds(
@@ -63,7 +63,7 @@ class ContractVersionController extends Controller
             abort(422);
         }
 
-        $contractVersion->syncRelation($request->all(), 'payments');
+        sync_relation($contractVersion, 'payments', $request->all());
 
         return new ContractVersionListResource($contractVersion);
     }
@@ -71,11 +71,11 @@ class ContractVersionController extends Controller
     public function update(ContractVersion $contractVersion, Request $request)
     {
         $contractVersion->update($request->all());
-        $contractVersion->syncRelation($request->all(), 'programs');
+        sync_relation($contractVersion, 'programs', $request->all());
         foreach ($contractVersion->programs as $index => $program) {
-            $program->syncRelation($request->programs[$index], 'prices');
+            sync_relation($program, 'prices', $request->programs[$index]);
         }
-        $contractVersion->syncRelation($request->all(), 'payments');
+        sync_relation($contractVersion, 'payments', $request->all());
 
         return new ContractVersionListResource($contractVersion);
     }

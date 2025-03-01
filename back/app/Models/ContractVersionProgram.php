@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enums\LessonStatus;
 use App\Enums\Program;
-use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,8 +13,6 @@ use Illuminate\Support\Collection;
 
 class ContractVersionProgram extends Model
 {
-    use RelationSyncable;
-
     public $timestamps = false;
 
     protected $fillable = [

@@ -7,7 +7,6 @@ use App\Enums\TeacherPaymentMethod;
 use App\Enums\TeacherStatus;
 use App\Traits\HasBalance;
 use App\Traits\HasTelegramMessages;
-use App\Traits\RelationSyncable;
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -17,7 +16,7 @@ use Laravel\Scout\Searchable;
 
 class Teacher extends Person implements HasTeeth
 {
-    use HasBalance, HasTelegramMessages, RelationSyncable, Searchable;
+    use HasBalance, HasTelegramMessages, Searchable;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'status', 'subjects',

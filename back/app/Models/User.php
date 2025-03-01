@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Person
 {
-    use RelationSyncable;
-
     protected $fillable = [
         'first_name', 'last_name',
         'is_active', 'is_call_notifications',

@@ -6,7 +6,6 @@ use App\Enums\Direction;
 use App\Enums\RequestStatus;
 use App\Traits\HasComments;
 use App\Traits\HasPhones;
-use App\Traits\RelationSyncable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,7 +15,7 @@ use Laravel\Scout\Searchable;
 
 class Request extends Model
 {
-    use HasComments, HasPhones, RelationSyncable, Searchable;
+    use HasComments, HasPhones, Searchable;
 
     protected $fillable = [
         'responsible_user_id', 'direction', 'status', 'client_id',

@@ -11,7 +11,7 @@ class UserController extends Controller
 {
     protected $filters = [
         'equals' => ['is_active'],
-        'search' => ['q']
+        'search' => ['q'],
     ];
 
     public function index(Request $request)
@@ -19,6 +19,7 @@ class UserController extends Controller
         $query = User::latest('is_active')
             ->orderBy('id');
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, UserResource::class);
     }
 
@@ -29,7 +30,8 @@ class UserController extends Controller
             'last_name' => ['required', 'string'],
         ]);
         $user = User::create($request->all());
-        $user->syncRelation($request->all(), 'phones');
+        sync_relation($user, 'phones', $request->all());
+
         return new UserResource($user);
     }
 
@@ -41,7 +43,8 @@ class UserController extends Controller
     public function update(User $user, Request $request)
     {
         $user->update($request->all());
-        $user->syncRelation($request->all(), 'phones');
+        sync_relation($user, 'phones', $request->all());
+
         return new UserResource($user);
     }
 
@@ -49,6 +52,7 @@ class UserController extends Controller
     {
         $user->phones->each->delete();
         $user->delete();
+
         return new UserResource($user);
     }
 
