@@ -28,6 +28,7 @@ class SearchController extends Controller
                 'num_typos' => 0,
                 'typo_tokens_threshold' => 0,
                 'enable_highlight_v1' => false,
+                'exhaustive_search' => true,
                 'per_page' => $perPage,
                 'page' => $page,
             ])
