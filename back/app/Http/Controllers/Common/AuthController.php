@@ -22,8 +22,10 @@ class AuthController extends Controller
     public function submitPhone(SubmitPhoneRequest $request)
     {
         $phone = Phone::auth($request->input('number'));
-        if ($phone->telegram_id) {
-            VerificationService::sendCode($phone);
+
+        // если "без телеграм", отправляем код в SMS
+        if ($phone->telegram_id || $phone->is_telegram_disabled) {
+            VerificationService::sendCode($phone, $phone->is_telegram_disabled);
         }
 
         return [

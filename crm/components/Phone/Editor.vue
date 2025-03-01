@@ -47,7 +47,7 @@ function removePhone(p: PhoneResource) {
           :class="p.is_telegram_disabled ? 'text-error' : 'text-gray'"
           @click="p.is_telegram_disabled = !p.is_telegram_disabled"
         >
-          без рассылки
+          без telegram
         </span>
         <span class="phone-editor__remove" @click="removePhone(p)">
           удалить
