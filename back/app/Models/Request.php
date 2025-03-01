@@ -6,16 +6,16 @@ use App\Enums\Direction;
 use App\Enums\RequestStatus;
 use App\Traits\HasComments;
 use App\Traits\HasPhones;
+use App\Traits\IsSearchable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
-use Laravel\Scout\Searchable;
 
 class Request extends Model
 {
-    use HasComments, HasPhones, Searchable;
+    use HasComments, HasPhones, IsSearchable;
 
     protected $fillable = [
         'responsible_user_id', 'direction', 'status', 'client_id',
@@ -111,24 +111,14 @@ class Request extends Model
         return $clients->unique('id');
     }
 
-    public function searchableAs()
+    public function getSearchWeight(): int
     {
-        return 'people';
+        return 100;
     }
 
-    public function toSearchableArray()
+    public function getSearchIsActive(): bool
     {
-        $class = class_basename(self::class);
-        $weight = 100;
-
-        return [
-            'id' => implode('-', [$class, $this->id]),
-            'first_name' => '',
-            'last_name' => '',
-            'phones' => $this->phones->pluck('number')->toArray(),
-            'is_active' => false,
-            'weight' => $weight,
-        ];
+        return false;
     }
 
     public function makeAllSearchableUsing(Builder $query): Builder

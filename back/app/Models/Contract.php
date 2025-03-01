@@ -4,15 +4,15 @@ namespace App\Models;
 
 use App\Enums\Company;
 use App\Traits\HasBalance;
+use App\Traits\IsSearchable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Laravel\Scout\Searchable;
 
 class Contract extends Model
 {
-    use HasBalance, Searchable;
+    use HasBalance, IsSearchable;
 
     public $timestamps = false;
 
@@ -34,19 +34,6 @@ class Contract extends Model
         return $this->hasMany(ContractPayment::class);
     }
 
-    // TODO: вроде не используется
-    //    public function groups(): HasManyThrough
-    //    {
-    //        return $this->hasManyThrough(
-    //            Group::class,
-    //            ClientGroup::class,
-    //            'contract_id',
-    //            'id',
-    //            'id',
-    //            'group_id',
-    //        );
-    //    }
-
     public function getActiveVersionAttribute(): ContractVersion
     {
         return $this->versions->where('is_active', true)->first();
@@ -62,26 +49,21 @@ class Contract extends Model
         return $this->hasMany(ContractVersion::class)->oldest();
     }
 
-    public function searchableAs()
+    public function getSearchWeight(): int
     {
-        return 'people';
+        return 150;
     }
 
-    public function toSearchableArray()
+    public function getSearchPhones(): array
     {
-        $class = class_basename(self::class);
-        $weight = 150;
-
         return [
-            'id' => implode('-', [$class, $this->id]),
-            'first_name' => '',
-            'last_name' => '',
-            'phones' => [
-                (string) $this->id,
-            ],
-            'is_active' => $this->year >= current_academic_year(),
-            'weight' => $weight,
+            (string) $this->id,
         ];
+    }
+
+    public function getSearchIsActive(): bool
+    {
+        return $this->year >= current_academic_year();
     }
 
     public function makeAllSearchableUsing(Builder $query): Builder

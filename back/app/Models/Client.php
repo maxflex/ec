@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Contracts\HasTeeth;
 use App\Enums\Direction;
 use App\Enums\LessonStatus;
-use App\Traits\HasTelegramMessages;
+use App\Traits\IsSearchable;
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -15,11 +15,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Laravel\Scout\Searchable;
 
 class Client extends Person implements HasTeeth
 {
-    use HasTelegramMessages, Searchable;
+    use IsSearchable;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'branches',
@@ -270,21 +269,6 @@ class Client extends Person implements HasTeeth
             ->groupByRaw('clients.id');
     }
 
-    public function toSearchableArray()
-    {
-        $class = class_basename(self::class);
-        $weight = intval($this->contracts()->max('year') ?? 1000);
-
-        return [
-            'id' => implode('-', [$class, $this->id]),
-            'first_name' => $this->first_name ? mb_strtolower($this->first_name) : '',
-            'last_name' => $this->last_name ? mb_strtolower($this->last_name) : '',
-            'phones' => $this->phones->pluck('number')->toArray(),
-            'is_active' => Client::canLogin()->whereId($this->id)->exists(),
-            'weight' => $weight,
-        ];
-    }
-
     public function makeAllSearchableUsing(Builder $query): Builder
     {
         return $query
@@ -329,5 +313,10 @@ class Client extends Person implements HasTeeth
             ->flatten()
             ->unique()
             ->all();
+    }
+
+    public function getSearchWeight(): int
+    {
+        return intval($this->contracts()->max('year') ?? 1000);
     }
 }

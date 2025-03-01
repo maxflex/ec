@@ -34,6 +34,14 @@ abstract class Person extends Authenticatable implements CanLogin
         return $this->morphMany(Log::class, 'entity');
     }
 
+    /**
+     * У типа User не используется
+     */
+    public function telegramMessages(): MorphMany
+    {
+        return $this->morphMany(TelegramMessage::class, 'entity');
+    }
+
     public function formatName(string $format = 'last-first'): string
     {
         $name = match ($format) {

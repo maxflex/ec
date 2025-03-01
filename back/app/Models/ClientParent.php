@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use App\Traits\HasTelegramMessages;
+use App\Traits\IsSearchable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Laravel\Scout\Searchable;
 
 class ClientParent extends Person
 {
-    use HasTelegramMessages, Searchable;
+    use IsSearchable;
 
     public $timestamps = false;
 
@@ -27,24 +26,9 @@ class ClientParent extends Person
         return $this->belongsTo(Client::class);
     }
 
-    public function searchableAs()
+    public function getSearchWeight(): int
     {
-        return 'people';
-    }
-
-    public function toSearchableArray()
-    {
-        $class = class_basename(self::class);
-        $array = $this->client->toSearchableArray();
-
-        return [
-            ...$array,
-            'id' => implode('-', [$class, $this->id]),
-            'first_name' => $this->first_name ? mb_strtolower($this->first_name) : '',
-            'last_name' => $this->last_name ? mb_strtolower($this->last_name) : '',
-            'phones' => $this->phones->pluck('number')->toArray(),
-            'weight' => intval($array['weight'] / 2),
-        ];
+        return $this->client->getSearchWeight() / 2;
     }
 
     public function getLastSeenAtAttribute(): ?string

@@ -6,17 +6,16 @@ use App\Contracts\HasTeeth;
 use App\Enums\TeacherPaymentMethod;
 use App\Enums\TeacherStatus;
 use App\Traits\HasBalance;
-use App\Traits\HasTelegramMessages;
+use App\Traits\IsSearchable;
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Laravel\Scout\Searchable;
 
 class Teacher extends Person implements HasTeeth
 {
-    use HasBalance, HasTelegramMessages, Searchable;
+    use HasBalance, IsSearchable;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'status', 'subjects',
@@ -70,30 +69,6 @@ class Teacher extends Person implements HasTeeth
         return Teeth::get($query, $year);
     }
 
-    public function searchableAs()
-    {
-        return 'people';
-    }
-
-    public function toSearchableArray()
-    {
-        $class = class_basename(self::class);
-
-        return [
-            'id' => implode('-', [$class, $this->id]),
-            'first_name' => $this->first_name ? mb_strtolower($this->first_name) : '',
-            'last_name' => $this->last_name ? mb_strtolower($this->last_name) : '',
-            'phones' => $this->phones->pluck('number')->toArray(),
-            'is_active' => Teacher::canLogin()->whereId($this->id)->exists(),
-            'weight' => 499 + intval($this->lessons()->count() / 3),
-        ];
-    }
-
-    public function lessons(): HasMany
-    {
-        return $this->hasMany(Lesson::class);
-    }
-
     public function makeAllSearchableUsing(Builder $query): Builder
     {
         return $query->with('phones');
@@ -135,6 +110,16 @@ class Teacher extends Person implements HasTeeth
             'code' => null,
             'issued_by' => null,
         ] : json_decode($value);
+    }
+
+    public function getSearchWeight(): int
+    {
+        return 499 + intval($this->lessons()->count() / 3);
+    }
+
+    public function lessons(): HasMany
+    {
+        return $this->hasMany(Lesson::class);
     }
 
     protected function getBalanceItems($year, ?bool $split = null): array

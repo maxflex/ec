@@ -66,11 +66,6 @@ class User extends Person
         return $this->hasMany(Comment::class);
     }
 
-    public function telegramMessages(): HasMany
-    {
-        return $this->hasMany(TelegramMessage::class);
-    }
-
     public function examScores(): HasMany
     {
         return $this->hasMany(ExamScore::class);
