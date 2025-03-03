@@ -12,6 +12,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * TODO: снести полностью
+ */
 class AvailableYears
 {
     public string $mode;

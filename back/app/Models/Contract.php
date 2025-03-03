@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Enums\Company;
-use App\Traits\HasBalance;
 use App\Traits\IsSearchable;
+use App\Utils\Balance\Balance;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Contract extends Model
 {
-    use HasBalance, IsSearchable;
+    use IsSearchable;
 
     public $timestamps = false;
 
@@ -71,41 +71,40 @@ class Contract extends Model
         return $query->where('year', '>=', current_academic_year() - 3);
     }
 
-    protected function getBalanceItems(): array
+    public function getBalance(): Balance
     {
-        $programIds = $this->active_version->programs()->pluck('id');
+        $clientLessons = ClientLesson::whereHas(
+            'contractVersionProgram.contractVersion',
+            fn ($q) => $q->where('contract_id', $this->id)
+        )->get();
 
-        $clientLessons = ClientLesson::query()
-            ->whereIn('contract_version_program_id', $programIds)
-            ->get();
-
-        $balanceItems = [];
+        $balance = new Balance;
 
         foreach ($clientLessons as $clientLesson) {
             $lesson = $clientLesson->lesson;
-            $balanceItems[] = (object) [
-                'dateTime' => $lesson->conducted_at,
-                'sum' => $clientLesson->price * -1,
-                'comment' => sprintf(
+            $balance->push(
+                $clientLesson->price * -1,
+                $lesson->conducted_at,
+                sprintf(
                     'занятие %s, группа %d, кабинет %s',
                     $lesson->date_time->format('d.m.y в H:i'),
                     $lesson->group_id,
                     filter_var($lesson->cabinet->value, FILTER_SANITIZE_NUMBER_INT)
-                ),
-            ];
+                )
+            );
         }
 
         foreach ($this->payments as $payment) {
-            $balanceItems[] = (object) [
-                'dateTime' => $payment->created_at->format('Y-m-d H:i:s'),
-                'sum' => $payment->sum * ($payment->is_return ? -1 : 1),
-                'comment' => sprintf(
+            $balance->push(
+                $payment->sum * ($payment->is_return ? -1 : 1),
+                $payment->created_at->format('Y-m-d H:i:s'),
+                sprintf(
                     '%s (обучение)',
                     $payment->method->getTitle()
                 ),
-            ];
+            );
         }
 
-        return $balanceItems;
+        return $balance;
     }
 }

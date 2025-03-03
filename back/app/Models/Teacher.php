@@ -5,8 +5,8 @@ namespace App\Models;
 use App\Contracts\HasTeeth;
 use App\Enums\TeacherPaymentMethod;
 use App\Enums\TeacherStatus;
-use App\Traits\HasBalance;
 use App\Traits\IsSearchable;
+use App\Utils\Balance\Balance;
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Teacher extends Person implements HasTeeth
 {
-    use HasBalance, IsSearchable;
+    use IsSearchable;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'status', 'subjects',
@@ -122,9 +122,9 @@ class Teacher extends Person implements HasTeeth
         return $this->hasMany(Lesson::class);
     }
 
-    protected function getBalanceItems($year, ?bool $split = null): array
+    public function getBalance(int $year, ?bool $split = null): Balance
     {
-        $balanceItems = [];
+        $balance = new Balance;
 
         if ($split !== false) {
             $lessons = Lesson::query()
@@ -134,17 +134,17 @@ class Teacher extends Person implements HasTeeth
                 ->get();
 
             foreach ($lessons as $lesson) {
-                $balanceItems[] = (object) [
-                    'dateTime' => $lesson->date_time,
-                    'sum' => $lesson->price,
-                    'comment' => sprintf(
+                $balance->push(
+                    $lesson->price,
+                    $lesson->date_time,
+                    sprintf(
                         'занятие %s, группа %d, кабинет %s, %s',
                         $lesson->date_time->format('в H:i'),
                         $lesson->group_id,
                         filter_var($lesson->cabinet->value, FILTER_SANITIZE_NUMBER_INT),
                         $lesson->group->program->getShortName(),
-                    ),
-                ];
+                    )
+                );
             }
         }
 
@@ -158,41 +158,41 @@ class Teacher extends Person implements HasTeeth
         }
 
         foreach ($query->get() as $payment) {
-            $balanceItems[] = (object) [
-                'dateTime' => $payment->created_at->format('Y-m-d H:i:s'),
-                'sum' => $payment->sum * ($payment->is_return ? 1 : -1),
-                'comment' => sprintf(
+            $balance->push(
+                $payment->sum * ($payment->is_return ? 1 : -1),
+                $payment->created_at->format('Y-m-d H:i:s'),
+                sprintf(
                     'выплата, %s',
                     $payment->method->getTitle()
                 ),
-            ];
+            );
         }
 
         if ($split !== true) {
             $services = $this->services()->where('year', $year)->get();
             foreach ($services as $service) {
-                $balanceItems[] = (object) [
-                    'dateTime' => $service->date.' 15:00:00',
-                    'sum' => $service->sum,
-                    'comment' => $service->purpose,
-                ];
+                $balance->push(
+                    $service->sum,
+                    $service->date.' 15:00:00',
+                    $service->purpose,
+                );
             }
 
             $reports = $this->reports()->where('year', $year)->where('price', '>', 0)->get();
             foreach ($reports as $report) {
-                $balanceItems[] = (object) [
-                    'dateTime' => $report->created_at->format('Y-m-d H:i:s'),
-                    'sum' => $report->price,
-                    'comment' => sprintf(
+                $balance->push(
+                    $report->price,
+                    $report->created_at->format('Y-m-d H:i:s'),
+                    sprintf(
                         'отчет по ученику %s, %s',
                         $report->client->formatName(),
                         $report->program->getShortName(),
                     ),
-                ];
+                );
             }
         }
 
-        return $balanceItems;
+        return $balance;
     }
 
     public function payments(): HasMany
