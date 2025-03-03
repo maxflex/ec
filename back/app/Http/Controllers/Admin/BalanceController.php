@@ -27,7 +27,10 @@ class BalanceController extends Controller
             if ($request->has('available_years')) {
                 return Balance::getAvailableYears($teacher);
             }
-            $balance = $teacher->getBalance($request->year, $request->split ?: null);
+            $balance = $teacher->getBalance(
+                $request->year,
+                $request->has('split') ? (bool) $request->split : null
+            );
         }
 
         return paginate($balance->get());
