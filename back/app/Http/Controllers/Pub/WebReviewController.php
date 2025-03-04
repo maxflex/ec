@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\WebReviewPubResource;
 use App\Models\WebReview;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class WebReviewController extends Controller
 {
@@ -18,20 +19,35 @@ class WebReviewController extends Controller
         $grade = intval($request->input('grade'));
         $seed = $request->input('seed');
 
-        if ($grade === 11 && in_array($subject, [
-            'math',
-            'phys',
-            'inf',
-        ])) {
-            $program = match ($subject) {
-                'phys' => Program::phys11,
-                'inf' => Program::inf11,
-                default => Program::math11,
-            };
+        // отзывы существуют
+        $exists = false;
+        $programs = [];
 
-            $exam = $program->getExam();
+        if ($grade === 14) {
+            $programs = Program::getAllExternal();
+            $exists = true;
+        } elseif ($grade !== 20) {
+            $program = Program::tryFrom($subject.$grade);
+            if ($program) {
+                $exists = DB::table('web_review_programs')->where('program', $program->value)->exists();
+                $programs = [$program];
+            }
+        }
 
-            $query->with('examScores', fn ($q) => $q->where('exam', $exam))
+        if (is_localhost()) {
+            logger('grade: '.$grade);
+            logger('subject: '.is_null($subject) ? 'null' : $subject);
+            logger('Programs', $programs);
+        }
+
+        if (count($programs) > 0 && $exists) {
+            $exams = collect($programs)
+                ->map(fn (Program $p) => $p->getExam()->value)
+                ->all();
+
+            // logger('Exams', $exams);
+
+            $query->with('examScores', fn ($q) => $q->whereIn('exam', $exams))
                 ->selectRaw('web_reviews.*')
                 ->join(
                     'exam_score_web_review as es_wr',
@@ -42,10 +58,10 @@ class WebReviewController extends Controller
                 ->join('exam_scores as es',
                     fn ($join) => $join
                         ->on('es.id', '=', 'es_wr.exam_score_id')
-                        ->where('es.exam', $exam)
+                        ->whereIn('es.exam', $exams)
                 )
                 ->where('es.score', '>=', 40)
-                ->whereHas('client.photo')
+
                 ->where('is_published', true)
                 ->orderByRaw('
                      CASE
@@ -71,7 +87,6 @@ class WebReviewController extends Controller
         return $this->handleIndexRequest($request, $query, WebReviewPubResource::class);
     }
 
-    // Не используется
     public function show(WebReview $webReview)
     {
         return new WebReviewPubResource($webReview);
