@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Pub;
 
+use App\Enums\Exam;
 use App\Enums\Program;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\WebReviewPubResource;
@@ -42,7 +43,9 @@ class WebReviewController extends Controller
 
         if (count($programs) > 0 && $exists) {
             $exams = collect($programs)
-                ->map(fn (Program $p) => $p->getExam()->value)
+                ->map(fn (Program $p) => $p->getExam())
+                ->filter(fn ($e) => $e !== null)
+                ->map(fn (Exam $exam) => $exam->value)
                 ->all();
 
             // logger('Exams', $exams);
