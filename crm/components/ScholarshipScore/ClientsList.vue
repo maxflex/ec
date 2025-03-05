@@ -7,7 +7,10 @@ const { items } = defineProps<{
 <template>
   <v-table>
     <tbody>
-      <tr v-for="item in items" :key="item.client.id">
+      <tr v-for="(item, index) in items" :key="item.client.id">
+        <td width="30" class="pr-0">
+          {{ index + 1 }}
+        </td>
         <td width="350">
           <UiPerson :item="item.client" />
         </td>
