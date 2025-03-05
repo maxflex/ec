@@ -45,7 +45,7 @@ class ClientParent extends Person
             ->with('phones')
             ->whereHas(
                 'client',
-                fn ($q) => $q->whereRaw('`created_at` >= NOW() - INTERVAL 3 YEAR')
+                fn ($q) => $q->whereRaw('`created_at` >= NOW() - INTERVAL 5 YEAR')
             );
     }
 

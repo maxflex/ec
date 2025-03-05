@@ -273,7 +273,7 @@ class Client extends Person implements HasTeeth
     {
         return $query
             ->with('phones')
-            ->whereRaw('`created_at` >= NOW() - INTERVAL 3 YEAR');
+            ->whereRaw('`created_at` >= NOW() - INTERVAL 5 YEAR');
     }
 
     public function getPassportAttribute($value)
