@@ -35,7 +35,15 @@ class Balance
         );
     }
 
-    public function get(): array
+    /**
+     * Текущий баланс
+     */
+    public function getCurrent(): int
+    {
+        return $this->groupByDay()[0]?->balance;
+    }
+
+    public function groupByDay(): array
     {
         $itemsGrouped = $this->items
             ->sort(fn (BalanceItem $a, BalanceItem $b) => $a->dateTime <=> $b->dateTime)

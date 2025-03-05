@@ -33,6 +33,6 @@ class BalanceController extends Controller
             );
         }
 
-        return paginate($balance->get());
+        return paginate($balance->groupByDay());
     }
 }

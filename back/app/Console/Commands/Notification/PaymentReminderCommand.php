@@ -22,7 +22,15 @@ class PaymentReminderCommand extends Command
 
         $bar = $this->output->createProgressBar($payments->count());
         foreach ($payments as $payment) {
-            $clientParent = $payment->contractVersion->contract->client->parent;
+            // если текущий баланс выше, чем платеж
+            $contract = $payment->contractVersion->contract;
+            $currentBalance = $contract->getBalance()->getCurrent();
+            if ($currentBalance > $payment->sum) {
+                continue;
+            }
+
+            $clientParent = $contract->client->parent;
+
             TelegramMessage::sendTemplate(
                 TelegramTemplate::paymentReminder,
                 $clientParent,
