@@ -35,7 +35,6 @@ nextTick(updateMenuCounts)
     <v-btn
       v-for="m in menu"
       :key="m.to"
-      :ripple="false"
       :icon="m.icon"
       :to="m.to"
       :exact="false"

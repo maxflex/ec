@@ -29,6 +29,8 @@ watch(items, (newVal) => {
   selectedQuarter.value = quarters.value.length ? quarters.value[0].value : null
 })
 
+watch(selectedProgram, () => smoothScroll('main', 'top', 'instant'))
+
 const filteredItems = computed(() => items.value.filter((e) => {
   return e.lesson.quarter === selectedQuarter.value && (
     selectedProgram.value ? (e.program === selectedProgram.value) : true
