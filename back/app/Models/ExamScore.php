@@ -8,12 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 class ExamScore extends Model
 {
     protected $fillable = [
-        'exam', 'year', 'score', 'client_id'
+        'exam', 'year', 'score', 'client_id',
     ];
 
     protected $casts = [
-        'exam' => Exam::class
+        'exam' => Exam::class,
     ];
+
+    public static function booted()
+    {
+        static::saving(function (ExamScore $examScore) {
+            if ($examScore->score) {
+                $examScore->max_score = $examScore->score <= 5 ? 5 : 100;
+            } else {
+                $examScore->max_score = null;
+            }
+        });
+    }
 
     public function client()
     {
