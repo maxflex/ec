@@ -75,10 +75,12 @@ const { items } = defineProps<{
 .journal {
   & > div {
     padding: 20px;
-    border-bottom: 1px solid rgb(var(--v-theme-border));
     display: flex;
     flex-direction: column;
     gap: 20px;
+    &:not(:last-child) {
+      border-bottom: 1px solid rgb(var(--v-theme-border));
+    }
   }
   &__columns {
     display: flex;

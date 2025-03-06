@@ -36,7 +36,7 @@ const computedModel = computed({
         <option :value="null">
           не установлено
         </option>
-        <hr>
+        <!-- <hr> -->
       </template>
       <option v-for="item in items" :key="item.value" :value="item.value">
         {{ item.title }}

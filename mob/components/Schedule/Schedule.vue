@@ -401,8 +401,10 @@ const lessonItemComponent = (function () {
     display: flex;
     flex-direction: column;
     padding: 16px 20px;
-    border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
     gap: 20px;
+    &:not:last-child {
+      border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+    }
     &.week-separator {
       border-bottom: 2px solid rgb(var(--v-theme-gray));
     }

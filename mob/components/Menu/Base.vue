@@ -6,7 +6,6 @@ const { isAdmin, isTeacher } = useAuthStore()
   <MenuAdminMenu v-if="isAdmin" />
   <MenuTeacherMenu v-else-if="isTeacher" />
   <MenuClientMenu v-else />
-  <AppUpdateBtn />
 </template>
 
 <style lang="scss">
@@ -16,6 +15,8 @@ const { isAdmin, isTeacher } = useAuthStore()
   bottom: 0;
   height: $height;
   min-height: $height;
+  box-shadow: none !important;
+  border-top: 1px solid rgb(var(--v-theme-border));
   &__content {
     & > a {
       min-width: initial !important;
