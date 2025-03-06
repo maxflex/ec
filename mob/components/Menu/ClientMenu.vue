@@ -34,11 +34,7 @@ const menu: Menu = [
 </script>
 
 <template>
-  <v-bottom-navigation
-    grow
-    tag="footer"
-    :height="50"
-  >
+  <v-bottom-navigation grow tag="footer">
     <v-btn
       v-for="m in menu"
       :key="m.to"

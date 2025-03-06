@@ -28,7 +28,6 @@ const {
   width: 100%;
   flex: 1;
   color: rgb(var(--v-theme-gray));
-  position: absolute;
   & > div {
     display: flex;
     flex-direction: column;

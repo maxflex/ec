@@ -21,14 +21,14 @@ async function preview(item: ClientListResource) {
 </script>
 
 <template>
-  <div class="table table--padding">
+  <div class="table table--padding table--hover">
     <div
       v-for="item in items"
       :id="`clients-${item.id}`"
       :key="item.id"
       @click="preview(item)"
     >
-      <div style="width: 160px">
+      <div style="width: 170px">
         {{ formatName(item) }}
       </div>
       <div>

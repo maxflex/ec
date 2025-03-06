@@ -12,16 +12,28 @@ const model = defineModel()
 const selectRef = ref<HTMLSelectElement | null>(null)
 
 function openSelector() {
-  selectRef.value?.click()
+  if (selectRef.value?.showPicker) {
+    selectRef.value.showPicker() // Opens instantly on iOS 15+
+  }
+  else {
+    selectRef.value?.focus() // Fallback for older versions
+  }
 }
+
+const computedModel = computed({
+  get: () => model.value ?? null, // Convert `undefined` to `null` for select
+  set: (val) => {
+    model.value = val === null ? undefined : val // Convert `null` back to `undefined`
+  },
+})
 </script>
 
 <template>
-  <v-chip class="chip-selector" label @click="openSelector">
+  <v-chip class="chip-selector" label @pointerup="openSelector">
     {{ items.find(item => item.value === model)?.title || label }}
-    <select ref="selectRef" v-model="model" class="hidden">
+    <select ref="selectRef" v-model="computedModel" class="hidden">
       <template v-if="clearable">
-        <option value="undefined">
+        <option :value="null">
           не установлено
         </option>
         <hr>

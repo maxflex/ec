@@ -15,8 +15,8 @@ const { globalMessage } = useGlobalMessage()
     <v-app>
       <v-main :class="currentPageClass">
         <NuxtPage />
+        <MenuBase />
       </v-main>
-      <MenuBase />
       <UiBottomBar v-model="globalMessage.value" :color="globalMessage.color">
         {{ globalMessage.text }}
       </UiBottomBar>

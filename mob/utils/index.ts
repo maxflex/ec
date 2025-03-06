@@ -401,3 +401,7 @@ export function transformArrayKeys(obj: Record<string, any>): Record<string, any
 
   return transformed
 }
+
+export function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}

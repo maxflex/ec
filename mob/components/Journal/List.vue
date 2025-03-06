@@ -95,6 +95,11 @@ const { items } = defineProps<{
       &:first-child {
         font-weight: 500;
       }
+      &:last-child {
+        white-space: pre-wrap; // Preserves line breaks & wraps text
+        word-wrap: break-word; // Ensures long words don’t overflow
+        overflow-wrap: break-word;
+      }
     }
   }
   &__files {

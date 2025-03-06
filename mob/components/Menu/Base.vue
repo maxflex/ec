@@ -10,11 +10,18 @@ const { isAdmin, isTeacher } = useAuthStore()
 </template>
 
 <style lang="scss">
-.v-bottom-navigation__content {
-  & > a {
-    min-width: initial !important;
-    padding: 0 !important;
-    color: black !important;
+.v-bottom-navigation {
+  $height: 50px !important;
+  position: sticky !important;
+  bottom: 0;
+  height: $height;
+  min-height: $height;
+  &__content {
+    & > a {
+      min-width: initial !important;
+      padding: 0 !important;
+      color: black !important;
+    }
   }
 }
 </style>

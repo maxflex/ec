@@ -317,35 +317,6 @@ const lessonItemComponent = (function () {
       "
       density="comfortable"
     />
-    <template #buttons>
-      <div v-if="lessonIds.length" class="d-flex ga-4">
-        <v-btn variant="text" @click="checkboxes = {}">
-          отмена
-        </v-btn>
-        <v-btn color="primary" :width="216" @click="lessonBulkUpdateDialog?.open(lessonIds)">
-          редактировать
-          {{ lessonIds.length }}/{{ lessons.length }}
-        </v-btn>
-      </div>
-      <v-menu v-else-if="isMassEditable">
-        <template #activator="{ props }">
-          <v-btn color="primary" v-bind="props" :width="216">
-            добавить занятия
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item @click="lessonDialog?.create(groupId!, year!)">
-            добавить одно занятие
-          </v-list-item>
-          <v-list-item @click="lessonBulkCreateDialog?.create(groupId!, year!)">
-            добавить несколько занятий
-          </v-list-item>
-        </v-list>
-      </v-menu>
-      <v-fade-transition v-else>
-        <TeethBar v-if="teeth" :items="teeth" />
-      </v-fade-transition>
-    </template>
   </UiFilters>
   <UiNoData v-if="availableYearsLoaded && !selectedYear" />
   <UiLoader v-else-if="loading" />

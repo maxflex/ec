@@ -144,6 +144,7 @@ definePageMeta({ layout: 'login' })
           v-maska:[phoneMask]
           density="comfortable"
           label="Телефон"
+          type="tel"
           :error-messages="errors.number"
           @keydown.enter="onPhoneEnter()"
         />
@@ -254,7 +255,7 @@ definePageMeta({ layout: 'login' })
 
   &__logo {
     text-align: center;
-    padding: 60px 0 30px;
+    padding: 40px 0 30px;
 
     img {
       width: 90px;

@@ -38,6 +38,6 @@ nextTick(loadAvailableYears)
       title: YearLabel[year],
     }))"
     :label="YearLabel[currentAcademicYear()]"
-    :disabled="!loading && availableYears.length <= 1"
+    :disabled="loading || availableYears.length <= 1"
   />
 </template>
