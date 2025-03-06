@@ -2,6 +2,8 @@
 
 namespace App\Enums;
 
+use Illuminate\Support\Collection;
+
 enum Program: string
 {
     case math9 = 'math9';
@@ -133,13 +135,12 @@ enum Program: string
     case geoPract = 'geoPract';
 
     /**
-     * @return array<int, Program>
+     * @return Collection<int, Program>
      */
-    public static function getAllExternal(): array
+    public static function getAllExternal(): Collection
     {
         return collect(Program::cases())
-            ->filter(fn (Program $p) => $p->getDirection() === Direction::external)
-            ->all();
+            ->filter(fn (Program $p) => $p->getDirection() === Direction::external);
     }
 
     public function getDirection(): Direction
