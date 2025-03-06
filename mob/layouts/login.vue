@@ -20,7 +20,7 @@
     // background: linear-gradient(to top, #5a2d22 10%, rgb(var(--v-theme-primary)));
     height: 100vh;
     width: 100vw;
-    overflow: hidden;
+    overflow-x: hidden;
     display: flex;
     align-items: flex-start;
     justify-content: center;
