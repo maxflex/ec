@@ -38,12 +38,13 @@ const menu: Menu = [
     <v-btn
       v-for="m in menu"
       :key="m.to"
+      :ripple="false"
       :icon="m.icon"
       :to="m.to"
       :exact="false"
     >
     </v-btn>
-    <v-btn v-if="user" to="/profile">
+    <v-btn v-if="user" to="/profile" :ripple="false">
       <UiAvatar :item="user" :size="26" />
     </v-btn>
   </v-bottom-navigation>
