@@ -16,11 +16,13 @@ class WebReviewPubResource extends JsonResource
         return extract_fields($this, [
             'text', 'signature', 'rating',
         ], [
-            'exam_scores' => $examScores->map(fn ($es) => extract_fields($es, [
-                'score', 'max_score',
-            ], [
-                'name' => $es->exam->getName(),
-            ])),
+            'exam_scores' => $examScores
+                ->sortByDesc('score')
+                ->map(fn ($es) => extract_fields($es, [
+                    'score', 'max_score',
+                ], [
+                    'name' => $es->exam->getName(),
+                ])),
             'client' => new PersonWithPhotoResource($this->client),
         ]);
     }
