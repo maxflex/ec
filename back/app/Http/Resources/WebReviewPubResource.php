@@ -11,15 +11,15 @@ class WebReviewPubResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $examScore = $this->relationLoaded('examScores') ? $this->examScores?->first() : null;
+        $examScores = $this->relationLoaded('examScores') ? $this->examScores : collect();
 
         return extract_fields($this, [
             'text', 'signature', 'rating',
         ], [
-            'exam_score' => $this->when((bool) $examScore, fn () => extract_fields($examScore, [
+            'exam_scores' => $examScores->map(fn ($es) => extract_fields($es, [
                 'score', 'max_score',
             ], [
-                'name' => $examScore->exam->getName(),
+                'name' => $es->exam->getName(),
             ])),
             'client' => new PersonWithPhotoResource($this->client),
         ]);

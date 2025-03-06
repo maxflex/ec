@@ -17,8 +17,10 @@ class WebReviewController extends Controller
         $grade = intval($request->input('grade'));
         $seed = $request->input('seed');
 
-        if (in_array($grade, [14, 20])) {
+        if ($grade === 20) {
             $query = $this->getReviewsQuery($seed);
+        } elseif ($grade === 14) {
+            $query = $this->getExternalQuery($seed);
         } else {
             $program = Program::tryFrom($subject.$grade);
 
@@ -74,5 +76,19 @@ class WebReviewController extends Controller
             ->whereHas('client.photo')
             ->where('rating', 5)
             ->inRandomOrder($seed);
+    }
+
+    private function getExternalQuery($seed)
+    {
+        $programs = array_column(Program::getAllExternal(), 'value');
+
+        return WebReview::with('client', 'client.photo', 'examScores')
+            ->join('web_review_programs as wrp', fn ($join) => $join
+                ->on('wrp.web_review_id', '=', 'web_reviews.id')
+                ->whereIn('wrp.program', $programs)
+            )
+            ->where('is_published', true)
+            ->inRandomOrder($seed)
+            ->select('web_reviews.*');
     }
 }
