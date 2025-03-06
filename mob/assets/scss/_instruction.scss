@@ -1,0 +1,59 @@
+.instruction {
+  display: flex;
+  min-height: 100vh;
+  &__content {
+    flex: 1;
+    padding: 20px;
+    margin-right: 255px; /* Ensure space for the fixed panel */
+    & > h1 {
+      margin-bottom: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      & > div {
+        display: inline-flex;
+        .v-icon {
+          font-size: 24px !important;
+          color: rgb(148, 157, 177);
+        }
+      }
+    }
+  }
+  &__panel {
+    width: 255px;
+    border-left: 1px solid #e0e0e0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    overflow-y: auto; /* Allow scrolling within the panel if needed */
+    .table {
+      & > a {
+        display: block !important;
+      }
+      & > div {
+        border-bottom: none !important;
+        &:hover {
+          background: none !important;
+        }
+      }
+      .selected {
+        background: rgba(var(--v-border-color), var(--v-hover-opacity)) !important;
+        pointer-events: none;
+      }
+    }
+  }
+  &__sign {
+    margin-top: 36px;
+    padding-bottom: 36px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  &__signs {
+    margin-top: 36px;
+    left: -20px;
+    position: relative;
+    width: calc(100% + 40px);
+  }
+}

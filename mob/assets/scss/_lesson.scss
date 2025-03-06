@@ -1,0 +1,76 @@
+.lesson-item {
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    & > div {
+      &:first-child {
+        width: 130px;
+      }
+    }
+  }
+
+  &__contract-lesson {
+    flex: auto !important;
+    display: flex;
+    gap: 20px;
+    // padding-left: 650px;
+  }
+
+  &__icons {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    & > div {
+      $width: 25px;
+      width: $width;
+      max-width: $width;
+      min-width: $width;
+    }
+  }
+
+  &__inline-scores {
+    display: flex;
+    gap: 4px;
+    top: -1px;
+    position: relative;
+
+    .score {
+      $size: 24px !important;
+      width: $size;
+      height: $size;
+      min-width: $size;
+      min-height: $size;
+    }
+  }
+
+  .table-actionss {
+    top: -16px;
+    right: -1 0px;
+  }
+
+  &__checkbox {
+    position: absolute;
+    right: 0;
+  }
+
+  &__lesson {
+    position: relative;
+  }
+
+  &__extra {
+    font-weight: bold;
+
+    &--exam-date {
+      color: rgb(var(--v-theme-deepOrange));
+      &-reserved {
+        color: #7b1fa2 !important;
+      }
+    }
+
+    &--vacation {
+      color: rgb(var(--v-theme-red));
+    }
+  }
+}
