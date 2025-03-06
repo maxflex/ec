@@ -47,10 +47,6 @@ class WebReviewController extends Controller
                 ->whereColumn('wrp.web_review_id', 'web_reviews.id')
                 ->whereIn('wrp.program', Program::getAllExternal())
             )
-            ->orderByRaw('(
-                select count(*) from exam_score_web_review es_wr
-                where es_wr.web_review_id = web_reviews.id
-            ) desc')
             ->inRandomOrder($seed)
             ->select('web_reviews.*');
     }
