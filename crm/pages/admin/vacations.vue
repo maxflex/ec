@@ -15,6 +15,7 @@ const monthLabels = [
 ]
 const years = Object.keys(YearLabel).map(y => Number(y))
 years.push(years[years.length - 1] + 1) // добавляем слеюующий год
+years.push(years[years.length - 1] + 1) // добавляем слеюующий год
 const loading = ref(true)
 const dates = ref<Record<string, boolean>>({})
 
@@ -22,7 +23,7 @@ onMounted(async () => {
   setTimeout(
     () =>
       document
-        ?.querySelector('.vcalendar--today')
+        ?.querySelector('.calendar--today')
         ?.scrollIntoView({ block: 'center' }),
     100,
   )
@@ -84,44 +85,31 @@ nextTick(loadData)
 </script>
 
 <template>
-  <UiLoader :loading="loading" />
-  <v-card class="vcalendar-card">
-    <div class="vcalendar__header">
+  <v-fade-transition>
+    <UiLoader v-if="loading" style="z-index: 1" />
+  </v-fade-transition>
+  <v-card class="calendar-card">
+    <div class="calendar__header">
       <!-- <v-btn icon @click="dialog = false" variant="flat" :size="48">
           <v-icon icon="$close"></v-icon>
         </v-btn> -->
     </div>
-    <div
-      v-for="year in years"
-      :key="year"
-      class="vcalendar__year"
-    >
+    <div v-for="year in years" :key="year" class="calendar__year">
       <h2>{{ year }}</h2>
-      <div class="vcalendar">
-        <div
-          v-for="month in 12"
-          :key="month"
-          class="vcalendar__month"
-        >
-          <div class="vcalendar__month-label">
-            <span class="text-grey-light">
+      <div class="calendar">
+        <div v-for="month in 12" :key="month" class="calendar__month">
+          <div class="calendar__month-label">
+            <span>
               {{ monthLabels[month - 1] }}
             </span>
           </div>
-          <div class="vcalendar__month-days">
+          <div class="calendar__month-days">
+            <div v-for="x in firstDayOfWeek(year, month)" :key="`x${x}`" class="no-pointer-events" />
             <div
-              v-for="x in firstDayOfWeek(year, month)"
-              :key="`x${x}`"
-              class="no-pointer-events"
-            />
-            <div
-              v-for="day in daysInMonth(year, month)"
-              :key="day"
-              :class="{
-                'vcalendar--today': isToday(year, month, day),
-                'vcalendar--selected': isSelected(year, month, day),
-              }"
-              @click="onClick(year, month, day)"
+              v-for="day in daysInMonth(year, month)" :key="day" :class="{
+                'calendar--today': isToday(year, month, day),
+                'calendar--selected': isSelected(year, month, day),
+              }" @click="onClick(year, month, day)"
             >
               {{ day }}
             </div>
@@ -131,98 +119,3 @@ nextTick(loadData)
     </div>
   </v-card>
 </template>
-
-<style lang="scss">
-.vcalendar {
-  display: flex;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin-top: 40px;
-  color: black;
-  gap: 30px 40px;
-  max-width: 1500px;
-  &-card {
-    align-items: flex-start;
-    height: 100vh;
-    overflow: scroll !important;
-  }
-  &--selected {
-    background: rgb(var(--v-theme-primary)) !important;
-    border-color: rgb(var(--v-theme-primary)) !important;
-  }
-  &--today {
-    color: rgb(var(--v-theme-on-surface));
-    border: 1px solid rgb(var(--v-theme-on-surface));
-  }
-  &__month {
-    &-label {
-      font-weight: bold;
-      padding: 12px;
-      color: rgb(var(--v-theme-grey));
-    }
-    &-days {
-      display: grid;
-      $size: 30px;
-      grid-template-columns: repeat(7, $size);
-      grid-row-gap: 3px;
-      // grid-gap: 1;
-      & > div {
-        height: $size;
-        // width: $size;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        // font-size: 12px;
-        font-weight: 500;
-        border-radius: 50%;
-        // transition: background cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
-        // transition: background linear 0.1s;
-        letter-spacing: 0.0892857143em;
-        text-indent: 0.0892857143em;
-        position: relative;
-        &:hover {
-          background: rgb(var(--v-theme-on-surface-variant));
-        }
-      }
-    }
-  }
-  &__year {
-    margin-bottom: 40px;
-    margin-left: 20px;
-    & > h2 {
-      // position: sticky;
-      // top: 18px;
-      //z-index: 99;
-      margin-left: 10px;
-      display: inline;
-      color: black;
-      font-size: 36px;
-    }
-  }
-  &__header {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    height: 0;
-    display: flex;
-    justify-content: flex-end;
-    width: 100%;
-    & > .v-btn {
-      margin-top: 11px;
-      margin-right: 30px;
-      background: transparent;
-    }
-    // &:before {
-    //   content: '';
-    //   position: absolute;
-    //   left: 0;
-    //   top: 0;
-    //   height: 70px;
-    //   width: 106px;
-    //   background: white;
-    //   box-shadow: 0 0 10px 10px white;
-    // }
-  }
-}
-</style>

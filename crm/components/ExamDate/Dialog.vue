@@ -5,7 +5,7 @@ const emit = defineEmits<{
   saved: [item: ExamDateResource]
 }>()
 
-const { dialog, width } = useDialog('small')
+const dialog = ref(false)
 const item = ref<ExamDateResource>({
   id: newId(),
   dates: [],
@@ -37,12 +37,17 @@ async function save() {
 
 // начиная с какой даты возможен выбор в календаре
 const startYear = 2015
-
-const years = Array.from({ length: currentAcademicYear() - startYear + 2 }, (_, i) => startYear + i)
+const scrolling = ref(true)
+const years = Array.from({ length: currentAcademicYear() - startYear + 4 }, (_, i) => startYear + i)
 
 function open() {
   dialog.value = true
-  setTimeout(() => {
+  scrollToActiveDate()
+}
+
+function scrollToActiveDate() {
+  scrolling.value = true
+  nextTick(() => {
     const selectedElement = document.querySelector('.calendar--selected')
     const todayElement = document.querySelector('.calendar--today')
 
@@ -52,7 +57,8 @@ function open() {
     else if (todayElement) {
       todayElement.scrollIntoView({ block: 'center' })
     }
-  }, 100)
+    scrolling.value = false
+  })
 }
 
 function zeroPad(value: number): string {
@@ -115,18 +121,22 @@ defineExpose({ edit })
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :width="width">
+  <v-dialog v-model="dialog" class="dialog-fullwidth">
+    <v-fade-transition>
+      <UiLoader v-if="scrolling" style="z-index: 1" />
+    </v-fade-transition>
     <v-card class="calendar-card">
       <div class="calendar__header">
-        <!-- <v-btn icon @click="dialog = false" variant="flat" :size="48">
+        <v-btn icon variant="flat" :size="48" @click="dialog = false">
           <v-icon icon="$close"></v-icon>
-        </v-btn> -->
+        </v-btn>
       </div>
       <div
         v-for="y in years"
         :key="y"
         class="calendar__year"
       >
+        <h2>{{ y }}</h2>
         <div class="calendar">
           <div
             v-for="m in 12"
@@ -136,7 +146,6 @@ defineExpose({ edit })
             <div class="calendar__month-label">
               <span class="text-grey-light">
                 {{ MonthLabel[m as Month] }}
-                '{{ y - 2000 }}
               </span>
             </div>
             <div class="calendar__month-days">

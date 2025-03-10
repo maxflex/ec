@@ -1,11 +1,10 @@
-type DialogWidth = 'small' | 'default' | 'medium' | 'large' | 'x-large'
+type DialogWidth = 'small' | 'default' | 'medium' | 'large'
 
 const dialogWidths: { [key in DialogWidth]: number } = {
-  'small': 406,
-  'default': 500,
-  'medium': 800,
-  'large': 1000,
-  'x-large': 1300,
+  small: 406,
+  default: 500,
+  medium: 800,
+  large: 1000,
 }
 
 export default function (w: DialogWidth) {
@@ -21,10 +20,6 @@ export default function (w: DialogWidth) {
     }
     else {
       transition.value = 'dialog-second-transition'
-      // x-large не отодвигаем, не хватает места
-      if (el.clientWidth === dialogWidths['x-large']) {
-        return
-      }
       // @ts-expect-error
       el.style.right = val ? `${width * 0.5}px` : null
     }
