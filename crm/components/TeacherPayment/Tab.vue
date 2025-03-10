@@ -4,15 +4,17 @@ import { apiUrl, type TeacherPaymentResource } from '.'
 
 const { teacherId } = defineProps<{ teacherId: number }>()
 
-const filters = ref<AvailableYearsFilter>({})
-const teacherPaymentDialog = ref<InstanceType<typeof TeacherPaymentDialog>>()
-const availableYearsLoaded = ref(false)
+const filters = ref<AvailableYearsFilter>({
+  year: undefined,
+})
 
-const { items, indexPageData } = useIndex<TeacherPaymentResource, AvailableYearsFilter>(
+const teacherPaymentDialog = ref<InstanceType<typeof TeacherPaymentDialog>>()
+
+const { items, availableYears, indexPageData } = useIndex<TeacherPaymentResource, AvailableYearsFilter>(
   apiUrl,
   filters,
   {
-    instantLoad: false,
+    loadAvailableYears: true,
     staticFilters: {
       teacher_id: teacherId,
     },
@@ -34,22 +36,14 @@ function onUpdated(p: TeacherPaymentResource) {
   }
   itemUpdated('teacher-payments', p.id)
 }
-
-const noData = computed(() => availableYearsLoaded.value && !filters.value.year)
-
-function onAvailableYearsLoaded() {
-  availableYearsLoaded.value = true
-}
 </script>
 
 <template>
-  <UiIndexPage :data="availableYearsLoaded && noData ? { noData, loading: false } : indexPageData">
+  <UiIndexPage :data="indexPageData">
     <template #filters>
-      <AvailableYearsSelector
+      <AvailableYearsSelector2
         v-model="filters.year"
-        mode="teacher-payments"
-        :teacher-id="teacherId"
-        @loaded="onAvailableYearsLoaded()"
+        :items="availableYears"
       />
     </template>
     <template #buttons>

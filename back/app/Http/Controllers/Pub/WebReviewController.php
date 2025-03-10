@@ -55,6 +55,10 @@ class WebReviewController extends Controller
     {
         $program = Program::tryFrom($subject.$grade);
 
+        if (! $program) {
+            return $this->getReviewsQuery($seed);
+        }
+
         // экзамен: 1 или 0
         $cte = DB::table('web_reviews as wr')
             ->selectRaw('

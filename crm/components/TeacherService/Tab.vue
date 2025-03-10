@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import type { TeacherServiceDialog } from '#build/components'
+import { apiUrl, type TeacherServiceResource } from '.'
 
 const { teacherId } = defineProps<{ teacherId: number }>()
 const teacherServiceDialog = ref<InstanceType<typeof TeacherServiceDialog>>()
-const filters = ref<AvailableYearsFilter>({ })
-const availableYearsLoaded = ref(false)
-const { items, indexPageData } = useIndex<TeacherServiceResource, AvailableYearsFilter>(
-  `teacher-services`,
+const filters = ref<AvailableYearsFilter>({
+  year: undefined,
+})
+
+const { items, availableYears, indexPageData } = useIndex<TeacherServiceResource, AvailableYearsFilter>(
+  apiUrl,
   filters,
   {
-    instantLoad: false,
+    loadAvailableYears: true,
     staticFilters: {
       teacher_id: teacherId,
     },
@@ -26,22 +29,14 @@ function onUpdated(p: TeacherServiceResource) {
   }
   itemUpdated('teacher-services', p.id)
 }
-
-const noData = computed(() => availableYearsLoaded.value && !filters.value.year)
-
-function onAvailableYearsLoaded() {
-  availableYearsLoaded.value = true
-}
 </script>
 
 <template>
-  <UiIndexPage :data="availableYearsLoaded && noData ? { noData, loading: false } : indexPageData">
+  <UiIndexPage :data="indexPageData">
     <template #filters>
-      <AvailableYearsSelector
+      <AvailableYearsSelector2
         v-model="filters.year"
-        mode="teacher-services"
-        :teacher-id="teacherId"
-        @loaded="onAvailableYearsLoaded()"
+        :items="availableYears"
       />
     </template>
     <template #buttons>

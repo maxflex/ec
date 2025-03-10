@@ -4,67 +4,39 @@ const { clientId, teacherId } = defineProps<{
   teacherId?: number
 }>()
 
+interface Filters extends AvailableYearsFilter {
+  requirement?: ReportRequirement
+}
+
 // isHeadTeacher
 const { isTeacher } = useAuthStore()
-const selectedYear = ref<Year>()
-const requirement = ref<ReportRequirement>()
-const availableYearsLoaded = ref(false)
 
-const loading = ref(false)
-const items = ref<ReportListResource[]>([])
-
-async function loadData() {
-  loading.value = true
-  const { data } = await useHttp<ApiResponse<ReportListResource>>(
-    `reports`,
-    {
-      params: {
-        client_id: clientId,
-        teacher_id: teacherId,
-        year: selectedYear.value,
-        requirement: requirement.value,
-      },
-    },
-  )
-  if (data.value) {
-    items.value = data.value.data
-  }
-  loading.value = false
-}
-
-const noData = computed(() => {
-  if (selectedYear.value) {
-    return !loading.value && items.value.length === 0
-  }
-  return availableYearsLoaded.value && !selectedYear.value
+const filters = ref<Filters>({
+  year: undefined,
 })
 
-function onAvailableYearsLoaded() {
-  availableYearsLoaded.value = true
-  // подгружаем данные только если есть какой-то год
-  if (selectedYear.value) {
-    loadData()
-    watch(selectedYear, loadData)
-  }
-}
+const { items, availableYears, indexPageData } = useIndex<ReportListResource>(
+  `reports`,
+  filters,
+  {
+    loadAvailableYears: true,
+    staticFilters: {
+      client_id: clientId,
+      teacher_id: teacherId,
+    },
+  },
+)
 </script>
 
 <template>
-  <UiIndexPage :data="{ loading, noData }">
+  <UiIndexPage :data="indexPageData">
     <template #filters>
-      <AvailableYearsSelector
-        v-model="selectedYear"
-        :client-id="clientId"
-        :teacher-id="teacherId"
-        mode="reports"
-        @loaded="onAvailableYearsLoaded()"
-      />
+      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
       <UiClearableSelect
-        v-model="requirement"
+        v-model="filters.requirement"
         label="Тип"
         :items="selectItems(ReportRequirementLabel)"
         density="comfortable"
-        @update:model-value="loadData()"
       />
     </template>
     <ReportListForHeadTeachers v-if="isTeacher" :items="items" />
