@@ -38,7 +38,7 @@ nextTick(loadAvailableYears)
       value: year,
       title: YearLabel[year],
     }))"
-    label="Год"
+    label="Учебный год"
     density="comfortable"
     :disabled="!loading && availableYears.length <= 1"
   />

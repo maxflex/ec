@@ -61,14 +61,14 @@ export function asInt(n: unknown) {
   return Number.parseInt(n as string) || 0
 }
 
-export function selectItems2<T extends string | number>(labelObj: Record<T, string>, allowed?: Array<T>) {
-  const keys = allowed || Object.keys(labelObj).map(key => (Number.isNaN(key) ? key : Number(key)))
+// export function selectItems2<T extends string | number>(labelObj: Record<T, string>, allowed?: Array<T>) {
+//   const keys = allowed || Object.keys(labelObj).map(key => (Number.isNaN(key) ? key : Number(key)))
 
-  return keys.map(value => ({
-    value,
-    title: labelObj[value as T],
-  }))
-}
+//   return keys.map(value => ({
+//     value,
+//     title: labelObj[value as T],
+//   }))
+// }
 
 export function selectItems(obj: object, skip: string[] = []): SelectItems {
   const items = Object.entries(obj)

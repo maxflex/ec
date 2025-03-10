@@ -13,21 +13,20 @@ class AllPayments
 {
     public static function query()
     {
-        $clientPayments = ClientPayment::selectRaw("
+        $clientPayments = ClientPayment::selectRaw('
             client_id, is_return, method, is_confirmed, `date`,
             `company`, `year`, `purpose`, NULL as contract_id,
             `sum`, id, pko_number
-        ");
+        ');
 
-        $contractPayments = ContractPayment::selectRaw("
+        $contractPayments = ContractPayment::selectRaw('
             client_id, is_return, method, is_confirmed, `date`,
             `company`, `year`, NULL as purpose, contract_id,
             `sum`, contract_payments.id, pko_number
-        ")->join('contracts as c', 'c.id', '=', 'contract_id');
+        ')->join('contracts as c', 'c.id', '=', 'contract_id');
 
         $cte = $clientPayments->union($contractPayments);
 
         return DB::table('payments')->withExpression('payments', $cte);
     }
-
 }
