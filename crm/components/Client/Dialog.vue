@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { clone } from 'rambda'
+import ClearableSelect from '../Ui/ClearableSelect.vue'
 
 const emit = defineEmits<{
   created: [c: ClientListResource, requestId?: number]
@@ -280,9 +281,15 @@ defineExpose({ create, edit })
         />
         <v-textarea
           v-model="item.how_found"
-          label="Как вы о нас узнали?"
+          label="Откуда вы о нас узнали?"
           no-resize
           rows="3"
+        />
+        <ClearableSelect
+          v-model="item.heard_about_us"
+          nullify
+          label="Откуда вы о нас узнали?"
+          :items="selectItems(HeardAboutUsLabel)"
         />
         <PhoneEditor v-model="item.parent.phones" edit-telegram />
       </div>

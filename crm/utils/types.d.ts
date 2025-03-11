@@ -57,6 +57,8 @@ declare global {
 
   type Year = keyof typeof YearLabel
 
+  type HeardAboutUs = keyof typeof HeardAboutUsLabel
+
   type Month = keyof typeof MonthLabel
 
   type EntityString = keyof typeof EntityTypeValue
@@ -209,6 +211,7 @@ declare global {
     created_at?: string
     email?: string
     how_found?: string
+    heard_about_us?: HeardAboutUs
     last_seen_at: ?string
     passport: {
       series: ?string

@@ -645,3 +645,10 @@ export const ReportRequirementLabel = {
   required: 'требуется отчёт',
   notRequired: 'пока не требуется',
 } as const
+
+export const HeardAboutUsLabel = {
+  internet: 'интернет',
+  fromClient: 'от клиента сарафан',
+  fromFamily: 'от семьи',
+  other: 'другое',
+} as const

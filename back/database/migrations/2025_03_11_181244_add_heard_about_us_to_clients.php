@@ -10,8 +10,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('clients', function (Blueprint $table) {
-            $table->enum('head_about_us', array_column(HeadAboutUs::cases(), 'value'))
+            $table->enum('heard_about_us', array_column(HeadAboutUs::cases(), 'value'))
                 ->nullable();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('clients', function (Blueprint $table) {
+            $table->dropColumn('heard_about_us');
         });
     }
 };
