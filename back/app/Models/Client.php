@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Contracts\HasTeeth;
 use App\Enums\Direction;
+use App\Enums\HeadAboutUs;
 use App\Enums\LessonStatus;
 use App\Traits\IsSearchable;
 use App\Utils\Teeth;
@@ -23,12 +24,13 @@ class Client extends Person implements HasTeeth
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'branches',
         'head_teacher_id', 'passport', 'is_remote', 'email',
-        'how_found',
+        'how_found', 'heard_about_us',
     ];
 
     protected $casts = [
         'passport' => 'array',
         'is_remote' => 'bool',
+        'heard_about_us' => HeadAboutUs::class,
     ];
 
     public function tests(): HasMany

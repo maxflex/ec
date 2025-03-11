@@ -669,6 +669,11 @@ defineExpose({ edit, newContract, newVersion })
     }
   }
   &__programs {
+    thead {
+      th:last-child {
+        border-right: none !important;
+      }
+    }
     tbody {
       tr {
         &:last-child {

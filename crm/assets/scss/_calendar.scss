@@ -16,9 +16,36 @@
   &--selected {
     background: rgb(var(--v-theme-primary)) !important;
     border-color: rgb(var(--v-theme-primary)) !important;
+
     &-accent {
       background: #ce93d8 !important;
       border-color: #ce93d8 !important;
+    }
+  }
+
+  &-dialog {
+    .dialog {
+      // transition: none !important;
+      box-shadow: none !important;
+
+      .v-overlay__scrim {
+        display: none;
+      }
+
+      &-calendar-transition {
+        &-enter-active {
+          transition-delay: 0ms !important;
+        }
+
+        &-leave-active {
+          transition-delay: 10ms !important;
+        }
+
+        &-enter-from,
+        &-leave-to {
+          transform: translateX(100%) !important;
+        }
+      }
     }
   }
 

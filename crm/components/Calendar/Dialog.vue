@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const emit = defineEmits(['close'])
 const model = defineModel<string | string[]>({ required: true })
-const dialog = ref(false)
+const { dialog, width } = useDialog('calendar')
 
 // начиная с какой даты возможен выбор в календаре
 const startYear = 2015
@@ -85,47 +85,32 @@ defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :transition="false" class="dialog-fullwidth">
+  <v-dialog v-model="dialog" :width="width" transition="dialog-calendar-transition" class="calendar-dialog">
     <v-fade-transition>
       <UiLoader v-if="scrolling" style="z-index: 1" />
     </v-fade-transition>
     <v-card>
       <div class="calendar__header">
-        <v-btn icon variant="flat" :size="48" @click="dialog = false">
-          <v-icon icon="$close"></v-icon>
+        <v-btn icon variant="flat" :size="48" color="white" @click="dialog = false">
+          <v-icon icon="$close" color="black"></v-icon>
         </v-btn>
       </div>
-      <div
-        v-for="y in years"
-        :key="y"
-        class="calendar__year"
-      >
+      <div v-for="y in years" :key="y" class="calendar__year">
         <h2>{{ y }}</h2>
         <div class="calendar">
-          <div
-            v-for="m in 12"
-            :key="m"
-            class="calendar__month"
-          >
+          <div v-for="m in 12" :key="m" class="calendar__month">
             <div class="calendar__month-label">
               <span class="text-grey-light">
                 {{ MonthLabel[m as Month] }}
               </span>
             </div>
             <div class="calendar__month-days">
+              <div v-for="x in firstDayOfWeek(y, m)" :key="`x${x}`" class="no-pointer-events" />
               <div
-                v-for="x in firstDayOfWeek(y, m)"
-                :key="`x${x}`"
-                class="no-pointer-events"
-              />
-              <div
-                v-for="d in daysInMonth(y, m)"
-                :key="d"
-                :class="{
+                v-for="d in daysInMonth(y, m)" :key="d" :class="{
                   'calendar--today': isToday(y, m, d),
                   'calendar--selected': isSelected(y, m, d),
-                }"
-                @click="onClick(y, m, d)"
+                }" @click="onClick(y, m, d)"
               >
                 {{ d }}
               </div>
