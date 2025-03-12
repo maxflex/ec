@@ -668,12 +668,12 @@ defineExpose({ edit, newContract, newVersion })
       }
     }
   }
-  &__programs {
-    thead {
-      th:last-child {
-        border-right: none !important;
-      }
+  thead {
+    th:last-child {
+      border-right: none !important;
     }
+  }
+  &__programs {
     tbody {
       tr {
         &:last-child {

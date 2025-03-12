@@ -108,9 +108,10 @@ function toggleMarked(cr: ClientReviewListResource, value: boolean) {
             @click="clientReviewDialog?.create(cr)"
           />
         </div>
-        <div class="text-right">
+        <div style="flex: initial; width: 80px">
           <span class="text-error">
-            требуется создание
+            требуется <br />
+            создание
           </span>
         </div>
       </template>

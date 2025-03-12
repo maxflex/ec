@@ -1,6 +1,9 @@
 <?php
 
-use App\Http\Controllers\Pub\{RequestsController, SecurityController, TeacherController, WebReviewController};
+use App\Http\Controllers\Pub\RequestsController;
+use App\Http\Controllers\Pub\SecurityController;
+use App\Http\Controllers\Pub\TeacherController;
+use App\Http\Controllers\Pub\WebReviewController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('requests')->controller(RequestsController::class)->group(function () {
@@ -19,3 +22,9 @@ Route::prefix('security')->controller(SecurityController::class)->group(function
 });
 
 Route::apiResource('reviews', WebReviewController::class)->only('index', 'show');
+
+Route::get('macros', function () {
+    return view('macros', [
+        'inn' => '622709802712',
+    ]);
+});

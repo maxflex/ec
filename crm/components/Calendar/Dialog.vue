@@ -91,7 +91,7 @@ defineExpose({ open })
     </v-fade-transition>
     <v-card>
       <div class="calendar__header">
-        <v-btn icon variant="flat" :size="48" color="white" @click="dialog = false">
+        <v-btn icon variant="flat" :size="48" color="primary" @click="dialog = false">
           <v-icon icon="$close" color="black"></v-icon>
         </v-btn>
       </div>

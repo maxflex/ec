@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ClientReviewListResource } from '~/components/ClientReview'
 import type { ClientReviewFilters } from '~/components/ClientReview/Filters.vue'
 
 const filters = ref<ClientReviewFilters>(loadFilters({ }))
