@@ -73,7 +73,7 @@ class ClientReviewController extends Controller
 
     protected function filterExamScoresExists(&$query, $value)
     {
-        $condition = $value ? 'EXISTS' : 'NOT EXISTS';
+        $condition = $value ? 'NOT EXISTS' : 'EXISTS';
 
         $query->whereRaw("$condition (
             select 1 from exam_scores es
