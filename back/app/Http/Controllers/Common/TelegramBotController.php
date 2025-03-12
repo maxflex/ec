@@ -18,7 +18,9 @@ class TelegramBotController extends Controller
 {
     public function __invoke(Request $request)
     {
-        logger('TELEGRAM: '.json_encode($request->all(), JSON_PRETTY_PRINT));
+        if (is_localhost()) {
+            logger('TELEGRAM: '.json_encode($request->all(), JSON_PRETTY_PRINT));
+        }
 
         if ($request->has('my_chat_member')) {
             $botDeleted = $this->onBotDeleted($request);
@@ -65,7 +67,9 @@ class TelegramBotController extends Controller
                     $message = $callback->getMessage();
                     $chatId = $message->getChat()->getId();
                     $data = json_decode($callback->getData());
-                    logger('Callback data:', (array) $data);
+                    if (is_localhost()) {
+                        logger('Callback data:', (array) $data);
+                    }
 
                     /**
                      * Обработка шаблонов

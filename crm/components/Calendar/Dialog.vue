@@ -128,7 +128,7 @@ function onClick(y: number, m: number, d: number) {
 function close() {
   handleLowerDialogOnClose()
   emit('close')
-  setTimeout(() => dialog.value = false, 300)
+  setTimeout(() => dialog.value = false, 500)
 }
 
 defineExpose({ open })

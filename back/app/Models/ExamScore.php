@@ -9,10 +9,12 @@ class ExamScore extends Model
 {
     protected $fillable = [
         'exam', 'year', 'score', 'client_id',
+        'is_published',
     ];
 
     protected $casts = [
         'exam' => Exam::class,
+        'is_published' => 'boolean',
     ];
 
     public static function booted()

@@ -18,34 +18,24 @@ class WebReviewController extends Controller
         $seed = $request->input('seed');
 
         $query = match ($grade) {
-            20 => $this->getReviewsQuery($seed),
-            14 => $this->getExternalQuery($seed),
+            20 => $this->getExternalOrSchoolQuery($seed, false),
+            14 => $this->getExternalOrSchoolQuery($seed, true),
             default => $this->getCoursesQuery($subject, $grade, $seed),
         };
 
         return $this->handleIndexRequest($request, $query, WebReviewPubResource::class);
     }
 
-    /**
-     * Чтобы хоть какие-то отзывы отображались (экстернат, старшая школа)
-     */
-    private function getReviewsQuery($seed)
+    private function getExternalOrSchoolQuery($seed, bool $isExternal)
     {
-        // в старой системе отображались только отзывы с фотками
-        return WebReview::with('client', 'client.photo')
-            ->whereHas('client.photo')
-            ->where('rating', 5)
-            ->inRandomOrder($seed);
-    }
+        $programs = $isExternal ? Program::getAllExternal() : Program::getAllSchool();
 
-    private function getExternalQuery($seed)
-    {
-        return WebReview::with('client', 'client.photo', 'examScores')
+        return WebReview::with('client', 'client.photo')
             ->where('is_published', true)
             ->whereExists(fn ($q) => $q->selectRaw(1)
                 ->from('web_review_programs as wrp')
                 ->whereColumn('wrp.web_review_id', 'web_reviews.id')
-                ->whereIn('wrp.program', Program::getAllExternal())
+                ->whereIn('wrp.program', $programs)
             )
             ->inRandomOrder($seed)
             ->select('web_reviews.*');
@@ -62,23 +52,27 @@ class WebReviewController extends Controller
         // экзамен: 1 или 0
         $cte = DB::table('web_reviews as wr')
             ->selectRaw('
-                wr.id, (
-                    select count(*) from exam_score_web_review es_wr
-                    where es_wr.web_review_id = wr.id
-                ) as cnt
+                wr.id,
+                count(*) as cnt
             ')
+            ->leftJoin('exam_scores as es', fn ($join) => $join
+                ->on('es.client_id', '=', 'wr.client_id')
+                ->where('es.is_published', true)
+            )
             ->groupBy('wr.id')
             ->having('cnt', '<=', 1);
 
-        $query = WebReview::with('client', 'client.photo', 'examScores')
+        $query = WebReview::with('client', 'client.photo')
             ->joinSub($cte, 'cte', 'cte.id', '=', 'web_reviews.id')
+            ->leftJoin('exam_scores as es', fn ($join) => $join
+                ->on('es.client_id', '=', 'web_reviews.client_id')
+                ->where('es.is_published', true)
+            )
             ->join('web_review_programs as wrp', fn ($join) => $join
                 ->on('wrp.web_review_id', '=', 'web_reviews.id')
                 ->where('wrp.program', '=', $program->value)
             )
-            ->leftJoin('exam_score_web_review as es_wr', 'es_wr.web_review_id', '=', 'web_reviews.id')
-            ->leftJoin('exam_scores as es', 'es.id', '=', 'es_wr.exam_score_id')
-            ->where('is_published', true)
+            ->where('web_reviews.is_published', true)
             ->orderByRaw('
                  CASE
                     WHEN es.id IS NULL THEN 0
@@ -98,5 +92,16 @@ class WebReviewController extends Controller
         }
 
         return $query;
+    }
+
+    /**
+     * Чтобы хоть какие-то отзывы отображались (экстернат, старшая школа)
+     */
+    private function getReviewsQuery($seed)
+    {
+        // в старой системе отображались только отзывы с фотками
+        return WebReview::with('client', 'client.photo')
+            ->where('is_published', true)
+            ->inRandomOrder($seed);
     }
 }

@@ -759,7 +759,6 @@ declare global {
 
   interface ExamScoreResource {
     id: number
-    web_review_id: ?number
     year: Year
     client_id?: number
     exam?: Exam
@@ -767,6 +766,7 @@ declare global {
     user?: PersonResource
     client?: PersonResource
     created_at?: string
+    is_published: boolean
   }
 
   interface TelegramMessageResource {

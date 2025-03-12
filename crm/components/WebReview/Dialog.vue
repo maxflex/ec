@@ -9,7 +9,6 @@ const { width, dialog } = useDialog('default')
 
 const item = ref<WebReviewResource>(modelDefaults)
 const itemId = ref<number>()
-const examScores = ref<ExamScoreResource[]>([])
 const saving = ref(false)
 const loading = ref(false)
 
@@ -22,7 +21,6 @@ async function edit(id: number) {
     item.value = data.value
   }
   loading.value = false
-  loadExamScores()
 }
 
 function create(clientId: number) {
@@ -32,7 +30,6 @@ function create(clientId: number) {
     client_id: clientId,
   })
   dialog.value = true
-  loadExamScores()
 }
 
 async function save() {
@@ -58,29 +55,6 @@ async function save() {
   emit('updated', item.value, false)
   dialog.value = false
   setTimeout(() => saving.value = false, 200)
-}
-
-async function loadExamScores() {
-  examScores.value = []
-  const { data } = await useHttp<ApiResponse<ExamScoreResource>>(
-    `exam-scores`,
-    {
-      params: {
-        web_review_id: item.value?.id,
-        client_id: item.value?.client_id,
-      },
-    },
-  )
-  if (data.value) {
-    examScores.value = data.value.data
-  }
-}
-
-function selectExamScore({ id }: ExamScoreResource) {
-  const index = item.value.exam_scores.findIndex(x => x === id)
-  index === -1
-    ? item.value.exam_scores.push(id)
-    : item.value.exam_scores.splice(index, 1)
 }
 
 function onDeleted() {
@@ -173,22 +147,13 @@ defineExpose({ edit, create })
           />
         </div>
 
-        <div class="table table--hover table--separated mt-6">
-          <div
-            v-for="examScore in examScores"
-            :key="examScore.id"
-            class="cursor-pointer"
-            :class="{ 'table-item-disabled': examScore.web_review_id }"
-            @click="selectExamScore(examScore)"
-          >
-            <div class="vfn-1" style="width: 20px">
-              <UiCheckbox :value="!!examScore.web_review_id || item.exam_scores.includes(examScore.id)" />
-            </div>
+        <div class="table table--separated mt-6">
+          <div v-for="es in item.exam_scores" :key="es.id">
             <div style="width: 320px">
-              {{ ExamLabel[examScore.exam!] }}
+              {{ ExamLabel[es.exam] }}
             </div>
             <div>
-              балл: {{ examScore.score }}
+              балл: {{ es.score }}
             </div>
           </div>
         </div>

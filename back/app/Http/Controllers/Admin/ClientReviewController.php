@@ -13,7 +13,7 @@ class ClientReviewController extends Controller
 {
     protected $filters = [
         'equals' => ['client_id', 'teacher_id', 'program', 'is_marked'],
-        'examScores' => ['exam_scores'],
+        'examScoresExists' => ['exam_scores_exists'],
         'webReviewExists' => ['web_review_exists'],
         'year' => ['year'],
     ];
@@ -71,32 +71,14 @@ class ClientReviewController extends Controller
         )");
     }
 
-    protected function filterExamScores(&$query, $status)
+    protected function filterExamScoresExists(&$query, $value)
     {
-        switch ($status) {
-            // нет баллов = по текущему client_ID вообще нет баллов
-            case 'notExists':
-                $query->whereRaw('NOT EXISTS (
-                    select 1 from exam_scores es
-                    where es.client_id = cr.client_id
-                )');
-                break;
+        $condition = $value ? 'EXISTS' : 'NOT EXISTS';
 
-            default:
-                $condition = $status === 'existsAvailable' ? 'EXISTS' : 'NOT EXISTS';
-                $query->whereRaw('EXISTS (
-                    select 1 from exam_scores es
-                    where es.client_id = cr.client_id
-                )')->whereRaw("$condition (
-                    select 1 from exam_scores es
-                    where es.client_id = cr.client_id
-                    and not exists (
-                        select 1 from exam_score_web_review es_wr
-                        where es_wr.exam_score_id = es.id
-                    )
-                )");
-                break;
-        }
+        $query->whereRaw("$condition (
+            select 1 from exam_scores es
+            where es.client_id = cr.client_id
+        )");
     }
 
     protected function filterYear(&$query, $year)

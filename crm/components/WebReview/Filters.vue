@@ -1,13 +1,7 @@
 <script lang="ts" setup>
-const WebReviewExamScoreFilterLabel = {
-  notExists: 'нет доступных баллов',
-  existsNotSelected: 'есть доступные + ничего не выбрано',
-  existsSelected: 'есть доступные + есть выбранные',
-} as const
-
 export interface WebReviewFilters {
   program: Program[]
-  exam_scores?: keyof typeof WebReviewExamScoreFilterLabel
+  // exam_scores: number
   is_published?: number
 }
 
@@ -21,12 +15,12 @@ const model = defineModel<WebReviewFilters>({ required: true })
     label="Программы"
     density="comfortable"
   />
-  <UiClearableSelect
+  <!-- <UiClearableSelect
     v-model="model.exam_scores"
-    :items="selectItems(WebReviewExamScoreFilterLabel)"
+    :items="yesNo('есть баллы', 'нет баллов')"
     density="comfortable"
-    label="Балл"
-  />
+    label="Баллы"
+  /> -->
   <UiClearableSelect
     v-model="model.is_published"
     label="Публикация"

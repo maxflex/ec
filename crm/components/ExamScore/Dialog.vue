@@ -12,8 +12,8 @@ const loading = ref(false)
 const itemId = ref<number>()
 const modelDefaults: ExamScoreResource = {
   id: newId(),
-  web_review_id: null,
   year: currentAcademicYear(),
+  is_published: false,
 }
 const item = ref<ExamScoreResource>(modelDefaults)
 
@@ -104,6 +104,12 @@ defineExpose({ create, edit })
         </div>
         <div>
           <v-text-field v-model="item.score" label="Балл" type="number" hide-spin-buttons />
+        </div>
+        <div>
+          <v-checkbox
+            v-model="item.is_published"
+            label="Опубликован"
+          />
         </div>
       </div>
     </div>

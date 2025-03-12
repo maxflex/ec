@@ -5,8 +5,8 @@ namespace App\Models;
 use App\Enums\Program;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 class WebReview extends Model
 {
@@ -23,14 +23,34 @@ class WebReview extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function examScores(): BelongsToMany
-    {
-        return $this->belongsToMany(ExamScore::class);
-    }
-
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
+    }
+
+    /**
+     * @return Collection<int, ExamScore>
+     */
+    public function getExamScoresAttribute(): Collection
+    {
+        $examScores = collect();
+        foreach ($this->programs as $program) {
+            $exam = $program->getExam();
+            if ($exam === null) {
+                continue;
+            }
+            $examScore = ExamScore::query()
+                ->where('exam', $exam)
+                ->where('is_published', true)
+                ->where('client_id', $this->client_id)
+                ->first();
+            if ($examScore === null) {
+                continue;
+            }
+            $examScores->push($examScore);
+        }
+
+        return $examScores->unique('id');
     }
 
     /**

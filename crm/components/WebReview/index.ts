@@ -1,7 +1,11 @@
 export interface WebReviewResource {
   id: number
   client_id: number
-  exam_scores: number[]
+  exam_scores: Array<{
+    id: number
+    exam: Exam
+    score: number
+  }>
   text: string
   signature: string
   rating: number
