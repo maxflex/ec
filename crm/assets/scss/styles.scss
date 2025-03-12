@@ -500,15 +500,3 @@ tr.hoverable {
     }
   }
 }
-
-.calender-lower-dialog {
-  &:before {
-    content: '';
-    position: absolute;
-    background: white;
-    opacity: 0.6;
-    height: 100%;
-    width: 100%;
-    z-index: 3;
-  }
-}

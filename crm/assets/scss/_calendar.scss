@@ -24,33 +24,52 @@
   }
 
   &-dialog {
-    .v-overlay__scrim {
-      // opacity: 0.6 !important;
-      // background: white !important;
-      display: none;
+    position: absolute;
+    background: white;
+    top: 0;
+    left: 100%;
+    z-index: 3;
+    height: 100vh;
+    overflow-y: scroll;
+    box-shadow:
+      0px 2px 1px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
+      0px 1px 1px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)),
+      0px 1px 3px 0px var(--v-shadow-key-ambient-opacity, rgba(0, 0, 0, 0.12));
+
+    &__header {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      height: 0;
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+
+      & > .v-btn {
+        margin-top: 11px;
+        margin-right: 30px;
+        background: transparent;
+      }
     }
-    .dialog {
-      // transition: none !important;
-      // box-shadow: none !important;
 
-      .v-overlay__scrim {
-        display: none;
-      }
+    &__scrim {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+    }
+  }
 
-      &-calendar-transition {
-        &-enter-active {
-          transition-delay: 0ms !important;
-        }
-
-        &-leave-active {
-          transition-delay: 10ms !important;
-        }
-
-        &-enter-from,
-        &-leave-to {
-          transform: translateX(100%) !important;
-        }
-      }
+  &-open {
+    &:before {
+      content: '';
+      position: absolute;
+      background: white;
+      opacity: 0.6;
+      height: 100%;
+      width: 100%;
+      z-index: 3;
     }
   }
 
@@ -110,31 +129,6 @@
       color: black;
       font-size: 36px;
     }
-  }
-
-  &__header {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    height: 0;
-    display: flex;
-    justify-content: flex-end;
-    width: 100%;
-
-    & > .v-btn {
-      margin-top: 11px;
-      margin-right: 30px;
-      background: transparent;
-    }
-
-    // &:before {
-    //   content: '';
-    //   position: absolute;
-    //   left: 0;
-    //   top: 0;
-    //   background: white;
-    //   box-shadow: 0 0 10px 10px white;
-    // }
   }
 
   .loader {

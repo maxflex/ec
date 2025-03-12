@@ -263,6 +263,20 @@ enum Program: string
         };
     }
 
+    /**
+     * @return Collection<int, Program>
+     */
+    public static function getAllSchool(): Collection
+    {
+        return collect(Program::cases())
+            ->filter(fn (Program $p) => in_array($p->getDirection(), [
+                Direction::school11,
+                Direction::school10,
+                Direction::school9,
+                Direction::school8,
+            ]));
+    }
+
     // /**
     //  * @return array<int, Program>
     //  */
