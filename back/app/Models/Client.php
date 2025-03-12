@@ -24,7 +24,7 @@ class Client extends Person implements HasTeeth
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'branches',
         'head_teacher_id', 'passport', 'is_remote', 'email',
-        'how_found', 'heard_about_us',
+        'heard_about_us',
     ];
 
     protected $casts = [

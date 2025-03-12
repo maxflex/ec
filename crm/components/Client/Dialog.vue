@@ -279,12 +279,6 @@ defineExpose({ create, edit })
           no-resize
           rows="3"
         />
-        <v-textarea
-          v-model="item.how_found"
-          label="Откуда вы о нас узнали?"
-          no-resize
-          rows="3"
-        />
         <ClearableSelect
           v-model="item.heard_about_us"
           nullify

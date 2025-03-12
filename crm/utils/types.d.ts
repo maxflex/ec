@@ -210,7 +210,6 @@ declare global {
     user?: PersonResource
     created_at?: string
     email?: string
-    how_found?: string
     heard_about_us?: HeardAboutUs
     last_seen_at: ?string
     passport: {

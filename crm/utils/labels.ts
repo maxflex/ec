@@ -648,7 +648,7 @@ export const ReportRequirementLabel = {
 
 export const HeardAboutUsLabel = {
   internet: 'интернет',
-  fromClient: 'от клиента сарафан',
-  fromFamily: 'от семьи',
+  fromClient: 'от ученика / знакомых / друзей',
+  fromFamily: 'учился у нас брат / сестра / кто-то из семьи',
   other: 'другое',
 } as const
