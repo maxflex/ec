@@ -16,8 +16,8 @@ const groupDialog = ref<InstanceType<typeof GroupDialog>>()
 const printDialog = ref<InstanceType<typeof PrintDialog>>()
 
 const printOptions: PrintOption[] = [
-  { id: 13, label: 'Договор на преподавателя (ООО)' },
-  { id: 13, label: 'Договор на преподавателя (ИП)' },
+  { id: 13, label: 'Договор на преподавателя (ООО)', company: 'ooo' },
+  { id: 13, label: 'Договор на преподавателя (ИП)', company: 'ip' },
 ]
 
 async function loadData() {
@@ -82,8 +82,9 @@ nextTick(loadData)
             </template>
             <v-list>
               <v-list-item
-                v-for="(p, i) in printOptions" :key="p.label"
-                @click="printDialog?.open(p, { group_id: group.id, text_field: i === 0 ? 'text_ooo' : 'text_ip' })"
+                v-for="p in printOptions"
+                :key="p.label"
+                @click="printDialog?.open(p, { group_id: group.id })"
               >
                 {{ p.label }}
               </v-list-item>

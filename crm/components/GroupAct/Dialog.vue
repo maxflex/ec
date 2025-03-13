@@ -16,8 +16,8 @@ const modelDefaults: GroupActResource = {
 
 const printDialog = ref<InstanceType<typeof PrintDialog>>()
 const printOptions: PrintOption[] = [
-  { id: 12, label: 'Печать ООО' },
-  { id: 12, label: 'Печать ИП' },
+  { id: 12, label: 'Печать ООО', company: 'ooo' },
+  { id: 12, label: 'Печать ИП', company: 'ip' },
 ]
 
 const { dialog, width } = useDialog('default')
@@ -93,11 +93,9 @@ defineExpose({ edit, create })
               </template>
               <v-list>
                 <v-list-item
-                  v-for="p in printOptions" :key="p.label"
-                  @click="printDialog?.open(p, {
-                    act_id: item.id,
-                    text_field: p.label === 'Печать ООО' ? 'text_ooo' : 'text_ip',
-                  })"
+                  v-for="p in printOptions"
+                  :key="p.label"
+                  @click="printDialog?.open(p, { act_id: item.id })"
                 >
                   {{ p.label }}
                 </v-list-item>

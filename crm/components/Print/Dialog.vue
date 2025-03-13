@@ -12,11 +12,25 @@ const cmOptions: EditorConfiguration = {
   lineWrapping: true,
 }
 
-async function open(p: PrintOption, params: object = {}) {
+async function open(p: PrintOption, params: object = {}, skipPreview: boolean = false) {
   text.value = undefined
-  dialog.value = true
-  const { data } = await useHttp<{ text: string }>(`print/${p.id}`, { params })
+  const { data } = await useHttp<{ text: string }>(
+    `print`,
+    {
+      method: 'post',
+      body: {
+        id: p.id,
+        company: p.company,
+        ...params,
+      },
+    },
+  )
   text.value = data.value!.text
+  if (skipPreview) {
+    print()
+    return
+  }
+  dialog.value = true
 }
 
 function print() {

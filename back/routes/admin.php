@@ -111,7 +111,7 @@ Route::middleware(['auth:crm'])->group(function () {
     });
 
     Route::get('search', SearchController::class);
-    Route::apiResource('print', PrintController::class)->only('show');
+    Route::post('print', PrintController::class);
 
     Route::get('people-selector', PeopleSelectorController::class);
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ClientDialog } from '#build/components'
+import type { ClientDialog, PrintSpravkaDialog } from '#build/components'
 
 const tabs = {
   requests: 'заявки',
@@ -20,6 +20,8 @@ const selectedTab = ref<keyof typeof tabs>('requests')
 const route = useRoute()
 const client = ref<ClientResource>()
 const clientDialog = ref<InstanceType<typeof ClientDialog>>()
+
+const printSpravkaDialog = ref<InstanceType<typeof PrintSpravkaDialog>>()
 
 async function loadData() {
   const { data } = await useHttp<ClientResource>(`clients/${route.params.id}`)
@@ -86,6 +88,13 @@ nextTick(loadData)
             :entity-id="client.id"
             :entity-type="EntityTypeValue.client"
           />
+          <v-btn
+            v-bind="props"
+            icon="$print"
+            :size="48"
+            variant="plain"
+            @click="printSpravkaDialog?.open(client.id)"
+          />
           <PreviewMode :client-id="client.id" />
           <v-btn
             icon="$edit"
@@ -122,6 +131,7 @@ nextTick(loadData)
     <Schedule v-else :client-id="client.id" show-teeth program-filter />
     <ClientDialog ref="clientDialog" @updated="onClientUpdated" />
   </template>
+  <PrintSpravkaDialog ref="printSpravkaDialog" />
 </template>
 
 <style lang="scss">

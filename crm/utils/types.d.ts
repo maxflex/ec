@@ -956,6 +956,7 @@ declare global {
   interface PrintOption {
     id: number
     label: string
+    company?: Company
   }
 
   interface PeopleSelectorExtra {
