@@ -42,7 +42,6 @@ class NotifyLkCommand extends Command
             }
             $sentTo->push($parent->id);
             $bar->advance();
-            break;
         }
         $bar->finish();
         $this->line(PHP_EOL);
