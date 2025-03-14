@@ -27,6 +27,7 @@ export interface RequestResource {
   phones: PhoneResource[]
   user?: PersonResource
   client_id: number | null
+  source?: string
   created_at?: string
   associated_clients: ClientWithContractsResource[]
   is_verified?: boolean

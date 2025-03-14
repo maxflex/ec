@@ -127,6 +127,12 @@ defineExpose({ create, edit })
         <div v-if="itemId">
           <ClientSelector v-model="request.client_id" :items="request.associated_clients" />
         </div>
+        <div>
+          <v-text-field
+            v-model="request.source"
+            label="Источник"
+          />
+        </div>
         <PhoneEditor v-model="request.phones" />
         <template v-if="itemId">
           <div>
