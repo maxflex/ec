@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import type { ClientMarkSheetDialog } from '#build/components'
+import { mdiTableEdit } from '@mdi/js'
 import { clone } from 'rambda'
+import { type ClientListResource, type ClientResource, modelDefaults } from '.'
 import ClearableSelect from '../Ui/ClearableSelect.vue'
 
 const emit = defineEmits<{
@@ -7,41 +10,7 @@ const emit = defineEmits<{
   updated: [c: ClientResource]
 }>()
 
-const modelDefaults: ClientResource = {
-  id: newId(),
-  first_name: null,
-  last_name: null,
-  middle_name: null,
-  head_teacher_id: null,
-  branches: [],
-  directions: [],
-  phones: [],
-  photo_url: null,
-  is_remote: false,
-  entity_type: EntityTypeValue.client,
-  passport: {
-    series: null,
-    number: null,
-    birthdate: null,
-  },
-  parent: {
-    id: newId(),
-    first_name: null,
-    last_name: null,
-    middle_name: null,
-    phones: [],
-    passport: {
-      series: null,
-      number: null,
-      address: null,
-      code: null,
-      issued_date: null,
-      issued_by: null,
-      fact_address: null,
-    },
-  },
-}
-
+const markSheetDialog = ref<InstanceType<typeof ClientMarkSheetDialog>>()
 const { dialog, width } = useDialog('medium')
 const item = ref<ClientResource>(clone(modelDefaults))
 const itemId = ref<number>()
@@ -144,6 +113,13 @@ defineExpose({ create, edit })
             api-url="clients"
             @deleted="onDeleted()"
           />
+          <v-btn
+            :size="48"
+            variant="text"
+            @click="markSheetDialog?.open(item.mark_sheet)"
+          >
+            <v-icon :size="24" :icon="mdiTableEdit" class="vf-1"></v-icon>
+          </v-btn>
           <v-btn
             icon="$save"
             :size="48"
@@ -279,14 +255,23 @@ defineExpose({ create, edit })
           no-resize
           rows="3"
         />
-        <ClearableSelect
-          v-model="item.heard_about_us"
-          nullify
-          label="Откуда вы о нас узнали?"
-          :items="selectItems(HeardAboutUsLabel)"
-        />
+        <div class="double-input">
+          <ClearableSelect
+            v-model="item.heard_about_us"
+            nullify
+            label="Откуда вы о нас узнали?"
+            :items="selectItems(HeardAboutUsLabel)"
+          />
+          <ClearableSelect
+            v-model="item.grade"
+            nullify
+            label="Класс"
+            :items="selectItems(GradeLabel)"
+          />
+        </div>
         <PhoneEditor v-model="item.parent.phones" edit-telegram />
       </div>
     </div>
   </v-dialog>
+  <LazyClientMarkSheetDialog ref="markSheetDialog" @save="markSheet => (item.mark_sheet = markSheet)" />
 </template>

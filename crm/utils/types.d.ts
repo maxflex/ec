@@ -71,6 +71,8 @@ declare global {
 
   type LessonScore = keyof typeof LessonScoreLabel
 
+  type Grade = keyof typeof GradeLabel
+
   type ContractEditMode = 'new-contract' | 'new-version' | 'edit'
 
   interface ClientLessonScore {
@@ -119,10 +121,6 @@ declare global {
   }
 
   type PersonWithPhotoResource = PersonResource & HasPhoto
-
-  interface ClientWithContractsResource extends PersonResource {
-    contract_versions: ContractVersionResource[]
-  }
 
   type ResponseErrors = string[]
 
@@ -179,45 +177,6 @@ declare global {
     entity_type: EntityType
     entity_id: number
     is_telegram_disabled: boolean
-  }
-
-  interface ParentResource extends HasName, HasPhones {
-    id: number
-    email?: string
-    last_seen_at: ?string
-    passport: {
-      series: ?string
-      number: ?string
-      address: ?string
-      code: ?string
-      issued_date: ?string
-      issued_by: ?string
-      fact_address: ?string
-    }
-  }
-
-  interface ClientListResource extends PersonResource {
-    directions: Direction[]
-    created_at: string
-  }
-
-  interface ClientResource extends PersonWithPhotoResource, HasPhones {
-    branches: Branch[]
-    directions: Direction[]
-    head_teacher_id: ?number
-    head_teacher?: PersonResource
-    parent: ParentResource
-    is_remote: boolean
-    user?: PersonResource
-    created_at?: string
-    email?: string
-    heard_about_us?: HeardAboutUs
-    last_seen_at: ?string
-    passport: {
-      series: ?string
-      number: ?string
-      birthdate: ?string
-    }
   }
 
   interface CommentResource {

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ClientWithContractsResource } from '.'
+
 const { items } = defineProps<{
   items: ClientWithContractsResource[]
 }>()

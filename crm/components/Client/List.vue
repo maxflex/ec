@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ClientDialog } from '#build/components'
+import type { ClientListResource } from '.'
 
 const { items } = defineProps<{
   items: ClientListResource[]

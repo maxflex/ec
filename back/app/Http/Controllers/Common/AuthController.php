@@ -86,7 +86,9 @@ class AuthController extends Controller
             'link' => ['required', 'string'],
         ]);
 
-        sleep(1);
+        if (is_localhost()) {
+            sleep(1);
+        }
 
         $phone = MagicLink::get($request->input('link'));
 

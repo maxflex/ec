@@ -1,3 +1,4 @@
+import type { ClientWithContractsResource } from '~/components/Client'
 import type { PassResource } from '~/components/Pass'
 
 export interface RequestListResource {
