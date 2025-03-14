@@ -97,8 +97,6 @@ nextTick(loadData)
             variant="plain"
             @click="printSpravkaDialog?.open(client.id)"
           />
-
-          <PreviewMode :client-id="client.id" />
           <v-btn
             :size="48"
             variant="plain"
@@ -106,6 +104,7 @@ nextTick(loadData)
           >
             <v-icon :size="24" :icon="mdiTable" class="vf-1"></v-icon>
           </v-btn>
+          <PreviewMode :client-id="client.id" />
           <v-btn
             icon="$edit"
             :size="48"
