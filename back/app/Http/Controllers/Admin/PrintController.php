@@ -60,45 +60,4 @@ class PrintController extends Controller
 
         return ['text' => $renderedText];
     }
-
-    private function getSpravkaVariables(Request $request)
-    {
-        $request->validate([
-            'year' => ['required', 'numeric', 'min:2015'],
-            'client_id' => ['required', 'numeric', 'exists:clients,id'],
-            'seq' => ['required', 'numeric', 'min:1'],
-            'parent_inn' => ['required', 'numeric'],
-            'date' => ['required', 'date_format:Y-m-d'],
-            'parent_birthday' => ['required', 'date_format:Y-m-d'],
-            'client_passport_issued_at' => ['required', 'date_format:Y-m-d'],
-            'client_inn' => ['required', 'numeric'],
-            'sum' => ['required', 'numeric', 'min:1'],
-            'company' => Rule::enum(Company::class),
-        ]);
-
-        $companyData = $request->input('company') === Company::ip->value ? [
-            'company_name_line_1' => 'Индивидуальный предприниматель Горшкова',
-            'company_name_line_2' => 'Анастасия Александровна',
-            'inn' => '622709802712',
-            'kpp' => '',
-            'last_name' => 'Горшкова',
-            'first_name' => 'Анастасия',
-            'middle_name' => 'Александровна',
-        ] : [
-            'company_name_line_1' => 'Общество с ограниченной ответственностью',
-            'company_name_line_2' => '«ЕГЭ-Центр»',
-            'inn' => '9701038111',
-            'kpp' => '770301001',
-            'last_name' => 'Колбягина',
-            'first_name' => 'Анастасия',
-            'middle_name' => 'Тимофеевна',
-        ];
-
-        return ['text' => view('print.spravka-ip'), [
-            ...$companyData,
-            ...$request->all(),
-            'year' => (string) $request->input('year'),
-            'client' => Client::find($request->client_id),
-        ]];
-    }
 }

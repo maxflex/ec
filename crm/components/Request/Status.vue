@@ -39,14 +39,14 @@ function toggle() {
   &--new {
     --background: rgb(var(--v-theme-error));
   }
-  &--awaiting {
+  &--waiting {
     --background: rgb(var(--v-theme-orange));
   }
   &--finished {
     --background: rgba(var(--v-theme-success));
   }
-  &--trash {
-    --background: rgba(var(--v-theme-gray));
+  &--refused {
+    --background: black;
   }
   &:hover {
     transform: scale(1.2);

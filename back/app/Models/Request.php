@@ -125,7 +125,6 @@ class Request extends Model
     {
         return $query
             ->with('phones')
-            ->where('status', '<>', RequestStatus::trash)
             ->whereRaw('`created_at` >= NOW() - INTERVAL 2 YEAR');
     }
 }

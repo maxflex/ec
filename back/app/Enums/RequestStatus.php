@@ -5,7 +5,7 @@ namespace App\Enums;
 enum RequestStatus: string
 {
     case new = 'new';
-    case awaiting = 'awaiting';
     case finished = 'finished';
-    case trash = 'trash';
+    case waiting = 'waiting';
+    case refused = 'refused';
 }

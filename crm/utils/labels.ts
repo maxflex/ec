@@ -268,9 +268,9 @@ export const BranchLabel = {
 
 export const RequestStatusLabel = {
   new: 'новые',
-  awaiting: 'в ожидании',
   finished: 'выполненные',
-  trash: 'архив',
+  waiting: 'в ожидании',
+  refused: 'отказ',
 } as const
 
 export const WeekdayLabel = {
