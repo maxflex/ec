@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import type { ClientDialog, PrintSpravkaDialog } from '#build/components'
+import type { ClientDialog, ClientMarkSheetDialog, PrintSpravkaDialog } from '#build/components'
+import { mdiTable } from '@mdi/js'
+import type { ClientResource } from '~/components/Client'
 
 const tabs = {
   requests: 'заявки',
@@ -19,6 +21,7 @@ const tabs = {
 const selectedTab = ref<keyof typeof tabs>('requests')
 const route = useRoute()
 const client = ref<ClientResource>()
+const markSheetDialog = ref<InstanceType<typeof ClientMarkSheetDialog>>()
 const clientDialog = ref<InstanceType<typeof ClientDialog>>()
 
 const printSpravkaDialog = ref<InstanceType<typeof PrintSpravkaDialog>>()
@@ -89,13 +92,20 @@ nextTick(loadData)
             :entity-type="EntityTypeValue.client"
           />
           <v-btn
-            v-bind="props"
             icon="$print"
             :size="48"
             variant="plain"
             @click="printSpravkaDialog?.open(client.id)"
           />
+
           <PreviewMode :client-id="client.id" />
+          <v-btn
+            :size="48"
+            variant="plain"
+            @click="markSheetDialog?.open(client)"
+          >
+            <v-icon :size="24" :icon="mdiTable" class="vf-1"></v-icon>
+          </v-btn>
           <v-btn
             icon="$edit"
             :size="48"
@@ -132,6 +142,7 @@ nextTick(loadData)
     <ClientDialog ref="clientDialog" @updated="onClientUpdated" />
   </template>
   <PrintSpravkaDialog ref="printSpravkaDialog" />
+  <ClientMarkSheetDialog ref="markSheetDialog" />
 </template>
 
 <style lang="scss">

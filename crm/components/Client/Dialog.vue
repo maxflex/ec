@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { ClientMarkSheetDialog } from '#build/components'
-import { mdiTableEdit } from '@mdi/js'
 import { clone } from 'rambda'
 import { type ClientListResource, type ClientResource, modelDefaults } from '.'
 import ClearableSelect from '../Ui/ClearableSelect.vue'
@@ -10,7 +8,6 @@ const emit = defineEmits<{
   updated: [c: ClientResource]
 }>()
 
-const markSheetDialog = ref<InstanceType<typeof ClientMarkSheetDialog>>()
 const { dialog, width } = useDialog('medium')
 const item = ref<ClientResource>(clone(modelDefaults))
 const itemId = ref<number>()
@@ -113,13 +110,7 @@ defineExpose({ create, edit })
             api-url="clients"
             @deleted="onDeleted()"
           />
-          <v-btn
-            :size="48"
-            variant="text"
-            @click="markSheetDialog?.open(item.mark_sheet)"
-          >
-            <v-icon :size="24" :icon="mdiTableEdit" class="vf-1"></v-icon>
-          </v-btn>
+
           <v-btn
             icon="$save"
             :size="48"
@@ -273,5 +264,4 @@ defineExpose({ create, edit })
       </div>
     </div>
   </v-dialog>
-  <LazyClientMarkSheetDialog ref="markSheetDialog" @save="markSheet => (item.mark_sheet = markSheet)" />
 </template>

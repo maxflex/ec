@@ -80,3 +80,5 @@ export const modelDefaults: ClientResource = {
     },
   },
 }
+
+export const apiUrl = 'clients'

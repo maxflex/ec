@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import type { MarkSheet } from '.'
-
-const emit = defineEmits<{
-  save: [ms: MarkSheet | null]
-}>()
+import { apiUrl, type ClientResource, type MarkSheet } from '.'
 
 const { dialog, width, transition } = useDialog('default')
 const markSheet = ref<MarkSheet>({})
+let client: ClientResource
 
-function open(ms: MarkSheet | null) {
-  markSheet.value = ms || {}
+function open(cl: ClientResource) {
+  client = cl
+  markSheet.value = cl.mark_sheet || {}
   dialog.value = true
 }
 
@@ -30,8 +28,14 @@ function toggleMark(subject: Subject) {
 }
 
 function save() {
-  emit('save', Object.keys(markSheet.value).length ? markSheet.value : null)
   dialog.value = false
+  useHttp(`${apiUrl}/${client.id}`, {
+    method: 'put',
+    body: {
+      ...client,
+      mark_sheet: Object.keys(markSheet.value).length ? markSheet.value : null,
+    },
+  })
 }
 
 defineExpose({ open })
