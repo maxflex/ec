@@ -480,6 +480,21 @@ export const SubjectLabel = {
   soch: 'сочинение',
 } as const
 
+export const SubjectDativeLabel = {
+  math: 'математике',
+  phys: 'физике',
+  chem: 'химии',
+  bio: 'биологии',
+  inf: 'информатике',
+  rus: 'русскому языку',
+  lit: 'литературе',
+  soc: 'обществознанию',
+  his: 'истории',
+  eng: 'английскому языку',
+  geo: 'географии',
+  soch: 'сочинению',
+} as const
+
 export const SubjectLabelShort = {
   math: 'МАТ',
   phys: 'ФИЗ',

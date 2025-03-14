@@ -417,7 +417,7 @@ declare global {
     students: ClientLessonResource[]
   }
 
-  interface TeacherListResource extends HasName {
+  interface TeacherListResource extends PersonWithPhotoResource {
     status: TeacherStatus
     subjects: Subject[]
     is_published: boolean
@@ -594,7 +594,7 @@ declare global {
     recommendation_comment?: string
     grade: ?LessonScore
     price: ?number
-    teacher?: PersonResource
+    teacher?: TeacherListResource
     client?: PersonResource
     program?: Program
     created_at?: string

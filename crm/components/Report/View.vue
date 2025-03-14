@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const route = useRoute()
-const { user } = useAuthStore()
+// const { user } = useAuthStore()
 const item = ref<ReportResource>()
 
 async function loadData() {
@@ -23,19 +23,24 @@ nextTick(loadData)
 <template>
   <UiLoader v-if="item === undefined" />
   <div v-else class="report-view pa-6">
-    <h2>
+    <!-- <h2>
       Отчёт от {{ formatDate(item.created_at!) }}
-    </h2>
+    </h2> -->
+
+    <v-card variant="tonal" width="fit-content" class="pr-2">
+      <template #prepend>
+        <UiAvatar :item="item.teacher!" :size="80" class="mr-3" />
+      </template>
+      <template #title>
+        {{ formatName(item.teacher!, 'full') }}
+      </template>
+      <template #subtitle>
+        преподаватель по {{ item.teacher!.subjects.map(s => SubjectDativeLabel[s]).join(' и ') }} <br />
+      </template>
+    </v-card>
+
     <div class="report-view__content">
-      <div>
-        <div>
-          Составитель отчёта:
-        </div>
-        <div>
-          <UiPerson :item="item.teacher!" teacher-format="full" />
-        </div>
-      </div>
-      <div>
+      <!-- <div>
         <div>Ученик:</div>
         <div>
           <RouterLink
@@ -48,7 +53,7 @@ nextTick(loadData)
             {{ formatName(item.client!) }}
           </template>
         </div>
-      </div>
+      </div> -->
       <div>
         <div>Программа:</div>
         <div>
@@ -88,15 +93,23 @@ nextTick(loadData)
           {{ item.recommendation_comment }}
         </div>
       </div>
+      <div v-if="item && item.grade">
+        <div class="d-flex align-center ga-2" style="font-size: 20px">
+          Оценка:
+          <span :class="`text-score text-score--${item.grade}`">
+            {{ item.grade }}
+          </span>
+        </div>
+        <div>
+        </div>
+      </div>
     </div>
-  </div>
-  <div v-if="item && item.grade" class="report-view__final">
-    <div class="report-view__final-title">
-      Оценка:
-    </div>
-    <span :class="`text-score text-score--${item.grade}`">
-      {{ item.grade }}
-    </span>
+    <!-- <div class="mt-12">
+      <div></div>
+      <div class="text-gray" style="font-size: 14px">
+        Отчет написан {{ formatDate(item.created_at!) }}
+      </div>
+    </div> -->
   </div>
 </template>
 
@@ -116,23 +129,26 @@ nextTick(loadData)
         &:first-child {
           font-weight: bold;
         }
+        &:last-child {
+          word-wrap: break-word;
+          white-space: pre-wrap;
+        }
       }
     }
   }
-  &__final {
-    flex: initial !important;
-    border-top: 1px solid rgb(var(--v-theme-border));
-    margin-top: 20px;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding-left: 20px;
-    &-title {
-      font-weight: bold;
-      font-size: 20px;
-    }
+
+  .v-card__underlay {
+    background: rgb(var(--v-theme-gray)) !important;
+    // opacity: 1 !important;
+  }
+
+  .v-card-title {
+    font-weight: bold !important;
+    font-size: 16px !important;
+  }
+
+  .v-card-subtitle {
+    font-size: 16px !important;
   }
 }
 </style>
