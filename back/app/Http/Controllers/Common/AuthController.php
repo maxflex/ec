@@ -10,6 +10,7 @@ use App\Http\Resources\AuthResource;
 use App\Http\Resources\PhoneResource;
 use App\Models\Log;
 use App\Models\Phone;
+use App\Utils\MagicLink;
 use App\Utils\Session;
 use App\Utils\VerificationService;
 use Illuminate\Http\Request;
@@ -41,26 +42,58 @@ class AuthController extends Controller
     public function verifyCode(VerifyCodeRequest $request)
     {
         $phone = Phone::find($request->phone_id);
+
+        return $this->logIn($phone);
+    }
+
+    /**
+     * Входим в систему...
+     */
+    private function logIn(Phone $phone, bool $viaMagicLink = false)
+    {
         $token = Session::logIn($phone);
-        $this->logSuccess($phone);
+        $this->logSuccess($phone, $viaMagicLink);
 
         return [
             'user' => new AuthResource($phone->entity),
+            'phone' => new PhoneResource($phone),
             'token' => $token,
         ];
     }
 
-    private function logSuccess(Phone $phone)
+    private function logSuccess(Phone $phone, bool $viaMagicLink = false)
     {
         Log::create([
             'entity_type' => $phone->entity_type,
             'entity_id' => $phone->entity_id,
             'type' => LogType::auth,
             'data' => [
-                'status' => 'success',
+                'phone_id' => $phone->id,
+                'number' => $phone->number,
+                'magic_link' => $viaMagicLink,
                 'ua' => $_SERVER['HTTP_USER_AGENT'],
+                // 'status' => 'success',
             ],
         ]);
+    }
+
+    /**
+     * Вход через ссылку
+     */
+    public function magicLink(Request $request)
+    {
+        $request->validate([
+            'link' => ['required', 'string'],
+        ]);
+
+        sleep(1);
+
+        $phone = MagicLink::get($request->input('link'));
+
+        abort_if(! $phone, 422);
+        abort_if(! Phone::auth($phone->number), 422);
+
+        return $this->logIn($phone, true);
     }
 
     public function user()

@@ -167,6 +167,7 @@ declare global {
 
   interface TokenResponse {
     user: AuthResource
+    phone: PhoneResource
     token: string
   }
 

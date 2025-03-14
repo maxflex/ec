@@ -44,7 +44,7 @@ export const useAuthStore = defineStore('auth', () => {
    * @param t Токен для сохранения в Cookies
    * @param phone Номер телефона для rememberUser
    */
-  function logInAndRemember(u: AuthResource, t: string, phone: PhoneResource) {
+  function logInAndRemember({ token: t, user: u, phone }: TokenResponse) {
     // учителя не сохраняем в rememberUser
     if (u.entity_type !== EntityTypeValue.teacher) {
       rememberUser.value = {

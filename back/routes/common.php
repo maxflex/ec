@@ -18,6 +18,7 @@ Route::post('telegram', TelegramBotController::class);
 Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::post('submit-phone', 'submitPhone');
     Route::post('verify-code', 'verifyCode');
+    Route::post('magic-link', 'magicLink');
 });
 
 Route::post('mango/events/{event}', MangoController::class)
