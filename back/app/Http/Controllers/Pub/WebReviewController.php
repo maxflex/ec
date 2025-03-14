@@ -48,20 +48,18 @@ class WebReviewController extends Controller
             return $this->getReviewsQuery($seed);
         }
 
-        $exam = $program->getExam();
+        $query = WebReview::with('client', 'client.photo');
 
-        $query = WebReview::with('client', 'client.photo')
-            ->leftJoin('exam_scores as es', fn ($join) => $join
-                ->on('es.client_id', '=', 'web_reviews.client_id')
-                ->where('es.is_published', true)
-                ->where('es.exam', $exam->value ?? -1)
-            )
-            ->join('web_review_programs as wrp', fn ($join) => $join
-                ->on('wrp.web_review_id', '=', 'web_reviews.id')
-                ->where('wrp.program', '=', $program->value)
-            )
-            ->where('web_reviews.is_published', true)
-            ->orderByRaw('
+        $exam = $program->getExam();
+        // в 10 классе нет экзаменов
+        if ($exam) {
+            $query
+                ->leftJoin('exam_scores as es', fn ($join) => $join
+                    ->on('es.client_id', '=', 'web_reviews.client_id')
+                    ->where('es.is_published', true)
+                    ->where('es.exam', $exam->value)
+                )
+                ->orderByRaw('
                  CASE
                     WHEN es.id IS NULL THEN 0
                     WHEN (es.score / es.max_score) > 0.8 THEN 6
@@ -71,7 +69,15 @@ class WebReviewController extends Controller
                     WHEN (es.score / es.max_score) > 0.4 THEN 2
                     ELSE 1
                 END DESC
-            ')
+            ');
+        }
+
+        $query
+            ->join('web_review_programs as wrp', fn ($join) => $join
+                ->on('wrp.web_review_id', '=', 'web_reviews.id')
+                ->where('wrp.program', '=', $program->value)
+            )
+            ->where('web_reviews.is_published', true)
             ->inRandomOrder($seed)
             ->select('web_reviews.*');
 
