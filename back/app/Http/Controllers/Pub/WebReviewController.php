@@ -54,7 +54,7 @@ class WebReviewController extends Controller
             ->leftJoin('exam_scores as es', fn ($join) => $join
                 ->on('es.client_id', '=', 'web_reviews.client_id')
                 ->where('es.is_published', true)
-                ->where('es.exam', $exam->value)
+                ->where('es.exam', $exam->value ?? -1)
             )
             ->join('web_review_programs as wrp', fn ($join) => $join
                 ->on('wrp.web_review_id', '=', 'web_reviews.id')
