@@ -93,7 +93,7 @@ class TelegramMessage extends Model
                     replyMarkup: $replyMarkup
                 );
             } catch (Exception $e) {
-                logger('Cant send telegram message', $phone->toArray());
+                logger('Cant send telegram message: '.$e->getMessage());
                 //                "message": "Bad Request: chat not found",
                 //                "exception": "TelegramBot\\Api\\HttpException",
             }
