@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\WebReviewPubResource;
 use App\Models\WebReview;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class WebReviewController extends Controller
 {
@@ -49,24 +48,13 @@ class WebReviewController extends Controller
             return $this->getReviewsQuery($seed);
         }
 
-        // экзамен: 1 или 0
-        $cte = DB::table('web_reviews as wr')
-            ->selectRaw('
-                wr.id,
-                count(*) as cnt
-            ')
-            ->leftJoin('exam_scores as es', fn ($join) => $join
-                ->on('es.client_id', '=', 'wr.client_id')
-                ->where('es.is_published', true)
-            )
-            ->groupBy('wr.id')
-            ->having('cnt', '<=', 1);
+        $exam = $program->getExam();
 
         $query = WebReview::with('client', 'client.photo')
-            ->joinSub($cte, 'cte', 'cte.id', '=', 'web_reviews.id')
             ->leftJoin('exam_scores as es', fn ($join) => $join
                 ->on('es.client_id', '=', 'web_reviews.client_id')
                 ->where('es.is_published', true)
+                ->where('es.exam', $exam->value)
             )
             ->join('web_review_programs as wrp', fn ($join) => $join
                 ->on('wrp.web_review_id', '=', 'web_reviews.id')
