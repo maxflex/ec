@@ -23,9 +23,9 @@ nextTick(loadData)
 <template>
   <UiLoader v-if="item === undefined" />
   <div v-else class="report-view pa-6">
-    <!-- <h2>
+    <h2 class="mb-6">
       Отчёт от {{ formatDate(item.created_at!) }}
-    </h2> -->
+    </h2>
 
     <v-card variant="tonal" width="fit-content" class="pr-2">
       <template #prepend>
@@ -93,8 +93,8 @@ nextTick(loadData)
           {{ item.recommendation_comment }}
         </div>
       </div>
-      <div v-if="item && item.grade">
-        <div class="d-flex align-center ga-2" style="font-size: 20px">
+      <div v-if="item && item.grade" class="report-view__score">
+        <div class="d-flex align-center ga-2">
           Оценка:
           <span :class="`text-score text-score--${item.grade}`">
             {{ item.grade }}
@@ -132,9 +132,15 @@ nextTick(loadData)
         &:last-child {
           word-wrap: break-word;
           white-space: pre-wrap;
+          max-width: 1000px;
         }
       }
     }
+  }
+
+  .text-score,
+  &__score {
+    font-size: 24px;
   }
 
   .v-card__underlay {
