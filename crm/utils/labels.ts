@@ -674,3 +674,8 @@ export const HeardAboutUsLabel = {
   fromFamily: 'учился у нас брат / сестра / кто-то из семьи',
   other: 'другое',
 } as const
+
+export const MetricAggregateLabel = {
+  sum: 'сумма',
+  count: 'кол-во',
+} as const

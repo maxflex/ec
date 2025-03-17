@@ -9,20 +9,20 @@ class LessonMetric extends BaseMetric
 {
     protected $filters = [
         'equals' => ['status', 'is_free', 'is_unplanned'],
-        'direction' => ['direction']
+        'direction' => ['direction'],
     ];
 
-    public static function getQuery()
-    {
-        return Lesson::query();
-    }
-
-    public static function getDateField(): string
+    public function getDateField(): string
     {
         return 'date';
     }
 
-    public static function getQueryValue($query): int
+    public function getQuery()
+    {
+        return Lesson::query();
+    }
+
+    public function getQueryValue($query): int
     {
         return $query->count();
     }
@@ -41,6 +41,6 @@ class LessonMetric extends BaseMetric
         }
         $programs = $programs->unique();
 
-        $query->whereHas('group', fn($q) => $q->whereIn('program', $programs));
+        $query->whereHas('group', fn ($q) => $q->whereIn('program', $programs));
     }
 }

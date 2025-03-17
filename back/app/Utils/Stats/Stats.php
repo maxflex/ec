@@ -2,6 +2,7 @@
 
 namespace App\Utils\Stats;
 
+use App\Utils\Stats\Metrics\MetricInterface;
 use Carbon\Carbon;
 use Exception;
 
@@ -14,10 +15,9 @@ class Stats
         string $mode,
         string $date,
         string $dateFrom,
-        array  $metrics,
-        ?int   $page,
-    ): array
-    {
+        array $metrics,
+        ?int $page,
+    ): array {
         $dateObj = Carbon::createFromFormat('Y-m-d', $date);
         $dateFromObj = Carbon::createFromFormat('Y-m-d', $dateFrom);
 
@@ -33,7 +33,7 @@ class Stats
             // 1st page = -0 day
             $paginate = 30;
             $from = $dateObj->modify(sprintf('-%d %s', ($page - 1) * $paginate, $mode));
-            $to = (clone $from)->modify(sprintf("-%d %s", $paginate - 1, $mode));
+            $to = (clone $from)->modify(sprintf('-%d %s', $paginate - 1, $mode));
             $isLastPage = $to->lessThan($dateFromObj);
         }
 
@@ -54,7 +54,7 @@ class Stats
                 $format = 'Y-m-01';
                 $sqlFormat = '%Y-%m-01';
                 break;
-//            case 'year':
+                //            case 'year':
             default:
                 $format = 'Y-01-01';
                 $dateFromObj->startOf('year');
@@ -71,35 +71,44 @@ class Stats
             $date = $from->format($format);
             $values = [];
             foreach ($metrics as $metric) {
-                $metricClass = join('\\', [__NAMESPACE__, 'Metrics', $metric['metric']]);
-                if (!class_exists($metricClass)) {
+                $metricClass = implode('\\', [__NAMESPACE__, 'Metrics', $metric['metric']]);
+                if (! class_exists($metricClass)) {
                     throw new Exception("Class $metricClass not found");
                 }
-                $values[] = $metricClass::getValue($metric['filters'], $date, $dateFrom, $sqlFormat, $mode);
+                $metricInstance = new $metricClass(
+                    $metric['filters'],
+                    $date,
+                    $dateFrom,
+                    $sqlFormat,
+                    $mode
+                );
+                if (! $metricInstance instanceof MetricInterface) {
+                    throw new Exception("Class $metricClass does not implement MetricInterface");
+                }
+                $values[] = $metricInstance->getValue();
             }
             $data[] = [
                 'date' => $date,
-                'values' => $values
+                'values' => $values,
             ];
             $from->modify("-1 $mode");
         }
 
         return [
             'data' => $data,
-            'is_last_page' => $isLastPage
+            'is_last_page' => $isLastPage,
         ];
     }
 
     public static function getTotals(
         string $date,
         string $dateFrom,
-        array  $metrics
-    ): array
-    {
+        array $metrics
+    ): array {
         $values = [];
         foreach ($metrics as $metric) {
-            $metricClass = join('\\', [__NAMESPACE__, 'Metrics', $metric['metric']]);
-            if (!class_exists($metricClass)) {
+            $metricClass = implode('\\', [__NAMESPACE__, 'Metrics', $metric['metric']]);
+            if (! class_exists($metricClass)) {
                 throw new Exception("Class $metricClass not found");
             }
             $values[] = $metricClass::getTotals($metric['filters'], $date, $dateFrom);

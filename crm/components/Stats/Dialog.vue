@@ -16,7 +16,7 @@ const emit = defineEmits<{
 }>()
 
 const { dialog, width } = useDialog('large')
-const presetDialog = ref()
+const savePresetDialog = ref()
 
 const params = ref<StatsParams>({
   metrics: [],
@@ -103,12 +103,12 @@ defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :width="width">
+  <v-dialog v-model="dialog" :width="width" class="dialog-fullwidth">
     <div class="dialog-wrapper">
       <div class="dialog-header">
         Конфигуратор
         <div class="d-flex ga-4">
-          <v-btn variant="text" @click="presetDialog?.open(params)">
+          <v-btn variant="text" @click="savePresetDialog?.open(params)">
             сохранить пресет
           </v-btn>
           <v-btn color="primary" @click="go()">
@@ -242,7 +242,7 @@ defineExpose({ open })
       </div>
     </div>
   </v-dialog>
-  <StatsPresetDialog ref="presetDialog" @save="onPresetSave" />
+  <StatsSavePresetDialog ref="savePresetDialog" @save="onPresetSave" />
 </template>
 
 <style lang="scss">

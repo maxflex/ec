@@ -1,42 +1,43 @@
-<script lang="ts" setup>
+<script lang="ts">
 interface Filters {
-  year: Year[]
-  program: Program[]
+  aggregate: MetricAggregate
   status: ReportStatus[]
+  direction: Direction[]
 }
 
-const filters = ref<Filters>({
-  year: [],
-  program: [],
+const filterDefaults: Filters = {
+  aggregate: 'sum',
+  direction: [],
   status: [],
-})
+}
 
-defineExpose({ filters })
+export default {
+  label: 'Отчёты',
+  filters: { ...filterDefaults } as Filters,
+}
 </script>
 
-<script lang="ts">
-export default {
-  label: 'Отчёты (кол-во)',
-  filters: {
-    year: [],
-    program: [],
-    status: [],
-  },
-}
+<script lang="ts" setup>
+const filters = ref<Filters>({ ...filterDefaults })
+defineExpose({ filters })
 </script>
 
 <template>
   <div>
-    <UiMultipleSelect v-model="filters.year" :items="selectItems(YearLabel)" label="Учебный год" />
-  </div>
-  <div>
-    <UiMultipleSelect v-model="filters.program" :items="selectItems(ProgramLabel)" label="Программа" />
+    <v-select v-model="filters.aggregate" :items="selectItems(MetricAggregateLabel)" label="Данные" />
   </div>
   <div>
     <UiMultipleSelect
       v-model="filters.status"
       :items="selectItems(ReportStatusLabel)"
-      label="Статус отчёта"
+      label="Статус"
+    />
+  </div>
+  <div>
+    <UiMultipleSelect
+      v-model="filters.direction"
+      :items="selectItems(DirectionLabel)"
+      label="Направление"
     />
   </div>
 </template>

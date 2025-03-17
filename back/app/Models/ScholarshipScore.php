@@ -14,14 +14,14 @@ class ScholarshipScore extends Model
         'year',
         'month',
         'score',
-        'program'
+        'program',
     ];
 
     protected $casts = [
-        'program' => Program::class
+        'program' => Program::class,
     ];
 
-    public static function getQuery()
+    public function getQuery()
     {
         $year = current_academic_year();
         $startFrom = "$year-10-01";
@@ -41,13 +41,13 @@ class ScholarshipScore extends Model
             ->where('l.status', LessonStatus::conducted)
             ->whereRaw("cvp.program LIKE '%External'")
             ->where('l.date', '>', $startFrom)
-            ->selectRaw("
+            ->selectRaw('
                 g.year, l.teacher_id, c.client_id, g.program,
                 MONTH(l.date) AS `month`, count(*) as lessons_count
-            ")
-            ->groupByRaw("
+            ')
+            ->groupByRaw('
                 g.year, `month`, l.teacher_id, c.client_id, g.program
-            ")
+            ')
             ->having('lessons_count', '>=', 3);
 
         return DB::table('s')

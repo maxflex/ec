@@ -11,19 +11,19 @@ class PassLogMetric extends BaseMetric
         'findInSet' => ['entity_type'],
     ];
 
-    public static function getQuery()
-    {
-        return PassLog::query()
-            ->where('entity_type', '<>', Pass::class);
-    }
-
-    public static function getDateField(): string
+    public function getDateField(): string
     {
         return 'used_at';
     }
 
-    public static function getQueryValue($query): int
+    public function getQueryValue($query): int
     {
         return $query->count();
+    }
+
+    public function getQuery()
+    {
+        return PassLog::query()
+            ->where('entity_type', '<>', Pass::class);
     }
 }

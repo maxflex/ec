@@ -12,20 +12,20 @@ class RequestMetric extends BaseMetric
     ];
 
     protected $mapFilters = [
-        'is_from_internet' => 'user_id'
+        'is_from_internet' => 'user_id',
     ];
 
-    public static function getQuery()
-    {
-        return ClientRequest::query();
-    }
-
-    public static function getDateField(): string
+    public function getDateField(): string
     {
         return 'created_at';
     }
 
-    public static function getQueryValue($query): int
+    public function getQuery()
+    {
+        return ClientRequest::query();
+    }
+
+    public function getQueryValue($query): int
     {
         return $query->count();
     }

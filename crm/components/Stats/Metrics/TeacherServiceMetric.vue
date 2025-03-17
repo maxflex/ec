@@ -12,7 +12,7 @@ defineExpose({ filters })
 
 <script lang="ts">
 export default {
-  label: 'Допуслуги препод',
+  label: 'Сумма допуслуг',
   width: 130,
   filters: {
     year: [],
@@ -22,6 +22,6 @@ export default {
 
 <template>
   <div>
-    <UiMultipleSelect v-model="filters.year" :items="selectItems(YearLabel)" label="Учебный год" />
+    <!-- <UiMultipleSelect v-model="filters.year" :items="selectItems(YearLabel)" label="Учебный год" /> -->
   </div>
 </template>

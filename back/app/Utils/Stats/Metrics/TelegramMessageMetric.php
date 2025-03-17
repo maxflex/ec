@@ -12,20 +12,20 @@ class TelegramMessageMetric extends BaseMetric
     ];
 
     protected $mapFilters = [
-        'status' => 'telegram_id'
+        'status' => 'telegram_id',
     ];
 
-    public static function getQuery()
-    {
-        return TelegramMessage::query();
-    }
-
-    public static function getDateField(): string
+    public function getDateField(): string
     {
         return 'created_at';
     }
 
-    public static function getQueryValue($query): int
+    public function getQuery()
+    {
+        return TelegramMessage::query();
+    }
+
+    public function getQueryValue($query): int
     {
         return $query->count();
     }

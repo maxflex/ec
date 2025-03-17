@@ -9,27 +9,27 @@ class AllPaymentsMetric extends BaseMetric
 {
     protected $filters = [
         'equals' => [
-            'company', 'is_confirmed', 'is_return'
+            'company', 'is_confirmed', 'is_return',
         ],
         'type' => ['type'],
         'findInSet' => ['method', 'year'],
     ];
 
-    public static function getQuery()
+    public function getDateField(): string
+    {
+        return 'date';
+    }
+
+    public function getQuery()
     {
         return AllPayments::query();
     }
 
-    public static function getQueryValue($query): int
+    public function getQueryValue($query): int
     {
-        return $query->sum(DB::raw("
+        return $query->sum(DB::raw('
             CAST(IF(is_return = 1, -`sum`, `sum`) AS SIGNED)
-        "));
-    }
-
-    public static function getDateField(): string
-    {
-        return 'date';
+        '));
     }
 
     protected function filterType(&$query, $value)

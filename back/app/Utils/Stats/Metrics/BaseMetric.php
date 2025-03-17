@@ -7,64 +7,63 @@ use Illuminate\Http\Request;
 
 abstract class BaseMetric extends Controller implements MetricInterface
 {
-    public static function getValue(
-        array  $filters,
-        string $date,
-        string $dateFrom,
-        string $sqlFormat,
-        string $mode,
-    ): int
+    public function __construct(
+        public array $filterValues,
+        public string $date,
+        public string $dateFrom,
+        public string $sqlFormat,
+        public string $mode,
+    ) {}
+
+    public function getTotals(): int
     {
-        $request = new Request($filters);
-        $dateField = static::getDateField();
-        $query = static::getQuery();
+        $request = new Request($this->filterValues);
+        $dateField = $this->getDateField();
+        $query = $this->getQuery();
 
-//        if ($mode === 'year') {
-//            [$y, $m, $d] = explode('-', $date);
-//            $query->whereHas('contract', fn($q) => $q->where('year', $y));
-//            $query->whereRaw("`year` = DATE_FORMAT(?, ?)", [
-//                $sqlFormat,
-//                $date,
-//                $sqlFormat,
-//            ]);
-        if ($mode === 'week') {
-            $query->whereRaw("DATE_FORMAT(`$dateField`, ?) = DATE_FORMAT(?, ?)", [
-                $sqlFormat,
-                $date,
-                $sqlFormat,
-            ]);
-        } else {
-            $query->whereRaw("DATE_FORMAT(`$dateField`, ?) = ?", [
-                $sqlFormat,
-                $date,
-            ]);
-        }
+        $query->whereRaw("DATE(`$dateField`) BETWEEN ? AND ?", [
+            $this->dateFrom,
+            $this->date,
+        ]);
 
-        $query->whereRaw("DATE(`$dateField`) >= ?", [$dateFrom]);
+        $this->filter($request, $query);
 
-        $controller = new static();
-        $controller->filter($request, $query);
         return static::getQueryValue($query);
     }
 
-
-    public static function getTotals(
-        array  $filters,
-        string $date,
-        string $dateFrom,
-    ): int
+    public function getValue(): int
     {
-        $request = new Request($filters);
-        $dateField = static::getDateField();
-        $query = static::getQuery();
+        $request = new Request($this->filterValues);
+        $dateField = $this->getDateField();
+        $query = $this->getQuery();
 
-        $query->whereRaw("DATE(`$dateField`) BETWEEN ? AND ?", [
-            $dateFrom,
-            $date,
+        //        if ($mode === 'year') {
+        //            [$y, $m, $d] = explode('-', $date);
+        //            $query->whereHas('contract', fn($q) => $q->where('year', $y));
+        //            $query->whereRaw("`year` = DATE_FORMAT(?, ?)", [
+        //                $sqlFormat,
+        //                $date,
+        //                $sqlFormat,
+        //            ]);
+        if ($this->mode === 'week') {
+            $query->whereRaw("DATE_FORMAT(`$dateField`, ?) = DATE_FORMAT(?, ?)", [
+                $this->sqlFormat,
+                $this->date,
+                $this->sqlFormat,
+            ]);
+        } else {
+            $query->whereRaw("DATE_FORMAT(`$dateField`, ?) = ?", [
+                $this->sqlFormat,
+                $this->date,
+            ]);
+        }
+
+        $query->whereRaw("DATE(`$dateField`) >= ?", [
+            $this->dateFrom,
         ]);
 
-        $controller = new static();
-        $controller->filter($request, $query);
+        $this->filter($request, $query);
+
         return static::getQueryValue($query);
     }
 }

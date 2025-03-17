@@ -132,6 +132,8 @@ onMounted(() => {
 onUnmounted(() => {
   scrollContainer?.removeEventListener('scroll', onScroll)
 })
+
+nextTick(() => statsDialog.value?.open())
 </script>
 
 <template>
