@@ -5,35 +5,27 @@ namespace App\Models;
 use App\Observers\InstructionObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
-use Jfcherng\Diff\{Differ, DiffHelper};
+use Jfcherng\Diff\Differ;
+use Jfcherng\Diff\DiffHelper;
+use tidy;
 
 #[ObservedBy(InstructionObserver::class)]
 class Instruction extends Model
 {
     protected $fillable = [
-        'title', 'text', 'entry_id', 'is_published'
+        'title', 'text', 'entry_id', 'is_published',
     ];
 
     protected $casts = [
-        'is_published' => 'boolean'
+        'is_published' => 'boolean',
     ];
-
-    public function signs()
-    {
-        return $this->hasMany(InstructionSign::class);
-    }
-
-    public function versions()
-    {
-        return $this->hasMany(self::class, 'entry_id', 'entry_id');
-    }
 
     public function scopeWithLastVersionsCte($query, bool $onlyPublished = true)
     {
-        $lastVersionsCte = self::selectRaw(<<<SQL
+        $lastVersionsCte = self::selectRaw('
             entry_id as max_entry_id,
             MAX(id) as max_id
-        SQL)->groupBy('entry_id');
+        ')->groupBy('entry_id');
 
         if ($onlyPublished) {
             $lastVersionsCte->where('is_published', true);
@@ -58,21 +50,21 @@ class Instruction extends Model
                     ->on('instruction_signs.instruction_id', '=', 'instructions.id')
                     ->where('instruction_signs.teacher_id', $teacherId)
             )
-            ->whereRaw(<<<SQL
+            ->whereRaw(<<<'SQL'
                 (instruction_signs.id IS NOT NULL OR last_versions.max_id IS NOT NULL)
             SQL)
             ->selectRaw('instructions.*, signed_at')
-            ->orderByRaw(<<<SQL
+            ->orderByRaw(<<<'SQL'
                 if(signed_at is null, 0, 1) asc,
                 signed_at desc,
                 instructions.created_at desc
             SQL);
     }
 
-    public function scopeLastVersions($query)
+    public function scopeLastVersions($query, bool $onlyPublished = true)
     {
         $query
-            ->withLastVersionsCte()
+            ->withLastVersionsCte($onlyPublished)
             ->join(
                 'last_versions',
                 fn ($join) => $join
@@ -106,10 +98,10 @@ class Instruction extends Model
 
         return [
             'current' => extract_fields($this, [
-                'index', 'title'
+                'index', 'title',
             ]),
             'prev' => extract_fields($prev, [
-                'index', 'title'
+                'index', 'title',
             ]),
             'diff' => DiffHelper::calculate(
                 $prev->getTidyText(),
@@ -121,12 +113,17 @@ class Instruction extends Model
         ];
     }
 
+    public function versions()
+    {
+        return $this->hasMany(self::class, 'entry_id', 'entry_id');
+    }
+
     private function getTidyText()
     {
         $allowedTags = ['a', 'li', 'img'];
-        $result = preg_replace("/<li>/", "<br>– ", $this->text);
-        $result = preg_replace("/<\/li>/", "", $result);
-        $tidy = new \tidy;
+        $result = preg_replace('/<li>/', '<br>– ', $this->text);
+        $result = preg_replace("/<\/li>/", '', $result);
+        $tidy = new tidy;
         $tidy->parseString($result, [
             'indent' => true,
             'output-xhtml' => false,
@@ -136,8 +133,9 @@ class Instruction extends Model
         $tidy->cleanRepair();
         $result = strip_tags((string) $tidy, $allowedTags);
         $result = preg_replace("/[\r\n]+/", "\n", $result);
-        $result = preg_replace("/&gt;/", ">", $result);
-        $result = preg_replace("/&lt;/", "<", $result);
+        $result = preg_replace('/&gt;/', '>', $result);
+        $result = preg_replace('/&lt;/', '<', $result);
+
         return $result;
     }
 
@@ -156,7 +154,7 @@ class Instruction extends Model
      */
     public function getIsLastVersionAttribute()
     {
-        return !$this->versions()
+        return ! $this->versions()
             ->published()
             ->where('id', '>', $this->id)
             ->exists();
@@ -167,25 +165,27 @@ class Instruction extends Model
      */
     public function getIsFirstVersion(int $teacherId)
     {
-        return !Instruction::queryForTeacher($teacherId)
+        return ! Instruction::queryForTeacher($teacherId)
             ->where('entry_id', $this->entry_id)
             ->where('instructions.id', '<', $this->id)
             ->exists();
     }
 
+    /**
+     * Архив если не подписано и не последняя версия
+     */
+    public function isArchive(int $teacherId): bool
+    {
+        return ! $this->is_last_version && $this->getSignedAt($teacherId) === null;
+    }
 
     public function getSignedAt(int $teacherId)
     {
         return $this->signs()->where('teacher_id', $teacherId)->value('signed_at');
     }
 
-    /**
-     * Архив если не подписано и не последняя версия
-     * @param int $teacherId
-     * @return bool
-     */
-    public function isArchive(int $teacherId): bool
+    public function signs()
     {
-        return !$this->is_last_version && $this->getSignedAt($teacherId) === null;
+        return $this->hasMany(InstructionSign::class);
     }
 }

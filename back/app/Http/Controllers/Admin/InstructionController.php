@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 class InstructionController extends Controller
 {
     protected $filters = [
-        'signed' => ['signed']
+        'signed' => ['signed'],
     ];
 
     /**
@@ -30,10 +30,11 @@ class InstructionController extends Controller
             $query = Instruction::query()
                 ->lastVersions(false)
                 ->latest()
-                ->withCount('versions', 'signs');
+                ->withCount(['versions', 'signs']);
             $resource = InstructionListResource::class;
         }
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, $resource);
     }
 
@@ -44,6 +45,7 @@ class InstructionController extends Controller
     {
         $instruction = auth()->user()->instructions()->create($request->all());
         $instruction->loadCount('versions', 'signs');
+
         return new InstructionListResource($instruction);
     }
 
@@ -61,6 +63,7 @@ class InstructionController extends Controller
     public function update(Request $request, Instruction $instruction)
     {
         $instruction->update($request->all());
+
         return new InstructionResource($instruction);
     }
 
