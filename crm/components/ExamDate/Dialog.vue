@@ -126,8 +126,8 @@ defineExpose({ edit })
       <UiLoader v-if="scrolling" style="z-index: 1" />
     </v-fade-transition>
     <v-card class="calendar-card">
-      <div class="calendar__header">
-        <v-btn icon variant="flat" :size="48" @click="dialog = false">
+      <div class="calendar-dialog__header">
+        <v-btn icon variant="flat" :size="48" color="primary" @click="dialog = false">
           <v-icon icon="$close"></v-icon>
         </v-btn>
       </div>
