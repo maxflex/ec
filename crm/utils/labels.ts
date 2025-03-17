@@ -655,13 +655,6 @@ export const ReportStatusLabel = {
   empty: 'пустой отчет',
 } as const
 
-export const GradeLabel = {
-  8: '8 класс',
-  9: '9 класс',
-  10: '10 класс',
-  11: '11 класс',
-} as const
-
 export const ReportRequirementLabel = {
   created: 'созданные',
   required: 'требуется отчёт',

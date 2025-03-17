@@ -71,8 +71,6 @@ declare global {
 
   type LessonScore = keyof typeof LessonScoreLabel
 
-  type Grade = keyof typeof GradeLabel
-
   type ContractEditMode = 'new-contract' | 'new-version' | 'edit'
 
   interface ClientLessonScore {

@@ -253,12 +253,6 @@ defineExpose({ create, edit })
             label="Откуда вы о нас узнали?"
             :items="selectItems(HeardAboutUsLabel)"
           />
-          <ClearableSelect
-            v-model="item.grade"
-            nullify
-            label="Класс"
-            :items="selectItems(GradeLabel)"
-          />
         </div>
         <PhoneEditor v-model="item.parent.phones" edit-telegram />
       </div>

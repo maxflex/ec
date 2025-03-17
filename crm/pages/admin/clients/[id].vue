@@ -97,13 +97,23 @@ nextTick(loadData)
             variant="plain"
             @click="printSpravkaDialog?.open(client.id)"
           />
-          <v-btn
-            :size="48"
-            variant="plain"
+          <div
+            class="badge"
             @click="markSheetDialog?.open(client)"
           >
-            <v-icon :size="24" :icon="mdiTable" class="vf-1"></v-icon>
-          </v-btn>
+            <v-btn
+              v-bind="$attrs"
+              :size="48"
+              variant="plain"
+            >
+              <v-icon :size="24" :icon="mdiTable" class="vf-1"></v-icon>
+            </v-btn>
+            <v-badge
+              v-if="client.mark_sheet"
+              floating
+              :content="Object.keys(client.mark_sheet).length"
+            />
+          </div>
           <PreviewMode :client-id="client.id" />
           <v-btn
             icon="$edit"

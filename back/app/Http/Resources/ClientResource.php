@@ -13,7 +13,7 @@ class ClientResource extends JsonResource
     {
         return extract_fields($this, [
             'first_name', 'last_name', 'middle_name', 'branches',
-            'head_teacher_id', 'photo_url', 'created_at', 'grade',
+            'head_teacher_id', 'photo_url', 'created_at',
             'passport', 'is_remote', 'directions', 'email',
             'last_seen_at', 'heard_about_us', 'mark_sheet',
         ], [

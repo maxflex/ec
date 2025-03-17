@@ -36,7 +36,6 @@ export interface ClientResource extends PersonWithPhotoResource, HasPhones {
   email?: string
   heard_about_us?: HeardAboutUs
   last_seen_at?: string
-  grade?: number | null
   mark_sheet: MarkSheet | null
   passport: {
     series: string | null
