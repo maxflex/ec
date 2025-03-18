@@ -13,7 +13,7 @@ const filterDefaults: Filters = {
 
 export default {
   label: 'Отчеты',
-  filters: { ...filterDefaults } as Filters,
+  filters: { ...filterDefaults },
 }
 </script>
 

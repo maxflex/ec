@@ -25,7 +25,7 @@ const filterDefaults: Filters = {
 
 export default {
   label: 'Заявки',
-  filters: { ...filterDefaults } as Filters,
+  filters: { ...filterDefaults },
 }
 </script>
 

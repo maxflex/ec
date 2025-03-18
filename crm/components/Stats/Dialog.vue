@@ -158,7 +158,12 @@ defineExpose({ open })
             </div>
             <v-table v-if="!showPresets" hover>
               <tbody>
-                <tr v-for="(metric, key) in MetricComponents" :key="key" @click="addMetric(key)">
+                <tr
+                  v-for="(metric, key) in MetricComponents"
+                  :key="key"
+                  :class="{ 'stats-dialog__metric--disabled': metric.special && params.metrics.length !== 2 }"
+                  @click="addMetric(key)"
+                >
                   <td>
                     <div class="stats-dialog__metric">
                       <span>
@@ -315,6 +320,10 @@ defineExpose({ open })
   &__metric {
     display: flex;
     justify-content: space-between;
+    &--disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
   }
   &__selected-metric {
     td {

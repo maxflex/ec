@@ -3,6 +3,7 @@
 namespace App\Utils\Stats;
 
 use App\Utils\Stats\Metrics\MetricInterface;
+use App\Utils\Stats\Metrics\PercentMetric;
 use Carbon\Carbon;
 use Exception;
 
@@ -100,7 +101,11 @@ class Stats
             $dateStr = $windowCurrentDate->format($format);
             $values = [];
             foreach ($metrics as $metric) {
-                $values[] = $metric->getValueForDate($dateStr);
+                if ($metric instanceof PercentMetric) {
+                    $values[] = $metric->getPercent($values);
+                } else {
+                    $values[] = $metric->getValueForDate($dateStr);
+                }
             }
             $data[] = [
                 'date' => $dateStr,
@@ -117,7 +122,11 @@ class Stats
         if ($page === 1) {
             $totals = [];
             foreach ($metrics as $metric) {
-                $totals[] = $metric->getTotalValue();
+                if ($metric instanceof PercentMetric) {
+                    $totals[] = $metric->getPercent($totals);
+                } else {
+                    $totals[] = $metric->getTotalValue();
+                }
             }
             $result['totals'] = $totals;
         }

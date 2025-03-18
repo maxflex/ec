@@ -5,6 +5,7 @@ import ContractMetric from './ContractMetric.vue'
 import ContractPaymentMetric from './ContractPaymentMetric.vue'
 import LessonMetric from './LessonMetric.vue'
 import PassMetric from './PassMetric.vue'
+import PercentMetric from './PercentMetric.vue'
 import ReportMetric from './ReportMetric.vue'
 import RequestMetric from './RequestMetric.vue'
 import TeacherLessonMetric from './TeacherLessonMetric.vue'
@@ -18,9 +19,11 @@ interface MetricComponentParams {
   width: number
   label: string
   filters: object
+  special?: boolean
 }
 
 const MetricComponentsUnsorted = {
+  PercentMetric,
   CallMetric,
   RequestMetric,
   ReportMetric,
@@ -39,8 +42,12 @@ const MetricComponentsUnsorted = {
 } as unknown as { [key: string]: MetricComponentParams }
 
 export const MetricComponents = Object.fromEntries(
-  Object.entries(MetricComponentsUnsorted).sort(
-    ([, a], [, b]) => a.label.localeCompare(b.label),
+  Object.entries(MetricComponentsUnsorted).sort(([, a], [, b]) => {
+    if (b.special) {
+      return -1
+    }
+    return a.label.localeCompare(b.label)
+  },
   ),
 )
 

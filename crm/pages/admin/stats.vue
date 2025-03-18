@@ -124,6 +124,10 @@ function onScroll() {
   }
 }
 
+function isPercentMetric(index: number): boolean {
+  return responseParams.value?.metrics[index].metric === 'PercentMetric'
+}
+
 onMounted(() => {
   scrollContainer = document.documentElement.querySelector('main')
   scrollContainer?.addEventListener('scroll', onScroll)
@@ -177,7 +181,7 @@ nextTick(() => statsDialog.value?.open())
           :class="`text-${responseParams.metrics[index].color}`"
           :style="getWidth(responseParams.metrics[index])"
         >
-          {{ value ? formatPrice(value) : '' }}
+          {{ value ? (isPercentMetric(index) ? value : formatPrice(value)) : '' }}
         </div>
       </div>
       <div class="table-stats__footer table-stats__body">
@@ -191,7 +195,7 @@ nextTick(() => statsDialog.value?.open())
           :class="`text-${responseParams.metrics[index].color}`"
         >
           <span>
-            {{ total ? formatPrice(total) : '' }}
+            {{ total ? (isPercentMetric(index) ? total : formatPrice(total)) : '' }}
           </span>
         </div>
       </div>
