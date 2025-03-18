@@ -16,20 +16,19 @@ class StatsController extends Controller
             'mode' => ['required'],
             'page' => ['nullable', 'numeric'],
             'metrics' => ['required', 'array'],
-            'date' => ['nullable', 'date_format:Y-m-d'],
             'date_from' => ['nullable', 'date_format:Y-m-d'],
+            'date_to' => ['nullable', 'date_format:Y-m-d'],
         ]);
-
         // если дата не установлена, то сегодняшняя
-        $date = $request->date ?? now()->format('Y-m-d');
+        $dateToStr = $request->date_to ?? now()->format('Y-m-d');
 
         // если date_from не установлена, то "год назад"
-        $dateFrom = $request->input('date_from') ?? now()->subYear()->addDay()->format('Y-m-d');
+        $dateFromStr = $request->date_from ?? now()->subYear()->addDay()->format('Y-m-d');
 
-        $result = Stats::getData(
+        $result = Stats::get(
             $request->mode,
-            $date,
-            $dateFrom,
+            $dateFromStr,
+            $dateToStr,
             $request->metrics,
             $request->page,
         );
@@ -37,17 +36,10 @@ class StatsController extends Controller
         // если page не указан, то экспортируем
         if ($request->page === null) {
             $export = new StatsExport($result['data'], $request->metrics);
+
             return Excel::download($export, 'stats.xlsx');
         }
 
-        return [
-            'data' => $result['data'],
-            'is_last_page' => $result['is_last_page'],
-            'totals' => $request->page === 1 ? Stats::getTotals(
-                $date,
-                $dateFrom,
-                $request->metrics,
-            ) : null,
-        ];
+        return $result;
     }
 }

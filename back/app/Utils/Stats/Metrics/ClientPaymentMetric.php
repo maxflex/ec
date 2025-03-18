@@ -2,40 +2,32 @@
 
 namespace App\Utils\Stats\Metrics;
 
-use App\Utils\AllPayments;
+use App\Models\ClientPayment;
 use Illuminate\Support\Facades\DB;
 
-class AllPaymentsMetric extends BaseMetric
+class ClientPaymentMetric extends BaseMetric
 {
     protected $filters = [
         'equals' => [
             'company', 'is_confirmed', 'is_return',
         ],
-        'type' => ['type'],
         'findInSet' => ['method', 'year'],
     ];
 
     public function getDateField(): string
     {
-        return 'date';
+        return '`date`';
     }
 
-    public function getQuery()
+    public function getBaseQuery()
     {
-        return AllPayments::query();
+        return ClientPayment::query();
     }
 
-    public function getQueryValue($query): int
+    public function aggregate($query): int
     {
         return $query->sum(DB::raw('
             CAST(IF(is_return = 1, -`sum`, `sum`) AS SIGNED)
         '));
-    }
-
-    protected function filterType(&$query, $value)
-    {
-        $value
-            ? $query->whereNotNull('contract_id')
-            : $query->whereNull('contract_id');
     }
 }

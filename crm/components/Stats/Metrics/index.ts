@@ -1,14 +1,18 @@
-import AllPaymentsMetric from './AllPaymentsMetric.vue'
+import CallMetric from './CallMetric.vue'
 import ClientLessonMetric from './ClientLessonMetric.vue'
-import ContractVersionMetric from './ContractVersionMetric.vue'
+import ClientPaymentMetric from './ClientPaymentMetric.vue'
+import ContractMetric from './ContractMetric.vue'
+import ContractPaymentMetric from './ContractPaymentMetric.vue'
 import LessonMetric from './LessonMetric.vue'
-import PassLogMetric from './PassLogMetric.vue'
+import PassMetric from './PassMetric.vue'
 import ReportMetric from './ReportMetric.vue'
 import RequestMetric from './RequestMetric.vue'
 import TeacherLessonMetric from './TeacherLessonMetric.vue'
 import TeacherPaymentMetric from './TeacherPaymentMetric.vue'
 import TeacherServiceMetric from './TeacherServiceMetric.vue'
 import TelegramMessageMetric from './TelegramMessageMetric.vue'
+import VisitsMetric from './VisitsMetric.vue'
+import WebReviewMetric from './WebReviewMetric.vue'
 
 interface MetricComponentParams {
   width: number
@@ -17,17 +21,21 @@ interface MetricComponentParams {
 }
 
 const MetricComponentsUnsorted = {
+  CallMetric,
   RequestMetric,
   ReportMetric,
-  AllPaymentsMetric,
+  ClientPaymentMetric,
+  ContractPaymentMetric,
+  ContractMetric,
   TeacherPaymentMetric,
   TeacherServiceMetric,
-  PassLogMetric,
+  PassMetric,
   LessonMetric,
   TeacherLessonMetric,
-  ContractVersionMetric,
   ClientLessonMetric,
   TelegramMessageMetric,
+  VisitsMetric,
+  WebReviewMetric,
 } as unknown as { [key: string]: MetricComponentParams }
 
 export const MetricComponents = Object.fromEntries(
@@ -57,8 +65,8 @@ export interface StatsMetric {
 export interface StatsParams {
   metrics: StatsMetric[]
   mode: StatsMode
-  date: string | null
   date_from: string | null
+  date_to: string | null
 }
 
 export interface StatsPreset {

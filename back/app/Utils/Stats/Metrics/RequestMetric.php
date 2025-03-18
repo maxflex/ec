@@ -7,8 +7,10 @@ use App\Models\Request as ClientRequest;
 class RequestMetric extends BaseMetric
 {
     protected $filters = [
-        'findInSet' => ['direction', 'responsible_user_id'],
+        'findInSet' => ['direction', 'responsible_user_id', 'status'],
+        'equals' => ['is_verified'],
         'null' => ['is_from_internet'],
+        'passes' => ['passes'],
     ];
 
     protected $mapFilters = [
@@ -20,13 +22,34 @@ class RequestMetric extends BaseMetric
         return 'created_at';
     }
 
-    public function getQuery()
+    public function getBaseQuery()
     {
         return ClientRequest::query();
     }
 
-    public function getQueryValue($query): int
+    public function aggregate($query): int
     {
         return $query->count();
+    }
+
+    protected function filterPasses(&$query, $value)
+    {
+        $query->where(function ($q) use ($value) {
+            foreach ($value as $v) {
+                switch ($v) {
+                    case 'hasUsedPasses':
+                        $q->orWhereHas('passes', fn ($q) => $q->whereHas('passLog'));
+                        break;
+
+                    case 'hasPasses':
+                        $q->orWhereHas('passes');
+                        break;
+
+                    case 'noPasses':
+                        $q->orWhereDoesntHave('passes');
+                        break;
+                }
+            }
+        });
     }
 }

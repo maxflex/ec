@@ -14,15 +14,15 @@ class TeacherLessonMetric extends BaseMetric
 
     public function getDateField(): string
     {
-        return 'date';
+        return '`date`';
     }
 
-    public function getQuery()
+    public function getBaseQuery()
     {
         return Lesson::query();
     }
 
-    public function getQueryValue($query): int
+    public function aggregate($query): int
     {
         return $query->sum('price');
     }

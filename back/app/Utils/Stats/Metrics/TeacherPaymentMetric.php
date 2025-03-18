@@ -13,15 +13,15 @@ class TeacherPaymentMetric extends BaseMetric
 
     public function getDateField(): string
     {
-        return 'date';
+        return '`date`';
     }
 
-    public function getQueryValue($query): int
+    public function aggregate($query): int
     {
         return $query->sum('sum');
     }
 
-    public function getQuery()
+    public function getBaseQuery()
     {
         return TeacherPayment::query();
     }

@@ -1,29 +1,27 @@
-<script lang="ts" setup>
+<script lang="ts">
 interface Filters {
   year: Year[]
-  type?: number
-  method: ContractPaymentMethod[]
+  method: ClientPaymentMethod[]
   company?: Company
   is_confirmed?: number
   is_return?: number
 }
 
-const filters = ref<Filters>({
+const filterDefaults: Filters = {
   year: [],
   method: [],
-})
+}
 
-defineExpose({ filters })
+export default {
+  label: 'Платежи по клиентам',
+  width: 130,
+  filters: { ...filterDefaults },
+}
 </script>
 
-<script lang="ts">
-export default {
-  label: 'Платежи клиентов',
-  width: 130,
-  filters: {
-    method: [],
-  },
-}
+<script lang="ts" setup>
+const filters = ref<Filters>({ ...filterDefaults })
+defineExpose({ filters })
 </script>
 
 <template>
@@ -31,17 +29,10 @@ export default {
     <UiMultipleSelect v-model="filters.year" :items="selectItems(YearLabel)" label="Учебный год" />
   </div>
   <div>
-    <UiClearableSelect
-      v-model="filters.type"
-      :items="yesNo('по договорам', 'по клиентам')"
-      label="Тип платежа"
-    />
-  </div>
-  <div>
     <UiMultipleSelect
       v-model="filters.method"
       label="Метод оплаты"
-      :items="selectItems(ContractPaymentMethodLabel)"
+      :items="selectItems(ClientPaymentMethodLabel)"
     />
   </div>
   <div>
@@ -55,7 +46,7 @@ export default {
     <UiClearableSelect
       v-model="filters.is_return"
       label="Операция"
-      :items="yesNo('возвраты', 'платежи', true)"
+      :items="yesNo('возврат', 'платеж', true)"
     />
   </div>
   <div>

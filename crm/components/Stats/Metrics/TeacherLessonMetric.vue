@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script lang="ts">
 const { cancelled, ...LessonStatusLabelWithoutCancelled } = LessonStatusLabel
 
 interface Filters {
@@ -6,21 +6,20 @@ interface Filters {
   direction: Direction[]
 }
 
-const filters = ref<Filters>({
+const filterDefaults: Filters = {
   direction: [],
-})
+}
 
-defineExpose({ filters })
+export default {
+  label: 'Начисления по урокам (преподаватели)',
+  width: 150,
+  filters: { ...filterDefaults },
+}
 </script>
 
-<script lang="ts">
-export default {
-  label: 'Начисления уроки препод',
-  width: 150,
-  filters: {
-    direction: [],
-  },
-}
+<script lang="ts" setup>
+const filters = ref<Filters>({ ...filterDefaults })
+defineExpose({ filters })
 </script>
 
 <template>

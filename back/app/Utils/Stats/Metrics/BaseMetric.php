@@ -9,33 +9,38 @@ abstract class BaseMetric extends Controller implements MetricInterface
 {
     public function __construct(
         public array $filterValues,
-        public string $date,
         public string $dateFrom,
+        public string $dateTo,
         public string $sqlFormat,
         public string $mode,
     ) {}
 
-    public function getTotals(): int
+    public function getTotalValue(): int
     {
-        $request = new Request($this->filterValues);
+        $request = $this->getRequest();
         $dateField = $this->getDateField();
-        $query = $this->getQuery();
+        $query = $this->getBaseQuery();
 
-        $query->whereRaw("DATE(`$dateField`) BETWEEN ? AND ?", [
+        $query->whereRaw("DATE($dateField) BETWEEN ? AND ?", [
             $this->dateFrom,
-            $this->date,
+            $this->dateTo,
         ]);
 
         $this->filter($request, $query);
 
-        return static::getQueryValue($query);
+        return $this->aggregate($query);
     }
 
-    public function getValue(): int
+    protected function getRequest(): Request
     {
-        $request = new Request($this->filterValues);
+        return new Request($this->filterValues);
+    }
+
+    public function getValueForDate(string $date): int
+    {
+        $request = $this->getRequest();
         $dateField = $this->getDateField();
-        $query = $this->getQuery();
+        $query = $this->getBaseQuery();
 
         //        if ($mode === 'year') {
         //            [$y, $m, $d] = explode('-', $date);
@@ -46,24 +51,24 @@ abstract class BaseMetric extends Controller implements MetricInterface
         //                $sqlFormat,
         //            ]);
         if ($this->mode === 'week') {
-            $query->whereRaw("DATE_FORMAT(`$dateField`, ?) = DATE_FORMAT(?, ?)", [
+            $query->whereRaw("DATE_FORMAT($dateField, ?) = DATE_FORMAT(?, ?)", [
                 $this->sqlFormat,
-                $this->date,
+                $date,
                 $this->sqlFormat,
             ]);
         } else {
-            $query->whereRaw("DATE_FORMAT(`$dateField`, ?) = ?", [
+            $query->whereRaw("DATE_FORMAT($dateField, ?) = ?", [
                 $this->sqlFormat,
-                $this->date,
+                $date,
             ]);
         }
 
-        $query->whereRaw("DATE(`$dateField`) >= ?", [
+        $query->whereRaw("DATE($dateField) >= ?", [
             $this->dateFrom,
         ]);
 
         $this->filter($request, $query);
 
-        return static::getQueryValue($query);
+        return $this->aggregate($query);
     }
 }

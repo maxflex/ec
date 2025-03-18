@@ -21,8 +21,8 @@ const savePresetDialog = ref()
 const params = ref<StatsParams>({
   metrics: [],
   mode: 'day',
-  date: null,
   date_from: null,
+  date_to: null,
 })
 
 const showPresets = ref(false)
@@ -37,6 +37,9 @@ function open() {
 }
 
 function go() {
+  if (params.value.metrics.length === 0) {
+    return
+  }
   dialog.value = false
   emit('go', params.value)
 }
@@ -129,14 +132,16 @@ defineExpose({ open })
               </div>
               <div class="double-input-glued">
                 <UiDateInput
-                  v-model="params.date"
+                  v-model="params.date_to"
                   label="Начиная с"
                   today-btn
                   clearable
                   placeholder="текущего дня"
+                  dialog2
                 />
                 <UiDateInput
                   v-model="params.date_from"
+                  dialog2
                   label="по"
                   clearable
                   placeholder="год назад"

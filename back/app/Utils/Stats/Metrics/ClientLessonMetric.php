@@ -10,23 +10,22 @@ use Illuminate\Support\Collection;
 class ClientLessonMetric extends BaseMetric
 {
     protected $filters = [
-        'equals' => ['status'],
         'direction' => ['direction'],
     ];
 
     public function getDateField(): string
     {
-        return 'date';
+        return '`date`';
     }
 
-    public function getQuery()
+    public function getBaseQuery()
     {
         return Lesson::query()
             ->where('status', '<>', LessonStatus::cancelled)
             ->where('is_free', false);
     }
 
-    public function getQueryValue($query): int
+    public function aggregate($query): int
     {
         /** @var Collection<int, Lesson> $lessons */
         $lessons = $query->get();

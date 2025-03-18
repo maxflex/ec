@@ -126,6 +126,7 @@ class Controller extends BaseController
 
     protected function filterFindInSet(&$query, $values, $field)
     {
+        $field = $this->getFieldName($field);
         if (is_array($values)) {
             if (count($values) === 0) {
                 return;

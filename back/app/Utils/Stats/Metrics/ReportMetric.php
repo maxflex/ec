@@ -17,12 +17,16 @@ class ReportMetric extends BaseMetric
         return 'created_at';
     }
 
-    public function getQueryValue($query): int
+    public function aggregate($query): int
     {
+        if (@$this->filterValues['aggregate'] === 'sum') {
+            return $query->sum('price');
+        }
+
         return $query->count();
     }
 
-    public function getQuery()
+    public function getBaseQuery()
     {
         return Report::query();
     }

@@ -9,8 +9,8 @@ const statsDialog = ref<InstanceType<typeof StatsDialog>>()
 const params = ref<StatsParams>({
   metrics: [],
   mode: 'day',
-  date: null,
   date_from: null,
+  date_to: null,
 })
 
 // сохраняем параметры ответа сервера, чтобы не зависеть от текущих параметров

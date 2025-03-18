@@ -1,9 +1,8 @@
 <script lang="ts">
 interface Filters {
-  status: LessonStatus[]
+  status: ClientLessonStatus[]
   direction: Direction[]
   is_free?: boolean
-  is_unplanned?: boolean
 }
 
 const filterDefaults: Filters = {
@@ -12,7 +11,7 @@ const filterDefaults: Filters = {
 }
 
 export default {
-  label: 'Уроки',
+  label: 'Посещения (ученики)',
   filters: { ...filterDefaults },
 }
 </script>
@@ -26,7 +25,7 @@ defineExpose({ filters })
   <div>
     <UiMultipleSelect
       v-model="filters.status"
-      :items="selectItems(LessonStatusLabel)"
+      :items="selectItems(ClientLessonStatusLabel)"
       label="Статус"
     />
   </div>
@@ -42,13 +41,6 @@ defineExpose({ filters })
       v-model="filters.is_free"
       :items="yesNo('да', 'нет')"
       label="Бесплатное"
-    />
-  </div>
-  <div>
-    <UiClearableSelect
-      v-model="filters.is_unplanned"
-      :items="yesNo('да', 'нет')"
-      label="Внеплановое"
     />
   </div>
 </template>
