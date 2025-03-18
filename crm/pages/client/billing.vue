@@ -146,9 +146,13 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
                   </b>
                 </td>
                 <td>
-                  <b>
+                  <b v-if="formatPrice(totalSum(selectedContract.version.payments) - totalSum(selectedContract.payments))">
+
                     {{ formatPrice(totalSum(selectedContract.version.payments) - totalSum(selectedContract.payments)) }}
                     руб.
+                  </b>
+                  <b v-else class="text-gray">
+                    0 руб.
                   </b>
                 </td>
               </tr>
