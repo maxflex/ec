@@ -46,7 +46,7 @@ defineExpose({ filters })
     <UiMultipleSelect
       v-model="filters.status"
       :items="selectItems(RequestStatusLabel)"
-      label="Пропуски в заявке"
+      label="Статус"
     />
   </div>
   <div>
