@@ -16,13 +16,13 @@ const emit = defineEmits<{
 }>()
 
 const { dialog, width } = useDialog('large')
-const presetDialog = ref()
+const savePresetDialog = ref()
 
 const params = ref<StatsParams>({
   metrics: [],
   mode: 'day',
-  date: null,
   date_from: null,
+  date_to: null,
 })
 
 const showPresets = ref(false)
@@ -37,6 +37,9 @@ function open() {
 }
 
 function go() {
+  if (params.value.metrics.length === 0) {
+    return
+  }
   dialog.value = false
   emit('go', params.value)
 }
@@ -103,12 +106,12 @@ defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :width="width">
+  <v-dialog v-model="dialog" :width="width" class="dialog-fullwidth">
     <div class="dialog-wrapper">
       <div class="dialog-header">
         Конфигуратор
         <div class="d-flex ga-4">
-          <v-btn variant="text" @click="presetDialog?.open(params)">
+          <v-btn variant="text" @click="savePresetDialog?.open(params)">
             сохранить пресет
           </v-btn>
           <v-btn color="primary" @click="go()">
@@ -129,14 +132,16 @@ defineExpose({ open })
               </div>
               <div class="double-input-glued">
                 <UiDateInput
-                  v-model="params.date"
+                  v-model="params.date_to"
                   label="Начиная с"
                   today-btn
                   clearable
                   placeholder="текущего дня"
+                  dialog2
                 />
                 <UiDateInput
                   v-model="params.date_from"
+                  dialog2
                   label="по"
                   clearable
                   placeholder="год назад"
@@ -153,7 +158,12 @@ defineExpose({ open })
             </div>
             <v-table v-if="!showPresets" hover>
               <tbody>
-                <tr v-for="(metric, key) in MetricComponents" :key="key" @click="addMetric(key)">
+                <tr
+                  v-for="(metric, key) in MetricComponents"
+                  :key="key"
+                  :class="{ 'stats-dialog__metric--disabled': metric.special && params.metrics.length !== 2 }"
+                  @click="addMetric(key)"
+                >
                   <td>
                     <div class="stats-dialog__metric">
                       <span>
@@ -242,7 +252,7 @@ defineExpose({ open })
       </div>
     </div>
   </v-dialog>
-  <StatsPresetDialog ref="presetDialog" @save="onPresetSave" />
+  <StatsSavePresetDialog ref="savePresetDialog" @save="onPresetSave" />
 </template>
 
 <style lang="scss">
@@ -310,6 +320,10 @@ defineExpose({ open })
   &__metric {
     display: flex;
     justify-content: space-between;
+    &--disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
   }
   &__selected-metric {
     td {

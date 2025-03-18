@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { label = 'Дата', year, disabled, manual } = defineProps<{
+const { label = 'Дата', year, disabled, manual, dialog2 } = defineProps<{
   label?: string
   year?: Year
   disabled?: boolean
@@ -9,6 +9,7 @@ const { label = 'Дата', year, disabled, manual } = defineProps<{
   density?: string
   error?: boolean
   placeholder?: string | null
+  dialog2: boolean
 }>()
 
 const model = defineModel<string | null>({ required: true })
@@ -92,7 +93,15 @@ function onManualKeyup() {
     </a>
   </div>
 
+  <CalendarDialog2
+    v-if="dialog2"
+    ref="calendarDialog"
+    :model-value="model"
+    :year="year"
+    @update:model-value="onDateSelected"
+  />
   <CalendarDialog
+    v-else
     ref="calendarDialog"
     :model-value="model"
     :year="year"

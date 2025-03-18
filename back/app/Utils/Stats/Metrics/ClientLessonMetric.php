@@ -10,31 +10,29 @@ use Illuminate\Support\Collection;
 class ClientLessonMetric extends BaseMetric
 {
     protected $filters = [
-        'equals' => ['status'],
         'direction' => ['direction'],
     ];
 
-    public static function getQuery()
+    public function getDateField(): string
+    {
+        return '`date`';
+    }
+
+    public function getBaseQuery()
     {
         return Lesson::query()
             ->where('status', '<>', LessonStatus::cancelled)
             ->where('is_free', false);
     }
 
-    public static function getDateField(): string
-    {
-        return 'date';
-    }
-
-    public static function getQueryValue($query): int
+    public function aggregate($query): int
     {
         /** @var Collection<int, Lesson> $lessons */
         $lessons = $query->get();
 
         // conducted sum
         $sum = $lessons->where('status', LessonStatus::conducted)->reduce(
-            fn($carry, Lesson $l) => $carry + $l->clientLessons()->sum('price')
-            , 0
+            fn ($carry, Lesson $l) => $carry + $l->clientLessons()->sum('price'), 0
         );
 
         // planned sum
@@ -51,7 +49,6 @@ class ClientLessonMetric extends BaseMetric
         return $sum;
     }
 
-
     protected function filterDirection(&$query, array $values)
     {
         if (count($values) === 0) {
@@ -66,6 +63,6 @@ class ClientLessonMetric extends BaseMetric
         }
         $programs = $programs->unique();
 
-        $query->whereHas('group', fn($q) => $q->whereIn('program', $programs));
+        $query->whereHas('group', fn ($q) => $q->whereIn('program', $programs));
     }
 }

@@ -73,6 +73,8 @@ declare global {
 
   type ContractEditMode = 'new-contract' | 'new-version' | 'edit'
 
+  type MetricAggregate = keyof typeof MetricAggregateLabel
+
   interface ClientLessonScore {
     score: ?LessonScore
     comment: ?string

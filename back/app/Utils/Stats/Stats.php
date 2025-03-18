@@ -2,44 +2,53 @@
 
 namespace App\Utils\Stats;
 
+use App\Utils\Stats\Metrics\MetricInterface;
+use App\Utils\Stats\Metrics\PercentMetric;
 use Carbon\Carbon;
 use Exception;
 
 class Stats
 {
     /**
-     * @return array{data: array, is_last_page: bool}
+     * @return array{
+     *  data: array,
+     *  is_last_page: bool,
+     *  totals: array
+     * }
      */
-    public static function getData(
+    public static function get(
         string $mode,
-        string $date,
-        string $dateFrom,
-        array  $metrics,
-        ?int   $page,
-    ): array
-    {
-        $dateObj = Carbon::createFromFormat('Y-m-d', $date);
-        $dateFromObj = Carbon::createFromFormat('Y-m-d', $dateFrom);
+        string $dateFromStr,
+        string $dateToStr,
+        array $metricsData,
+        ?int $page,
+    ): array {
+        $dateFrom = Carbon::createFromFormat('Y-m-d', $dateFromStr);
+        $dateTo = Carbon::createFromFormat('Y-m-d', $dateToStr);
 
-        /**
-         * Если $page не указан, то без пагинации от $dateFrom до $date
-         * (нужно для экспорта)
-         */
+        // Если $page не указан, то без пагинации (нужно для экспорта)
         if ($page === null) {
-            $from = $dateObj->copy();
-            $to = Carbon::createFromFormat('Y-m-d', $dateFrom);
-            $isLastPage = true;
+            $windowCurrentDate = $dateFrom->copy();
+            $windowTo = $dateTo->copy();
         } else {
-            // 1st page = -0 day
             $paginate = 30;
-            $from = $dateObj->modify(sprintf('-%d %s', ($page - 1) * $paginate, $mode));
-            $to = (clone $from)->modify(sprintf("-%d %s", $paginate - 1, $mode));
-            $isLastPage = $to->lessThan($dateFromObj);
+            $windowTo = $dateTo->copy()->sub($mode, ($page - 1) * $paginate);
+            $windowCurrentDate = $windowTo->copy()->sub($mode, $paginate - 1);
         }
 
         if ($mode === 'week') {
-            $from->startOfWeek();
+            $windowCurrentDate->startOfWeek();
         }
+
+        if (is_localhost()) {
+            logger('dateFrom: '.$dateFrom->format('Y-m-d'));
+            logger('dateTo: '.$dateTo->format('Y-m-d'));
+            logger('windowCurrentDate: '.$windowCurrentDate->format('Y-m-d'));
+            logger('windowTo: '.$windowTo->format('Y-m-d'));
+
+        }
+
+        $isLastPage = $windowCurrentDate->lte($dateFrom);
 
         switch ($mode) {
             case 'day':
@@ -54,57 +63,74 @@ class Stats
                 $format = 'Y-m-01';
                 $sqlFormat = '%Y-%m-01';
                 break;
-//            case 'year':
+                //            case 'year':
             default:
                 $format = 'Y-01-01';
-                $dateFromObj->startOf('year');
+                $dateFrom->startOf('year');
                 $sqlFormat = '%Y-01-01';
                 break;
         }
 
-        /**
-         * from : "2025-06-14"
-         * to : "2025-04-26"
-         */
-        $data = [];
-        while ($from->gte($to) && $from->gte($dateFromObj)) {
-            $date = $from->format($format);
-            $values = [];
-            foreach ($metrics as $metric) {
-                $metricClass = join('\\', [__NAMESPACE__, 'Metrics', $metric['metric']]);
-                if (!class_exists($metricClass)) {
-                    throw new Exception("Class $metricClass not found");
-                }
-                $values[] = $metricClass::getValue($metric['filters'], $date, $dateFrom, $sqlFormat, $mode);
-            }
-            $data[] = [
-                'date' => $date,
-                'values' => $values
-            ];
-            $from->modify("-1 $mode");
-        }
+        /** @var array<int, MetricInterface> $metrics */
+        $metrics = [];
 
-        return [
-            'data' => $data,
-            'is_last_page' => $isLastPage
-        ];
-    }
-
-    public static function getTotals(
-        string $date,
-        string $dateFrom,
-        array  $metrics
-    ): array
-    {
-        $values = [];
-        foreach ($metrics as $metric) {
-            $metricClass = join('\\', [__NAMESPACE__, 'Metrics', $metric['metric']]);
-            if (!class_exists($metricClass)) {
+        foreach ($metricsData as $m) {
+            $metricClass = implode('\\', [__NAMESPACE__, 'Metrics', $m['metric']]);
+            if (! class_exists($metricClass)) {
                 throw new Exception("Class $metricClass not found");
             }
-            $values[] = $metricClass::getTotals($metric['filters'], $date, $dateFrom);
+            $metricInstance = new $metricClass(
+                $m['filters'],
+                $dateFromStr,
+                $dateToStr,
+                $sqlFormat,
+                $mode
+            );
+            if (! $metricInstance instanceof MetricInterface) {
+                throw new Exception("Class $metricClass does not implement MetricInterface");
+            }
+            $metrics[] = $metricInstance;
         }
 
-        return $values;
+        /**
+         * from : "2025-04-26"
+         * to : "2025-06-14"
+         */
+        $data = [];
+        while ($windowCurrentDate->lte($windowTo) && $windowCurrentDate->lte($dateTo)) {
+            $dateStr = $windowCurrentDate->format($format);
+            $values = [];
+            foreach ($metrics as $metric) {
+                if ($metric instanceof PercentMetric) {
+                    $values[] = $metric->getPercent($values);
+                } else {
+                    $values[] = $metric->getValueForDate($dateStr);
+                }
+            }
+            $data[] = [
+                'date' => $dateStr,
+                'values' => $values,
+            ];
+            $windowCurrentDate->modify("+1 $mode");
+        }
+
+        $result = [
+            'data' => array_reverse($data),
+            'is_last_page' => $isLastPage,
+        ];
+
+        if ($page === 1) {
+            $totals = [];
+            foreach ($metrics as $metric) {
+                if ($metric instanceof PercentMetric) {
+                    $totals[] = $metric->getPercent($totals);
+                } else {
+                    $totals[] = $metric->getTotalValue();
+                }
+            }
+            $result['totals'] = $totals;
+        }
+
+        return $result;
     }
 }

@@ -9,8 +9,8 @@ const statsDialog = ref<InstanceType<typeof StatsDialog>>()
 const params = ref<StatsParams>({
   metrics: [],
   mode: 'day',
-  date: null,
   date_from: null,
+  date_to: null,
 })
 
 // сохраняем параметры ответа сервера, чтобы не зависеть от текущих параметров
@@ -124,6 +124,10 @@ function onScroll() {
   }
 }
 
+function isPercentMetric(index: number): boolean {
+  return responseParams.value?.metrics[index].metric === 'PercentMetric'
+}
+
 onMounted(() => {
   scrollContainer = document.documentElement.querySelector('main')
   scrollContainer?.addEventListener('scroll', onScroll)
@@ -132,6 +136,8 @@ onMounted(() => {
 onUnmounted(() => {
   scrollContainer?.removeEventListener('scroll', onScroll)
 })
+
+nextTick(() => statsDialog.value?.open())
 </script>
 
 <template>
@@ -175,7 +181,7 @@ onUnmounted(() => {
           :class="`text-${responseParams.metrics[index].color}`"
           :style="getWidth(responseParams.metrics[index])"
         >
-          {{ value ? formatPrice(value) : '' }}
+          {{ value ? (isPercentMetric(index) ? value : formatPrice(value)) : '' }}
         </div>
       </div>
       <div class="table-stats__footer table-stats__body">
@@ -189,7 +195,7 @@ onUnmounted(() => {
           :class="`text-${responseParams.metrics[index].color}`"
         >
           <span>
-            {{ total ? formatPrice(total) : '' }}
+            {{ total ? (isPercentMetric(index) ? total : formatPrice(total)) : '' }}
           </span>
         </div>
       </div>

@@ -1,26 +1,30 @@
-<script lang="ts" setup>
+<script lang="ts">
 interface Filters {
   status?: number
   template: TelegramTemplate[]
   entity_type: EntityType[]
 }
 
-const filters = ref<Filters>({
+const filterDefaults: Filters = {
   template: [],
   entity_type: [],
+}
+
+const receivers = selectItems({
+  'App\\Models\\Client': 'Ученик',
+  'App\\Models\\ClientParent': 'Представитель',
+  'App\\Models\\Teacher': 'Преподаватель',
 })
 
-defineExpose({ filters })
-</script>
-
-<script lang="ts">
 export default {
   label: 'Сообщения',
-  filters: {
-    template: [],
-    entity_type: [],
-  },
+  filters: { ...filterDefaults },
 }
+</script>
+
+<script lang="ts" setup>
+const filters = ref<Filters>({ ...filterDefaults })
+defineExpose({ filters })
 </script>
 
 <template>
@@ -34,15 +38,15 @@ export default {
   <div>
     <UiMultipleSelect
       v-model="filters.template"
-      label="Шаблон"
+      label="Шаблон отправки"
       :items="selectItems(TelegramTemplateLabel)"
     />
   </div>
   <div>
     <UiMultipleSelect
       v-model="filters.entity_type"
-      label="Получатели"
-      :items="selectItems(EntityTypeLabel)"
+      label="Получатель"
+      :items="receivers"
     />
   </div>
 </template>

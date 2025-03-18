@@ -2,26 +2,49 @@
 
 namespace App\Utils\Stats\Metrics;
 
+use App\Enums\Direction;
 use App\Models\Report;
 
 class ReportMetric extends BaseMetric
 {
     protected $filters = [
         'findInSet' => ['year', 'program', 'status'],
+        'direction' => ['direction'],
     ];
 
-    public static function getQuery()
-    {
-        return Report::query();
-    }
-
-    public static function getDateField(): string
+    public function getDateField(): string
     {
         return 'created_at';
     }
 
-    public static function getQueryValue($query): int
+    public function aggregate($query): int
     {
+        if (@$this->filterValues['aggregate'] === 'sum') {
+            return $query->sum('price');
+        }
+
         return $query->count();
+    }
+
+    public function getBaseQuery()
+    {
+        return Report::query();
+    }
+
+    protected function filterDirection(&$query, array $values)
+    {
+        if (count($values) === 0) {
+            return;
+        }
+
+        $programs = collect();
+        foreach ($values as $directionString) {
+            $programs = $programs->concat(
+                Direction::from($directionString)->toPrograms()
+            );
+        }
+        $programs = $programs->unique();
+
+        $query->whereIn('program', $programs);
     }
 }

@@ -1,16 +1,19 @@
 <script lang="ts">
 interface Filters {
-  // year: Year[]
-  method: TeacherPaymentMethod[]
+  year: Year[]
+  method: ContractPaymentMethod[]
+  company?: Company
   is_confirmed?: number
+  is_return?: number
 }
 
 const filterDefaults: Filters = {
+  year: [],
   method: [],
 }
 
 export default {
-  label: 'Платежи по преподавателям',
+  label: 'Платежи по договорам',
   width: 130,
   filters: { ...filterDefaults },
 }
@@ -22,14 +25,28 @@ defineExpose({ filters })
 </script>
 
 <template>
-  <!-- <div>
+  <div>
     <UiMultipleSelect v-model="filters.year" :items="selectItems(YearLabel)" label="Учебный год" />
-  </div> -->
+  </div>
   <div>
     <UiMultipleSelect
       v-model="filters.method"
       label="Метод оплаты"
-      :items="selectItems(TeacherPaymentMethodLabel)"
+      :items="selectItems(ContractPaymentMethodLabel)"
+    />
+  </div>
+  <div>
+    <UiClearableSelect
+      v-model="filters.company"
+      label="Компания"
+      :items="selectItems(CompanyLabel)"
+    />
+  </div>
+  <div>
+    <UiClearableSelect
+      v-model="filters.is_return"
+      label="Операция"
+      :items="yesNo('возврат', 'платеж', true)"
     />
   </div>
   <div>

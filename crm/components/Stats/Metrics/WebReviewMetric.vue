@@ -3,12 +3,10 @@ interface Filters {
 }
 
 const filterDefaults: Filters = {
-
 }
 
 export default {
-  label: 'Сумма допуслуг',
-  width: 130,
+  label: 'Отзывы',
   filters: { ...filterDefaults },
 }
 </script>
@@ -19,7 +17,5 @@ defineExpose({ filters })
 </script>
 
 <template>
-  <div>
-    <!-- <UiMultipleSelect v-model="filters.year" :items="selectItems(YearLabel)" label="Учебный год" /> -->
-  </div>
+  <div></div>
 </template>

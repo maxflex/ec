@@ -1,33 +1,33 @@
-<script lang="ts" setup>
+<script lang="ts">
 interface Filters {
-  status?: LessonStatus
+  status: LessonStatus[]
+  direction: Direction[]
   is_free?: boolean
   is_unplanned?: boolean
-  direction: Direction[]
 }
 
-const filters = ref<Filters>({
+const filterDefaults: Filters = {
+  status: [],
   direction: [],
-})
+}
 
-defineExpose({ filters })
-</script>
-
-<script lang="ts">
 export default {
   label: 'Уроки',
-  filters: {
-    direction: [],
-  },
+  filters: { ...filterDefaults },
 }
+</script>
+
+<script lang="ts" setup>
+const filters = ref<Filters>({ ...filterDefaults })
+defineExpose({ filters })
 </script>
 
 <template>
   <div>
-    <UiClearableSelect
+    <UiMultipleSelect
       v-model="filters.status"
       :items="selectItems(LessonStatusLabel)"
-      label="Статус урока"
+      label="Статус"
     />
   </div>
   <div>

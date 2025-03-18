@@ -2,17 +2,14 @@
 
 namespace App\Utils\Stats\Metrics;
 
-use App\Models\TelegramMessage;
+use App\Models\Call;
 
-class TelegramMessageMetric extends BaseMetric
+class CallMetric extends BaseMetric
 {
     protected $filters = [
-        'null' => ['status'],
-        'findInSet' => ['template', 'entity_type'],
-    ];
-
-    protected $mapFilters = [
-        'status' => 'telegram_id',
+        'findInSet' => ['user_id'],
+        'equals' => ['type'],
+        'null' => ['answered_at'],
     ];
 
     public function getDateField(): string
@@ -22,7 +19,7 @@ class TelegramMessageMetric extends BaseMetric
 
     public function getBaseQuery()
     {
-        return TelegramMessage::query();
+        return Call::query();
     }
 
     public function aggregate($query): int

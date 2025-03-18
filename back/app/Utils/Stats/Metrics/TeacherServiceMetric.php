@@ -10,18 +10,18 @@ class TeacherServiceMetric extends BaseMetric
         'findInSet' => ['year'],
     ];
 
-    public static function getQuery()
+    public function getDateField(): string
     {
-        return TeacherPayment::query();
+        return '`date`';
     }
 
-    public static function getDateField(): string
-    {
-        return 'date';
-    }
-
-    public static function getQueryValue($query): int
+    public function aggregate($query): int
     {
         return $query->sum('sum');
+    }
+
+    public function getBaseQuery()
+    {
+        return TeacherPayment::query();
     }
 }

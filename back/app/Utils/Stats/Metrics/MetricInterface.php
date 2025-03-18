@@ -2,12 +2,15 @@
 
 namespace App\Utils\Stats\Metrics;
 
-
 interface MetricInterface
 {
-    public static function getQuery();
+    public function getBaseQuery();
 
-    public static function getQueryValue($query): int;
+    public function getValueForDate(string $date): int;
 
-    public static function getDateField(): string;
+    public function getTotalValue(): int;
+
+    public function aggregate($query): int;
+
+    public function getDateField(): string;
 }

@@ -7,26 +7,49 @@ use App\Models\Request as ClientRequest;
 class RequestMetric extends BaseMetric
 {
     protected $filters = [
-        'findInSet' => ['direction', 'responsible_user_id'],
+        'findInSet' => ['direction', 'responsible_user_id', 'status'],
+        'equals' => ['is_verified'],
         'null' => ['is_from_internet'],
+        'passes' => ['passes'],
     ];
 
     protected $mapFilters = [
-        'is_from_internet' => 'user_id'
+        'is_from_internet' => 'user_id',
     ];
 
-    public static function getQuery()
-    {
-        return ClientRequest::query();
-    }
-
-    public static function getDateField(): string
+    public function getDateField(): string
     {
         return 'created_at';
     }
 
-    public static function getQueryValue($query): int
+    public function getBaseQuery()
+    {
+        return ClientRequest::query();
+    }
+
+    public function aggregate($query): int
     {
         return $query->count();
+    }
+
+    protected function filterPasses(&$query, $value)
+    {
+        $query->where(function ($q) use ($value) {
+            foreach ($value as $v) {
+                switch ($v) {
+                    case 'hasUsedPasses':
+                        $q->orWhereHas('passes', fn ($q) => $q->whereHas('passLog'));
+                        break;
+
+                    case 'hasPasses':
+                        $q->orWhereHas('passes');
+                        break;
+
+                    case 'noPasses':
+                        $q->orWhereDoesntHave('passes');
+                        break;
+                }
+            }
+        });
     }
 }
