@@ -8,9 +8,8 @@ use Illuminate\Support\Facades\DB;
 class ContractPaymentMetric extends BaseMetric
 {
     protected $filters = [
-        'equals' => [
-            'company', 'is_confirmed', 'is_return',
-        ],
+        'equals' => ['is_confirmed', 'is_return'],
+        'contract' => ['company'],
         'findInSet' => ['method', 'year'],
     ];
 
@@ -29,5 +28,10 @@ class ContractPaymentMetric extends BaseMetric
         return $query->sum(DB::raw('
             CAST(IF(is_return = 1, -`sum`, `sum`) AS SIGNED)
         '));
+    }
+
+    protected function filterContract(&$query, $value, $field)
+    {
+        $query->whereHas('contract', fn ($q) => $q->where($field, $value));
     }
 }
