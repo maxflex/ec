@@ -21,7 +21,7 @@ class ScholarshipScore extends Model
         'program' => Program::class,
     ];
 
-    public function getQuery()
+    public static function getQuery()
     {
         $year = current_academic_year();
         $startFrom = "$year-10-01";
