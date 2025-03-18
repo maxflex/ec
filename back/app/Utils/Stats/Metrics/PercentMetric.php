@@ -25,8 +25,14 @@ class PercentMetric extends BaseMetric
 
     public function getPercent(array $values)
     {
-        [$denominator, $numerator] = $values;
-        $denominator = $denominator ?: 1;
+        // compromise
+        $metrics = collect(request()->input('metrics', []));
+        $numeratorId = (int) $this->filterValues['numerator'];
+        $denominatorId = (int) $this->filterValues['denominator'];
+        $numeratorIndex = $metrics->search(fn ($e) => $e['id'] === $numeratorId);
+        $denominatorIndex = $metrics->search(fn ($e) => $e['id'] === $denominatorId);
+        $numerator = $values[$numeratorIndex];
+        $denominator = $values[$denominatorIndex] ?: 1;
 
         // Вычисление процента
         $percent = $numerator / $denominator;

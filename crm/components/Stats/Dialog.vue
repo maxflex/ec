@@ -45,7 +45,7 @@ function go() {
 }
 
 function addMetric(metric: MetricComponent) {
-  const id = newId()
+  const id = Math.abs(newId())
   params.value.metrics.push({
     id,
     metric,
@@ -103,6 +103,7 @@ function editMetric(m: StatsMetric) {
 }
 
 defineExpose({ open })
+provide<StatsMetric[]>('metrics', params.value.metrics)
 </script>
 
 <template>
@@ -161,7 +162,6 @@ defineExpose({ open })
                 <tr
                   v-for="(metric, key) in MetricComponents"
                   :key="key"
-                  :class="{ 'stats-dialog__metric--disabled': metric.special && params.metrics.length !== 2 }"
                   @click="addMetric(key)"
                 >
                   <td>

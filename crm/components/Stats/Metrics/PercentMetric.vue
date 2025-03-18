@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { StatsMetric } from '.'
+
 const RoundFilterLabel = {
   '3': '+3',
   '2': '+2',
@@ -12,6 +14,8 @@ const RoundFilterLabel = {
 type RoundFilter = keyof typeof RoundFilterLabel
 
 interface Filters {
+  numerator?: number
+  denominator?: number
   round: RoundFilter
 }
 
@@ -28,13 +32,34 @@ export default {
 </script>
 
 <script lang="ts" setup>
+const metrics = inject<StatsMetric[]>('metrics')
 const filters = ref<Filters>({ ...filterDefaults })
+
+const items = metrics!.filter(m => m.metric !== 'PercentMetric').map(m => ({
+  value: m.id,
+  title: m.label,
+}))
+
 defineExpose({ filters })
 </script>
 
 <template>
   <div>
-    <UiClearableSelect
+    <v-select
+      v-model="filters.numerator"
+      label="Числитель"
+      :items="items"
+    />
+  </div>
+  <div>
+    <v-select
+      v-model="filters.denominator"
+      label="Знаменатель"
+      :items="items"
+    />
+  </div>
+  <div>
+    <v-select
       v-model="filters.round"
       label="Округление"
       :items="selectItems(RoundFilterLabel)"
