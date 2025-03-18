@@ -13,6 +13,7 @@ class PassMetric extends BaseMetric
 {
     protected $filters = [
         'type' => ['type'],
+        'direction' => ['direction'],
     ];
 
     public function getDateField(): string
@@ -69,5 +70,15 @@ class PassMetric extends BaseMetric
                 });
             }
         });
+    }
+
+    protected function filterDirection(&$query, array $directions)
+    {
+        $query->whereHas('pass',
+            fn ($q) => $q->whereHas(
+                'request',
+                fn ($q) => $q->whereIn('direction', $directions)
+            )
+        );
     }
 }

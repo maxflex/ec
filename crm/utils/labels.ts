@@ -672,3 +672,8 @@ export const MetricAggregateLabel = {
   sum: 'сумма',
   count: 'кол-во',
 } as const
+
+export const ReportDeliveryLabel = {
+  delivered: 'отправлено',
+  read: 'прочитано',
+}

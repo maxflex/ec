@@ -12,10 +12,12 @@ type PassTypeFilter = keyof typeof PassTypeFilterLabel
 
 interface Filters {
   type: PassTypeFilter[]
+  direction: Direction[]
 }
 
 const filterDefaults: Filters = {
   type: [],
+  direction: [],
 }
 
 export default {
@@ -32,5 +34,12 @@ defineExpose({ filters })
 <template>
   <div>
     <UiMultipleSelect v-model="filters.type" :items="selectItems(PassTypeFilterLabel)" label="Вид пропуска" />
+  </div>
+  <div>
+    <UiMultipleSelect
+      v-model="filters.direction"
+      :items="selectItems(DirectionLabel)"
+      label="Направление"
+    />
   </div>
 </template>

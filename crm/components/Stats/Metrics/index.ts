@@ -8,6 +8,7 @@ import PassMetric from './PassMetric.vue'
 import PercentMetric from './PercentMetric.vue'
 import ReportMetric from './ReportMetric.vue'
 import RequestMetric from './RequestMetric.vue'
+import RequestPassesMetric from './RequestPassesMetric.vue'
 import TeacherLessonMetric from './TeacherLessonMetric.vue'
 import TeacherPaymentMetric from './TeacherPaymentMetric.vue'
 import TeacherServiceMetric from './TeacherServiceMetric.vue'
@@ -39,6 +40,7 @@ const MetricComponentsUnsorted = {
   TelegramMessageMetric,
   VisitsMetric,
   WebReviewMetric,
+  RequestPassesMetric,
 } as unknown as { [key: string]: MetricComponentParams }
 
 export const MetricComponents = Object.fromEntries(

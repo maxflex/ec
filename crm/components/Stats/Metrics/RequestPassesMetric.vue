@@ -1,19 +1,15 @@
 <script lang="ts">
 interface Filters {
-  aggregate: MetricAggregate
-  status: ReportStatus[]
   direction: Direction[]
-  delivery?: ReportDelivery
+  has_used?: number
 }
 
 const filterDefaults: Filters = {
-  aggregate: 'sum',
   direction: [],
-  status: [],
 }
 
 export default {
-  label: 'Отчеты',
+  label: 'Заявки по разрешениям на пропуска',
   filters: { ...filterDefaults },
 }
 </script>
@@ -25,16 +21,6 @@ defineExpose({ filters })
 
 <template>
   <div>
-    <v-select v-model="filters.aggregate" :items="selectItems(MetricAggregateLabel)" label="Данные" />
-  </div>
-  <div>
-    <UiMultipleSelect
-      v-model="filters.status"
-      :items="selectItems(ReportStatusLabel)"
-      label="Статус"
-    />
-  </div>
-  <div>
     <UiMultipleSelect
       v-model="filters.direction"
       :items="selectItems(DirectionLabel)"
@@ -43,9 +29,9 @@ defineExpose({ filters })
   </div>
   <div>
     <UiClearableSelect
-      v-model="filters.delivery"
-      :items="selectItems(ReportDeliveryLabel)"
-      label="Доставка"
+      v-model="filters.has_used"
+      :items="yesNo('есть хотя бы 1 использованное разрешение', 'нет использованных разрешений')"
+      label="Разрешения на пропуска в заявке"
     />
   </div>
 </template>

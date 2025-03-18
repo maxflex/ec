@@ -1,8 +1,8 @@
 <script lang="ts">
 const PassFilterLabel = {
-  hasUsedPasses: 'есть хотя бы 1 использованный пропуск',
-  hasPasses: 'есть хотя бы 1 пропуск',
-  noPasses: 'нет пропусков',
+  hasUsedPasses: 'есть хотя бы 1 использованное разрешение',
+  hasPasses: 'есть хотя бы 1 разрешение',
+  noPasses: 'нет разрешений',
 } as const
 
 type PassFilter = keyof typeof PassFilterLabel
@@ -70,7 +70,7 @@ defineExpose({ filters })
     <UiMultipleSelect
       v-model="filters.passes"
       :items="selectItems(PassFilterLabel)"
-      label="Пропуски в заявке"
+      label="Разрешения на пропуска в заявке"
     />
   </div>
 </template>

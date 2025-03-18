@@ -1,6 +1,8 @@
 import type { ContractPaymentResource } from '~/components/ContractPayment'
 
 declare global {
+  type ReportDelivery = keyof typeof ReportDeliveryLabel
+
   type Direction = keyof typeof DirectionLabel
 
   type ReportStatus = keyof typeof ReportStatusLabel
@@ -566,7 +568,7 @@ declare global {
     price: ?number
     grade: ?LessonScore
     fill: number
-    delivery: 'delivered' | 'read' | null
+    delivery: ?ReportDelivery
     requirement: ReportRequirement
     created_at: string
   }
