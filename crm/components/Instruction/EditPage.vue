@@ -3,7 +3,7 @@ const modelDefaults: InstructionBaseResource = {
   id: newId(),
   title: '',
   text: '',
-  is_published: false,
+  status: 'draft',
 }
 const titleInput = ref()
 const route = useRoute()
@@ -88,11 +88,8 @@ nextTick(loadData)
     <div class="instruction-edit__title">
       <v-text-field ref="titleInput" v-model="item.title" label="Заголовок" />
       <v-select
-        v-model="item.is_published"
-        :items="[
-          { value: false, title: 'в разработке' },
-          { value: true, title: 'опубликовано' },
-        ]"
+        v-model="item.status"
+        :items="selectItems(InstructionStatusLabel)"
         label="Статус"
       />
       <div class="text-right">

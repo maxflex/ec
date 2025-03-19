@@ -1,6 +1,8 @@
 import type { ContractPaymentResource } from '~/components/ContractPayment'
 
 declare global {
+  type InstructionStatus = keyof typeof InstructionStatusLabel
+
   type ReportDelivery = keyof typeof ReportDeliveryLabel
 
   type Direction = keyof typeof DirectionLabel
@@ -745,7 +747,7 @@ declare global {
 
   interface InstructionBaseResource {
     id: number
-    is_published: boolean
+    status: InstructionStatus
     title: string
     text: string
     entry_id?: number
@@ -771,7 +773,7 @@ declare global {
   interface InstructionListResource {
     id: number
     title: string
-    is_published: boolean
+    status: InstructionStatus
     versions_count: number
     signs_count: number
     signs_needed: number

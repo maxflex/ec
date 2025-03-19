@@ -17,9 +17,9 @@ class InstructionTeacherListResource extends JsonResource
         $signedAt = $this->signs()
             ->where('teacher_id', $request->teacher_id)
             ->value('signed_at');
-       
+
         return extract_fields($this, [
-            'title', 'created_at', 'is_last_version'
+            'title', 'created_at', 'is_last_version',
         ], [
             'signed_at' => $signedAt,
         ]);

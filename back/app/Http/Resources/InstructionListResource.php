@@ -17,13 +17,13 @@ class InstructionListResource extends JsonResource
     {
         return extract_fields($this, [
             'title', 'versions_count', 'signs_count', 'created_at',
-            'is_published'
+            'status',
         ], [
             'signs_needed' => Teacher::canLogin()->count(),
             'signed_at' => $this->whenLoaded(
                 'signs',
                 fn () => $this->signs->first()?->signed_at,
-            )
+            ),
         ]);
     }
 }

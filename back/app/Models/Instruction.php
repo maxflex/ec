@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\InstructionStatus;
 use App\Observers\InstructionObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
@@ -13,11 +14,11 @@ use tidy;
 class Instruction extends Model
 {
     protected $fillable = [
-        'title', 'text', 'entry_id', 'is_published',
+        'title', 'text', 'entry_id', 'status',
     ];
 
     protected $casts = [
-        'is_published' => 'boolean',
+        'status' => InstructionStatus::class,
     ];
 
     public function scopeWithLastVersionsCte($query, bool $onlyPublished = true)
@@ -28,7 +29,7 @@ class Instruction extends Model
         ')->groupBy('entry_id');
 
         if ($onlyPublished) {
-            $lastVersionsCte->where('is_published', true);
+            $lastVersionsCte->where('status', InstructionStatus::published);
         }
 
         $query->withExpression('last_versions', $lastVersionsCte);
@@ -75,7 +76,7 @@ class Instruction extends Model
 
     public function scopePublished($query)
     {
-        $query->where('is_published', true);
+        $query->where('status', InstructionStatus::published);
     }
 
     public function getDiff($teacherId = null)
@@ -150,7 +151,7 @@ class Instruction extends Model
     }
 
     /**
-     * Используется преподами
+     * Используется преподавателями
      */
     public function getIsLastVersionAttribute()
     {
@@ -161,7 +162,7 @@ class Instruction extends Model
     }
 
     /**
-     * Используется преподами
+     * Используется преподавателями
      */
     public function getIsFirstVersion(int $teacherId)
     {

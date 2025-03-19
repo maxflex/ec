@@ -8,11 +8,11 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateEnumCommand extends Command
+class UpdateEnumsCommand extends Command
 {
-    protected $signature = 'once:update-enum';
+    protected $signature = 'once:update-enums';
 
-    protected $description = 'Command description';
+    protected $description = 'Update enum values for table';
 
     public function handle(): void
     {

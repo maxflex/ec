@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use App\Models\Instruction;
-use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -24,15 +23,15 @@ class InstructionTeacherResource extends JsonResource
             ->values();
 
         return extract_fields($this, [
-            'title', 'text', 'is_last_version'
+            'title', 'text', 'is_last_version',
         ], [
             'versions' => $versions->map(fn ($v) => extract_fields($v, [
-                'title', 'created_at', 'is_last_version'
+                'title', 'created_at', 'is_last_version',
             ], [
-                'signed_at' => $v->getSignedAt(auth()->id())
+                'signed_at' => $v->getSignedAt(auth()->id()),
             ])),
             'is_first_version' => $this->getIsFirstVersion(auth()->id()),
-            'signed_at' => $this->getSignedAt(auth()->id())
+            'signed_at' => $this->getSignedAt(auth()->id()),
         ]);
     }
 }

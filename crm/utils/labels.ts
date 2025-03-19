@@ -677,3 +677,11 @@ export const ReportDeliveryLabel = {
   delivered: 'отправлено',
   read: 'прочитано',
 }
+
+export const InstructionStatusLabel = {
+  draft: 'в разработке',
+  readyForConst: 'подготовлено для Кости',
+  toCheckTeacher: 'на проверку преподавателю',
+  finalCheckBeforePublished: 'финальная проверка перед публикацией',
+  published: 'опубликовано',
+}
