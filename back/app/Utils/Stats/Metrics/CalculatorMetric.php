@@ -74,7 +74,7 @@ class CalculatorMetric extends BaseMetric
         $round = (int) $this->filterValues['round'];
 
         if ($round === 0) {
-            return $number;
+            return round($number);
         }
 
         if ($round > 0) {
