@@ -22,6 +22,7 @@ class ContractMetric extends BaseMetric
     public function getBaseQuery(): Builder
     {
         return ContractVersion::query()
+            ->select('contract_versions.*')
             ->join('contracts as c', 'contract_versions.contract_id', '=', 'c.id');
     }
 

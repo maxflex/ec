@@ -43,6 +43,11 @@ abstract class BaseMetric extends Controller implements MetricInterface
         $dateField = $this->getDateField();
         $query = $this->getBaseQuery();
 
+        $query->whereRaw("DATE($dateField) BETWEEN ? AND ?", [
+            $this->dateFrom,
+            $this->dateTo,
+        ]);
+
         //        if ($mode === 'year') {
         //            [$y, $m, $d] = explode('-', $date);
         //            $query->whereHas('contract', fn($q) => $q->where('year', $y));

@@ -8,8 +8,9 @@ use App\Models\Lesson;
 class LessonMetric extends BaseMetric
 {
     protected $filters = [
-        'equals' => ['status', 'is_free', 'is_unplanned'],
+        'equals' => ['is_free', 'is_unplanned'],
         'direction' => ['direction'],
+        'findInSet' => ['status'],
     ];
 
     public function getDateField(): string
