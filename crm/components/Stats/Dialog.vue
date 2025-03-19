@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { StatsMetricsEditor } from '#build/components'
-import { mdiPlus } from '@mdi/js'
+import { mdiEyeOffOutline, mdiPlus } from '@mdi/js'
 import { clone } from 'rambda'
 import { VueDraggableNext } from 'vue-draggable-next'
 import {
@@ -29,8 +29,10 @@ const showPresets = ref(false)
 const metricsEditor = ref<InstanceType<typeof StatsMetricsEditor>>()
 const selected = ref<number>()
 const presets = ref<StatsPreset[]>([])
+const isBackButton = ref(false)
 
-function open() {
+function open(hasData: boolean = false) {
+  isBackButton.value = hasData
   dialog.value = true
   selected.value = undefined
   loadPresets()
@@ -45,7 +47,7 @@ function go() {
 }
 
 function addMetric(metric: MetricComponent) {
-  const id = Math.abs(newId())
+  const id = newId()
   params.value.metrics.push({
     id,
     metric,
@@ -103,14 +105,17 @@ function editMetric(m: StatsMetric) {
 }
 
 defineExpose({ open })
-provide<StatsMetric[]>('metrics', params.value.metrics)
+provide<Ref<StatsParams>>('params', params)
 </script>
 
 <template>
   <v-dialog v-model="dialog" :width="width" class="dialog-fullwidth">
     <div class="dialog-wrapper">
-      <div class="dialog-header">
-        Конфигуратор
+      <div class="dialog-header pl-5">
+        <div class="d-flex align-center ga-2">
+          <v-btn v-if="isBackButton" icon="$back" :size="48" @click="dialog = false" />
+          Конфигуратор
+        </div>
         <div class="d-flex ga-4">
           <v-btn variant="text" @click="savePresetDialog?.open(params)">
             сохранить пресет
@@ -229,12 +234,20 @@ provide<StatsMetric[]>('metrics', params.value.metrics)
                       <span>
                         {{ m.label }}
                       </span>
-                      <v-icon
-                        :icon="mdiPlus"
-                        color="gray"
-                        class="stats-dialog__remove"
-                        @click.stop="deleteMetric(m)"
-                      />
+                      <div class="d-flex ga-1 align-center">
+                        <v-icon
+                          v-if="m.hidden"
+                          :icon="mdiEyeOffOutline"
+                          color="gray"
+                          :size="20"
+                        />
+                        <v-icon
+                          :icon="mdiPlus"
+                          color="gray"
+                          class="stats-dialog__remove"
+                          @click.stop="deleteMetric(m)"
+                        />
+                      </div>
                     </div>
                   </td>
                 </tr>

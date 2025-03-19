@@ -124,8 +124,8 @@ function onScroll() {
   }
 }
 
-function isPercentMetric(index: number): boolean {
-  return responseParams.value?.metrics[index].metric === 'PercentMetric'
+function isCalculatorMetric(index: number): boolean {
+  return responseParams.value?.metrics[index].metric === 'CalculatorMetric'
 }
 
 onMounted(() => {
@@ -147,7 +147,7 @@ nextTick(() => statsDialog.value?.open())
   <div class="table table-stats">
     <div class="table-stats__header">
       <div class="table-stats__header-mode">
-        <v-btn :icon="mdiTune" :size="48" variant="text" @click="statsDialog?.open()" />
+        <v-btn :icon="mdiTune" :size="48" variant="text" @click="statsDialog?.open(responseParams !== undefined)" />
         <v-btn
           :icon="mdiDownload"
           :size="48"
@@ -158,16 +158,18 @@ nextTick(() => statsDialog.value?.open())
         />
       </div>
       <template v-if="responseParams">
-        <div
-          v-for="(metric, index) in responseParams.metrics"
-          :key="index"
-          :style="getWidth(metric)"
-          class="table-stats__header-metric"
-        >
-          <span>
-            {{ metric.label }}
-          </span>
-        </div>
+        <template v-for="metric in responseParams.metrics">
+          <div
+            v-if="!metric.hidden"
+            :key="metric.id"
+            :style="getWidth(metric)"
+            class="table-stats__header-metric"
+          >
+            <span>
+              {{ metric.label }}
+            </span>
+          </div>
+        </template>
       </template>
     </div>
     <template v-if="responseParams">
@@ -175,29 +177,33 @@ nextTick(() => statsDialog.value?.open())
         <div class="table-stats__date">
           {{ formatDateMode(date, responseParams.mode) }}
         </div>
-        <div
-          v-for="(value, index) in values"
-          :key="index"
-          :class="`text-${responseParams.metrics[index].color}`"
-          :style="getWidth(responseParams.metrics[index])"
-        >
-          {{ value ? (isPercentMetric(index) ? value : formatPrice(value)) : '' }}
-        </div>
+        <template v-for="(value, index) in values">
+          <div
+            v-if="!responseParams.metrics[index].hidden"
+            :key="index"
+            :class="`text-${responseParams.metrics[index].color}`"
+            :style="getWidth(responseParams.metrics[index])"
+          >
+            {{ value ? (isCalculatorMetric(index) ? value : formatPrice(value)) : '' }}
+          </div>
+        </template>
       </div>
       <div class="table-stats__footer table-stats__body">
         <div class="table-stats__date">
           итого
         </div>
-        <div
-          v-for="(total, index) in totals"
-          :key="index"
-          :style="getWidth(responseParams.metrics[index])"
-          :class="`text-${responseParams.metrics[index].color}`"
-        >
-          <span>
-            {{ total ? (isPercentMetric(index) ? total : formatPrice(total)) : '' }}
-          </span>
-        </div>
+        <template v-for="(total, index) in totals">
+          <div
+            v-if="!responseParams.metrics[index].hidden"
+            :key="index"
+            :style="getWidth(responseParams.metrics[index])"
+            :class="`text-${responseParams.metrics[index].color}`"
+          >
+            <span>
+              {{ total ? (isCalculatorMetric(index) ? total : formatPrice(total)) : '' }}
+            </span>
+          </div>
+        </template>
       </div>
     </template>
   </div>

@@ -21,13 +21,6 @@ defineExpose({ filters })
 
 <template>
   <div>
-    <UiClearableSelect
-      v-model="filters.status"
-      :items="selectItems(LessonStatusLabelWithoutCancelled)"
-      label="Статус урока"
-    />
-  </div>
-  <div>
     <UiMultipleSelect
       v-model="filters.direction"
       :items="selectItems(DirectionLabel)"

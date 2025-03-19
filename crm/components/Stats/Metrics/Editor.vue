@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { mdiEyeOffOutline } from '@mdi/js'
 import { clone, isNotNil, pickBy } from 'rambda'
 import { MetricColors, MetricComponents, type StatsMetric } from '~/components/Stats/Metrics/index'
 
@@ -49,6 +50,14 @@ defineExpose({ open })
         label="Заголовок"
       >
         <template #append-inner>
+          <v-icon
+            :icon="mdiEyeOffOutline"
+            class="metric-editor__hide"
+            :class="{
+              'metric-editor__hide--hidden': item.hidden,
+            }"
+            @click="item.hidden = !item.hidden"
+          ></v-icon>
           <UiToggler
             v-model="item.color"
             :items="selectItems(MetricColors)"
@@ -64,7 +73,7 @@ defineExpose({ open })
 <style lang="scss">
 .metric-editor {
   &__color {
-    $size: 18px;
+    $size: 16px;
     height: $size;
     width: $size;
     display: inline-block;
@@ -78,6 +87,17 @@ defineExpose({ open })
     top: -30px;
     width: calc(100% + 40px) !important;
     left: -20px !important;
+  }
+  &__hide {
+    margin-right: 10px;
+    color: rgb(var(--v-theme-gray));
+    &:hover {
+      opacity: 1;
+    }
+    &--hidden {
+      color: rgb(var(--v-theme-error));
+      opacity: 1 !important;
+    }
   }
 }
 </style>

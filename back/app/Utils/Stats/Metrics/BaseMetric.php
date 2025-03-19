@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 abstract class BaseMetric extends Controller implements MetricInterface
 {
     public function __construct(
+        public int $id,
         public array $filterValues,
         public string $dateFrom,
         public string $dateTo,

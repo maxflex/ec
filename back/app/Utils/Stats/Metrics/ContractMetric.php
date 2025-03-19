@@ -74,60 +74,58 @@ class ContractMetric extends BaseMetric
         }
     }
 
-    protected function filterVersion(&$query, array $values)
+    protected function filterVersion(&$query, $value)
     {
-        $firstInClient = ContractVersion::query()
-            ->join('contracts', 'contract_versions.contract_id', '=', 'contracts.id')
-            ->selectRaw('client_id, MIN(contract_versions.id) as `id`')
-            ->groupBy('client_id');
+        if ($value === 'firstInClient') {
+            $firstInClient = ContractVersion::query()
+                ->join('contracts', 'contract_versions.contract_id', '=', 'contracts.id')
+                ->selectRaw('client_id, MIN(contract_versions.id) as `id`')
+                ->groupBy('client_id');
 
-        $firstInContract = ContractVersion::query()
-            ->selectRaw('contract_id, MIN(id) as `id`')
-            ->groupBy('contract_id');
-
-        $query
-            ->leftJoinSub(
+            $query->leftJoinSub(
                 $firstInClient,
                 'first_in_client',
                 'first_in_client.id',
                 '=',
                 'contract_versions.id'
-            )
-            ->leftJoinSub(
+            );
+        } else {
+            $firstInContract = ContractVersion::query()
+                ->selectRaw('contract_id, MIN(id) as `id`')
+                ->groupBy('contract_id');
+
+            $query->leftJoinSub(
                 $firstInContract,
                 'first_in_contract',
                 'first_in_contract.id',
                 '=',
                 'contract_versions.id'
             );
+        }
 
-        $query->where(function ($q) use ($values) {
-            foreach ($values as $value) {
-                switch ($value) {
-                    case 'firstInClient':
-                        $q->orWhereNotNull('first_in_client.id');
-                        break;
+        switch ($value) {
+            case 'firstInClient':
+                $query->whereNotNull('first_in_client.id');
+                break;
 
-                    case 'firstInContract':
-                        $q->orWhereNotNull('first_in_contract.id');
-                        break;
+            case 'firstInContract':
+                $query->whereNotNull('first_in_contract.id');
+                break;
 
-                    case 'recurringFirstInClient':
-                        $q->orWhereRaw('(
-                            first_in_contract.id IS NOT NULL
-                            AND EXISTS (
-                                SELECT 1 FROM contracts c2
-                                WHERE c2.client_id = c.client_id
-                                AND c2.year < c.year
-                            )
-                        )');
-                        break;
+            case 'recurringFirstInClient':
+                $query->whereRaw('(
+                    first_in_contract.id IS NOT NULL
+                    AND EXISTS (
+                        SELECT 1 FROM contracts c2
+                        WHERE c2.client_id = c.client_id
+                        AND c2.year < c.year
+                    )
+                )');
+                break;
 
-                    case 'onlyChanges':
-                        $q->orWhereNull('first_in_contract.id');
-                        break;
-                }
-            }
-        });
+            case 'onlyChanges':
+                $query->whereNull('first_in_contract.id');
+                break;
+        }
     }
 }

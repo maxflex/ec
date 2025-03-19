@@ -14,6 +14,8 @@ const preset = ref<StatsPreset>({
   name: '',
   params: {
     mode: 'day',
+    date_from: null,
+    date_to: null,
     metrics: [],
   },
 })
@@ -38,12 +40,28 @@ async function save() {
   }
   saving.value = true
   const body = clone(preset.value)
+
   // делаем ID положительными, чтобы в будущем загрузка пресета
   // не конфликтовала с добавлением новых метрик
-  body.params.metrics = body.params.metrics.map(m => ({
-    ...m,
-    id: Math.abs(m.id),
-  }))
+  const { metrics } = body.params
+  const updatedMetrics = []
+  for (const m of metrics) {
+    const updatedMetric = {
+      ...m,
+      id: Math.abs(m.id),
+    }
+    if (m.metric === 'CalculatorMetric') {
+      // @ts-ignore
+      updatedMetric.filters.metrics = updatedMetric.filters.metrics.map(e => ({
+        ...e,
+        id: Math.abs(e.id),
+      }))
+    }
+    updatedMetrics.push(updatedMetric)
+  }
+
+  body.params.metrics = updatedMetrics
+
   const { data } = await useHttp<StatsPreset>(
     `stats-presets`,
     {

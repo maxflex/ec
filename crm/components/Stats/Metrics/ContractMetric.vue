@@ -12,14 +12,13 @@ interface Filters {
   aggregate: MetricAggregate
   year: Year[]
   company?: Company
-  version: VersionFilter[]
+  version?: VersionFilter
   direction: Direction[]
 }
 
 const filterDefaults: Filters = {
   aggregate: 'sum',
   year: [],
-  version: [],
   direction: [],
 }
 
@@ -50,7 +49,7 @@ defineExpose({ filters })
     />
   </div>
   <div>
-    <UiMultipleSelect
+    <UiClearableSelect
       v-model="filters.version"
       label="Версия договора"
       :items="selectItems(VersionFilterLabel)"

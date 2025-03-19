@@ -4,8 +4,7 @@ namespace App\Utils\Stats\Metrics;
 
 use App\Enums\Direction;
 use App\Enums\LessonStatus;
-use App\Models\Lesson;
-use Illuminate\Support\Collection;
+use App\Models\ClientLesson;
 
 class ClientLessonMetric extends BaseMetric
 {
@@ -15,38 +14,19 @@ class ClientLessonMetric extends BaseMetric
 
     public function getDateField(): string
     {
-        return '`date`';
+        return 'lessons.`date`';
     }
 
     public function getBaseQuery()
     {
-        return Lesson::query()
-            ->where('status', '<>', LessonStatus::cancelled)
-            ->where('is_free', false);
+        return ClientLesson::query()
+            ->join('lessons', 'client_lessons.lesson_id', '=', 'lessons.id')
+            ->where('lessons.status', LessonStatus::conducted);
     }
 
     public function aggregate($query): int
     {
-        /** @var Collection<int, Lesson> $lessons */
-        $lessons = $query->get();
-
-        // conducted sum
-        $sum = $lessons->where('status', LessonStatus::conducted)->reduce(
-            fn ($carry, Lesson $l) => $carry + $l->clientLessons()->sum('price'), 0
-        );
-
-        // planned sum
-        $plannedLessons = $lessons->where('status', LessonStatus::planned);
-        foreach ($plannedLessons as $index => $plannedLesson) {
-            foreach ($plannedLesson->group->clientGroups as $clientGroup) {
-                $program = $clientGroup->contractVersionProgram;
-                $lessonsPassed = $program->clientLessons()->where('price', '>', 0)->count();
-                $nextPrice = $program->getNextPrice($lessonsPassed + $index + 1);
-                $sum += $nextPrice;
-            }
-        }
-
-        return $sum;
+        return $query->sum('client_lessons.price');
     }
 
     protected function filterDirection(&$query, array $values)
@@ -63,6 +43,8 @@ class ClientLessonMetric extends BaseMetric
         }
         $programs = $programs->unique();
 
-        $query->whereHas('group', fn ($q) => $q->whereIn('program', $programs));
+        $query
+            ->join('groups', 'lessons.group_id', '=', 'groups.id')
+            ->whereIn('groups.program', $programs);
     }
 }

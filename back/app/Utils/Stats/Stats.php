@@ -2,10 +2,11 @@
 
 namespace App\Utils\Stats;
 
+use App\Utils\Stats\Metrics\CalculatorMetric;
 use App\Utils\Stats\Metrics\MetricInterface;
-use App\Utils\Stats\Metrics\PercentMetric;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Collection;
 
 class Stats
 {
@@ -71,8 +72,8 @@ class Stats
                 break;
         }
 
-        /** @var array<int, MetricInterface> $metrics */
-        $metrics = [];
+        /** @var Collection<int, MetricInterface> $metrics */
+        $metrics = collect();
 
         foreach ($metricsData as $m) {
             $metricClass = implode('\\', [__NAMESPACE__, 'Metrics', $m['metric']]);
@@ -80,16 +81,18 @@ class Stats
                 throw new Exception("Class $metricClass not found");
             }
             $metricInstance = new $metricClass(
+                $m['id'],
                 $m['filters'],
                 $dateFromStr,
                 $dateToStr,
                 $sqlFormat,
                 $mode
             );
+
             if (! $metricInstance instanceof MetricInterface) {
                 throw new Exception("Class $metricClass does not implement MetricInterface");
             }
-            $metrics[] = $metricInstance;
+            $metrics->push($metricInstance);
         }
 
         /**
@@ -101,8 +104,8 @@ class Stats
             $dateStr = $windowCurrentDate->format($format);
             $values = [];
             foreach ($metrics as $metric) {
-                if ($metric instanceof PercentMetric) {
-                    $values[] = $metric->getPercent($values);
+                if ($metric instanceof CalculatorMetric) {
+                    $values[] = $metric->getPercent($values, $metrics);
                 } else {
                     $values[] = $metric->getValueForDate($dateStr);
                 }
@@ -122,8 +125,8 @@ class Stats
         if ($page === 1) {
             $totals = [];
             foreach ($metrics as $metric) {
-                if ($metric instanceof PercentMetric) {
-                    $totals[] = $metric->getPercent($totals);
+                if ($metric instanceof CalculatorMetric) {
+                    $totals[] = $metric->getPercent($totals, $metrics);
                 } else {
                     $totals[] = $metric->getTotalValue();
                 }
