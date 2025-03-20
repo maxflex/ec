@@ -184,7 +184,7 @@ nextTick(() => statsDialog.value?.open())
             :class="`text-${responseParams.metrics[index].color}`"
             :style="getWidth(responseParams.metrics[index])"
           >
-            {{ value ? (isCalculatorMetric(index) ? value : formatPrice(value)) : '' }}
+            {{ value ? formatPrice(value) : '' }}
           </div>
         </template>
       </div>
@@ -200,7 +200,7 @@ nextTick(() => statsDialog.value?.open())
             :class="`text-${responseParams.metrics[index].color}`"
           >
             <span>
-              {{ total ? (isCalculatorMetric(index) ? total : formatPrice(total)) : '' }}
+              {{ total ? formatPrice(total) : '' }}
             </span>
           </div>
         </template>

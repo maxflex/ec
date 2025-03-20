@@ -348,6 +348,9 @@ export function formatPrice(price: number, showZero: boolean = false) {
   if (price === 0) {
     return showZero ? 0 : ''
   }
+  if (price < 1) {
+    return price
+  }
   return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
 }
 
