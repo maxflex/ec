@@ -129,7 +129,7 @@ nextTick(loadData)
           </td>
           <td />
         </tr>
-        <tr v-for="l in items" :key="l.id">
+        <tr v-for="l in items" :key="l.id" :class="{ 'is-cancelled': l.status === 'cancelled' }">
           <td>
             {{ formatTextDate(l.dateTime) }}
             <span class="text-gray ml-1">
@@ -217,6 +217,11 @@ nextTick(loadData)
       width: 100%;
       height: 100%;
       background: rgba(var(--v-theme-orange), 0.2);
+    }
+  }
+  .is-cancelled {
+    td {
+      background: #feeceb !important;
     }
   }
   &__col {

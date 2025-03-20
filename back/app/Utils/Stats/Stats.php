@@ -32,7 +32,7 @@ class Stats
             $windowCurrentDate = $dateFrom->copy();
             $windowTo = $dateTo->copy();
         } else {
-            $paginate = 30;
+            $paginate = $mode === 'day' ? 90 : 30;
             $windowTo = $dateTo->copy()->sub($mode, ($page - 1) * $paginate);
             $windowCurrentDate = $windowTo->copy()->sub($mode, $paginate - 1);
         }

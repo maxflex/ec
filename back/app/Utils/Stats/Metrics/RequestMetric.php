@@ -34,22 +34,18 @@ class RequestMetric extends BaseMetric
 
     protected function filterPasses(&$query, $value)
     {
-        $query->where(function ($q) use ($value) {
-            foreach ($value as $v) {
-                switch ($v) {
-                    case 'hasUsedPasses':
-                        $q->orWhereHas('passes', fn ($q) => $q->whereHas('passLog'));
-                        break;
+        switch ($value) {
+            case 'hasUsedPasses':
+                $query->whereHas('passes', fn ($q) => $q->whereHas('passLog'));
+                break;
 
-                    case 'hasPasses':
-                        $q->orWhereHas('passes');
-                        break;
+            case 'hasPasses':
+                $query->whereHas('passes');
+                break;
 
-                    case 'noPasses':
-                        $q->orWhereDoesntHave('passes');
-                        break;
-                }
-            }
-        });
+            case 'noPasses':
+                $query->whereDoesntHave('passes');
+                break;
+        }
     }
 }

@@ -13,13 +13,12 @@ interface Filters {
   responsible_user_id: number[]
   is_from_internet?: number
   is_verified?: number
-  passes: PassFilter[]
+  pass?: PassFilter
 }
 
 const filterDefaults: Filters = {
   direction: [],
   status: [],
-  passes: [],
   responsible_user_id: [],
 }
 
@@ -67,8 +66,8 @@ defineExpose({ filters })
     />
   </div>
   <div>
-    <UiMultipleSelect
-      v-model="filters.passes"
+    <UiClearableSelect
+      v-model="filters.pass"
       :items="selectItems(PassFilterLabel)"
       label="Разрешения на пропуска в заявке"
     />

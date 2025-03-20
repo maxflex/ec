@@ -61,6 +61,45 @@ nextTick(loadData)
         </div>
       </div>
 
+      <div>
+        <div>Посещаемость и пройденные темы:</div>
+        <div class="report-view__client-lessons">
+          <div v-for="cl in item.client_lessons" :key="cl.id">
+            <span>
+              {{ formatDate(cl.lesson.date) }} –
+            </span>
+            <span
+              :class="{
+                'text-error': cl.status === 'absent',
+                'text-deepOrange': cl.status === 'late' || cl.status === 'lateOnline',
+              }"
+            >
+              {{ ClientLessonStatusLabel[cl.status!] }}
+              <span v-if="cl.minutes_late">
+                на {{ cl.minutes_late }} мин.
+              </span>
+            </span>
+            <span v-if="cl.lesson.topic">
+              ({{ cl.lesson.topic }})
+            </span>
+            <span v-if="cl.scores.length">
+              Оценки:
+              <span v-for="(s, i) in cl.scores" :key="i">
+                <span :class="`text-score text-score--${s.score}`" style="font-size: initial">
+                  {{ s.score }}
+                </span>
+                <span v-if="s.comment"> – {{ s.comment }}</span>{{ i + 1 < cl.scores.length ? ', ' : '' }}
+              </span>
+            </span>
+            <span v-if="cl.comment">
+              Комментарий от преподавателя: {{ cl.comment }}
+            </span>
+          </div>
+
+          <!-- {{ date('d.m.Y', strtotime($cl->lesson->date)) }} – @if ($cl->status === \App\Enums\ClientLessonStatus::absent) <b>не был</b> @elseif ($cl->status === \App\Enums\ClientLessonStatus::late) опоздал на {{ $cl->minutes_late }} мин. @else был @endif @if ($cl->lesson->topic)({{ $cl->lesson->topic }})@endif -->
+        </div>
+      </div>
+
       <div v-if="item.homework_comment">
         <div>
           Выполнение домашнего задания:
@@ -130,11 +169,17 @@ nextTick(loadData)
           font-weight: bold;
         }
         &:last-child {
-          word-wrap: break-word;
-          white-space: pre-wrap;
-          max-width: 1000px;
+          // word-wrap: break-word;
+          // white-space: pre-wrap;
+          // max-width: 1000px;
         }
       }
+    }
+  }
+
+  &__client-lessons {
+    & > div {
+      // display: flex;
     }
   }
 
