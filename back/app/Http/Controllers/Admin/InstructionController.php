@@ -20,7 +20,6 @@ class InstructionController extends Controller
      */
     public function index(Request $request)
     {
-
         if ($request->has('teacher_id')) {
             $query = Instruction::query()
                 ->lastVersions()

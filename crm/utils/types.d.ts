@@ -147,6 +147,7 @@ declare global {
     title: string
     icon: string
     items: MenuItem[]
+    hide?: boolean
   }
 
   type Menu = Array<MenuItem | Submenu>

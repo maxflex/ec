@@ -11,10 +11,13 @@ const { items } = defineProps<{
       :id="`instruction-${item.id}`"
       :key="item.id"
       class="table-item"
-      :to="{ name: 'instructions-id', params: { id: item.id } }"
+      :to="{ path: `${$route.path}/${item.id}` }"
     >
       <div style="flex: 1">
         {{ item.title }}
+      </div>
+      <div style="width: 220px">
+        {{ InstructionStatusLabel[item.status] }}
       </div>
       <div style="width: 120px">
         {{ plural(item.versions_count, ['версия', 'версии', 'версий']) }}

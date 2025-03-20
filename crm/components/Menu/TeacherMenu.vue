@@ -61,6 +61,12 @@ const menu: Menu = [
     title: 'Инструкции',
     to: '/instructions',
   },
+  {
+    icon: mdiFileSign,
+    title: 'Инструкции проверка',
+    to: '/instructions-check',
+    hide: user?.id !== 24350,
+  },
 ]
 
 if (user?.is_head_teacher) {
@@ -85,7 +91,7 @@ nextTick(updateMenuCounts)
 
 <template>
   <v-list nav density="compact">
-    <MenuList :items="menu" />
+    <MenuList :items="menu.filter(e => !e.hide)" />
     <v-list-item v-if="user" :to="{ name: 'profile' }">
       <template #prepend>
         <UiAvatar :item="user" :size="26" />

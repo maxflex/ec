@@ -12,6 +12,14 @@ const saving = ref(false)
 const deleting = ref(false)
 const loading = ref(true)
 const item = ref<InstructionBaseResource>(modelDefaults)
+const { isTeacher } = useAuthStore()
+const apiUrl = isTeacher ? 'instructions-check' : 'instructions'
+const { showGlobalMessage } = useGlobalMessage()
+
+const teacherAvailableStatuses: InstructionStatus[] = [
+  'toCheckTeacher',
+  'finalCheckBeforePublished',
+]
 
 const mode: 'new-version' | 'create' | 'edit' = (function () {
   switch (route.name) {
@@ -29,10 +37,13 @@ async function save() {
   switch (mode) {
     case 'create':
     case 'new-version':
-      const { data } = await useHttp<InstructionListResource>(`instructions`, {
-        method: 'post',
-        body: item.value,
-      })
+      const { data } = await useHttp<InstructionListResource>(
+        apiUrl,
+        {
+          method: 'post',
+          body: item.value,
+        },
+      )
       if (data.value) {
         router.push({
           name: 'instructions-id',
@@ -43,11 +54,15 @@ async function save() {
       }
       break
     case 'edit':
-      await useHttp<InstructionListResource>(`instructions/${item.value.id}`, {
-        method: 'put',
-        body: item.value,
-      })
+      await useHttp<InstructionListResource>(
+        `${apiUrl}/${item.value.id}`,
+        {
+          method: 'put',
+          body: item.value,
+        },
+      )
       setTimeout(() => (saving.value = false), 200)
+      showGlobalMessage('Инструкция сохранена', 'success')
   }
 }
 
@@ -56,9 +71,12 @@ async function destroy() {
     return
   }
   deleting.value = true
-  const { status } = await useHttp(`instructions/${item.value.id}`, {
-    method: 'delete',
-  })
+  const { status } = await useHttp(
+    `${apiUrl}/${item.value.id}`,
+    {
+      method: 'delete',
+    },
+  )
   if (status.value === 'error') {
     deleting.value = false
     return
@@ -73,7 +91,7 @@ async function loadData() {
   }
   else {
     const { data } = await useHttp<InstructionResource>(
-      `instructions/${route.params.id}`,
+      `${apiUrl}/${route.params.id}`,
     )
     item.value = data.value as InstructionResource
   }
@@ -87,21 +105,37 @@ nextTick(loadData)
   <div v-if="!loading" class="instruction-edit">
     <div class="instruction-edit__title">
       <v-text-field ref="titleInput" v-model="item.title" label="Заголовок" />
+
       <v-select
+        v-if="isTeacher"
+        v-model="item.status"
+        :disabled="item.status === 'published'"
+        :items="teacherAvailableStatuses.map(value => ({
+          value,
+          title: InstructionStatusLabel[value],
+        }))"
+        label="Статус"
+      >
+        <template v-if="!(item.status in teacherAvailableStatuses)" #selection>
+          {{ InstructionStatusLabel[item.status] }}
+        </template>
+      </v-select>
+      <v-select
+        v-else
         v-model="item.status"
         :items="selectItems(InstructionStatusLabel)"
         label="Статус"
       />
       <div class="text-right">
         <v-btn
-          v-if="mode !== 'create'"
+          v-if="mode !== 'create' && !isTeacher"
           icon="$delete"
           :size="48"
           :loading="deleting"
           class="remove-btn"
           @click="destroy()"
         />
-        <v-btn icon="$save" :size="48" :loading="saving" @click="save()" />
+        <v-btn v-if="!(isTeacher && item.status === 'published')" icon="$save" :size="48" :loading="saving" @click="save()" />
       </div>
     </div>
     <div>

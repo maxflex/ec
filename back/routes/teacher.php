@@ -1,23 +1,24 @@
 <?php
 
-use App\Http\Controllers\Teacher\{BalanceController,
-    BalanceVerificationController,
-    ClientController,
-    ClientGroupController,
-    ClientReviewController,
-    ClientTestController,
-    CommentController,
-    ExamScoreController,
-    GradeController,
-    GroupController,
-    HeadTeacherReportController,
-    InstructionController,
-    LessonController,
-    MenuCountsController,
-    ReportController,
-    ScholarshipScoreController,
-    TeacherPaymentController};
-use App\Http\Middleware\{HeadTeacherMiddleware};
+use App\Http\Controllers\Teacher\BalanceController;
+use App\Http\Controllers\Teacher\BalanceVerificationController;
+use App\Http\Controllers\Teacher\ClientController;
+use App\Http\Controllers\Teacher\ClientGroupController;
+use App\Http\Controllers\Teacher\ClientReviewController;
+use App\Http\Controllers\Teacher\ClientTestController;
+use App\Http\Controllers\Teacher\CommentController;
+use App\Http\Controllers\Teacher\ExamScoreController;
+use App\Http\Controllers\Teacher\GradeController;
+use App\Http\Controllers\Teacher\GroupController;
+use App\Http\Controllers\Teacher\HeadTeacherReportController;
+use App\Http\Controllers\Teacher\InstructionCheckController;
+use App\Http\Controllers\Teacher\InstructionController;
+use App\Http\Controllers\Teacher\LessonController;
+use App\Http\Controllers\Teacher\MenuCountsController;
+use App\Http\Controllers\Teacher\ReportController;
+use App\Http\Controllers\Teacher\ScholarshipScoreController;
+use App\Http\Controllers\Teacher\TeacherPaymentController;
+use App\Http\Middleware\HeadTeacherMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:crm'])->group(function () {
@@ -25,7 +26,7 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::apiResource('groups', GroupController::class);
     Route::post('lessons/conduct/{lesson}', [LessonController::class, 'conduct']);
     Route::apiResource('lessons', LessonController::class)->only([
-        'index', 'update', 'show'
+        'index', 'update', 'show',
     ]);
     Route::get('groups/visits/{group}', [GroupController::class, 'visits']);
     Route::apiResource('client-groups', ClientGroupController::class)->only('index');
@@ -35,6 +36,7 @@ Route::middleware(['auth:crm'])->group(function () {
         Route::post('sign/{instruction}', 'sign');
     });
     Route::apiResource('instructions', InstructionController::class)->only('index', 'show');
+    Route::apiResource('instructions-check', InstructionCheckController::class)->except('destroy');
     Route::apiResource('clients', ClientController::class)->only('index', 'show');
     Route::get('reports/tabs', [ReportController::class, 'tabs']);
     Route::get('reports/lessons', [ReportController::class, 'lessons']);

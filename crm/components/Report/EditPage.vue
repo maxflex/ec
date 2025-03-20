@@ -17,17 +17,17 @@ const tabs = {
 
 const selectedTab = ref<keyof typeof tabs>('edit')
 
-const availableTeacherStatuses = [
+const availableTeacherStatuses: ReportStatus[] = [
   'draft',
   'toCheck',
   'empty',
-] as ReportStatus[]
+]
 
-const availableAdminStatuses = [
+const availableAdminStatuses: ReportStatus[] = [
   'refused',
   'published',
   'empty',
-] as ReportStatus[]
+]
 
 const availableStatuses = isTeacher ? availableTeacherStatuses : availableAdminStatuses
 
