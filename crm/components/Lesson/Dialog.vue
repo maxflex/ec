@@ -33,6 +33,7 @@ function create(groupId: number, y: Year) {
   year.value = y
   lesson.value = clone(modelDefaults)
   lesson.value.group_id = groupId
+  isConducted.value = false
   dialog.value = true
 }
 
