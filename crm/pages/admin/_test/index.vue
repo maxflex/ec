@@ -13,11 +13,6 @@ function showMessage(color: GlobalMessageColor) {
 
 <template>
   <div class="pa-10 d-flex ga-6">
-    <v-btn color="primary" @click="showMessage('error')">
-      error
-    </v-btn>
-    <v-btn color="primary" @click="showMessage('success')">
-      success
-    </v-btn>
+    <UiLoader />
   </div>
 </template>

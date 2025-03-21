@@ -143,7 +143,7 @@ definePageMeta({ layout: 'login' })
 <template>
   <form class="login">
     <div class="login__logo">
-      <img src="/img/app.svg" />
+      <img src="/img/logo.svg" />
     </div>
     <v-window v-model="window">
       <v-window-item>
@@ -288,10 +288,10 @@ definePageMeta({ layout: 'login' })
 
   &__logo {
     text-align: center;
-    padding: 30px 0;
+    padding: 50px 0 30px;
 
     img {
-      width: 90px;
+      width: 80px;
     }
   }
 

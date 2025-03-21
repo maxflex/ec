@@ -1,6 +1,6 @@
 <template>
   <div class="loader">
-    <span> загрузка... </span>
+    <span> загружаю... </span>
   </div>
 </template>
 
@@ -14,6 +14,7 @@
   justify-content: center;
   position: absolute;
   span {
+    font-size: 30px;
     position: relative;
     color: transparent; /* Makes the text invisible initially */
     background: linear-gradient(120deg, rgba(0, 0, 0, 0.1) 25%, rgba(var(--v-theme-gray)) 50%, rgba(0, 0, 0, 0.1) 75%);
