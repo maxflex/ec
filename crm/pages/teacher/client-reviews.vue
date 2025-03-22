@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ClientReviewListResource } from '~/components/ClientReview'
+
 const { items, indexPageData } = useIndex<ClientReviewListResource>(
   `client-reviews`,
 )

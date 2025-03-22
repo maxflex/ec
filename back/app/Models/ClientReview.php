@@ -53,6 +53,33 @@ class ClientReview extends Model
         return DB::table('requirements')->withExpression('requirements', $requirements);
     }
 
+    /**
+     * @return array{lessons_count: int, years: array<int>}
+     */
+    public static function getLessonsCountAndYears(int $clientId, int $teacherId, Program $program): array
+    {
+
+        $data = DB::table('client_lessons', 'cl')
+            ->join('contract_version_programs as cvp', 'cvp.id', '=', 'cl.contract_version_program_id')
+            ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
+            ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
+            ->join('lessons as l', 'l.id', '=', 'cl.lesson_id')
+            ->selectRaw('
+                COUNT(DISTINCT cl.id) as lessons_count,
+                GROUP_CONCAT(DISTINCT c.year) as years
+            ')
+            ->where('c.client_id', $clientId)
+            ->where('l.teacher_id', $teacherId)
+            ->where('cvp.program', $program)
+            ->groupByRaw('c.client_id, l.teacher_id, cvp.program')
+            ->first();
+
+        return [
+            'lessons_count' => $data->lessons_count,
+            'years' => array_map('intval', explode(',', $data->years)),
+        ];
+    }
+
     public function scopeSelectForUnion($query)
     {
         $query->selectRaw('

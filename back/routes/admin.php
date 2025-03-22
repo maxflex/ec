@@ -138,6 +138,8 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::get('reports/tabs', [ReportController::class, 'tabs']);
 
+    Route::post('client-reviews/send-message', [ClientReviewController::class, 'sendMessage']);
+
     Route::apiResources([
         'telegram-lists' => TelegramListController::class,
         'requests' => RequestsController::class,

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\TelegramTemplate;
 use App\Facades\Telegram;
+use App\Jobs\DeleteClientReviewMessageJob;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -86,12 +87,22 @@ class TelegramMessage extends Model
         if ($phone->telegram_id) {
             try {
                 $telegramId = is_localhost() ? 84626120 : $phone->telegram_id;
-                Telegram::sendMessage(
+                $message = Telegram::sendMessage(
                     $telegramId,
                     $text,
                     'HTML',
                     replyMarkup: $replyMarkup
                 );
+
+                // удаляем сообщение об отзыве, если на него не ответили
+                if ($template === TelegramTemplate::clientReviewRating) {
+                    $job = new DeleteClientReviewMessageJob($message);
+                    if (is_localhost()) {
+                        dispatch($job)->delay(now()->addMinute());
+                    } else {
+                        dispatch($job)->delay(now()->addHours(3));
+                    }
+                }
             } catch (Exception $e) {
                 logger('Cant send telegram message: '.$e->getMessage());
                 //                "message": "Bad Request: chat not found",

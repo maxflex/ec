@@ -122,6 +122,8 @@ export const TelegramTemplateLabel = {
   teacherConductMissing: 'занятие не проведено',
   paymentReminder: 'напоминание об оплате',
   unplannedOrCancelled: 'изменения в расписании',
+  clientReviewRating: 'отзыв клиента - оценка',
+  clientReviewText: 'отзыв клиента - текст',
 }
 
 export const ProgramShortLabel = {

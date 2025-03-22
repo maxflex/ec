@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Common;
 use App\Enums\TelegramTemplate;
 use App\Events\TelegramBotAdded;
 use App\Http\Controllers\Controller;
+use App\Models\Client;
 use App\Models\EventParticipant;
 use App\Models\Phone;
+use App\Utils\ClientReviewMessage;
 use Illuminate\Http\Request;
-use TelegramBot\Api\Client;
 use TelegramBot\Api\Exception;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
 use TelegramBot\Api\Types\ReplyKeyboardRemove;
@@ -30,7 +31,7 @@ class TelegramBotController extends Controller
         }
 
         try {
-            $bot = new Client(config('telegram.key'));
+            $bot = new \TelegramBot\Api\Client(config('telegram.key'));
 
             // Handle /ping command
             $bot->command('ping', function ($message) use ($bot) {
@@ -58,14 +59,13 @@ class TelegramBotController extends Controller
 
             // Handle text messages
             $bot->on(function (Update $update) use ($bot) {
-
-                $callback = $update->getCallbackQuery();
                 /**
                  * Обработка кнопок
                  */
+                $callback = $update->getCallbackQuery();
                 if ($callback !== null) {
                     $message = $callback->getMessage();
-                    $chatId = $message->getChat()->getId();
+                    $telegramId = $message->getChat()->getId();
                     $data = json_decode($callback->getData());
                     if (is_localhost()) {
                         logger('Callback data:', (array) $data);
@@ -73,15 +73,16 @@ class TelegramBotController extends Controller
 
                     /**
                      * Обработка шаблонов
+                     * tid - Template ID
                      */
-                    if (isset($data->template)) {
+                    if (isset($data->tid)) {
                         $bot->deleteMessage(
-                            $chatId,
+                            $telegramId,
                             $message->getMessageId(),
                         );
 
-                        $template = TelegramTemplate::from($data->template);
-                        $template->callback($data, (int) $chatId);
+                        $template = TelegramTemplate::tryFromId($data->tid);
+                        $template?->callback($data, (int) $telegramId);
 
                         return;
                     }
@@ -136,8 +137,12 @@ class TelegramBotController extends Controller
 
                 /**
                  * Произвольное сообщение клиента – в администрацию
-                 * UPD. Отключено
                  */
+                // текст отзыва, обработка
+                $phone = Phone::where('telegram_id', $telegramId)->first();
+                if ($phone?->entity_type === Client::class) {
+                    ClientReviewMessage::setText($phone->entity, $message);
+                }
             }, function () {
                 return true;
             });

@@ -23,7 +23,7 @@ return new class extends Migration
                 'program',
                 collect(Program::cases())->map(fn ($e) => $e->name)->all()
             );
-            $table->text('text');
+            $table->text('text')->nullable();
             $table->unsignedSmallInteger('rating');
             $table->foreignIdFor(User::class)->nullable()->constrained();
             $table->timestamps();

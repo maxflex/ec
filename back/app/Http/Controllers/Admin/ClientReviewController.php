@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ClientReviewListResource;
 use App\Http\Resources\ClientReviewResource;
 use App\Models\ClientReview;
+use App\Utils\ClientReviewMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -59,6 +60,18 @@ class ClientReviewController extends Controller
     public function destroy(ClientReview $clientReview)
     {
         $clientReview->delete();
+    }
+
+    public function sendMessage(Request $request)
+    {
+        $request->validate([
+            'id' => ['required', 'string'],
+        ]);
+
+        $clientReviewMessage = new ClientReviewMessage($request->input('id'));
+        $sent = $clientReviewMessage->sendRatingMessage();
+
+        abort_unless($sent, 422);
     }
 
     protected function filterWebReviewExists(&$query, $value)

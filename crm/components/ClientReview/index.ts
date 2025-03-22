@@ -9,6 +9,7 @@ export interface ClientReviewListResource {
   client: PersonResource
   created_at: string
   is_marked: boolean
+  ttl: number
   exam_scores: Array<{
     id: number
     exam: Exam

@@ -1,15 +1,19 @@
 <script setup lang="ts">
-const props = defineProps<{ seconds: number }>()
+const { seconds, hours } = defineProps<{
+  seconds: number
+  hours?: boolean
+}>()
 const emit = defineEmits(['timeout'])
-const seconds = ref(props.seconds || 0)
 const { $dayjs } = useNuxtApp()
+const countdown = ref(seconds || 0)
+const format = hours ? 'HH:mm:ss' : 'mm:ss'
 let interval: NodeJS.Timeout
 
 onMounted(() => {
-  if (seconds.value > 0) {
+  if (countdown.value > 0) {
     interval = setInterval(() => {
-      seconds.value--
-      if (seconds.value <= 0) {
+      countdown.value--
+      if (countdown.value <= 0) {
         clearInterval(interval)
         emit('timeout')
       }
@@ -21,7 +25,7 @@ onMounted(() => {
 <template>
   <span class="ui-countdown">
     <slot />
-    {{ $dayjs.duration(seconds, "second").format("mm:ss") }}
+    {{ $dayjs.duration(countdown, "second").format(format) }}
   </span>
 </template>
 
