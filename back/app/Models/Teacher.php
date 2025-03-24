@@ -29,6 +29,11 @@ class Teacher extends Person implements HasTeeth
         'passport' => 'array',
     ];
 
+    public function clientReviews(): HasMany
+    {
+        return $this->hasMany(ClientReview::class);
+    }
+
     public function scholarshipScores(): HasMany
     {
         return $this->hasMany(ScholarshipScore::class);

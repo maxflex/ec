@@ -140,6 +140,8 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::post('client-reviews/send-message', [ClientReviewController::class, 'sendMessage']);
 
+    Route::get('teachers/stats/{teacher}', [TeacherController::class, 'stats']);
+
     Route::apiResources([
         'telegram-lists' => TelegramListController::class,
         'requests' => RequestsController::class,
