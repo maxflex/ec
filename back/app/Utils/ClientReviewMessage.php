@@ -63,7 +63,7 @@ class ClientReviewMessage
 
         Telegram::sendMessage(
             $message->getChat()->getId(),
-            'Спасибо за отзыв! Нам очень важно ваше мнение.'
+            'Спасибо за отзыв! Нам важно ваше мнение.'
         );
 
         event(new ClientReviewMessageEvent(
