@@ -194,8 +194,9 @@ readonly class TeacherStats
                     'left' => 0,
                 ];
             } else {
-                $left[$lesson->group_id]->total += $lesson->clientLessons->count();
-                $left[$lesson->group_id]->left += $left[$lesson->group_id]->studentIds->diff($studentIds)->count();
+                $diff = $left[$lesson->group_id]->studentIds->diff($studentIds)->count();
+                $left[$lesson->group_id]->total += $lesson->clientLessons->count() + $diff;
+                $left[$lesson->group_id]->left += $diff;
                 $left[$lesson->group_id]->studentIds = $left[$lesson->group_id]->studentIds->merge($studentIds)->unique()->values();
             }
         }

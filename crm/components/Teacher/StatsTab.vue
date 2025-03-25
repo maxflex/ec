@@ -160,12 +160,7 @@ nextTick(loadAvailableYears)
         Средняя оценка по отзывам
       </div>
       <div>
-        <span v-if="stats.review_rating_avg">
-          {{ stats.review_rating_avg }}
-        </span>
-        <span v-else class="text-gray">
-          нет отзывов
-        </span>
+        {{ stats.review_rating_avg || 'нет отзывов' }}
       </div>
     </div>
     <div>

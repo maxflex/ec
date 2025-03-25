@@ -62,6 +62,27 @@ function isRemote(l: GroupVisitResource, c: PersonResource): boolean {
   return ['lateOnline', 'presentOnline'].includes(status)
 }
 
+// function testy(l: GroupVisitResource, c: PersonResource) {
+//   if (!clientLessons.value || !clientLessons.value[l.id]) {
+//     return ''
+//   }
+//   if (!clientLessons.value[l.id][c.id]) {
+//     const lessons = items.value.filter(e => e.status === 'conducted')
+//     const firstLessonDate = lessons.find(e => e.clientLessons.some(x => x.client.id === c.id))!.dateTime
+//     return lessons
+//       .filter(e =>
+//         e.dateTime > firstLessonDate
+//         && e.dateTime <= l.dateTime
+//         && !e.clientLessons.some(cl => cl.client.id === c.id)
+//         && lessons.some(x =>
+//           x.clientLessons.some(y => y.client.id === c.id)
+//           && x.dateTime <= l.dateTime,
+//         ),
+//       )
+//       .length
+//   }
+// }
+
 function getClientLessonColor(l: GroupVisitResource, c: PersonResource) {
   if (!clientLessons.value || !clientLessons.value[l.id] || !clientLessons.value[l.id][c.id]) {
     return ''
@@ -147,6 +168,9 @@ nextTick(loadData)
               v-if="clientLessons[l.id][c.id]"
               :color="getClientLessonColor(l, c) "
             />
+            <!-- <span v-else-if="l.status === 'conducted'">
+              {{ testy(l, c) }}
+            </span> -->
           </td>
           <td />
         </tr>
