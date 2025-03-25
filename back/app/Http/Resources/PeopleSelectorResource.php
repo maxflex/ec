@@ -2,22 +2,19 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PersonResource extends JsonResource
+/** @mixin Client */
+class PeopleSelectorResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
             'first_name', 'last_name', 'middle_name',
         ], [
-            'entity_type' => $this->entity_type ?? get_class($this->resource),
+            'directions' => $this->current_year_directions,
         ]);
     }
 }

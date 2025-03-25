@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import type { EventAddToDialog, TelegramListDialog } from '#components'
+import type { PeopleSelectorFilters } from '~/components/PeopleSelector/Filters.vue'
 
 const telegramListDialog = shallowRef<InstanceType<typeof TelegramListDialog>>()
 const eventAddToDialog = shallowRef<InstanceType<typeof EventAddToDialog>>()
 const filters = ref<PeopleSelectorFilters>({
   mode: 'clients',
-  year: currentAcademicYear(),
-  program: [],
-  statuses: [],
-  subjects: [],
+  direction: [],
 })
 
 const { items, extra, indexPageData } = useIndex<
@@ -67,20 +65,27 @@ nextTick(() => {
 <template>
   <UiIndexPage class="people-selector" :data="indexPageData">
     <template #filters>
-      <PeopleSelectorFilters v-model="filters" :group-ids="extra.group_ids || []" />
+      <PeopleSelectorFilters v-model="filters" />
     </template>
     <v-table hover class="people-selector-table">
       <tbody>
         <tr @click="selectAll()">
-          <td colspan="100">
+          <td colspan="1000">
             <UiCheckbox :value="isSelectedAll" />
             <span> всего: {{ extra.ids.length }} </span>
           </td>
         </tr>
         <tr v-for="item in items" :key="item.id" @click="select(item)">
+          <td style="width: 500px">
+            <div>
+              <UiCheckbox :value="isSelectedAll || selected[filters.mode].some(id => id === item.id)" />
+              <UiPerson :item="item" teacher-format="full" />
+            </div>
+          </td>
           <td>
-            <UiCheckbox :value="isSelectedAll || selected[filters.mode].some(id => id === item.id)" />
-            <UiPerson :item="item" teacher-format="full" />
+            <template v-if="item.directions">
+              {{ item.directions.map(e => DirectionLabel[e]).join(', ') }}
+            </template>
           </td>
         </tr>
       </tbody>
@@ -92,7 +97,7 @@ nextTick(() => {
       выбрано: {{ selectedTotal }}
     </div>
     <div>
-      <v-btn variant="text" @click="eventAddToDialog?.open(selected, filters.year)">
+      <v-btn variant="text" @click="eventAddToDialog?.open(selected)">
         добавить к событию
       </v-btn>
       <v-btn color="secondary" :to="{ name: 'people-selector-send' }">
@@ -106,20 +111,3 @@ nextTick(() => {
   <TelegramListDialog ref="telegramListDialog" />
   <EventAddToDialog ref="eventAddToDialog" />
 </template>
-
-<style lang="scss">
-.people-selector {
-  &__filters {
-    padding-bottom: 24px !important;
-    overflow: hidden !important;
-    .filters__inputs {
-      width: 100%;
-      & > div {
-        //flex: 1;
-        //width: auto !important;
-        width: 227px !important;
-      }
-    }
-  }
-}
-</style>

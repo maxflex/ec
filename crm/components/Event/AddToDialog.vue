@@ -13,13 +13,17 @@ const selected = ref<SelectedPeople>({
 
 // const selectedTotal = computed(() => selected.value.clients.length + selected.value.teachers.length)
 
-async function open(sp: SelectedPeople, year: Year) {
+async function open(sp: SelectedPeople) {
   dialog.value = true
   loading.value = true
   selected.value = clone(sp)
   const { data } = await useHttp<ApiResponse<EventListResource>>(
     `common/events`,
-    { params: { year } },
+    {
+      params: {
+        year: currentAcademicYear(),
+      },
+    },
   )
   if (data.value) {
     events.value = data.value.data

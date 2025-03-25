@@ -372,9 +372,11 @@ code {
 
   td {
     &:first-child {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      & > div {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
     }
   }
 }

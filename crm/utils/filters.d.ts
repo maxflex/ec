@@ -100,16 +100,6 @@ declare global {
     q?: string
   }
 
-  interface PeopleSelectorFilters {
-    mode: 'clients' | 'teachers'
-    year: Year
-    program: Program[]
-    statuses: SwampFilterStatus[]
-    group_id?: number
-    status?: TeacherStatus
-    subjects: Subject[]
-  }
-
   interface TelegramListFilters {
     status?: TelegramListStatus
   }

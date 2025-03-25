@@ -210,7 +210,7 @@ class Client extends Person implements HasTeeth
     //  2) отсеять: нет в группах
     //  3) отсеять: услуги по договору оказаны
     // 2-3 => оставить тех, кто: либо в группе, либо услуги по договору не оказаны
-    public function scopeCanLogin($query)
+    public function scopeCanLogin($query, bool $onlyCurrentAcademicYear = false)
     {
         // tmp duplication
         // сумма занятий и цен из ContractVersionProgramPrice
@@ -259,8 +259,12 @@ class Client extends Person implements HasTeeth
                 cvp.program
             ');
 
+        $years = $onlyCurrentAcademicYear
+            ? [current_academic_year()]
+            : [current_academic_year(), current_academic_year() + 1];
+
         $query->whereHas('contracts', fn ($q) => $q
-            ->whereIn('contracts.year', [current_academic_year(), current_academic_year() + 1])
+            ->whereIn('contracts.year', $years)
             ->whereRaw('EXISTS (
                 SELECT 1 FROM s
                 WHERE s.contract_id = contracts.id
@@ -311,6 +315,21 @@ class Client extends Person implements HasTeeth
 
         return $this->contracts
             ->where('year', $maxYear)
+            ->map(fn ($c) => $c->active_version)
+            ->map(fn ($activeVersion) => $activeVersion->directions)
+            ->flatten()
+            ->unique()
+            ->all();
+    }
+
+    /**
+     * Направления текущего учебного года
+     * (используется на /people-selector)
+     */
+    public function getCurrentYearDirectionsAttribute()
+    {
+        return $this->contracts
+            ->where('year', current_academic_year())
             ->map(fn ($c) => $c->active_version)
             ->map(fn ($activeVersion) => $activeVersion->directions)
             ->flatten()

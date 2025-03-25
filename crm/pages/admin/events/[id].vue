@@ -17,7 +17,10 @@ async function loadData() {
   }
 }
 
-function setParticipantConfirmation(p: EventParticipant, confirmation: EventParticipantConfirmation) {
+function setParticipantConfirmation(
+  p: EventParticipant,
+  confirmation: EventParticipantConfirmation,
+) {
   p.confirmation = confirmation
   useHttp(`event-participants/${p.id}`, {
     method: 'put',
@@ -51,6 +54,15 @@ nextTick(loadData)
         />
       </div>
       <div class="show__content">
+        <div>
+          <div>
+            Создал
+          </div>
+          <div>
+            {{ formatName(item.user!) }}
+            {{ formatDateTime(item.created_at!) }}
+          </div>
+        </div>
         <div>
           <div>
             Описание

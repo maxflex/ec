@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { color } = defineProps<{
-  color: GlobalMessageColor
+  color?: GlobalMessageColor
 }>()
 const model = defineModel<boolean>({
   default: true,

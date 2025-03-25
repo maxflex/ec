@@ -2,28 +2,24 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Direction;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PeopleSelectorResource;
 use App\Http\Resources\PersonResource;
 use App\Models\Client;
 use App\Models\Teacher;
-use App\Utils\Swamp;
 use Illuminate\Http\Request;
 
 class PeopleSelectorController extends Controller
 {
     protected $clientFilters = [
-        'equals' => [
-            'year', 'client_id', 'group_id'
-        ],
-        'statuses' => ['statuses'],
-        'findInSet' => ['program'],
+        'equals' => ['client_id'],
+        'direction' => ['direction'],
+        'searchByName' => ['q'],
     ];
 
     protected $teacherFilters = [
-        'equals' => ['status'],
-        'findInSet' => ['subjects'],
     ];
-
 
     public function __invoke(Request $request)
     {
@@ -34,33 +30,17 @@ class PeopleSelectorController extends Controller
 
     private function clients(Request $request)
     {
-        $query = Swamp::query();
-
-        $groupsQ = (clone $query)
-            ->whereNotNull('group_id')
-            ->orderBy('group_id')
-            ->groupBy('group_id');
+        $query = Client::canLogin(true);
 
         $this->filter($request, $query, $this->clientFilters);
 
-        $this->filter(new Request($request->except('group_id')), $groupsQ, $this->clientFilters);
-
-        $clientsQ = (clone $query)
-            ->selectRaw("c.id, c.last_name, c.first_name, c.middle_name, ? as entity_type", [
-                Client::class
-            ])
-            ->join('clients as c', 'c.id', '=', 'client_id')
-            ->groupBy('c.id')
-            ->orderByRaw("c.last_name, c.first_name, c.middle_name");
-
-        $result = PersonResource::collection((clone $clientsQ)->paginate(30));
+        $result = PeopleSelectorResource::collection((clone $query)->paginate(30));
 
         if (intval($request->page) === 1) {
             $result->additional([
                 'extra' => [
-                    'ids' => $clientsQ->pluck('c.id')->all(),
-                    'group_ids' => $groupsQ->pluck('group_id')->all(),
-                ]
+                    'ids' => $query->pluck('clients.id')->all(),
+                ],
             ]);
         }
 
@@ -70,8 +50,8 @@ class PeopleSelectorController extends Controller
     private function teachers(Request $request)
     {
         $query = Teacher::query()
-            ->withPayments($request->year)
-            ->orderByRaw("last_name, first_name, middle_name");
+            ->canLogin()
+            ->orderByRaw('last_name, first_name, middle_name');
 
         $this->filter($request, $query, $this->teacherFilters);
 
@@ -81,45 +61,35 @@ class PeopleSelectorController extends Controller
             $result->additional([
                 'extra' => [
                     'ids' => $query->pluck('teachers.id')->all(),
-//                    'group_ids' => $groupsQ->pluck('group_id')->all(),
-                ]
+                ],
             ]);
         }
 
         return $result;
     }
 
-
-    protected function filterStatuses($query, $statuses)
+    protected function filterDirection(&$query, array $values)
     {
-        $query->where(function ($q) use ($statuses) {
-            foreach ($statuses as $status) {
-                switch ($status) {
-                    case 'toFulfil':
-                        $q->orWhereRaw("group_id IS NULL AND total_price_passed < total_price");
-                        break;
+        if (count($values) === 0) {
+            return;
+        }
 
-                    case 'exceedNoGroup':
-                        $q->orWhereRaw("group_id IS NULL AND total_price_passed > total_price");
-                        break;
+        $programs = collect();
+        foreach ($values as $directionString) {
+            $programs = $programs->concat(
+                Direction::from($directionString)->toPrograms()
+            );
+        }
+        $programs = $programs->unique();
 
-                    case 'completeNoGroup':
-                        $q->orWhereRaw("group_id IS NULL AND total_price_passed = total_price");
-                        break;
-
-                    case 'inProcess':
-                        $q->orWhereRaw("group_id IS NOT NULL AND total_price_passed < total_price");
-                        break;
-
-                    case 'exceedInGroup':
-                        $q->orWhereRaw("group_id IS NOT NULL AND total_price_passed > total_price");
-                        break;
-
-                    case 'completeInGroup':
-                        $q->orWhereRaw("group_id IS NOT NULL AND total_price_passed = total_price");
-                        break;
-                }
-            }
-        });
+        $query->whereHas(
+            'contracts',
+            fn ($q) => $q
+                ->where('year', current_academic_year())
+                ->whereHas('versions', fn ($q) => $q
+                    ->where('is_active', true)
+                    ->whereHas('programs', fn ($q) => $q->whereIn('program', $programs))
+                )
+        );
     }
 }
