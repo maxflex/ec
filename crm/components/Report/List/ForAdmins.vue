@@ -9,16 +9,6 @@ const { items } = toRefs(props)
 function isRealReport(r: ReportListResource): r is RealReport {
   return 'status' in r
 }
-
-function getFillColor(r: RealReport) {
-  if (r.fill > 80) {
-    return 'success'
-  }
-  if (r.fill > 50) {
-    return 'orange'
-  }
-  return 'error'
-}
 </script>
 
 <template>
@@ -75,15 +65,7 @@ function getFillColor(r: RealReport) {
           </span>
         </div>
         <div style="width: 100px" class="pr-2">
-          <v-progress-linear
-            bg-color="#92aed9"
-            :color="getFillColor(r)"
-            height="12"
-            max="100"
-            min="0"
-            :model-value="r.fill"
-            rounded
-          />
+          <ReportFill v-model="r.fill" />
         </div>
 
         <div style="width: 100px; flex: initial" class="text-gray">

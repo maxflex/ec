@@ -39,7 +39,7 @@ readonly class TeacherStats
     {
         return [
             'lessons' => $this->getLessons(),
-            'cancelled_count' => $this->getCancelledCount(),
+            'cancelled_percentage' => $this->getCancelledPercentage(),
             'report_fill_avg' => $this->getReportFillAvg(),
             'report_similarity' => $this->getReportSimilarity(),
             'conducted_next_day_count' => $this->getConductedNextDayCount(),
@@ -84,11 +84,14 @@ readonly class TeacherStats
     }
 
     /**
-     * Количество отмен
+     * Доля отмен
      */
-    private function getCancelledCount(): int
+    private function getCancelledPercentage(): int
     {
-        return $this->lessons->where('status', LessonStatus::cancelled)->count();
+        $total = $this->lessons->where('status', LessonStatus::conducted)->count();
+        $cancelled = $this->lessons->where('status', LessonStatus::cancelled)->count();
+
+        return (int) round(($cancelled / $total) * 100);
     }
 
     /**

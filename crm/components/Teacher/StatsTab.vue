@@ -5,7 +5,7 @@ interface TeacherStats {
     conducted: number
     planned: number
   }>
-  cancelled_count: number
+  cancelled_percentage: number
   report_fill_avg: number
   report_similarity: number
   conducted_next_day_count: number
@@ -93,18 +93,18 @@ nextTick(loadAvailableYears)
     </div>
     <div>
       <div>
-        Количество отмен
+        Доля отмен
       </div>
       <div>
-        {{ stats.cancelled_count }}
+        {{ stats.cancelled_percentage }}%
       </div>
     </div>
     <div>
       <div>
         Средний уровень заполненности отчетов со статусом "опубликовано"
       </div>
-      <div>
-        {{ stats.report_fill_avg }}%
+      <div style="width: 100px" class="mt-2">
+        <ReportFill v-model="stats.report_fill_avg" />
       </div>
     </div>
     <div>
