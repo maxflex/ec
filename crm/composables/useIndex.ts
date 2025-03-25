@@ -39,9 +39,12 @@ export default function<T, F extends object = object, E extends object = object>
   let scrollContainer: HTMLElement | null = null
   let page = 0
   let isLastPage = false
+  let abortController: AbortController
 
   async function loadData() {
-    if (loading.value || isLastPage) {
+    abortController?.abort()
+
+    if (isLastPage) {
       return
     }
     page++
@@ -59,7 +62,13 @@ export default function<T, F extends object = object, E extends object = object>
       ...filters.value,
     })
 
-    const { data } = await useHttp<ApiResponse<T>>(apiUrl, { params })
+    abortController = new AbortController()
+
+    const { data } = await useHttp<ApiResponse<T>>(apiUrl, {
+      params,
+      signal: abortController.signal,
+    })
+
     if (data.value) {
       const { extra: e, meta, data: newItems } = data.value
       if (e) {
