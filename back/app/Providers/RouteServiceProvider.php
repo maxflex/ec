@@ -30,6 +30,10 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('pub', function (Request $request) {
             return Limit::perMinute(100)->by($request->ip());
         });
+        // 5 заявок в час с одного IP
+        RateLimiter::for('requests', function (Request $request) {
+            return Limit::perHour(5)->by($request->ip());
+        });
         $this->routes(function () {
             foreach (['common', 'admin', 'client', 'teacher'] as $r) {
                 Route::middleware('crm')

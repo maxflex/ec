@@ -6,7 +6,7 @@ use App\Http\Controllers\Pub\TeacherController;
 use App\Http\Controllers\Pub\WebReviewController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('requests')->controller(RequestsController::class)->group(function () {
+Route::prefix('requests')->middleware('throttle:requests')->controller(RequestsController::class)->group(function () {
     Route::post('/', 'store');
     Route::post('/verify', 'verify');
 });
