@@ -146,7 +146,8 @@ class ClientReviewMessage
                 'lessonsCount' => $lessonsCountAndYears['lessons_count'],
             ], [
                 'id' => $this->fakeId,
-            ]
+            ],
+            $this->fakeId,
         );
 
         if ($sent) {

@@ -7,6 +7,7 @@ use App\Models\Client;
 use App\Models\ClientReview;
 use App\Models\ExamScore;
 use App\Models\Teacher;
+use App\Models\TelegramMessage;
 use App\Utils\ClientReviewMessage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -31,11 +32,13 @@ class ClientReviewListResource extends JsonResource
             $programEnum,
         );
 
-        $id = $this->id ?? collect([
+        $fakeId = collect([
             $this->client_id,
             $this->teacher_id,
             $this->program,
         ])->join('-');
+
+        $id = $this->id ?? $fakeId;
 
         $teacher = Teacher::find($this->teacher_id);
         $client = Client::find($this->client_id);
@@ -47,6 +50,7 @@ class ClientReviewListResource extends JsonResource
             'is_marked' => (bool) $this->is_marked,
             'teacher' => new PersonResource($teacher),
             'client' => new PersonResource($client),
+            'telegram_message' => TelegramMessage::where('extra', $fakeId)->latest()->first()?->text,
             'exam_scores' => ExamScore::where('client_id', $this->client_id)->select([
                 'id', 'score', 'max_score', 'exam',
             ])->get(),

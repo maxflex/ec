@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ClientReviewDialog } from '#build/components'
+import { mdiEye } from '@mdi/js'
 import { apiUrl, type ClientReviewListResource } from '.'
 
 const props = defineProps<{
@@ -13,6 +14,7 @@ const { clientId, teacherId } = props
 const clientReviewDialog = ref<InstanceType<typeof ClientReviewDialog>>()
 const { isTeacher } = useAuthStore()
 const { showGlobalMessage } = useGlobalMessage()
+const readDialog = ref()
 
 function onUpdated(cr: ClientReviewListResource) {
   const index = items.value.findIndex(e => e.id === cr.id)
@@ -105,10 +107,20 @@ onMounted(() => $addSseListener('ClientReviewMessageEvent', ({ item, fakeId }: {
       <div style="width: 120px">
         занятий: {{ item.lessons_count }}
       </div>
-      <div style="width: 180px">
+      <div style="width: 140px">
         <div v-for="year in item.years" :key="year">
           {{ YearLabel[year] }}
         </div>
+      </div>
+      <div style="width: 40px">
+        <v-btn
+          v-if="item.telegram_message"
+          icon="$send"
+          :size="40"
+          color="gray"
+          variant="text"
+          @click="readDialog.open(item.telegram_message)"
+        />
       </div>
       <div style="flex: 1">
         <UiCountDown v-if="item.ttl > 0" :seconds="item.ttl" hours>
@@ -169,6 +181,7 @@ onMounted(() => $addSseListener('ClientReviewMessageEvent', ({ item, fakeId }: {
     @created="onCreated"
     @deleted="onDeleted"
   />
+  <TelegramMessageReadDialog ref="readDialog" />
 </template>
 
 <style lang="scss">

@@ -17,7 +17,7 @@ class TelegramMessage extends Model
 {
     protected $fillable = [
         'text', 'list_id', 'template', 'number', 'telegram_id',
-        'user_id',
+        'user_id', 'extra',
     ];
 
     protected $casts = [
@@ -31,7 +31,8 @@ class TelegramMessage extends Model
         TelegramTemplate $template,
         $receiverOrPhone,
         array $viewVariables = [],
-        array $callbackData = []
+        array $callbackData = [],
+        ?string $extra = null,
     ): bool {
         $phones = $receiverOrPhone instanceof Phone ? [$receiverOrPhone] : $receiverOrPhone->phones;
 
@@ -39,7 +40,13 @@ class TelegramMessage extends Model
 
         foreach ($phones as $phone) {
             $text = $template->getText($viewVariables);
-            $telegramMessage = TelegramMessage::send($phone, $text, $template->getReplyMarkup($callbackData), $template);
+            $telegramMessage = TelegramMessage::send(
+                $phone,
+                $text,
+                $template->getReplyMarkup($callbackData),
+                $template,
+                extra: $extra,
+            );
             if ($telegramMessage && $phone->telegram_id && ! $atLeastOneDelivered) {
                 $atLeastOneDelivered = true;
             }
@@ -61,6 +68,7 @@ class TelegramMessage extends Model
         InlineKeyboardMarkup|ReplyKeyboardMarkup|ReplyKeyboardRemove|ForceReply|null $replyMarkup = null,
         ?TelegramTemplate $template = null,
         ?User $user = null,
+        ?string $extra = null,
     ): ?self {
         if ($phone->is_telegram_disabled) {
             return null;
@@ -82,6 +90,7 @@ class TelegramMessage extends Model
             'text' => $text,
             'template' => $template,
             'user_id' => $user?->id,
+            'extra' => $extra,
         ]);
 
         if ($phone->telegram_id) {
