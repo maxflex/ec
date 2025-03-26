@@ -41,7 +41,7 @@ function onUpdated(p: TeacherPaymentResource) {
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <AvailableYearsSelector2
+      <AvailableYearsSelector
         v-model="filters.year"
         :items="availableYears"
       />

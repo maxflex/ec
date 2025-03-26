@@ -336,7 +336,7 @@ nextTick(loadAvailableYears)
 <template>
   <UiFilters>
     <!-- на странице группы год передаётся явно, там селектор не нужен (v-if="!year") -->
-    <AvailableYearsSelector2 v-if="!year" v-model="selectedYear" :items="availableYears" />
+    <AvailableYearsSelector v-if="!year" v-model="selectedYear" :items="availableYears" />
     <UiClearableSelect
       v-if="programFilter"
       v-model="selectedProgram"

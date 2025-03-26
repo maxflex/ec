@@ -123,7 +123,7 @@ nextTick(loadAvailableYears)
   </UiIndexPage>
   <UiIndexPage v-else :data="{ loading, noData }">
     <template #filters>
-      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
+      <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
     </template>
     <GroupList :items="clientGroups" />
     <SwampList :items="swamps" @attach="onAttachStart" />

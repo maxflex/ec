@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Common\AuthController;
-use App\Http\Controllers\Common\AvailableYearsController;
 use App\Http\Controllers\Common\EventController;
 use App\Http\Controllers\Common\ExamDateController;
 use App\Http\Controllers\Common\FileController;
@@ -26,8 +25,6 @@ Route::post('mango/events/{event}', MangoController::class)
     ->name('mango');
 
 Route::post('files', FileController::class);
-
-Route::get('available-years', AvailableYearsController::class);
 
 Route::middleware(['auth:crm'])->group(function () {
     Route::controller(AuthController::class)->prefix('auth')->group(function () {

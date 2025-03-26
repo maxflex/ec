@@ -33,7 +33,7 @@ watch(filters.value, () => {
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
+      <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
       <UiClearableSelect
         v-model="selectedProgram"
         label="Программа"

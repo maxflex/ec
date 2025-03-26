@@ -23,7 +23,7 @@ const filteredItems = computed(() =>
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" @update:model-value="selectedProgram = undefined" />
+      <AvailableYearsSelector v-model="filters.year" :items="availableYears" @update:model-value="selectedProgram = undefined" />
       <UiClearableSelect
         v-model="selectedProgram"
         label="Программа"

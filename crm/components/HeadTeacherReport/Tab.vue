@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { AvailableYearsSelector2, HeadTeacherReportDialog } from '#components'
+import type { HeadTeacherReportResource } from '.'
+import { HeadTeacherReportDialog } from '#components'
 
 const { teacherId } = defineProps<{
   teacherId: number
@@ -41,7 +42,7 @@ function onDeleted(item: HeadTeacherReportResource) {
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
+      <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
     </template>
     <HeadTeacherReportList :items="items" @edit="dialogRef?.edit" />
   </UiIndexPage>

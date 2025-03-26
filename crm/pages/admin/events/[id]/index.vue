@@ -110,7 +110,7 @@ nextTick(loadData)
             </RouterLink>
           </div>
         </div>
-        <div class="mb-10">
+        <div class="mb-8">
           <v-btn color="primary" :width="300" :to="{ name: 'events-id-participants', params: { id: item.id } }">
             добавить участников
           </v-btn>
@@ -174,8 +174,9 @@ nextTick(loadData)
       </div>
       <v-btn
         v-if="item?.participants?.clients.length || item?.participants?.teachers.length"
-        color="secondary"
         class="mt-8"
+        color="primary"
+        :width="300"
         :to="{
           name: 'people-selector-send',
           query: {
@@ -184,9 +185,6 @@ nextTick(loadData)
         }"
       >
         сообщение участникам
-        <template #append>
-          <v-icon icon="$next" />
-        </template>
       </v-btn>
     </div>
   </v-fade-transition>

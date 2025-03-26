@@ -39,7 +39,7 @@ function onDeleted(p: ClientPaymentResource) {
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
+      <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
     </template>
     <template #buttons>
       <v-btn

@@ -18,7 +18,7 @@ const { items, indexPageData, availableYears } = useIndex<GroupListResource, Ava
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
+      <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
     </template>
     <GroupList :items="items" />
   </UiIndexPage>

@@ -66,7 +66,7 @@ nextTick(loadAvailableYears)
 
 <template>
   <UiFilters>
-    <AvailableYearsSelector2 v-model="selectedYear" :items="availableYears" />
+    <AvailableYearsSelector v-model="selectedYear" :items="availableYears" />
   </UiFilters>
 
   <UiNoData v-if="availableYears && availableYears.length === 0" />

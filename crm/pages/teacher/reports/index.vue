@@ -25,7 +25,7 @@ const { items, indexPageData, availableYears } = useIndex<ReportListResource, Fi
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
+      <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
       <UiClearableSelect
         v-model="filters.requirement"
         label="Тип"
