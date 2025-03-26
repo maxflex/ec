@@ -18,6 +18,7 @@ const modelDefaults: EventResource = {
   description: null,
   duration: null,
   is_afterclass: false,
+  is_private: false,
 }
 const item = ref<EventResource>(modelDefaults)
 const route = useRoute()
@@ -155,6 +156,10 @@ defineExpose({ create, edit })
           <v-checkbox
             v-model="item.is_afterclass"
             label="Внеучебное"
+          />
+          <v-checkbox
+            v-model="item.is_private"
+            label="Конфиденциальное"
           />
         </div>
       </div>

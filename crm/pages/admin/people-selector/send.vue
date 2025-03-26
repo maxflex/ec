@@ -173,6 +173,7 @@ nextTick(async () => {
         <div class="double-input">
           <UiDateInput
             v-model="scheduledAt.date"
+            dialog2
           />
           <div>
             <v-text-field

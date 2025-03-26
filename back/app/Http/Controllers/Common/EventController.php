@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Common;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EventListResource;
 use App\Http\Resources\EventResource;
-use App\Models\{Client, Event, Teacher};
+use App\Models\Client;
+use App\Models\Event;
+use App\Models\Teacher;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
@@ -13,7 +16,7 @@ class EventController extends Controller
     protected $filters = [
         'equals' => ['year'],
         'client' => ['client_id'],
-        'teacher' => ['teacher_id']
+        'teacher' => ['teacher_id'],
     ];
 
     /**
@@ -22,10 +25,18 @@ class EventController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            'year' => ['required']
+            'year' => ['required'],
         ]);
+
         $query = Event::withCount('participants')->latest();
+
+        // конфиденциальные события видны только админам
+        if (get_class(auth('crm')->user()) !== User::class) {
+            $query->where('is_private', false);
+        }
+
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, EventListResource::class);
     }
 
@@ -36,6 +47,7 @@ class EventController extends Controller
     {
         $event = auth()->user()->events()->create($request->all());
         $event->loadCount('participants');
+
         return new EventListResource($event);
     }
 
@@ -45,6 +57,7 @@ class EventController extends Controller
     public function show(Event $event)
     {
         $event->loadCount('participants');
+
         return new EventResource($event);
     }
 
@@ -55,6 +68,7 @@ class EventController extends Controller
     {
         $event->update($request->all());
         $event->loadCount('participants');
+
         return new EventListResource($event);
     }
 
@@ -71,7 +85,7 @@ class EventController extends Controller
     {
         $where = [
             ['entity_type', Client::class],
-            ['entity_id', $clientId]
+            ['entity_id', $clientId],
         ];
         $query
             ->whereHas('participants', fn ($q) => $q->where($where))
@@ -82,7 +96,7 @@ class EventController extends Controller
     {
         $where = [
             ['entity_type', Teacher::class],
-            ['entity_id', $teacherId]
+            ['entity_id', $teacherId],
         ];
         $query
             ->whereHas('participants', fn ($q) => $q->where($where))

@@ -38,7 +38,7 @@ function getSentCount(l: TelegramListResource): number {
       class="table-item"
     >
       <div style="width: 250px">
-        отправка от {{ formatDateTime(item.created_at!) }}
+        рассылка от {{ formatDateTime(item.created_at!) }}
       </div>
       <div style="width: 200px">
         {{ SendToLabel[item.send_to] }}

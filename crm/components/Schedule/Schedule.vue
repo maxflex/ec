@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import type {
   ClientLessonEditPriceDialog,
-  EventDialog,
   LessonBulkCreateDialog,
   LessonBulkUpdateDialog,
   LessonConductDialog,
   LessonDialog,
 } from '#build/components'
 import {
+  EventItemAdmin,
+  EventItemClient,
+  EventItemTeacher,
   LessonItemAdminClient,
   LessonItemAdminGroup,
   LessonItemAdminTeacher,
@@ -34,7 +36,6 @@ const { groupId, teacherId, clientId, program, showTeeth, year, programFilter, h
 const selectedProgram = ref<Program>()
 const selectedYear = ref<Year>()
 const hideEmptyDates = ref<number>(1)
-const availableYearsLoaded = ref(false)
 const { user, isTeacher, isClient } = useAuthStore()
 const isMassEditable = user?.entity_type === EntityTypeValue.user && !!groupId
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
@@ -52,7 +53,6 @@ const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
 const clientLessonEditPriceDialog = ref<InstanceType<typeof ClientLessonEditPriceDialog>>()
 const lessonBulkUpdateDialog = ref<InstanceType<typeof LessonBulkUpdateDialog>>()
 const lessonBulkCreateDialog = ref<InstanceType<typeof LessonBulkCreateDialog>>()
-const eventDialog = ref<InstanceType<typeof EventDialog>>()
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 const vacations = ref<Record<string, boolean>>({})
 const examDates = ref<ExamDateResource[]>([])
@@ -149,7 +149,26 @@ const itemsByDate = computed(
   },
 )
 
+const availableYears = ref<Year[]>()
 const availablePrograms = computed(() => [...new Set(lessons.value.map(l => l.group.program))])
+
+async function loadAvailableYears() {
+  const { data } = await useHttp<Year[]>(
+    `groups`,
+    {
+      params: {
+        ...params,
+        available_years: 1,
+      },
+    },
+  )
+  if (data.value) {
+    availableYears.value = data.value
+    if (data.value.length > 0) {
+      selectedYear.value = data.value[0]
+    }
+  }
+}
 
 async function loadLessons() {
   loading.value = true
@@ -274,16 +293,17 @@ function toggleCheckboxes(id: number) {
   }
 }
 
-function onAvailableYearsLoaded() {
-  availableYearsLoaded.value = true
-  // подгружаем данные только если есть какой-то год
-  if (selectedYear.value) {
-    loadData()
-    watch(selectedYear, loadData)
+const eventComponent = (function () {
+  if (isClient) {
+    return EventItemClient
   }
-}
+  if (isTeacher) {
+    return EventItemTeacher
+  }
+  return EventItemAdmin
+})()
 
-const lessonItemComponent = (function () {
+const lessonComponent = (function () {
   if (isClient) {
     console.log('LessonItemHeadTeacher')
     return LessonItemClientLK
@@ -307,19 +327,16 @@ const lessonItemComponent = (function () {
   console.log('LessonItemAdminGroup')
   return LessonItemAdminGroup
 })()
+
+watch(selectedYear, loadData)
+
+nextTick(loadAvailableYears)
 </script>
 
 <template>
   <UiFilters>
-    <!-- v-if="!year" на странице группы год передаётся явно, там селектор не нужен -->
-    <AvailableYearsSelector
-      v-if="!year"
-      v-model="selectedYear"
-      :client-id="clientId"
-      :teacher-id="teacherId"
-      mode="schedule"
-      @loaded="onAvailableYearsLoaded()"
-    />
+    <!-- на странице группы год передаётся явно, там селектор не нужен (v-if="!year") -->
+    <AvailableYearsSelector2 v-if="!year" v-model="selectedYear" :items="availableYears" />
     <UiClearableSelect
       v-if="programFilter"
       v-model="selectedProgram"
@@ -362,7 +379,7 @@ const lessonItemComponent = (function () {
       </v-fade-transition>
     </template>
   </UiFilters>
-  <UiNoData v-if="availableYearsLoaded && !selectedYear" />
+  <UiNoData v-if="availableYears !== undefined && !selectedYear" />
   <UiLoader v-else-if="loading" />
   <div v-else class="schedule">
     <div
@@ -400,14 +417,14 @@ const lessonItemComponent = (function () {
         </div>
       </template>
       <template v-for="item in itemsByDate[d]">
-        <EventItem
+        <component
+          :is="eventComponent"
           v-if="isEvent(item)"
           :key="`e-${item.id}`"
           :item="item"
-          @edit="eventDialog?.edit"
         />
         <component
-          :is="lessonItemComponent"
+          :is="lessonComponent"
           v-else
           :id="`lesson-${item.id}`"
           :key="`l-${item.id}`"
@@ -425,7 +442,6 @@ const lessonItemComponent = (function () {
   </div>
   <LessonDialog ref="lessonDialog" />
   <ClientLessonEditPriceDialog v-if="clientId" ref="clientLessonEditPriceDialog" />
-  <EventDialog ref="eventDialog" />
   <LessonConductDialog ref="conductDialog" @updated="loadLessons" />
   <template v-if="isMassEditable">
     <LessonBulkUpdateDialog ref="lessonBulkUpdateDialog" @updated="onBulkUpdated" />

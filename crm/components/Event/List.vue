@@ -37,11 +37,10 @@ const eventsByDate = computed(() => groupBy(x => x.date, items))
           {{ dayLabels[getDay(d)] }}
         </span>
       </div>
-      <EventItem
+      <EventItemAdmin
         v-for="e in eventsByDate[d]"
         :key="e.id"
         :item="e"
-        @edit="x => $emit('edit', x)"
       />
     </div>
   </div>

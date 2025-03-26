@@ -35,12 +35,15 @@ async function loadData() {
 
 async function loadAvailableYears() {
   loading.value = true
-  const { data } = await useHttp<Year[]>(`contracts`, {
-    params: {
-      client_id: clientId,
-      available_years: 1,
+  const { data } = await useHttp<Year[]>(
+    `contracts`,
+    {
+      params: {
+        client_id: clientId,
+        available_years: 1,
+      },
     },
-  })
+  )
   availableYears.value = data.value!
 
   if (availableYears.value.length > 0) {

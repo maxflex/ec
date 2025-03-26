@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { mdiVideo } from '@mdi/js'
-
 const { item } = defineProps<{
   item: LessonListResource
 }>()

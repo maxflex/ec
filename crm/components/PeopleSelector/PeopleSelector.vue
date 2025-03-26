@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import type { EventAddToDialog } from '#components'
 import type { PeopleSelectorFilters } from '~/components/PeopleSelector/Filters.vue'
 
-const eventAddToDialog = shallowRef<InstanceType<typeof EventAddToDialog>>()
+const { event } = defineProps<{
+  event?: EventResource
+}>()
+
 const filters = ref<PeopleSelectorFilters>({
   mode: 'clients',
   direction: [],
@@ -17,10 +19,23 @@ const { items, extra, indexPageData } = useIndex<
   filters,
 )
 
-const selected = ref<SelectedPeople>({
-  clients: [],
-  teachers: [],
-})
+const router = useRouter()
+const loading = ref(false)
+
+function getDefaultSelectedPeople(): SelectedPeople {
+  if (event) {
+    return {
+      clients: event.participants!.clients.map(e => e.entity.id),
+      teachers: event.participants!.teachers.map(e => e.entity.id),
+    }
+  }
+  return {
+    clients: [],
+    teachers: [],
+  }
+}
+
+const selected = ref<SelectedPeople>(getDefaultSelectedPeople())
 
 const selectedTotal = computed(() => {
   const { clients, teachers } = selected.value
@@ -47,18 +62,24 @@ function clearSelection() {
   }
 }
 
-watch(selected, (newVal) => {
-  selectedTotal.value === 0
-    ? localStorage.removeItem('selected-people')
-    : localStorage.setItem('selected-people', JSON.stringify(newVal))
-}, { deep: true })
-
-nextTick(() => {
-  const selectedPeople = localStorage.getItem('selected-people')
-  if (selectedPeople) {
-    selected.value = JSON.parse(selectedPeople) as SelectedPeople
+async function addToEvent() {
+  if (!event) {
+    return
   }
-})
+
+  loading.value = true
+  await useHttp(
+    `event-participants`,
+    {
+      method: 'post',
+      body: {
+        id: event.id,
+        selected: selected.value,
+      },
+    },
+  )
+  await router.push({ name: 'events-id', params: { id: event.id } })
+}
 </script>
 
 <template>
@@ -98,16 +119,9 @@ nextTick(() => {
       выбрано: {{ selectedTotal }}
     </div>
     <div>
-      <v-btn variant="text" @click="eventAddToDialog?.open(selected)">
-        добавить к событию
-      </v-btn>
-      <v-btn color="secondary" :to="{ name: 'people-selector-send' }">
-        отправить
-        <template #append>
-          <v-icon icon="$next" />
-        </template>
+      <v-btn v-if="event" variant="text" :loading="loading" @click="addToEvent()">
+        сохранить
       </v-btn>
     </div>
   </UiBottomBar>
-  <EventAddToDialog ref="eventAddToDialog" />
 </template>

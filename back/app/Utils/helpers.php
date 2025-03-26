@@ -205,6 +205,20 @@ function save_csv(Collection $csv): string
     return cdn('other', $filename);
 }
 
+/**
+ * Teacher => teachers
+ * ClientParent => parents
+ * Client => clients
+ */
+function get_entity_type_key(string $entityType): string
+{
+    return match ($entityType) {
+        \App\Models\Teacher::class => 'teachers',
+        \App\Models\Client::class => 'clients',
+        \App\Models\ClientParent::class => 'parents',
+    };
+}
+
 function plural($n, $one, $few, $many)
 {
     $text = $n % 10 == 1 && $n % 100 != 11 ? $one : ($n % 10 >= 2 && $n % 10 <= 4 && ($n % 100 < 10 || $n % 100 >= 20) ? $few : $many);

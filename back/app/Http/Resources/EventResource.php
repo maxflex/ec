@@ -26,16 +26,18 @@ class EventResource extends JsonResource
                 ->get()
                 ->sortBy([
                     ['entity.last_name', 'asc'],
-                    ['entity.first_name', 'asc']
+                    ['entity.first_name', 'asc'],
                 ])
                 ->values()
-                ->map(fn($p) => extract_fields($p, [
-                    'confirmation'
+                ->map(fn ($p) => extract_fields($p, [
+                    'confirmation',
                 ], [
-                    'entity' => new PersonResource($p->entity)
+                    'entity' => new PersonResource($p->entity),
                 ]));
         }
+
         return extract_fields($this, ['*'], [
+            'telegram_lists' => $this->telegramLists,
             'user' => new PersonResource($this->user),
             'participants' => $participants,
         ]);

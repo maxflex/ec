@@ -12,10 +12,12 @@ class Event extends Model
     protected $fillable = [
         'date', 'time', 'name', 'description',
         'is_afterclass', 'duration', 'year',
+        'is_private',
     ];
 
     protected $casts = [
         'is_afterclass' => 'boolean',
+        'is_private' => 'boolean',
         'duration' => 'int',
     ];
 
@@ -27,6 +29,11 @@ class Event extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function telegramLists(): HasMany
+    {
+        return $this->hasMany(TelegramList::class);
     }
 
     public function getTimeEndAttribute()

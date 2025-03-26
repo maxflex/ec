@@ -17,14 +17,15 @@ class EventListResource extends JsonResource
         return extract_fields($this, [
             'date', 'name', 'time', 'time_end',
             'is_afterclass', 'participants_count',
-            'description'
+            'description', 'is_private',
         ], [
+            'user' => new PersonResource($this->user),
             'participant' => $this->whenLoaded(
                 'participants',
                 fn () => extract_fields($this->participants[0], [
-                    'is_confirmed'
+                    'is_confirmed',
                 ])
-            )
+            ),
         ]);
     }
 }

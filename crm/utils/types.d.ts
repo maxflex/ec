@@ -635,9 +635,11 @@ declare global {
     date: string
     description: ?string
     is_afterclass: boolean
+    is_private: boolean
     participants_count: number
     time?: string
     time_end?: string
+    user: PersonResource
     participant?: {
       id: number
       confirmation: EventParticipantConfirmation
@@ -659,8 +661,13 @@ declare global {
     duration: ?number
     description: ?string
     is_afterclass: boolean
+    is_private: boolean
     user?: PersonResource
     created_at?: string
+    telegram_lists: Array<{
+      id: number
+      created_at: string
+    }>
     participants?: {
       clients: EventParticipant[]
       teachers: EventParticipant[]
@@ -927,7 +934,6 @@ declare global {
 
   interface PeopleSelectorExtra {
     ids: number[]
-    group_ids: number[]
   }
 
   interface SelectedPeople {
@@ -940,12 +946,14 @@ declare global {
     teachers: PersonResource[]
   }
 
-  interface TelegramListResult {
-    id: number
-    is_sent: boolean
-    is_parent: boolean
-    number: string
-    is_telegram_disabled?: boolean
+  type PeopleSelector = keyof typeof PeopleSelectorLabel
+
+  interface TelegramListResult extends PersonResource {
+    messages: Array<{
+      id: number
+      telegram_id: ?number
+      number: string
+    }>
   }
 
   interface TelegramListResource {
@@ -962,7 +970,7 @@ declare global {
       name: string
     }
     text: string
-    results?: { [key: string]: TelegramListResult[] }
+    result: Record<PeopleSelector, TelegramListResult[]>
   }
 
   interface GroupActResource {

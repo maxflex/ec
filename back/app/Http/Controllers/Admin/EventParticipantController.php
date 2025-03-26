@@ -46,4 +46,9 @@ class EventParticipantController extends Controller
             }
         }
     }
+
+    public function destroy(EventParticipant $eventParticipant)
+    {
+        $eventParticipant->delete();
+    }
 }

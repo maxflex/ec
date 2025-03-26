@@ -502,3 +502,12 @@ tr.hoverable {
     }
   }
 }
+
+.event-item {
+  align-items: flex-start !important;
+  &__status {
+    margin-top: 3px;
+    width: 110px;
+    line-height: 18px;
+  }
+}

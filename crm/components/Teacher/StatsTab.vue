@@ -26,7 +26,7 @@ const availableYears = ref<Year[]>()
 
 const stats = ref<TeacherStats>()
 
-const year = ref<Year>()
+const selectedYear = ref<Year>()
 
 async function loadData() {
   stats.value = undefined
@@ -34,7 +34,7 @@ async function loadData() {
     `teachers/stats/${teacherId}`,
     {
       params: {
-        year: year.value,
+        year: selectedYear.value,
       },
     },
   )
@@ -54,19 +54,19 @@ async function loadAvailableYears() {
   if (data.value) {
     availableYears.value = data.value
     if (data.value.length > 0) {
-      year.value = data.value[0]
+      selectedYear.value = data.value[0]
     }
   }
 }
 
-watch(year, loadData)
+watch(selectedYear, loadData)
 
 nextTick(loadAvailableYears)
 </script>
 
 <template>
   <UiFilters>
-    <AvailableYearsSelector2 v-model="year" :items="availableYears" />
+    <AvailableYearsSelector2 v-model="selectedYear" :items="availableYears" />
   </UiFilters>
 
   <UiNoData v-if="availableYears && availableYears.length === 0" />

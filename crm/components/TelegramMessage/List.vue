@@ -21,9 +21,9 @@ const readDialog = ref()
       <div style="flex: 1" class="text-truncate relative">
         {{ m.text }}
       </div>
-      <div v-if="m.list_id" style="width: 100px">
+      <div v-if="m.list_id" style="width: 110px">
         <RouterLink :to="{ name: 'telegram-lists-id', params: { id: m.list_id } }">
-          отправка {{ m.list_id }}
+          рассылка {{ m.list_id }}
         </RouterLink>
       </div>
       <div style="width: 40px">

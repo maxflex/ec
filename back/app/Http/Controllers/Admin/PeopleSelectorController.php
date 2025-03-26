@@ -30,7 +30,8 @@ class PeopleSelectorController extends Controller
 
     private function clients(Request $request)
     {
-        $query = Client::canLogin(true);
+        $query = Client::canLogin(true)
+            ->orderByRaw('last_name, first_name, middle_name');
 
         $this->filter($request, $query, $this->clientFilters);
 

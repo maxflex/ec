@@ -13,14 +13,14 @@ class TelegramListResource extends JsonResource
     {
         return extract_fields($this, [
             'send_to', 'text', 'created_at', 'scheduled_at',
-            'is_confirmable', 'status'
+            'is_confirmable', 'status',
         ], [
             'recipients' => TelegramList::getPeople($this->recipients),
             'event' => $this->when(
-                !!$this->event_id,
-                fn() => extract_fields($this->event, ['name'])
+                (bool) $this->event_id,
+                fn () => extract_fields($this->event, ['name'])
             ),
-            'results' => $this->getResults()
+            'result' => $this->getResult(),
         ]);
     }
 }

@@ -94,6 +94,7 @@ Route::middleware(['auth:crm'])->group(function () {
     Route::prefix('event-participants')->controller(EventParticipantController::class)->group(function () {
         Route::post('/', 'store');
         Route::put('/{eventParticipant}', 'update');
+        Route::delete('/{eventParticipant}', 'destroy');
         Route::get('/{event}', 'show');
     });
 

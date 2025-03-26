@@ -687,3 +687,9 @@ export const InstructionStatusLabel = {
   finalCheckBeforePublished: 'финальная проверка перед публикацией',
   published: 'опубликовано',
 }
+
+export const PeopleSelectorLabel = {
+  clients: 'Ученики',
+  parents: 'Представители',
+  teachers: 'Преподаватели',
+}

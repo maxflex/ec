@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { EventDialog } from '#components'
-import { mdiCheckAll } from '@mdi/js'
+import { mdiAccountGroup, mdiCheckAll, mdiPlus } from '@mdi/js'
 
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
 const { $addSseListener, $removeSseListener } = useNuxtApp()
@@ -28,6 +28,14 @@ function setParticipantConfirmation(
   })
 }
 
+function deleteParticipant(key: 'clients' | 'teachers', p: EventParticipant) {
+  const index = item.value!.participants![key].findIndex(e => e.id === p.id)
+  item.value!.participants![key].splice(index, 1)
+  useHttp(`event-participants/${p.id}`, {
+    method: 'delete',
+  })
+}
+
 $addSseListener('ParticipantConfirmationEvent', (data: any) => {
   console.log('ParticipantConfirmationEvent', data)
   loadData()
@@ -46,12 +54,14 @@ nextTick(loadData)
         <h2>
           {{ item.name }}
         </h2>
-        <v-btn
-          variant="plain"
-          icon="$edit"
-          :size="48"
-          @click="eventDialog?.edit(item.id)"
-        />
+        <div>
+          <v-btn
+            variant="plain"
+            icon="$edit"
+            :size="48"
+            @click="eventDialog?.edit(item.id)"
+          />
+        </div>
       </div>
       <div class="show__content">
         <div>
@@ -86,18 +96,37 @@ nextTick(loadData)
             {{ item.is_afterclass ? 'внеклассное' : 'учебное' }} событие
           </div>
         </div>
+        <div>
+          <div>Видимость</div>
+          <div>
+            {{ item.is_private ? 'конфиденциальное' : 'публичное' }}
+          </div>
+        </div>
+        <div>
+          <div>Рассылки</div>
+          <div v-for="tl in item.telegram_lists" :key="tl.id">
+            <RouterLink :to="{ name: 'telegram-lists-id', params: { id: tl.id } }">
+              рассылка от {{ formatDateTime(tl.created_at!) }}
+            </RouterLink>
+          </div>
+        </div>
+        <div class="mb-10">
+          <v-btn color="primary" :width="300" :to="{ name: 'events-id-participants', params: { id: item.id } }">
+            добавить участников
+          </v-btn>
+        </div>
         <template v-for="(participants, key) in item.participants">
           <div v-if="participants.length" :key="key">
             <div class="mb-1">
               {{ key === 'clients' ? 'Клиенты' : 'Преподаватели' }}
             </div>
-            <v-table>
+            <v-table class="event-participants">
               <tbody>
                 <tr v-for="p in participants" :key="p.id">
-                  <td style="width: 400px" class="pl-5">
+                  <td width="400" class="pl-5">
                     <UiPerson :item="p.entity" />
                   </td>
-                  <td>
+                  <td width="230" class="pr-0">
                     <v-menu>
                       <template #activator="{ props }">
                         <span v-bind="props" class="cursor-pointer">
@@ -129,6 +158,14 @@ nextTick(loadData)
                       </v-list>
                     </v-menu>
                   </td>
+                  <td class="pl-0">
+                    <v-icon
+                      :icon="mdiPlus"
+                      color="gray"
+                      class="event-participants__remove"
+                      @click.stop="deleteParticipant(key, p)"
+                    />
+                  </td>
                 </tr>
               </tbody>
             </v-table>
@@ -155,3 +192,25 @@ nextTick(loadData)
   </v-fade-transition>
   <EventDialog ref="eventDialog" @updated="loadData()" />
 </template>
+
+<style lang="scss">
+.event-participants {
+  tr {
+    .event-participants__remove {
+      opacity: 0;
+    }
+    &:hover {
+      .event-participants__remove {
+        opacity: 1;
+      }
+    }
+  }
+  &__remove {
+    transform: rotate(45deg);
+    transition: opacity ease-in-out 0.2s;
+    &:hover {
+      color: rgb(var(--v-theme-error)) !important;
+    }
+  }
+}
+</style>
