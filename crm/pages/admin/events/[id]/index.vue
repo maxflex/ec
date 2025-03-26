@@ -104,11 +104,16 @@ nextTick(loadData)
         </div>
         <div>
           <div>Рассылки</div>
-          <div v-for="tl in item.telegram_lists" :key="tl.id">
-            <RouterLink :to="{ name: 'telegram-lists-id', params: { id: tl.id } }">
-              рассылка от {{ formatDateTime(tl.created_at!) }}
-            </RouterLink>
+          <div v-if="item.telegram_lists.length === 0">
+            нет рассылок
           </div>
+          <template v-else>
+            <div v-for="tl in item.telegram_lists" :key="tl.id">
+              <RouterLink :to="{ name: 'telegram-lists-id', params: { id: tl.id } }">
+                рассылка от {{ formatDateTime(tl.created_at!) }}
+              </RouterLink>
+            </div>
+          </template>
         </div>
         <div class="mb-8">
           <v-btn color="primary" :width="300" :to="{ name: 'events-id-participants', params: { id: item.id } }">
