@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Enums\Program;
-use App\Http\Resources\JournalResource;
 use App\Http\Resources\ReportListResource;
 use App\Http\Resources\ReportResource;
 use App\Models\Report;
@@ -18,7 +17,7 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
     public function index(Request $request)
     {
         // классруку можно видеть не только свои отчеты
-        if (!auth()->user()->is_head_teacher) {
+        if (! auth()->user()->is_head_teacher) {
             $request->merge([
                 'teacher_id' => auth()->id(),
             ]);
@@ -35,9 +34,10 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
         $request->validate([
             'client_id' => ['required', 'exists:clients,id'],
             'program' => [Rule::enum(Program::class)],
-            'year' => ['required', 'numeric', 'gt:0']
+            'year' => ['required', 'numeric', 'gt:0'],
         ]);
         $report = auth()->user()->reports()->create($request->all());
+
         return new ReportListResource($report);
     }
 
@@ -50,6 +50,7 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
             auth()->user()->is_head_teacher || $report->teacher_id === auth()->id(),
             403
         );
+
         return new ReportResource($report);
     }
 
@@ -60,6 +61,7 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
     {
         abort_if($report->teacher_id !== auth()->id(), 403);
         $report->update($request->all());
+
         return new ReportListResource($report);
     }
 
@@ -70,23 +72,5 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
     {
         abort_if($report->teacher_id !== auth()->id(), 403);
         $report->delete();
-    }
-
-    /**
-     * Получить занятия для отображения в диалоге "Новый отчёт"
-     */
-    public function lessons(Request $request)
-    {
-        $request->validate([
-            'year' => ['required', 'numeric'],
-            'client_id' => ['required', 'exists:clients,id'],
-            'program' => ['required', Rule::enum(Program::class)]
-        ]);
-
-        $report = new Report($request->all());
-        $report->teacher_id = auth()->id();
-        $report->setCreatedAt(now());
-
-        return JournalResource::collection($report->clientLessons);
     }
 }

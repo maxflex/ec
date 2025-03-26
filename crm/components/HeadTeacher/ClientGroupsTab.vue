@@ -4,6 +4,7 @@ const { clientId } = defineProps<{ clientId: number }>()
 const filters = ref<AvailableYearsFilter>({
   year: undefined,
 })
+
 const { items, indexPageData, availableYears } = useIndex<GroupListResource, AvailableYearsFilter>(
   `groups`,
   filters,

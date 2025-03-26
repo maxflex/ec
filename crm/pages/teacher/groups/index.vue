@@ -1,13 +1,15 @@
 <script setup lang="ts">
-const filters = ref<AvailableYearsFilter>({ })
-const { user } = useAuthStore()
+const filters = ref<AvailableYearsFilter>({
+  year: undefined,
+})
+
 const selectedProgram = ref<Program>()
 
-const { items, indexPageData } = useIndex<GroupListResource, AvailableYearsFilter>(
+const { items, indexPageData, availableYears } = useIndex<GroupListResource, AvailableYearsFilter>(
   `groups`,
   filters,
   {
-    instantLoad: false,
+    loadAvailableYears: true,
   },
 )
 
@@ -31,11 +33,7 @@ watch(filters.value, () => {
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <AvailableYearsSelector
-        v-model="filters.year"
-        :teacher-id="user!.id"
-        mode="groups"
-      />
+      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
       <UiClearableSelect
         v-model="selectedProgram"
         label="Программа"

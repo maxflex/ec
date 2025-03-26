@@ -27,10 +27,6 @@ class ReportController extends Controller
      */
     public function index(Request $request)
     {
-        $request->validate([
-            'year' => ['required'],
-        ]);
-
         $query = DB::table('r')->withExpression('r',
             Report::selectForUnion()->union(Report::requirements())
         );

@@ -153,12 +153,15 @@ const availablePrograms = computed(() => [...new Set(lessons.value.map(l => l.gr
 
 async function loadLessons() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<LessonListResource>>(`lessons`, {
-    params: {
-      ...params,
-      year: groupId ? undefined : selectedYear.value,
+  const { data } = await useHttp<ApiResponse<LessonListResource>>(
+    `lessons`,
+    {
+      params: {
+        ...params,
+        year: groupId ? undefined : selectedYear.value,
+      },
     },
-  })
+  )
   if (data.value) {
     lessons.value = data.value.data
   }
@@ -170,12 +173,15 @@ async function loadEvents() {
   if (groupId) {
     return
   }
-  const { data } = await useHttp<ApiResponse<EventListResource>>(`common/events`, {
-    params: {
-      ...params,
-      year: selectedYear.value,
+  const { data } = await useHttp<ApiResponse<EventListResource>>(
+    `common/events`,
+    {
+      params: {
+        ...params,
+        year: selectedYear.value,
+      },
     },
-  })
+  )
   if (data.value) {
     events.value = data.value.data
   }
@@ -185,12 +191,15 @@ async function loadTeeth() {
   if (!showTeeth) {
     return
   }
-  const { data } = await useHttp<Teeth>(`common/teeth`, {
-    params: {
-      ...params,
-      year: selectedYear.value,
+  const { data } = await useHttp<Teeth>(
+    `common/teeth`,
+    {
+      params: {
+        ...params,
+        year: selectedYear.value,
+      },
     },
-  })
+  )
   if (data.value) {
     teeth.value = data.value
   }
@@ -198,9 +207,12 @@ async function loadTeeth() {
 
 async function loadVacations() {
   vacations.value = {}
-  const { data } = await useHttp<ApiResponse<VacationResource>>(`common/vacations`, {
-    params: { year: selectedYear.value },
-  })
+  const { data } = await useHttp<ApiResponse<VacationResource>>(
+    `common/vacations`,
+    {
+      params: { year: selectedYear.value },
+    },
+  )
   if (data.value) {
     for (const { date } of data.value.data) {
       vacations.value[date] = true
@@ -210,11 +222,14 @@ async function loadVacations() {
 
 async function loadExamDates() {
   const programs = program ? [program] : availablePrograms.value
-  const { data } = await useHttp<ApiResponse<ExamDateResource>>(`common/exam-dates`, {
-    params: {
-      'programs[]': programs,
+  const { data } = await useHttp<ApiResponse<ExamDateResource>>(
+    `common/exam-dates`,
+    {
+      params: {
+        'programs[]': programs,
+      },
     },
-  })
+  )
   if (data.value) {
     examDates.value = data.value.data
   }
