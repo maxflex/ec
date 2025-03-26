@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import type { EventAddToDialog } from '#components'
 import type { PeopleSelectorFilters } from '~/components/PeopleSelector/Filters.vue'
 
-const eventAddToDialog = shallowRef<InstanceType<typeof EventAddToDialog>>()
 const filters = ref<PeopleSelectorFilters>({
   mode: 'clients',
   direction: [],
@@ -98,16 +96,9 @@ nextTick(() => {
       выбрано: {{ selectedTotal }}
     </div>
     <div>
-      <v-btn variant="text" @click="eventAddToDialog?.open(selected)">
-        добавить к событию
-      </v-btn>
-      <v-btn color="secondary" :to="{ name: 'people-selector-send' }">
-        отправить
-        <template #append>
-          <v-icon icon="$next" />
-        </template>
+      <v-btn variant="text" @click="$router.push({ name: 'people-selector-send' })">
+        отправить сообщение
       </v-btn>
     </div>
   </UiBottomBar>
-  <EventAddToDialog ref="eventAddToDialog" />
 </template>

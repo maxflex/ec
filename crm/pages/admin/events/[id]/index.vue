@@ -184,7 +184,7 @@ nextTick(loadData)
           },
         }"
       >
-        сообщение участникам
+        отправить сообщение
       </v-btn>
     </div>
   </v-fade-transition>
