@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { GroupFilters } from './Filters.vue'
+
 const { group } = defineProps<{ group: GroupResource }>()
 
 const emit = defineEmits<{

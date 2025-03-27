@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { HeadTeacherReportDialog } from '#components'
+import type { HeadTeacherReportResource } from '~/components/HeadTeacherReport'
 
 const filters = ref<YearFilters>(loadFilters({
   year: currentAcademicYear(),
 }))
+
 const { items, indexPageData } = useIndex<HeadTeacherReportResource, YearFilters>(
   `head-teacher-reports`,
   filters,
 )
+
 const dialogRef = ref<InstanceType<typeof HeadTeacherReportDialog>>()
 
 function onUpdated(item: HeadTeacherReportResource) {

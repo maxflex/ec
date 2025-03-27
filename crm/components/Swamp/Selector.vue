@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { SwampFilters } from './Filters.vue'
+
 const { group } = defineProps<{ group: GroupResource }>()
 
 const emit = defineEmits(['back', 'selected'])

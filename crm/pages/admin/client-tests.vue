@@ -1,4 +1,10 @@
 <script setup lang="ts">
+interface ClientTestFilters {
+  year: Year
+  program?: Program
+  status?: ClientTestStatus
+}
+
 const filters = ref<ClientTestFilters>(loadFilters({
   year: currentAcademicYear(),
 }))

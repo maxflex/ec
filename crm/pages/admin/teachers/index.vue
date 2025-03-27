@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { TeacherDialog } from '#components'
+import type { TeacherFilters } from '~/components/Teacher/Filters.vue'
 
 const filters = ref<TeacherFilters>(loadFilters({
   subjects: [],

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import type { TeacherPaymentResource } from '~/components/TeacherPayment'
+import type { TeacherPaymentFilters } from '~/components/TeacherPayment/Filters.vue'
+
 const filters = ref<TeacherPaymentFilters>(loadFilters({
   year: currentAcademicYear(),
 }))

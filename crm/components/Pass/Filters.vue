@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+export interface PassFilters {
+  status?: PassStatus
+  type?: PassType
+}
+
 const model = defineModel<PassFilters>({ required: true })
 </script>
 

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { TelegramListFilters } from '~/components/TelegramList/Filters.vue'
+
 const filters = ref<TelegramListFilters>(loadFilters({}))
 const { items, indexPageData } = useIndex<TelegramListResource, TelegramListFilters>(
   `telegram-lists`,

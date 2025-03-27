@@ -22,6 +22,11 @@ export const player = reactive<{
   },
 })
 
+interface CallAppFilters {
+  q: string
+  status: CallAppStatusFilter
+}
+
 export const filters = ref<CallAppFilters>({
   q: '',
   status: 'all',

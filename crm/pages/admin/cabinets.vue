@@ -8,7 +8,8 @@ interface CabinetTeeth {
     program: Program
   } | null
 }
-const { items, indexPageData } = useIndex<CabinetTeeth, YearFilters>(
+
+const { items, indexPageData } = useIndex<CabinetTeeth>(
   `cabinets`,
 )
 </script>

@@ -1046,6 +1046,14 @@ declare global {
     client: PersonResource
     sum: number
   }
+
+  interface YearFilters {
+    year: Year
+  }
+
+  interface AvailableYearsFilter {
+    year?: Year
+  }
 }
 
 export {}

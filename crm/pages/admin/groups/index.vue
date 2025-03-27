@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { GroupDialog } from '#build/components'
+import type { GroupFilters } from '~/components/Group/Filters.vue'
 
 const filters = ref<GroupFilters>(loadFilters({
   year: currentAcademicYear(),

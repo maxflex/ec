@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+export interface UserFilters {
+  q?: string
+  is_active?: number
+}
+
 const model = defineModel<UserFilters>({ required: true })
 const q = ref(model.value.q)
 </script>

@@ -1,4 +1,11 @@
 <script lang="ts" setup>
+export interface ContractVersionFilters {
+  year: Year
+  company?: Company
+  is_active?: number
+  direction: Direction[]
+}
+
 const model = defineModel<ContractVersionFilters>({ required: true })
 </script>
 

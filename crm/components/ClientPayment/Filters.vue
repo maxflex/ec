@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+export interface ClientPaymentFilters {
+  year: Year
+  method?: ClientPaymentMethod
+}
+
 const model = defineModel<ClientPaymentFilters>({ required: true })
 </script>
 

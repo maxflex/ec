@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+export interface TeacherPaymentFilters {
+  year: Year
+  method?: TeacherPaymentMethod
+}
+
 const model = defineModel<TeacherPaymentFilters>({ required: true })
 </script>
 

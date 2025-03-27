@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { LogFilters } from '~/components/Log/Filters.vue'
+
 const filters = ref<LogFilters>(loadFilters({}))
 const { items, indexPageData } = useIndex<LogResource, LogFilters>(
   `logs`,

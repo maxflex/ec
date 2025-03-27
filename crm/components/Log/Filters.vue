@@ -1,4 +1,11 @@
 <script lang="ts" setup>
+export interface LogFilters {
+  type?: LogType
+  table?: string
+  row_id?: string
+  q?: string
+}
+
 const model = defineModel<LogFilters>({ required: true })
 const rowId = ref(model.value.row_id)
 const q = ref(model.value.q)

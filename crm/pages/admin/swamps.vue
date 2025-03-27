@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { SwampFilters } from '~/components/Swamp/Filters.vue'
+
 const filters = ref<SwampFilters>(loadFilters({
   year: currentAcademicYear(),
 }))

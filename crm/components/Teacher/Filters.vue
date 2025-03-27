@@ -1,4 +1,10 @@
 <script lang="ts" setup>
+export interface TeacherFilters {
+  q?: string
+  status?: TeacherStatus
+  subjects: Subject[]
+}
+
 const model = defineModel<TeacherFilters>({ required: true })
 const q = ref(model.value.q)
 </script>

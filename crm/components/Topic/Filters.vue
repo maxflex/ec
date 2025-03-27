@@ -5,12 +5,12 @@ const StatusLabel = {
   verified: 'тема подтверждена',
 } as const
 
-export interface Filters {
+export interface TopicFilters {
   year: Year
   status?: keyof typeof StatusLabel
 }
 
-const model = defineModel<Filters>({ required: true })
+const model = defineModel<TopicFilters>({ required: true })
 </script>
 
 <template>

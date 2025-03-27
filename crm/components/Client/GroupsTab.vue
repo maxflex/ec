@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { GroupFilters } from '../Group/Filters.vue'
+
 const { clientId } = defineProps<{ clientId: number }>()
 
 const filters = ref<AvailableYearsFilter>({

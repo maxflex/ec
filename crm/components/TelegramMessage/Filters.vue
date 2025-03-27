@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+export interface TelegramMessageFilters {
+  status?: number
+  template?: TelegramTemplate
+}
+
 const model = defineModel<TelegramMessageFilters>({ required: true })
 </script>
 

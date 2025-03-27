@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { ClientDialog } from '#build/components'
+import type { ClientListResource } from '~/components/Client'
+import type { ClientFilters } from '~/components/Client/Filters.vue'
 
 const filters = ref<ClientFilters>(loadFilters({
   q: '',

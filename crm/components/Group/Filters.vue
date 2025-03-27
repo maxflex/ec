@@ -1,4 +1,10 @@
 <script lang="ts" setup>
+export interface GroupFilters {
+  year: Year
+  program: Program[]
+  teacher_id?: number
+}
+
 const { disabled } = defineProps<{
   disabled?: boolean
 }>()

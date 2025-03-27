@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ContractVersionDialog } from '#build/components'
+import type { ContractVersionFilters } from '~/components/ContractVersion/Filters.vue'
 
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
 const filters = ref<ContractVersionFilters>(loadFilters({

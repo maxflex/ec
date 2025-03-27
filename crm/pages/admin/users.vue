@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { UserDialog } from '#build/components'
+import type { UserFilters } from '~/components/User/Filters.vue'
 
 const userDialog = ref<InstanceType<typeof UserDialog>>()
 const filters = ref<UserFilters>(loadFilters({}))

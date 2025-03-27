@@ -3,6 +3,7 @@
  * @DEPRICATED страница не используется
  */
 import type { ClientPaymentDialog } from '#build/components'
+import type { ClientPaymentFilters } from '~/components/ClientPayment/Filters.vue'
 
 const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()
 const filters = ref<ClientPaymentFilters>(loadFilters({

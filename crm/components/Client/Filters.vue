@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+export interface ClientFilters {
+  q: string
+  year: Year
+}
+
 const model = defineModel<ClientFilters>({ required: true })
 const q = ref(model.value.q)
 </script>

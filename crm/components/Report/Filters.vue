@@ -1,4 +1,12 @@
 <script lang="ts" setup>
+export interface ReportFilters {
+  year: Year
+  program?: Program
+  requirement?: ReportRequirement
+  status?: ReportStatus
+  teacher_id?: number
+}
+
 const model = defineModel<ReportFilters>({ required: true })
 </script>
 

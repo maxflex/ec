@@ -1,4 +1,10 @@
 <script lang="ts" setup>
+export interface SwampFilters {
+  year: Year
+  program?: Program
+  status?: SwampFilterStatus
+}
+
 const { disabled } = defineProps<{
   disabled?: boolean
 }>()
