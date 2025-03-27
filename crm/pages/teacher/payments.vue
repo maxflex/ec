@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { mdiLockOpenOutline } from '@mdi/js'
+import type { TeacherPaymentResource } from '~/components/TeacherPayment'
 
-const filters = ref<AvailableYearsFilter>({
-  year: undefined,
-})
+const filters = useAvailableYearsFilter()
 
-const { items, indexPageData, availableYears } = useIndex<TeacherPaymentResource, AvailableYearsFilter>(
+const { items, indexPageData, availableYears } = useIndex<TeacherPaymentResource>(
   `teacher-payments`,
   filters,
   {

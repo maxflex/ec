@@ -2,11 +2,10 @@
 import type { ClientPaymentDialog } from '#build/components'
 
 const { clientId } = defineProps<{ clientId: number }>()
-const filters = ref<AvailableYearsFilter>({
-  year: undefined,
-})
+const filters = useAvailableYearsFilter()
 const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()
-const { items, indexPageData, availableYears } = useIndex<ClientPaymentResource, AvailableYearsFilter>(
+
+const { items, indexPageData, availableYears } = useIndex<ClientPaymentResource>(
   `client-payments`,
   filters,
   {

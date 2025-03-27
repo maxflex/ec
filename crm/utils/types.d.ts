@@ -1050,10 +1050,6 @@ declare global {
   interface YearFilters {
     year: Year
   }
-
-  interface AvailableYearsFilter {
-    year?: Year
-  }
 }
 
 export {}

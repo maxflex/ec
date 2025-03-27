@@ -1,9 +1,8 @@
 <script setup lang="ts">
 const { teacherId } = defineProps<{ teacherId: number }>()
-const filters = ref<AvailableYearsFilter>({
-  year: undefined,
-})
-const { items, indexPageData, availableYears } = useIndex<GroupListResource, AvailableYearsFilter>(
+const filters = useAvailableYearsFilter()
+
+const { items, indexPageData, availableYears } = useIndex<GroupListResource>(
   `groups`,
   filters,
   {

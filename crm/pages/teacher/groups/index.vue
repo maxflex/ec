@@ -1,11 +1,9 @@
 <script setup lang="ts">
-const filters = ref<AvailableYearsFilter>({
-  year: undefined,
-})
+const filters = useAvailableYearsFilter()
 
 const selectedProgram = ref<Program>()
 
-const { items, indexPageData, availableYears } = useIndex<GroupListResource, AvailableYearsFilter>(
+const { items, indexPageData, availableYears } = useIndex<GroupListResource>(
   `groups`,
   filters,
   {

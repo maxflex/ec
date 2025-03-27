@@ -1,13 +1,11 @@
 <script setup lang="ts">
-const filters = ref<AvailableYearsFilter>({
-  year: undefined,
-})
+const filters = useAvailableYearsFilter()
 
 const selectedQuarter = ref<Quarter | null>(null)
 const selectedProgram = ref<Program | undefined>(undefined)
 const availablePrograms = ref<Program[]>([])
 
-const { items, indexPageData, availableYears } = useIndex<JournalResource, AvailableYearsFilter>(
+const { items, indexPageData, availableYears } = useIndex<JournalResource>(
   `journal`,
   filters,
   {

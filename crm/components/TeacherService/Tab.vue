@@ -4,11 +4,9 @@ import { apiUrl, type TeacherServiceResource } from '.'
 
 const { teacherId } = defineProps<{ teacherId: number }>()
 const teacherServiceDialog = ref<InstanceType<typeof TeacherServiceDialog>>()
-const filters = ref<AvailableYearsFilter>({
-  year: undefined,
-})
+const filters = useAvailableYearsFilter()
 
-const { items, availableYears, indexPageData } = useIndex<TeacherServiceResource, AvailableYearsFilter>(
+const { items, availableYears, indexPageData } = useIndex<TeacherServiceResource>(
   apiUrl,
   filters,
   {

@@ -2,7 +2,7 @@
 const { items } = defineProps<{
   items: Year[] | undefined
 }>()
-const model = defineModel<Year | undefined>({ required: true })
+const model = defineModel<Year | null>({ required: true })
 
 const availableYears = computed(() => {
   if (!Array.isArray(items)) {
@@ -19,7 +19,6 @@ const disabled = computed(() => !loading.value && items!.length <= 1)
 </script>
 
 <template>
-  <!-- :loading="loading" -->
   <v-select
     v-model="model"
     :disabled="disabled"

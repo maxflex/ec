@@ -3,11 +3,9 @@ import type { ExamScoreDialog } from '#build/components'
 
 const { clientId } = defineProps<{ clientId: number }>()
 const examScoreDialog = ref<InstanceType<typeof ExamScoreDialog>>()
-const filters = ref<AvailableYearsFilter>({
-  year: undefined,
-})
+const filters = useAvailableYearsFilter()
 
-const { items, indexPageData, availableYears } = useIndex<ExamScoreResource, AvailableYearsFilter>(
+const { items, indexPageData, availableYears } = useIndex<ExamScoreResource>(
   `exam-scores`,
   filters,
   {

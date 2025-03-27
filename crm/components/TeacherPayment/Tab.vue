@@ -4,13 +4,11 @@ import { apiUrl, type TeacherPaymentResource } from '.'
 
 const { teacherId } = defineProps<{ teacherId: number }>()
 
-const filters = ref<AvailableYearsFilter>({
-  year: undefined,
-})
+const filters = useAvailableYearsFilter()
 
 const teacherPaymentDialog = ref<InstanceType<typeof TeacherPaymentDialog>>()
 
-const { items, availableYears, indexPageData } = useIndex<TeacherPaymentResource, AvailableYearsFilter>(
+const { items, availableYears, indexPageData } = useIndex<TeacherPaymentResource>(
   apiUrl,
   filters,
   {
