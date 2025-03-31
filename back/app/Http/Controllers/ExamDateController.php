@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Common;
+namespace App\Http\Controllers;
 
 use App\Enums\Program;
-use App\Http\Controllers\Controller;
 use App\Models\ExamDate;
 use Illuminate\Http\Request;
 

@@ -4,7 +4,7 @@ const event = ref<EventResource>()
 
 async function loadData() {
   const { data } = await useHttp<EventResource>(
-    `common/events/${route.params.id}`,
+    `events/${route.params.id}`,
   )
   event.value = data.value!
 }

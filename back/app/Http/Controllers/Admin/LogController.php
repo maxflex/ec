@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Common;
+namespace App\Http\Controllers\Admin;
 
 use App\Enums\LogType;
 use App\Http\Controllers\Controller;
@@ -23,8 +23,9 @@ class LogController extends Controller
     public function index(Request $request)
     {
         $query = Log::query()
-            ->with(['entity'])
+            ->with('entity')
             ->latest();
+
         $this->filter($request, $query);
 
         return $this->handleIndexRequest(

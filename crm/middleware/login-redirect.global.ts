@@ -9,7 +9,8 @@ export default defineNuxtRouteMiddleware((to) => {
     if (isLoginPage) {
       return navigateTo({ name: 'index' })
     }
-    useHttp('common/logs', {
+    // логирование просмотра URL
+    useHttp(`logs`, {
       method: 'post',
       body: {
         url: to.path,

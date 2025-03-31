@@ -20,7 +20,7 @@ function edit(ed: ExamDateResource) {
 
 async function save() {
   const { data } = await useHttp<ExamDateResource>(
-    `common/exam-dates/${item.value.id}`,
+    `exam-dates/${item.value.id}`,
     {
       method: 'put',
       body: {

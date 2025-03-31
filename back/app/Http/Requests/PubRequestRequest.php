@@ -10,7 +10,7 @@ class PubRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => ['required', 'mobile']
+            'phone' => ['required', 'mobile'],
         ];
     }
 
@@ -25,7 +25,7 @@ class PubRequestRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'phone' => Phone::autoCorrectFirstDigit($this->phone)
+            'phone' => Phone::autoCorrectFirstDigit($this->input('phone')),
         ]);
     }
 }

@@ -16,6 +16,9 @@ trait HasPhones
         return $this->phones()->pluck('number');
     }
 
+    /**
+     * @return MorphMany<Phone>
+     */
     public function phones(): MorphMany
     {
         return $this->morphMany(Phone::class, 'entity');

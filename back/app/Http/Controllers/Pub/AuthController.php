@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Common;
+namespace App\Http\Controllers\Pub;
 
 use App\Enums\LogType;
 use App\Http\Controllers\Controller;

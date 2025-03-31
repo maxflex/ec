@@ -193,7 +193,7 @@ async function loadEvents() {
     return
   }
   const { data } = await useHttp<ApiResponse<EventListResource>>(
-    `common/events`,
+    `events`,
     {
       params: {
         ...params,
@@ -211,7 +211,7 @@ async function loadTeeth() {
     return
   }
   const { data } = await useHttp<Teeth>(
-    `common/teeth`,
+    `teeth`,
     {
       params: {
         ...params,
@@ -227,7 +227,7 @@ async function loadTeeth() {
 async function loadVacations() {
   vacations.value = {}
   const { data } = await useHttp<ApiResponse<VacationResource>>(
-    `common/vacations`,
+    `vacations`,
     {
       params: { year: selectedYear.value },
     },
@@ -242,7 +242,7 @@ async function loadVacations() {
 async function loadExamDates() {
   const programs = program ? [program] : availablePrograms.value
   const { data } = await useHttp<ApiResponse<ExamDateResource>>(
-    `common/exam-dates`,
+    `exam-dates`,
     {
       params: {
         'programs[]': programs,

@@ -27,11 +27,11 @@ use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\HeadTeacherReportController;
 use App\Http\Controllers\Admin\InstructionController;
 use App\Http\Controllers\Admin\LessonController;
+use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\Admin\MacroController;
 use App\Http\Controllers\Admin\MenuCountsController;
 use App\Http\Controllers\Admin\PassController;
 use App\Http\Controllers\Admin\PeopleSelectorController;
-use App\Http\Controllers\Admin\PhotoController;
 use App\Http\Controllers\Admin\PreviewController;
 use App\Http\Controllers\Admin\PrintController;
 use App\Http\Controllers\Admin\ReportController;
@@ -51,22 +51,28 @@ use App\Http\Controllers\Admin\TestController;
 use App\Http\Controllers\Admin\TopicController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WebReviewController;
-use App\Http\Controllers\Common\LogController;
+use App\Http\Controllers\ExamDateController;
+use App\Http\Controllers\TeethController;
+use App\Http\Controllers\UploadController;
+use App\Http\Controllers\VacationController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:crm'])->group(function () {
-    Route::post('tests/upload-pdf/{test}', [TestController::class, 'uploadPdf']);
     Route::post('preview', PreviewController::class);
-    Route::post('photos/upload', [PhotoController::class, 'upload']);
     Route::post('stats', StatsController::class);
 
     Route::get('balance', BalanceController::class);
+
+    Route::prefix('upload')->controller(UploadController::class)->group(function () {
+        Route::post('files', 'files');
+        Route::post('photos', 'photos');
+        Route::post('instructions', 'instructions');
+    });
 
     Route::get('teacher-payments/get-suggestions/{teacher}', [TeacherPaymentController::class, 'getSuggestions']);
 
     Route::get('clients-browse', ClientsBrowseController::class);
 
-    Route::apiResource('logs', LogController::class)->only('index');
     Route::apiResource('topics', TopicController::class)->only('index');
     Route::post('lessons/bulk', [LessonController::class, 'bulk']);
 
@@ -143,6 +149,10 @@ Route::middleware(['auth:crm'])->group(function () {
 
     Route::get('teachers/stats/{teacher}', [TeacherController::class, 'stats']);
 
+    Route::apiResource('vacations', VacationController::class)->only(['index', 'store']);
+    Route::apiResource('exam-dates', ExamDateController::class)->only('index', 'update');
+    Route::get('teeth', TeethController::class);
+
     Route::apiResources([
         'telegram-lists' => TelegramListController::class,
         'requests' => RequestsController::class,
@@ -174,5 +184,6 @@ Route::middleware(['auth:crm'])->group(function () {
         'passes' => PassController::class,
         'head-teacher-reports' => HeadTeacherReportController::class,
         'stats-presets' => StatsPresetController::class,
+        'logs' => LogController::class,
     ]);
 });

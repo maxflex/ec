@@ -8,7 +8,7 @@ export default function () {
 
   async function authViaMagicLink() {
     const { data, error } = await useHttp<TokenResponse>(
-      `common/auth/magic-link`,
+      `pub/auth/magic-link`,
       {
         method: 'post',
         body: {

@@ -5,11 +5,12 @@ namespace App\Models;
 use App\Casts\JsonArrayCast;
 use App\Enums\Program;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Test extends Model
 {
     protected $fillable = [
-        'name', 'minutes', 'program', 'questions', 'file'
+        'name', 'minutes', 'program', 'questions', 'file',
     ];
 
     protected $casts = [
@@ -18,7 +19,7 @@ class Test extends Model
         'file' => 'array',
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
