@@ -1,11 +1,11 @@
 <script setup lang="ts">
-const PeopleSelectorModeLabel = {
+const SendToModeLabel = {
   clients: 'клиенты',
   teachers: 'преподаватели',
 } as const
 
 export interface PeopleSelectorFilters {
-  mode: keyof typeof PeopleSelectorModeLabel
+  mode: keyof typeof SendToModeLabel
   q?: string
   direction: Direction[]
 }
@@ -18,7 +18,7 @@ const q = ref(model.value.q)
   <v-select
     v-model="model.mode"
     label="Режим"
-    :items="selectItems(PeopleSelectorModeLabel)"
+    :items="selectItems(SendToModeLabel)"
     density="comfortable"
   />
   <template v-if="model.mode === 'clients'">

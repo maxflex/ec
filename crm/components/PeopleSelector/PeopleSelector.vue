@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import type { PeopleSelectorFilters } from '~/components/PeopleSelector/Filters.vue'
 
+interface PeopleSelectorExtra {
+  ids: number[]
+}
+
 const { event } = defineProps<{
   event?: EventResource
 }>()
@@ -80,12 +84,48 @@ async function addToEvent() {
   )
   await router.push({ name: 'events-id', params: { id: event.id } })
 }
+
+if (!event) {
+  watch(selected, (newVal) => {
+    selectedTotal.value === 0
+      ? localStorage.removeItem('selected-people')
+      : localStorage.setItem('selected-people', JSON.stringify(newVal))
+  }, { deep: true })
+
+  nextTick(() => {
+    const selectedPeople = localStorage.getItem('selected-people')
+    if (selectedPeople) {
+      selected.value = JSON.parse(selectedPeople) as SelectedPeople
+    }
+  })
+}
 </script>
 
 <template>
   <UiIndexPage class="people-selector" :data="indexPageData">
     <template #filters>
       <PeopleSelectorFilters v-model="filters" />
+      <div v-if="!!selectedTotal" class="people-selector__controls">
+        <!-- <div>
+          <v-btn icon="$close" :size="30" variant="text" @click="clearSelection()" />
+          выбрано: {{ selectedTotal }}
+        </div> -->
+        <div>
+          <v-btn variant="text" @click="clearSelection()">
+            отмена
+          </v-btn>
+        </div>
+        <div>
+          <v-btn v-if="event" color="primary" :loading="loading" @click="addToEvent()">
+            сохранить
+            ({{ selectedTotal }})
+          </v-btn>
+          <v-btn v-else color="primary" @click="$router.push({ name: 'group-message-send' })">
+            отправить сообщение
+            ({{ selectedTotal }})
+          </v-btn>
+        </div>
+      </div>
     </template>
     <v-table hover class="people-selector-table">
       <tbody>
@@ -113,15 +153,26 @@ async function addToEvent() {
       </tbody>
     </v-table>
   </UiIndexPage>
-  <UiBottomBar :model-value="!!selectedTotal">
-    <div>
-      <v-btn icon="$close" :size="30" variant="text" @click="clearSelection()" />
-      выбрано: {{ selectedTotal }}
-    </div>
-    <div>
-      <v-btn v-if="event" variant="text" :loading="loading" @click="addToEvent()">
-        сохранить
-      </v-btn>
-    </div>
-  </UiBottomBar>
 </template>
+
+<style lang="scss">
+.people-selector {
+  &__filters {
+    .filters__inputs {
+      width: 100%;
+      & > .v-input {
+        width: 250px;
+        max-width: 250px;
+      }
+    }
+  }
+  &__controls {
+    display: flex;
+    align-items: center;
+    width: initial !important;
+    flex: 1;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+}
+</style>

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\JsonArrayCast;
+use App\Casts\Set;
 use App\Enums\SendTo;
 use App\Enums\TelegramListStatus;
 use App\Events\TelegramListSentEvent;
@@ -21,7 +22,7 @@ class TelegramList extends Model
 
     protected $casts = [
         'recipients' => JsonArrayCast::class,
-        'send_to' => SendTo::class,
+        'send_to' => Set::class,
         'status' => TelegramListStatus::class,
         'scheduled_at' => 'datetime',
         'is_confirmable' => 'boolean',
@@ -73,7 +74,7 @@ class TelegramList extends Model
     private function getSentResult()
     {
         $result = [
-            'clients' => [],
+            'students' => [],
             'parents' => [],
             'teachers' => [],
         ];
@@ -97,15 +98,15 @@ class TelegramList extends Model
     private function getScheduledResult()
     {
         $result = [
-            'clients' => [],
+            'students' => [],
             'parents' => [],
             'teachers' => [],
         ];
 
         foreach ($this->recipients as $key => $ids) {
-            $people = $key === 'clients'
-                ? Client::whereIn('id', $ids)->get()
-                : Teacher::whereIn('id', $ids)->get();
+            $class = $key === 'clients' ? Client::class : Teacher::class;
+            $people = $class::whereIn('id', $ids)->get();
+            $key = get_entity_type_key($class);
 
             foreach ($people as $person) {
                 $result[$key][] = [
@@ -114,8 +115,8 @@ class TelegramList extends Model
                         'telegram_id', 'number',
                     ]),
                 ];
-                // "родителям" или "ученикам и родителям"
-                if ($key === 'clients' && $this->send_to !== SendTo::students) {
+                // родителям
+                if ($key === 'students' && in_array(SendTo::parents->value, $this->send_to)) {
                     $result['parents'][] = [
                         ...(new PersonResource($person->parent))->toArray(new Request),
                         'messages' => extract_fields_array($person->parent->phones, [

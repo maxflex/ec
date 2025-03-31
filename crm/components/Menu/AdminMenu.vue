@@ -91,7 +91,7 @@ const menu: Menu = [
     title: 'Сообщения',
     items: [
       { title: 'Отправленные', to: '/telegram-messages' },
-      { title: 'Выбрать людей', to: '/people-selector' },
+      { title: 'Групповое сообщение', to: '/group-message' },
       { title: 'Проекты отправок', to: '/telegram-lists' },
     ],
   },

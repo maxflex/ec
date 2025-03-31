@@ -3,8 +3,11 @@
 use App\Enums\ClientPaymentMethod;
 use App\Enums\Company;
 use App\Enums\ContractPaymentMethod;
+use App\Models\Client;
+use App\Models\ClientParent;
 use App\Models\ClientPayment;
 use App\Models\ContractPayment;
+use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -208,14 +211,14 @@ function save_csv(Collection $csv): string
 /**
  * Teacher => teachers
  * ClientParent => parents
- * Client => clients
+ * Client => students
  */
 function get_entity_type_key(string $entityType): string
 {
     return match ($entityType) {
-        \App\Models\Teacher::class => 'teachers',
-        \App\Models\Client::class => 'clients',
-        \App\Models\ClientParent::class => 'parents',
+        Teacher::class => 'teachers',
+        Client::class => 'students',
+        ClientParent::class => 'parents',
     };
 }
 

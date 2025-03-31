@@ -3,7 +3,7 @@ import { clone } from 'rambda'
 
 const modelDefaults: TelegramListResource = {
   id: newId(),
-  send_to: 'studentsAndParents',
+  send_to: ['students', 'parents', 'teachers'],
   is_confirmable: false,
   text: '',
   status: 'scheduled',
@@ -123,9 +123,9 @@ nextTick(async () => {
       <div class="show__content mt-0">
         <template v-for="(people, key) in item.recipients">
           <div v-if="people.length" :key="key">
-            <div class="mb-1">
+            <h2 class="mb-5">
               {{ key === 'clients' ? 'Клиенты' : 'Преподаватели' }}
-            </div>
+            </h2>
             <v-table hover>
               <tbody>
                 <tr
@@ -157,7 +157,8 @@ nextTick(async () => {
         <div>
           <v-select
             v-model="item.send_to"
-            :items="selectItems(SendToLabel)"
+            multiple
+            :items="selectItems(SendToAltLabel)"
             label="Кому отправлять"
           />
         </div>
@@ -196,3 +197,11 @@ nextTick(async () => {
     </div>
   </v-fade-transition>
 </template>
+
+<style lang="scss">
+.page-group-message-send {
+  .show__content {
+    gap: 50px !important;
+  }
+}
+</style>

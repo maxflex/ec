@@ -17,8 +17,6 @@ declare global {
 
   type EventParticipantConfirmation = keyof typeof EventParticipantConfirmationLabel
 
-  type SendTo = keyof typeof SendToLabel
-
   type ErrorCode = typeof ErrorCodeLabel[number]
 
   type CallAppStatusFilter = keyof typeof CallAppStatusFilterLabel
@@ -932,10 +930,6 @@ declare global {
     company?: Company
   }
 
-  interface PeopleSelectorExtra {
-    ids: number[]
-  }
-
   interface SelectedPeople {
     clients: number[]
     teachers: number[]
@@ -946,7 +940,7 @@ declare global {
     teachers: PersonResource[]
   }
 
-  type PeopleSelector = keyof typeof PeopleSelectorLabel
+  type SendTo = keyof typeof SendToLabel
 
   interface TelegramListResult extends PersonResource {
     messages: Array<{
@@ -958,7 +952,7 @@ declare global {
 
   interface TelegramListResource {
     id: number
-    send_to: SendTo
+    send_to: SendTo[]
     status: TelegramListStatus
     is_confirmable: boolean
     recipients: PeopleResource
@@ -970,7 +964,7 @@ declare global {
       name: string
     }
     text: string
-    result: Record<PeopleSelector, TelegramListResult[]>
+    result: Record<SendTo, TelegramListResult[]>
   }
 
   interface GroupActResource {

@@ -117,14 +117,14 @@ nextTick(loadData)
         </div>
         <div class="mb-8">
           <v-btn color="primary" :width="300" :to="{ name: 'events-id-participants', params: { id: item.id } }">
-            добавить участников
+            редактировать участников
           </v-btn>
         </div>
         <template v-for="(participants, key) in item.participants">
           <div v-if="participants.length" :key="key">
-            <div class="mb-1">
+            <h2 class="mb-5">
               {{ key === 'clients' ? 'Клиенты' : 'Преподаватели' }}
-            </div>
+            </h2>
             <v-table class="event-participants">
               <tbody>
                 <tr v-for="p in participants" :key="p.id">
@@ -183,7 +183,7 @@ nextTick(loadData)
         color="primary"
         :width="300"
         :to="{
-          name: 'people-selector-send',
+          name: 'group-message-send',
           query: {
             event_id: item.id,
           },

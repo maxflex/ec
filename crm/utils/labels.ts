@@ -604,12 +604,6 @@ export const SwampFilterStatusLabel = {
   completeInGroup: 'исполнено + в группе',
 } as const
 
-export const SendToLabel = {
-  studentsAndParents: 'ученикам, родителям и преподавателям',
-  students: 'ученикам и преподавателям',
-  parents: 'родителям и преподавателям',
-} as const
-
 export const EventParticipantConfirmationLabel = {
   pending: 'не подтвердил участие',
   confirmed: 'подтвердил участие',
@@ -688,8 +682,14 @@ export const InstructionStatusLabel = {
   published: 'опубликовано',
 }
 
-export const PeopleSelectorLabel = {
-  clients: 'Ученики',
+export const SendToLabel = {
+  students: 'Ученики',
   parents: 'Представители',
   teachers: 'Преподаватели',
+}
+
+export const SendToAltLabel = {
+  students: 'ученикам',
+  parents: 'представителям',
+  teachers: 'преподавателям',
 }

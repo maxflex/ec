@@ -76,7 +76,7 @@ nextTick(loadData)
         </div>
         <div>
           <div> Кому отправлять </div>
-          <div> {{ SendToLabel[item.send_to] }} </div>
+          <div> {{ item.send_to.map(e => SendToAltLabel[e]).join(', ') }} </div>
         </div>
         <div v-if="item.event">
           <div>Событие</div>
@@ -99,10 +99,10 @@ nextTick(loadData)
           </div>
         </div>
         <template v-for="(items, key) in item.result">
-          <div v-if="items.length" :key="key">
-            <div>
-              {{ PeopleSelectorLabel[key] }}
-            </div>
+          <div v-if="items.length" :key="key" class="telegram-list__send-to">
+            <h2 class="mb-5">
+              {{ SendToLabel[key] }}
+            </h2>
             <div class="table table--padding">
               <div v-for="person in items" :key="person.id">
                 <div style="width: 300px">
@@ -136,6 +136,9 @@ nextTick(loadData)
       display: flex;
       gap: 8px;
     }
+  }
+  &__send-to {
+    margin-top: 30px;
   }
 }
 </style>
