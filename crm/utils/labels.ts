@@ -682,6 +682,11 @@ export const InstructionStatusLabel = {
   published: 'опубликовано',
 }
 
+export const RecepientLabel = {
+  clients: 'Клиенты',
+  teachers: 'Преподаватели',
+}
+
 export const SendToLabel = {
   students: 'Ученики',
   parents: 'Представители',

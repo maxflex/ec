@@ -1,16 +1,11 @@
 <script setup lang="ts">
-const SendToModeLabel = {
-  clients: 'клиенты',
-  teachers: 'преподаватели',
-} as const
-
-export interface PeopleSelectorFilters {
-  mode: keyof typeof SendToModeLabel
+export interface GroupMessageFilters {
+  mode: Recepient
   q?: string
   direction: Direction[]
 }
 
-const model = defineModel<PeopleSelectorFilters>({ required: true })
+const model = defineModel<GroupMessageFilters>({ required: true })
 const q = ref(model.value.q)
 </script>
 
@@ -18,8 +13,12 @@ const q = ref(model.value.q)
   <v-select
     v-model="model.mode"
     label="Режим"
-    :items="selectItems(SendToModeLabel)"
+    :items="selectItems(RecepientLabel)"
     density="comfortable"
+    class="lowercase-select-items"
+    :menu-props="{
+      class: 'lowercase-select-items',
+    }"
   />
   <template v-if="model.mode === 'clients'">
     <UiMultipleSelect

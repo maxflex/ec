@@ -511,3 +511,10 @@ tr.hoverable {
     line-height: 18px;
   }
 }
+
+.lowercase-select-items {
+  .v-select__selection-text,
+  .v-list-item-title {
+    text-transform: lowercase;
+  }
+}

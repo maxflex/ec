@@ -1,6 +1,8 @@
 import type { ContractPaymentResource } from '~/components/ContractPayment'
 
 declare global {
+  type Recepient = keyof typeof RecepientLabel
+
   type InstructionStatus = keyof typeof InstructionStatusLabel
 
   type ReportDelivery = keyof typeof ReportDeliveryLabel
@@ -930,16 +932,6 @@ declare global {
     company?: Company
   }
 
-  interface SelectedPeople {
-    clients: number[]
-    teachers: number[]
-  }
-
-  interface PeopleResource {
-    clients: PersonResource[]
-    teachers: PersonResource[]
-  }
-
   type SendTo = keyof typeof SendToLabel
 
   interface TelegramListResult extends PersonResource {
@@ -950,12 +942,20 @@ declare global {
     }>
   }
 
+  type RecipientIds = Record<Recepient, number[]>
+
+  interface RecepientPerson extends PersonResource {
+    directions?: Direction[]
+  }
+
+  type Recipients = Record<Recepient, RecepientPerson[]>
+
   interface TelegramListResource {
     id: number
     send_to: SendTo[]
     status: TelegramListStatus
     is_confirmable: boolean
-    recipients: PeopleResource
+    recipients: Recipients
     scheduled_at?: string
     created_at?: string
     event_id?: number

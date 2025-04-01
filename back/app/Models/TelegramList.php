@@ -73,15 +73,11 @@ class TelegramList extends Model
 
     private function getSentResult()
     {
-        $result = [
-            'students' => [],
-            'parents' => [],
-            'teachers' => [],
-        ];
+        $result = $this->getResultDefaults();
 
         foreach ($this->telegramMessages->groupBy('entity_type') as $entityType => $entityTypeMessages) {
             $key = get_entity_type_key($entityType);
-            foreach ($entityTypeMessages->groupBy('entity_id') as $entityId => $telegramMessages) {
+            foreach ($entityTypeMessages->groupBy('entity_id') as $telegramMessages) {
                 $entity = $telegramMessages->first()->entity;
                 $result[$key][] = [
                     ...(new PersonResource($entity))->toArray(new Request),
@@ -95,16 +91,24 @@ class TelegramList extends Model
         return $result;
     }
 
+    /**
+     * 'students' => [],
+     * 'parents' => [],
+     * 'teachers' => [],
+     */
+    private function getResultDefaults(): array
+    {
+        return collect(SendTo::cases())->mapWithKeys(fn (SendTo $sendTo) => [
+            $sendTo->value => [],
+        ])->values()->all();
+    }
+
     private function getScheduledResult()
     {
-        $result = [
-            'students' => [],
-            'parents' => [],
-            'teachers' => [],
-        ];
+        $result = $this->getResultDefaults();
 
-        foreach ($this->recipients as $key => $ids) {
-            $class = $key === 'clients' ? Client::class : Teacher::class;
+        foreach ($this->recipients as $recipient => $ids) {
+            $class = $recipient === 'clients' ? Client::class : Teacher::class;
             $people = $class::whereIn('id', $ids)->get();
             $key = get_entity_type_key($class);
 

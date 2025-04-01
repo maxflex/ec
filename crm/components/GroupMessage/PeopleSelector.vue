@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { PeopleSelectorFilters } from '~/components/PeopleSelector/Filters.vue'
+import type { GroupMessageFilters } from '~/components/GroupMessage/Filters.vue'
 
-interface PeopleSelectorExtra {
+interface Extra {
   ids: number[]
 }
 
@@ -9,15 +9,15 @@ const { event } = defineProps<{
   event?: EventResource
 }>()
 
-const filters = ref<PeopleSelectorFilters>({
+const filters = ref<GroupMessageFilters>({
   mode: 'clients',
   direction: [],
 })
 
 const { items, extra, indexPageData } = useIndex<
-  PersonResource,
-  PeopleSelectorFilters,
-  PeopleSelectorExtra
+  RecepientPerson,
+  GroupMessageFilters,
+  Extra
 >(
   `people-selector`,
   filters,
@@ -26,7 +26,7 @@ const { items, extra, indexPageData } = useIndex<
 const router = useRouter()
 const loading = ref(false)
 
-function getDefaultSelectedPeople(): SelectedPeople {
+function getDefaultRecipientIds(): RecipientIds {
   if (event) {
     return {
       clients: event.participants!.clients.map(e => e.entity.id),
@@ -39,7 +39,7 @@ function getDefaultSelectedPeople(): SelectedPeople {
   }
 }
 
-const selected = ref<SelectedPeople>(getDefaultSelectedPeople())
+const selected = ref<RecipientIds>(getDefaultRecipientIds())
 
 const selectedTotal = computed(() => {
   const { clients, teachers } = selected.value
@@ -48,7 +48,7 @@ const selectedTotal = computed(() => {
 
 const isSelectedAll = computed(() => selected.value[filters.value.mode].length === extra.value.ids.length)
 
-function select(item: PersonResource) {
+function select(item: RecepientPerson) {
   const index = selected.value[filters.value.mode].findIndex(id => id === item.id)
   index === -1
     ? selected.value[filters.value.mode].push(item.id)
@@ -95,7 +95,7 @@ if (!event) {
   nextTick(() => {
     const selectedPeople = localStorage.getItem('selected-people')
     if (selectedPeople) {
-      selected.value = JSON.parse(selectedPeople) as SelectedPeople
+      selected.value = JSON.parse(selectedPeople) as RecipientIds
     }
   })
 }
@@ -104,12 +104,8 @@ if (!event) {
 <template>
   <UiIndexPage class="people-selector" :data="indexPageData">
     <template #filters>
-      <PeopleSelectorFilters v-model="filters" />
+      <GroupMessageFilters v-model="filters" />
       <div v-if="!!selectedTotal" class="people-selector__controls">
-        <!-- <div>
-          <v-btn icon="$close" :size="30" variant="text" @click="clearSelection()" />
-          выбрано: {{ selectedTotal }}
-        </div> -->
         <div>
           <v-btn variant="text" @click="clearSelection()">
             отмена
@@ -121,7 +117,7 @@ if (!event) {
             ({{ selectedTotal }})
           </v-btn>
           <v-btn v-else color="primary" @click="$router.push({ name: 'group-message-send' })">
-            отправить сообщение
+            отправить
             ({{ selectedTotal }})
           </v-btn>
         </div>

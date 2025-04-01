@@ -13,5 +13,5 @@ nextTick(loadData)
 </script>
 
 <template>
-  <PeopleSelector v-if="event" :event="event" />
+  <GroupMessagePeopleSelector v-if="event" :event="event" />
 </template>

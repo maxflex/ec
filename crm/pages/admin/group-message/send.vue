@@ -11,6 +11,11 @@ const modelDefaults: TelegramListResource = {
     clients: [],
     teachers: [],
   },
+  result: {
+    students: [],
+    teachers: [],
+    parents: [],
+  },
 }
 
 const loading = ref(true)
@@ -19,7 +24,7 @@ const route = useRoute()
 const router = useRouter()
 const item = ref<TelegramListResource>(modelDefaults)
 const event = shallowRef<EventResource>()
-const selected = ref<SelectedPeople>({
+const selected = ref<RecipientIds>({
   clients: [],
   teachers: [],
 })
@@ -93,13 +98,13 @@ nextTick(async () => {
   else {
     const selectedPeople = localStorage.getItem('selected-people')
     if (selectedPeople) {
-      selected.value = JSON.parse(selectedPeople) as SelectedPeople
+      selected.value = JSON.parse(selectedPeople) as RecipientIds
     }
     else {
       await router.push({ name: 'people-selector' })
     }
   }
-  const { data } = await useHttp<PeopleResource>(
+  const { data } = await useHttp<Recipients>(
     `telegram-lists/load-people`,
     {
       method: 'post',
