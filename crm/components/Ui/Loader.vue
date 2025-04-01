@@ -13,6 +13,7 @@
   align-items: center;
   justify-content: center;
   position: absolute;
+  z-index: 1;
   span {
     font-size: 30px;
     position: relative;

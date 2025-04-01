@@ -222,6 +222,15 @@ function get_entity_type_key(string $entityType): string
     };
 }
 
+function enum_value(BackedEnum|UnitEnum|string $enum): string
+{
+    return match (true) {
+        $enum instanceof BackedEnum => $enum->value,
+        $enum instanceof UnitEnum => $enum->name,
+        default => $enum,
+    };
+}
+
 function plural($n, $one, $few, $many)
 {
     $text = $n % 10 == 1 && $n % 100 != 11 ? $one : ($n % 10 >= 2 && $n % 10 <= 4 && ($n % 100 < 10 || $n % 100 >= 20) ? $few : $many);

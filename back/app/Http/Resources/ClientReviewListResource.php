@@ -24,7 +24,7 @@ class ClientReviewListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $programEnum = $this->program instanceof Program ? $this->program : Program::tryFrom($this->program);
+        $programEnum = is_string($this->program) ? Program::tryFrom($this->program) : $this->program;
 
         $lessonsCountAndYears = ClientReview::getLessonsCountAndYears(
             $this->client_id,
@@ -35,7 +35,7 @@ class ClientReviewListResource extends JsonResource
         $fakeId = collect([
             $this->client_id,
             $this->teacher_id,
-            $this->program,
+            enum_value($this->program),
         ])->join('-');
 
         $id = $this->id ?? $fakeId;
@@ -50,7 +50,9 @@ class ClientReviewListResource extends JsonResource
             'is_marked' => (bool) $this->is_marked,
             'teacher' => new PersonResource($teacher),
             'client' => new PersonResource($client),
-            'telegram_message' => TelegramMessage::where('extra', $fakeId)->latest()->first()?->text,
+            'telegram_messages' => TelegramMessageResource::collection(
+                TelegramMessage::where('extra', $fakeId)->get()
+            ),
             'exam_scores' => ExamScore::where('client_id', $this->client_id)->select([
                 'id', 'score', 'max_score', 'exam',
             ])->get(),

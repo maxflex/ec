@@ -10,7 +10,7 @@ export interface ClientReviewListResource {
   created_at: string
   is_marked: boolean
   ttl: number
-  telegram_message: string | null
+  telegram_messages: TelegramMessageResource[]
   exam_scores: Array<{
     id: number
     exam: Exam

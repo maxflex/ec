@@ -20,9 +20,9 @@ class TelegramMessageResource extends JsonResource
     {
         return extract_fields($this, [
             'text', 'created_at', 'list_id', 'template',
-            'number', 'telegram_id', 'entity_type'
+            'number', 'telegram_id', 'entity_type',
         ], [
-            'entity' => new PersonResource($this->entity)
+            'entity' => new PersonResource($this->entity),
         ]);
     }
 }

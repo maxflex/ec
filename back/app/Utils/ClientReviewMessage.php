@@ -117,7 +117,8 @@ class ClientReviewMessage
                 'rating' => $rating,
             ], [
                 'id' => $this->fakeId,
-            ]
+            ],
+            $this->fakeId,
         );
     }
 

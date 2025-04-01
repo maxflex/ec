@@ -21,6 +21,13 @@ function open(p: PhoneResource) {
   loadData()
 }
 
+function openWithTelegramMessages(messages: TelegramMessageResource[]) {
+  telegramMessages.value = messages
+  loaded.value = true
+  dialog.value = true
+  scrollBottom()
+}
+
 async function loadData() {
   loaded.value = false
   const { data } = await useHttp<ApiResponse<TelegramMessageResource>>(
@@ -40,7 +47,7 @@ async function loadData() {
   }
 }
 
-defineExpose({ open })
+defineExpose({ open, openWithTelegramMessages })
 </script>
 
 <template>

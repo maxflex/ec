@@ -21,9 +21,6 @@ function formatDateLocal(dateTime: string): string {
       <div class="tg-message__avatar">
         EC
       </div>
-      <!--      <div class="tg-message__avatar"> -->
-      <!--        <img alt="" src="/img/logo.svg"> -->
-      <!--      </div> -->
       <div>
         <div class="tg-message__title">
           <span>

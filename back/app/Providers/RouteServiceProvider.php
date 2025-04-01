@@ -19,7 +19,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         $this->routes(function () {
             foreach (RouteGroup::cases() as $routeGroup) {
-                $name = $routeGroup->name;
+                $name = enum_value($routeGroup);
                 $middleware = [
                     'throttle:'.$name,
                     SubstituteBindings::class,
