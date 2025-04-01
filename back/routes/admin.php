@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Admin\AllLessonsController;
 use App\Http\Controllers\Admin\AllPaymentsController;
-use App\Http\Controllers\Admin\BalanceController;
 use App\Http\Controllers\Admin\CabinetController;
 use App\Http\Controllers\Admin\CallController;
 use App\Http\Controllers\Admin\ClientController;
@@ -27,7 +26,6 @@ use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\HeadTeacherReportController;
 use App\Http\Controllers\Admin\InstructionController;
 use App\Http\Controllers\Admin\LessonController;
-use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\Admin\MacroController;
 use App\Http\Controllers\Admin\MenuCountsController;
 use App\Http\Controllers\Admin\PassController;
@@ -51,8 +49,10 @@ use App\Http\Controllers\Admin\TestController;
 use App\Http\Controllers\Admin\TopicController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WebReviewController;
+use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExamDateController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\TeethController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\VacationController;
@@ -150,7 +150,9 @@ Route::post('client-reviews/send-message', [ClientReviewController::class, 'send
 Route::get('teachers/stats/{teacher}', [TeacherController::class, 'stats']);
 
 Route::apiResource('vacations', VacationController::class)->only(['index', 'store']);
+Route::apiResource('logs', LogController::class)->only(['index', 'store']);
 Route::apiResource('exam-dates', ExamDateController::class)->only('index', 'update');
+
 Route::get('teeth', TeethController::class);
 
 Route::apiResources([
@@ -184,6 +186,5 @@ Route::apiResources([
     'passes' => PassController::class,
     'head-teacher-reports' => HeadTeacherReportController::class,
     'stats-presets' => StatsPresetController::class,
-    'logs' => LogController::class,
     'events' => EventController::class,
 ]);

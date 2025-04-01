@@ -1,22 +1,22 @@
 <?php
 
+use App\Http\Controllers\Admin\ClientTestController;
+use App\Http\Controllers\Admin\CommentController;
+use App\Http\Controllers\Admin\ExamScoreController;
+use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExamDateController;
-use App\Http\Controllers\Teacher\BalanceController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\Teacher\BalanceVerificationController;
 use App\Http\Controllers\Teacher\ClientController;
 use App\Http\Controllers\Teacher\ClientGroupController;
 use App\Http\Controllers\Teacher\ClientReviewController;
-use App\Http\Controllers\Teacher\ClientTestController;
-use App\Http\Controllers\Teacher\CommentController;
-use App\Http\Controllers\Teacher\ExamScoreController;
 use App\Http\Controllers\Teacher\GradeController;
 use App\Http\Controllers\Teacher\GroupController;
 use App\Http\Controllers\Teacher\HeadTeacherReportController;
 use App\Http\Controllers\Teacher\InstructionCheckController;
 use App\Http\Controllers\Teacher\InstructionController;
 use App\Http\Controllers\Teacher\LessonController;
-use App\Http\Controllers\Teacher\LogController;
 use App\Http\Controllers\Teacher\MenuCountsController;
 use App\Http\Controllers\Teacher\ReportController;
 use App\Http\Controllers\Teacher\ScholarshipScoreController;
@@ -43,12 +43,12 @@ Route::apiResource('instructions-check', InstructionCheckController::class)->exc
 Route::apiResource('clients', ClientController::class)->only('index', 'show');
 Route::get('reports/tabs', [ReportController::class, 'tabs']);
 Route::apiResource('events', EventController::class)->only('index');
+Route::apiResource('comments', CommentController::class)->only('index');
 Route::apiResources([
     'reports' => ReportController::class,
     'head-teacher-reports' => HeadTeacherReportController::class,
     'grades' => GradeController::class,
     'client-reviews' => ClientReviewController::class,
-    'comments' => CommentController::class,
     'scholarship-scores' => ScholarshipScoreController::class,
 ]);
 Route::middleware(HeadTeacherMiddleware::class)->group(function () {

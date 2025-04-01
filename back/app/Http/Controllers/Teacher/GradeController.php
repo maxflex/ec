@@ -10,17 +10,19 @@ class GradeController extends \App\Http\Controllers\Admin\GradeController
 {
     public function index(Request $request)
     {
-        $query = ($request->has('client_id') && auth()->user()->is_head_teacher)
+        $isHeadTeacherView = $request->has('client_id') && auth()->user()->is_head_teacher;
+        $query = $isHeadTeacherView
             ? Grade::fakeQuery()
             : Grade::fakeQuery(auth()->id());
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, QuartersGradesResource::class);
     }
 
     public function store(Request $request)
     {
         $request->merge([
-            'teacher_id' => auth()->id()
+            'teacher_id' => auth()->id(),
         ]);
 
         return parent::store($request);
@@ -29,7 +31,7 @@ class GradeController extends \App\Http\Controllers\Admin\GradeController
     public function update(Grade $grade, Request $request)
     {
         $request->merge([
-            'teacher_id' => auth()->id()
+            'teacher_id' => auth()->id(),
         ]);
 
         return parent::update($grade, $request);

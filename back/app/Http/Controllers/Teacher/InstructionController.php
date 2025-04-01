@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\{InstructionTeacherListResource, InstructionTeacherResource};
+use App\Http\Resources\InstructionTeacherListResource;
+use App\Http\Resources\InstructionTeacherResource;
 use App\Models\Instruction;
 use Illuminate\Http\Request;
 
@@ -11,11 +12,11 @@ class InstructionController extends Controller
 {
     public function index(Request $request)
     {
-        $request->merge(['teacher_id' => auth()->id()]);
         $query = Instruction::query()
             ->lastVersions()
             ->latest();
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, InstructionTeacherListResource::class);
     }
 
@@ -24,9 +25,9 @@ class InstructionController extends Controller
         if ($instruction->isArchive(auth()->id())) {
             return response(status: 404);
         }
+
         return new InstructionTeacherResource($instruction);
     }
-
 
     public function diff(Instruction $instruction)
     {
@@ -36,8 +37,9 @@ class InstructionController extends Controller
     public function sign(Instruction $instruction)
     {
         $instruction->signs()->create([
-            'teacher_id' => auth()->id()
+            'teacher_id' => auth()->id(),
         ]);
+
         return new InstructionTeacherResource($instruction);
     }
 }

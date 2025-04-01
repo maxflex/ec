@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Enums\LogType;
-use App\Http\Controllers\Controller;
 use App\Http\Resources\LogResource;
 use App\Models\Log;
 use Illuminate\Http\Request;

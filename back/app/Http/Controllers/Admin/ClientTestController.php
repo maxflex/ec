@@ -12,16 +12,18 @@ class ClientTestController extends Controller
 {
     protected $filters = [
         'equals' => ['client_id', 'year', 'program'],
-        'status' => ['status']
+        'status' => ['status'],
     ];
 
     public function index(Request $request)
     {
         $query = ClientTest::latest();
-        if (!$request->has('client_id')) {
+
+        if (! $request->has('client_id')) {
             $query->with('client');
         }
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, ClientTestResource::class);
     }
 

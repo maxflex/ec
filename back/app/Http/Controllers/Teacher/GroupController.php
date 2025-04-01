@@ -12,9 +12,10 @@ class GroupController extends \App\Http\Controllers\Admin\GroupController
     {
         // препод может видеть только свои группы
         // (исключение – классрук, он может видеть группы клиента)
-        if (!($request->has('client_id') && auth()->user()->is_head_teacher)) {
+        $isHeadTeacherView = $request->has('client_id') && auth()->user()->is_head_teacher;
+        if (! $isHeadTeacherView) {
             $request->merge([
-                'teacher_id' => auth()->id()
+                'teacher_id' => auth()->id(),
             ]);
         }
 
@@ -26,10 +27,10 @@ class GroupController extends \App\Http\Controllers\Admin\GroupController
         // препод может видеть только группы, в которых у него были занятия
         // https://doc.ege-centr.ru/tasks/834
         abort_if(
-            !$group->lessons()->where('teacher_id', auth()->id())->exists(),
+            ! $group->lessons()->where('teacher_id', auth()->id())->exists(),
             403
         );
-        
+
         return new GroupResource($group);
     }
 }

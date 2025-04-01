@@ -15,6 +15,7 @@ class ClientTestController extends Controller
         $query = ClientTest::query()
             ->where('client_id', auth()->id())
             ->latest();
+
         return $this->handleIndexRequest($request, $query, ClientTestResource::class);
     }
 
@@ -24,12 +25,25 @@ class ClientTestController extends Controller
             ->whereId($id)
             ->where('client_id', auth()->id())
             ->firstOrFail();
+
         return new ClientTestResource($clientTest);
     }
 
     public function start(ClientTest $clientTest)
     {
         $clientTest->start();
+    }
+
+    public function finish(Request $request)
+    {
+        $activeTest = ClientTest::query()
+            ->where('client_id', auth()->id())
+            ->active()
+            ->first();
+        if ($activeTest === null) {
+            return response(null);
+        }
+        $activeTest->finish($request->answers);
     }
 
     public function active()
@@ -48,20 +62,8 @@ class ClientTestController extends Controller
             // сколько в секундах осталось на выполнение теста
             'seconds' => max(
                 0,
-                $activeTest->minutes * 60 - (int)abs(Carbon::parse($activeTest->started_at)->diffInSeconds(now()))
-            )
+                $activeTest->minutes * 60 - (int) abs(Carbon::parse($activeTest->started_at)->diffInSeconds(now()))
+            ),
         ];
-    }
-
-    public function finish(Request $request)
-    {
-        $activeTest = ClientTest::query()
-            ->where('client_id', auth()->id())
-            ->active()
-            ->first();
-        if ($activeTest === null) {
-            return response(null);
-        }
-        $activeTest->finish($request->answers);
     }
 }
