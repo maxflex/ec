@@ -6,6 +6,7 @@ use App\Enums\RouteGroup;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
@@ -19,16 +20,20 @@ class RouteServiceProvider extends ServiceProvider
         $this->routes(function () {
             foreach (RouteGroup::cases() as $routeGroup) {
                 $name = $routeGroup->name;
-                $routeRegistrar = Route::middleware($name)
-                    ->prefix($name)
-                    ->name($name.'.')
-                    ->middleware('throttle:'.$name)
-                    ->group(base_path("routes/$name.php"));
+                $middleware = [
+                    'throttle:'.$name,
+                    SubstituteBindings::class,
+                ];
 
                 // всё, кроме pub, под логином
                 if ($routeGroup !== RouteGroup::pub) {
-                    $routeRegistrar->middleware('auth:crm');
+                    $middleware[] = 'auth:crm';
                 }
+
+                Route::prefix($name)
+                    ->name($name.'.')
+                    ->middleware($middleware)
+                    ->group(base_path("routes/$name.php"));
             }
         });
 
