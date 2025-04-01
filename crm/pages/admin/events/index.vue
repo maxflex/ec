@@ -19,7 +19,7 @@ async function loadData() {
   }
   loading.value = true
   const { data } = await useHttp<ApiResponse<EventListResource>>(
-    `common/events`,
+    `events`,
     {
       params: {
         ...filters.value,

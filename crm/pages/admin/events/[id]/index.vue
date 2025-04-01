@@ -10,7 +10,7 @@ const item = ref<EventResource>()
 
 async function loadData() {
   const { data } = await useHttp<EventResource>(
-    `common/events/${route.params.id}`,
+    `events/${route.params.id}`,
   )
   if (data.value) {
     item.value = data.value

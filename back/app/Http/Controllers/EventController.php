@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Common;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Resources\EventListResource;
 use App\Http\Resources\EventResource;
 use App\Models\Client;
@@ -31,7 +30,7 @@ class EventController extends Controller
         $query = Event::withCount('participants')->latest();
 
         // конфиденциальные события видны только админам
-        if (get_class(auth('crm')->user()) !== User::class) {
+        if (get_class(auth()->user()) !== User::class) {
             $query->where('is_private', false);
         }
 

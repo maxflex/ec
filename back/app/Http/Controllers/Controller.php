@@ -168,13 +168,14 @@ class Controller extends BaseController
     protected function filterSearchByName(&$query, $value)
     {
         $words = explode(' ', $value);
-        $query->where(function ($q) use ($words) {
-            foreach ($words as $word) {
-                $q->where('first_name', 'like', "%{$word}%")
-                    ->orWhere('last_name', 'like', "%{$word}%")
-                    ->orWhere('middle_name', 'like', "%{$word}%");
-            }
-        });
+
+        foreach ($words as $word) {
+            $query->whereAny(
+                ['first_name', 'last_name', 'middle_name'],
+                'like',
+                "{$word}%"
+            );
+        }
     }
 
     protected function filterLte(&$query, $value, $field)

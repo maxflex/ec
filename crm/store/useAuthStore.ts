@@ -75,14 +75,14 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function logOut() {
-    await useHttp('common/auth/logout')
+    await useHttp(`pub/auth/logout`)
     clearCurrentToken()
     const path = sessionStorage.getItem('redirect') || '/'
     window.location.href = path
   }
 
   async function getLoggedUser() {
-    const { data } = await useHttp<AuthResource>('common/auth/user')
+    const { data } = await useHttp<AuthResource>(`pub/auth/user`)
     if (data.value) {
       const entityType = data.value.entity_type
       isAdmin.value = entityType === EntityTypeValue.user

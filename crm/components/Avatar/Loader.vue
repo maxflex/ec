@@ -60,7 +60,7 @@ async function save() {
   formData.append('entity_type', item.entity_type)
   formData.append('entity_id', String(item.id))
   const { data, error } = await useHttp<HasPhoto>(
-    `common/photos`,
+    `upload/photos`,
     {
       method: 'post',
       body: formData,

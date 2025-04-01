@@ -30,7 +30,7 @@ onMounted(async () => {
 })
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<VacationResource>>(`common/vacations`)
+  const { data } = await useHttp<ApiResponse<VacationResource>>(`vacations`)
   if (data.value) {
     // vacations.value = data.value.data
     for (const { date } of data.value.data) {
@@ -71,7 +71,7 @@ function onClick(year: number, month: number, day: number) {
   else {
     dates.value[date] = true
   }
-  useHttp(`common/vacations`, {
+  useHttp(`vacations`, {
     method: 'post',
     body: { date },
   })

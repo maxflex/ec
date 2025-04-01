@@ -15,7 +15,7 @@ const modules = [
         const formData = new FormData()
         formData.append('photo', photo)
         const { data } = await useHttp<{ name: string }>(
-          `photos/upload`,
+          `upload/instructions`,
           {
             method: 'post',
             body: formData,

@@ -10,13 +10,14 @@ use Illuminate\Http\Request;
 class CommentController extends Controller
 {
     protected $filters = [
-        'equals' => ['entity_id', 'entity_type']
+        'equals' => ['entity_id', 'entity_type'],
     ];
 
     public function index(Request $request)
     {
         $query = Comment::with('user');
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, CommentResource::class);
     }
 
@@ -25,6 +26,7 @@ class CommentController extends Controller
         $comment = auth()->user()->comments()->create(
             $request->all()
         );
+
         return new CommentResource($comment);
     }
 
@@ -32,9 +34,11 @@ class CommentController extends Controller
     {
         abort_if($comment->user_id !== auth()->id(), 403);
         $request->validate([
-            'text' => ['required', 'string']
+            'text' => ['required', 'string'],
         ]);
+
         $comment->update($request->all());
+
         return new CommentResource($comment);
     }
 

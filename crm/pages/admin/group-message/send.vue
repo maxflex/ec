@@ -85,7 +85,7 @@ watch(item, () => {
 nextTick(async () => {
   const eventId = route.query.event_id
   if (eventId) {
-    const { data } = await useHttp<EventResource>(`common/events/${eventId}`)
+    const { data } = await useHttp<EventResource>(`events/${eventId}`)
     if (data.value) {
       const { clients, teachers } = data.value.participants!
       selected.value = {

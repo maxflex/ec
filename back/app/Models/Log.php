@@ -7,6 +7,7 @@ use App\Utils\Session;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Log extends Model
 {
@@ -73,7 +74,7 @@ class Log extends Model
         });
     }
 
-    public function entity()
+    public function entity(): MorphTo
     {
         return $this->morphTo();
     }

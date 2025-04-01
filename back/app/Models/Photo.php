@@ -23,10 +23,9 @@ class Photo extends Model
     ];
 
     /**
-     * Свободная загрузка.
-     * Используется в загрузке фоток в инструкции
+     * Загрузка фоток в инструкции
      */
-    public static function arbitraryUpload(UploadedFile $file)
+    public static function uploadInstructionAttachment(UploadedFile $file)
     {
         $file = Image::make($file)->stream('jpg');
         $fileName = uniqid('instruction_').'.jpg';

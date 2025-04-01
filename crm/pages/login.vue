@@ -56,7 +56,7 @@ async function onPhoneEnter() {
     user: AuthResource
     phone: PhoneResource
   }>(
-    `common/auth/submit-phone`,
+    `pub/auth/submit-phone`,
     {
       method: 'post',
       body: {
@@ -96,7 +96,7 @@ async function onOtpFinish() {
   errors.value = {}
   otp.loading = true
   const { data, error } = await useHttp<TokenResponse>(
-    `common/auth/verify-code`,
+    `pub/auth/verify-code`,
     {
       method: 'post',
       body: {
