@@ -2,6 +2,7 @@
 export interface PassFilters {
   status?: PassStatus
   type?: PassType
+  direction: Direction[]
 }
 
 const model = defineModel<PassFilters>({ required: true })
@@ -18,6 +19,12 @@ const model = defineModel<PassFilters>({ required: true })
     v-model="model.type"
     label="Тип"
     :items="selectItems(PassTypeLabel)"
+    density="comfortable"
+  />
+  <UiMultipleSelect
+    v-model="model.direction"
+    label="Направление"
+    :items="selectItems(DirectionLabel)"
     density="comfortable"
   />
 </template>

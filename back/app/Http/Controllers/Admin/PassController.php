@@ -14,6 +14,7 @@ class PassController extends Controller
     protected $filters = [
         'equals' => ['request_id', 'type'],
         'status' => ['status'],
+        'direction' => ['direction'],
     ];
 
     protected $statsFilters = [
@@ -102,5 +103,14 @@ class PassController extends Controller
             case 'expired':
                 $query->whereDoesntHave('passLog')->where('date', '<', now()->format('Y-m-d'));
         }
+    }
+
+    protected function filterDirection(&$query, array $directions)
+    {
+        if (count($directions) === 0) {
+            return;
+        }
+
+        $query->whereHas('request', fn ($q) => $q->whereIn('direction', $directions));
     }
 }

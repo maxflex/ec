@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 export interface Filters {
   status?: RequestStatus
-  direction?: Direction[]
+  direction: Direction[]
 }
 
 const model = defineModel<Filters>({ required: true })
