@@ -20,7 +20,6 @@ export default defineNuxtConfig({
   modules: [
     (_options, nuxt) => {
       nuxt.hooks.hook('vite:extendConfig', (config) => {
-        // @ts-expect-error
         config.plugins?.push(vuetify({ autoImport: true }))
       })
     },
@@ -49,10 +48,6 @@ export default defineNuxtConfig({
     },
   },
 
-  imports: {
-    dirs: ['store'],
-  },
-
   sourcemap: {
     server: true,
   },
@@ -72,5 +67,5 @@ export default defineNuxtConfig({
     },
   },
 
-  compatibilityDate: '2024-10-31',
+  compatibilityDate: '2025-04-01',
 })
