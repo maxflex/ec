@@ -29,7 +29,7 @@ const computedModel = computed({
 </script>
 
 <template>
-  <v-chip class="chip-selector" label @pointerup="openSelector">
+  <v-chip class="chip-selector" label @click="openSelector">
     {{ items.find(item => item.value === model)?.title || label }}
     <select ref="selectRef" v-model="computedModel" class="hidden">
       <template v-if="clearable">

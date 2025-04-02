@@ -31,7 +31,7 @@ const { indexPageData, availableYears, items } = useIndex<Balance>(
 <template>
   <UiIndexPage :data="indexPageData" class="balance">
     <template v-if="teacherId" #filters>
-      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
+      <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
       <UiClearableSelect
         v-if="split"
         v-model="filters.split"

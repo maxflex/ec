@@ -79,54 +79,10 @@ function onClick(e: EventListResource) {
       <v-icon :icon="mdiAccountGroup" class="mr-2 vfn-1" />
       {{ item.participants_count }}
     </div>
+    <div style="width: 100px">
+    </div>
     <div style="width: 140px">
       <EventStatus :item="item" />
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.event-item {
-  position: relative;
-  align-items: flex-start !important;
-  // background: rgba(#9c27b0, 0.05);
-  padding: 20px;
-  cursor: pointer;
-  .table-actionss {
-    right: -10px !important;
-    // top: -16px !important;
-    height: 60px !important;
-  }
-  .v-chip {
-    top: -4px !important;
-  }
-  &:after {
-    content: '';
-    background: rgba(#9c27b0, 0.05);
-    // background: rgba(#337ab7, 0.05);
-    width: calc(100% - 110px);
-    height: 100%;
-    position: absolute;
-    left: 110px;
-    top: 0;
-    border-radius: 8px;
-    pointer-events: none;
-    transition: background-color linear 0.2s;
-  }
-  &--study {
-    &:after {
-      background: rgba(#fe8a1e, 0.05);
-    }
-    &:hover {
-      &:after {
-        background: rgba(#fe8a1e, 0.1) !important;
-      }
-    }
-  }
-  &:hover {
-    &:after {
-      background: rgba(#9c27b0, 0.1);
-    }
-  }
-}
-</style>

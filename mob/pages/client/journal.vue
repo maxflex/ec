@@ -1,13 +1,11 @@
 <script setup lang="ts">
-const filters = ref<AvailableYearsFilter>({
-  year: undefined,
-})
+const filters = useAvailableYearsFilter()
 
-const selectedQuarter = ref<Quarter | null>(null)
+const selectedQuarter = ref<Quarter | -1>(-1)
 const selectedProgram = ref<Program | undefined>(undefined)
 const availablePrograms = ref<Program[]>([])
 
-const { items, indexPageData, availableYears } = useIndex<JournalResource, AvailableYearsFilter>(
+const { items, indexPageData, availableYears } = useIndex<JournalResource>(
   `journal`,
   filters,
   {
@@ -17,22 +15,22 @@ const { items, indexPageData, availableYears } = useIndex<JournalResource, Avail
 
 const quarters = ref<{
   title: string
-  value: Quarter | null
+  value: Quarter | -1
 }[]>([])
 
 watch(items, (newVal) => {
   quarters.value = [...new Set(newVal.map(e => e.lesson.quarter))].sort().map(q => ({
-    value: q,
+    value: q === null ? -1 : q,
     title: q === null ? 'без четверти' : QuarterLabel[q],
   }))
   availablePrograms.value = [...new Set(newVal.map(e => e.program))]
-  selectedQuarter.value = quarters.value.length ? quarters.value[0].value : null
+  selectedQuarter.value = quarters.value.length ? quarters.value[0].value : -1
 })
 
 watch(selectedProgram, () => smoothScroll('main', 'top', 'instant'))
 
 const filteredItems = computed(() => items.value.filter((e) => {
-  return e.lesson.quarter === selectedQuarter.value && (
+  return (e.lesson.quarter ?? -1) === selectedQuarter.value && (
     selectedProgram.value ? (e.program === selectedProgram.value) : true
   )
 }))
@@ -41,7 +39,7 @@ const filteredItems = computed(() => items.value.filter((e) => {
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
+      <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
       <UiChipSelector v-model="selectedQuarter" :items="quarters" label="без четверти" />
       <UiChipSelector
         v-model="selectedProgram"

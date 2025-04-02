@@ -1,13 +1,8 @@
 <script setup lang="ts">
-import type {
-  ClientLessonEditPriceDialog,
-  EventDialog,
-  LessonBulkCreateDialog,
-  LessonBulkUpdateDialog,
-  LessonConductDialog,
-  LessonDialog,
-} from '#build/components'
 import {
+  EventItemAdmin,
+  EventItemClient,
+  EventItemTeacher,
   LessonItemAdminClient,
   LessonItemAdminGroup,
   LessonItemAdminTeacher,
@@ -34,9 +29,7 @@ const { groupId, teacherId, clientId, program, showTeeth, year, programFilter, h
 const selectedProgram = ref<Program>()
 const selectedYear = ref<Year>()
 const hideEmptyDates = ref<number>(1)
-const availableYearsLoaded = ref(false)
-const { user, isTeacher, isClient } = useAuthStore()
-const isMassEditable = user?.entity_type === EntityTypeValue.user && !!groupId
+const { isTeacher, isClient } = useAuthStore()
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const params = {
   // только один из них НЕ undefined
@@ -48,24 +41,8 @@ const loading = ref(true)
 const teeth = ref<Teeth>()
 const lessons = ref<LessonListResource[]>([])
 const events = ref<EventListResource[]>([])
-const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
-const clientLessonEditPriceDialog = ref<InstanceType<typeof ClientLessonEditPriceDialog>>()
-const lessonBulkUpdateDialog = ref<InstanceType<typeof LessonBulkUpdateDialog>>()
-const lessonBulkCreateDialog = ref<InstanceType<typeof LessonBulkCreateDialog>>()
-const eventDialog = ref<InstanceType<typeof EventDialog>>()
-const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 const vacations = ref<Record<string, boolean>>({})
 const examDates = ref<ExamDateResource[]>([])
-const checkboxes = ref<{ [key: number]: boolean }>({})
-const lessonIds = computed((): number[] => {
-  const result = []
-  for (const key in checkboxes.value) {
-    if (checkboxes.value[key]) {
-      result.push(Number.parseInt(key))
-    }
-  }
-  return result
-})
 
 if (year) {
   selectedYear.value = year
@@ -149,16 +126,38 @@ const itemsByDate = computed(
   },
 )
 
+const availableYears = ref<Year[]>()
 const availablePrograms = computed(() => [...new Set(lessons.value.map(l => l.group.program))])
+
+async function loadAvailableYears() {
+  const { data } = await useHttp<Year[]>(
+    `groups`,
+    {
+      params: {
+        ...params,
+        available_years: 1,
+      },
+    },
+  )
+  if (data.value) {
+    availableYears.value = data.value
+    if (data.value.length > 0) {
+      selectedYear.value = data.value[0]
+    }
+  }
+}
 
 async function loadLessons() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<LessonListResource>>(`lessons`, {
-    params: {
-      ...params,
-      year: groupId ? undefined : selectedYear.value,
+  const { data } = await useHttp<ApiResponse<LessonListResource>>(
+    `lessons`,
+    {
+      params: {
+        ...params,
+        year: groupId ? undefined : selectedYear.value,
+      },
     },
-  })
+  )
   if (data.value) {
     lessons.value = data.value.data
   }
@@ -170,12 +169,15 @@ async function loadEvents() {
   if (groupId) {
     return
   }
-  const { data } = await useHttp<ApiResponse<EventListResource>>(`common/events`, {
-    params: {
-      ...params,
-      year: selectedYear.value,
+  const { data } = await useHttp<ApiResponse<EventListResource>>(
+    `events`,
+    {
+      params: {
+        ...params,
+        year: selectedYear.value,
+      },
     },
-  })
+  )
   if (data.value) {
     events.value = data.value.data
   }
@@ -185,12 +187,15 @@ async function loadTeeth() {
   if (!showTeeth) {
     return
   }
-  const { data } = await useHttp<Teeth>(`common/teeth`, {
-    params: {
-      ...params,
-      year: selectedYear.value,
+  const { data } = await useHttp<Teeth>(
+    `teeth`,
+    {
+      params: {
+        ...params,
+        year: selectedYear.value,
+      },
     },
-  })
+  )
   if (data.value) {
     teeth.value = data.value
   }
@@ -198,9 +203,12 @@ async function loadTeeth() {
 
 async function loadVacations() {
   vacations.value = {}
-  const { data } = await useHttp<ApiResponse<VacationResource>>(`common/vacations`, {
-    params: { year: selectedYear.value },
-  })
+  const { data } = await useHttp<ApiResponse<VacationResource>>(
+    `vacations`,
+    {
+      params: { year: selectedYear.value },
+    },
+  )
   if (data.value) {
     for (const { date } of data.value.data) {
       vacations.value[date] = true
@@ -210,11 +218,14 @@ async function loadVacations() {
 
 async function loadExamDates() {
   const programs = program ? [program] : availablePrograms.value
-  const { data } = await useHttp<ApiResponse<ExamDateResource>>(`common/exam-dates`, {
-    params: {
-      'programs[]': programs,
+  const { data } = await useHttp<ApiResponse<ExamDateResource>>(
+    `exam-dates`,
+    {
+      params: {
+        'programs[]': programs,
+      },
     },
-  })
+  )
   if (data.value) {
     examDates.value = data.value.data
   }
@@ -236,39 +247,17 @@ async function loadData() {
   await loadVacations()
 }
 
-function onBulkUpdated() {
-  loadLessons()
-  checkboxes.value = {}
-}
-
-function onMassEditClick(item: LessonListResource) {
-  if (!isMassEditable || item.status === 'cancelled' || !lessonIds.value.length) {
-    return
+const eventComponent = (function () {
+  if (isClient) {
+    return EventItemClient
   }
-  toggleCheckboxes(item.id)
-}
-
-function toggleCheckboxes(id: number) {
-  if (checkboxes.value) {
-    if (checkboxes.value[id]) {
-      delete checkboxes.value[id]
-    }
-    else {
-      checkboxes.value[id] = true
-    }
+  if (isTeacher) {
+    return EventItemTeacher
   }
-}
+  return EventItemAdmin
+})()
 
-function onAvailableYearsLoaded() {
-  availableYearsLoaded.value = true
-  // подгружаем данные только если есть какой-то год
-  if (selectedYear.value) {
-    loadData()
-    watch(selectedYear, loadData)
-  }
-}
-
-const lessonItemComponent = (function () {
+const lessonComponent = (function () {
   if (isClient) {
     console.log('LessonItemHeadTeacher')
     return LessonItemClientLK
@@ -292,19 +281,16 @@ const lessonItemComponent = (function () {
   console.log('LessonItemAdminGroup')
   return LessonItemAdminGroup
 })()
+
+watch(selectedYear, loadData)
+
+nextTick(loadAvailableYears)
 </script>
 
 <template>
   <UiFilters>
-    <!-- v-if="!year" на странице группы год передаётся явно, там селектор не нужен -->
-    <AvailableYearsSelector
-      v-if="!year"
-      v-model="selectedYear"
-      :client-id="clientId"
-      :teacher-id="teacherId"
-      mode="schedule"
-      @loaded="onAvailableYearsLoaded()"
-    />
+    <!-- на странице группы год передаётся явно, там селектор не нужен (v-if="!year") -->
+    <AvailableYearsSelector v-if="!year" v-model="selectedYear" :items="availableYears" />
     <UiClearableSelect
       v-if="programFilter"
       v-model="selectedProgram"
@@ -318,7 +304,7 @@ const lessonItemComponent = (function () {
       density="comfortable"
     />
   </UiFilters>
-  <UiNoData v-if="availableYearsLoaded && !selectedYear" />
+  <UiNoData v-if="availableYears !== undefined && !selectedYear" />
   <UiLoader v-else-if="loading" />
   <div v-else class="schedule">
     <div
@@ -358,37 +344,23 @@ const lessonItemComponent = (function () {
         </div>
       </template>
       <template v-for="item in itemsByDate[d]">
-        <EventItem
+        <component
+          :is="eventComponent"
           v-if="isEvent(item)"
           :key="`e-${item.id}`"
           :item="item"
-          @edit="eventDialog?.edit"
         />
         <component
-          :is="lessonItemComponent"
+          :is="lessonComponent"
           v-else
           :id="`lesson-${item.id}`"
           :key="`l-${item.id}`"
           :item="item"
-          :checkboxes="checkboxes"
           class="lesson-item lesson-item__lesson"
-          @edit="lessonDialog?.edit"
-          @conduct="conductDialog?.open"
-          @edit-price="clientLessonEditPriceDialog?.edit"
-          @click="onMassEditClick(item)"
-          @select="toggleCheckboxes"
         />
       </template>
     </div>
   </div>
-  <LessonDialog ref="lessonDialog" />
-  <ClientLessonEditPriceDialog v-if="clientId" ref="clientLessonEditPriceDialog" />
-  <EventDialog ref="eventDialog" />
-  <LessonConductDialog ref="conductDialog" @updated="loadLessons" />
-  <template v-if="isMassEditable">
-    <LessonBulkUpdateDialog ref="lessonBulkUpdateDialog" @updated="onBulkUpdated" />
-    <LessonBulkCreateDialog ref="lessonBulkCreateDialog" @updated="loadLessons" />
-  </template>
 </template>
 
 <style lang="scss">

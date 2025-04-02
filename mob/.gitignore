@@ -6,6 +6,11 @@
 .cache
 dist
 
+# Symlink
+utils
+store
+composables
+
 # Node dependencies
 node_modules
 

@@ -68,7 +68,7 @@ function onFileSelected(e: Event) {
     }
 
     useHttp<string>(
-      `common/files`,
+      `files`,
       {
         method: 'post',
         body: formData,

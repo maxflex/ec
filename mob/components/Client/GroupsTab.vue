@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { mdiArrowLeftThick } from '@mdi/js'
+
 const { clientId } = defineProps<{ clientId: number }>()
 
 const filters = ref<AvailableYearsFilter>({
@@ -111,16 +113,16 @@ nextTick(loadAvailableYears)
     <template #buttons>
       <v-btn color="primary" @click="back()">
         <template #prepend>
-          <v-icon icon="$back" />
+          <v-icon :icon="mdiArrowLeftThick" />
         </template>
-        назад
+        назад1
       </v-btn>
     </template>
     <GroupList :items="groups" selectable @selected="onGroupSelected" />
   </UiIndexPage>
   <UiIndexPage v-else :data="{ loading, noData }">
     <template #filters>
-      <AvailableYearsSelector2 v-model="filters.year" :items="availableYears" />
+      <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
     </template>
     <GroupList :items="clientGroups" />
     <SwampList :items="swamps" @attach="onAttachStart" />

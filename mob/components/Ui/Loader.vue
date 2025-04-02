@@ -12,6 +12,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 24px;
   span {
     position: relative;
     color: transparent; /* Makes the text invisible initially */

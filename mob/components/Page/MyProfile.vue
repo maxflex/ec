@@ -6,7 +6,7 @@ const { user, logOut } = useAuthStore()
   <div v-if="user" class="my-profile">
     <div class="my-profile__head">
       <div>
-        <AvatarLoader :item="user" :size="100" />
+        <UiAvatar :item="user" :size="100" />
       </div>
       <div>
         <h4>{{ formatFullName(user) }}</h4>

@@ -18,6 +18,7 @@ const modelDefaults: EventResource = {
   description: null,
   duration: null,
   is_afterclass: false,
+  is_private: false,
 }
 const item = ref<EventResource>(modelDefaults)
 const route = useRoute()
@@ -35,7 +36,7 @@ async function edit(id: number) {
   itemId.value = id
   loading.value = true
   dialog.value = true
-  const { data } = await useHttp<EventResource>(`common/events/${id}`)
+  const { data } = await useHttp<EventResource>(`events/${id}`)
   if (data.value) {
     item.value = data.value
   }
@@ -45,7 +46,7 @@ async function edit(id: number) {
 async function save() {
   saving.value = true
   const method = itemId.value ? `put` : `post`
-  const url = itemId.value ? `common/events/${itemId.value}` : `common/events`
+  const url = itemId.value ? `events/${itemId.value}` : `events`
   const { data } = await useHttp<EventListResource>(url, {
     method,
     body: item.value,
@@ -63,7 +64,7 @@ async function destroy() {
   }
   deleting.value = true
   const { error } = await useHttp(
-    `common/events/${item.value.id}`,
+    `events/${item.value.id}`,
     {
       method: 'delete',
     },
@@ -154,7 +155,11 @@ defineExpose({ create, edit })
         <div>
           <v-checkbox
             v-model="item.is_afterclass"
-            label="Внеучебное"
+            label="Внеклассное"
+          />
+          <v-checkbox
+            v-model="item.is_private"
+            label="Конфиденциальное"
           />
         </div>
       </div>
