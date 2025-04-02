@@ -3,6 +3,9 @@ const { items, indexPageData } = useIndex<ReportListResource>(`reports`)
 </script>
 
 <template>
+  <UiPageTitle>
+    Отчёты
+  </UiPageTitle>
   <UiIndexPage :data="indexPageData">
     <ReportList :items="items" />
   </UiIndexPage>

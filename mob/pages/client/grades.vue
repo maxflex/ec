@@ -11,6 +11,9 @@ const { items, indexPageData, availableYears } = useIndex<QuartersGradesResource
 </script>
 
 <template>
+  <UiPageTitle>
+    Оценки
+  </UiPageTitle>
   <UiIndexPage :data="indexPageData">
     <template #filters>
       <AvailableYearsSelector v-model="filters.year" :items="availableYears" />

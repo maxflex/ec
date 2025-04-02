@@ -37,6 +37,9 @@ const filteredItems = computed(() => items.value.filter((e) => {
 </script>
 
 <template>
+  <UiPageTitle>
+    Дневник
+  </UiPageTitle>
   <UiIndexPage :data="indexPageData">
     <template #filters>
       <AvailableYearsSelector v-model="filters.year" :items="availableYears" />

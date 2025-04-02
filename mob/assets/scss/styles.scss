@@ -1,5 +1,6 @@
 :root {
   --app-height: 100%;
+  --offset: 16px;
 }
 
 * {
@@ -52,10 +53,6 @@ a:not(.v-list-item):not(.table-item) {
 a.table-item {
   text-decoration: none;
   color: initial;
-}
-
-.page-title {
-  padding: 20px;
 }
 
 .cursor {

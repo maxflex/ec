@@ -3,6 +3,9 @@ const { user, logOut } = useAuthStore()
 </script>
 
 <template>
+  <UiPageTitle>
+    Мой профиль
+  </UiPageTitle>
   <div v-if="user" class="my-profile">
     <div class="my-profile__head">
       <div>
