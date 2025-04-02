@@ -21,7 +21,6 @@ const { error } = defineProps({
           У вас нет доступа к этой странице
         </span>
       </v-main>
-      <MenuBase />
     </v-app>
   </ClientOnly>
 </template>

@@ -13,9 +13,6 @@ const { item } = defineProps<{
       <div v-if="item.cabinet">
         {{ CabinetAllLabel[item.cabinet] }}
       </div>
-      <div>
-        ГР-{{ item.group.id }}
-      </div>
     </div>
     <div class="lesson-item__row">
       <div v-if="item.teacher" class="text-truncate">
