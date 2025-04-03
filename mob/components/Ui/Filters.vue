@@ -9,7 +9,7 @@
 
 <style lang="scss">
 .filters {
-  background: rgb(var(--v-theme-bg));
+  // background: rgb(var(--v-theme-bg));
   padding: 0 var(--offset);
   display: flex;
   align-items: center;

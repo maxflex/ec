@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
+import { differenceInDays, eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { groupBy } from 'rambda'
 import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 import { formatDateMonth } from '~/utils'
@@ -15,6 +15,8 @@ const { groupId, teacherId, clientId, program, year, programFilter } = definePro
 }>()
 
 const expanded = ref<Record<string, boolean>>({})
+const showAllDates = ref(false)
+const todayDate = today()
 
 // const tabName = teacherId ? 'TeacherSchedule' : groupId ? 'GroupSchedule' : 'ClientSchedule'
 const selectedProgram = ref<Program>()
@@ -71,43 +73,57 @@ const filteredLessons = computed(() =>
     : lessons.value,
 )
 
+// все даты учебного года
+const allDates = computed<string[]>(() => selectedYear.value
+  ? eachDayOfInterval({
+    start: `${selectedYear.value}-09-01`,
+    end: `${selectedYear.value + 1}-05-31`,
+  }).map(d => format(d, 'yyyy-MM-dd'))
+  : [],
+)
+
+// даты с контентом
 const dates = computed(() => {
-  if (!selectedYear.value) {
-    return []
-  }
-
-  // Define the start and end months for the academic year
-  const startMonth = 8 // September (0-indexed)
-  const endMonth = 5 // June (0-indexed)
-
-  // Define start and end dates for the academic year
-  const startDate = startOfMonth(new Date(selectedYear.value, startMonth, 1)) // September 1st
-  const endDate = endOfMonth(new Date(selectedYear.value + 1, endMonth, 31)) // May 31st
-
-  // Generate array of all dates between startDate and endDate
-  const allDates = eachDayOfInterval({ start: startDate, end: endDate })
-
   const result = []
-  for (const d of allDates) {
-    const dateString = format(d, 'yyyy-MM-dd')
-    if (
-      filteredLessons.value.some(e => e.date === dateString)
-      || events.value.some(e => e.date === dateString)
-      || (dateString in availableExamDates.value)
-    ) {
-      result.push(dateString)
+  for (const d of allDates.value) {
+    if (hasContentAtDate(d)) {
+      // если дата больше чем 3 дня назад или нажата "показать все даты"
+      if (showAllDates.value || differenceInDays(todayDate, d) < 3) {
+        result.push(d)
+      }
     }
   }
   return result
 })
 
+function hasContentAtDate(d: string): boolean {
+  return filteredLessons.value.some(e => e.date === d)
+    || events.value.some(e => e.date === d)
+    || (d in availableExamDates.value)
+}
+
 const itemsByDate = computed(
-  (): {
-    [index: string]: Array<LessonListResource | EventListResource>
-  } => {
+  (): Record<string, Array<LessonListResource | EventListResource>> => {
     return groupBy(x => x.date, [...filteredLessons.value, ...events.value])
   },
 )
+
+// если есть скрытый контент, то кнопка "показать более ранние даты"
+const hasHiddenContent = computed<boolean>(() => {
+  if (showAllDates.value) {
+    return false
+  }
+
+  const firstShownDate = dates.value[0]
+
+  for (const d of allDates.value) {
+    if (d < firstShownDate && hasContentAtDate(d)) {
+      return true
+    }
+  }
+
+  return false
+})
 
 const availableYears = ref<Year[]>()
 const availablePrograms = computed(() => [...new Set(lessons.value.map(l => l.group.program))])
@@ -230,27 +246,25 @@ nextTick(loadAvailableYears)
     <!-- на странице группы год передаётся явно, там селектор не нужен (v-if="!year") -->
     <AvailableYearsSelector v-if="!year" v-model="selectedYear" :items="availableYears" />
     <UiClearableSelect
-      v-if="programFilter"
-      v-model="selectedProgram"
-      label="Программа"
-      :items="
-        availablePrograms.map((value) => ({
-          value,
-          title: ProgramLabel[value],
-        }))
-      "
-      density="comfortable"
+      v-if="programFilter" v-model="selectedProgram" label="Программа" :items="availablePrograms.map((value) => ({
+        value,
+        title: ProgramLabel[value],
+      }))
+      " density="comfortable"
     />
   </UiFilters>
   <UiNoData v-if="availableYears !== undefined && !selectedYear" />
   <UiLoader v-else-if="loading" />
   <div v-else class="schedule">
+    <div v-if="hasHiddenContent" class="pb-4 pt-2 pl-4">
+      <v-chip label @click="showAllDates = true">
+        показать более ранние даты
+      </v-chip>
+    </div>
     <div
-      v-for="d in dates"
-      :key="d"
-      class="schedule__row"
-      :class="{
+      v-for="d in dates" :key="d" class="schedule__row" :class="{
         'schedule__row--expanded': expanded[d],
+        'schedule__row--today': d === todayDate,
       }"
     >
       <div class="schedule__row-data" @click="expand(d)">
@@ -272,26 +286,17 @@ nextTick(loadAvailableYears)
           </div>
         </div>
         <div>
-          <v-icon
-            icon="$expand"
-            color="gray"
-          />
+          <v-icon icon="$expand" color="gray" />
         </div>
       </div>
-      <Vue3SlideUpDown
-        :model-value="!!expanded[d]"
-        :duration="200"
-        class="schedule__row-expansion"
-      >
+      <Vue3SlideUpDown :model-value="!!expanded[d]" :duration="200" class="schedule__row-expansion">
         <div v-if="vacations[d]" class="lesson-item lesson-item__extra lesson-item__extra--vacation">
           Государственный праздник
         </div>
         <template v-if="d in availableExamDates">
           <div
-            v-for="ed in availableExamDates[d]"
-            :key="ed.id"
-            class="lesson-item lesson-item__extra lesson-item__extra--exam-date"
-            :class="{
+            v-for="ed in availableExamDates[d]" :key="ed.id"
+            class="lesson-item lesson-item__extra lesson-item__extra--exam-date" :class="{
               'lesson-item__extra--exam-date-reserved': ed.is_reserve,
             }"
           >
@@ -305,17 +310,8 @@ nextTick(loadAvailableYears)
           </div>
         </template>
         <template v-for="item in itemsByDate[d]">
-          <ScheduleRowEvent
-            v-if="isEvent(item)"
-            :key="`e-${item.id}`"
-            :item="item"
-          />
-          <ScheduleRowLesson
-            v-else
-            :id="`lesson-${item.id}`"
-            :key="`l-${item.id}`"
-            :item="item"
-          />
+          <ScheduleRowEvent v-if="isEvent(item)" :key="`e-${item.id}`" :item="item" />
+          <ScheduleRowLesson v-else :id="`lesson-${item.id}`" :key="`l-${item.id}`" :item="item" />
         </template>
       </Vue3SlideUpDown>
     </div>
@@ -330,47 +326,65 @@ nextTick(loadAvailableYears)
       align-items: center;
       border-bottom: 1px solid rgb(var(--v-theme-bg));
       transition: background-color ease-in-out 0.2s;
+
       & > div {
         font-size: 14px;
+
         &:first-child {
           width: 120px;
           padding-left: var(--offset);
         }
+
         &:nth-child(2) {
           display: inline-flex;
           flex: 1;
+
           & > div:not(:last-child) {
             padding-right: 3px;
+
             &:after {
               content: ',';
             }
           }
         }
+
         &:last-child {
           width: fit-content;
           padding-right: 10px;
+
           .v-icon {
             opacity: 0.5;
             transition: transform ease-in-out 0.2s;
           }
         }
+
         padding-top: 10px;
         padding-bottom: 10px;
       }
     }
+
     &-expansion {
       border-bottom: 1px solid rgb(var(--v-theme-bg));
+
       & > div {
         padding: 10px var(--offset);
       }
     }
+
     &--expanded {
       .schedule__row-data {
         background-color: rgba(var(--v-theme-secondary), 0.05);
         border-color: transparent;
+
         .v-icon {
           transform: rotate(-180deg);
         }
+      }
+    }
+
+    &--today {
+      .schedule__row-data {
+        background-color: rgba(var(--v-theme-primary), 0.3);
       }
     }
   }

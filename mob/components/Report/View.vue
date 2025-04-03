@@ -27,15 +27,15 @@ nextTick(loadData)
     <UiFilters>
       <RouterLink :to="{ name: 'reports' }">
         <UiIconLink :icon="mdiArrowLeftThin" prepend>
-          назад
+          все отчеты
         </UiIconLink>
       </RouterLink>
     </UiFilters>
+    <UiPageTitle>
+      Отчёт от {{ formatDate(item.created_at!) }}
+    </UiPageTitle>
     <div class="report-view">
-      <h2>
-        Отчёт от {{ formatDate(item.created_at!) }}
-      </h2>
-      <v-card variant="tonal" width="fit-content" class="mt-4">
+      <v-card variant="tonal" class="mt-4">
         <template #prepend>
           <UiAvatar :item="item.teacher!" :size="60" class="mr-2" />
         </template>
@@ -129,7 +129,7 @@ nextTick(loadData)
     </div>
     <div v-if="item && item.grade" class="report-view__final">
       <div class="report-view__final-title">
-        Оценка:
+        Оценка по отчету:
       </div>
       <span :class="`text-score text-score--${item.grade}`">
         {{ item.grade }}
@@ -141,12 +141,13 @@ nextTick(loadData)
 <style lang="scss">
 .report-view {
   flex: 1;
-  padding: 20px;
+  padding: 0 var(--offset);
   &__content {
     margin-top: 30px;
     display: flex;
     flex-direction: column;
     gap: 30px;
+    font-size: 14px;
     & > div {
       display: flex;
       flex-direction: column;
@@ -179,7 +180,7 @@ nextTick(loadData)
 
   .v-card-title {
     font-weight: bold !important;
-    font-size: 16px !important;
+    font-size: 14px !important;
   }
 
   .v-card-item {
@@ -189,6 +190,8 @@ nextTick(loadData)
   .v-card-subtitle {
     white-space: wrap !important;
     padding: 0 !important;
+    font-size: 12px !important;
+    line-height: 14px !important;
   }
 }
 </style>

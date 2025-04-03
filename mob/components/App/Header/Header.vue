@@ -29,7 +29,14 @@ watch(dialog, (nowOpen, wasOpen) => {
     <div class="header__wrapper">
       <RouterLink to="/" class="header__logo">
         <img src="/img/logo.svg" />
-        <span>ЕГЭ-Центр</span>
+        <div class="header__logo-text">
+          <div>
+            ЕГЭ-Центр
+          </div>
+          <div>
+            личный кабинет
+          </div>
+        </div>
       </RouterLink>
       <div class="header__actions">
         <a href="tel:+74956468592" class="header__phone">
@@ -37,8 +44,7 @@ watch(dialog, (nowOpen, wasOpen) => {
         </a>
         <div class="header__hamburger" @click="toggleMenu()">
           <div
-            class="hamburger hamburger--squeeze"
-            :class="[
+            class="hamburger hamburger--squeeze" :class="[
               {
                 'is-active': dialog,
                 'is-unactive-transition': isBurgerClosing,
@@ -59,7 +65,6 @@ watch(dialog, (nowOpen, wasOpen) => {
             <div v-if="showMenu" class="header__menu">
               <li v-for="m in menu" :key="m.to">
                 <RouterLink :to="m.to" @click="dialog = false">
-                  <v-icon :icon="m.icon" />
                   {{ m.title }}
                 </RouterLink>
               </li>
@@ -108,6 +113,7 @@ watch(dialog, (nowOpen, wasOpen) => {
     position: relative;
     z-index: 2;
   }
+
   &__logo {
     display: flex;
     align-items: center;
@@ -118,11 +124,26 @@ watch(dialog, (nowOpen, wasOpen) => {
       margin-right: 8px;
     }
 
-    span {
-      font-weight: 500;
-      font-size: 20px;
+    &-text {
+      position: relative;
+      top: 3px;
+
+      & > div {
+        &:first-child {
+          font-weight: 500;
+          font-size: 20px;
+          line-height: 16px;
+        }
+
+        &:last-child {
+          font-size: 12px;
+          font-weight: normal;
+          color: rgb(var(--v-theme-gray));
+        }
+      }
     }
   }
+
   &__hamburger {
     display: flex;
   }
@@ -140,7 +161,7 @@ watch(dialog, (nowOpen, wasOpen) => {
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
 
     &:after {
       content: '';
@@ -152,9 +173,11 @@ watch(dialog, (nowOpen, wasOpen) => {
       background: linear-gradient(to top, white, rgba(255, 255, 255, 0));
       // background: transparent;
     }
+
     & > li:last-child {
       padding-bottom: 30px;
     }
+
     li {
       display: block;
       font-size: 18px;
@@ -169,6 +192,7 @@ watch(dialog, (nowOpen, wasOpen) => {
       cursor: pointer;
       color: black !important;
       transition: color 0.25s $ease;
+
       .v-icon {
         font-size: 24px;
       }
@@ -185,14 +209,16 @@ watch(dialog, (nowOpen, wasOpen) => {
     backdrop-filter: saturate(180%) blur(20px);
   }
 
-  &-enter-from, // Corrected from &-enter
+  &-enter-from,
+  // Corrected from &-enter
   &-leave-to {
     // Corrected from &-leave-to
     opacity: 0;
     background: transparent;
   }
 
-  &-enter-to, // Corrected from &-enter
+  &-enter-to,
+  // Corrected from &-enter
   &-leave-from {
     // Corrected from &-leave
     opacity: 1;
@@ -245,6 +271,7 @@ watch(dialog, (nowOpen, wasOpen) => {
   height: 100vh;
   overflow-y: scroll;
   z-index: 1;
+
   &::-webkit-scrollbar {
     display: none;
     width: 0px;

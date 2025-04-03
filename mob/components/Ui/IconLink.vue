@@ -21,6 +21,7 @@ const { icon = '$next', prepend } = defineProps<{
   gap: var(--gap);
   transition: gap 0.2s cubic-bezier(0.2, 0, 0.4, 0.9);
   user-select: none;
+  font-size: 14px;
   .v-icon {
     top: 1px;
     position: relative;

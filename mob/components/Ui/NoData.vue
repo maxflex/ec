@@ -2,10 +2,8 @@
 import { mdiBookOpenBlankVariantOutline } from '@mdi/js'
 
 const {
-  label = 'нет данных',
   icon = mdiBookOpenBlankVariantOutline,
 } = defineProps<{
-  label?: string
   icon?: string
 }>()
 </script>
@@ -14,7 +12,9 @@ const {
   <div class="no-data">
     <div>
       <v-icon :icon="icon" />
-      <div>{{ label }}</div>
+      <slot>
+        нет данных
+      </slot>
     </div>
   </div>
 </template>
@@ -28,6 +28,7 @@ const {
   width: 100%;
   flex: 1;
   color: rgb(var(--v-theme-gray));
+  text-align: center;
   & > div {
     display: flex;
     flex-direction: column;

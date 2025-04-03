@@ -134,7 +134,7 @@ nextTick(loadData)
       </div>
       <div v-if="item && item.grade" class="report-view__score">
         <div class="d-flex align-center ga-2">
-          Оценка:
+          Оценка по отчету:
           <span :class="`text-score text-score--${item.grade}`">
             {{ item.grade }}
           </span>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { items, indexPageData } = useIndex<ReportListResource>(`reports`)
+const { items, indexPageData } = useIndex<RealReport>(`reports`)
 </script>
 
 <template>
@@ -10,11 +10,3 @@ const { items, indexPageData } = useIndex<ReportListResource>(`reports`)
     <ReportList :items="items" />
   </UiIndexPage>
 </template>
-
-<style lang="scss">
-.page-reports {
-  .table > a:first-child {
-    padding-top: 0 !important;
-  }
-}
-</style>

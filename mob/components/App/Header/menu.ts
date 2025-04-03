@@ -4,6 +4,7 @@ import {
   mdiBookOpenBlankVariantOutline,
   mdiCalendar,
   mdiCreditCardCheckOutline,
+  mdiDotsTriangle,
   mdiFileDocumentEditOutline,
   mdiNumeric5BoxMultiple,
 } from '@mdi/js'
@@ -28,6 +29,11 @@ export const clientMenu: MenuItem[] = [
     icon: mdiFileDocumentEditOutline,
     title: 'Отчёты',
     to: '/reports',
+  },
+  {
+    icon: mdiDotsTriangle,
+    title: 'Тесты',
+    to: '/tests',
   },
   {
     icon: mdiCreditCardCheckOutline,
