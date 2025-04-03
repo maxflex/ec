@@ -1,27 +1,15 @@
 <script setup lang="ts">
-import {
-  EventItemAdmin,
-  EventItemClient,
-  EventItemTeacher,
-  LessonItemAdminClient,
-  LessonItemAdminGroup,
-  LessonItemAdminTeacher,
-  LessonItemClientLK,
-  LessonItemHeadTeacherLK,
-  LessonItemTeacherLK,
-} from '#components'
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { groupBy } from 'rambda'
 import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 import { formatDateMonth } from '~/utils'
 
-const { groupId, teacherId, clientId, program, showTeeth, year, programFilter, headTeacher } = defineProps<{
+const { groupId, teacherId, clientId, program, year, programFilter } = defineProps<{
   groupId?: number
   teacherId?: number
   clientId?: number
   year?: Year
   program?: Program
-  showTeeth?: boolean
   programFilter?: boolean
   headTeacher?: boolean
 }>()
@@ -31,7 +19,6 @@ const expanded = ref<Record<string, boolean>>({})
 // const tabName = teacherId ? 'TeacherSchedule' : groupId ? 'GroupSchedule' : 'ClientSchedule'
 const selectedProgram = ref<Program>()
 const selectedYear = ref<Year>()
-const { isTeacher, isClient } = useAuthStore()
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const params = {
   // только один из них НЕ undefined
@@ -40,7 +27,6 @@ const params = {
   group_id: groupId,
 }
 const loading = ref(true)
-const teeth = ref<Teeth>()
 const lessons = ref<LessonListResource[]>([])
 const events = ref<EventListResource[]>([])
 const vacations = ref<Record<string, boolean>>({})
@@ -180,24 +166,6 @@ async function loadEvents() {
   }
 }
 
-async function loadTeeth() {
-  if (!showTeeth) {
-    return
-  }
-  const { data } = await useHttp<Teeth>(
-    `teeth`,
-    {
-      params: {
-        ...params,
-        year: selectedYear.value,
-      },
-    },
-  )
-  if (data.value) {
-    teeth.value = data.value
-  }
-}
-
 async function loadVacations() {
   vacations.value = {}
   const { data } = await useHttp<ApiResponse<VacationResource>>(
@@ -237,7 +205,6 @@ async function loadData() {
   if (!selectedYear.value) {
     return
   }
-  await loadTeeth()
   await loadLessons()
   await loadExamDates()
   await loadEvents()
@@ -252,41 +219,6 @@ function expand(d: string) {
     expanded.value[d] = true
   }
 }
-
-const eventComponent = (function () {
-  if (isClient) {
-    return EventItemClient
-  }
-  if (isTeacher) {
-    return EventItemTeacher
-  }
-  return EventItemAdmin
-})()
-
-const lessonComponent = (function () {
-  if (isClient) {
-    console.log('LessonItemHeadTeacher')
-    return LessonItemClientLK
-  }
-  else if (headTeacher) {
-    console.log('LessonItemHeadTeacherLK')
-    return LessonItemHeadTeacherLK
-  }
-  else if (clientId) {
-    console.log('LessonItemAdminClient')
-    return LessonItemAdminClient
-  }
-  else if (isTeacher) {
-    console.log('LessonItemTeacherLK')
-    return LessonItemTeacherLK
-  }
-  else if (teacherId) {
-    console.log('LessonItemAdminTeacher')
-    return LessonItemAdminTeacher
-  }
-  console.log('LessonItemAdminGroup')
-  return LessonItemAdminGroup
-})()
 
 watch(selectedYear, loadData)
 
@@ -363,7 +295,7 @@ nextTick(loadAvailableYears)
               'lesson-item__extra--exam-date-reserved': ed.is_reserve,
             }"
           >
-            Экзамен ({{ ExamLabel[ed.exam] }})
+            {{ ExamLabel[ed.exam] }}
             <template v-if="ed.is_reserve">
               – резервная дата
             </template>
@@ -373,19 +305,16 @@ nextTick(loadAvailableYears)
           </div>
         </template>
         <template v-for="item in itemsByDate[d]">
-          <component
-            :is="eventComponent"
+          <ScheduleRowEvent
             v-if="isEvent(item)"
             :key="`e-${item.id}`"
             :item="item"
           />
-          <component
-            :is="lessonComponent"
+          <ScheduleRowLesson
             v-else
             :id="`lesson-${item.id}`"
             :key="`l-${item.id}`"
             :item="item"
-            class="lesson-item lesson-item__lesson"
           />
         </template>
       </Vue3SlideUpDown>
@@ -404,7 +333,7 @@ nextTick(loadAvailableYears)
       & > div {
         font-size: 14px;
         &:first-child {
-          width: 100px;
+          width: 120px;
           padding-left: var(--offset);
         }
         &:nth-child(2) {

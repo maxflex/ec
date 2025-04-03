@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { adminMenu, clientMenu } from '~/components/Menu'
+import { adminMenu, clientMenu } from './menu'
 
 const { isClient } = useAuthStore()
 
@@ -27,10 +27,10 @@ watch(dialog, (nowOpen, wasOpen) => {
 <template>
   <header class="header" :class="{ 'header--menu-open': dialog }">
     <div class="header__wrapper">
-      <div class="header__logo">
+      <RouterLink to="/" class="header__logo">
         <img src="/img/logo.svg" />
         <span>ЕГЭ-Центр</span>
-      </div>
+      </RouterLink>
       <div class="header__actions">
         <a href="tel:+74956468592" class="header__phone">
           <img src="/img/phone.svg" />
@@ -111,10 +111,13 @@ watch(dialog, (nowOpen, wasOpen) => {
   &__logo {
     display: flex;
     align-items: center;
+    color: black !important;
+
     img {
       max-width: 39px;
       margin-right: 8px;
     }
+
     span {
       font-weight: 500;
       font-size: 20px;

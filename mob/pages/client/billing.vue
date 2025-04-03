@@ -58,155 +58,136 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
 </script>
 
 <template>
+  <UiPageTitle>
+    Оплата обучения
+  </UiPageTitle>
   <UiIndexPage :data="indexPageData">
-    <div class="billing">
-      <div class="filters">
+    <template #filters>
+      <v-chip
+        v-for="(contract, i) in items"
+        :key="contract.id"
+        label
+        :class="selected === i ? 'bg-primary' : undefined"
+        size="large"
+        @click="selected = i"
+      >
         <div>
-          <v-btn
-            v-for="(contract, i) in items"
-            :key="contract.id"
-            class="tab-btn"
-            :class="{ 'tab-btn--active': selected === i }"
-            variant="plain"
-            :ripple="false"
-            @click="selected = i"
-          >
-            <div>
-              Договор №{{ contract.id }}
-            </div>
-            <div>
-              на {{ formatYear(contract.year) }}
-            </div>
-          </v-btn>
+          Договор №{{ contract.id }}
+        </div>
+        <div>
+          на {{ formatYear(contract.year) }}
+        </div>
+      </v-chip>
+    </template>
+    <div class="table">
+      <div>
+        <div class="font-weight-bold">
+          График платежей
         </div>
       </div>
-      <div class="billing__content">
+      <div v-for="p in selectedContract.version.payments" :key="p.id">
         <div>
-          <table>
-            <tbody v-if="selectedContract.version.payments.length">
-              <tr v-for="(p, i) in selectedContract.version.payments" :key="p.id">
-                <td width="200">
-                  <b v-if="i === 0">График платежей</b>
-                </td>
-                <td width="150">
-                  {{ formatDate(p.date) }}
-                </td>
-                <td>{{ formatPrice(p.sum) }} руб.</td>
-              </tr>
-              <tr>
-                <td colspan="2" />
-                <td>
-                  <b>
-                    {{ formatPrice(totalSum(selectedContract.version.payments)) }} руб.
-                  </b>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="100" class="invisible">
-                  x
-                </td>
-              </tr>
-            </tbody>
-            <tbody v-if="selectedContract.payments.length">
-              <tr v-for="(p, i) in selectedContract.payments" :key="p.id">
-                <td width="200">
-                  <b v-if="i === 0">Оплачено</b>
-                </td>
-                <td width="150">
-                  {{ formatDate(p.date) }}
-                </td>
-                <td>
-                  <span v-if="p.is_return" class="text-red">
-                    {{ formatPrice(p.sum) }} руб. (возврат)
-                  </span>
-                  <span v-else>
-                    {{ formatPrice(p.sum) }} руб.
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="2" />
-                <td>
-                  <b>
-                    {{ formatPrice(totalSum(selectedContract.payments)) }} руб.
-                  </b>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="100" class="invisible">
-                  x
-                </td>
-              </tr>
-            </tbody>
-            <tbody>
-              <tr class="billing__total">
-                <td colspan="2">
-                  <b>
-                    Итого остаток по договору
-                  </b>
-                </td>
-                <td>
-                  <b>
-                    {{ formatPrice(totalSum(selectedContract.version.payments) - totalSum(selectedContract.payments)) }}
-                    руб.
-                  </b>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          {{ formatDate(p.date) }}
         </div>
-        <div v-if="selectedContract.year >= currentAcademicYear()">
-          <VueQrcode :value="qrValue" :options="{ width: qrSize, height: qrSize }" class="billing__qr" />
-          <p>
-            Откройте приложение вашего банка. Выберите в меню "Оплата по QR-коду".
-            Наведите на изображение. Все реквизиты будут подставлены автоматически.
-          </p>
+        <div>{{ formatPrice(p.sum) }} руб.</div>
+      </div>
+      <div>
+        <div></div>
+        <div>
+          <b>
+            {{ formatPrice(totalSum(selectedContract.version.payments)) }} руб.
+          </b>
         </div>
-        <!-- <v-textarea :value="qrValue" /> -->
       </div>
     </div>
-  </uiindexpage>
+    <div v-if="selectedContract.payments.length" class="table">
+      <div>
+        <b>Оплачено</b>
+      </div>
+      <div v-for="p in selectedContract.payments" :key="p.id">
+        <div>
+          {{ formatDate(p.date) }}
+        </div>
+        <div>
+          <span v-if="p.is_return" class="text-red">
+            {{ formatPrice(p.sum) }} руб. (возврат)
+          </span>
+          <span v-else>
+            {{ formatPrice(p.sum) }} руб.
+          </span>
+        </div>
+      </div>
+      <div>
+        <div></div>
+        <div>
+          <b>
+            {{ formatPrice(totalSum(selectedContract.payments)) }} руб.
+          </b>
+        </div>
+      </div>
+    </div>
+
+    <div class="table page-billing__total">
+      <div></div>
+      <div>
+        <div>
+          Итого остаток<br />
+          по договору
+        </div>
+        <div>
+          <b>
+            {{ formatPrice(totalSum(selectedContract.version.payments) - totalSum(selectedContract.payments)) }}
+            руб.
+          </b>
+        </div>
+      </div>
+    </div>
+  </UiIndexPage>
 </template>
 
 <style lang="scss">
-.billing {
-  &__qr {
-    --size: 300px;
-    width: var(--size) !important;
-    height: var(--size) !important;
-  }
-  &__content {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-    width: 100%;
-    h3 {
-      margin-bottom: 20px;
-    }
-    & > div {
-      &:first-child {
-        width: 650px;
-      }
-      &:last-child {
-        // text-align: center;
-        p {
-          color: rgb(var(--v-theme-gray));
-          font-size: 14px;
-          max-width: 300px;
-          padding: 0 14px;
+.page-billing {
+  .filters {
+    .v-chip {
+      &__content {
+        display: flex;
+        flex-direction: column;
+        line-height: 14px;
+        text-align: center;
+        & > div {
+          &:first-child {
+            font-size: 14px;
+            font-weight: 500;
+          }
+          &:last-child {
+            font-size: 12px;
+            opacity: 0.8;
+          }
         }
       }
-      table {
-        margin-bottom: 50px;
-        border-collapse: collapse;
+      &__underlay {
+        display: none !important;
+      }
+    }
+  }
+  .table {
+    & > div {
+      &:not(:first-child) {
+        & > div {
+          &:first-child {
+            width: 150px;
+          }
+        }
       }
     }
   }
   &__total {
-    td {
-      border-top: 1px solid #e0e0e0;
-      padding-top: 28px;
-      font-size: 20px;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 20px 0 20px;
+    line-height: 20px;
+    & > div:first-child {
+      display: none;
     }
   }
 }

@@ -5,7 +5,7 @@ const { item } = defineProps<{
 </script>
 
 <template>
-  <div>
+  <div class="lesson-item lesson-item__lesson">
     <div class="lesson-item__row">
       <div class="font-weight-medium">
         {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
@@ -30,8 +30,19 @@ const { item } = defineProps<{
         {{ item.group.zoom.password }}
       </div>
     </div>
-    <div class="lesson-item__status">
-      <LessonItemStatus :item="item" show-unplanned />
+    <div class="lesson-item__row">
+      <div
+        :class="{
+          'text-success': item.status === 'conducted',
+          'text-error': item.status === 'cancelled',
+          'text-gray': item.status === 'planned',
+        }"
+      >
+        {{ LessonStatusLabel[item.status] }}
+      </div>
+      <div v-if="item.is_unplanned" class="text-purple">
+        внеплановое
+      </div>
     </div>
   </div>
 </template>

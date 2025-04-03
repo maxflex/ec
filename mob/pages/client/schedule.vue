@@ -3,8 +3,8 @@ const { user } = useAuthStore()
 </script>
 
 <template>
-  <h1 class="page-title">
+  <UiPageTitle>
     Расписание
-  </h1>
+  </UiPageTitle>
   <Schedule :client-id="user?.id!" />
 </template>
