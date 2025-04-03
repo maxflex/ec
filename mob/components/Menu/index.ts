@@ -38,8 +38,8 @@ export const clientMenu: MenuItem[] = [
 export const adminMenu: MenuItem[] = [
   {
     icon: mdiAccountGroup,
-    title: 'Клиенты',
-    to: '/clients',
+    title: 'Договоры',
+    to: '/contracts',
   },
   {
     icon: mdiAccount,

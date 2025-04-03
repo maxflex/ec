@@ -12,6 +12,7 @@ import {
 } from '#components'
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { groupBy } from 'rambda'
+import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 import { formatDateMonth } from '~/utils'
 
 const { groupId, teacherId, clientId, program, showTeeth, year, programFilter, headTeacher } = defineProps<{
@@ -25,10 +26,11 @@ const { groupId, teacherId, clientId, program, showTeeth, year, programFilter, h
   headTeacher?: boolean
 }>()
 
+const expanded = ref<Record<string, boolean>>({})
+
 // const tabName = teacherId ? 'TeacherSchedule' : groupId ? 'GroupSchedule' : 'ClientSchedule'
 const selectedProgram = ref<Program>()
 const selectedYear = ref<Year>()
-const hideEmptyDates = ref<number>(1)
 const { isTeacher, isClient } = useAuthStore()
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const params = {
@@ -102,16 +104,11 @@ const dates = computed(() => {
   const result = []
   for (const d of allDates) {
     const dateString = format(d, 'yyyy-MM-dd')
-    if (hideEmptyDates.value) {
-      if (
-        filteredLessons.value.some(e => e.date === dateString)
-        || events.value.some(e => e.date === dateString)
-        || (dateString in availableExamDates.value)
-      ) {
-        result.push(dateString)
-      }
-    }
-    else {
+    if (
+      filteredLessons.value.some(e => e.date === dateString)
+      || events.value.some(e => e.date === dateString)
+      || (dateString in availableExamDates.value)
+    ) {
       result.push(dateString)
     }
   }
@@ -247,6 +244,15 @@ async function loadData() {
   await loadVacations()
 }
 
+function expand(d: string) {
+  if (expanded.value[d]) {
+    expanded.value[d] = false
+  }
+  else {
+    expanded.value[d] = true
+  }
+}
+
 const eventComponent = (function () {
   if (isClient) {
     return EventItemClient
@@ -310,75 +316,128 @@ nextTick(loadAvailableYears)
     <div
       v-for="d in dates"
       :key="d"
+      class="schedule__row"
       :class="{
-        'week-separator': !hideEmptyDates && getDay(d) === 0,
+        'schedule__row--expanded': expanded[d],
       }"
     >
-      <div class="text-center">
-        <v-chip density="compact">
+      <div class="schedule__row-data" @click="expand(d)">
+        <div>
           {{ formatDateMonth(d) }}
           <span class="text-gray ml-1">
             {{ dayLabels[getDay(d)] }}
           </span>
-        </v-chip>
-      </div>
-      <div v-if="vacations[d]" class="lesson-item lesson-item__extra lesson-item__extra--vacation">
-        Государственный праздник
-      </div>
-      <template v-if="d in availableExamDates">
-        <div
-          v-for="ed in availableExamDates[d]"
-          :key="ed.id"
-          class="lesson-item lesson-item__extra lesson-item__extra--exam-date"
-          :class="{
-            'lesson-item__extra--exam-date-reserved': ed.is_reserve,
-          }"
-        >
-          Экзамен ({{ ExamLabel[ed.exam] }})
-          <template v-if="ed.is_reserve">
-            – резервная дата
-          </template>
-          <template v-else>
-            – основная дата
-          </template>
         </div>
-      </template>
-      <template v-for="item in itemsByDate[d]">
-        <component
-          :is="eventComponent"
-          v-if="isEvent(item)"
-          :key="`e-${item.id}`"
-          :item="item"
-        />
-        <component
-          :is="lessonComponent"
-          v-else
-          :id="`lesson-${item.id}`"
-          :key="`l-${item.id}`"
-          :item="item"
-          class="lesson-item lesson-item__lesson"
-        />
-      </template>
+        <div>
+          <div v-if="itemsByDate[d] && itemsByDate[d].filter(e => !isEvent(e)).length">
+            {{ plural(itemsByDate[d].filter(e => !isEvent(e)).length, ['занятие', 'занятия', 'занятий']) }}
+          </div>
+          <div v-if="itemsByDate[d] && itemsByDate[d].filter(e => isEvent(e)).length" class="text-purple">
+            {{ plural(itemsByDate[d].filter(e => isEvent(e)).length, ['событие', 'события', 'событий']) }}
+          </div>
+          <div v-if="availableExamDates[d]" class="text-deepOrange">
+            {{ plural(availableExamDates[d].length, ['экзамен', 'экзамена', 'экзаменов']) }}
+          </div>
+        </div>
+        <div>
+          <v-icon
+            icon="$expand"
+            color="gray"
+          />
+        </div>
+      </div>
+      <Vue3SlideUpDown
+        :model-value="!!expanded[d]"
+        :duration="200"
+        class="schedule__row-expansion"
+      >
+        <div v-if="vacations[d]" class="lesson-item lesson-item__extra lesson-item__extra--vacation">
+          Государственный праздник
+        </div>
+        <template v-if="d in availableExamDates">
+          <div
+            v-for="ed in availableExamDates[d]"
+            :key="ed.id"
+            class="lesson-item lesson-item__extra lesson-item__extra--exam-date"
+            :class="{
+              'lesson-item__extra--exam-date-reserved': ed.is_reserve,
+            }"
+          >
+            Экзамен ({{ ExamLabel[ed.exam] }})
+            <template v-if="ed.is_reserve">
+              – резервная дата
+            </template>
+            <template v-else>
+              – основная дата
+            </template>
+          </div>
+        </template>
+        <template v-for="item in itemsByDate[d]">
+          <component
+            :is="eventComponent"
+            v-if="isEvent(item)"
+            :key="`e-${item.id}`"
+            :item="item"
+          />
+          <component
+            :is="lessonComponent"
+            v-else
+            :id="`lesson-${item.id}`"
+            :key="`l-${item.id}`"
+            :item="item"
+            class="lesson-item lesson-item__lesson"
+          />
+        </template>
+      </Vue3SlideUpDown>
     </div>
   </div>
 </template>
 
 <style lang="scss">
 .schedule {
-  & > div {
-    --height: 57px;
-    overflow: hidden;
-    position: relative;
-    min-height: var(--height);
-    display: flex;
-    flex-direction: column;
-    padding: 16px 20px;
-    gap: 20px;
-    &:not:last-child {
-      border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+  &__row {
+    &-data {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid rgb(var(--v-theme-bg));
+      transition: background-color ease-in-out 0.2s;
+      & > div {
+        font-size: 14px;
+        &:first-child {
+          width: 100px;
+          padding-left: var(--offset);
+        }
+        &:nth-child(2) {
+          display: inline-flex;
+          gap: 10px;
+          flex: 1;
+        }
+        &:last-child {
+          width: fit-content;
+          padding-right: 10px;
+          .v-icon {
+            opacity: 0.5;
+            transition: transform ease-in-out 0.2s;
+          }
+        }
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
     }
-    &.week-separator {
-      border-bottom: 2px solid rgb(var(--v-theme-gray));
+    &-expansion {
+      border-bottom: 1px solid rgb(var(--v-theme-bg));
+      & > div {
+        padding: 10px var(--offset);
+      }
+    }
+    &--expanded {
+      .schedule__row-data {
+        background-color: rgba(var(--v-theme-secondary), 0.05);
+        border-color: transparent;
+        .v-icon {
+          transform: rotate(-180deg);
+        }
+      }
     }
   }
 }

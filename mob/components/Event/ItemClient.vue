@@ -7,25 +7,24 @@ const { item } = defineProps<{ item: EventListResource }>()
     :id="`event-${item.id}`"
     class="lesson-item event-item"
   >
-    <div style="width: 110px">
-      {{ formatTime(item.time!) }}
-      <template v-if="item.time_end">
-        – {{ item.time_end }}
-      </template>
+    <div class="lesson-item__row">
+      <div class="font-weight-medium">
+        {{ formatTime(item.time!) }}
+        <template v-if="item.time_end">
+          – {{ item.time_end }}
+        </template>
+      </div>
+      <div>
+        {{ item.participants_count }} участников
+      </div>
     </div>
-    <div style="width: 60px">
-    </div>
-    <div style="width: 150px">
-      {{ formatName(item.user) }}
-    </div>
-    <div style="width: 310px">
-      {{ item.name }}
-    </div>
-    <div style="width: 196px">
-      {{ item.participants_count }} участников
-    </div>
-    <div>
-      {{ item.is_afterclass ? 'внеклассное' : 'учебное' }} событие
+    <div class="lesson-item__row">
+      <div>
+        {{ item.name }}
+      </div>
+      <div>
+        {{ item.is_afterclass ? 'внеклассное' : 'учебное' }} событие
+      </div>
     </div>
   </div>
 </template>

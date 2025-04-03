@@ -97,19 +97,22 @@ class ContractVersionController extends Controller
         $query->whereHas('contract', fn ($q) => $q->where($field, $value));
     }
 
-    protected function filterDirection(&$query, array $values)
+    protected function filterDirection(&$query, $value)
     {
-        if (count($values) === 0) {
-            return;
-        }
+        if (is_array($value)) {
+            if (count($value) === 0) {
+                return;
+            }
 
-        $programs = collect();
-        foreach ($values as $directionString) {
-            $programs = $programs->concat(
-                Direction::from($directionString)->toPrograms()
-            );
+            $programs = collect();
+            foreach ($value as $directionString) {
+                $programs = $programs->concat(
+                    Direction::from($directionString)->toPrograms()
+                );
+            }
+        } else {
+            $programs = Direction::from($value)->toPrograms();
         }
-        $programs = $programs->unique();
 
         $query->whereHas('programs', fn ($q) => $q->whereIn('program', $programs));
     }
