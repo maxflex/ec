@@ -332,10 +332,10 @@ nextTick(loadAvailableYears)
           <div v-if="itemsByDate[d] && itemsByDate[d].filter(e => !isEvent(e)).length">
             {{ plural(itemsByDate[d].filter(e => !isEvent(e)).length, ['занятие', 'занятия', 'занятий']) }}
           </div>
-          <div v-if="itemsByDate[d] && itemsByDate[d].filter(e => isEvent(e)).length" class="text-purple">
+          <div v-if="itemsByDate[d] && itemsByDate[d].filter(e => isEvent(e)).length">
             {{ plural(itemsByDate[d].filter(e => isEvent(e)).length, ['событие', 'события', 'событий']) }}
           </div>
-          <div v-if="availableExamDates[d]" class="text-deepOrange">
+          <div v-if="availableExamDates[d]">
             {{ plural(availableExamDates[d].length, ['экзамен', 'экзамена', 'экзаменов']) }}
           </div>
         </div>
@@ -409,8 +409,13 @@ nextTick(loadAvailableYears)
         }
         &:nth-child(2) {
           display: inline-flex;
-          gap: 10px;
           flex: 1;
+          & > div:not(:last-child) {
+            padding-right: 3px;
+            &:after {
+              content: ',';
+            }
+          }
         }
         &:last-child {
           width: fit-content;
