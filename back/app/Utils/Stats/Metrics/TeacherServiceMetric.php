@@ -2,14 +2,10 @@
 
 namespace App\Utils\Stats\Metrics;
 
-use App\Models\TeacherPayment;
+use App\Models\TeacherService;
 
 class TeacherServiceMetric extends BaseMetric
 {
-    protected $filters = [
-        'findInSet' => ['year'],
-    ];
-
     public function getDateField(): string
     {
         return '`date`';
@@ -22,6 +18,6 @@ class TeacherServiceMetric extends BaseMetric
 
     public function getBaseQuery()
     {
-        return TeacherPayment::query();
+        return TeacherService::query();
     }
 }
