@@ -215,6 +215,14 @@ export function formatDate(dateTime: string | null): string {
   return dayjs(dateTime).format('DD.MM.YYYY')
 }
 
+export function formatDateMob(dateTime: string | null): string {
+  if (!dateTime) {
+    return ''
+  }
+  return dayjs(dateTime).format('DD.MM.YY')
+}
+
+
 export function formatDateMonth(dateTime: string | null): string {
   if (!dateTime) {
     return ''

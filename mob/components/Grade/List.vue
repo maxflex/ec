@@ -5,17 +5,29 @@ const { items } = defineProps<{
 </script>
 
 <template>
-  <div class="table grade-list">
-    <!-- <div class="grade-list__row">
+  <div class="table grade-list mt-6">
+    <div class="grade-list__row">
       <div>
-        программа
+        <!-- программа -->
       </div>
       <div class="grade-list__grades">
-        <div v-for="(label, id) in QuarterShortLabel" :key="id">
-          {{ label }}
+        <div v-for="n in 5" :key="n" class="text-gray grade-list__header">
+          <template v-if="n === 5">
+            год.
+            <br />
+            итог
+          </template>
+          <template v-else>
+            {{ n }}
+            <br />
+            четв.
+          </template>
         </div>
+        <!-- <div v-for="(label, id) in QuarterShortLabel" :key="id">
+          {{ label }}
+        </div> -->
       </div>
-    </div> -->
+    </div>
     <div v-for="g in items" :key="g.id" class="grade-list__row">
       <div>
         {{ ProgramShortLabel[g.program] }}
@@ -45,9 +57,12 @@ const { items } = defineProps<{
     padding-right: 0 !important;
     & > div {
       &:first-child {
-        width: 100px;
+        width: 60px;
       }
     }
+  }
+  &__header {
+    align-items: center;
   }
 }
 </style>

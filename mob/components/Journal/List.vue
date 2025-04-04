@@ -9,24 +9,28 @@ const { items } = defineProps<{
     <div v-for="item in items" :key="item.id">
       <div class="journal__columns journal__date">
         <div>
-          {{ formatDate(item.lesson.date) }}
+          {{ formatDateMob(item.lesson.date) }}
+          <br />
+          {{ formatTime(item.lesson.time) }} – {{ formatTime(item.lesson.time_end) }}
         </div>
-        <div v-if="!item.status" class="text-gray">
-          до начала обучения
-        </div>
-        <div v-else :class="{ 'text-error': item.status === 'absent' }">
-          {{ ClientLessonStatusLabel[item.status] }}
-          <template v-if="item.minutes_late">
-            на {{ item.minutes_late }} мин.
-          </template>
-        </div>
-      </div>
-      <div class="journal__columns">
-        <UiPerson :item="item.lesson.teacher" />
         <div>
-          {{ ProgramShortLabel[item.program] }}
+          <UiPerson :item="item.lesson.teacher" />
+          <div>
+            {{ ProgramShortLabel[item.program] }}
+          </div>
         </div>
       </div>
+
+      <div v-if="!item.status" class="text-gray">
+        до начала обучения
+      </div>
+      <div v-else :class="{ 'text-error': item.status === 'absent' }">
+        {{ ClientLessonStatusLabel[item.status] }}
+        <template v-if="item.minutes_late">
+          на {{ item.minutes_late }} мин.
+        </template>
+      </div>
+
       <div v-if="item.lesson.topic" class="journal__with-header">
         <div>
           Тема:
@@ -107,6 +111,7 @@ const { items } = defineProps<{
     }
   }
   &__files {
+    line-height: 16px;
     & > div {
       max-width: 100%;
       .file-item {

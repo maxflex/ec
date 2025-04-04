@@ -996,6 +996,8 @@ declare global {
       quarter: ?Quarter
       teacher: PersonResource
       files: UploadedFile[]
+      time: string
+      time_end: string
     }
   }
 

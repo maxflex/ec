@@ -38,7 +38,7 @@ const filteredItems = computed(() => items.value.filter((e) => {
   <UiIndexPage :data="indexPageData">
     <template #filters>
       <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
-      <v-select v-model="selectedQuarter" :items="quarters" label="Четверть" density="comfortable" />
+      <v-select v-if="quarters.length > 1" v-model="selectedQuarter" :items="quarters" label="Четверть" density="comfortable" />
       <UiClearableSelect
         v-model="selectedProgram" :items="availablePrograms.map(e => ({
           value: e,

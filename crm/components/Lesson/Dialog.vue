@@ -133,6 +133,7 @@ defineExpose({ create, edit })
             :items="selectItems(QuarterLabel, ['final' as Quarter])"
             label="Четверть"
             :disabled="isConducted"
+            nullify
           />
         </div>
         <div v-if="isAdmin">

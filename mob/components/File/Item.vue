@@ -77,7 +77,7 @@ const uploading = computed(() => !item.url)
     color: black;
   }
   .v-icon {
-    font-size: 30px;
+    font-size: 22px;
     margin-right: 8px;
   }
   .loader {
