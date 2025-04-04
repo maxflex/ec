@@ -168,7 +168,7 @@ watch(dialog, (nowOpen, wasOpen) => {
       position: absolute;
       bottom: 0;
       left: 0;
-      height: 40px;
+      height: 30px;
       width: 100%;
       background: linear-gradient(to top, white, rgba(255, 255, 255, 0));
       // background: transparent;
@@ -269,7 +269,8 @@ watch(dialog, (nowOpen, wasOpen) => {
   background: white;
   width: 100vw;
   height: 100vh;
-  overflow-y: scroll;
+  // overflow-y: scroll;
+  overflow: hidden;
   z-index: 1;
 
   &::-webkit-scrollbar {

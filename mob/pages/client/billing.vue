@@ -1,51 +1,9 @@
 <script setup lang="ts">
-import VueQrcode from '@chenfengyuan/vue-qrcode'
-
 const selected = ref(0)
-const qrSize = 600
 
 const { items, indexPageData } = useIndex<BillingResource>(`billing`)
 
-const qrData: { [key in Company]: any } = {
-  ip: {
-    Name: 'ИП Горшкова Анастасия Александровна',
-    PersonalAcc: '40802810401400004731',
-    PayeeINN: '622709802712',
-    KPP: '',
-  },
-  ooo: {
-    Name: 'ООО "ЕГЭ-Центр"',
-    PersonalAcc: '40702810801960000153',
-    PayeeINN: '9701038111',
-    KPP: '770101001',
-  },
-}
-
 const selectedContract = computed(() => items.value[selected.value])
-
-const qrValue = computed(() => {
-  const currentQrData = qrData[selectedContract.value.company]
-  const data = {
-    Name: currentQrData.Name,
-    PersonalAcc: currentQrData.PersonalAcc,
-    BankName: 'АО "АЛЬФА-БАНК"',
-    BIC: '044525593',
-    CorrespAcc: '30101810200000000593',
-    Purpose: `Платные образовательные услуги по договору №${selectedContract.value.id} от ${formatDate(selectedContract.value.version.date)} г.`,
-    PayeeINN: currentQrData.PayeeINN,
-    KPP: currentQrData.KPP,
-    LastName: selectedContract.value.parent.last_name,
-    FirstName: selectedContract.value.parent.first_name,
-    MiddleName: selectedContract.value.parent.middle_name,
-  }
-  return [
-    'ST00012',
-  ].concat(
-    Object.entries(data).map(
-      ([key, value]) => `${key}=${value}`,
-    ),
-  ).join('|')
-})
 
 function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
   return payments.reduce(
@@ -53,8 +11,6 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
     , 0,
   )
 }
-
-// const testValue = 'ST00012|Name=ИП Горшкова Анастасия Александровна|PersonalAcc=40802810401400004731|BankName=АО "АЛЬФА-БАНК"|BIC=044525593|CorrespAcc=30101810200000000593|Purpose=Платные образовательные услуги по договору № 14340 от 24.05.24 г.|PayeeINN=622709802712|KPP=|LastName=Мирошниченко|FirstName=Татьяна|MiddleName=Петровна'
 </script>
 
 <template>

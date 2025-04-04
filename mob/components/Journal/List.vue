@@ -73,6 +73,8 @@ const { items } = defineProps<{
 
 <style lang="scss">
 .journal {
+  font-size: 14px;
+
   & > div {
     padding: 20px;
     display: flex;

@@ -521,3 +521,9 @@ tr.hoverable {
 h2 {
   line-height: 30px;
 }
+
+.v-overlay-scroll-blocked {
+  main {
+    overflow-y: hidden !important;
+  }
+}

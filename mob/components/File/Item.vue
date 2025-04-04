@@ -40,7 +40,7 @@ function getIcon(file: UploadedFile): UploadedFileIcon {
 
 function onClick() {
   if (downloadable) {
-    window.open(item.url)
+    window.open(item.url, '_blank')
   }
 }
 
