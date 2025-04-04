@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { differenceInDays, eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
-import { groupBy } from 'rambda'
+import { differenceInDays, eachDayOfInterval, format, getDay } from 'date-fns'
+import { groupBy, pipe } from 'rambda'
 import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 import { formatDateMonth } from '~/utils'
 
@@ -76,9 +76,9 @@ const filteredLessons = computed(() =>
 // все даты учебного года
 const allDates = computed<string[]>(() => selectedYear.value
   ? eachDayOfInterval({
-    start: `${selectedYear.value}-09-01`,
-    end: `${selectedYear.value + 1}-05-31`,
-  }).map(d => format(d, 'yyyy-MM-dd'))
+      start: `${selectedYear.value}-09-01`,
+      end: `${selectedYear.value + 1}-05-31`,
+    }).map(d => format(d, 'yyyy-MM-dd'))
   : [],
 )
 
@@ -103,9 +103,8 @@ function hasContentAtDate(d: string): boolean {
 }
 
 const itemsByDate = computed(
-  (): Record<string, Array<LessonListResource | EventListResource>> => {
-    return groupBy(x => x.date, [...filteredLessons.value, ...events.value])
-  },
+  (): Record<string, Array<LessonListResource | EventListResource>> =>
+    pipe([...filteredLessons.value, ...events.value], groupBy(x => x.date)) as Record<string, Array<LessonListResource | EventListResource>>,
 )
 
 // если есть скрытый контент, то кнопка "показать более ранние даты"

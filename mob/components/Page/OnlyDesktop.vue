@@ -14,9 +14,13 @@ import { mdiMonitor } from '@mdi/js'
 
 <style lang="scss">
 .page-only-desktop {
-  font-size: 20px;
+  & > div {
+    font-size: 20px;
+    opacity: 0.8 !important;
+  }
   .v-icon {
     font-size: 54px !important;
+    opacity: 0.8 !important;
   }
 }
 </style>
