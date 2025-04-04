@@ -72,7 +72,7 @@ nextTick(loadAvailableYears)
   <UiNoData v-if="availableYears && availableYears.length === 0" />
   <UiLoader v-else-if="!stats" />
   <div v-else class="teacher-stats">
-    <div>
+    <div class="teacher-stats__row">
       <div>
         Занятия
       </div>
@@ -91,86 +91,90 @@ nextTick(loadAvailableYears)
         </div>
       </div>
     </div>
-    <div>
+
+    <div class="teacher-stats__blocks mt-6">
       <div>
-        Доля отмен
+        <div>
+          Средний уровень заполненности отчетов со статусом "опубликовано"
+        </div>
+        <div style="width: 100px" class="mt-2">
+          {{ stats.report_fill_avg }}%
+        </div>
+      </div>
+
+      <div>
+        <div>
+          Доля отмен
+        </div>
+        <div>
+          {{ stats.cancelled_percentage }}%
+        </div>
+      </div>
+
+      <div>
+        <div>
+          Степень "одинаковости" отчетов
+        </div>
+        <div>
+          {{ stats.report_similarity }}%
+        </div>
       </div>
       <div>
-        {{ stats.cancelled_percentage }}%
-      </div>
-    </div>
-    <div>
-      <div>
-        Средний уровень заполненности отчетов со статусом "опубликовано"
-      </div>
-      <div style="width: 100px" class="mt-2">
-        <ReportFill v-model="stats.report_fill_avg" />
-      </div>
-    </div>
-    <div>
-      <div>
-        Степень "одинаковости" отчетов
+        <div>
+          Доля занятий, которая была проведена не в день занятия
+        </div>
+        <div>
+          {{ stats.conducted_next_day_count }}%
+        </div>
       </div>
       <div>
-        {{ stats.report_similarity }}%
-      </div>
-    </div>
-    <div>
-      <div>
-        Доля занятий, которая была проведена не в день занятия
-      </div>
-      <div>
-        {{ stats.conducted_next_day_count }}%
-      </div>
-    </div>
-    <div>
-      <div>
-        Доля отсутствующих учеников в проведенных занятиях
+        <div>
+          Доля отсутствующих учеников в проведенных занятиях
+        </div>
+        <div>
+          {{ stats.client_lesson_counts.absent }}%
+        </div>
       </div>
       <div>
-        {{ stats.client_lesson_counts.absent }}%
-      </div>
-    </div>
-    <div>
-      <div>
-        Доля опаздывающих
-      </div>
-      <div>
-        {{ stats.client_lesson_counts.late }}%
-      </div>
-    </div>
-    <div>
-      <div>
-        Доля дистанционщиков
+        <div>
+          Доля опаздывающих
+        </div>
+        <div>
+          {{ stats.client_lesson_counts.late }}%
+        </div>
       </div>
       <div>
-        {{ stats.client_lesson_counts.online }}%
-      </div>
-    </div>
-    <div>
-      <div>
-        Доля занятий за счет ушедших учеников
-      </div>
-      <div>
-        {{ stats.client_lesson_counts.left }}%
-      </div>
-    </div>
-    <div>
-      <div>
-        Средняя оценка по отзывам
+        <div>
+          Доля дистанционщиков
+        </div>
+        <div>
+          {{ stats.client_lesson_counts.online }}%
+        </div>
       </div>
       <div>
-        {{ stats.review_rating_avg || 'нет отзывов' }}
+        <div>
+          Доля занятий за счет ушедших учеников
+        </div>
+        <div>
+          {{ stats.client_lesson_counts.left }}%
+        </div>
       </div>
-    </div>
-    <div>
-      <div>Откупаемость</div>
       <div>
-        {{ stats.client_lesson_counts.payback }}
+        <div>
+          Средняя оценка по отзывам
+        </div>
+        <div>
+          {{ stats.review_rating_avg || 'нет отзывов' }}
+        </div>
+      </div>
+      <div>
+        <div>Маржинальность занятий</div>
+        <div>
+          {{ stats.client_lesson_counts.payback }}
+        </div>
       </div>
     </div>
   </div>
-  <!-- <pre>{{ stats }}</pre> -->
 </template>
 
 <style lang="scss">
@@ -180,10 +184,34 @@ nextTick(loadAvailableYears)
   flex-direction: column;
   gap: 30px;
 
-  & > div {
+  &__row {
     & > div {
       &:first-child {
         font-weight: bold;
+      }
+    }
+  }
+
+  &__blocks {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    row-gap: 40px;
+    column-gap: 80px;
+
+    & > div {
+      display: flex;
+      flex-direction: column-reverse;
+      justify-content: flex-end;
+
+      & > div {
+        &:first-child {
+          // font-size: 20px;
+          max-width: 250px;
+        }
+        &:last-child {
+          font-weight: bold;
+          font-size: 70px;
+        }
       }
     }
   }

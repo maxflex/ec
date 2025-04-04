@@ -219,10 +219,10 @@ readonly class TeacherStats
         ];
     }
 
-    private function getReviewRatingAvg(): int
+    private function getReviewRatingAvg(): float
     {
-        return (int) round(
-            $this->teacher->clientReviews()->avg('rating')
-        );
+        $avg = $this->teacher->clientReviews()->avg('rating');
+
+        return round($avg, 2);
     }
 }
