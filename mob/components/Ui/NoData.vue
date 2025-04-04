@@ -35,11 +35,11 @@ const {
     justify-content: center;
     align-items: center;
     gap: 10px;
-    opacity: 0.5;
+    opacity: 0.9;
   }
   .v-icon {
     font-size: 50px;
-    opacity: 0.5;
+    opacity: 0.9;
   }
 }
 </style>

@@ -1,25 +1,21 @@
 <script setup lang="ts">
 const route = useRoute()
-const { user } = useAuthStore()
+const { user, isClient } = useAuthStore()
 
 const currentPageClass = computed(() => [
   `page-${(route.name as string) || 'default'}`,
   `entity-${user ? getEntityString(user.entity_type) : 'default'}`,
 ])
-
-const { globalMessage } = useGlobalMessage()
 </script>
 
 <template>
   <ClientOnly>
     <v-app>
-      <v-main :class="currentPageClass">
+      <v-main v-if="isClient || user?.id === 5" :class="currentPageClass">
         <AppHeader />
         <NuxtPage />
       </v-main>
-      <UiBottomBar v-model="globalMessage.value" :color="globalMessage.color">
-        {{ globalMessage.text }}
-      </UiBottomBar>
+      <PageOnlyDesktop v-else />
     </v-app>
   </ClientOnly>
 </template>

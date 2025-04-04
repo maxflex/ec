@@ -1,6 +1,3 @@
-<script setup lang="ts">
-</script>
-
 <template>
   <v-app class="login-layout">
     <div class="video-background">
@@ -24,15 +21,6 @@
       </ClientOnly>
     </div>
   </v-app>
-  <div class="login-layout__only-mobile">
-    <h4>Мобильная версия пока недоступна</h4>
-    <img alt="" src="/img/clock.svg">
-    <!--        <img alt="" src="/img/monitor.svg"> -->
-    <div>
-      Мобильная версия пока недоступна, но мы уже работаем над её созданием.
-      А пока вы можете зайти в Личный Кабинет с компьютера.
-    </div>
-  </div>
 </template>
 
 <style lang="scss">
@@ -58,9 +46,6 @@
       height: 100%;
     }
   }
-  &__only-mobile {
-    display: none;
-  }
 }
 .video-background {
   position: fixed;
@@ -82,40 +67,5 @@
   transform: translate(-50%, -50%);
   z-index: -1;
   // filter: blur(3px); /* Apply blur effect */
-}
-
-@media screen and (max-width: 900px) {
-  .login-layout {
-    display: none !important;
-    &__only-mobile {
-      display: flex !important;
-      flex-direction: column;
-      gap: 20px;
-      background: rgba(white, 0.95);
-      border-radius: 20px;
-      // border: 2px solid rgba(255, 196, 35, 0.5);
-      z-index: 2;
-      scale: 1.05;
-      text-align: center;
-      font-size: 20px;
-      justify-content: center;
-      align-items: center;
-      padding: 0 40px;
-      position: fixed;
-      width: 100%;
-      height: 90vh;
-      top: 0;
-      left: 0;
-      text-wrap: balance;
-      h4 {
-        font-size: 24px;
-        font-weight: bold;
-        text-wrap: balance;
-      }
-      img {
-        width: 80px;
-      }
-    }
-  }
 }
 </style>

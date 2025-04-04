@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { useDisplay } from 'vuetify'
-
 const { $addSseListener, $removeSseListener } = useNuxtApp()
 const { public: config } = useRuntimeConfig()
 const { rememberUser, logInAndRemember } = useAuthStore()
-const { smAndUp } = useDisplay()
 const magicLink = useMagicLink()
 const number = ref('')
 const phoneMask = { mask: '+7 (###) ###-##-##' }
@@ -37,7 +34,7 @@ const window = ref(
     : (rememberUser ? Step.RememberUser : Step.EnterPhoneNumber),
 )
 
-if (magicLink.hasMagicLink && smAndUp.value) {
+if (magicLink.hasMagicLink) {
   nextTick(magicLink.authViaMagicLink)
 }
 
