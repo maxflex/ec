@@ -2,6 +2,7 @@
 const filters = useAvailableYearsFilter()
 
 const selectedProgram = ref<Program>()
+const { user } = useAuthStore()
 
 const { items, indexPageData, availableYears } = useIndex<GroupListResource>(
   `groups`,
@@ -39,6 +40,6 @@ watch(filters.value, () => {
         density="comfortable"
       />
     </template>
-    <GroupTeacherList :items="filteredItems" blur-others />
+    <GroupTeacherList :items="filteredItems" :blur-others="user?.id" />
   </UiIndexPage>
 </template>

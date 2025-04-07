@@ -4,14 +4,12 @@ const { items, selectable } = defineProps<{
   selectable?: boolean
   // blur групп, где текущий препод больше не ведёт занятия
   // (другими словами, препода нет в планируемых занятиях)
-  blurOthers?: boolean
+  blurOthers?: number
 }>()
 
 const emit = defineEmits<{
   select: [g: GroupListResource]
 }>()
-
-const { user } = useAuthStore()
 
 function onClick(g: GroupListResource) {
   if (selectable) {
@@ -32,7 +30,7 @@ function onClick(g: GroupListResource) {
       :id="`group-${item.id}`"
       :key="item.id"
       :class="{
-        'group-list__item--blur': blurOthers && !item.teachers.map(e => e.id).includes(user!.id),
+        'group-list__item--blur': blurOthers && !item.teachers.map(e => e.id).includes(blurOthers),
       }"
       @click="onClick(item)"
     >
