@@ -66,6 +66,11 @@ function add() {
   })
 }
 
+function removeMetric(index: number) {
+  console.log('remove metric', index)
+  filters.value.metrics.splice(index, 1)
+}
+
 defineExpose({ filters })
 </script>
 
@@ -87,7 +92,16 @@ defineExpose({ filters })
           v-model="m.id"
           :items="metrics"
           label="Метрика"
-        />
+        >
+          <template #append-inner>
+            <v-icon
+              icon="$plus"
+              class="stats-dialog__remove"
+              color="gray"
+              @mousedown.stop="removeMetric(index)"
+            />
+          </template>
+        </v-select>
       </div>
       <div class="calculator-metric__operator">
         <v-menu v-if="index < filters.metrics.length - 1" offset="6 46">
