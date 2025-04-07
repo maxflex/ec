@@ -17,8 +17,8 @@ class LogResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'type', 'table', 'created_at','ip',
-            'row_id', 'data'
+            'type', 'table', 'created_at', 'ip',
+            'row_id', 'data', 'is_mobile',
         ], [
             'entity' => new PersonResource(
                 $this->clientParent ?? $this->entity

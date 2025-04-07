@@ -19,6 +19,7 @@ class Log extends Model
 
     protected $casts = [
         'data' => 'array',
+        'is_mobile' => 'boolean',
         'type' => LogType::class,
     ];
 
@@ -56,21 +57,24 @@ class Log extends Model
 
     public static function booted()
     {
-        static::creating(function ($model) {
+        static::creating(function (Log $log) {
             if (auth()->user()) {
-                $model->entity_type = get_class(auth()->user());
-                $model->entity_id = auth()->id();
+                $log->entity_type = get_class(auth()->user());
+                $log->entity_id = auth()->id();
             }
             if (request()->header('Preview')) {
                 $user = Session::get(request()->header('Preview'));
                 if ($user) {
-                    $model->emulation_user_id = $user->id;
+                    $log->emulation_user_id = $user->id;
                 }
             }
             if (request()->header('Client-Parent-Id')) {
-                $model->client_parent_id = request()->header('Client-Parent-Id');
+                $log->client_parent_id = request()->header('Client-Parent-Id');
             }
-            $model->ip = request()->ip();
+            if (request()->header('Mobile')) {
+                $log->is_mobile = true;
+            }
+            $log->ip = request()->ip();
         });
     }
 

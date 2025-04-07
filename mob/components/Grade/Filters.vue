@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+interface GradeFilters {
+  year?: Year
+  program?: Program
+}
+
 const model = defineModel<GradeFilters>({ required: true })
 </script>
 

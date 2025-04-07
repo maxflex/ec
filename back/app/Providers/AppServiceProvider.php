@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Observers\LogsObserver;
+use App\Observers\LogAllModelsObserver;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\ServiceProvider;
 use RecursiveDirectoryIterator;
@@ -37,7 +37,7 @@ class AppServiceProvider extends ServiceProvider
                 $class = str_replace('/', '\\', $class);
                 $class = '\\App\\Models\\'.$class;
                 if (! defined($class.'::DISABLE_LOGS')) {
-                    $class::observe(LogsObserver::class);
+                    $class::observe(LogAllModelsObserver::class);
                 }
             }
         }

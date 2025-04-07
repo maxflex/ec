@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { UserDialog } from '#build/components'
-import { mdiArrowTopRightThin } from '@mdi/js'
+import { mdiArrowTopRightThin, mdiCellphone } from '@mdi/js'
 
 const { items } = defineProps<{
   items: LogResource[]
@@ -11,8 +11,11 @@ const userDialog = ref<InstanceType<typeof UserDialog>>()
 <template>
   <div class="table log-list">
     <div v-for="log in items" :key="log.id">
-      <div style="width: 150px" class="text-gray">
+      <div style="width: 126px" class="text-gray">
         {{ formatDateTime(log.created_at) }}
+      </div>
+      <div style="width: 20px">
+        <v-icon v-if="log.is_mobile" :icon="mdiCellphone" color="gray" :size="20" />
       </div>
       <div style="width: 180px">
         <template v-if="log.entity">
@@ -72,7 +75,7 @@ const userDialog = ref<InstanceType<typeof UserDialog>>()
             </tr>
           </table>
           <table v-else>
-            <tr v-for="(value, field, index) in log.data" :key="index">
+            <tr v-for="value, field in log.data" :key="field">
               <td width="150" class="text-gray">
                 {{ field }}
               </td>

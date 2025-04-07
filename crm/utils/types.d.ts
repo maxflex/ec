@@ -547,6 +547,7 @@ declare global {
     entity: ?PersonResource
     emulation_user: ?PersonResource
     row_id: ?number
+    is_mobile: boolean
     ip: string
     data: any
   }

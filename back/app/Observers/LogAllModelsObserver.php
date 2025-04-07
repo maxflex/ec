@@ -5,7 +5,10 @@ namespace App\Observers;
 use App\Enums\LogType;
 use App\Models\Log;
 
-class LogsObserver
+/**
+ * Этот observer вешается на все модели, чтобы логировать все действия в системе
+ */
+class LogAllModelsObserver
 {
     public function created($model)
     {

@@ -8,7 +8,6 @@ dist
 
 # Symlink
 utils
-composables
 
 # Node dependencies
 node_modules
