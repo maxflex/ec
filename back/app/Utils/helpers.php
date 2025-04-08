@@ -129,7 +129,7 @@ function get_max_pko_number(Company $company, string $date)
 
 /**
  * Получить академический год по дате
- * Новый академический год начинается с 1 сентября
+ * Новый академический год начинается с 1 июля
  *
  * @param  string  $date  Дата в формате 'Y-m-d'
  * @return int Академический год
@@ -139,7 +139,7 @@ function get_academic_year(string $date): int
     $year = (int) date('Y', strtotime($date));
     $month = (int) date('m', strtotime($date));
 
-    return ($month >= 9) ? $year : $year - 1;
+    return ($month >= 7) ? $year : $year - 1;
 }
 
 /**
