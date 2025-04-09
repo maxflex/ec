@@ -125,18 +125,9 @@ export const options: ChartOptions<'bar'> = {
         label(context: any) {
           const label = context.dataset.label || ''
           const value = context.parsed.y ?? context.parsed
-
           const title = `${label}: ${value}`
-          const percentTitle = `${title}%`
 
-          const index = this.chart.id as unknown as number
-          if (index === 0) {
-            return title
-          }
-
-          const isPercent = categories[index - 1].key.endsWith('_percent')
-
-          return isPercent ? percentTitle : title
+          return this.chart.canvas.id.endsWith('_percent') ? `${title}%` : title
         },
         title(tooltipItems) {
           const year = tooltipItems[0].label as unknown as Year
