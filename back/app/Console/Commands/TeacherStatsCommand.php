@@ -14,30 +14,27 @@ class TeacherStatsCommand extends Command
 
     protected $description = 'Recalculate teacher stats';
 
-    /** @var array<int, int> */
-    private array $years;
-
     public function handle(): void
     {
-        if ($this->option('all')) {
-            $this->years = range(2015, current_academic_year());
-            DB::table('teachers')->update([
-                'stats' => null,
-            ]);
-        } else {
-            $this->years = [current_academic_year()];
-        }
-
         $this->calculateForTeachers();
         $this->calculateAvg();
     }
 
     private function calculateForTeachers()
     {
+        if ($this->option('all')) {
+            $years = range(2015, current_academic_year());
+            DB::table('teachers')->update([
+                'stats' => null,
+            ]);
+        } else {
+            $years = [current_academic_year()];
+        }
+
         $this->info('Calculating stats for each teacher...');
 
-        foreach ($this->years as $i => $year) {
-            $this->info("$year year (".($i + 1).'/'.count($this->years).')');
+        foreach ($years as $i => $year) {
+            $this->info("$year year (".($i + 1).'/'.count($years).')');
             $teacherIds = Lesson::query()
                 ->join('groups as g', 'g.id', '=', 'lessons.group_id')
                 ->where('g.year', $year)
@@ -67,10 +64,11 @@ class TeacherStatsCommand extends Command
 
         $teachers = Teacher::whereNotNull('stats')->get();
 
+        $years = range(2015, current_academic_year());
         $result = [];
 
-        foreach ($this->years as $i => $year) {
-            $this->info("$year year (".($i + 1).'/'.count($this->years).')');
+        foreach ($years as $i => $year) {
+            $this->info("$year year (".($i + 1).'/'.count($years).')');
             $bar = $this->output->createProgressBar($teachers->count());
 
             $yearlySums = [];

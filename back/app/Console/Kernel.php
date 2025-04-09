@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use Bugsnag\BugsnagLaravel\OomBootstrapper;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -19,6 +20,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:check-errors')->dailyAt('03:00');
         $schedule->command('app:send-telegram-messages')->everyMinute();
         $schedule->command('scout:reimport-all')->dailyAt('01:00');
+
+        $schedule->command('app:teacher-stats')->weeklyOn(7, '05:00');
     }
 
     /**
@@ -32,7 +35,7 @@ class Kernel extends ConsoleKernel
     protected function bootstrappers()
     {
         return array_merge(
-            [\Bugsnag\BugsnagLaravel\OomBootstrapper::class],
+            [OomBootstrapper::class],
             parent::bootstrappers(),
         );
     }
