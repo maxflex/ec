@@ -65,11 +65,13 @@ async function loadData() {
     label: LessonStatusLabel.conducted,
     data: lessons.map(l => l.conducted),
     backgroundColor: colors.secondary,
+    maxBarThickness: 80,
   })
   lessonsChart.datasets.push({
     label: LessonStatusLabel.planned,
     data: lessons.map(l => l.planned),
     backgroundColor: colors.border,
+    maxBarThickness: 80,
   })
 
   loaded.value = true
@@ -105,6 +107,7 @@ nextTick(loadData)
       </div>
       <div class="teacher-stats__chart">
         <BarChart
+          :chart-id="category.key"
           :chart-data="charts[category.key]!"
           :height="300"
           :options="options"

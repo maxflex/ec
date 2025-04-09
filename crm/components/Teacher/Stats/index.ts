@@ -148,17 +148,10 @@ export const options: ChartOptions<'bar'> = {
   scales: {
     y: {
       ticks: {
-        // stepSize: 1,
         precision: 0,
 
         callback(value) {
-          const index = this.chart.id as unknown as number
-          if (index === 0) {
-            return value
-          }
-
-          const isPercent = categories[index - 1].key.endsWith('_percent')
-          return isPercent ? `${value}%` : value
+          return this.chart.canvas.id.endsWith('_percent') ? `${value}%` : value
         },
       },
     },
