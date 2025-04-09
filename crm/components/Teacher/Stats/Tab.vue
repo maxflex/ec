@@ -59,19 +59,20 @@ async function loadData() {
       charts[key]!.datasets[1].data.push(teacherValue)
     }
   }
+  const arr = Array.from({ length: Object.keys(stats.avg).length })
   const lessons = stats.teacher[currentAcademicYear()].lessons
-  lessonsChart.labels = lessons.map(l => DirectionLabel[l.direction])
+  lessonsChart.labels = arr.map((_, i) => lessons[i] ? DirectionLabel[lessons[i].direction] : '')
   lessonsChart.datasets.push({
     label: LessonStatusLabel.conducted,
-    data: lessons.map(l => l.conducted),
+    data: arr.map((_, i) => lessons[i] ? lessons[i].conducted : 0),
     backgroundColor: colors.secondary,
-    maxBarThickness: 80,
+    maxBarThickness: 40,
   })
   lessonsChart.datasets.push({
     label: LessonStatusLabel.planned,
-    data: lessons.map(l => l.planned),
+    data: arr.map((_, i) => lessons[i] ? lessons[i].planned : 0),
     backgroundColor: colors.border,
-    maxBarThickness: 80,
+    maxBarThickness: 40,
   })
 
   loaded.value = true
