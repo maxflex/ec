@@ -1,5 +1,6 @@
 import type { ChartOptions } from 'chart.js'
 import { mdiAccountArrowRight, mdiAccountGroup, mdiAccountMultipleOutline, mdiCalendarAlert, mdiCancel, mdiClockTimeEight, mdiCurrencyRub, mdiCurrencyUsd, mdiFileCompare, mdiFileDocumentAlert, mdiFileDocumentEditOutline, mdiHome, mdiHumanMaleBoard, mdiStarCircle, mdiStarCircleOutline, mdiStarShooting } from '@mdi/js'
+import { colors } from '~/plugins/vuetify'
 
 interface TeacherStats {
   lessons: Array<{
@@ -97,7 +98,7 @@ export const categories: TeacherStatsCategory[] = [
   },
   {
     key: 'client_reviews_count',
-    icon: mdiStarCircleOutline,
+    icon: mdiStarCircle,
     title: 'Количество отзывов',
   },
   {
@@ -106,6 +107,10 @@ export const categories: TeacherStatsCategory[] = [
     title: 'Маржинальность занятий',
   },
 ]
+
+export const extraColors: Partial<Record<TeacherStatsKey, [string, string]>> = {
+  cancelled_lessons_percent: ['#ffebee', colors.error],
+}
 
 export const options: ChartOptions<'bar'> = {
   plugins: {
@@ -143,6 +148,9 @@ export const options: ChartOptions<'bar'> = {
   scales: {
     y: {
       ticks: {
+        // stepSize: 1,
+        precision: 0,
+
         callback(value) {
           const index = this.chart.id as unknown as number
           if (index === 0) {

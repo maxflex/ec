@@ -4,9 +4,10 @@ import { mdiSchool } from '@mdi/js'
 import { Chart, registerables } from 'chart.js'
 import { BarChart } from 'vue-chart-3'
 import { colors } from '~/plugins/vuetify'
-import { categories, options, optionsLessons, type TeacherStatsKey, type TeacherStatsResponse } from '.'
+import { categories, extraColors, options, optionsLessons, type TeacherStatsKey, type TeacherStatsResponse } from '.'
 
 const { teacher } = defineProps<{ teacher: TeacherResource }>()
+const teacherName = formatName(teacher, 'initials')
 
 const loaded = ref(false)
 Chart.register(...registerables)
@@ -32,18 +33,19 @@ async function loadData() {
         continue
       }
       if (!(key in charts)) {
+        // const category = categories.find(e => e.key === key)!
         charts[key] = {
           labels: [],
           datasets: [
             {
               label: 'Среднее',
               data: [],
-              backgroundColor: key === 'cancelled_lessons_percent' ? '#ffebee' : colors.border,
+              backgroundColor: key in extraColors ? extraColors[key]![0] : colors.border,
             },
             {
-              label: formatName(teacher, 'initials'),
+              label: teacherName,
               data: [],
-              backgroundColor: key === 'cancelled_lessons_percent' ? colors.error : colors.secondary,
+              backgroundColor: key in extraColors ? extraColors[key]![1] : colors.secondary,
             },
           ],
         }

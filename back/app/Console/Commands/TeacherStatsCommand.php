@@ -10,13 +10,15 @@ use Illuminate\Support\Facades\DB;
 
 class TeacherStatsCommand extends Command
 {
-    protected $signature = 'app:teacher-stats {--all}';
+    protected $signature = 'app:teacher-stats {--all} {--only-avg}';
 
     protected $description = 'Recalculate teacher stats';
 
     public function handle(): void
     {
-        $this->calculateForTeachers();
+        if (! $this->option('only-avg')) {
+            $this->calculateForTeachers();
+        }
         $this->calculateAvg();
     }
 
@@ -72,7 +74,7 @@ class TeacherStatsCommand extends Command
             $bar = $this->output->createProgressBar($teachers->count());
 
             $yearlySums = [];
-            $teachersWithYearData = 0;
+            $yearlyCounts = [];
 
             foreach ($teachers as $teacher) {
                 $stats = $teacher->stats[$year] ?? null;
@@ -83,8 +85,6 @@ class TeacherStatsCommand extends Command
                     continue;
                 }
 
-                $teachersWithYearData++;
-
                 foreach ($stats as $key => $value) {
                     if ($key === 'lessons') {
                         continue;
@@ -92,9 +92,13 @@ class TeacherStatsCommand extends Command
 
                     if (! isset($yearlySums[$key])) {
                         $yearlySums[$key] = 0;
+                        $yearlyCounts[$key] = 0;
                     }
 
-                    $yearlySums[$key] += $value;
+                    if ($value) {
+                        $yearlySums[$key] += $value;
+                        $yearlyCounts[$key]++;
+                    }
                 }
 
                 $bar->advance();
@@ -102,14 +106,14 @@ class TeacherStatsCommand extends Command
             $bar->finish();
             $this->info("\n");
 
-            if ($teachersWithYearData > 0) {
-                $averages = [];
-                foreach ($yearlySums as $key => $total) {
-                    $averages[$key] = round($total / $teachersWithYearData, is_float($total) ? 2 : 0);
-                }
-
-                $result[$year] = $averages;
+            $averages = [];
+            foreach ($yearlySums as $key => $total) {
+                $averages[$key] = $yearlyCounts[$key] > 0
+                    ? round($total / $yearlyCounts[$key], is_float($total) ? 2 : 0)
+                    : 0;
             }
+
+            $result[$year] = $averages;
         }
 
         // Save the new avg stats back to the "average teacher"
