@@ -15,7 +15,7 @@ const tabs = {
   services: 'допуслуги',
   instructions: 'инструкции',
   stats: 'статистика',
-  headTeacherClients: 'классный руководитель',
+  headTeacherClients: 'классрук',
   headTeacherReports: 'отчёты кр',
 } as const
 
@@ -107,7 +107,7 @@ nextTick(loadData)
     <TeacherPaymentTab v-else-if="selectedTab === 'payments'" :teacher-id="teacher.id" />
     <TeacherServiceTab v-else-if="selectedTab === 'services'" :teacher-id="teacher.id" />
     <Balance v-else-if="selectedTab === 'balance'" :teacher-id="teacher.id" :split="teacher.is_split_balance" />
-    <TeacherStatsTab v-else-if="selectedTab === 'stats'" :teacher-id="teacher.id" />
+    <TeacherStatsTab v-else-if="selectedTab === 'stats'" :teacher="teacher" />
     <HeadTeacherReportTab v-else-if="selectedTab === 'headTeacherReports'" :teacher-id="teacher.id" />
     <HeadTeacherClientsTab v-else-if="selectedTab === 'headTeacherClients'" :teacher-id="teacher.id" />
   </template>

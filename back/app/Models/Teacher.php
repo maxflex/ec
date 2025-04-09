@@ -27,6 +27,7 @@ class Teacher extends Person implements HasTeeth
         'is_split_balance' => 'bool',
         'is_published' => 'bool',
         'passport' => 'array',
+        'stats' => 'array',
     ];
 
     public function clientReviews(): HasMany

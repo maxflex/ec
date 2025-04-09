@@ -58,15 +58,12 @@ class TeacherController extends Controller
         $teacher->delete();
     }
 
-    public function stats(Teacher $teacher, Request $request)
+    public function stats(Teacher $teacher)
     {
-        $request->validate([
-            'year' => ['required', 'numeric'],
-        ]);
-
-        $stats = new TeacherStats($teacher, (int) $request->year);
-
-        return $stats->get();
+        return [
+            'teacher' => $teacher->stats,
+            'avg' => TeacherStats::loadAvg(),
+        ];
     }
 
     protected function filterSearch(&$query, $value)

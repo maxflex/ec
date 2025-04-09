@@ -48,7 +48,7 @@ const icons = {
   },
 }
 
-const colors = {
+export const colors = {
   primary: '#ffd572', // оранжевый приглушённый
   secondary: '#337ab7', // синий
   orange: '#ffc423', // оранжевый

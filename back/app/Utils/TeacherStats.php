@@ -9,6 +9,7 @@ use App\Models\Lesson;
 use App\Models\Teacher;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 
 readonly class TeacherStats
 {
@@ -35,17 +36,144 @@ readonly class TeacherStats
             ->get();
     }
 
-    public function get()
+    public function get(): array
     {
+        $clientLessons = $this->getClientLessons();
+        $clientReviews = $this->getClientReviews();
+        $conductedLessonsCount = $this->lessons->where('status', LessonStatus::conducted)->count();
+        $cancelledLessonsCount = $this->lessons->where('status', LessonStatus::cancelled)->count();
+        $conductedNextDayCount = $this->getConductedNextDayCount();
+
         return [
             'lessons' => $this->getLessons(),
-            'cancelled_percentage' => $this->getCancelledPercentage(),
+            'reports_count' => $this->reports->count(),
+            'client_reviews_count' => $clientReviews->count,
+            'client_lessons_count' => $clientLessons->count,
+            'conducted_lessons_count' => $conductedLessonsCount,
+            'cancelled_lessons_percent' => $this->percent($cancelledLessonsCount, $conductedLessonsCount),
             'report_fill_avg' => $this->getReportFillAvg(),
-            'report_similarity' => $this->getReportSimilarity(),
-            'conducted_next_day_count' => $this->getConductedNextDayCount(),
-            'client_lesson_counts' => $this->getClientLessonCounts(),
-            'review_rating_avg' => $this->getReviewRatingAvg(),
+            'report_similarity_percent' => $this->getReportSimilarityPercent(),
+            'conducted_next_day_percent' => $this->percent($conductedNextDayCount, $conductedLessonsCount),
+            'client_reviews_avg' => $clientReviews->avg,
+            'client_lessons_late_percent' => $this->percent($clientLessons->late, $clientLessons->count),
+            'client_lessons_online_percent' => $this->percent($clientLessons->online, $clientLessons->count),
+            'client_lessons_absent_percent' => $this->percent($clientLessons->absent, $clientLessons->count),
+            'students_left_percent' => $clientLessons->studentsLeftPercent,
+            'payback' => $clientLessons->payback,
         ];
+    }
+
+    /**
+     * Доля отсутствующих учеников в проведенных занятиях
+     * Доля опаздывающих
+     * Доля дистанционщиков
+     * Доля занятий за счет ушедших учеников
+     */
+    private function getClientLessons(): object
+    {
+        $count = 0;
+        $absent = 0;
+        $late = 0;
+        $online = 0;
+        $priceClientLessons = 0;
+        $priceTeacher = 0;
+
+        $left = [];
+
+        foreach ($this->lessons->where('status', LessonStatus::conducted) as $lesson) {
+            $studentIds = collect();
+            $priceTeacher += $lesson->price;
+            foreach ($lesson->clientLessons as $clientLesson) {
+                $studentIds->push($clientLesson->contract_version_program_id);
+                $priceClientLessons += $clientLesson->price;
+                switch ($clientLesson->status) {
+                    case ClientLessonStatus::absent:
+                        $absent++;
+                        break;
+
+                    case ClientLessonStatus::late:
+                    case ClientLessonStatus::lateOnline:
+                        $late++;
+                        break;
+
+                    case ClientLessonStatus::presentOnline:
+                    case ClientLessonStatus::lateOnline:
+                        $online++;
+                        break;
+                }
+                $count++;
+            }
+
+            // Доля занятий за счет ушедших учеников
+            if (! array_key_exists($lesson->group_id, $left)) {
+                $left[$lesson->group_id] = (object) [
+                    'studentIds' => $studentIds,
+                    'count' => $lesson->clientLessons->count(),
+                    'left' => 0,
+                ];
+            } else {
+                $diff = $left[$lesson->group_id]->studentIds->diff($studentIds)->count();
+                $left[$lesson->group_id]->count += $lesson->clientLessons->count() + $diff;
+                $left[$lesson->group_id]->left += $diff;
+                $left[$lesson->group_id]->studentIds = $left[$lesson->group_id]->studentIds->merge($studentIds)->unique()->values();
+            }
+        }
+
+        $studentsLeftPercent = 0;
+        foreach ($left as $obj) {
+            $studentsLeftPercent += ($obj->count - $obj->left) / $obj->count * 100;
+        }
+        $studentsLeftPercent = (int) round($studentsLeftPercent / count($left));
+
+        return (object) [
+            'absent' => $absent,
+            'late' => $late,
+            'online' => $online,
+            'payback' => round($priceClientLessons / $priceTeacher, 2),
+            'studentsLeftPercent' => $studentsLeftPercent,
+            'count' => $count,
+        ];
+    }
+
+    /**
+     * @return object{count: int, avg: float}
+     */
+    private function getClientReviews(): object
+    {
+        $query = $this->teacher->clientReviews()
+            ->whereRaw('exists (
+                select 1 from lessons l
+                join client_lessons cl on cl.lesson_id = l.id
+                join contract_version_programs cvp
+                    on cvp.id = cl.contract_version_program_id
+                    and cvp.program = client_reviews.program
+                join contract_versions cv on cv.id = cvp.contract_version_id
+                join contracts c
+                    on c.id = cv.contract_id
+                    and c.client_id = client_reviews.client_id
+                join `groups` g
+                    on g.id = l.group_id
+                    and g.year = ?
+                where l.teacher_id = client_reviews.teacher_id
+            )', [
+                $this->year,
+            ]);
+
+        return (object) [
+            'count' => $query->count(),
+            'avg' => round($query->avg('client_reviews.rating'), 2),
+        ];
+    }
+
+    /**
+     * Кол-во занятий, которая была проведена не в день занятия
+     */
+    private function getConductedNextDayCount(): int
+    {
+        return $this->lessons
+            ->where('status', LessonStatus::conducted)
+            ->where(fn ($l) => $l->date !== Carbon::parse($l->conducted_at)->format('Y-m-d'))
+            ->count();
     }
 
     /**
@@ -83,15 +211,9 @@ readonly class TeacherStats
         return $collect->sortByDesc(fn ($e) => $e->conducted + $e->planned)->values()->all();
     }
 
-    /**
-     * Доля отмен
-     */
-    private function getCancelledPercentage(): int
+    private function percent(int $value, int $total): int
     {
-        $total = $this->lessons->where('status', LessonStatus::conducted)->count();
-        $cancelled = $this->lessons->where('status', LessonStatus::cancelled)->count();
-
-        return (int) round(($cancelled / $total) * 100);
+        return (int) round(($value / $total) * 100);
     }
 
     /**
@@ -105,7 +227,7 @@ readonly class TeacherStats
     /**
      * Степень "одинаковости" отчетов
      */
-    private function getReportSimilarity(): int
+    private function getReportSimilarityPercent(): int
     {
         $textFields = collect([
             'homework_comment', 'cognitive_ability_comment', 'knowledge_level_comment', 'recommendation_comment',
@@ -139,90 +261,23 @@ readonly class TeacherStats
     }
 
     /**
-     * Доля занятий, которая была проведена не в день занятия
+     * Сохранить средние значения статистики по всем преподавателям
      */
-    private function getConductedNextDayCount(): int
+    public static function saveAvg(array $stats): bool
     {
-        return $this->lessons
-            ->where('status', LessonStatus::conducted)
-            ->where(fn ($l) => $l->date !== Carbon::parse($l->conducted_at)->format('Y-m-d'))
-            ->count();
+        return Storage::disk('local')->put(
+            'teacher-stats-avg.json',
+            json_encode($stats)
+        );
     }
 
     /**
-     * Доля отсутствующих учеников в проведенных занятиях
-     * Доля опаздывающих
-     * Доля дистанционщиков
-     * Доля занятий за счет ушедших учеников
+     * Загрузить средние значения по всем преподавателям
      */
-    private function getClientLessonCounts()
+    public static function loadAvg(): array
     {
-        $total = 0;
-        $absent = 0;
-        $late = 0;
-        $online = 0;
-        $priceClientLessons = 0;
-        $priceTeacher = 0;
+        $stats = Storage::disk('local')->get('teacher-stats-avg.json');
 
-        $left = [];
-
-        foreach ($this->lessons->where('status', LessonStatus::conducted) as $lesson) {
-            $studentIds = collect();
-            $priceTeacher += $lesson->price;
-            foreach ($lesson->clientLessons as $clientLesson) {
-                $studentIds->push($clientLesson->contract_version_program_id);
-                $priceClientLessons += $clientLesson->price;
-                switch ($clientLesson->status) {
-                    case ClientLessonStatus::absent:
-                        $absent++;
-                        break;
-
-                    case ClientLessonStatus::late:
-                        $late++;
-                        break;
-
-                    case ClientLessonStatus::lateOnline:
-                        $late++;
-                        $online++;
-                        break;
-                }
-                $total++;
-            }
-
-            // Доля занятий за счет ушедших учеников
-            if (! array_key_exists($lesson->group_id, $left)) {
-                $left[$lesson->group_id] = (object) [
-                    'studentIds' => $studentIds,
-                    'total' => $lesson->clientLessons->count(),
-                    'left' => 0,
-                ];
-            } else {
-                $diff = $left[$lesson->group_id]->studentIds->diff($studentIds)->count();
-                $left[$lesson->group_id]->total += $lesson->clientLessons->count() + $diff;
-                $left[$lesson->group_id]->left += $diff;
-                $left[$lesson->group_id]->studentIds = $left[$lesson->group_id]->studentIds->merge($studentIds)->unique()->values();
-            }
-        }
-
-        $leftAvg = 0;
-        foreach ($left as $obj) {
-            $leftAvg += ($obj->total - $obj->left) / $obj->total * 100;
-        }
-        $leftAvg = (int) round($leftAvg / count($left));
-
-        return [
-            'absent' => (int) round(($absent / $total) * 100),
-            'late' => (int) round(($late / $total) * 100),
-            'online' => (int) round(($online / $total) * 100),
-            'payback' => round($priceClientLessons / $priceTeacher, 2),
-            'left' => $leftAvg,
-        ];
-    }
-
-    private function getReviewRatingAvg(): float
-    {
-        $avg = $this->teacher->clientReviews()->avg('rating');
-
-        return round($avg, 2);
+        return json_decode($stats, true);
     }
 }
