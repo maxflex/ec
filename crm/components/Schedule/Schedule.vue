@@ -442,7 +442,7 @@ nextTick(loadAvailableYears)
   </div>
   <LessonDialog ref="lessonDialog" />
   <ClientLessonEditPriceDialog v-if="clientId" ref="clientLessonEditPriceDialog" />
-  <LessonConductDialog ref="conductDialog" @updated="loadLessons" />
+  <LessonConductDialog ref="conductDialog" @conducted="loadLessons" />
   <template v-if="isMassEditable">
     <LessonBulkUpdateDialog ref="lessonBulkUpdateDialog" @updated="onBulkUpdated" />
     <LessonBulkCreateDialog ref="lessonBulkCreateDialog" @updated="loadLessons" />

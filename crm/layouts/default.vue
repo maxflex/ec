@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { globalMessage } from '~/composables/useGlobalMessage'
+
 const route = useRoute()
 const { user } = useAuthStore()
 
@@ -6,8 +8,6 @@ const currentPageClass = computed(() => [
   `page-${(route.name as string) || 'default'}`,
   `entity-${user ? getEntityString(user.entity_type) : 'default'}`,
 ])
-
-const { globalMessage } = useGlobalMessage()
 </script>
 
 <template>

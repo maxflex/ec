@@ -23,7 +23,6 @@ const modelDefaults: EventResource = {
 const item = ref<EventResource>(modelDefaults)
 const route = useRoute()
 const router = useRouter()
-const { showGlobalMessage } = useGlobalMessage()
 
 function create(year: Year) {
   itemId.value = undefined
@@ -75,7 +74,7 @@ async function destroy() {
   }
   dialog.value = false
   if (route.name === 'events-id') {
-    showGlobalMessage('Событие удалено', 'success')
+    useGlobalMessage('Событие удалено', 'success')
     await router.push({ name: 'events' })
   }
   setTimeout(() => deleting.value = false, 300)

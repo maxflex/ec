@@ -4,7 +4,6 @@ type useFetchType = typeof useFetch
 
 export const useHttp: useFetchType = (path: string, options = {}) => {
   const { getCurrentToken, clearCurrentToken, getOriginalToken, isPreviewMode, clientParentId } = useAuthStore()
-  const { showGlobalMessage } = useGlobalMessage()
   let baseURL = useRuntimeConfig().public.baseUrl
   const token = getCurrentToken().value
 
@@ -52,7 +51,7 @@ export const useHttp: useFetchType = (path: string, options = {}) => {
           break
 
         case 500:
-          showGlobalMessage('Ошибка сервера', 'error')
+          useGlobalMessage('Ошибка сервера', 'error')
           break
       }
     },

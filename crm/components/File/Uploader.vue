@@ -4,7 +4,6 @@ import { mdiDownload } from '@mdi/js'
 const { folder } = defineProps<{
   folder: 'lessons' | 'tests'
 }>()
-const { showGlobalMessage } = useGlobalMessage()
 
 const fileInput = ref<HTMLInputElement>()
 
@@ -77,7 +76,7 @@ function onFileSelected(e: Event) {
             newFile.url = response._data
           }
           else {
-            showGlobalMessage(`Файл ${newFile.name} слишком большой (${formatFileSize(newFile)}). Максимально допустимый размер 20 Мб`, 'error')
+            useGlobalMessage(`Файл ${newFile.name} слишком большой (${formatFileSize(newFile)}). Максимально допустимый размер 20 Мб`, 'error')
             removeFile(newFile)
           }
         },

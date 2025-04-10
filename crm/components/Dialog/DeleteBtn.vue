@@ -5,7 +5,6 @@ const { confirmText = 'Вы уверены, что хотите удалить �
   id: number | undefined
 }>()
 const emit = defineEmits(['deleted'])
-const { showGlobalMessage } = useGlobalMessage()
 const deleting = ref(false)
 async function destroy() {
   if (!confirm(confirmText)) {
@@ -17,10 +16,10 @@ async function destroy() {
   })
   if (error.value) {
     deleting.value = false
-    showGlobalMessage(`Невозможно удалить запись. ${error.value.data?.message}`, 'error')
+    useGlobalMessage(`Невозможно удалить запись. ${error.value.data?.message}`, 'error')
   }
   else {
-    showGlobalMessage(`Запись удалена`, 'success')
+    useGlobalMessage(`Запись удалена`, 'success')
     emit('deleted')
     setTimeout(() => (deleting.value = false), 300)
   }

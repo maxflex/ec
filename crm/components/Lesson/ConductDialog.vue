@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const emit = defineEmits(['conducted'])
 const { dialog } = useDialog('large')
-const itemId = ref<number>()
+const itemId = ref(-1)
 const item = ref<LessonConductResource>()
 const { isAdmin, isTeacher } = useAuthStore()
 
@@ -45,11 +45,8 @@ async function conduct() {
   if (error.value) {
     // errors.value = error.value.data.errors
     loading.value = false
-    return
   }
-  dialog.value = false
-  setTimeout(() => saving.value = false, 300)
-  emit('conducted')
+  onSaved()
 }
 
 /**
@@ -67,11 +64,15 @@ async function save() {
   if (error.value) {
     // errors.value = error.value.data.errors
     loading.value = false
-    return
   }
+  onSaved()
+}
+
+function onSaved() {
+  emit('conducted')
   dialog.value = false
   setTimeout(() => saving.value = false, 300)
-  emit('conducted')
+  useGlobalMessage(isConducted.value ? 'Изменения сохранены' : 'Занятие проведено', 'success')
 }
 
 function onScoresSave(cl: ClientLessonResource) {

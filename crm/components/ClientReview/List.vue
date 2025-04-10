@@ -13,7 +13,6 @@ const { items } = toRefs(props)
 const { clientId, teacherId } = props
 const clientReviewDialog = ref<InstanceType<typeof ClientReviewDialog>>()
 const { isTeacher } = useAuthStore()
-const { showGlobalMessage } = useGlobalMessage()
 const telegramMessageDialog = ref<InstanceType<typeof TelegramMessageDialog>>()
 
 function onUpdated(cr: ClientReviewListResource) {
@@ -53,11 +52,11 @@ async function sendMessage(cr: ClientReviewListResource) {
   )
 
   if (error.value) {
-    showGlobalMessage('Ожидается ответ на предыдущий запрос или у клиента не добавлен Telegram бот', 'error')
+    useGlobalMessage('Ожидается ответ на предыдущий запрос или у клиента не добавлен Telegram бот', 'error')
     return
   }
 
-  showGlobalMessage('Запрос отправлен клиенту в Telegram', 'success')
+  useGlobalMessage('Запрос отправлен клиенту в Telegram', 'success')
 }
 
 function toggleMarked(cr: ClientReviewListResource, value: boolean) {

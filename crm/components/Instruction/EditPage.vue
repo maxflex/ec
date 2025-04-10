@@ -14,7 +14,6 @@ const loading = ref(true)
 const item = ref<InstructionBaseResource>(modelDefaults)
 const { isTeacher } = useAuthStore()
 const apiUrl = isTeacher ? 'instructions-check' : 'instructions'
-const { showGlobalMessage } = useGlobalMessage()
 
 const teacherAvailableStatuses: InstructionStatus[] = [
   'toCheckTeacher',
@@ -62,7 +61,7 @@ async function save() {
         },
       )
       setTimeout(() => (saving.value = false), 200)
-      showGlobalMessage('Инструкция сохранена', 'success')
+      useGlobalMessage('Инструкция сохранена', 'success')
   }
 }
 

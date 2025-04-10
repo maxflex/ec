@@ -12,11 +12,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[ObservedBy(ClientLessonObserver::class)]
 class ClientLesson extends Model
 {
-    public $timestamps = false;
-
     protected $fillable = [
         'price', 'status', 'minutes_late', 'scores',
-        'contract_version_program_id', 'comment'
+        'contract_version_program_id', 'comment',
     ];
 
     protected $casts = [
