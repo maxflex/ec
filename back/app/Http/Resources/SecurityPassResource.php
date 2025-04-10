@@ -10,24 +10,27 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin Pass
+ */
 class SecurityPassResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
         if ($this->resource instanceof Pass) {
             return extract_fields($this, [
-                'date'
+                'date', 'name',
             ], [
-                'name' => $this->comment,
-                'type' => 'person',
+                'type' => 'pass',
             ]);
         }
         $class = get_class($this->resource);
+
         return extract_fields($this, [
         ], [
             'birthday' => $this->when(
-                $class === Client::class && ((object)$this->passport)?->birthdate,
-                fn() => $this->passport->birthdate
+                $class === Client::class && ((object) $this->passport)?->birthdate,
+                fn () => $this->passport->birthdate
             ),
             'name' => $this->formatName('full'),
             'type' => match ($class) {
@@ -35,7 +38,7 @@ class SecurityPassResource extends JsonResource
                 ClientParent::class => 'parent',
                 Teacher::class => 'teacher',
                 User::class => 'user',
-            }
+            },
         ]);
     }
 }

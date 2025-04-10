@@ -12,7 +12,7 @@ class PassLogResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'entity', 'comment', 'complaint', 'used_at',
+            'entity', 'name', 'complaint', 'used_at',
         ]);
     }
 }

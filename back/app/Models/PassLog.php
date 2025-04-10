@@ -14,7 +14,7 @@ class PassLog extends Model
         'entity_id',
         'entity_type',
         'used_at',
-        'comment',
+        'name',
         'complaint',
     ];
 

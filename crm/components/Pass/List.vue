@@ -34,7 +34,7 @@ function onPassDeleted(pass: PassResource) {
     <tbody>
       <tr v-for="item in items" :id="`pass-${item.id}`" :key="item.id">
         <td width="350">
-          {{ item.comment }}
+          {{ item.name }}
         </td>
         <td width="160">
           {{ formatDate(item.date) }}
@@ -43,6 +43,9 @@ function onPassDeleted(pass: PassResource) {
           <RouterLink v-if="item.request" :to="{ name: 'requests-id', params: { id: item.request.id } }">
             заявка {{ item.request.id }}
           </RouterLink>
+          <span v-else-if="item.comment">
+            {{ item.comment }}
+          </span>
         </td>
         <td v-if="showRequest" width="160">
           <div v-if="item.request">

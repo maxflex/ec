@@ -1,7 +1,8 @@
 export interface PassResource {
   id: number
   date: string
-  comment: string
+  name: string
+  comment: string | null
   used_at: string | null
   is_expired: boolean
   request_id?: number
@@ -16,7 +17,8 @@ export interface PassResource {
 export const modelDefaults: PassResource = {
   id: newId(),
   date: '',
-  comment: '',
+  name: '',
+  comment: null,
   used_at: null,
   is_expired: false,
 }

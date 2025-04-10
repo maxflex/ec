@@ -66,6 +66,9 @@ defineExpose({ create, edit })
       <div class="dialog-header">
         <div v-if="item.id > 0">
           Редактировать пропуск
+          <template v-if="item.request_id || item.request">
+            к заявке {{ item.request ? item.request.id : item.request_id }}
+          </template>
           <div class="dialog-subheader">
             {{ formatName(item.user!) }}
             {{ formatDateTime(item.created_at!) }}
@@ -73,8 +76,8 @@ defineExpose({ create, edit })
         </div>
         <template v-else>
           Добавить пропуск
-          <template v-if="item.request_id">
-            к заявке {{ item.request_id }}
+          <template v-if="item.request_id || item.request">
+            к заявке {{ item.request ? item.request.id : item.request_id }}
           </template>
         </template>
         <div v-if="!isDisabled">
@@ -93,8 +96,16 @@ defineExpose({ create, edit })
         </div>
         <div>
           <v-text-field
-            v-model="item.comment"
+            v-model="item.name"
             label="ФИО"
+            :disabled="isDisabled"
+          />
+        </div>
+        <div>
+          <v-text-field
+            v-if="!(item.request_id || item.request)"
+            v-model="item.comment"
+            label="Комментарий"
             :disabled="isDisabled"
           />
         </div>

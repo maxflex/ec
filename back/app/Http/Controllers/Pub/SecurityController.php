@@ -23,8 +23,8 @@ class SecurityController extends Controller
     ];
 
     protected $mapFilters = [
-        'q' => 'comment',
-        'date' => 'DATE(used_at)'
+        'q' => 'name',
+        'date' => 'DATE(used_at)',
     ];
 
     public function sendCode()
@@ -35,11 +35,11 @@ class SecurityController extends Controller
     public function verifyCode(Request $request)
     {
         $request->validate([
-            'code' => ['required', 'string']
+            'code' => ['required', 'string'],
         ]);
 
         return [
-            'verified' => SecurityVerificationService::verifyCode($request->code)
+            'verified' => SecurityVerificationService::verifyCode($request->code),
         ];
     }
 
@@ -72,7 +72,7 @@ class SecurityController extends Controller
     {
         $request->validate([
             'id' => ['required', 'numeric'],
-            'type' => ['required', 'in:client,parent,teacher,person,user']
+            'type' => ['required', 'in:client,parent,teacher,user,pass'],
         ]);
         $entityType = match ($request->type) {
             'client' => Client::class,
@@ -87,10 +87,11 @@ class SecurityController extends Controller
             'complaint' => $request->complaint,
             'entity_id' => $request->id,
             'entity_type' => $entityType,
-            'comment' => $entityType === Pass::class
-                ? $entity->comment
-                : $entity->formatName('full')
+            'name' => $entityType === Pass::class
+                ? $entity->name
+                : $entity->formatName('full'),
         ]);
+
         return $request->all();
     }
 
@@ -102,6 +103,7 @@ class SecurityController extends Controller
         $request->merge(['paginate' => 100]);
         $query = PassLog::with('entity')->orderBy('id', 'desc');
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, PassLogResource::class);
     }
 
@@ -116,10 +118,8 @@ class SecurityController extends Controller
         $words = array_unique(array_filter(explode(' ', $value), 'trim'));
         $query->where(function ($query) use ($field, $words) {
             foreach ($words as $word) {
-                $query->orWhere(DB::raw($this->getFieldName($field)), 'like', '%' . $word . '%');
+                $query->orWhere(DB::raw($this->getFieldName($field)), 'like', '%'.$word.'%');
             }
         });
     }
 }
-
-
