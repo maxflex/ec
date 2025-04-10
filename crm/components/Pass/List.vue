@@ -39,9 +39,6 @@ function onPassDeleted(pass: PassResource) {
         <td width="160">
           {{ formatDate(item.date) }}
         </td>
-        <!-- <td width="160">
-          {{ PassTypeLabel[item.type] }}
-        </td> -->
         <td v-if="showRequest" width="150">
           <RouterLink v-if="item.request" :to="{ name: 'requests-id', params: { id: item.request.id } }">
             заявка {{ item.request.id }}

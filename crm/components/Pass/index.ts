@@ -1,6 +1,5 @@
 export interface PassResource {
   id: number
-  type: PassType
   date: string
   comment: string
   used_at: string | null
@@ -16,7 +15,6 @@ export interface PassResource {
 
 export const modelDefaults: PassResource = {
   id: newId(),
-  type: 'person',
   date: '',
   comment: '',
   used_at: null,

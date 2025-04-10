@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 class Pass extends Model
 {
     protected $fillable = [
-        'comment', 'type', 'date', 'request_id',
+        'comment', 'date', 'request_id',
     ];
 
     public function request(): BelongsTo

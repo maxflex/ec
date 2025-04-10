@@ -89,20 +89,12 @@ defineExpose({ create, edit })
       </div>
       <div class="dialog-body">
         <div>
-          <v-select
-            v-model="item.type"
-            label="Тип"
-            :items="selectItems(PassTypeLabel)"
-            :disabled="isDisabled"
-          />
-        </div>
-        <div>
           <UiDateInput v-model="item.date" label="Дата" :disabled="isDisabled" />
         </div>
         <div>
           <v-text-field
             v-model="item.comment"
-            :label="item.type === 'person' ? 'ФИО' : 'Марка и номер'"
+            label="ФИО"
             :disabled="isDisabled"
           />
         </div>

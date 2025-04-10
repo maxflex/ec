@@ -12,7 +12,7 @@ class PassResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'comment', 'type', 'date', 'created_at',
+            'comment', 'date', 'created_at',
             'used_at', 'is_expired',
         ], [
             'user' => new PersonResource($this->user),

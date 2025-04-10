@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 class PassController extends Controller
 {
     protected $filters = [
-        'equals' => ['request_id', 'type'],
+        'equals' => ['request_id'],
         'status' => ['status'],
         'direction' => ['direction'],
     ];

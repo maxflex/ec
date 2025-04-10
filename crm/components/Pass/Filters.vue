@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 export interface PassFilters {
   status?: PassStatus
-  type?: PassType
   direction: Direction[]
 }
 
@@ -13,12 +12,6 @@ const model = defineModel<PassFilters>({ required: true })
     v-model="model.status"
     label="Статус"
     :items="selectItems(PassStatusLabel)"
-    density="comfortable"
-  />
-  <UiClearableSelect
-    v-model="model.type"
-    label="Тип"
-    :items="selectItems(PassTypeLabel)"
     density="comfortable"
   />
   <UiMultipleSelect

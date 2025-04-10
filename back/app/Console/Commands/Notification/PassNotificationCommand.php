@@ -15,6 +15,8 @@ class PassNotificationCommand extends Command
 
     public function handle(): void
     {
+        $message = 'ЕГЭ-Центр напоминает: завтра Вы записаны на встречу в ЕГЭ-Центре. С уважением, администрация.';
+
         $requestIds = Pass::query()
             ->where('date', now()->addDay()->format('Y-m-d'))
             ->whereNotNull('request_id')
@@ -26,10 +28,7 @@ class PassNotificationCommand extends Command
 
         foreach ($requests as $request) {
             foreach ($request->phones as $phone) {
-                Sms::send($phone, sprintf(
-                    '%s, здравствуйте. Напоминаем, завтра запланирована встреча в ЕГЭ-Центре',
-                    $phone->comment
-                ));
+                Sms::send($phone, $message);
             }
             $bar->advance();
         }
