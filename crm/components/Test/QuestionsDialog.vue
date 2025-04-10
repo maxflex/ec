@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { TestQuestion } from '.'
+
 const emit = defineEmits<{
   (e: 'saved', questions: TestQuestion[]): void
 }>()
@@ -23,7 +25,7 @@ function save() {
 
 function add() {
   questions.value.push({
-    answer: null,
+    answers: [],
     score: null,
   })
   nextTick(() =>
@@ -31,6 +33,13 @@ function add() {
       .querySelector('.test-dialog__questions')
       ?.scrollTo({ top: 9999, behavior: 'smooth' }),
   )
+}
+
+function toggleAnswer(q: TestQuestion, n: number) {
+  const index = q.answers.findIndex(e => e === n)
+  index === -1
+    ? q.answers.push(n)
+    : q.answers.splice(index, 1)
 }
 
 defineExpose({ open })
@@ -45,13 +54,7 @@ defineExpose({ open })
     <div class="dialog-wrapper">
       <div class="dialog-header">
         <span>
-          Вопросы
-          <span
-            v-if="questions.length"
-            class="ml-1 text-gray"
-          >
-            {{ questions.length }}
-          </span>
+          Редактировать вопросы
         </span>
         <v-btn
           icon="$save"
@@ -77,28 +80,22 @@ defineExpose({ open })
                 @click="deleteQuestion(i)"
               />
             </h2>
-            <v-item-group
-              v-model="q.answer"
-              selected-class="bg-success"
-            >
-              <v-item
+            <div class="test-dialog__questions-answers">
+              <v-btn
                 v-for="n in 6"
                 :key="n"
+                height="48"
+                width="48"
+                variant="text"
+                border
+                :class="{
+                  'bg-success': q.answers.some(e => e === n),
+                }"
+                icon
+                @click="toggleAnswer(q, n)"
               >
-                <template #default="{ toggle, selectedClass }">
-                  <v-btn
-                    height="48"
-                    width="48"
-                    variant="text"
-                    icon
-                    border
-                    :class="selectedClass"
-                    @click="toggle"
-                  >
-                    {{ n }}
-                  </v-btn>
-                </template>
-              </v-item>
+                {{ n }}
+              </v-btn>
               <v-spacer />
               <v-text-field
                 v-model.number="q.score"
@@ -108,7 +105,7 @@ defineExpose({ open })
                 density="comfortable"
                 hide-details
               />
-            </v-item-group>
+            </div>
           </div>
         </div>
         <v-btn
@@ -129,6 +126,10 @@ defineExpose({ open })
     flex: 1;
     // padding: 20px;
     overflow: scroll;
+    &-answers {
+      display: flex;
+      gap: 8px;
+    }
     &::-webkit-scrollbar {
       display: none;
     }

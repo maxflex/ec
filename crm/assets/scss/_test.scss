@@ -30,7 +30,7 @@
         padding-right: $padding;
       }
     }
-    .v-item-group {
+    &-answers {
       gap: 10px;
       display: flex;
       // justify-content: center;
@@ -73,5 +73,30 @@
     width: 80px;
     margin-left: 16px;
     opacity: 0.5;
+  }
+
+  &-answer {
+    &--correct {
+      border: 1px solid rgb(var(--v-theme-success)) !important;
+      .v-btn__content {
+        color: rgb(var(--v-theme-success));
+      }
+    }
+    &--my {
+      &.test-answer--correct {
+        background-color: rgb(var(--v-theme-success)) !important;
+        .v-btn__content {
+          color: white !important;
+        }
+      }
+      &:not(.test-answer--correct) {
+        border: 1px solid rgb(var(--v-theme-error)) !important;
+
+        .v-btn__content {
+          color: rgb(var(--v-theme-error));
+        }
+        // background-color: rgb(var(--v-theme-error)) !important;
+      }
+    }
   }
 }

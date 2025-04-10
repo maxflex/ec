@@ -484,49 +484,6 @@ declare global {
   // TODO: delete?
   // type EmitType<T> = T extends (e: any, p: infer P) => any ? P : never
 
-  interface ClientTestResource {
-    id: number
-    client_id: number
-    program: Program
-    name: string
-    file: UploadedFile
-    minutes: number
-    seconds_left?: number
-    questions: TestQuestion[]
-    answers: TestAnswers | null
-    started_at: ?string
-    finished_at: ?string
-    is_finished: boolean
-    is_active: boolean
-    questions_count: number
-    client?: PersonResource
-    created_at: string
-  }
-
-  interface TestQuestion {
-    answer: ?number
-    score: ?number
-  }
-
-  interface TestResource {
-    id: number
-    program: Program | null
-    name: string
-    file: ?UploadedFile
-    minutes: number
-    questions: TestQuestion[]
-    created_at?: string
-    updated_at?: string
-    user?: PersonResource
-  }
-
-  type TestAnswers = Array<number | undefined | null>
-
-  interface ActiveTest {
-    test: ClientTestResource
-    seconds: number
-  }
-
   interface MacroResource {
     id: number
     title: string

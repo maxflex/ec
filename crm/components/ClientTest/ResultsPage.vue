@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import type { ClientTestResource } from '.'
+import type { TestAnswers } from '../Test'
+
 const route = useRoute()
 const test = ref<ClientTestResource>()
-const answers = ref<TestAnswers>()
+const answers = ref<TestAnswers>({})
 
 async function loadData() {
   const { data } = await useHttp<ClientTestResource>(
@@ -27,25 +30,16 @@ nextTick(loadData)
     <div>
       <div class="test__questions">
         <div
-          v-for="(q, i) in test.questions"
+          v-for="i in test.questions_count"
           :key="i"
         >
-          <h2>
-            Вопрос {{ i + 1 }}
-            <span
-              v-if="answers && answers[i] === q.answer"
-              class="text-success"
-            >
-              +{{ plural(q.score as number, ["балл", "балла", "баллов"]) }}
-            </span>
-            <span
-              v-else
-              class="text-error"
-            >
-              -{{ plural(q.score as number, ["балл", "балла", "баллов"]) }}
+          <h2 class="d-flex align-center ga-4">
+            Вопрос {{ i }}
+            <span class="text-gray">
+              {{ test.results!.answers[i].score }} / {{ test.results!.answers[i].total }}
             </span>
           </h2>
-          <div class="v-item-group">
+          <div class="test__questions-answers">
             <v-btn
               v-for="n in 6"
               :key="n"
@@ -56,8 +50,8 @@ nextTick(loadData)
               border
               class="no-pointer-events"
               :class="{
-                'bg-success': n - 1 === q.answer,
-                'bg-error': answers && n - 1 === answers[i],
+                'test-answer--correct': test.questions[i - 1].answers.includes(n),
+                'test-answer--my': i in test.answers && test.answers[i].includes(n),
               }"
             >
               {{ n }}
@@ -68,7 +62,7 @@ nextTick(loadData)
       <div class="test__results">
         Набрано
         <span class="font-weight-bold">
-          {{ formatClientTestResults(test) }}
+          {{ test.results!.score }} из {{ test.results!.total }}
         </span>
         баллов
       </div>

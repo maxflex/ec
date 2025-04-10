@@ -222,7 +222,6 @@ export function formatDateMob(dateTime: string | null): string {
   return dayjs(dateTime).format('DD.MM.YY')
 }
 
-
 export function formatDateMonth(dateTime: string | null): string {
   if (!dateTime) {
     return ''
@@ -378,19 +377,6 @@ export function filterAge(date: string) {
   const year = Number.parseInt(date.split('-')[0])
   console.log({ date, currentYear, year })
   return plural(currentYear - year, ['год', 'года', 'лет'])
-}
-
-export function formatClientTestResults(clientTest: ClientTestResource) {
-  const score = clientTest.questions
-    ?.filter((e, i) => clientTest.answers && e.answer === clientTest.answers[i])
-    .reduce((c, v) => c + (v.score as number), 0)
-
-  const total = clientTest.questions?.reduce(
-    (c, v) => c + (v.score as number),
-    0,
-  )
-
-  return `${score} из ${total}`
 }
 
 export function filterTruncate(text: string, stop: number, clamp = '...') {

@@ -18,28 +18,30 @@ class ClientTestResource extends JsonResource
     {
         $extra = [
             'file' => $this->file,
-            'client' => $this->whenLoaded('client', fn () => new PersonResource($this->client))
+            'questions_count' => count($this->questions),
+            'client' => $this->whenLoaded('client', fn () => new PersonResource($this->client)),
         ];
 
         if ($this->is_finished) {
             $extra = [
                 ...$extra,
                 'questions' => $this->questions,
-                'answers' => $this->answers
+                'answers' => $this->answers,
+                'results' => $this->results,
             ];
         }
 
         if ($this->is_active) {
             $extra = [
                 ...$extra,
-                'seconds_left' => $this->secondsLeft,
+                'seconds_left' => $this->seconds_left,
             ];
         }
 
         return extract_fields($this, [
             'program', 'name', 'is_finished', 'is_active',
             'minutes', 'questions_count', 'created_at',
-            'finished_at', 'started_at'
+            'finished_at', 'started_at',
         ], $extra);
     }
 }

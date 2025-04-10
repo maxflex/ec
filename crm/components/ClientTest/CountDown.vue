@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ClientTestResource } from '.'
+
 const { item } = defineProps<{ item: ClientTestResource }>()
 const seconds = ref(item.seconds_left || 0)
 const { $dayjs } = useNuxtApp()

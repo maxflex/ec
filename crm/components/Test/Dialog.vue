@@ -1,18 +1,12 @@
 <script setup lang="ts">
 import type { TestQuestionsDialog } from '#build/components'
 import { clone } from 'rambda'
+import { modelDefaults, type TestQuestion, type TestResource } from '.'
 
 const emit = defineEmits<{
-  (e: 'updated'): void
+  updated: []
 }>()
-const modelDefaults: TestResource = {
-  id: newId(),
-  minutes: 30,
-  name: '',
-  file: null,
-  program: null,
-  questions: [],
-}
+
 const { dialog, width } = useDialog('default')
 const item = ref<TestResource>({ ...modelDefaults })
 const input = ref()

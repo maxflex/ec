@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { TestSelectorDialog } from '#build/components'
+import type { ClientTestResource } from '.'
+import type { TestResource } from '../Test'
 
 const { clientId } = defineProps<{ clientId: number }>()
 const tabName = 'ClientTestTab'

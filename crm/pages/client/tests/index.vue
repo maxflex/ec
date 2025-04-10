@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { TestDialog } from '#build/components'
+import type { ClientTestResource } from '~/components/ClientTest'
 
 definePageMeta({ middleware: ['check-active-test'] })
 

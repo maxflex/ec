@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ClientTestResource } from '.'
+
 const { items } = defineProps<{ items: ClientTestResource[] }>()
 
 const emit = defineEmits<{
@@ -68,8 +70,8 @@ const { isAdmin, isClient } = useAuthStore()
         </div>
       </div>
       <div style="width: 100px">
-        <b v-if="t.is_finished">
-          {{ formatClientTestResults(t) }}
+        <b v-if="t.results">
+          {{ t.results.score }} из {{ t.results.total }}
         </b>
         <ClientTestCountDown v-else-if="t.is_active" :item="t" />
       </div>

@@ -1,5 +1,8 @@
 <script setup lang="ts">
-const answers = ref<TestAnswers>([])
+import { clone } from 'rambda'
+import type { ActiveTest, TestAnswers } from '~/components/Test'
+
+const answers = ref<TestAnswers>({})
 const cookie = useCookie<TestAnswers>('answers', { maxAge: 60 * 60 * 3 }) // 3 hours
 const test = ref<ClientTestResource>()
 const finishing = ref(false)
@@ -32,9 +35,8 @@ async function loadData() {
         }
       }, 1000)
     }
-    answers.value = Array.from({ length: data.value.test.questions_count })
     if (cookie.value) {
-      answers.value = cookie.value.slice()
+      answers.value = clone(cookie.value)
     }
   }
 }
@@ -55,6 +57,25 @@ async function finish() {
   })
 }
 
+function toggleAnswer(i: number, n: number) {
+  if (i in answers.value) {
+    const index = answers.value[i].findIndex(e => e === n)
+    if (index === -1) {
+      // максимальное кол-во ответов
+      if (answers.value[i].length >= 3) {
+        return
+      }
+      answers.value[i].push(n)
+    }
+    else {
+      answers.value[i].splice(index, 1)
+    }
+  }
+  else {
+    answers.value[i] = [n]
+  }
+}
+
 watch(answers, saveAnswers, { deep: true })
 
 nextTick(loadData)
@@ -73,29 +94,21 @@ nextTick(loadData)
           :key="i"
         >
           <h2>Вопрос {{ i }}</h2>
-          <v-item-group
-            v-model="answers[i - 1]"
-            selected-class="bg-primary"
-          >
-            <v-item
+          <div class="test__questions-answers">
+            <v-btn
               v-for="n in 6"
               :key="n"
+              height="48"
+              width="48"
+              variant="text"
+              icon
+              border
+              :class="{ 'bg-primary': (i in answers) && answers[i].some(e => e === n) }"
+              @click="toggleAnswer(i, n)"
             >
-              <template #default="{ toggle, selectedClass }">
-                <v-btn
-                  height="48"
-                  width="48"
-                  variant="text"
-                  icon
-                  border
-                  :class="selectedClass"
-                  @click="toggle"
-                >
-                  {{ n }}
-                </v-btn>
-              </template>
-            </v-item>
-          </v-item-group>
+              {{ n }}
+            </v-btn>
+          </div>
         </div>
       </div>
       <div class="test__controls">
