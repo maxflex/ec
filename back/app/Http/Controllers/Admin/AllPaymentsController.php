@@ -14,14 +14,18 @@ class AllPaymentsController extends Controller
 {
     protected $filters = [
         'equals' => [
-            'year', 'method', 'company', 'is_confirmed'
-        ]
+            'company', 'is_confirmed',
+        ],
+        'findInSet' => [
+            'year', 'method',
+        ],
     ];
 
     public function __invoke(Request $request)
     {
         $query = AllPayments::query()->orderBy('date', 'desc');
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, AllPaymentResource::class);
     }
 }

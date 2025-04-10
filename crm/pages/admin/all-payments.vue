@@ -2,8 +2,8 @@
 import type { ClientPaymentDialog, ContractPaymentDialog } from '#build/components'
 
 interface Filters {
-  year: Year
-  method?: ContractPaymentMethod
+  year: Year[]
+  method: ContractPaymentMethod[]
   company?: Company
   is_confirmed?: number
 }
@@ -11,10 +11,11 @@ interface Filters {
 const clientPaymentDialog = ref<InstanceType<typeof ClientPaymentDialog>>()
 const contractPaymentDialog = ref<InstanceType<typeof ContractPaymentDialog>>()
 const filters = ref<Filters>(loadFilters({
-  year: currentAcademicYear(),
+  year: [],
+  method: [],
 }))
 
-const { items, indexPageData } = useIndex<AllPaymentResource, Filters>(
+const { items, indexPageData } = useIndex<AllPaymentResource>(
   `all-payments`,
   filters,
 )
@@ -29,13 +30,13 @@ function edit(item: AllPaymentResource) {
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <v-select
+      <UiMultipleSelect
         v-model="filters.year"
         label="Учебный год"
         :items="selectItems(YearLabel)"
         density="comfortable"
       />
-      <UiClearableSelect
+      <UiMultipleSelect
         v-model="filters.method"
         label="Метод"
         :items="selectItems(ContractPaymentMethodLabel)"

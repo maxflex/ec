@@ -39,19 +39,23 @@ function onPassDeleted(pass: PassResource) {
         <td width="160">
           {{ formatDate(item.date) }}
         </td>
-        <td v-if="showRequest" width="150">
-          <RouterLink v-if="item.request" :to="{ name: 'requests-id', params: { id: item.request.id } }">
-            заявка {{ item.request.id }}
-          </RouterLink>
-          <span v-else-if="item.comment">
-            {{ item.comment }}
-          </span>
-        </td>
-        <td v-if="showRequest" width="160">
-          <div v-if="item.request">
-            {{ DirectionLabel[item.request.direction] }}
-          </div>
-        </td>
+        <template v-if="showRequest">
+          <template v-if="item.request">
+            <td width="150">
+              <RouterLink :to="{ name: 'requests-id', params: { id: item.request.id } }">
+                заявка {{ item.request.id }}
+              </RouterLink>
+            </td>
+            <td width="160">
+              {{ DirectionLabel[item.request.direction] }}
+            </td>
+          </template>
+          <td v-else colspan="2">
+            <span v-if="item.comment">
+              {{ item.comment }}
+            </span>
+          </td>
+        </template>
         <td class="flex-1">
           <span v-if="item.used_at">
             использован {{ formatDateTime(item.used_at) }}
