@@ -132,7 +132,7 @@ nextTick(loadData)
     background: linear-gradient(to right, #f6f6f6 1%, white);
     // #f6f6f6
     // background-color: #e4e4e4 !important;
-    border-radius: 8px;
+    border-radius: 16px;
     overflow: hidden;
     transition: all ease-in-out 0.3s;
 
