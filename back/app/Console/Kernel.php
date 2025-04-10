@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('notification:teacher-conduct-missing')->dailyAt('10:00');
         $schedule->command('notification:payment-reminder')->dailyAt('19:50');
         $schedule->command('notification:unplanned-or-cancelled')->dailyAt('20:00');
+        $schedule->command('notification:pass-notification')->dailyAt('20:30');
 
         $schedule->command('app:check-errors')->dailyAt('03:00');
         $schedule->command('app:send-telegram-messages')->everyMinute();

@@ -13,7 +13,7 @@ class TeacherConductMissingCommand extends Command
 {
     protected $signature = 'notification:teacher-conduct-missing';
 
-    protected $description = 'напоминание преподу за незаполненную проводку';
+    protected $description = 'Напоминание преподу за незаполненную проводку';
 
     public function handle(): void
     {

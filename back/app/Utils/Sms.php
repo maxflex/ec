@@ -9,6 +9,15 @@ class Sms
 {
     public static function send(Phone $phone, string $message)
     {
+        if (is_localhost()) {
+            logger('SMS', [
+                'number' => $phone->number,
+                'message' => $message,
+            ]);
+
+            return true;
+        }
+
         $params = [
             'login' => config('sms.login'),
             'psw' => config('sms.psw'),
