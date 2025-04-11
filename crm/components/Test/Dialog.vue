@@ -132,7 +132,6 @@ defineExpose({ open, create })
         </div>
         <div>
           <v-text-field
-            ref="input"
             v-model="item.description"
             label="Техническое описание"
           />
