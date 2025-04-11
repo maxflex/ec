@@ -24,6 +24,8 @@ class Controller extends BaseController
 
     protected function handleIndexRequest(Request $request, $query, $resource = null)
     {
+        $resource = $resource ?? $this->getResource($request);
+
         if ($request->has('available_years')) {
             return $this->getAvailableYears($query->distinct()->reorder())->unique()->sortDesc()->values()->all();
         }
@@ -36,9 +38,13 @@ class Controller extends BaseController
             $query->with($request->with);
         }
 
-        $result = (clone $query)->paginate($request->paginate ?: ($request->page ? 30 : 9999));
+        if (! $request->has('page')) {
+            return paginate($resource::collection($query->get()));
+        }
 
-        $result = ($resource ?? $this->getResource($request))::collection($result);
+        $result = (clone $query)->paginate($request->paginate ?? 30);
+        $result = $resource::collection($result);
+
         if ($request->has('pluck')) {
             $value = $request->input('pluck');
             $result->additional([
@@ -58,11 +64,6 @@ class Controller extends BaseController
         return $result;
     }
 
-    protected function getAvailableYears($query): Collection
-    {
-        return $query->pluck('year');
-    }
-
     protected function getResource(Request $request)
     {
         if (count($this->resources) === 0) {
@@ -76,6 +77,11 @@ class Controller extends BaseController
         }
 
         return $resource;
+    }
+
+    protected function getAvailableYears($query): Collection
+    {
+        return $query->pluck('year');
     }
 
     protected function filter(Request $request, &$query, ?array $filters = null)
