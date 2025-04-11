@@ -6,25 +6,23 @@ use Illuminate\Support\Facades\DB;
 
 class Swamp
 {
-    public static function query()
+    public static function query(?int $clientId = null)
     {
         // сумма занятий и цен из ContractVersionProgramPrice
         $totals = DB::table('contract_version_program_prices')
-            ->selectRaw(<<<'SQL'
+            ->selectRaw('
                 contract_version_program_id,
                 CAST(SUM(`lessons`) AS UNSIGNED) AS total_lessons,
                 CAST(SUM(`price` * `lessons`) AS UNSIGNED) AS total_price
-            SQL
-            )
+            ')
             ->groupBy('contract_version_program_id');
 
         // сумма цен за проведённые занятия из ClientLesson
         $totalPassed = DB::table('client_lessons')
-            ->selectRaw(<<<'SQL'
+            ->selectRaw('
                 contract_version_program_id,
                 CAST(SUM(`price`) AS UNSIGNED) AS total_price_passed
-            SQL
-            )
+            ')
             ->groupBy('contract_version_program_id');
 
         /**
@@ -44,7 +42,8 @@ class Swamp
                 '=',
                 'cvp.id'
             )
-            ->selectRaw(<<<'SQL'
+            ->when($clientId, fn ($q) => $q->where('c.client_id', $clientId))
+            ->selectRaw('
                 cvp.id,
                 t.total_lessons,
                 t.total_price,
@@ -54,8 +53,7 @@ class Swamp
                 c.year,
                 c.client_id,
                 cvp.program
-            SQL
-            );
+            ');
 
         return DB::table('swamps')->withExpression('swamps', $swampsCte);
     }

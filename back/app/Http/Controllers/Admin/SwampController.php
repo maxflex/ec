@@ -10,14 +10,15 @@ use Illuminate\Http\Request;
 class SwampController extends Controller
 {
     protected $filters = [
-        'equals' => ['year', 'program', 'client_id'],
+        'equals' => ['year', 'program'],
         'status' => ['status'],
     ];
 
     public function index(Request $request)
     {
-        $query = Swamp::query();
+        $query = Swamp::query($request->input('client_id'));
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, SwampListResource::class);
     }
 

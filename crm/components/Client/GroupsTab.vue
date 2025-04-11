@@ -54,12 +54,16 @@ async function loadAvailableYears() {
 
 async function loadSwamps() {
   loading.value = true
-  const params = {
-    ...filters.value,
-    status: 'noGroup',
-    client_id: clientId,
-  }
-  const { data } = await useHttp<ApiResponse<SwampListResource>>(`swamps`, { params })
+  const { data } = await useHttp<ApiResponse<SwampListResource>>(
+    `swamps`,
+    {
+      params: {
+        ...filters.value,
+        status: 'noGroup',
+        client_id: clientId,
+      },
+    },
+  )
   if (data.value) {
     swamps.value = data.value.data
   }
