@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Events\ClientTestUpdatedEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ClientTestResource;
 use App\Models\ClientTest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 class ClientTestController extends Controller
 {
@@ -26,44 +26,34 @@ class ClientTestController extends Controller
             ->where('client_id', auth()->id())
             ->firstOrFail();
 
+        abort_if($clientTest->is_timed_out, 404);
+
         return new ClientTestResource($clientTest);
     }
 
     public function start(ClientTest $clientTest)
     {
         $clientTest->start();
+        ClientTestUpdatedEvent::dispatch($clientTest);
     }
 
     public function finish(Request $request)
     {
-        $activeTest = ClientTest::query()
-            ->where('client_id', auth()->id())
-            ->active()
-            ->first();
-        if ($activeTest === null) {
-            return response(null);
-        }
+        $activeTest = ClientTest::getActive(auth()->id());
+
+        abort_if(! $activeTest, 417);
+
         $activeTest->finish($request->answers);
+
+        ClientTestUpdatedEvent::dispatch($activeTest);
     }
 
     public function active()
     {
-        $activeTest = ClientTest::query()
-            ->active()
-            ->where('client_id', auth()->id())
-            ->first();
+        $activeTest = ClientTest::getActive(auth()->id());
 
-        if ($activeTest === null) {
-            return response(null);
-        }
+        abort_if(! $activeTest, 417);
 
-        return [
-            'test' => new ClientTestResource($activeTest),
-            // сколько в секундах осталось на выполнение теста
-            'seconds' => max(
-                0,
-                $activeTest->minutes * 60 - (int) abs(Carbon::parse($activeTest->started_at)->diffInSeconds(now()))
-            ),
-        ];
+        return new ClientTestResource($activeTest);
     }
 }

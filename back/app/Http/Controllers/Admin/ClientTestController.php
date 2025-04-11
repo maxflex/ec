@@ -11,17 +11,16 @@ use Illuminate\Http\Request;
 class ClientTestController extends Controller
 {
     protected $filters = [
-        'equals' => ['client_id', 'year', 'program'],
+        'equals' => ['client_id', 'year'],
         'status' => ['status'],
     ];
 
     public function index(Request $request)
     {
-        $query = ClientTest::latest();
+        $query = ClientTest::query()
+            ->with('client')
+            ->latest();
 
-        if (! $request->has('client_id')) {
-            $query->with('client');
-        }
         $this->filter($request, $query);
 
         return $this->handleIndexRequest($request, $query, ClientTestResource::class);
@@ -41,8 +40,8 @@ class ClientTestController extends Controller
         foreach ($tests as $test) {
             $clientTests[] = auth()->user()->clientTests()->create([
                 ...$request->all(),
-                'program' => $test->program,
                 'name' => $test->name,
+                'description' => $test->description,
                 'file' => $test->file,
                 'minutes' => $test->minutes,
                 'questions' => $test->questions,
@@ -54,6 +53,8 @@ class ClientTestController extends Controller
 
     public function show(ClientTest $clientTest)
     {
+        abort_if($clientTest->is_finished && ! $clientTest->finished_at, 404);
+
         return new ClientTestResource($clientTest);
     }
 
@@ -69,7 +70,10 @@ class ClientTestController extends Controller
                 $query->active();
                 break;
             case 'finished':
-                $query->finished();
+                $query->whereNotNull('finished_at');
+                break;
+            case 'timeout':
+                $query->finished()->whereNull('finished_at');
                 break;
             case 'new':
                 $query->whereNull('started_at');

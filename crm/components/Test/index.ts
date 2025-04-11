@@ -7,15 +7,11 @@ export interface TestQuestion {
 
 export type TestAnswers = Record<number, number[]>
 
-export interface ActiveTest {
-  test: ClientTestResource
-  seconds: number
-}
-
 export interface TestResource {
   id: number
-  program: Program | null
   name: string
+  max_score: number
+  description: string | null
   file: UploadedFile | null
   minutes: number
   questions: TestQuestion[]
@@ -27,8 +23,9 @@ export interface TestResource {
 export const modelDefaults: TestResource = {
   id: newId(),
   minutes: 30,
+  max_score: -1,
   name: '',
+  description: null,
   file: null,
-  program: null,
   questions: [],
 }

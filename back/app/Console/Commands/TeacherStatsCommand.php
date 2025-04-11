@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\DB;
 
 class TeacherStatsCommand extends Command
 {
+    // минимальный год в статистике
+    const START_YEAR = 2017;
+
     protected $signature = 'app:teacher-stats {--all} {--only-avg}';
 
     protected $description = 'Recalculate teacher stats';
@@ -25,7 +28,7 @@ class TeacherStatsCommand extends Command
     private function calculateForTeachers()
     {
         if ($this->option('all')) {
-            $years = range(2015, current_academic_year());
+            $years = range(self::START_YEAR, current_academic_year());
             DB::table('teachers')->update([
                 'stats' => null,
             ]);
@@ -66,7 +69,7 @@ class TeacherStatsCommand extends Command
 
         $teachers = Teacher::whereNotNull('stats')->get();
 
-        $years = range(2015, current_academic_year());
+        $years = range(self::START_YEAR, current_academic_year());
         $result = [];
 
         foreach ($years as $i => $year) {

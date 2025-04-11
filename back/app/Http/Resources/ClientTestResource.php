@@ -18,8 +18,8 @@ class ClientTestResource extends JsonResource
     {
         $extra = [
             'file' => $this->file,
-            'questions_count' => count($this->questions),
-            'client' => $this->whenLoaded('client', fn () => new PersonResource($this->client)),
+            'question_counts' => collect($this->questions)->map(fn ($q) => count($q->answers)),
+            'client' => new PersonResource($this->client),
         ];
 
         if ($this->is_finished) {
@@ -39,9 +39,9 @@ class ClientTestResource extends JsonResource
         }
 
         return extract_fields($this, [
-            'program', 'name', 'is_finished', 'is_active',
+            'name', 'is_finished', 'is_active',
             'minutes', 'questions_count', 'created_at',
-            'finished_at', 'started_at',
+            'finished_at', 'started_at', 'description',
         ], $extra);
     }
 }

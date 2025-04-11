@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import type { ClientTestResource } from '~/components/ClientTest'
+
+const { $addSseListener } = useNuxtApp()
+
 interface ClientTestFilters {
   year: Year
   program?: Program
@@ -9,7 +13,7 @@ const filters = ref<ClientTestFilters>(loadFilters({
   year: currentAcademicYear(),
 }))
 
-const { items, indexPageData } = useIndex<ClientTestResource, ClientTestFilters>(
+const { items, indexPageData } = useIndex<ClientTestResource>(
   `client-tests`,
   filters,
 )
@@ -26,6 +30,15 @@ function onDestroy(clientTest: ClientTestResource) {
     })
   }
 }
+
+$addSseListener('ClientTestUpdatedEvent', (clientTest: ClientTestResource) => {
+  const index = items.value.findIndex(t => t.id === clientTest.id)
+
+  if (index !== -1) {
+    items.value.splice(index, 1, clientTest)
+    itemUpdated('client-test', clientTest.id)
+  }
+})
 </script>
 
 <template>
@@ -33,6 +46,6 @@ function onDestroy(clientTest: ClientTestResource) {
     <template #filters>
       <ClientTestFilters v-model="filters" />
     </template>
-    <ClientTestList :items="items" @destroy="onDestroy" />
+    <ClientTestList :items="items" show-client @destroy="onDestroy" />
   </UiIndexPage>
 </template>

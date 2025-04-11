@@ -2,20 +2,23 @@
 
 namespace App\Events;
 
-use App\Models\EventParticipant;
+use App\Http\Resources\ClientTestResource;
+use App\Models\ClientTest;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ParticipantConfirmationEvent implements ShouldBroadcastNow
+class ClientTestUpdatedEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public EventParticipant $eventParticipant) {}
+    public function __construct(
+        public ClientTest $clientTest,
+    ) {}
 
-    public function broadcastOn()
+    public function broadcastOn(): Channel
     {
         return new Channel('sse');
     }
@@ -26,7 +29,7 @@ class ParticipantConfirmationEvent implements ShouldBroadcastNow
     public function broadcastWith(): array
     {
         return [
-            'data' => $this->eventParticipant,
+            'data' => new ClientTestResource($this->clientTest),
         ];
     }
 }

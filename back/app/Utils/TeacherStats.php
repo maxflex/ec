@@ -50,6 +50,7 @@ readonly class TeacherStats
             'client_reviews_count' => $clientReviews->count,
             'client_lessons_count' => $clientLessons->count,
             'conducted_lessons_count' => $conductedLessonsCount,
+            'cancelled_lessons_count' => $cancelledLessonsCount,
             'cancelled_lessons_percent' => $this->percent($cancelledLessonsCount, $conductedLessonsCount),
             'report_fill_avg' => $this->getReportFillAvg(),
             'report_similarity_percent' => $this->getReportSimilarityPercent(),
@@ -211,9 +212,9 @@ readonly class TeacherStats
         return $collect->sortByDesc(fn ($e) => $e->conducted + $e->planned)->values()->all();
     }
 
-    private function percent(int $value, int $total): int
+    private function percent(int $value, int $total): float
     {
-        return (int) round(($value / $total) * 100);
+        return round(($value / $total) * 100, 1);
     }
 
     /**

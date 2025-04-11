@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ClientTestResource } from '.'
 import type { TestAnswers } from '../Test'
+import { mdiMessageAlertOutline } from '@mdi/js'
 
 const route = useRoute()
 const test = ref<ClientTestResource>()
@@ -30,15 +31,19 @@ nextTick(loadData)
     <div>
       <div class="test__questions">
         <div
-          v-for="i in test.questions_count"
+          v-for="i in test.question_counts.length"
           :key="i"
         >
-          <h2 class="d-flex align-center ga-4">
+          <h2>
             Вопрос {{ i }}
             <span class="text-gray">
               {{ test.results!.answers[i].score }} / {{ test.results!.answers[i].total }}
             </span>
           </h2>
+          <div v-if="test.question_counts[i - 1] > 1" class="test__answers-count">
+            <v-icon :icon="mdiMessageAlertOutline" color="deepOrange" />
+            укажите {{ test.question_counts[i - 1] }} ответа
+          </div>
           <div class="test__questions-answers">
             <v-btn
               v-for="n in 6"

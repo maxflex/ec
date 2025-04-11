@@ -6,6 +6,6 @@ const model = defineModel<Year>({ required: true })
   <v-select
     v-model="model"
     :items="selectItems(YearLabel)"
-    label="Год"
+    label="Учебный год"
   />
 </template>

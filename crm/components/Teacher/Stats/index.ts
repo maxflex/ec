@@ -19,6 +19,7 @@ interface TeacherStats {
   students_left_percent: number
   payback: number
 
+  cancelled_lessons_count: number
   client_reviews_count: number
   client_lessons_count: number
   reports_count: number
@@ -38,6 +39,7 @@ interface TeacherStatsCategory {
   key: TeacherStatsKey
   icon: string
   title: string
+  desc?: string
 }
 
 export const categories: TeacherStatsCategory[] = [

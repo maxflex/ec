@@ -90,6 +90,9 @@ nextTick(loadData)
         <span>
           Уроки
         </span>
+        <div>
+          Распределение уроков по направлениям. Данные приведены только за текущий учебный год
+        </div>
       </div>
       <div class="teacher-stats__chart">
         <BarChart
@@ -145,6 +148,10 @@ nextTick(loadData)
         cursor: default;
         font-size: 26px;
         opacity: 0.9;
+      }
+
+      & > div {
+        margin-top: 20px;
       }
 
       .v-icon {

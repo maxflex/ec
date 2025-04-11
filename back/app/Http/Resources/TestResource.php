@@ -17,7 +17,8 @@ class TestResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, ['*'], [
-            'user' => new PersonResource($this->user)
+            'user' => new PersonResource($this->user),
+            'max_score' => $this->max_score,
         ]);
     }
 }

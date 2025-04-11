@@ -1,40 +1,27 @@
 <script setup lang="ts">
+import { mdiMessageAlertOutline } from '@mdi/js'
 import { clone } from 'rambda'
-import type { ActiveTest, TestAnswers } from '~/components/Test'
+import type { ClientTestResource } from '~/components/ClientTest'
+import type { TestAnswers } from '~/components/Test'
 
+const isTimeout = ref(false)
 const answers = ref<TestAnswers>({})
 const cookie = useCookie<TestAnswers>('answers', { maxAge: 60 * 60 * 3 }) // 3 hours
 const test = ref<ClientTestResource>()
 const finishing = ref(false)
-const seconds = ref(0)
-let interval: NodeJS.Timeout
-
-// const answered = computed(
-//   () => answers.value.filter((e) => e !== undefined && e !== null).length,
-// )
 
 function saveAnswers() {
-  console.log('save answers', cookie.value, answers.value)
   cookie.value = answers.value
 }
 
 async function loadData() {
-  const { data, error } = await useHttp<ActiveTest>(`client-tests/active`)
+  const { data, error } = await useHttp<ClientTestResource>(`client-tests/active`)
   // нет активного теста
   if (error.value) {
     return navigateTo({ name: 'tests' })
   }
   if (data.value) {
-    test.value = data.value.test
-    seconds.value = data.value.seconds
-    if (seconds.value > 0) {
-      interval = setInterval(() => {
-        seconds.value--
-        if (seconds.value <= 0) {
-          clearInterval(interval)
-        }
-      }, 1000)
-    }
+    test.value = data.value
     if (cookie.value) {
       answers.value = clone(cookie.value)
     }
@@ -43,12 +30,15 @@ async function loadData() {
 
 async function finish() {
   finishing.value = true
-  await useHttp(`client-tests/finish`, {
-    method: 'post',
-    body: {
-      answers: answers.value,
+  await useHttp(
+    `client-tests/finish`,
+    {
+      method: 'post',
+      body: {
+        answers: answers.value,
+      },
     },
-  })
+  )
   navigateTo({
     name: 'tests-result-id',
     params: {
@@ -57,22 +47,35 @@ async function finish() {
   })
 }
 
-function toggleAnswer(i: number, n: number) {
+function toggleAnswer(i: number, answer: number) {
+  // максимальное кол-во ответов
+  const maxAnswers = test.value!.question_counts[i - 1]
+  console.log({ maxAnswers })
+
+  if (maxAnswers === 1) {
+    if (i in answers.value && answers.value[i][0] === answer) {
+      delete answers.value[i]
+    }
+    else {
+      answers.value[i] = [answer]
+    }
+    return
+  }
+
   if (i in answers.value) {
-    const index = answers.value[i].findIndex(e => e === n)
+    const index = answers.value[i].findIndex(a => a === answer)
     if (index === -1) {
-      // максимальное кол-во ответов
-      if (answers.value[i].length >= 3) {
+      if (answers.value[i].length >= maxAnswers) {
         return
       }
-      answers.value[i].push(n)
+      answers.value[i].push(answer)
     }
     else {
       answers.value[i].splice(index, 1)
     }
   }
   else {
-    answers.value[i] = [n]
+    answers.value[i] = [answer]
   }
 }
 
@@ -90,10 +93,16 @@ nextTick(loadData)
     <div>
       <div class="test__questions">
         <div
-          v-for="i in test.questions_count"
+          v-for="i in test.question_counts.length"
           :key="i"
         >
-          <h2>Вопрос {{ i }}</h2>
+          <h2>
+            Вопрос {{ i }}
+          </h2>
+          <div v-if="test.question_counts[i - 1] > 1" class="test__answers-count">
+            <v-icon :icon="mdiMessageAlertOutline" color="deepOrange" />
+            укажите {{ test.question_counts[i - 1] }} ответа
+          </div>
           <div class="test__questions-answers">
             <v-btn
               v-for="n in 6"
@@ -112,12 +121,16 @@ nextTick(loadData)
         </div>
       </div>
       <div class="test__controls">
-        <!-- <div class="test__timer">
-          <v-icon :icon="mdiClockOutline" />
-          {{ $dayjs.duration(seconds, "second").format("mm:ss") }}
-        </div> -->
         <v-btn
-          v-if="seconds > 0"
+          v-if="isTimeout"
+          size="x-large"
+          block
+          disabled
+        >
+          время истекло
+        </v-btn>
+        <v-btn
+          v-else
           color="primary"
           size="x-large"
           block
@@ -125,18 +138,7 @@ nextTick(loadData)
           @click="finish()"
         >
           отправить ответы
-          <!-- <span class="ml-2" style="width: 50px; opacity: 0.5">
-            {{ answered }}/{{ test.answers?.length }}
-          </span> -->
-          <ClientTestCountDown class="test__timer-in-btn" :item="test" />
-        </v-btn>
-        <v-btn
-          v-else
-          size="x-large"
-          block
-          disabled
-        >
-          время истекло
+          <ClientTestCountDown class="test__timer-in-btn" :item="test" @timeout="isTimeout = true" />
         </v-btn>
       </div>
     </div>

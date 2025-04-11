@@ -1,61 +1,34 @@
 <script setup lang="ts">
+import type { TestResource } from '.'
+
 const { tests } = defineProps<{ tests: TestResource[] }>()
 const emit = defineEmits<{
   open: [t: TestResource]
 }>()
-const selected = defineModel<TestResource[]>('selected')
-const selectable = selected.value !== undefined
-
-function select(t: TestResource) {
-  if (!selected.value) {
-    return
-  }
-  const index = selected.value.findIndex(({ id }) => id === t.id)
-  index !== -1 ? selected.value.splice(index, 1) : selected.value.push(t)
-}
 </script>
 
 <template>
-  <div
-    class="table"
-    :class="{ 'table--hover': selectable }"
-  >
-    <div
-      v-for="t in tests"
-      :key="t.id"
-      @click="select(t)"
-    >
-      <div v-if="selected">
-        <UiCheckbox :value="selected.some(({ id }) => id === t.id)" />
-      </div>
-      <div style="width: 220px">
+  <div class="table table--padding">
+    <div v-for="t in tests" :key="t.id">
+      <div style="width: 380px">
         {{ t.name }}
-        <!-- <NuxtLink :to="{ name: 'tests-id', params: { id: t.id } }">
-          {{ t.name }}
-        </NuxtLink> -->
+        <div v-if="t.description">
+          {{ t.description }}
+        </div>
       </div>
-      <div style="width: 250px">
-        <template v-if="t.program">
-          {{ ProgramLabel[t.program] }}
-        </template>
-        <span
-          v-else
-          class="text-gray"
-        > не установлено </span>
-      </div>
-      <div style="width: 150px">
+      <div style="width: 200px">
         {{ t.minutes }} минут
+        <div>
+          <span v-if="t.questions?.length">
+            {{ plural(t.questions.length, ["вопрос", "вопроса", "вопросов"]) }}
+          </span>
+          <span v-else class="text-gray"> нет вопросов </span>
+        </div>
       </div>
-      <div>
-        <template v-if="t.questions?.length">
-          {{ plural(t.questions.length, ["вопрос", "вопроса", "вопросов"]) }}
-        </template>
-        <span v-else class="text-gray"> нет вопросов </span>
+      <div style="width: 100px" class="font-weight-bold">
+        {{ t.max_score }} баллов
       </div>
-      <div
-        v-if="!selectable"
-        class="table-actionss"
-      >
+      <div class="table-actionss">
         <v-btn
           variant="plain"
           color="gray"

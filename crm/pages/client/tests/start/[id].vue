@@ -29,7 +29,7 @@ nextTick(loadData)
     </h1>
     <div class="test-start__info">
       Длительность: {{ item.minutes }} минут.
-      {{ plural(item.questions_count, ["вопрос", "вопроса", "вопросов"]) }}.
+      {{ plural(item.question_counts.length, ["вопрос", "вопроса", "вопросов"]) }}.
       <br>
       Во время прохождения не закрывайте браузер!
     </div>

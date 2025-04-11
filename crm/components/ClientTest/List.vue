@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import type { ClientTestResource } from '.'
 
-const { items } = defineProps<{ items: ClientTestResource[] }>()
+const { items, showClient } = defineProps<{
+  items: ClientTestResource[]
+  showClient?: boolean
+}>()
 
 const emit = defineEmits<{
+  timeout: []
   destroy: [t: ClientTestResource]
 }>()
 
@@ -27,23 +31,23 @@ const { isAdmin, isClient } = useAuthStore()
           @click="emit('destroy', t)"
         />
       </div>
-      <div style="width: 230px; flex: 1">
-        <div v-if="t.client">
-          <NuxtLink :to="{ name: 'clients-id', params: { id: t.client.id } }">
-            {{ formatName(t.client) }}
-          </NuxtLink>
-        </div>
-        {{ t.name }}
+      <div v-if="showClient" style="width: 200px">
+        <NuxtLink :to="{ name: 'clients-id', params: { id: t.client.id } }">
+          {{ formatName(t.client) }}
+        </NuxtLink>
       </div>
-      <div style="width: 130px">
-        {{ ProgramShortLabel[t.program] }}
+      <div style="width: 230px; flex: 1">
+        {{ t.name }}
+        <div v-if="t.description">
+          {{ t.description }}
+        </div>
       </div>
       <div style="width: 130px">
         <div>
           {{ t.minutes }} минут
         </div>
         <div>
-          {{ plural(t.questions_count, ["вопрос", "вопроса", "вопросов"]) }}
+          {{ plural(t.question_counts.length, ["вопрос", "вопроса", "вопросов"]) }}
         </div>
       </div>
       <div style="width: 250px">
@@ -71,26 +75,30 @@ const { isAdmin, isClient } = useAuthStore()
       </div>
       <div style="width: 100px">
         <b v-if="t.results">
-          {{ t.results.score }} из {{ t.results.total }}
+          <template v-if="t.finished_at">
+            {{ t.results.score }} из {{ t.results.total }}
+          </template>
         </b>
-        <ClientTestCountDown v-else-if="t.is_active" :item="t" />
+        <ClientTestCountDown v-else-if="t.is_active" :item="t" @timeout="emit('timeout')" />
       </div>
-      <div class="text-right">
-        <v-btn
-          v-if="t.is_finished"
-          color="secondary"
-          density="comfortable"
-          variant="tonal"
-          :width="154"
-          :to="{
-            name: 'tests-result-id',
-            params: {
-              id: t.id,
-            },
-          }"
-        >
-          просмотр
-        </v-btn>
+      <div style="width: 180px; flex: initial">
+        <template v-if="t.is_finished">
+          <v-btn
+            v-if="t.finished_at"
+            color="secondary"
+            density="comfortable"
+            variant="tonal"
+            :width="154"
+            :to="{
+              name: 'tests-result-id',
+              params: {
+                id: t.id,
+              },
+            }"
+          >
+            просмотр
+          </v-btn>
+        </template>
         <v-btn
           v-else-if="isClient"
           color="primary"

@@ -585,7 +585,8 @@ export const LogTypeLabel = {
 export const ClientTestStatusLabel = {
   new: 'не пройден',
   active: 'активен',
-  finished: 'завершен',
+  finished: 'пройден',
+  timeout: 'время истекло',
 } as const
 
 export const CallAppStatusFilterLabel = {

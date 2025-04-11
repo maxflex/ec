@@ -19,7 +19,6 @@
     flex: 1;
     overflow: scroll;
     h2 {
-      margin-bottom: 16px;
       display: flex;
       align-items: center;
       // justify-content: space-between;
@@ -28,9 +27,12 @@
         font-weight: normal;
         font-size: 1rem;
         padding-right: $padding;
+        top: 2px;
+        position: relative;
       }
     }
     &-answers {
+      margin-top: 16px;
       gap: 10px;
       display: flex;
       // justify-content: center;
@@ -91,12 +93,30 @@
       }
       &:not(.test-answer--correct) {
         border: 1px solid rgb(var(--v-theme-error)) !important;
-
+        background-color: rgb(var(--v-theme-error)) !important;
         .v-btn__content {
-          color: rgb(var(--v-theme-error));
+          color: white !important;
         }
+
+        // .v-btn__content {
+        //   color: rgb(var(--v-theme-error));
+        // }
         // background-color: rgb(var(--v-theme-error)) !important;
       }
     }
+  }
+
+  &__answers-count {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    .v-icon {
+      font-size: 18px;
+      top: 2px;
+    }
+    // font-size: 12px;
+    // font-weight: normal;
+    // background: rgb(var(--v-theme-primary));
+    // padding: 4px 8px;
   }
 }

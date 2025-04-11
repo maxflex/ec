@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { TestQuestionsDialog } from '#build/components'
 import { clone } from 'rambda'
 import { modelDefaults, type TestQuestion, type TestResource } from '.'
 
@@ -12,7 +11,6 @@ const item = ref<TestResource>({ ...modelDefaults })
 const input = ref()
 const loading = ref(false)
 const deleting = ref(false)
-const questionsDialog = ref<InstanceType<typeof TestQuestionsDialog>>()
 
 function open(t: TestResource) {
   item.value = clone(t)
@@ -20,7 +18,7 @@ function open(t: TestResource) {
 }
 
 function create() {
-  item.value = { ...modelDefaults }
+  item.value = clone({ ...modelDefaults })
   dialog.value = true
   nextTick(() => {
     input.value.reset()
@@ -45,13 +43,6 @@ async function save() {
   emit('updated')
 }
 
-function onQuestionsSaved(questions: TestQuestion[]) {
-  if (!item.value) {
-    return
-  }
-  item.value.questions = questions
-}
-
 async function destroy() {
   if (!confirm('Вы уверены, что хотите удалить тест?')) {
     return
@@ -68,6 +59,25 @@ async function destroy() {
     dialog.value = false
     setTimeout(() => (deleting.value = false), 300)
   }
+}
+
+function deleteQuestion(i: number) {
+  item.value.questions.splice(i, 1)
+}
+
+function addQuestion() {
+  item.value.questions.push({
+    answers: [],
+    score: null,
+  })
+  smoothScroll('dialog', 'bottom')
+}
+
+function toggleAnswer(q: TestQuestion, n: number) {
+  const index = q.answers.findIndex(e => e === n)
+  index === -1
+    ? q.answers.push(n)
+    : q.answers.splice(index, 1)
 }
 
 defineExpose({ open, create })
@@ -95,7 +105,7 @@ defineExpose({ open, create })
         <span v-else> Добавить тест </span>
         <div>
           <v-btn
-            v-if="item.id"
+            v-if="item.id > 0"
             :loading="deleting"
             :size="48"
             class="remove-btn"
@@ -121,10 +131,10 @@ defineExpose({ open, create })
           />
         </div>
         <div>
-          <v-select
-            v-model="item.program"
-            :items="selectItems(ProgramLabel)"
-            label="Программа"
+          <v-text-field
+            ref="input"
+            v-model="item.description"
+            label="Техническое описание"
           />
         </div>
         <div>
@@ -139,18 +149,111 @@ defineExpose({ open, create })
           <FileUploader v-model="item.file" folder="tests" />
         </div>
         <div>
-          <UiIconLink @click="() => questionsDialog?.open(item.questions)">
-            редактировать вопросы
-            <template v-if="item.questions?.length">
-              ({{ item.questions.length }})
-            </template>
-          </UiIconLink>
+          <div class="test-dialog__questions">
+            <div
+              v-for="(q, i) in item.questions"
+              :key="i"
+            >
+              <h2>
+                Вопрос {{ i + 1 }}
+                <v-btn
+                  icon="$close"
+                  variant="plain"
+                  color="red"
+                  :size="32"
+                  :ripple="false"
+                  @click="deleteQuestion(i)"
+                />
+              </h2>
+              <div class="test-dialog__questions-answers">
+                <v-btn
+                  v-for="n in 6"
+                  :key="n"
+                  height="48"
+                  width="48"
+                  variant="text"
+                  border
+                  :class="{
+                    'bg-success': q.answers.some(e => e === n),
+                  }"
+                  icon
+                  @click="toggleAnswer(q, n)"
+                >
+                  {{ n }}
+                </v-btn>
+                <v-spacer />
+                <v-text-field
+                  v-model.number="q.score"
+                  label="балл"
+                  type="number"
+                  hide-spin-buttons
+                  density="comfortable"
+                  hide-details
+                />
+              </div>
+            </div>
+          </div>
+          <v-btn
+            size="x-large"
+            color="primary"
+            block
+            @click="addQuestion()"
+          >
+            добавить вопрос
+          </v-btn>
         </div>
       </div>
     </div>
   </v-dialog>
-  <TestQuestionsDialog
-    ref="questionsDialog"
-    @saved="onQuestionsSaved"
-  />
 </template>
+
+<style lang="scss">
+.test-dialog {
+  &__questions {
+    flex: 1;
+    // padding: 20px;
+    overflow: scroll;
+    &-answers {
+      display: flex;
+      gap: 8px;
+    }
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    h2 {
+      margin-bottom: 16px;
+      cursor: default;
+      .v-icon {
+        opacity: 0;
+        font-size: 24px !important;
+        top: -2px;
+        position: relative;
+        transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      &:hover {
+        .v-icon {
+          opacity: 1;
+        }
+      }
+    }
+    .v-item-group {
+      gap: 10px;
+      display: flex;
+      // justify-content: center;
+    }
+    .v-text-field {
+      // margin-top: 30px;
+      position: relative;
+      // top: 4px;
+      width: 48px;
+      // height: 40px;
+    }
+    & > div {
+      margin-bottom: 50px;
+      &:first-child {
+        margin-top: 20px;
+      }
+    }
+  }
+}
+</style>

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Casts\JsonArrayCast;
-use App\Enums\Program;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -11,16 +10,23 @@ use Illuminate\Support\Carbon;
 class ClientTest extends Model
 {
     protected $fillable = [
-        'name', 'minutes', 'program', 'questions', 'file',
-        'year', 'client_id',
+        'name', 'minutes', 'questions', 'file',
+        'year', 'client_id', 'description',
     ];
 
     protected $casts = [
         'file' => 'array',
-        'program' => Program::class,
         'questions' => JsonArrayCast::class,
         'answers' => JsonArrayCast::class,
     ];
+
+    public static function getActive(int $clientId): ?ClientTest
+    {
+        return ClientTest::query()
+            ->active()
+            ->where('client_id', $clientId)
+            ->first();
+    }
 
     public function client(): BelongsTo
     {
@@ -40,7 +46,7 @@ class ClientTest extends Model
         return $query->whereRaw('
             started_at is not null
             and finished_at is null
-            and now() < started_at + interval `minutes` + 1 minute
+            and now() < started_at + interval `minutes` minute
         ');
     }
 
@@ -52,7 +58,7 @@ class ClientTest extends Model
             $query->whereNotNull('started_at')
                 ->where(function ($query) use ($now) {
                     $query->whereNotNull('finished_at')
-                        ->orWhereRaw('started_at + interval `minutes` + 1 minute <= ?', [$now]);
+                        ->orWhereRaw('started_at + interval `minutes` minute <= ?', [$now]);
                 });
         });
     }
@@ -61,7 +67,6 @@ class ClientTest extends Model
     {
         $deadline = now()
             ->subMinutes($this->minutes)
-            ->subMinute()
             ->format('Y-m-d H:i:s');
 
         return $this->started_at !== null
@@ -73,6 +78,11 @@ class ClientTest extends Model
         return $this->started_at
             && ! $this->finished_at
             && now()->lt(Carbon::parse($this->started_at)->addMinutes($this->minutes)->addMinute());
+    }
+
+    public function getIsTimedOutAttribute(): bool
+    {
+        return $this->is_finished && ! $this->finished_at;
     }
 
     public function getSecondsLeftAttribute(): ?int
