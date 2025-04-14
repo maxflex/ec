@@ -24,6 +24,9 @@ interface TeacherStats {
   reports_count: number
   conducted_lessons_count: number
   client_lessons_avg: number
+  client_lessons_late_count: number
+  client_lessons_online_count: number
+  client_lessons_absent_count: number
 }
 
 export type TeacherStatsKey = keyof TeacherStats
@@ -49,12 +52,12 @@ export const categories: TeacherStatsCategory[] = [
     title: 'Доля отмен',
     desc: 'Отмены уроков преподавателя в сравнении с отменами всех преподавателей',
   },
-  // {
-  //   key: 'client_lessons_count',
-  //   icon: mdiAccountGroup,
-  //   title: 'Численность группы',
-  //   desc: 'Среднее число учеников в группе в проведённых занятиях',
-  // },
+  {
+    key: 'client_lessons_avg',
+    icon: mdiAccountGroup,
+    title: 'Численность группы',
+    desc: 'Среднее число учеников в группе в проведённых занятиях',
+  },
   {
     key: 'conducted_next_day_percent',
     icon: mdiCalendarAlert,
@@ -111,10 +114,10 @@ export const extraColors: Partial<Record<TeacherStatsKey, [string, string]>> = {
 
 export const absoluteValues: Partial<Record<TeacherStatsKey, TeacherStatsKey>> = {
   cancelled_lessons_percent: 'cancelled_lessons_count',
-  client_lessons_late_percent: 'client_lessons_count',
+  client_lessons_late_percent: 'client_lessons_late_count',
+  client_lessons_absent_percent: 'client_lessons_absent_count',
+  client_lessons_online_percent: 'client_lessons_online_count',
   conducted_next_day_percent: 'conducted_lessons_count',
-  client_lessons_absent_percent: 'client_lessons_count',
-  client_lessons_online_percent: 'client_lessons_count',
   report_similarity_percent: 'reports_count',
   client_reviews_avg: 'client_reviews_count',
 }
