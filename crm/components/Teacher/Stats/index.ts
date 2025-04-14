@@ -49,12 +49,12 @@ export const categories: TeacherStatsCategory[] = [
     title: 'Доля отмен',
     desc: 'Отмены уроков преподавателя в сравнении с отменами всех преподавателей',
   },
-  {
-    key: 'client_lessons_count',
-    icon: mdiAccountGroup,
-    title: 'Численность группы',
-    desc: 'Среднее число учеников в группе в проведённых занятиях',
-  },
+  // {
+  //   key: 'client_lessons_count',
+  //   icon: mdiAccountGroup,
+  //   title: 'Численность группы',
+  //   desc: 'Среднее число учеников в группе в проведённых занятиях',
+  // },
   {
     key: 'conducted_next_day_percent',
     icon: mdiCalendarAlert,
