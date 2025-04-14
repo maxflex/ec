@@ -27,6 +27,7 @@ interface TeacherStats {
   client_lessons_late_count: number
   client_lessons_online_count: number
   client_lessons_absent_count: number
+  conducted_next_day_count: number
 }
 
 export type TeacherStatsKey = keyof TeacherStats
@@ -117,7 +118,7 @@ export const absoluteValues: Partial<Record<TeacherStatsKey, TeacherStatsKey>> =
   client_lessons_late_percent: 'client_lessons_late_count',
   client_lessons_absent_percent: 'client_lessons_absent_count',
   client_lessons_online_percent: 'client_lessons_online_count',
-  conducted_next_day_percent: 'conducted_lessons_count',
+  conducted_next_day_percent: 'conducted_next_day_count',
   report_similarity_percent: 'reports_count',
   client_reviews_avg: 'client_reviews_count',
 }

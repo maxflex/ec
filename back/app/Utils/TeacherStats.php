@@ -55,6 +55,7 @@ readonly class TeacherStats
             'cancelled_lessons_percent' => $this->percent($cancelledLessonsCount, $conductedLessonsCount),
             'report_fill_avg' => $this->getReportFillAvg(),
             'report_similarity_percent' => $this->getReportSimilarityPercent(),
+            'conducted_next_day_count' => $conductedNextDayCount,
             'conducted_next_day_percent' => $this->percent($conductedNextDayCount, $conductedLessonsCount),
             'client_reviews_avg' => $clientReviews->avg,
             'client_lessons_late_count' => $clientLessons->late,
