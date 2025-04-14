@@ -68,4 +68,9 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: '2025-04-01',
+
+  // TODO: попробовать удалить после обновления пакетов
+  experimental: {
+    externalVue: false,
+  },
 })

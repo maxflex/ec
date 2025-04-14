@@ -59,5 +59,8 @@
     "vue": "^3.3.8",
     "vue-router": "^4.2.5",
     "vuetify": "^3.4.4"
+  },
+  "resolutions": {
+    "string-width": "4.2.3"
   }
 }
