@@ -157,7 +157,7 @@ nextTick(loadData)
   }
 
   &__desc {
-    width: 70%;
+    width: 75%;
     padding: 20px 0;
   }
 
