@@ -124,10 +124,6 @@ function onScroll() {
   }
 }
 
-function isCalculatorMetric(index: number): boolean {
-  return responseParams.value?.metrics[index].metric === 'CalculatorMetric'
-}
-
 onMounted(() => {
   scrollContainer = document.documentElement.querySelector('main')
   scrollContainer?.addEventListener('scroll', onScroll)
@@ -144,7 +140,7 @@ nextTick(() => statsDialog.value?.open())
   <v-fade-transition>
     <UiLoader v-if="loading" />
   </v-fade-transition>
-  <div class="table table-stats">
+  <div class="table table-stats" :class="`table-stats--${responseParams?.mode}`">
     <div class="table-stats__header">
       <div class="table-stats__header-mode">
         <v-btn :icon="mdiTune" :size="48" variant="text" @click="statsDialog?.open(responseParams !== undefined)" />
@@ -222,6 +218,11 @@ nextTick(() => statsDialog.value?.open())
       &:first-child {
         width: 150px;
       }
+    }
+  }
+  &--week {
+    & > div > div:first-child {
+      width: 200px !important;
     }
   }
   &__header {

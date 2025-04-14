@@ -243,7 +243,25 @@ export function formatDateMode(date: string, mode: StatsMode) {
   const monthLabel = MonthLabelShort[month as Month]
   switch (mode) {
     case 'day': return dateObj.format(`D ${monthLabel} YYYY`)
-    case 'week': return dateObj.format(`D ${monthLabel} YYYY`)
+    case 'week':
+      const today = dayjs()
+      // if (dateObj.isSame(today, 'D')) {
+      //   return 'сегодня'
+      // }
+
+      const endOfWeek = dateObj.endOf('week')
+
+      if (endOfWeek.isSame(today, 'D') || endOfWeek.isAfter(today, 'D')) {
+        return `${dateObj.format('D')} ${monthLabel} – сегодня`
+      }
+
+      const endMonthLabel = MonthLabelShort[endOfWeek.month() + 1 as Month]
+      const year = endOfWeek.year() // обычно конец недели — ориентир года
+      const sameMonth = dateObj.month() === endOfWeek.month()
+
+      return sameMonth
+        ? `${dateObj.format('D')} – ${endOfWeek.format('D')} ${monthLabel} ${year}`
+        : `${dateObj.format('D')} ${monthLabel} – ${endOfWeek.format('D')} ${endMonthLabel} ${year}`
     case 'month': return dateObj.format(`${monthLabel} YYYY`)
     case 'year': return dateObj.format('YYYY год')
   }
@@ -355,10 +373,9 @@ export function formatPrice(price: number, showZero: boolean = false) {
   if (price === 0) {
     return showZero ? 0 : ''
   }
-  if (price < 1) {
-    return price
-  }
-  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+  const formatted = Math.abs(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+
+  return price < 0 ? `-${formatted}` : formatted
 }
 
 export function formatFileSize(file: UploadedFile) {

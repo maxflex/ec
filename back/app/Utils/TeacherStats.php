@@ -124,13 +124,13 @@ readonly class TeacherStats
         foreach ($left as $obj) {
             $studentsLeftPercent += ($obj->count - $obj->left) / $obj->count * 100;
         }
-        $studentsLeftPercent = (int) round($studentsLeftPercent / count($left));
+        $studentsLeftPercent = round($studentsLeftPercent / count($left), 1);
 
         return (object) [
             'absent' => $absent,
             'late' => $late,
             'online' => $online,
-            'payback' => round($priceClientLessons / $priceTeacher, 2),
+            'payback' => round($priceClientLessons / $priceTeacher, 1),
             'studentsLeftPercent' => $studentsLeftPercent,
             'count' => $count,
         ];
@@ -162,7 +162,7 @@ readonly class TeacherStats
 
         return (object) [
             'count' => $query->count(),
-            'avg' => round($query->avg('client_reviews.rating'), 2),
+            'avg' => round($query->avg('client_reviews.rating'), 1),
         ];
     }
 
@@ -220,15 +220,15 @@ readonly class TeacherStats
     /**
      * Средний уровень заполненности отчетов со статусом "опубликовано"
      */
-    private function getReportFillAvg(): int
+    private function getReportFillAvg(): float
     {
-        return (int) round($this->reports->avg('fill'));
+        return round($this->reports->avg('fill'), 1);
     }
 
     /**
      * Степень "одинаковости" отчетов
      */
-    private function getReportSimilarityPercent(): int
+    private function getReportSimilarityPercent(): float
     {
         $textFields = collect([
             'homework_comment', 'cognitive_ability_comment', 'knowledge_level_comment', 'recommendation_comment',
@@ -258,7 +258,7 @@ readonly class TeacherStats
 
         $similarity = ($intersection / $union) * 100;
 
-        return (int) round($similarity);
+        return round($similarity, 1);
     }
 
     /**

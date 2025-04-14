@@ -112,7 +112,7 @@ class TeacherStatsCommand extends Command
             $averages = [];
             foreach ($yearlySums as $key => $total) {
                 $averages[$key] = $yearlyCounts[$key] > 0
-                    ? round($total / $yearlyCounts[$key], is_float($total) ? 2 : 0)
+                    ? round($total / $yearlyCounts[$key], is_float($total) ? 1 : 0)
                     : 0;
             }
 
