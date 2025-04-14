@@ -11,5 +11,5 @@ nextTick(loadData)
 </script>
 
 <template>
-  <TeacherStatsTab v-if="teacher" :teacher="teacher" />
+  <TeacherStats v-if="teacher" :teacher="teacher" />
 </template>

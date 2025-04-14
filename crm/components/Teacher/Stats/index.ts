@@ -1,6 +1,5 @@
 import type { ChartOptions } from 'chart.js'
 import { mdiAccountArrowRight, mdiAccountGroup, mdiAccountMultipleOutline, mdiCalendarAlert, mdiCancel, mdiClockTimeEight, mdiCurrencyRub, mdiCurrencyUsd, mdiFileCompare, mdiFileDocumentAlert, mdiFileDocumentEditOutline, mdiHome, mdiHumanMaleBoard, mdiStarCircle, mdiStarCircleOutline, mdiStarShooting } from '@mdi/js'
-import { colors } from '~/plugins/vuetify'
 
 interface TeacherStats {
   lessons: Array<{
@@ -24,6 +23,7 @@ interface TeacherStats {
   client_lessons_count: number
   reports_count: number
   conducted_lessons_count: number
+  client_lessons_avg: number
 }
 
 export type TeacherStatsKey = keyof TeacherStats
@@ -47,71 +47,76 @@ export const categories: TeacherStatsCategory[] = [
     key: 'cancelled_lessons_percent',
     icon: mdiCancel,
     title: 'Доля отмен',
-  },
-  {
-    key: 'conducted_lessons_count',
-    icon: mdiHumanMaleBoard,
-    title: 'Количество проведённых занятий',
+    desc: 'Отмены уроков преподавателя в сравнении с отменами всех преподавателей',
   },
   {
     key: 'client_lessons_count',
     icon: mdiAccountGroup,
-    title: 'Количество человеко-занятий',
+    title: 'Численность группы',
+    desc: 'Среднее число учеников в группе в проведённых занятиях',
   },
   {
     key: 'conducted_next_day_percent',
     icon: mdiCalendarAlert,
-    title: 'Доля занятий, которая была проведена не в день занятия',
+    title: 'Опоздания проводки',
+    desc: 'Доля занятий, которая была проведена преподавателем не в день занятия, а в последующие дни',
   },
   {
     key: 'client_lessons_absent_percent',
     icon: mdiAccountMultipleOutline,
-    title: 'Доля отсутствующих учеников в проведенных занятиях',
+    title: 'Доля пропуска',
+    desc: 'Доля учеников в статусе "не был" в проведённых занятиях',
   },
   {
     key: 'client_lessons_late_percent',
     icon: mdiClockTimeEight,
     title: 'Доля опаздывающих',
+    desc: 'Доля учеников в статусе "опоздал" и "опоздал дист" в проведённых занятиях',
   },
   {
     key: 'client_lessons_online_percent',
     icon: mdiHome,
-    title: 'Доля дистанционщиков',
+    title: 'Доля дистанционного обучения',
+    desc: 'Доля учеников в статусе "был дист" и "опоздал дист" в проведённых занятиях',
   },
   {
     key: 'students_left_percent',
     icon: mdiAccountArrowRight,
-    title: 'Доля занятий за счет ушедших учеников',
+    title: 'Ушедшие ученики',
+    desc: 'Доля проведённых человекозанятий учитывая ушедших учеников',
   },
   {
     key: 'report_similarity_percent',
     icon: mdiFileDocumentAlert,
-    title: 'Степень "одинаковости" отчетов',
-  },
-  {
-    key: 'reports_count',
-    icon: mdiFileDocumentEditOutline,
-    title: 'Количество отчетов',
+    title: 'Одинаковые отчеты',
+    desc: 'Степень внутреннего плагиата при написании отчетов',
   },
   {
     key: 'client_reviews_avg',
     icon: mdiStarCircle,
-    title: 'Средняя оценка по отзывам',
-  },
-  {
-    key: 'client_reviews_count',
-    icon: mdiStarCircle,
-    title: 'Количество отзывов',
+    title: 'Отзывы',
+    desc: 'Средняя оценка по отзывам преподавателя',
   },
   {
     key: 'payback',
     icon: mdiCurrencyRub,
-    title: 'Маржинальность занятий',
+    title: 'Маржинальность',
+    desc: 'Соотношение стоимости занятий у ученика к оплате занятий преподавателя',
   },
 ]
 
 export const extraColors: Partial<Record<TeacherStatsKey, [string, string]>> = {
-  cancelled_lessons_percent: ['#ffebee', colors.error],
+  // cancelled_lessons_percent: ['#ffebee', colors.error],
+}
+
+export const absoluteValues: Partial<Record<TeacherStatsKey, TeacherStatsKey>> = {
+  cancelled_lessons_percent: 'cancelled_lessons_count',
+  client_lessons_late_percent: 'client_lessons_count',
+  conducted_next_day_percent: 'conducted_lessons_count',
+  client_lessons_absent_percent: 'client_lessons_count',
+  client_lessons_online_percent: 'client_lessons_count',
+  report_similarity_percent: 'reports_count',
+  client_reviews_avg: 'client_reviews_count',
 }
 
 export const options: ChartOptions<'bar'> = {
@@ -127,9 +132,18 @@ export const options: ChartOptions<'bar'> = {
         label(context: any) {
           const label = context.dataset.label || ''
           const value = context.parsed.y ?? context.parsed
-          const title = `${label}: ${value}`
+          const absolute = context.chart.data?.datasets[context.datasetIndex].absoluteValues?.[context.dataIndex]
 
-          return this.chart.canvas.id.endsWith('_percent') ? `${title}%` : title
+          let title = `${label}: ${value}`
+          if (this.chart.canvas.id.endsWith('_percent')) {
+            title += '%'
+          }
+
+          if (absolute) {
+            title += ` (${absolute} всего)`
+          }
+
+          return title
         },
         title(tooltipItems) {
           const year = tooltipItems[0].label as unknown as Year

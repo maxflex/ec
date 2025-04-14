@@ -49,6 +49,7 @@ readonly class TeacherStats
             'reports_count' => $this->reports->count(),
             'client_reviews_count' => $clientReviews->count,
             'client_lessons_count' => $clientLessons->count,
+            'client_lessons_avg' => $clientLessons->avg,
             'conducted_lessons_count' => $conductedLessonsCount,
             'cancelled_lessons_count' => $cancelledLessonsCount,
             'cancelled_lessons_percent' => $this->percent($cancelledLessonsCount, $conductedLessonsCount),
@@ -78,10 +79,10 @@ readonly class TeacherStats
         $online = 0;
         $priceClientLessons = 0;
         $priceTeacher = 0;
-
         $left = [];
+        $lessons = $this->lessons->where('status', LessonStatus::conducted);
 
-        foreach ($this->lessons->where('status', LessonStatus::conducted) as $lesson) {
+        foreach ($lessons as $lesson) {
             $studentIds = collect();
             $priceTeacher += $lesson->price;
             foreach ($lesson->clientLessons as $clientLesson) {
@@ -133,6 +134,7 @@ readonly class TeacherStats
             'payback' => round($priceClientLessons / $priceTeacher, 1),
             'studentsLeftPercent' => $studentsLeftPercent,
             'count' => $count,
+            'avg' => $lessons->count() ? round($count / $lessons->count(), 1) : 0,
         ];
     }
 

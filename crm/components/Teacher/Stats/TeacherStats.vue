@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import type { ChartData } from 'chart.js'
-import { mdiSchool } from '@mdi/js'
 import { Chart, registerables } from 'chart.js'
 import { BarChart } from 'vue-chart-3'
 import { colors } from '~/plugins/vuetify'
-import { categories, extraColors, options, optionsLessons, type TeacherStatsKey, type TeacherStatsResponse } from '.'
+import { absoluteValues, categories, extraColors, options, optionsLessons, type TeacherStatsKey, type TeacherStatsResponse } from '.'
 
 const { teacher } = defineProps<{ teacher: TeacherResource }>()
-const teacherName = formatName(teacher, 'initials')
 
-const loaded = ref(false)
 Chart.register(...registerables)
+
+const maxBarThickness = 15
+const barPercentage = 2
+const categoryPercentage = 0.55
+
+const teacherName = formatName(teacher, 'initials')
+const loaded = ref(false)
 
 const lessonsChart: ChartData<'bar'> = {
   labels: [],
@@ -40,18 +44,31 @@ async function loadData() {
             {
               label: 'Среднее',
               data: [],
-              backgroundColor: key in extraColors ? extraColors[key]![0] : colors.border,
+              absoluteValues: [],
+              backgroundColor: key in extraColors ? extraColors[key]![0] : colors.primary,
+              maxBarThickness,
+              barPercentage,
+              categoryPercentage,
             },
             {
               label: teacherName,
               data: [],
-              backgroundColor: key in extraColors ? extraColors[key]![1] : colors.secondary,
+              absoluteValues: [],
+              backgroundColor: key in extraColors ? extraColors[key]![1] : colors.error,
+              maxBarThickness,
+              barPercentage,
+              categoryPercentage,
             },
           ],
         }
       }
       charts[key]!.labels!.push(year)
       charts[key]!.datasets[0].data.push(yearData[key])
+
+      if (key in absoluteValues) {
+        charts[key]!.datasets[0].absoluteValues.push(stats.avg[year][absoluteValues[key]])
+        charts[key]!.datasets[1].absoluteValues.push(stats.teacher[year][absoluteValues[key]])
+      }
 
       const teacherValue = (year in stats.teacher)
         ? stats.teacher[year][key]
@@ -66,13 +83,13 @@ async function loadData() {
     label: LessonStatusLabel.conducted,
     data: arr.map((_, i) => lessons[i] ? lessons[i].conducted : 0),
     backgroundColor: colors.secondary,
-    maxBarThickness: 40,
+    maxBarThickness,
   })
   lessonsChart.datasets.push({
     label: LessonStatusLabel.planned,
     data: arr.map((_, i) => lessons[i] ? lessons[i].planned : 0),
     backgroundColor: colors.border,
-    maxBarThickness: 40,
+    maxBarThickness,
   })
 
   loaded.value = true
@@ -85,35 +102,33 @@ nextTick(loadData)
   <UiLoader v-if="!loaded" />
   <div v-else class="teacher-stats">
     <div class="teacher-stats__category">
-      <div class="teacher-stats__category-title">
-        <v-icon :icon="mdiSchool" />
-        <span>
-          Уроки
-        </span>
-        <div>
-          Распределение уроков по направлениям. Данные приведены только за текущий учебный год
-        </div>
+      <div class="teacher-stats__title">
+        Уроки
+      </div>
+      <div class="teacher-stats__desc">
+        Распределение уроков по направлениям. Данные приведены только за текущий учебный год
       </div>
       <div class="teacher-stats__chart">
         <BarChart
           :chart-data="lessonsChart"
-          :height="300"
+          :height="240"
           :options="optionsLessons"
         />
       </div>
     </div>
     <div v-for="category in categories" :key="category.key" class="teacher-stats__category">
-      <div class="teacher-stats__category-title">
-        <v-icon :icon="category.icon" />
-        <span>
-          {{ category.title }}
-        </span>
+      <div class="teacher-stats__title">
+        {{ category.title }}
       </div>
+      <div class="teacher-stats__desc">
+        {{ category.desc }}
+      </div>
+      <v-spacer />
       <div class="teacher-stats__chart">
         <BarChart
           :chart-id="category.key"
           :chart-data="charts[category.key]!"
-          :height="300"
+          :height="240"
           :options="options"
         />
       </div>
@@ -123,59 +138,31 @@ nextTick(loadData)
 
 <style lang="scss">
 .teacher-stats {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+
+  row-gap: 40px;
+  column-gap: 40px;
 
   &__category {
     display: flex;
-    gap: 20px;
-    // background-color: rgb(var(--v-theme-bg));
-    background: linear-gradient(to right, #f6f6f6 1%, white);
-    // #f6f6f6
-    // background-color: #e4e4e4 !important;
-    border-radius: 16px;
-    overflow: hidden;
-    transition: all ease-in-out 0.3s;
+    flex-direction: column;
+    padding: 20px;
+  }
 
-    &-title {
-      flex: 1;
-      position: relative;
-      padding: 20px;
+  &__title {
+    cursor: default;
+    font-size: 30px;
+    opacity: 0.9;
+  }
 
-      span {
-        cursor: default;
-        font-size: 26px;
-        opacity: 0.9;
-      }
-
-      & > div {
-        margin-top: 20px;
-      }
-
-      .v-icon {
-        position: absolute;
-        bottom: -30px;
-        left: -30px;
-        opacity: 0.1;
-        font-size: 160px;
-        color: rgb(var(--v-theme-gray));
-      }
-    }
-
-    // &:hover {
-    //   scale: 1.005;
-    //   box-shadow:
-    //     0 3px 5px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
-    //     0 5px 8px 0 var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)),
-    //     0 1px 14px 0 var(--v-shadow-key-ambient-opacity, rgba(0, 0, 0, 0.12)) !important;
-    // }
+  &__desc {
+    width: 70%;
+    padding: 20px 0;
   }
 
   &__chart {
-    padding: 20px;
-    width: 900px;
+    margin-top: 20px;
   }
 }
 </style>
