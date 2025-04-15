@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ClientListResource, ClientResource } from '.'
-import { clone } from 'rambda'
+import { clone } from 'lodash'
 import { modelDefaults } from '.'
 import ClearableSelect from '../Ui/ClearableSelect.vue'
 

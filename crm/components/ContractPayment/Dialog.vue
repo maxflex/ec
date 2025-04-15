@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#components'
 import type { ContractPaymentResource } from '.'
-import { clone } from 'rambda'
+import { clone } from 'lodash'
 import { ContractPaymentMethodLabel } from '~/utils/labels'
 import { apiUrl, modelDefaults, printOptions } from '.'
 

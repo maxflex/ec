@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#build/components'
 import { mdiArrowRightThin } from '@mdi/js'
-import { clone } from 'rambda'
+import { clone } from 'lodash'
 
 const emit = defineEmits<{
   updated: [m: ContractEditMode, c: ContractResource | ContractVersionListResource]

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'rambda'
+import { clone } from 'lodash'
 import { apiUrl, modelDefaults, type TeacherServiceResource } from '.'
 
 const emit = defineEmits<{

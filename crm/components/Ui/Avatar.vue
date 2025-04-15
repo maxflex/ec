@@ -1,22 +1,10 @@
 <script setup lang="ts">
-import { getGender } from 'lvovich'
-
 const { item, size = 100 } = defineProps<{
   item: PersonWithPhotoResource
   size?: number
 }>()
 
-const src = computed(() => {
-  if (item.photo_url) {
-    return item.photo_url
-  }
-  const gender = getGender({
-    first: item.first_name,
-    last: item.last_name,
-    middle: item.middle_name,
-  })
-  return `/img/avatar/${gender === 'female' ? 'female' : 'male'}.png`
-})
+const src = computed(() => item.photo_url ?? `/img/avatar/male.png`)
 </script>
 
 <template>

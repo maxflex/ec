@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TeacherPaymentResource } from '.'
-import { clone } from 'rambda'
+import { clone } from 'lodash'
 import { apiUrl, modelDefaults } from '.'
 
 interface Suggestions {

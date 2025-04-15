@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getDay } from 'date-fns'
-import { uniq } from 'rambda'
+import { isEqual, uniqWith } from 'lodash'
 
 const { id } = defineProps<{ id: number }>()
 const items = ref<GroupVisitResource[]>([])
@@ -13,7 +13,7 @@ const clients = computed(() => {
       result.push(clientLesson.client)
     }
   }
-  return uniq(result)
+  return uniqWith(result, isEqual)
 })
 
 const clientLessons = computed(() => {
@@ -42,7 +42,7 @@ const teachers = computed(() => {
   for (const item of items.value) {
     result.push(item.teacher)
   }
-  return uniq(result)
+  return uniqWith(result, isEqual)
 })
 
 async function loadData() {

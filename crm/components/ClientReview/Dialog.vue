@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'rambda'
+import { clone } from 'lodash'
 import { apiUrl, type ClientReviewListResource, type ClientReviewResource, modelDefaults } from '.'
 
 const emit = defineEmits<{

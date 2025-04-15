@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { StatsMetricsEditor } from '#build/components'
 import { mdiEyeOffOutline, mdiPlus } from '@mdi/js'
-import { clone } from 'rambda'
+import { clone } from 'lodash'
 import { VueDraggableNext } from 'vue-draggable-next'
 import {
   type MetricComponent,

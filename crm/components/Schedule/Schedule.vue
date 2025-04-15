@@ -18,7 +18,7 @@ import {
   LessonItemTeacherLK,
 } from '#components'
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
-import { groupBy } from 'rambda'
+import { groupBy } from 'lodash'
 import { formatDateMonth } from '~/utils'
 
 const { groupId, teacherId, clientId, program, showTeeth, year, programFilter, headTeacher } = defineProps<{
@@ -142,10 +142,8 @@ const dates = computed(() => {
 })
 
 const itemsByDate = computed(
-  (): {
-    [index: string]: Array<LessonListResource | EventListResource>
-  } => {
-    return groupBy(x => x.date, [...filteredLessons.value, ...events.value])
+  (): Record<string, Array<LessonListResource | EventListResource>> => {
+    return groupBy([...filteredLessons.value, ...events.value], 'date')
   },
 )
 

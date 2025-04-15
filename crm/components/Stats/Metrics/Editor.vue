@@ -1,7 +1,8 @@
 <script lang="ts" setup>
+import type { StatsMetric } from '~/components/Stats/Metrics/index'
 import { mdiEyeOffOutline } from '@mdi/js'
-import { clone, isNotNil, pickBy } from 'rambda'
-import { MetricColors, MetricComponents, type StatsMetric } from '~/components/Stats/Metrics/index'
+import { clone, isNil, pickBy } from 'lodash'
+import { MetricColors, MetricComponents } from '~/components/Stats/Metrics/index'
 
 const emit = defineEmits<{
   update: [m: StatsMetric]
@@ -20,8 +21,7 @@ watch(() => metricComponentRef.value?.filters, (newVal, oldVal) => {
   if (newVal === undefined || oldVal === undefined || !item.value) {
     return
   }
-  console.log('filters upd', newVal, oldVal, pickBy<any, object>(isNotNil, newVal))
-  item.value.filters = pickBy<any, object>(isNotNil, newVal)
+  item.value.filters = pickBy(newVal, val => !isNil(val))
   emit('update', item.value)
 }, {
   deep: true,

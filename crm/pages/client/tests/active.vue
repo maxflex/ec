@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { mdiMessageAlertOutline } from '@mdi/js'
-import { clone } from 'rambda'
+import { clone } from 'lodash'
 import type { ClientTestResource } from '~/components/ClientTest'
 import type { TestAnswers } from '~/components/Test'
 

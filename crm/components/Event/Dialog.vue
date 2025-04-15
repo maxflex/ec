@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { clone } from 'rambda'
+import { clone } from 'lodash'
 
 const emit = defineEmits<{
   updated: [e: EventListResource]

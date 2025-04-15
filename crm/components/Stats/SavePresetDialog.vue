@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { StatsParams, StatsPreset } from './Metrics'
-import { clone } from 'rambda'
+import { clone } from 'lodash'
 import { VDialogTransition, VScaleTransition } from 'vuetify/components'
 
 const emit = defineEmits<{

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { eachDayOfInterval, format, getDay } from 'date-fns'
-import { groupBy } from 'rambda'
+import { groupBy } from 'lodash'
 
 const { items, year } = defineProps<{
   items: EventListResource[]
@@ -19,7 +19,7 @@ const dates = computed(() => {
 
   return allDates.map(d => format(d, 'yyyy-MM-dd'))
 })
-const eventsByDate = computed(() => groupBy(x => x.date, items))
+const eventsByDate = computed(() => groupBy(items, 'date'))
 </script>
 
 <template>
