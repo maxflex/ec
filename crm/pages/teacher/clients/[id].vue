@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ClientResource } from '~/components/Client'
+
 const route = useRoute()
 const { user } = useAuthStore()
 
@@ -92,7 +94,7 @@ nextTick(loadData)
 .page-clients-id.entity-teacher {
   //.v-btn:not(.v-btn--icon) {
   .table-actionss,
-  .v-btn {
+  .v-btn:not(.tests-result-id) {
     display: none;
   }
 }

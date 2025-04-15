@@ -53,7 +53,7 @@ Route::apiResources([
 ]);
 Route::middleware(HeadTeacherMiddleware::class)->group(function () {
     Route::apiResource('exam-scores', ExamScoreController::class)->only('index');
-    Route::apiResource('client-tests', ClientTestController::class)->only('index');
+    Route::apiResource('client-tests', ClientTestController::class)->only('index', 'show');
 });
 Route::get('menu-counts', MenuCountsController::class);
 Route::prefix('balance-verification')->controller(BalanceVerificationController::class)->group(function () {

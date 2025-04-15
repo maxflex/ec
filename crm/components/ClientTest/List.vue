@@ -88,6 +88,7 @@ const { isAdmin, isClient } = useAuthStore()
             color="secondary"
             density="comfortable"
             variant="tonal"
+            class="tests-result-id"
             :width="154"
             :to="{
               name: 'tests-result-id',

@@ -37,7 +37,7 @@ nextTick(loadData)
           <h2>
             Вопрос {{ i }}
             <span class="text-gray">
-              {{ test.results!.answers[i].score }} / {{ test.results!.answers[i].total }}
+              {{ test.results!.answers[i].score }} / {{ test.results!.answers[i].total }} балла
             </span>
           </h2>
           <div v-if="test.question_counts[i - 1] > 1" class="test__answers-count">
@@ -67,9 +67,9 @@ nextTick(loadData)
       <div class="test__results">
         Набрано
         <span class="font-weight-bold">
-          {{ test.results!.score }} из {{ test.results!.total }}
+          {{ test.results!.score }} / {{ test.results!.total }}
         </span>
-        баллов
+        балла
       </div>
     </div>
   </div>

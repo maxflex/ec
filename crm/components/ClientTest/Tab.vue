@@ -3,7 +3,6 @@ import type { TestSelectorDialog } from '#build/components'
 import type { ClientTestResource } from '.'
 
 const { clientId } = defineProps<{ clientId: number }>()
-
 const { $addSseListener } = useNuxtApp()
 
 const testSelectorDialog = ref<InstanceType<typeof TestSelectorDialog>>()

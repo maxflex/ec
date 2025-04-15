@@ -117,7 +117,12 @@ export default function<T, F extends object = object, E extends object = object>
   function reloadData() {
     page = 0
     isLastPage = false
-    loadData()
+    if (loadAvailableYears && !availableYears.value?.length) {
+      loadAvailableYearsGo()
+    }
+    else {
+      loadData()
+    }
   }
 
   watchFilters && watch(filters, (newVal) => {
