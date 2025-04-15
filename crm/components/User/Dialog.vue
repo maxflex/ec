@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash'
+import { clone } from 'lodash-es'
 
 const emit = defineEmits<{ (e: 'updated' | 'destroyed', u: UserResource): void }>()
 const modelDefaults: UserResource = {

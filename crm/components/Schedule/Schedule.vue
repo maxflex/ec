@@ -18,7 +18,7 @@ import {
   LessonItemTeacherLK,
 } from '#components'
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
-import { groupBy } from 'lodash'
+import { groupBy } from 'lodash-es'
 import { formatDateMonth } from '~/utils'
 
 const { groupId, teacherId, clientId, program, showTeeth, year, programFilter, headTeacher } = defineProps<{

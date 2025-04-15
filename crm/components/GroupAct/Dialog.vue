@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#components'
-import { clone } from 'lodash'
+import { clone } from 'lodash-es'
 
 const emit = defineEmits<{
   updated: [e: GroupActResource]

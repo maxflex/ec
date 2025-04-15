@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash'
+import { clone } from 'lodash-es'
 import { apiUrl, type HeadTeacherReportResource, modelDefaults } from '.'
 
 const emit = defineEmits<{

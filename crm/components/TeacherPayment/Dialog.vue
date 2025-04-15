@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TeacherPaymentResource } from '.'
-import { clone } from 'lodash'
+import { clone } from 'lodash-es'
 import { apiUrl, modelDefaults } from '.'
 
 interface Suggestions {

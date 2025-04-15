@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getDay } from 'date-fns'
-import { isEqual, uniqWith } from 'lodash'
+import { isEqual, uniqWith } from 'lodash-es'
 
 const { id } = defineProps<{ id: number }>()
 const items = ref<GroupVisitResource[]>([])

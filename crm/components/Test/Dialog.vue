@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash'
+import { clone } from 'lodash-es'
 import { modelDefaults, type TestQuestion, type TestResource } from '.'
 
 const emit = defineEmits<{

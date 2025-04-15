@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash'
+import { clone } from 'lodash-es'
 
 interface BulkItem {
   weekdays: { [key in Weekday]: string }

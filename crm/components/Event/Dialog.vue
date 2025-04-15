@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { clone } from 'lodash'
+import { clone } from 'lodash-es'
 
 const emit = defineEmits<{
   updated: [e: EventListResource]

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { StatsDialog } from '#build/components'
 import { mdiDownload, mdiTune } from '@mdi/js'
-import { clone } from 'lodash'
+import { clone } from 'lodash-es'
 import { MetricComponents, type StatsMetric, type StatsParams } from '~/components/Stats/Metrics'
 
 const statsDialog = ref<InstanceType<typeof StatsDialog>>()

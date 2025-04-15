@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { StatsMetric } from '~/components/Stats/Metrics/index'
 import { mdiEyeOffOutline } from '@mdi/js'
-import { clone, isNil, pickBy } from 'lodash'
+import { clone, isNil, pickBy } from 'lodash-es'
 import { MetricColors, MetricComponents } from '~/components/Stats/Metrics/index'
 
 const emit = defineEmits<{

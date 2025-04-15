@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { eachDayOfInterval, format, getDay } from 'date-fns'
-import { groupBy } from 'lodash'
+import { groupBy } from 'lodash-es'
 
 const { items, year } = defineProps<{
   items: EventListResource[]

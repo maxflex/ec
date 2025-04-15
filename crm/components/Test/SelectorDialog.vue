@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { TestResource } from '.'
-import { clone } from 'lodash'
+import { clone } from 'lodash-es'
 
 const { clientId } = defineProps<{ clientId: number }>()
 const emit = defineEmits(['saved'])
