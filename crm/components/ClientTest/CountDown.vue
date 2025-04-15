@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import type { ClientTestResource } from '.'
+import { addSeconds, format } from 'date-fns'
 
 const { item } = defineProps<{ item: ClientTestResource }>()
 const emit = defineEmits<{
   timeout: [item: ClientTestResource]
 }>()
 const seconds = ref(item.seconds_left || 0)
-const { $dayjs } = useNuxtApp()
 let interval: NodeJS.Timeout
+
+const timeLeft = computed(() => {
+  const dummyDate = new Date(0) // Epoch time
+  return format(addSeconds(dummyDate, seconds.value), 'mm:ss')
+})
 
 onMounted(() => {
   if (seconds.value > 0) {
@@ -20,12 +25,10 @@ onMounted(() => {
     }, 1000)
   }
 })
-
-defineExpose({ seconds })
 </script>
 
 <template>
   <span v-if="item.is_active" class="font-weight-bold">
-    {{ $dayjs.duration(seconds, "second").format("mm:ss") }}
+    {{ timeLeft }}
   </span>
 </template>

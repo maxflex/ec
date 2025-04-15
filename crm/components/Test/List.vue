@@ -39,7 +39,7 @@ const emit = defineEmits<{
         {{ t.max_score }} баллов
       </div>
       <div>
-        <FileItem v-if="t.file" :item="t.file" class="vf-1" style="top: 3px" />
+        <FileItem v-if="t.file" :item="t.file" class="vf-1" style="top: 3px; width: 400px" />
       </div>
     </div>
   </div>
