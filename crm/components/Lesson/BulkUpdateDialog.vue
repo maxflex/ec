@@ -116,7 +116,7 @@ defineExpose({ open })
         <div>
           <v-text-field
             v-model="lesson.time"
-            v-maska:[timeMask]
+            v-maska="timeMask"
             label="Время"
           />
         </div>

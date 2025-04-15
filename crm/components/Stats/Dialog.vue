@@ -143,11 +143,11 @@ provide<Ref<StatsParams>>('params', params)
                   today-btn
                   clearable
                   placeholder="текущего дня"
-                  dialog2
+                  fullscreen
                 />
                 <UiDateInput
                   v-model="params.date_from"
-                  dialog2
+                  fullscreen
                   label="по"
                   clearable
                   placeholder="год назад"

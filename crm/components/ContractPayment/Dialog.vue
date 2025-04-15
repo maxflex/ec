@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#components'
+import type { ContractPaymentResource } from '.'
 import { clone } from 'rambda'
 import { ContractPaymentMethodLabel } from '~/utils/labels'
-import { apiUrl, type ContractPaymentResource, modelDefaults, printOptions } from '.'
+import { apiUrl, modelDefaults, printOptions } from '.'
 
 const emit = defineEmits<{
   updated: [e: ContractPaymentResource]
@@ -135,7 +136,7 @@ defineExpose({ create, edit })
         <div v-if="item.method === 'card'">
           <v-text-field
             v-model="item.card_number"
-            v-maska:[cardNumberMask]
+            v-maska="cardNumberMask"
             placeholder="∗∗∗∗ ∗∗∗∗ ∗∗∗∗ ∗∗∗∗"
             label="Номер карты"
           />

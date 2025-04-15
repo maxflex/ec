@@ -147,7 +147,7 @@ definePageMeta({ layout: 'login' })
         <v-text-field
           ref="phoneInput"
           v-model="number"
-          v-maska:[phoneMask]
+          v-maska="phoneMask"
           label="Телефон"
           :error-messages="errors.number"
           @keydown.enter="onPhoneEnter()"

@@ -135,7 +135,7 @@ defineExpose({ open })
               <v-text-field
                 v-if="['late', 'lateOnline'].includes(s.status)"
                 v-model="s.minutes_late"
-                v-maska:[minutesLateMask]
+                v-maska="minutesLateMask"
                 style="position: absolute; width: 126px; top: -20px"
                 type="number"
                 hide-spin-buttons

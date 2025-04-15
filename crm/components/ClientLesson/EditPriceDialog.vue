@@ -64,7 +64,7 @@ defineExpose({ edit })
         <div>
           <v-text-field
             v-model="item.price"
-            v-maska:[priceMask]
+            v-maska="priceMask"
             label="Цена, руб."
           />
         </div>

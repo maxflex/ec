@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { ClientListResource, ClientResource } from '.'
 import { clone } from 'rambda'
-import { type ClientListResource, type ClientResource, modelDefaults } from '.'
+import { modelDefaults } from '.'
 import ClearableSelect from '../Ui/ClearableSelect.vue'
 
 const emit = defineEmits<{

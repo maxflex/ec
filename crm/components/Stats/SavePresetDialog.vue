@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { StatsParams, StatsPreset } from './Metrics'
 import { clone } from 'rambda'
-import { VDialogTransition } from 'vuetify/lib/components/transitions'
+import { VDialogTransition, VScaleTransition } from 'vuetify/components'
 
 const emit = defineEmits<{
   save: [e: StatsPreset]
@@ -84,7 +84,7 @@ defineExpose({ open })
     :fullscreen="false"
     location="center"
     :content-class="null"
-    :transition="{ component: VDialogTransition }"
+    :transition="VDialogTransition"
   >
     <v-card>
       <v-card-text>

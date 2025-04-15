@@ -119,7 +119,7 @@ defineExpose({ create })
             <div style="width: 100px">
               <v-text-field
                 v-model="bulk.weekdays[index]"
-                v-maska:[timeMask]
+                v-maska="timeMask"
                 density="compact"
               />
             </div>
@@ -136,7 +136,7 @@ defineExpose({ create })
               <td width="180">
                 <v-text-field
                   v-model="bulk.weekdays[i]"
-                  v-maska:[timeMask]
+                  v-maska="timeMask"
                   placeholder="Время"
                 />
               </td>

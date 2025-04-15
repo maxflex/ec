@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { label = 'Дата', year, disabled, manual, dialog2 } = defineProps<{
+const { label = 'Дата', year, disabled, manual, fullscreen } = defineProps<{
   label?: string
   year?: Year
   disabled?: boolean
@@ -9,7 +9,7 @@ const { label = 'Дата', year, disabled, manual, dialog2 } = defineProps<{
   density?: string
   error?: boolean
   placeholder?: string | null
-  dialog2: boolean
+  fullscreen?: boolean
 }>()
 
 const model = defineModel<string | null>({ required: true })
@@ -68,7 +68,7 @@ function onManualKeyup() {
       <v-text-field
         v-if="manual"
         v-model="dateManual"
-        v-maska:[dateMask]
+        v-maska="dateMask"
         :label="label"
         :disabled="disabled"
         :density="density"
@@ -94,7 +94,7 @@ function onManualKeyup() {
   </div>
 
   <CalendarDialog2
-    v-if="dialog2"
+    v-if="fullscreen"
     ref="calendarDialog"
     :model-value="model"
     :year="year"

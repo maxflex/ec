@@ -7,3 +7,7 @@ async function redirect() {
 
 nextTick(redirect)
 </script>
+
+<template>
+  <div></div>
+</template>

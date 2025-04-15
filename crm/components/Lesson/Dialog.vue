@@ -163,7 +163,7 @@ defineExpose({ create, edit })
           <div>
             <v-text-field
               v-model="lesson.time"
-              v-maska:[timeMask]
+              v-maska="timeMask"
               label="Время"
               :disabled="isConducted"
             />

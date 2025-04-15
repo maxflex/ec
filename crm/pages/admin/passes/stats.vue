@@ -36,12 +36,14 @@ const { items, indexPageData } = useIndex<PassStats, Filters>(
           label="Начиная с"
           clearable
           density="comfortable"
+          fullscreen
         />
         <UiDateInput
           v-model="filters.date_to"
           label="по"
           clearable
           density="comfortable"
+          fullscreen
         />
       </div>
       <UiClearableSelect

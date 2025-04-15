@@ -179,12 +179,12 @@ nextTick(async () => {
         <div class="double-input">
           <UiDateInput
             v-model="scheduledAt.date"
-            dialog2
+            fullscreen
           />
           <div>
             <v-text-field
               v-model="scheduledAt.time"
-              v-maska:[timeMask]
+              v-maska="timeMask"
               label="Время"
             />
           </div>

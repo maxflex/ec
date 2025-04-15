@@ -34,7 +34,7 @@ function removePhone(p: PhoneResource) {
     <div>
       <v-text-field
         v-model="p.number"
-        v-maska:[phoneMask]
+        v-maska="phoneMask"
         :label="p.telegram_id ? 'Телефон / Телеграм' : 'Телефон'"
         :disabled="disabled"
         :class="{

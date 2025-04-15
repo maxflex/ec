@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { TeacherPaymentResource } from '.'
 import { clone } from 'rambda'
-import { apiUrl, modelDefaults, type TeacherPaymentResource } from '.'
+import { apiUrl, modelDefaults } from '.'
 
 interface Suggestions {
   to_pay_lessons: number
@@ -156,7 +157,7 @@ defineExpose({ create, edit })
         <div v-if="item.method === 'card'">
           <v-text-field
             v-model="item.card_number"
-            v-maska:[cardNumberMask]
+            v-maska="cardNumberMask"
             hide-spin-buttons
             type="number"
             label="Номер карты"
