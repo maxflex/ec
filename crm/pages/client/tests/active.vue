@@ -138,7 +138,7 @@ nextTick(loadData)
           @click="finish()"
         >
           отправить ответы
-          <ClientTestCountDown class="test__timer-in-btn" :item="test" @timeout="isTimeout = true" />
+          <UiCountDown class="test__timer-in-btn" :seconds="test.seconds_left!" @timeout="isTimeout = true" />
         </v-btn>
       </div>
     </div>

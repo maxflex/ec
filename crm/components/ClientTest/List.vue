@@ -79,7 +79,7 @@ const { isAdmin, isClient } = useAuthStore()
             {{ t.results.score }} из {{ t.results.total }}
           </template>
         </b>
-        <ClientTestCountDown v-else-if="t.is_active" :item="t" @timeout="emit('timeout')" />
+        <UiCountDown v-else-if="t.is_active" :seconds="t.seconds_left!" class="font-weight-bold" @timeout="emit('timeout')" />
       </div>
       <div style="width: 180px; flex: initial">
         <template v-if="t.is_finished">

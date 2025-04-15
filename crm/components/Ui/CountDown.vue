@@ -1,21 +1,28 @@
 <script setup lang="ts">
+import { addSeconds, format } from 'date-fns'
+
 const { seconds, hours } = defineProps<{
   seconds: number
   hours?: boolean
 }>()
+
 const emit = defineEmits(['timeout'])
-const { $dayjs } = useNuxtApp()
-const countdown = ref(seconds || 0)
-const format = hours ? 'HH:mm:ss' : 'mm:ss'
+const secondsLeft = ref(seconds || 0)
 let interval: NodeJS.Timeout
+const formatString = hours ? 'HH:mm:ss' : 'mm:ss'
+
+const secondsLeftFormatted = computed(() => {
+  const dummyDate = new Date(0) // Epoch time
+  return format(addSeconds(dummyDate, secondsLeft.value), formatString)
+})
 
 onMounted(() => {
-  if (countdown.value > 0) {
+  if (secondsLeft.value > 0) {
     interval = setInterval(() => {
-      countdown.value--
-      if (countdown.value <= 0) {
+      secondsLeft.value--
+      if (secondsLeft.value <= 0) {
         clearInterval(interval)
-        emit('timeout')
+        setTimeout(() => emit('timeout'), 1000)
       }
     }, 1000)
   }
@@ -25,7 +32,7 @@ onMounted(() => {
 <template>
   <span class="ui-countdown">
     <slot />
-    {{ $dayjs.duration(countdown, "second").format(format) }}
+    {{ secondsLeftFormatted }}
   </span>
 </template>
 
