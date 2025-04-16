@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { mdiAlertCircleOutline, mdiCheckAll } from '@mdi/js'
-import dayjs from 'dayjs'
+import { format } from 'date-fns'
 
 const { items } = defineProps<{
   items: TelegramMessageResource[]
 }>()
-
-function formatDateLocal(dateTime: string): string {
-  return dayjs(dateTime).format('DD.MM.YY в HH:mm')
-}
 </script>
 
 <template>
@@ -30,7 +26,7 @@ function formatDateLocal(dateTime: string): string {
             <v-icon v-if="item.telegram_id" color="success" :icon="mdiCheckAll" :size="14" />
             <v-icon v-else color="error" :icon="mdiAlertCircleOutline" :size="14" />
             <span v-if="item.created_at">
-              {{ formatDateLocal(item.created_at) }}
+              {{ format(item.created_at, 'dd.MM.yy в HH:mm') }}
             </span>
           </span>
         </div>

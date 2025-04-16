@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { differenceInDays, eachDayOfInterval, format, getDay } from 'date-fns'
-import { groupBy, pipe } from 'rambda'
+import { groupBy } from 'lodash-es'
 import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 import { formatDateMonth } from '~/utils'
 
@@ -104,7 +104,7 @@ function hasContentAtDate(d: string): boolean {
 
 const itemsByDate = computed(
   (): Record<string, Array<LessonListResource | EventListResource>> =>
-    pipe([...filteredLessons.value, ...events.value], groupBy(x => x.date)) as Record<string, Array<LessonListResource | EventListResource>>,
+    groupBy([...filteredLessons.value, ...events.value], 'date'),
 )
 
 // если есть скрытый контент, то кнопка "показать более ранние даты"

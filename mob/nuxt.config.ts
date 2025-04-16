@@ -14,7 +14,6 @@ export default defineNuxtConfig({
       env: '',
       baseUrl: '',
     },
-    redisHost: '',
   },
 
   modules: [
@@ -66,10 +65,9 @@ export default defineNuxtConfig({
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=320, user-scalable=no' },
-        { hid: 'description', name: 'description', content: '' },
         { name: 'format-detection', content: 'telephone=no' },
       ],
-      title: 'Личный кабинет V3',
+      title: 'Личный кабинет',
     },
   },
 

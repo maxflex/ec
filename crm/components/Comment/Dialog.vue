@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { mdiSendVariant } from '@mdi/js'
-import dayjs from 'dayjs'
+import { format } from 'date-fns'
 
 const { entityId, entityType } = defineProps<{
   entityId: number
@@ -116,10 +116,6 @@ function quitEdit() {
   text.value = ''
 }
 
-function formatDateLocal(dateTime: string): string {
-  return dayjs(dateTime).format('DD.MM.YY в HH:mm')
-}
-
 defineExpose({ open })
 </script>
 
@@ -174,7 +170,7 @@ defineExpose({ open })
               </span>
 
               <span v-if="c.created_at">
-                {{ formatDateLocal(c.created_at) }}
+                {{ format(c.created_at, 'dd.MM.yy в HH:mm') }}
               </span>
             </div>
             {{ c.text }}

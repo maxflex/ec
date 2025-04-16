@@ -24,7 +24,6 @@
     "codemirror": "^5.65.19",
     "codemirror-editor-vue3": "^2.8.0",
     "date-fns": "^4.1.0",
-    "dayjs": "^1.11.13",
     "express": "^5.1.0",
     "install": "^0.13.0",
     "lodash-es": "^4.17.21",

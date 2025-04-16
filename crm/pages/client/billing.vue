@@ -49,8 +49,8 @@ const qrValue = computed(() => {
 
 function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
   return payments.reduce(
-    (carry, e) => carry + e.sum * (e.is_return ? -1 : 1)
-    , 0,
+    (carry, e) => carry + e.sum * (e.is_return ? -1 : 1),
+    0,
   )
 }
 
@@ -146,8 +146,7 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
                   </b>
                 </td>
                 <td>
-                  <b v-if="formatPrice(totalSum(selectedContract.version.payments) - totalSum(selectedContract.payments))">
-
+                  <b v-if="totalSum(selectedContract.version.payments) - totalSum(selectedContract.payments)">
                     {{ formatPrice(totalSum(selectedContract.version.payments) - totalSum(selectedContract.payments)) }}
                     руб.
                   </b>

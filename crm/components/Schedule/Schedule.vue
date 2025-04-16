@@ -142,9 +142,8 @@ const dates = computed(() => {
 })
 
 const itemsByDate = computed(
-  (): Record<string, Array<LessonListResource | EventListResource>> => {
-    return groupBy([...filteredLessons.value, ...events.value], 'date')
-  },
+  (): Record<string, Array<LessonListResource | EventListResource>> =>
+    groupBy([...filteredLessons.value, ...events.value], 'date'),
 )
 
 const availableYears = ref<Year[]>()

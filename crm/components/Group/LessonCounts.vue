@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { mdiArrowRightThin } from '@mdi/js'
-import dayjs from 'dayjs'
+import { format } from 'date-fns'
 
 const { item } = defineProps<{
   item: GroupListResource
 }>()
 
 const firstLessonDate = item.first_lesson_date
-  ? dayjs(item.first_lesson_date).format('DD.MM')
+  ? format(item.first_lesson_date, 'dd.MM')
   : ''
 </script>
 

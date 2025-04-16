@@ -7,8 +7,8 @@ const selectedContract = computed(() => items.value[selected.value])
 
 function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
   return payments.reduce(
-    (carry, e) => carry + e.sum * (e.is_return ? -1 : 1)
-    , 0,
+    (carry, e) => carry + e.sum * (e.is_return ? -1 : 1),
+    0,
   )
 }
 </script>
@@ -91,9 +91,12 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
           по договору
         </div>
         <div>
-          <b>
+          <b v-if="totalSum(selectedContract.version.payments) - totalSum(selectedContract.payments)">
             {{ formatPrice(totalSum(selectedContract.version.payments) - totalSum(selectedContract.payments)) }}
             руб.
+          </b>
+          <b v-else class="text-gray">
+            0 руб.
           </b>
         </div>
       </div>

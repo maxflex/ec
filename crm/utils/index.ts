@@ -5,11 +5,13 @@ import {
   differenceInMonths,
   differenceInWeeks,
   differenceInYears,
+  endOfWeek,
   format,
   getMonth,
   getYear,
+  isAfter,
+  isSameDay,
 } from 'date-fns'
-import dayjs from 'dayjs'
 
 export const menuCounts = ref<MenuCounts>({
   reports: 0,
@@ -212,21 +214,21 @@ export function formatDate(dateTime: string | null): string {
   if (!dateTime) {
     return ''
   }
-  return dayjs(dateTime).format('DD.MM.YYYY')
+  return format(dateTime, 'dd.MM.yyyy')
 }
 
 export function formatDateMob(dateTime: string | null): string {
   if (!dateTime) {
     return ''
   }
-  return dayjs(dateTime).format('DD.MM.YY')
+  return format(dateTime, 'dd.MM.yy')
 }
 
 export function formatDateMonth(dateTime: string | null): string {
   if (!dateTime) {
     return ''
   }
-  return dayjs(dateTime).format('DD.MM')
+  return format(dateTime, 'dd.MM')
 }
 
 export function formatTime(time: string): string {
@@ -234,36 +236,37 @@ export function formatTime(time: string): string {
 }
 
 export function formatDateTime(dateTime: string | null): string {
-  return dayjs(dateTime).format('DD.MM.YY в HH:mm')
+  if (!dateTime) {
+    return ''
+  }
+  return format(dateTime, 'dd.MM.yy в HH:mm')
 }
 
 export function formatDateMode(date: string, mode: StatsMode) {
-  const dateObj = dayjs(date)
-  const month = getMonth(date) + 1
-  const monthLabel = MonthLabelShort[month as Month]
+  const month = getMonth(date)
+  const monthLabel = MonthLabelShort[month + 1 as Month]
   switch (mode) {
-    case 'day': return dateObj.format(`D ${monthLabel} YYYY`)
+    case 'day':
+      return format(date, `d ${monthLabel} yyyy`)
+
     case 'week':
-      const today = dayjs()
-      // if (dateObj.isSame(today, 'D')) {
-      //   return 'сегодня'
-      // }
+      const today = new Date()
+      const end = endOfWeek(date)
 
-      const endOfWeek = dateObj.endOf('week')
-
-      if (endOfWeek.isSame(today, 'D') || endOfWeek.isAfter(today, 'D')) {
-        return `${dateObj.format('D')} ${monthLabel} – сегодня`
+      if (isSameDay(end, today) || isAfter(end, today)) {
+        return `${format(date, 'd')} ${monthLabel} – сегодня`
       }
 
-      const endMonthLabel = MonthLabelShort[endOfWeek.month() + 1 as Month]
-      const year = endOfWeek.year() // обычно конец недели — ориентир года
-      const sameMonth = dateObj.month() === endOfWeek.month()
+      const endMonth = getMonth(end)
+      const endMonthLabel = MonthLabelShort[endMonth + 1 as Month]
+      const year = getYear(end) // обычно конец недели — ориентир года
 
-      return sameMonth
-        ? `${dateObj.format('D')} – ${endOfWeek.format('D')} ${monthLabel} ${year}`
-        : `${dateObj.format('D')} ${monthLabel} – ${endOfWeek.format('D')} ${endMonthLabel} ${year}`
-    case 'month': return dateObj.format(`${monthLabel} YYYY`)
-    case 'year': return dateObj.format('YYYY год')
+      return month === endMonth
+        ? `${format(date, 'd')} – ${format(end, 'd')} ${monthLabel} ${year}`
+        : `${format(date, 'd')} ${monthLabel} – ${format(end, 'd')} ${endMonthLabel} ${year}`
+
+    case 'month': return format(date, `${monthLabel} YYYY`)
+    case 'year': return format(date, 'YYYY год')
   }
 }
 
@@ -390,9 +393,8 @@ export function formatFileSize(file: UploadedFile) {
 }
 
 export function filterAge(date: string) {
-  const currentYear = Number.parseInt(dayjs().format('YYYY'))
+  const currentYear = Number.parseInt(format(new Date(), 'yyyy'))
   const year = Number.parseInt(date.split('-')[0])
-  console.log({ date, currentYear, year })
   return plural(currentYear - year, ['год', 'года', 'лет'])
 }
 

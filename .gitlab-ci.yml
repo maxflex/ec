@@ -21,8 +21,8 @@ before_script:
   - chmod 644 ~/.ssh/known_hosts
 
 
-### 🏗 BUILD FRONTEND (Nuxt 3) ###
-build_frontend:
+### 🏗 BUILD CRM (Nuxt 3) ###
+build_crm:
   stage: build
   image: oven/bun:latest  # ✅ Use Bun's official image
   only:
@@ -38,14 +38,14 @@ build_frontend:
       - crm/.output/
 
 
-### 🚀 DEPLOY FRONTEND ###
-deploy_frontend:
+### 🚀 DEPLOY CRM ###
+deploy_crm:
   stage: deploy
   only:
     changes:
       - crm/**/*
   needs:
-    - build_frontend  # ✅ Ensure build finishes before deploying
+    - build_crm  # ✅ Ensure build finishes before deploying
   before_script:
     - apt-get update -y
     - apt-get -y install rsync
@@ -56,6 +56,43 @@ deploy_frontend:
   script:
     - rsync -a --delete crm/.output root@$REMOTE_ADDRESS:$DEPLOY_DIR/crm
     - ssh root@$REMOTE_ADDRESS "cd $DEPLOY_DIR/crm && /root/.nvm/versions/node/v20.11.1/bin/pm2 start ecosystem.config.js"
+
+### 🏗 BUILD MOB (Nuxt 3) ###
+build_mob:
+  stage: build
+  image: oven/bun:latest  # ✅ Use Bun's official image
+  only:
+    changes:
+      - mob/**/*
+  before_script:
+    - cd mob
+    - ln -sf ../crm/utils utils  # 👈 Create or update the symlink
+    - bun install
+  script:
+    - bun run build
+  artifacts:
+    paths:
+      - mob/.output/
+
+
+### 🚀 DEPLOY MOB ###
+deploy_mob:
+  stage: deploy
+  only:
+    changes:
+      - mob/**/*
+  needs:
+    - build_mob  # ✅ Ensure build finishes before deploying
+  before_script:
+    - apt-get update -y
+    - apt-get -y install rsync
+    - mkdir -p ~/.ssh
+    - echo -e "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+    - rsync -a --delete mob/.output root@$REMOTE_ADDRESS:$DEPLOY_DIR/mob
+    - ssh root@$REMOTE_ADDRESS "cd $DEPLOY_DIR/mob && /root/.nvm/versions/node/v20.11.1/bin/pm2 start ecosystem.config.js"
 
 
 ### 🚀 DEPLOY BACKEND (Laravel) ###
