@@ -28,7 +28,7 @@ const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 const dates = computed(() => {
   // Define the start and end months for the academic year
   const startMonth = 8 // September (0-indexed)
-  const endMonth = 4 // May (0-indexed)
+  const endMonth = 5 // June (0-indexed)
 
   // Define start and end dates for the academic year
   const startDate = startOfMonth(new Date(filters.value.year, startMonth, 1)) // September 1st
