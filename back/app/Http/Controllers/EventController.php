@@ -80,7 +80,7 @@ class EventController extends Controller
         $event->delete();
     }
 
-    protected function filterClient(&$query, $clientId)
+    protected function filterClient($query, $clientId)
     {
         $where = [
             ['entity_type', Client::class],
@@ -91,7 +91,7 @@ class EventController extends Controller
             ->with('participants', fn ($q) => $q->where($where));
     }
 
-    protected function filterTeacher(&$query, $teacherId)
+    protected function filterTeacher($query, $teacherId)
     {
         $where = [
             ['entity_type', Teacher::class],

@@ -14,7 +14,7 @@ class CallController extends Controller
 {
     protected $filters = [
         'status' => ['status'],
-        'search' => ['q']
+        'search' => ['q'],
     ];
 
     public function index(Request $request)
@@ -22,6 +22,7 @@ class CallController extends Controller
         $query = Call::query()
             ->latest();
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, CallListResource::class);
     }
 
@@ -37,32 +38,32 @@ class CallController extends Controller
 
     public function destroy(Call $call)
     {
-        if ($call->is_missed && !$call->is_missed_callback) {
+        if ($call->is_missed && ! $call->is_missed_callback) {
             $call->delete();
         }
     }
 
-    public function filterSearch(&$query, $value)
+    public function filterSearch($query, $value)
     {
-        if (!$value) {
+        if (! $value) {
             return;
         }
         if (is_numeric($value)) {
-            $query->where('number', 'like', '%' . $value . '%');
+            $query->where('number', 'like', '%'.$value.'%');
         } else {
-            $query->whereHas('phone', fn($q) => $q
+            $query->whereHas('phone', fn ($q) => $q
                 ->whereHasMorph('entity', [
                     Client::class,
                     ClientParent::class,
-                    Teacher::class
-                ], fn($q) => $q->whereRaw("
+                    Teacher::class,
+                ], fn ($q) => $q->whereRaw('
                 CONCAT(last_name, first_name) LIKE ?
-            ", ["%$value%"])
+            ', ["%$value%"])
                 ));
         }
     }
 
-    public function filterStatus(&$query, $status)
+    public function filterStatus($query, $status)
     {
         switch ($status) {
             case 'missed':

@@ -48,7 +48,7 @@ class ContractController extends Controller
         return new ContractResource($contract->fresh());
     }
 
-    public function filterContractVersionProgramId(&$query, $id)
+    public function filterContractVersionProgramId($query, $id)
     {
         $program = ContractVersionProgram::find($id);
         $query->whereHas(

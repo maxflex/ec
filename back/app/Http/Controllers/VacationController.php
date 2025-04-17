@@ -28,7 +28,7 @@ class VacationController extends Controller
         $vacation->delete();
     }
 
-    protected function filterYear(&$query, $year)
+    protected function filterYear($query, $year)
     {
         $query->whereYear($year);
     }

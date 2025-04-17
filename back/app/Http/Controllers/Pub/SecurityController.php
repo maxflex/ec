@@ -110,7 +110,7 @@ class SecurityController extends Controller
     /**
      * Split by words and search by each word
      */
-    protected function filterSearch(&$query, $value, $field)
+    protected function filterSearch($query, $value, $field)
     {
         if (strlen($value) < 2) {
             return;

@@ -34,12 +34,12 @@ class TopicController extends Controller
         );
     }
 
-    protected function filterGroup(&$query, $value, $field)
+    protected function filterGroup($query, $value, $field)
     {
         $query->whereHas('group', fn ($q) => $q->where($field, $value));
     }
 
-    protected function filterStatus(&$query, $status)
+    protected function filterStatus($query, $status)
     {
         switch ($status) {
             case 'noTopic':

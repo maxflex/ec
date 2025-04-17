@@ -27,7 +27,7 @@ class TeacherLessonMetric extends BaseMetric
         return $query->sum('price');
     }
 
-    protected function filterDirection(&$query, array $values)
+    protected function filterDirection($query, array $values)
     {
         if (count($values) === 0) {
             return;

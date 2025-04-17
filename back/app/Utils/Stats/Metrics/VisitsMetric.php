@@ -29,7 +29,7 @@ class VisitsMetric extends BaseMetric
         return $query->count();
     }
 
-    protected function filterDirection(&$query, array $values)
+    protected function filterDirection($query, array $values)
     {
         if (count($values) === 0) {
             return;
@@ -46,7 +46,7 @@ class VisitsMetric extends BaseMetric
         $query->whereHas('contractVersionProgram', fn ($q) => $q->whereIn('program', $programs));
     }
 
-    protected function filterStatus(&$query, $values)
+    protected function filterStatus($query, $values)
     {
         $query->where(function ($query) use ($values) {
             $query->where(function ($query) use ($values) {

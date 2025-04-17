@@ -31,7 +31,7 @@ class PassMetric extends BaseMetric
         return PassLog::query();
     }
 
-    protected function filterType(&$query, array $types)
+    protected function filterType($query, array $types)
     {
         $query->where(function ($query) use ($types) {
             foreach ($types as $type) {
@@ -72,7 +72,7 @@ class PassMetric extends BaseMetric
         });
     }
 
-    protected function filterDirection(&$query, array $directions)
+    protected function filterDirection($query, array $directions)
     {
         if (count($directions) === 0) {
             return;

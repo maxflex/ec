@@ -47,14 +47,14 @@ class LogController extends Controller
         ]);
     }
 
-    protected function filterQ(&$query, $q)
+    protected function filterQ($query, $q)
     {
         if ($q) {
             return $query->where('data', 'like', '%'.$q.'%');
         }
     }
 
-    protected function filterRowId(&$query, $rowId)
+    protected function filterRowId($query, $rowId)
     {
         if ($rowId) {
             return $query->where('row_id', $rowId);

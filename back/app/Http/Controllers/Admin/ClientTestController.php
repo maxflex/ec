@@ -63,7 +63,7 @@ class ClientTestController extends Controller
         $clientTest->delete();
     }
 
-    protected function filterStatus(&$query, $status)
+    protected function filterStatus($query, $status)
     {
         switch ($status) {
             case 'active':

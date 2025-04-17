@@ -29,7 +29,7 @@ class ClientLessonMetric extends BaseMetric
         return $query->sum('client_lessons.price');
     }
 
-    protected function filterDirection(&$query, array $values)
+    protected function filterDirection($query, array $values)
     {
         if (count($values) === 0) {
             return;

@@ -32,7 +32,7 @@ class RequestMetric extends BaseMetric
         return $query->count();
     }
 
-    protected function filterPass(&$query, $value)
+    protected function filterPass($query, $value)
     {
         switch ($value) {
             case 'hasUsedPasses':

@@ -69,7 +69,7 @@ class PeopleSelectorController extends Controller
         return $result;
     }
 
-    protected function filterDirection(&$query, array $values)
+    protected function filterDirection($query, array $values)
     {
         if (count($values) === 0) {
             return;

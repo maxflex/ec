@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\JustAttributesResource;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -20,11 +20,9 @@ class Controller extends BaseController
 
     protected $mapFilters = []; // e.g. test_client_id => tests.client_id
 
-    protected $resources = [];
-
     protected function handleIndexRequest(Request $request, $query, $resource = null)
     {
-        $resource = $resource ?? $this->getResource($request);
+        $resource = $resource ?? JsonResource::class;
 
         if ($request->has('available_years')) {
             return $this->getAvailableYears($query->distinct()->reorder())->unique()->sortDesc()->values()->all();
@@ -64,27 +62,12 @@ class Controller extends BaseController
         return $result;
     }
 
-    protected function getResource(Request $request)
-    {
-        if (count($this->resources) === 0) {
-            return JustAttributesResource::class;
-        }
-        $resource = $this->resources['default'];
-        foreach (array_keys($request->except('default')) as $key) {
-            if (isset($this->resources[$key])) {
-                $resource = $this->resources[$key];
-            }
-        }
-
-        return $resource;
-    }
-
     protected function getAvailableYears($query): Collection
     {
         return $query->pluck('year');
     }
 
-    protected function filter(Request $request, &$query, ?array $filters = null)
+    protected function filter(Request $request, $query, ?array $filters = null)
     {
         $filters = $filters ?? $this->filters;
         foreach ($filters as $type => $fields) {
@@ -97,12 +80,12 @@ class Controller extends BaseController
         }
     }
 
-    protected function filterEquals(&$query, $value, $field)
+    protected function filterEquals($query, $value, $field)
     {
         $query->where(DB::raw($this->getFieldName($field)), $value);
     }
 
-    // protected function filterNotNull(string $field, $value, &$query)
+    // protected function filterNotNull(string $field, $value, $query)
     // {
     //     $query->whereNotNull($this->getFieldName($field));
     // }
@@ -124,13 +107,13 @@ class Controller extends BaseController
         return $field;
     }
 
-    protected function filterNull(&$query, $value, $field)
+    protected function filterNull($query, $value, $field)
     {
         $field = $this->getFieldName($field);
         $value ? $query->whereNotNull($field) : $query->whereNull($field);
     }
 
-    protected function filterFindInSet(&$query, $values, $field)
+    protected function filterFindInSet($query, $values, $field)
     {
         $field = $this->getFieldName($field);
         if (is_array($values)) {
@@ -152,26 +135,26 @@ class Controller extends BaseController
         }
     }
 
-    protected function filterOrder(&$query, $value)
+    protected function filterOrder($query, $value)
     {
         $order = is_array($value) ? (object) $value : json_decode($value);
         $query->orderBy($this->getFieldName($order->field), $order->order);
     }
 
-    protected function filterHas(&$query, $value, $field)
+    protected function filterHas($query, $value, $field)
     {
         $relation = str($field)->after('has_')->camel()->value();
         $value ? $query->whereHas($relation) : $query->whereDoesntHave($relation);
     }
 
-    protected function filterGte(&$query, $value, $field)
+    protected function filterGte($query, $value, $field)
     {
         if ($value) {
             $query->where(DB::raw($this->getFieldName($field)), '>=', $value);
         }
     }
 
-    protected function filterSearchByName(&$query, $value)
+    protected function filterSearchByName($query, $value)
     {
         $words = explode(' ', $value);
 
@@ -184,7 +167,7 @@ class Controller extends BaseController
         }
     }
 
-    protected function filterLte(&$query, $value, $field)
+    protected function filterLte($query, $value, $field)
     {
         if ($value) {
             $query->where(DB::raw($this->getFieldName($field)), '<=', $value);

@@ -22,7 +22,7 @@ class SwampController extends Controller
         return $this->handleIndexRequest($request, $query, SwampListResource::class);
     }
 
-    protected function filterStatus(&$query, $status)
+    protected function filterStatus($query, $status)
     {
         Swamp::filterStatus($query, $status);
     }

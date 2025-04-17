@@ -27,7 +27,7 @@ class ExamDateController extends Controller
         return $examDate;
     }
 
-    protected function filterPrograms(&$query, $programs)
+    protected function filterPrograms($query, $programs)
     {
         $exams = [];
         foreach ($programs as $program) {

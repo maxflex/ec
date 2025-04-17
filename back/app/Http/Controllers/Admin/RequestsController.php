@@ -77,7 +77,7 @@ class RequestsController extends Controller
 
     // временно: заявки клиента по ассоциативному механизму
     // было устно сказано добавить так
-    public function filterClient(&$query, $clientId)
+    public function filterClient($query, $clientId)
     {
         $client = Client::find($clientId);
         $query->whereIn('id', collect($client->requests)->pluck('id'));

@@ -74,7 +74,7 @@ class ClientReviewController extends Controller
         abort_unless($sent, 422);
     }
 
-    protected function filterWebReviewExists(&$query, $value)
+    protected function filterWebReviewExists($query, $value)
     {
         $condition = $value ? 'NOT EXISTS' : 'EXISTS';
 
@@ -84,7 +84,7 @@ class ClientReviewController extends Controller
         )");
     }
 
-    protected function filterExamScoresExists(&$query, $value)
+    protected function filterExamScoresExists($query, $value)
     {
         $condition = $value ? 'NOT EXISTS' : 'EXISTS';
 
@@ -94,7 +94,7 @@ class ClientReviewController extends Controller
         )");
     }
 
-    protected function filterYear(&$query, $year)
+    protected function filterYear($query, $year)
     {
         $query->whereRaw("EXISTS (
             select 1 from client_lessons cl

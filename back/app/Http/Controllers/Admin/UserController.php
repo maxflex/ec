@@ -56,7 +56,7 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
-    protected function filterSearch(&$query, $value)
+    protected function filterSearch($query, $value)
     {
         $words = explode(' ', $value);
         $query->where(function ($q) use ($words) {

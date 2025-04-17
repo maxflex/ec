@@ -105,7 +105,7 @@ class PassController extends Controller
         }
     }
 
-    protected function filterDirection(&$query, array $directions)
+    protected function filterDirection($query, array $directions)
     {
         if (count($directions) === 0) {
             return;

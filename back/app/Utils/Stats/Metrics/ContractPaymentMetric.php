@@ -30,7 +30,7 @@ class ContractPaymentMetric extends BaseMetric
         '));
     }
 
-    protected function filterContract(&$query, $value, $field)
+    protected function filterContract($query, $value, $field)
     {
         $query->whereHas('contract', fn ($q) => $q->where($field, $value));
     }

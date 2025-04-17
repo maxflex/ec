@@ -52,7 +52,7 @@ class WebReviewController extends Controller
         $webReview->delete();
     }
 
-    // public function filterExamScores(&$query, $value)
+    // public function filterExamScores($query, $value)
     // {
     //     $condition = $value ? 'exists' : 'not exists';
     //     $query->whereRaw("$condition (
@@ -61,7 +61,7 @@ class WebReviewController extends Controller
     //     )");
     // }
     //
-    protected function filterProgram(&$query, $programs)
+    protected function filterProgram($query, $programs)
     {
         $query->where(function ($q) use ($programs) {
             foreach ($programs as $program) {

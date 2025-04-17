@@ -47,7 +47,7 @@ class ContractMetric extends BaseMetric
         return $sum;
     }
 
-    protected function filterDirection(&$query, array $values)
+    protected function filterDirection($query, array $values)
     {
         if (count($values) === 0) {
             return;
@@ -64,7 +64,7 @@ class ContractMetric extends BaseMetric
         $query->whereHas('programs', fn ($q) => $q->whereIn('program', $programs));
     }
 
-    protected function filterContract(&$query, $value, $field)
+    protected function filterContract($query, $value, $field)
     {
         if ($field === 'year') {
             if (count($value)) {
@@ -75,7 +75,7 @@ class ContractMetric extends BaseMetric
         }
     }
 
-    protected function filterVersion(&$query, $value)
+    protected function filterVersion($query, $value)
     {
         if ($value === 'firstInClient') {
             $firstInClient = ContractVersion::query()

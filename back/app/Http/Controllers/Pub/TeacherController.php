@@ -19,26 +19,27 @@ class TeacherController extends Controller
     {
         $query = Teacher::where('is_published', true);
         $this->filter($request, $query);
+
         return TeacherPubResource::collection(
             $query->get()
         );
     }
 
-    protected function filterIds(&$query, array $ids)
+    protected function filterIds($query, array $ids)
     {
         $idsString = implode(',', $ids);
         $query->whereIn('id', $ids)->orderByRaw("FIELD(id, $idsString)");
     }
 
-    protected function filterLimit(&$query, $limit)
+    protected function filterLimit($query, $limit)
     {
         $query->take($limit);
     }
 
-    protected function filterSubject(&$query, string $subject)
+    protected function filterSubject($query, string $subject)
     {
-        $query->whereRaw("FIND_IN_SET(?, `subjects`)", [
-            $subject
+        $query->whereRaw('FIND_IN_SET(?, `subjects`)', [
+            $subject,
         ]);
     }
 }

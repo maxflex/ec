@@ -79,7 +79,7 @@ class InstructionController extends Controller
         $instruction->delete();
     }
 
-    protected function filterSigned(&$query, $value)
+    protected function filterSigned($query, $value)
     {
         $value
             ? $query->whereNotNull('signed_at')

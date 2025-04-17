@@ -66,7 +66,7 @@ class TeacherController extends Controller
         ];
     }
 
-    protected function filterSearch(&$query, $value)
+    protected function filterSearch($query, $value)
     {
         $words = explode(' ', $value);
         $query->where(function ($q) use ($words) {

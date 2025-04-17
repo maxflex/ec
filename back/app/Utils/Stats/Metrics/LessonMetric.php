@@ -28,7 +28,7 @@ class LessonMetric extends BaseMetric
         return $query->count();
     }
 
-    protected function filterDirection(&$query, array $values)
+    protected function filterDirection($query, array $values)
     {
         if (count($values) === 0) {
             return;

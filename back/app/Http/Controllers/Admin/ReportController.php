@@ -105,7 +105,7 @@ class ReportController extends Controller
         return ReportResource::collection($items);
     }
 
-    protected function filterExcludeNotRequired(&$query)
+    protected function filterExcludeNotRequired($query)
     {
         $query->where('requirement', '<>', 'notRequired');
     }

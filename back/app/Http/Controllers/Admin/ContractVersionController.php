@@ -92,12 +92,12 @@ class ContractVersionController extends Controller
         return new ContractVersionListResource($contractVersion);
     }
 
-    protected function filterContract(&$query, $value, $field)
+    protected function filterContract($query, $value, $field)
     {
         $query->whereHas('contract', fn ($q) => $q->where($field, $value));
     }
 
-    protected function filterDirection(&$query, $value)
+    protected function filterDirection($query, $value)
     {
         if (is_array($value)) {
             if (count($value) === 0) {

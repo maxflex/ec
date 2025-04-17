@@ -84,7 +84,7 @@ class ClientController extends Controller
         });
     }
 
-    protected function filterSearch(&$query, $value)
+    protected function filterSearch($query, $value)
     {
         $words = explode(' ', $value);
         $query->where(function ($q) use ($words) {
@@ -96,7 +96,7 @@ class ClientController extends Controller
         });
     }
 
-    protected function filterContract(&$query, $value, $field)
+    protected function filterContract($query, $value, $field)
     {
         $query->whereHas('contracts', fn ($q) => $q->where($field, $value));
     }

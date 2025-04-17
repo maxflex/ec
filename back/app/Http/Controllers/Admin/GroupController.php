@@ -110,12 +110,12 @@ class GroupController extends Controller
         }
     }
 
-    protected function filterTeacher(&$query, $teacherId)
+    protected function filterTeacher($query, $teacherId)
     {
         $query->whereTeacher($teacherId);
     }
 
-    protected function filterClient(&$query, $clientId)
+    protected function filterClient($query, $clientId)
     {
         $query->whereClient($clientId);
     }

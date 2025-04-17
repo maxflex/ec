@@ -40,12 +40,12 @@ class RequestPassesMetric extends BaseMetric
         return DB::table('x')->withExpression('x', $cte);
     }
 
-    protected function filterHasUsed(&$query, $value)
+    protected function filterHasUsed($query, $value)
     {
         $query->where('passes_used', $value ? '>' : '=', 0);
     }
 
-    protected function filterDirection(&$query, array $directions)
+    protected function filterDirection($query, array $directions)
     {
         if (count($directions) === 0) {
             return;
