@@ -88,7 +88,9 @@ nextTick(loadData)
         </div>
         <div>
           <div>Сообщение</div>
-          <div>{{ item.text }}</div>
+          <div style="white-space: pre-wrap;">
+            {{ item.text }}
+          </div>
           <div v-if="item.event && item.is_confirmable" class="d-flex ga-2 mt-1">
             <v-btn variant="tonal" size="small" :rounded="false">
               подтвердить участие
