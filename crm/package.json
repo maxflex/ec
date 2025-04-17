@@ -22,7 +22,7 @@
     "@vueuse/core": "^13.1.0",
     "chart.js": "^4.4.9",
     "codemirror": "^5.65.19",
-    "codemirror-editor-vue3": "^2.8.0",
+    "codemirror-editor-vue3": "2.4.1",
     "date-fns": "^4.1.0",
     "express": "^5.1.0",
     "install": "^0.13.0",

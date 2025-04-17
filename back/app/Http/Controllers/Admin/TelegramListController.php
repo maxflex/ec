@@ -10,15 +10,17 @@ use Illuminate\Http\Request;
 class TelegramListController extends Controller
 {
     protected $filters = [
-        'equals' => ['status']
+        'equals' => ['status'],
     ];
 
     public function index(Request $request)
     {
         $query = TelegramList::query()
             ->with('event')
-            ->latest();
+            ->orderByRaw('IFNULL(scheduled_at, created_at) DESC');
+
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, TelegramListResource::class);
     }
 
@@ -32,6 +34,7 @@ class TelegramListController extends Controller
         $telegramList = auth()->user()->telegramLists()->create(
             $request->all(),
         );
+
         return new TelegramListResource($telegramList);
     }
 
