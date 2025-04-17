@@ -22,6 +22,7 @@ export default defineEventHandler(async (event) => {
   eventStream.onClosed(async () => {
     console.log('closing SSE...')
     await redisClient.unsubscribe('sse')
+    await redisClient.quit()
     await eventStream.close()
   })
 
