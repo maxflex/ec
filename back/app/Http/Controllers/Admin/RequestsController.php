@@ -39,8 +39,9 @@ class RequestsController extends Controller
         $clientRequest = auth()->user()->requests()->create(
             $request->all()
         );
+        sync_relation($clientRequest, 'phones', $request->all());
 
-        return new RequestListResource($clientRequest);
+        return new RequestListResource($clientRequest->fresh());
     }
 
     public function show($id)
