@@ -46,13 +46,10 @@ function getTotal(tgList: TelegramListResource, onlySent: boolean = false): numb
       </div>
       <div :class="{ 'opacity-5': item.status !== 'sent' }" style="width: 70px">
         <template v-if="item.result">
-          <span class="text-success">
+          <span class="text-secondary">
             {{ getTotal(item, true) }}
           </span>
-          /
-          <span class="text-error">
-            {{ getTotal(item) - getTotal(item, true) }}
-          </span>
+          / {{ getTotal(item) - getTotal(item, true) }}
         </template>
       </div>
       <div class="text-truncate">
