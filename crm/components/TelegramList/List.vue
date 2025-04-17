@@ -24,21 +24,6 @@ function getTotal(tgList: TelegramListResource, onlySent: boolean = false): numb
       :to="{ name: 'telegram-lists-id', params: { id: item.id } }"
       class="table-item"
     >
-      <div style="width: 150px">
-        {{ formatDateTime(item.created_at!) }}
-      </div>
-      <div style="width: 350px" class="text-truncate">
-        <RouterLink v-if="item.event" :to="{ name: 'events-id', params: { id: item.event.id } }">
-          {{ item.event.name }}
-        </RouterLink>
-      </div>
-      <div style="width: 250px">
-        <TelegramListRecipients :item="item" />
-        <div class="text-caption">
-          получатели: {{ getTotal(item) }}
-        </div>
-      </div>
-
       <div style="width: 300px">
         <span v-if="item.status === 'sent'">
           отправлено {{ formatDateTime(item.scheduled_at || item.created_at!) }}
@@ -51,7 +36,15 @@ function getTotal(tgList: TelegramListResource, onlySent: boolean = false): numb
         </span>
         <!-- <TelegramListStatus :item="item" /> -->
       </div>
-      <div :class="{ 'opacity-5': item.status !== 'sent' }">
+
+      <div style="width: 260px">
+        <TelegramListRecipients :item="item" />
+      </div>
+
+      <div style="width: 150px">
+        получатели: {{ getTotal(item) }}
+      </div>
+      <div :class="{ 'opacity-5': item.status !== 'sent' }" style="width: 70px">
         <template v-if="item.result">
           <span class="text-success">
             {{ getTotal(item, true) }}
@@ -61,6 +54,11 @@ function getTotal(tgList: TelegramListResource, onlySent: boolean = false): numb
             {{ getTotal(item) - getTotal(item, true) }}
           </span>
         </template>
+      </div>
+      <div class="text-truncate">
+        <RouterLink v-if="item.event" :to="{ name: 'events-id', params: { id: item.event.id } }">
+          {{ item.event.name }}
+        </RouterLink>
       </div>
     </RouterLink>
   </div>
