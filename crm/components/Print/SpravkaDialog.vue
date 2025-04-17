@@ -17,6 +17,8 @@ interface SpravkaParams {
   company: Company
 }
 
+const validated = ref(false)
+
 const printOption: PrintOption = {
   id: 15,
   label: 'Справка об оплате образовательных услуг',
@@ -34,6 +36,24 @@ function open(clientId: number) {
   dialog.value = true
 }
 
+const required = [
+  (value: any) => {
+    if (value) {
+      return true
+    }
+
+    return 'Поле обязательно для заполнения'
+  },
+]
+
+function onSubmit() {
+  setTimeout(() => {
+    if (validated.value) {
+      printDialog.value?.open(printOption, params.value, true)
+    }
+  }, 50)
+}
+
 defineExpose({ open })
 </script>
 
@@ -46,10 +66,11 @@ defineExpose({ open })
           :size="48"
           icon="$print"
           variant="text"
-          @click="printDialog?.open(printOption, params, true)"
+          type="submit"
+          form="form"
         />
       </div>
-      <div class="dialog-body">
+      <v-form id="form" v-model="validated" validate-on="submit" class="dialog-body" @submit.prevent="onSubmit()">
         <div>
           <v-select v-model="params.company" :items="selectItems(CompanyLabel)" label="Компания" />
         </div>
@@ -69,6 +90,7 @@ defineExpose({ open })
             type="number"
             hide-spin-buttons
             label="Номер справки"
+            :rules="required"
           />
         </div>
         <div>
@@ -77,6 +99,7 @@ defineExpose({ open })
             type="number"
             hide-spin-buttons
             label="Сумма"
+            :rules="required"
           />
         </div>
         <div>
@@ -85,6 +108,7 @@ defineExpose({ open })
             type="number"
             hide-spin-buttons
             label="ИНН представителя"
+            :rules="required"
           />
         </div>
         <div>
@@ -93,6 +117,7 @@ defineExpose({ open })
             type="number"
             hide-spin-buttons
             label="ИНН ученика"
+            :rules="required"
           />
         </div>
 
@@ -110,7 +135,7 @@ defineExpose({ open })
             manual
           />
         </div>
-      </div>
+      </v-form>
     </div>
   </v-dialog>
   <LazyPrintDialog ref="printDialog" />
