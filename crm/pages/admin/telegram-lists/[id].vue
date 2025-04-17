@@ -76,7 +76,9 @@ nextTick(loadData)
         </div>
         <div>
           <div> Кому отправлять </div>
-          <div> {{ item.send_to.map(e => SendToAltLabel[e]).join(', ') }} </div>
+          <div>
+            <TelegramListRecipients :item="item" />
+          </div>
         </div>
         <div v-if="item.event">
           <div>Событие</div>

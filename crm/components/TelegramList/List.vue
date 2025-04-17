@@ -3,29 +3,16 @@ const { items } = defineProps<{
   items: TelegramListResource[]
 }>()
 
-function getRecipientsCount(l: TelegramListResource) {
-  const { clients, teachers } = l.recipients
-  return (clients.length * (l.send_to === 'studentsAndParents' ? 2 : 1)) + teachers.length
-}
+function getTotal(tgList: TelegramListResource, onlySent: boolean = false): number {
+  let result = 0
 
-function getSentCount(l: TelegramListResource): number {
-  if (!l.results) {
-    return 0
+  for (const sentTo in tgList.result) {
+    for (const { messages } of tgList.result[sentTo as SendTo]) {
+      result += onlySent ? messages.filter(m => !!m.telegram_id).length : messages.length
+    }
   }
-  return Object.entries(l.results).reduce((carry, [key, val]) => {
-    if (key.startsWith('teachers')) {
-      carry += val.some(y => y.is_sent) ? 1 : 0
-    }
-    else {
-      if (l.send_to !== 'students') {
-        carry += val.some(y => y.is_sent && y.is_parent) ? 1 : 0
-      }
-      if (l.send_to !== 'parents') {
-        carry += val.some(y => y.is_sent && !y.is_parent) ? 1 : 0
-      }
-    }
-    return carry
-  }, 0)
+
+  return result
 }
 </script>
 
@@ -37,35 +24,36 @@ function getSentCount(l: TelegramListResource): number {
       :to="{ name: 'telegram-lists-id', params: { id: item.id } }"
       class="table-item"
     >
-      <div style="width: 250px">
+      <div style="width: 300px">
         рассылка от {{ formatDateTime(item.created_at!) }}
       </div>
-      <div style="width: 200px">
-        {{ SendToLabel[item.send_to] }}
+      <div style="width: 250px">
+        <TelegramListRecipients :item="item" />
       </div>
       <div style="width: 150px">
-        получатели: {{ getRecipientsCount(item) }}
+        получатели: {{ getTotal(item) }}
       </div>
 
-      <div style="width: 320px">
-        <span v-if="item.scheduled_at">
+      <div style="width: 300px">
+        <span v-if="item.status === 'sent'">
+          отправлено {{ formatDateTime(item.scheduled_at || item.created_at!) }}
+        </span>
+        <span v-else-if="item.scheduled_at" class="text-gray">
           запланирована на {{ formatDateTime(item.scheduled_at) }}
         </span>
-        <span v-else>
+        <span v-else class="text-gray">
           мгновенная отправка
         </span>
-      </div>
-      <div style="width: 140px">
-        <TelegramListStatus :item="item" />
+        <!-- <TelegramListStatus :item="item" /> -->
       </div>
       <div :class="{ 'opacity-5': item.status !== 'sent' }">
-        <template v-if="item.results">
+        <template v-if="item.result">
           <span class="text-success">
-            {{ getSentCount(item) }}
+            {{ getTotal(item, true) }}
           </span>
           /
           <span class="text-error">
-            {{ getRecipientsCount(item) - getSentCount(item) }}
+            {{ getTotal(item) - getTotal(item, true) }}
           </span>
         </template>
       </div>
