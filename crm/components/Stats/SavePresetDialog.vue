@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { StatsParams, StatsPreset } from './Metrics'
 import { cloneDeep } from 'lodash-es'
-import { VDialogTransition, VScaleTransition } from 'vuetify/components'
 
 const emit = defineEmits<{
   save: [e: StatsPreset]
@@ -81,10 +80,9 @@ defineExpose({ open })
   <v-dialog
     v-model="dialog"
     max-width="500"
-    :fullscreen="false"
     location="center"
     :content-class="null"
-    :transition="VDialogTransition"
+    :transition="false"
   >
     <v-card>
       <v-card-text>

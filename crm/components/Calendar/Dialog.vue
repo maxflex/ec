@@ -1,19 +1,12 @@
 <script setup lang="ts">
 const emit = defineEmits(['close'])
 const model = defineModel<string | string[]>({ required: true })
-const dialog = ref(false)
+const { dialog } = useDialog('large')
 
 // начиная с какой даты возможен выбор в календаре
 const startYear = 2015
-const width = 840
 const years = Array.from({ length: currentAcademicYear() - startYear + 4 }, (_, i) => startYear + i)
 const scrolling = ref(true)
-
-let el: {
-  overlay: HTMLElement
-  dialog: HTMLElement
-  clonedScrim: HTMLElement
-} | null = null
 
 // const years = year === undefined
 //   ? Array.from({ length: currentAcademicYear() - startYear + 2 }, (_, i) => startYear + i)
@@ -21,50 +14,7 @@ let el: {
 
 function open() {
   dialog.value = true
-  handleLowerDialogOnOpen()
   scrollToActiveDate()
-}
-
-function setElements() {
-  if (el !== null) {
-    return
-  }
-  const overlay = document.documentElement.querySelector<HTMLElement>('.v-dialog.v-overlay--active')!
-
-  el = {
-    overlay,
-    dialog: overlay.querySelector<HTMLElement>(':scope > .dialog')!,
-    clonedScrim: overlay.querySelector<HTMLElement>(':scope > .v-overlay__scrim')!.cloneNode() as HTMLElement,
-  }
-}
-
-function handleLowerDialogOnOpen() {
-  setElements()
-
-  if (!el) {
-    return
-  }
-
-  el.dialog.style.overflow = 'visible'
-  el.dialog.style.right = `${width}px`
-  el.dialog.classList.add('calendar-open')
-
-  el.clonedScrim.style.opacity = '0'
-  el.clonedScrim.addEventListener('click', close)
-  el.overlay.insertBefore(
-    el.clonedScrim,
-    el.dialog,
-  )
-}
-
-function handleLowerDialogOnClose() {
-  if (!el) {
-    return
-  }
-
-  el.dialog.style.right = '0'
-  el.dialog.classList.remove('calendar-open')
-  el.overlay.removeChild(el.clonedScrim)
 }
 
 function scrollToActiveDate() {
@@ -126,16 +76,15 @@ function onClick(y: number, m: number, d: number) {
 }
 
 function close() {
-  handleLowerDialogOnClose()
+  dialog.value = false
   emit('close')
-  setTimeout(() => dialog.value = false, 500)
 }
 
 defineExpose({ open })
 </script>
 
 <template>
-  <div v-if="dialog" class="calendar-dialog" :style="{ width: `${width}px` }">
+  <v-dialog v-model="dialog" class="dialog-fullwidth" :transition="false">
     <v-fade-transition>
       <UiLoader v-if="scrolling" style="z-index: 1" />
     </v-fade-transition>
@@ -144,30 +93,30 @@ defineExpose({ open })
         <v-icon icon="$close" color="black"></v-icon>
       </v-btn>
     </div>
-    <div v-for="y in years" :key="y" class="calendar__year">
-      <h2>{{ y }}</h2>
-      <div class="calendar">
-        <div v-for="m in 12" :key="m" class="calendar__month">
-          <div class="calendar__month-label">
-            <span class="text-grey-light">
-              {{ MonthLabel[m as Month] }}
-            </span>
-          </div>
-          <div class="calendar__month-days">
-            <div v-for="x in firstDayOfWeek(y, m)" :key="`x${x}`" class="no-pointer-events" />
-            <div
-              v-for="d in daysInMonth(y, m)" :key="d" :class="{
-                'calendar--today': isToday(y, m, d),
-                'calendar--selected': isSelected(y, m, d),
-              }" @click="onClick(y, m, d)"
-            >
-              {{ d }}
+    <v-card class="calendar-card">
+      <div v-for="y in years" :key="y" class="calendar__year">
+        <h2>{{ y }}</h2>
+        <div class="calendar">
+          <div v-for="m in 12" :key="m" class="calendar__month">
+            <div class="calendar__month-label">
+              <span class="text-grey-light">
+                {{ MonthLabel[m as Month] }}
+              </span>
+            </div>
+            <div class="calendar__month-days">
+              <div v-for="x in firstDayOfWeek(y, m)" :key="`x${x}`" class="no-pointer-events" />
+              <div
+                v-for="d in daysInMonth(y, m)" :key="d" :class="{
+                  'calendar--today': isToday(y, m, d),
+                  'calendar--selected': isSelected(y, m, d),
+                }" @click="onClick(y, m, d)"
+              >
+                {{ d }}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-  <!-- <div v-if="dialog" class="calendar-dialog__scrim" @click="close()">
-  </div> -->
+    </v-card>
+  </v-dialog>
 </template>

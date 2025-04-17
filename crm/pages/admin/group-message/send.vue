@@ -177,10 +177,7 @@ nextTick(async () => {
           />
         </div>
         <div class="double-input">
-          <UiDateInput
-            v-model="scheduledAt.date"
-            fullscreen
-          />
+          <UiDateInput v-model="scheduledAt.date" />
           <div>
             <v-text-field
               v-model="scheduledAt.time"

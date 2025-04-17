@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import type { StatsMetricsEditor } from '#build/components'
+import type { MetricComponent, StatsMetric, StatsParams, StatsPreset } from '~/components/Stats/Metrics'
 import { mdiEyeOffOutline, mdiPlus } from '@mdi/js'
 import { cloneDeep } from 'lodash-es'
 import { VueDraggableNext } from 'vue-draggable-next'
 import {
-  type MetricComponent,
+
   MetricComponents,
-  type StatsMetric,
-  type StatsParams,
-  type StatsPreset,
+
 } from '~/components/Stats/Metrics'
 
 const emit = defineEmits<{
@@ -143,11 +142,9 @@ provide<Ref<StatsParams>>('params', params)
                   today-btn
                   clearable
                   placeholder="текущего дня"
-                  fullscreen
                 />
                 <UiDateInput
                   v-model="params.date_from"
-                  fullscreen
                   label="по"
                   clearable
                   placeholder="год назад"
@@ -217,7 +214,7 @@ provide<Ref<StatsParams>>('params', params)
 
               <VueDraggableNext
                 v-model="params.metrics"
-                :remove-cloneDeep-on-hide="true"
+                :remove-clone-deep-on-hide="true"
                 :animation="200"
                 direction="vertical"
                 tag="tbody"
