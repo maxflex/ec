@@ -24,14 +24,19 @@ function getTotal(tgList: TelegramListResource, onlySent: boolean = false): numb
       :to="{ name: 'telegram-lists-id', params: { id: item.id } }"
       class="table-item"
     >
-      <div style="width: 300px">
-        рассылка от {{ formatDateTime(item.created_at!) }}
+      <div style="width: 150px">
+        {{ formatDateTime(item.created_at!) }}
+      </div>
+      <div style="width: 350px" class="text-truncate">
+        <RouterLink v-if="item.event" :to="{ name: 'events-id', params: { id: item.event.id } }">
+          {{ item.event.name }}
+        </RouterLink>
       </div>
       <div style="width: 250px">
         <TelegramListRecipients :item="item" />
-      </div>
-      <div style="width: 150px">
-        получатели: {{ getTotal(item) }}
+        <div class="text-caption">
+          получатели: {{ getTotal(item) }}
+        </div>
       </div>
 
       <div style="width: 300px">

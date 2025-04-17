@@ -921,6 +921,7 @@ declare global {
       name: string
     }
     text: string
+    user: PersonResource
     result: Record<SendTo, TelegramListResult[]>
   }
 

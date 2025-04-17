@@ -133,4 +133,9 @@ class TelegramList extends Model
 
         return $result;
     }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

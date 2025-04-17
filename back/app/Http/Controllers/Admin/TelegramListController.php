@@ -16,7 +16,7 @@ class TelegramListController extends Controller
     public function index(Request $request)
     {
         $query = TelegramList::query()
-            ->with('event')
+            ->with(['event', 'user'])
             ->orderByRaw('IFNULL(scheduled_at, created_at) DESC');
 
         $this->filter($request, $query);
