@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import { apiUrl, modelDefaults, type RequestListResource, type RequestResource } from '.'
 
 const emit = defineEmits<{
@@ -13,7 +13,7 @@ const itemId = ref<number>()
 const request = ref<RequestResource>(modelDefaults)
 
 function open(r: RequestResource) {
-  request.value = clone(r)
+  request.value = cloneDeep(r)
   dialog.value = true
 }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import { apiUrl, type ClientReviewListResource, type ClientReviewResource, modelDefaults } from '.'
 
 const emit = defineEmits<{
@@ -32,7 +32,7 @@ async function edit(clientReviewId: number) {
 async function create(cr: ClientReviewListResource) {
   itemId.value = undefined
   fakeItemId = cr.id as string
-  item.value = clone({
+  item.value = cloneDeep({
     ...modelDefaults,
     teacher: cr.teacher,
     client: cr.client,

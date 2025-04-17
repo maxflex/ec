@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import type { StatsDialog } from '#build/components'
+import type { StatsMetric, StatsParams } from '~/components/Stats/Metrics'
 import { mdiDownload, mdiTune } from '@mdi/js'
-import { clone } from 'lodash-es'
-import { MetricComponents, type StatsMetric, type StatsParams } from '~/components/Stats/Metrics'
+import { cloneDeep } from 'lodash-es'
+import { MetricComponents } from '~/components/Stats/Metrics'
 
 const statsDialog = ref<InstanceType<typeof StatsDialog>>()
 
@@ -28,7 +29,7 @@ const page = ref<number>(0)
 let scrollContainer: HTMLElement | null = null
 
 function onGo(p: StatsParams) {
-  params.value = clone(p)
+  params.value = cloneDeep(p)
   isLastPage.value = false
   loadData()
 }
@@ -51,7 +52,7 @@ async function loadMore() {
   )
   if (data.value) {
     if (page.value === 1) {
-      responseParams.value = clone(params.value)
+      responseParams.value = cloneDeep(params.value)
       items.value = data.value.data
       totals.value = data.value.totals
     }

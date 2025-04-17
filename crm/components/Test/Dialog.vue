@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import { modelDefaults, type TestQuestion, type TestResource } from '.'
 
 const emit = defineEmits<{
@@ -13,12 +13,12 @@ const loading = ref(false)
 const deleting = ref(false)
 
 function open(t: TestResource) {
-  item.value = clone(t)
+  item.value = cloneDeep(t)
   dialog.value = true
 }
 
 function create() {
-  item.value = clone({ ...modelDefaults })
+  item.value = cloneDeep({ ...modelDefaults })
   dialog.value = true
   nextTick(() => {
     input.value.reset()

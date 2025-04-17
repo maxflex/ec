@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{
   updated: [l: LessonListResource]
@@ -23,7 +23,7 @@ const timeMask = { mask: '##:##' }
 const { dialog, width } = useDialog('default')
 const loading = ref(false)
 const itemId = ref<number | undefined>()
-const lesson = ref<LessonResource>(clone(modelDefaults))
+const lesson = ref<LessonResource>(cloneDeep(modelDefaults))
 const year = ref<Year>()
 // если занятие проведено, нельзя менять статус на "отмена"
 const isConducted = ref(false)
@@ -31,7 +31,7 @@ const isConducted = ref(false)
 function create(groupId: number, y: Year) {
   itemId.value = undefined
   year.value = y
-  lesson.value = clone(modelDefaults)
+  lesson.value = cloneDeep(modelDefaults)
   lesson.value.group_id = groupId
   isConducted.value = false
   dialog.value = true

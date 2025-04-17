@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{ (e: 'updated' | 'destroyed', u: UserResource): void }>()
 const modelDefaults: UserResource = {
@@ -16,11 +16,11 @@ const modelDefaults: UserResource = {
 const { dialog, width } = useDialog('default')
 const loading = ref(false)
 const itemId = ref<number | undefined>()
-const item = ref<UserResource>(clone(modelDefaults))
+const item = ref<UserResource>(cloneDeep(modelDefaults))
 const deleting = ref(false)
 
 function openDialog(u: UserResource) {
-  item.value = clone(u)
+  item.value = cloneDeep(u)
   dialog.value = true
 }
 

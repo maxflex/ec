@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#components'
 import type { ContractPaymentResource } from '.'
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import { ContractPaymentMethodLabel } from '~/utils/labels'
 import { apiUrl, modelDefaults, printOptions } from '.'
 
@@ -22,7 +22,7 @@ const item = ref<ContractPaymentResource>(modelDefaults)
 
 function create(c: ContractResource) {
   itemId.value = undefined
-  item.value = clone(modelDefaults)
+  item.value = cloneDeep(modelDefaults)
   item.value.contract_id = c.id
   dialog.value = true
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 
 const modelDefaults: TelegramListResource = {
   id: newId(),
@@ -108,7 +108,7 @@ nextTick(async () => {
     `telegram-lists/load-people`,
     {
       method: 'post',
-      body: clone(selected.value),
+      body: cloneDeep(selected.value),
     },
   )
   if (data.value) {

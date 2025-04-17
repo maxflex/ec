@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{
   created: [g: GroupListResource]
@@ -23,7 +23,7 @@ const itemId = ref<number>()
 const group = ref<GroupResource>(modelDefaults)
 
 function open(r: GroupResource) {
-  group.value = clone(r)
+  group.value = cloneDeep(r)
   dialog.value = true
 }
 

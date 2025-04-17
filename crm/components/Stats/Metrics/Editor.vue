@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { StatsMetric } from '~/components/Stats/Metrics/index'
 import { mdiEyeOffOutline } from '@mdi/js'
-import { clone, isNil, pickBy } from 'lodash-es'
+import { cloneDeep, isNil, pickBy } from 'lodash-es'
 import { MetricColors, MetricComponents } from '~/components/Stats/Metrics/index'
 
 const emit = defineEmits<{
@@ -14,7 +14,7 @@ const metricComponentRef = ref()
 function open(m: StatsMetric) {
   item.value = m
   // загрузить фильтры в компонент
-  nextTick(() => metricComponentRef.value.filters = clone(m.filters))
+  nextTick(() => metricComponentRef.value.filters = cloneDeep(m.filters))
 }
 
 watch(() => metricComponentRef.value?.filters, (newVal, oldVal) => {

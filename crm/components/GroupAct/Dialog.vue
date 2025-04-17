@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#components'
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{
   updated: [e: GroupActResource]
@@ -25,7 +25,7 @@ const item = ref<GroupActResource>(modelDefaults)
 const saving = ref(false)
 
 function edit(groupAct: GroupActResource) {
-  item.value = clone(groupAct)
+  item.value = cloneDeep(groupAct)
   dialog.value = true
 }
 

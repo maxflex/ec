@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { mdiMessageAlertOutline } from '@mdi/js'
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import type { ClientTestResource } from '~/components/ClientTest'
 import type { TestAnswers } from '~/components/Test'
 
@@ -23,7 +23,7 @@ async function loadData() {
   if (data.value) {
     test.value = data.value
     if (cookie.value) {
-      answers.value = clone(cookie.value)
+      answers.value = cloneDeep(cookie.value)
     }
   }
 }

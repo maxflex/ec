@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import { apiUrl, type HeadTeacherReportResource, modelDefaults } from '.'
 
 const emit = defineEmits<{
@@ -22,7 +22,7 @@ const months = [10, 11, 12, 1, 2, 3, 4, 5].map(m => ({
 }))
 
 function edit(headTeacherReport: HeadTeacherReportResource) {
-  item.value = clone(headTeacherReport)
+  item.value = cloneDeep(headTeacherReport)
   dialog.value = true
 }
 
@@ -54,7 +54,7 @@ async function onDeleted() {
 }
 
 function create() {
-  item.value = clone(modelDefaults)
+  item.value = cloneDeep(modelDefaults)
   dialog.value = true
 }
 

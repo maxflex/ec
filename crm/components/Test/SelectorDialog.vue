@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { TestResource } from '.'
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 
 const { clientId } = defineProps<{ clientId: number }>()
 const emit = defineEmits(['saved'])
@@ -24,7 +24,7 @@ const model = ref<TestSelectorOptions>(modelDefaults)
 
 function open() {
   dialog.value = true
-  model.value = clone({ ...modelDefaults })
+  model.value = cloneDeep({ ...modelDefaults })
   loadData()
 }
 

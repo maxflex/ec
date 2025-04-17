@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{
   saved: [item: ExamDateResource]
@@ -14,7 +14,7 @@ const item = ref<ExamDateResource>({
 })
 
 function edit(ed: ExamDateResource) {
-  item.value = clone(ed)
+  item.value = cloneDeep(ed)
   open()
 }
 

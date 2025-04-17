@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#components'
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{
   updated: [e: ClientPaymentResource]
@@ -37,7 +37,7 @@ const item = ref<ClientPaymentResource>(modelDefaults)
 
 function create(clientId: number) {
   itemId.value = undefined
-  item.value = clone(modelDefaults)
+  item.value = cloneDeep(modelDefaults)
   item.value.year = currentAcademicYear()
   item.value.client_id = clientId
   dialog.value = true

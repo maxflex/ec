@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 
 interface BulkItem {
   weekdays: { [key in Weekday]: string }
@@ -45,19 +45,19 @@ const saving = ref(false)
 const timeMask = { mask: '##:##' }
 const { dialog, width } = useDialog('default')
 const loading = ref(false)
-const lesson = ref(clone(modelDefaults))
+const lesson = ref(cloneDeep(modelDefaults))
 const year = ref<Year>()
 
 // групповое добавление
-const bulk = ref(clone(bulkDefaults))
+const bulk = ref(cloneDeep(bulkDefaults))
 
 const isBulkAdd = computed(() => Object.values(bulk.value.weekdays).some(e => !!e))
 
 function create(groupId: number, y: Year) {
   year.value = y
-  lesson.value = clone(modelDefaults)
+  lesson.value = cloneDeep(modelDefaults)
   lesson.value.group_id = groupId
-  bulk.value = clone(bulkDefaults)
+  bulk.value = cloneDeep(bulkDefaults)
   dialog.value = true
 }
 

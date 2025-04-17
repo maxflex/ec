@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{
   (e: 'created' | 'updated', c: TeacherResource): void
@@ -35,7 +35,7 @@ const deleting = ref(false)
 const itemId = ref<number>()
 
 function open(c: TeacherResource) {
-  teacher.value = clone(c)
+  teacher.value = cloneDeep(c)
   dialog.value = true
 }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{
   updated: [l: TopicListResource]
@@ -10,7 +10,7 @@ const { dialog, width } = useDialog('default')
 const item = ref<TopicListResource>()
 
 async function edit(lesson: TopicListResource) {
-  item.value = clone(lesson)
+  item.value = cloneDeep(lesson)
   dialog.value = true
 }
 

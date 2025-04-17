@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import { API_URL } from '.'
 
 const emit = defineEmits<{
@@ -19,7 +19,7 @@ const item = ref<ExamScoreResource>(modelDefaults)
 
 function create(clientId: number) {
   itemId.value = undefined
-  item.value = clone(modelDefaults)
+  item.value = cloneDeep(modelDefaults)
   item.value.client_id = clientId
   item.value.year = currentAcademicYear()
   dialog.value = true

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits(['updated'])
 
@@ -8,7 +8,7 @@ const { dialog, width } = useDialog('default')
 const item = ref<ScholarshipScoreResource>()
 
 function open(e: ScholarshipScoreResource) {
-  item.value = clone(e)
+  item.value = cloneDeep(e)
   dialog.value = true
 }
 

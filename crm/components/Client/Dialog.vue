@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ClientListResource, ClientResource } from '.'
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import { modelDefaults } from '.'
 import ClearableSelect from '../Ui/ClearableSelect.vue'
 
@@ -10,7 +10,7 @@ const emit = defineEmits<{
 }>()
 
 const { dialog, width } = useDialog('medium')
-const item = ref<ClientResource>(clone(modelDefaults))
+const item = ref<ClientResource>(cloneDeep(modelDefaults))
 const itemId = ref<number>()
 const loading = ref(false)
 const saving = ref(false)
@@ -18,7 +18,7 @@ const requestId = ref<number>()
 const errors = ref(new Set<string>())
 
 function open(c: ClientResource) {
-  item.value = clone(c)
+  item.value = cloneDeep(c)
   dialog.value = true
 }
 

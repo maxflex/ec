@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import { apiUrl, modelDefaults, type WebReviewResource } from '.'
 
 const emit = defineEmits<{
@@ -25,7 +25,7 @@ async function edit(id: number) {
 
 function create(clientId: number) {
   itemId.value = undefined
-  item.value = clone({
+  item.value = cloneDeep({
     ...modelDefaults,
     client_id: clientId,
   })

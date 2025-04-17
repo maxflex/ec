@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TeacherPaymentResource } from '.'
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import { apiUrl, modelDefaults } from '.'
 
 interface Suggestions {
@@ -23,7 +23,7 @@ const loading = ref(false)
 const itemId = ref<number>()
 const sumInput = ref()
 function open(c: TeacherPaymentResource) {
-  item.value = clone(c)
+  item.value = cloneDeep(c)
   dialog.value = true
 }
 

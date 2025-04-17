@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{
   save: [cl: ClientLessonResource]
@@ -8,7 +8,7 @@ const emit = defineEmits<{
 const { dialog, width } = useDialog('default')
 const item = ref<ClientLessonResource>()
 function open(cl: ClientLessonResource) {
-  item.value = clone(cl)
+  item.value = cloneDeep(cl)
   dialog.value = true
   for (const i of [1, 2, 3]) {
     if (item.value.scores.length < i) {

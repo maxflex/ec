@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import { apiUrl, modelDefaults, type TeacherServiceResource } from '.'
 
 const emit = defineEmits<{
@@ -14,7 +14,7 @@ const itemId = ref<number>()
 const sumInput = ref()
 
 function open(c: TeacherServiceResource) {
-  item.value = clone(c)
+  item.value = cloneDeep(c)
   dialog.value = true
 }
 

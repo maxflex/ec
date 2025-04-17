@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{
   updated: [e: EventListResource]
@@ -26,7 +26,7 @@ const router = useRouter()
 
 function create(year: Year) {
   itemId.value = undefined
-  item.value = clone(modelDefaults)
+  item.value = cloneDeep(modelDefaults)
   item.value.year = year
   dialog.value = true
 }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { StatsParams, StatsPreset } from './Metrics'
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import { VDialogTransition, VScaleTransition } from 'vuetify/components'
 
 const emit = defineEmits<{
@@ -39,7 +39,7 @@ async function save() {
     return
   }
   saving.value = true
-  const body = clone(preset.value)
+  const body = cloneDeep(preset.value)
 
   // делаем ID положительными, чтобы в будущем загрузка пресета
   // не конфликтовала с добавлением новых метрик

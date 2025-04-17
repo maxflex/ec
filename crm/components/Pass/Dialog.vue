@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import { apiUrl, modelDefaults, type PassResource } from '.'
 
 const emit = defineEmits<{
@@ -22,7 +22,7 @@ function create(requestId: number | undefined = undefined) {
 
 function edit(pass: PassResource) {
   dialog.value = true
-  item.value = clone(pass)
+  item.value = cloneDeep(pass)
 }
 
 async function save() {

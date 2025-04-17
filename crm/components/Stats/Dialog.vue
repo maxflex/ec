@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { StatsMetricsEditor } from '#build/components'
 import { mdiEyeOffOutline, mdiPlus } from '@mdi/js'
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import { VueDraggableNext } from 'vue-draggable-next'
 import {
   type MetricComponent,
@@ -60,7 +60,7 @@ function addMetric(metric: MetricComponent) {
 
 // Загрузить конфигурацию из пресета
 function loadFromPreset(preset: StatsPreset) {
-  params.value = clone(preset.params)
+  params.value = cloneDeep(preset.params)
   selected.value = undefined
   // preset.params.metrics.map(m => itemUpdated('metric', m.id))
 }
@@ -217,7 +217,7 @@ provide<Ref<StatsParams>>('params', params)
 
               <VueDraggableNext
                 v-model="params.metrics"
-                :remove-clone-on-hide="true"
+                :remove-cloneDeep-on-hide="true"
                 :animation="200"
                 direction="vertical"
                 tag="tbody"
