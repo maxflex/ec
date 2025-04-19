@@ -265,8 +265,8 @@ export function formatDateMode(date: string, mode: StatsMode) {
         ? `${format(date, 'd')} – ${format(end, 'd')} ${monthLabel} ${year}`
         : `${format(date, 'd')} ${monthLabel} – ${format(end, 'd')} ${endMonthLabel} ${year}`
 
-    case 'month': return format(date, `${monthLabel} YYYY`)
-    case 'year': return format(date, 'YYYY год')
+    case 'month': return format(date, `${monthLabel} yyyy`)
+    case 'year': return format(date, 'yyyy год')
   }
 }
 
