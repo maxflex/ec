@@ -172,7 +172,7 @@ nextTick(() => statsDialog.value?.open())
     <template v-if="responseParams">
       <div v-for="{ date, values } in items" :key="date" class="table-stats__body">
         <div class="table-stats__date">
-          {{ formatDateMode(date, responseParams.mode) }}
+          {{ formatDateMode(date, responseParams.mode, responseParams.date_to) }}
         </div>
         <template v-for="(value, index) in values">
           <div

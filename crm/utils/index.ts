@@ -11,6 +11,9 @@ import {
   getYear,
   isAfter,
   isSameDay,
+  parse,
+  startOfWeek,
+  toDate,
 } from 'date-fns'
 
 export const menuCounts = ref<MenuCounts>({
@@ -242,7 +245,7 @@ export function formatDateTime(dateTime: string | null): string {
   return format(dateTime, 'dd.MM.yy в HH:mm')
 }
 
-export function formatDateMode(date: string, mode: StatsMode) {
+export function formatDateMode(date: string, mode: StatsMode, dateTo: string | null) {
   const month = getMonth(date)
   const monthLabel = MonthLabelShort[month + 1 as Month]
   switch (mode) {
@@ -250,11 +253,17 @@ export function formatDateMode(date: string, mode: StatsMode) {
       return format(date, `d ${monthLabel} yyyy`)
 
     case 'week':
-      const today = new Date()
-      const end = endOfWeek(date)
-
-      if (isSameDay(end, today) || isAfter(end, today)) {
-        return `${format(date, 'd')} ${monthLabel} – сегодня`
+      let end = endOfWeek(date)
+      if (dateTo) {
+        if (isAfter(end, dateTo)) {
+          end = toDate(dateTo)
+        }
+      }
+      else {
+        const today = new Date()
+        if (isSameDay(end, today) || isAfter(end, today)) {
+          return `${format(date, 'd')} ${monthLabel} – сегодня`
+        }
       }
 
       const endMonth = getMonth(end)

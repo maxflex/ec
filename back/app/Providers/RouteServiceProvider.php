@@ -56,7 +56,7 @@ class RouteServiceProvider extends ServiceProvider
         );
 
         RateLimiter::for(RouteGroup::pub,
-            fn ($request) => Limit::perMinute(50)->by($request->ip())
+            fn ($request) => Limit::perMinute(100)->by($request->ip())
         );
 
         /**
