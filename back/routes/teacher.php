@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ClientTestController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\ExamScoreController;
+use App\Http\Controllers\Admin\TestController;
 use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExamDateController;
@@ -69,3 +70,5 @@ Route::prefix('upload')->controller(UploadController::class)->group(function () 
     Route::post('files', 'files');
     Route::post('photos', 'photos');
 });
+
+Route::apiResource('tests', TestController::class)->only(['index', 'show']);

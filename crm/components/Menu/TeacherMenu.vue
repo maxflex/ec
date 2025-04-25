@@ -7,6 +7,7 @@ import {
   mdiFileDocumentEditOutline,
   mdiFileSign,
   mdiHumanMaleBoard,
+  mdiLandPlots,
   mdiNumeric5BoxMultiple,
   mdiStarBoxOutline,
   mdiTrophy,
@@ -66,6 +67,12 @@ const menu: Menu = [
     title: 'Инструкции проверка',
     to: '/instructions-check',
     hide: user?.id !== 24350,
+  },
+
+  {
+    icon: mdiLandPlots,
+    title: 'Тесты',
+    to: '/tests',
   },
 ]
 

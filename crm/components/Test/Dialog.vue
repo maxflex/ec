@@ -11,6 +11,7 @@ const item = ref<TestResource>({ ...modelDefaults })
 const input = ref()
 const loading = ref(false)
 const deleting = ref(false)
+const { isAdmin } = useAuthStore()
 
 function open(t: TestResource) {
   item.value = cloneDeep(t)
@@ -92,7 +93,7 @@ defineExpose({ open, create })
       v-if="item"
       class="dialog-wrapper"
     >
-      <div class="dialog-header">
+      <div class="dialog-header" v-if="isAdmin">
         <div v-if="item.id > 0">
           Редактирование теста
           <div class="dialog-subheader">
@@ -122,9 +123,13 @@ defineExpose({ open, create })
           />
         </div>
       </div>
+      <div class="dialog-header" v-else>
+        Просмотр теста
+      </div>
       <div class="dialog-body">
         <div>
           <v-text-field
+            :disabled="!isAdmin"
             ref="input"
             v-model="item.name"
             label="Название"
@@ -132,12 +137,14 @@ defineExpose({ open, create })
         </div>
         <div>
           <v-text-field
+            :disabled="!isAdmin"
             v-model="item.description"
             label="Техническое описание"
           />
         </div>
         <div>
           <v-text-field
+            :disabled="!isAdmin"
             v-model="item.minutes"
             label="Минут на выполнение"
             type="number"
@@ -145,7 +152,8 @@ defineExpose({ open, create })
           />
         </div>
         <div>
-          <FileUploader v-model="item.file" folder="tests" />
+          <FileUploader v-model="item.file" folder="tests" v-if="isAdmin" />
+          <FileItem downloadable :item="item.file" v-else-if="item.file" />
         </div>
         <div>
           <div class="test-dialog__questions">
@@ -156,6 +164,7 @@ defineExpose({ open, create })
               <h2>
                 Вопрос {{ i + 1 }}
                 <v-btn
+                  v-if="isAdmin"
                   icon="$close"
                   variant="plain"
                   color="red"
@@ -171,6 +180,7 @@ defineExpose({ open, create })
                   height="48"
                   width="48"
                   variant="text"
+                  :readonly="!isAdmin"
                   border
                   :class="{
                     'bg-success': q.answers.some(e => e === n),
@@ -188,6 +198,7 @@ defineExpose({ open, create })
                   hide-spin-buttons
                   density="comfortable"
                   hide-details
+                  :disabled="!isAdmin"
                 />
               </div>
             </div>
@@ -197,6 +208,7 @@ defineExpose({ open, create })
             color="primary"
             block
             @click="addQuestion()"
+            v-if="isAdmin"
           >
             добавить вопрос
           </v-btn>
