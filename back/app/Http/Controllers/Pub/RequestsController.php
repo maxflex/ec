@@ -17,6 +17,10 @@ class RequestsController extends Controller
      */
     public function store(PubRequestRequest $request)
     {
+        // тестовые заявки с health-check
+        if ($request->input('testing') === true) {
+            return ['id' => -1];
+        }
         $clientRequest = new ClientRequest($request->all());
         $clientRequest->direction = Direction::fromIncomingRequest($request);
         $clientRequest->ip = $request->ip();

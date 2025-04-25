@@ -64,6 +64,11 @@ class RouteServiceProvider extends ServiceProvider
          * 5 заявок в час с одного IP или google_id, или yandex_id, или phone
          */
         RateLimiter::for('requests', function (Request $request) {
+            // тестовые заявки с health-check
+            if ($request->input('testing') === true) {
+                return Limit::none();
+            }
+
             $maxAttempts = 5;
 
             $limits = [
