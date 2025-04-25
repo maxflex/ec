@@ -42,7 +42,34 @@ class RequestPassesMetric extends BaseMetric
 
     protected function filterHasUsed($query, $value)
     {
-        $query->where('passes_used', $value ? '>' : '=', 0);
+        switch ($value) {
+            case 'hasOne':
+                // есть хотя бы 1 использованное разрешение
+                return $query->where('passes_used', '>', 0);
+
+            case 'onlyFirst':
+                // только первое использованное разрешение
+                $sub = Pass::query()
+                    ->whereNotNull('request_id')
+                    ->join('pass_logs as pl', fn ($q) => $q
+                        ->on('pl.entity_id', '=', 'passes.id')
+                        ->where('pl.entity_type', '=', Pass::class)
+                    )
+                    ->selectRaw('
+                        passes.request_id,
+                        min(passes.date) as min_date
+                    ')
+                    ->groupByRaw('passes.request_id');
+
+                return $query->joinSub($sub, 's', fn ($join) => $join
+                    ->on('x.request_id', '=', 's.request_id')
+                    ->whereRaw('x.date = s.min_date')
+                );
+
+            case 'noPasses':
+                // нет использованных разрешений
+                return $query->where('passes_used', '=', 0);
+        }
     }
 
     protected function filterDirection($query, array $directions)

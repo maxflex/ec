@@ -1,7 +1,13 @@
 <script lang="ts">
+const HasUsedLabel = {
+  hasOne: 'есть хотя бы 1 использованное разрешение',
+  onlyFirst: 'только первое использованное разрешение',
+  noPasses: 'нет использованных разрешений',
+} as const
+
 interface Filters {
   direction: Direction[]
-  has_used?: number
+  has_used?: keyof typeof HasUsedLabel
 }
 
 const filterDefaults: Filters = {
@@ -30,7 +36,7 @@ defineExpose({ filters })
   <div>
     <UiClearableSelect
       v-model="filters.has_used"
-      :items="yesNo('есть хотя бы 1 использованное разрешение', 'нет использованных разрешений')"
+      :items="selectItems(HasUsedLabel)"
       label="Разрешения на пропуска в заявке"
     />
   </div>

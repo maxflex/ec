@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { TestQuestion, TestResource } from '.'
 import { cloneDeep } from 'lodash-es'
-import { modelDefaults, type TestQuestion, type TestResource } from '.'
+import { modelDefaults } from '.'
 
 const emit = defineEmits<{
   updated: []
@@ -81,6 +82,10 @@ function toggleAnswer(q: TestQuestion, n: number) {
     : q.answers.splice(index, 1)
 }
 
+function isCorrectAnswer(q: TestQuestion, n: number): boolean {
+  return q.answers.includes(n)
+}
+
 defineExpose({ open, create })
 </script>
 
@@ -93,7 +98,7 @@ defineExpose({ open, create })
       v-if="item"
       class="dialog-wrapper"
     >
-      <div class="dialog-header" v-if="isAdmin">
+      <div v-if="isAdmin" class="dialog-header">
         <div v-if="item.id > 0">
           Редактирование теста
           <div class="dialog-subheader">
@@ -123,37 +128,37 @@ defineExpose({ open, create })
           />
         </div>
       </div>
-      <div class="dialog-header" v-else>
+      <div v-else class="dialog-header">
         Просмотр теста
       </div>
       <div class="dialog-body">
         <div>
           <v-text-field
-            :disabled="!isAdmin"
             ref="input"
             v-model="item.name"
+            :disabled="!isAdmin"
             label="Название"
           />
         </div>
         <div>
           <v-text-field
-            :disabled="!isAdmin"
             v-model="item.description"
+            :disabled="!isAdmin"
             label="Техническое описание"
           />
         </div>
         <div>
           <v-text-field
-            :disabled="!isAdmin"
             v-model="item.minutes"
+            :disabled="!isAdmin"
             label="Минут на выполнение"
             type="number"
             hide-spin-buttons
           />
         </div>
         <div>
-          <FileUploader v-model="item.file" folder="tests" v-if="isAdmin" />
-          <FileItem downloadable :item="item.file" v-else-if="item.file" />
+          <FileUploader v-if="isAdmin" v-model="item.file" folder="tests" />
+          <FileItem v-else-if="item.file" downloadable :item="item.file" />
         </div>
         <div>
           <div class="test-dialog__questions">
@@ -182,9 +187,7 @@ defineExpose({ open, create })
                   variant="text"
                   :readonly="!isAdmin"
                   border
-                  :class="{
-                    'bg-success': q.answers.some(e => e === n),
-                  }"
+                  :class="{ 'bg-success': isCorrectAnswer(q, n) }"
                   icon
                   @click="toggleAnswer(q, n)"
                 >
@@ -204,11 +207,11 @@ defineExpose({ open, create })
             </div>
           </div>
           <v-btn
+            v-if="isAdmin"
             size="x-large"
             color="primary"
             block
             @click="addQuestion()"
-            v-if="isAdmin"
           >
             добавить вопрос
           </v-btn>
