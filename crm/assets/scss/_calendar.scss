@@ -25,18 +25,6 @@
   }
 
   &-dialog {
-    position: fixed;
-    background: white;
-    top: 0;
-    left: 100%;
-    z-index: 3;
-    height: 100vh;
-    overflow-y: scroll;
-    box-shadow:
-      0px 2px 1px -1px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
-      0px 1px 1px 0px var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)),
-      0px 1px 3px 0px var(--v-shadow-key-ambient-opacity, rgba(0, 0, 0, 0.12));
-
     &__header {
       position: sticky;
       top: 0;
@@ -51,26 +39,6 @@
         margin-right: 30px;
         background: transparent;
       }
-    }
-
-    &__scrim {
-      position: fixed;
-      left: 0;
-      top: 0;
-      width: 100vw;
-      height: 100vh;
-    }
-  }
-
-  &-open {
-    &:before {
-      content: '';
-      position: absolute;
-      background: white;
-      opacity: 0.6;
-      height: 100%;
-      width: 100%;
-      z-index: 3;
     }
   }
 

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { VDialogTransition } from 'vuetify/components'
+
 const emit = defineEmits(['close'])
 const model = defineModel<string | string[]>({ required: true })
 const { dialog } = useDialog('large')
@@ -84,7 +86,7 @@ defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog v-model="dialog" class="dialog-fullwidth" :transition="false">
+  <v-dialog v-model="dialog" class="dialog-fullwidth calendar-dialog" :transition="{ component: VDialogTransition }">
     <v-fade-transition>
       <UiLoader v-if="scrolling" style="z-index: 1" />
     </v-fade-transition>

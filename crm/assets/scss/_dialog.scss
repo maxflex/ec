@@ -241,8 +241,10 @@
 }
 
 .dialog-fullwidth {
-  .dialog {
+  &:not(.calendar-dialog) .dialog {
     transition: none !important;
+  }
+  .dialog {
     width: calc(100vw - 256px) !important;
     box-shadow: none !important;
     right: 0 !important;
