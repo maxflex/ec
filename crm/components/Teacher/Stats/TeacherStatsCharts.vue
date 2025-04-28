@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { ChartData } from 'chart.js'
+import type { TeacherStatsKey, TeacherStatsResponse } from '.'
 import { Chart, registerables } from 'chart.js'
 import { BarChart } from 'vue-chart-3'
 import { colors } from '~/plugins/vuetify'
-import { absoluteValues, categories, extraColors, options, optionsLessons, type TeacherStatsKey, type TeacherStatsResponse } from '.'
+import { absoluteValues, categories, extraColors, options, optionsLessons } from '.'
 
 const { teacher } = defineProps<{ teacher: TeacherResource }>()
 
@@ -44,6 +45,7 @@ async function loadData() {
             {
               label: 'Среднее',
               data: [],
+              // @ts-expect-error
               absoluteValues: [],
               backgroundColor: key in extraColors ? extraColors[key]![0] : colors.primary,
               maxBarThickness,
@@ -53,6 +55,7 @@ async function loadData() {
             {
               label: teacherName,
               data: [],
+              // @ts-expect-error
               absoluteValues: [],
               backgroundColor: key in extraColors ? extraColors[key]![1] : colors.error,
               maxBarThickness,
@@ -66,13 +69,15 @@ async function loadData() {
       charts[key]!.datasets[0].data.push(yearData[key])
 
       if (key in absoluteValues) {
+        // @ts-expect-error
         charts[key]!.datasets[0].absoluteValues.push(stats.avg[year][absoluteValues[key]])
-        charts[key]!.datasets[1].absoluteValues.push(stats.teacher[year][absoluteValues[key]])
+        // @ts-expect-error
+        const teacherValue = (year in stats.teacher) ? stats.teacher[year][absoluteValues[key]] : 0
+        // @ts-expect-error
+        charts[key]!.datasets[1].absoluteValues.push(teacherValue)
       }
 
-      const teacherValue = (year in stats.teacher)
-        ? stats.teacher[year][key]
-        : 0
+      const teacherValue = (year in stats.teacher) ? stats.teacher[year][key] : 0
       charts[key]!.datasets[1].data.push(teacherValue)
     }
   }
