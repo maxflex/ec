@@ -143,8 +143,9 @@ definePageMeta({ layout: 'login' })
       <img src="/img/logo.svg" />
     </div>
     <v-window v-model="window">
-      <v-window-item>
+      <v-window-item class="form-step-phone">
         <v-text-field
+          id="form-phone"
           ref="phoneInput"
           v-model="number"
           v-maska="phoneMask"
