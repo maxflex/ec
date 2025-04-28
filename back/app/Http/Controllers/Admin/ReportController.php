@@ -36,9 +36,21 @@ class ReportController extends Controller
                 requirement = 'required', 2,
                 IF(requirement = 'created', 1, 0)
             ) DESC,
+            CASE `status`
+                WHEN ? THEN 4
+                WHEN ? THEN 3
+                WHEN ? THEN 2
+                WHEN ? THEN 1
+                ELSE 0
+            END DESC,
             `status` DESC,
             `created_at` DESC
-        ");
+        ", [
+            ReportStatus::draft,
+            ReportStatus::toCheck,
+            ReportStatus::refused,
+            ReportStatus::published,
+        ]);
 
         $this->filter($request, $query);
 
