@@ -4,7 +4,7 @@ import type { UserFilters } from '~/components/User/Filters.vue'
 
 const userDialog = ref<InstanceType<typeof UserDialog>>()
 const filters = ref<UserFilters>(loadFilters({}))
-const { items, indexPageData } = useIndex<UserResource, UserFilters>(`users`, filters)
+const { items, indexPageData } = useIndex<UserResource>(`users`, filters)
 
 function onUserUpdated(u: UserResource) {
   const index = items.value.findIndex(e => e.id === u.id)

@@ -76,6 +76,10 @@ function select(key: 'clients' | 'teachers', p: PersonResource) {
     : selected.value[key].splice(index, 1)
 }
 
+function isSelected(key: 'clients' | 'teachers', p: PersonResource): boolean {
+  return selected.value[key].includes(p.id)
+}
+
 watch(item, () => {
   [scheduledAt.date, scheduledAt.time] = item.value.scheduled_at
     ? item.value.scheduled_at.split(' ')
@@ -140,7 +144,7 @@ nextTick(async () => {
                 >
                   <td>
                     <div class="d-flex ga-3">
-                      <UiCheckbox :value="selected[key].some(id => id === p.id)" />
+                      <UiCheckbox :value="isSelected(key, p)" />
                       <UiPerson :item="p" />
                     </div>
                   </td>

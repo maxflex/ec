@@ -9,7 +9,7 @@ const filters = ref<ClientFilters>(loadFilters({
 }))
 
 const clientDialog = ref<InstanceType<typeof ClientDialog>>()
-const { items, indexPageData } = useIndex<ClientListResource, ClientFilters>(
+const { items, indexPageData } = useIndex<ClientListResource>(
   `clients`,
   filters,
 )

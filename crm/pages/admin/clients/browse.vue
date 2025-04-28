@@ -30,7 +30,7 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
 const teacherDialog = ref<InstanceType<typeof TeacherDialog>>()
 const userDialog = ref<InstanceType<typeof UserDialog>>()
 
-const { indexPageData, items, total } = useIndex<ClientsBrowseResource, Filters>(
+const { indexPageData, items, total } = useIndex<ClientsBrowseResource>(
   `clients-browse`,
   filters,
 )

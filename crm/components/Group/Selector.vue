@@ -13,7 +13,7 @@ const filters = ref<GroupFilters>({
   program: [group.program!],
 })
 
-const { items, indexPageData } = useIndex<GroupListResource, GroupFilters>(
+const { items, indexPageData } = useIndex<GroupListResource>(
   `groups`,
   filters,
   {

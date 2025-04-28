@@ -21,7 +21,7 @@ const availableEntityTypes = [
 
 const filters = ref<Filters>(loadFilters({ }))
 
-const { items, indexPageData } = useIndex<PassStats, Filters>(
+const { items, indexPageData } = useIndex<PassStats>(
   `passes/stats`,
   filters,
 )

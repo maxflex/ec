@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import type { RequestDialog } from '#components'
-import { apiUrl, type RequestListResource } from '~/components/Request'
+import type { RequestListResource } from '~/components/Request'
 import type { Filters } from '~/components/Request/Filters.vue'
+import { apiUrl } from '~/components/Request'
 
 const filters = ref<Filters>(loadFilters({
   direction: [],
 }))
 
-const { items, indexPageData } = useIndex<RequestListResource, Filters>(
+const { items, indexPageData } = useIndex<RequestListResource>(
   apiUrl,
   filters,
 )

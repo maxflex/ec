@@ -8,7 +8,7 @@ const filters = ref<ContractVersionFilters>(loadFilters({
   direction: [],
 }))
 
-const { items, indexPageData } = useIndex<ContractVersionListResource, ContractVersionFilters>(
+const { items, indexPageData } = useIndex<ContractVersionListResource>(
   `contract-versions`,
   filters,
 )

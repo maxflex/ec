@@ -11,7 +11,7 @@ const filters = ref<SwampFilters>({
   status: 'toFulfil',
 })
 
-const { items, indexPageData } = useIndex<SwampListResource, SwampFilters>(
+const { items, indexPageData } = useIndex<SwampListResource>(
   `swamps`,
   filters,
   {

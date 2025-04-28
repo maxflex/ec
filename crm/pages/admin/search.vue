@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import type { SearchResultResource } from '~/components/Search'
 import { mdiTextBoxSearchOutline } from '@mdi/js'
 import { useDebounceFn } from '@vueuse/core'
-import type { SearchResultResource } from '~/components/Search'
 
 interface Filters {
   q: string
@@ -13,7 +13,7 @@ const filters = ref<Filters>({ q: '' })
 
 const debounceKeydown = useDebounceFn(onKeydown, 300)
 
-const { items, indexPageData, reloadData } = useIndex<SearchResultResource, Filters>(
+const { items, indexPageData, reloadData } = useIndex<SearchResultResource>(
   `search`,
   filters,
   {

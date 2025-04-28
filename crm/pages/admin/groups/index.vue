@@ -6,7 +6,7 @@ const filters = ref<GroupFilters>(loadFilters({
   year: currentAcademicYear(),
   program: [],
 }))
-const { items, indexPageData } = useIndex<GroupListResource, GroupFilters>(
+const { items, indexPageData } = useIndex<GroupListResource>(
   `groups`,
   filters,
 )

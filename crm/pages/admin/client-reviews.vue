@@ -3,7 +3,7 @@ import type { ClientReviewListResource } from '~/components/ClientReview'
 import type { ClientReviewFilters } from '~/components/ClientReview/Filters.vue'
 
 const filters = ref<ClientReviewFilters>(loadFilters({ }))
-const { items, indexPageData } = useIndex<ClientReviewListResource, ClientReviewFilters>(
+const { items, indexPageData } = useIndex<ClientReviewListResource>(
   `client-reviews`,
   filters,
 )

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { TeacherServiceResource } from '~/components/TeacherService'
+
 const filters = ref<{ year: Year }>(loadFilters({
   year: currentAcademicYear(),
 }))

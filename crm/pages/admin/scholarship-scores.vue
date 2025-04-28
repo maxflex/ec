@@ -20,7 +20,7 @@ const filters = ref<Filters>({
   mode: 'clients',
 })
 
-const { items, indexPageData, extra } = useIndex<ScholarshipScoreClient, Filters, Extra>(
+const { items, indexPageData, extra } = useIndex<ScholarshipScoreClient, Extra>(
   `scholarship-scores`,
   filters,
 )

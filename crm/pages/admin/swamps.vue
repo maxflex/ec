@@ -5,7 +5,7 @@ const filters = ref<SwampFilters>(loadFilters({
   year: currentAcademicYear(),
 }))
 
-const { items, indexPageData } = useIndex<SwampListResource, SwampFilters>(
+const { items, indexPageData } = useIndex<SwampListResource>(
   `swamps`,
   filters,
 )

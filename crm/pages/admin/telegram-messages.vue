@@ -3,7 +3,7 @@ import type { TelegramMessageFilters } from '~/components/TelegramMessage/Filter
 
 const filters = ref<TelegramMessageFilters>(loadFilters({}))
 
-const { items, indexPageData } = useIndex<TelegramMessageResource, TelegramMessageFilters>(
+const { items, indexPageData } = useIndex<TelegramMessageResource>(
   `telegram-messages`,
   filters,
 )

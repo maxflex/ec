@@ -14,11 +14,7 @@ const filters = ref<GroupMessageFilters>({
   direction: [],
 })
 
-const { items, extra, indexPageData } = useIndex<
-  RecepientPerson,
-  GroupMessageFilters,
-  Extra
->(
+const { items, extra, indexPageData } = useIndex<RecepientPerson, Extra>(
   `people-selector`,
   filters,
 )
@@ -85,6 +81,10 @@ async function addToEvent() {
   await router.push({ name: 'events-id', params: { id: event.id } })
 }
 
+function isSelected(item: RecepientPerson): boolean {
+  return isSelectedAll.value || selected.value[filters.value.mode].includes(item.id)
+}
+
 if (!event) {
   watch(selected, (newVal) => {
     selectedTotal.value === 0
@@ -136,7 +136,7 @@ if (!event) {
         <tr v-for="item in items" :key="item.id" @click="select(item)">
           <td style="width: 500px">
             <div>
-              <UiCheckbox :value="isSelectedAll || selected[filters.mode].some(id => id === item.id)" />
+              <UiCheckbox :value="isSelected(item)" />
               <UiPerson :item="item" teacher-format="full" />
             </div>
           </td>

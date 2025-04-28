@@ -17,7 +17,7 @@ const clientGroups = ref<GroupListResource[]>([])
 const availableYears = ref<Year[]>()
 const noData = computed(() => availableYears.value?.length === 0)
 
-const { items: groups } = useIndex<GroupListResource, GroupFilters>(
+const { items: groups } = useIndex<GroupListResource>(
   `groups`,
   groupFilters,
   {

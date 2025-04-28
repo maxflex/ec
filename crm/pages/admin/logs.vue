@@ -2,7 +2,7 @@
 import type { LogFilters } from '~/components/Log/Filters.vue'
 
 const filters = ref<LogFilters>(loadFilters({}))
-const { items, indexPageData } = useIndex<LogResource, LogFilters>(
+const { items, indexPageData } = useIndex<LogResource>(
   `logs`,
   filters,
 )

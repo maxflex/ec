@@ -5,7 +5,7 @@ import type { TeacherPaymentFilters } from '~/components/TeacherPayment/Filters.
 const filters = ref<TeacherPaymentFilters>(loadFilters({
   year: currentAcademicYear(),
 }))
-const { items, indexPageData } = useIndex<TeacherPaymentResource, TeacherPaymentFilters>(
+const { items, indexPageData } = useIndex<TeacherPaymentResource>(
   `teacher-payments`,
   filters,
 )

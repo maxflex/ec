@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import type { HeadTeacherReportResource } from '~/components/HeadTeacherReport'
 import { HeadTeacherReportDialog } from '#components'
 
 const filters = ref<YearFilters>(loadFilters({
   year: currentAcademicYear(),
 }))
-const { items, indexPageData } = useIndex<HeadTeacherReportResource, YearFilters>(
+const { items, indexPageData } = useIndex<HeadTeacherReportResource>(
   `head-teacher-reports`,
   filters,
 )

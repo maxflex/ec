@@ -58,6 +58,12 @@ nextTick(loadData)
 
       <div class="show__content">
         <div>
+          <div>Создал</div>
+          <div>
+            {{ formatName(item.user) }}
+          </div>
+        </div>
+        <div>
           <div> Статус </div>
           <div>
             <TelegramListStatus :item="item" />

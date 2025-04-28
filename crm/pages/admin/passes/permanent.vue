@@ -18,7 +18,7 @@ const filters = ref<Filters>({
   entity: client,
 })
 
-const { indexPageData, items, total } = useIndex<PersonResource, Filters>(`passes/permanent`, filters)
+const { indexPageData, items, total } = useIndex<PersonResource>(`passes/permanent`, filters)
 </script>
 
 <template>

@@ -7,7 +7,7 @@ const webReviewDialog = ref<InstanceType<typeof WebReviewDialog>>()
 const filters = ref<WebReviewFilters>(loadFilters({
   program: [],
 }))
-const { items, indexPageData } = useIndex<WebReviewResource, WebReviewFilters>(
+const { items, indexPageData } = useIndex<WebReviewResource>(
   `web-reviews`,
   filters,
 )

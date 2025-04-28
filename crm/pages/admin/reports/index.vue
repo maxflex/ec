@@ -4,7 +4,7 @@ import type { ReportFilters } from '~/components/Report/Filters.vue'
 const filters = ref<ReportFilters>(loadFilters({
   year: currentAcademicYear(),
 }))
-const { items, indexPageData } = useIndex<ReportListResource, ReportFilters>(`reports`, filters)
+const { items, indexPageData } = useIndex<ReportListResource>(`reports`, filters)
 </script>
 
 <template>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ClientListResource } from '~/components/Client'
+
 const { teacherId } = defineProps<{ teacherId: number }>()
 
 const { items, indexPageData } = useIndex<ClientListResource>(`clients`, ref({}), {

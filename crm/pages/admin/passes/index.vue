@@ -7,7 +7,7 @@ const passDialog = ref<InstanceType<typeof PassDialog>>()
 const filters = ref<PassFilters>(loadFilters({
   direction: [],
 }))
-const { items, indexPageData } = useIndex<PassResource, PassFilters>(`passes`, filters)
+const { items, indexPageData } = useIndex<PassResource>(`passes`, filters)
 
 function onPassCreated(pass: PassResource) {
   items.value.unshift(pass)

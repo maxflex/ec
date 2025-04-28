@@ -8,9 +8,9 @@ interface UseIndexOptions {
   loadAvailableYears?: boolean
 }
 
-export default function<T, F extends object = object, E extends object = object>(
+export default function<T, E extends object = object>(
   apiUrl: string,
-  filters: Ref<F> = ref({}) as Ref<F>,
+  filters: Ref<object> = ref({}) as Ref<object>,
   options: UseIndexOptions = {},
 ) {
   const {

@@ -10,7 +10,7 @@ const filters = ref<ClientPaymentFilters>(loadFilters({
   year: currentAcademicYear(),
 }))
 
-const { items, indexPageData } = useIndex<ClientPaymentResource, ClientPaymentFilters>(
+const { items, indexPageData } = useIndex<ClientPaymentResource>(
   `client-payments`,
   filters,
 )
