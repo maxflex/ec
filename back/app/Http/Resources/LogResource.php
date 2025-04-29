@@ -18,7 +18,7 @@ class LogResource extends JsonResource
     {
         return extract_fields($this, [
             'type', 'table', 'created_at', 'ip',
-            'row_id', 'data', 'is_mobile',
+            'row_id', 'data', 'device',
         ], [
             'entity' => new PersonResource(
                 $this->clientParent ?? $this->entity

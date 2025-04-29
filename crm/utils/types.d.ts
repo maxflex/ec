@@ -1,6 +1,8 @@
 import type { ContractPaymentResource } from '~/components/ContractPayment'
 
 declare global {
+  type LogDevice = keyof typeof LogDeviceLabel
+
   type Recepient = keyof typeof RecepientLabel
 
   type InstructionStatus = keyof typeof InstructionStatusLabel
@@ -502,7 +504,7 @@ declare global {
     entity: ?PersonResource
     emulation_user: ?PersonResource
     row_id: ?number
-    is_mobile: boolean
+    device: LogDevice
     ip: string
     data: any
   }

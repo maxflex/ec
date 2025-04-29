@@ -3,7 +3,7 @@ export interface LogFilters {
   type?: LogType
   table?: string
   row_id?: string
-  is_mobile?: number
+  device?: LogDevice
   q?: string
 }
 
@@ -66,9 +66,9 @@ const tables = [
     density="comfortable"
   />
   <UiClearableSelect
-    v-model="model.is_mobile"
+    v-model="model.device"
     label="Устройство"
-    :items="yesNo('только мобильная', 'только дестктоп')"
+    :items="selectItems(LogDeviceLabel)"
     density="comfortable"
   />
   <v-text-field

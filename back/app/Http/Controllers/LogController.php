@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class LogController extends Controller
 {
     protected $filters = [
-        'equals' => ['type', 'table', 'entity_id', 'entity_type', 'is_mobile'],
+        'equals' => ['type', 'table', 'entity_id', 'entity_type', 'device'],
         'rowId' => ['row_id'],
         'q' => ['q'],
     ];

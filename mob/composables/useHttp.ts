@@ -4,6 +4,7 @@ type useFetchType = typeof useFetch
 
 export const useHttp: useFetchType = (path: string, options = {}) => {
   const { getCurrentToken, clearCurrentToken, getOriginalToken, isPreviewMode, clientParentId } = useAuthStore()
+  const { $isTgMiniApp } = useNuxtApp()
   let baseURL = useRuntimeConfig().public.baseUrl
   const token = getCurrentToken().value
 
@@ -16,11 +17,17 @@ export const useHttp: useFetchType = (path: string, options = {}) => {
 
   const headers: any = {
     Accept: 'application/json',
-    Mobile: '1',
   }
 
   if (token) {
     headers.Authorization = `Bearer ${token}`
+  }
+
+  if ($isTgMiniApp) {
+    headers.Telegram = '1'
+  }
+  else {
+    headers.Mobile = '1'
   }
 
   if (isPreviewMode) {

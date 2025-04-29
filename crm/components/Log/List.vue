@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { UserDialog } from '#build/components'
-import { mdiArrowTopRightThin, mdiCellphone } from '@mdi/js'
+import { mdiArrowTopRightThin, mdiCellphone, mdiSendCircle } from '@mdi/js'
 
 const { items } = defineProps<{
   items: LogResource[]
@@ -15,7 +15,12 @@ const userDialog = ref<InstanceType<typeof UserDialog>>()
         {{ formatDateTime(log.created_at) }}
       </div>
       <div style="width: 20px">
-        <v-icon v-if="log.is_mobile" :icon="mdiCellphone" color="gray" :size="20" />
+        <v-icon
+          v-if="log.device !== 'desktop'"
+          :icon="log.device === 'mobile' ? mdiCellphone : mdiSendCircle"
+          :size="20"
+          color="gray"
+        />
       </div>
       <div style="width: 180px">
         <template v-if="log.entity">

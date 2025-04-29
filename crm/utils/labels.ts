@@ -694,3 +694,9 @@ export const SendToAltLabel = {
   parents: 'представителям',
   teachers: 'преподавателям',
 }
+
+export const LogDeviceLabel = {
+  desktop: 'десктоп',
+  mobile: 'мобильная',
+  telegram: 'телеграм',
+}

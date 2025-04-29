@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\LogDevice;
 use App\Enums\LogType;
 use App\Utils\Session;
 use Carbon\Carbon;
@@ -19,7 +20,7 @@ class Log extends Model
 
     protected $casts = [
         'data' => 'array',
-        'is_mobile' => 'boolean',
+        'device' => LogDevice::class,
         'type' => LogType::class,
     ];
 
@@ -71,9 +72,9 @@ class Log extends Model
             if (request()->header('Client-Parent-Id')) {
                 $log->client_parent_id = request()->header('Client-Parent-Id');
             }
-            if (request()->header('Mobile')) {
-                $log->is_mobile = true;
-            }
+            $log->device = request()->header('Telegram')
+                ? LogDevice::telegram
+                : (request()->header('Mobile') ? LogDevice::mobile : LogDevice::desktop);
             $log->ip = request()->ip();
         });
     }

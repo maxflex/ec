@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ClientReviewDialog, TelegramMessageDialog } from '#build/components'
-import { mdiEye } from '@mdi/js'
-import { apiUrl, type ClientReviewListResource } from '.'
+import type { ClientReviewListResource } from '.'
+import { apiUrl } from '.'
 
 const props = defineProps<{
   items: ClientReviewListResource[]
