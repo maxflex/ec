@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const { item, size = 100 } = defineProps<{
-  item: PersonWithPhotoResource
+  item: {
+    photo_url?: string | null
+  }
   size?: number
 }>()
 

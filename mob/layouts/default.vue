@@ -17,5 +17,6 @@ const currentPageClass = computed(() => [
       </v-main>
       <PageOnlyDesktop v-else />
     </v-app>
+    <TgMiniAppControls />
   </ClientOnly>
 </template>

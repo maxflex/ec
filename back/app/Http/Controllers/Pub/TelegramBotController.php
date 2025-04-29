@@ -39,14 +39,15 @@ class TelegramBotController extends Controller
             });
 
             $bot->command('start', function ($message) use ($bot) {
-                $buttons = [[
-                    ['text' => 'Отправить мой номер телефона', 'request_contact' => true],
-                ]];
+                $buttons = [
+                    [['text' => '📱Отправить мой номер телефона', 'request_contact' => true]],
+                ];
                 $replyMarkup = new ReplyKeyboardMarkup(
                     $buttons,
                     oneTimeKeyboard: true,
                     resizeKeyboard: true,
-                    isPersistent: true
+                    isPersistent: true,
+                    inputFieldPlaceholder: 'Нажмите кнопку ниже 👇'
                 );
                 $telegramId = $message->getChat()->getId();
                 $bot->sendMessage(

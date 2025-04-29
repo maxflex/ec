@@ -21,6 +21,13 @@ watch(dialog, (nowOpen, wasOpen) => {
       isBurgerClosing.value = false
     }, 400)
   }
+
+  if (nowOpen) {
+    document.documentElement.classList.add('menu-open')
+  }
+  else {
+    document.documentElement.classList.remove('menu-open')
+  }
 })
 </script>
 
@@ -73,8 +80,6 @@ watch(dialog, (nowOpen, wasOpen) => {
         </div>
       </div>
     </transition>
-    <v-dialog :model-value="dialog" :fullscreen="false" :scrim="false" persistent>
-    </v-dialog>
   </header>
 </template>
 

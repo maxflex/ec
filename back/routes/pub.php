@@ -24,9 +24,11 @@ Route::prefix('requests')->middleware('throttle:requests')->controller(RequestsC
 Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::post('submit-phone', 'submitPhone');
     Route::post('verify-code', 'verifyCode');
-    Route::post('magic-link', 'magicLink');
     Route::get('user', 'user')->middleware('auth:crm');
     Route::get('logout', 'logout')->middleware('auth:crm');
+
+    route::post('via-telegram', 'viaTelegram');
+    Route::post('via-magic-link', 'viaMagicLink');
 });
 
 Route::apiResource('/teachers', TeacherController::class)->only('index');

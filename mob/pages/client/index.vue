@@ -24,9 +24,9 @@ nextTick(async () => {
 <template>
   <v-fade-transition>
     <div v-if="showGreeting" class="client-greeting">
-      <h4>
-        {{ formatName(rememberUser!, 'first-middle') }}, здравствуйте!
-      </h4>
+      <UiPageTitle>
+        {{ rememberUser!.first_name }}, здравствуйте!
+      </UiPageTitle>
       <p>
         В этом личном кабинете вы сможете видеть:
       </p>
@@ -58,34 +58,24 @@ nextTick(async () => {
           почти все то же самое, только в виде сообщений
         </li>
       </ul>
-      <v-btn color="primary" width="300" class="mt-10" size="x-large" @click="ok()">
-        понятно
-      </v-btn>
+      <p>
+        <v-btn color="primary" width="300" class="mt-10" size="x-large" @click="ok()">
+          понятно
+        </v-btn>
+      </p>
     </div>
   </v-fade-transition>
 </template>
 
 <style lang="scss">
 .client-greeting {
-  // display: flex;
-  // justify-content: center;
-  // flex-direction: column;
-  // padding-left: 25vw;
-  // margin-top: -100px;
-  padding: 20px;
-  // font-size: 18px;
-
-  ul {
-    padding-left: 10px;
-  }
-  li {
-    padding-left: 10px;
-    &::marker {
-      content: '–';
-    }
-  }
+  padding-bottom: 30px;
   p {
-    margin: 20px 0;
+    padding: var(--offset);
+  }
+  ul {
+    padding-left: 40px;
+    padding-right: var(--offset);
   }
 }
 </style>

@@ -1,5 +1,5 @@
 :root {
-  --app-height: 100%;
+  --app-height: 100vh;
   --offset: 16px;
 }
 
@@ -10,16 +10,16 @@
 }
 
 html {
-  overflow-x: hidden;
-  height: 100dvh;
-  min-height: var(--app-height);
+  overflow: hidden;
+  height: var(--app-height);
+  min-height: 100%;
 }
 
 main {
-  height: 100dvh;
+  height: var(--app-height);
   overflow-y: scroll;
   overflow-x: hidden;
-  padding: 0 !important;
+  // padding: 0 !important;
 
   // если первыми на странице идут фильтры,
   // то они sticky
@@ -522,8 +522,19 @@ h2 {
   line-height: 30px;
 }
 
-.v-overlay-scroll-blocked {
+.menu-open {
   main {
     overflow-y: hidden !important;
+  }
+}
+
+.tg-mini-app {
+  .login,
+  main {
+    padding-top: 80px !important;
+  }
+
+  .menu-dialog .container {
+    padding-top: 80px;
   }
 }

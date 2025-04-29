@@ -12,6 +12,7 @@ use App\Models\Log;
 use App\Models\Phone;
 use App\Utils\MagicLink;
 use App\Utils\Session;
+use App\Utils\TelegramMiniApp;
 use App\Utils\VerificationService;
 use Illuminate\Http\Request;
 
@@ -49,10 +50,10 @@ class AuthController extends Controller
     /**
      * Входим в систему...
      */
-    private function logIn(Phone $phone, bool $viaMagicLink = false)
+    private function logIn(Phone $phone, array $meta = [])
     {
         $token = Session::logIn($phone);
-        $this->logSuccess($phone, $viaMagicLink);
+        $this->logSuccess($phone, $meta);
 
         return [
             'user' => new AuthResource($phone->entity),
@@ -61,26 +62,51 @@ class AuthController extends Controller
         ];
     }
 
-    private function logSuccess(Phone $phone, bool $viaMagicLink = false)
+    private function logSuccess(Phone $phone, array $meta = [])
     {
         Log::create([
             'entity_type' => $phone->entity_type,
             'entity_id' => $phone->entity_id,
             'type' => LogType::auth,
             'data' => [
+                ...$meta,
                 'phone_id' => $phone->id,
                 'number' => $phone->number,
-                'magic_link' => $viaMagicLink,
                 'ua' => $_SERVER['HTTP_USER_AGENT'],
-                // 'status' => 'success',
             ],
+        ]);
+    }
+
+    /**
+     * Вход через Telegram Mini-App
+     */
+    public function viaTelegram(Request $request)
+    {
+        $request->validate([
+            'initData' => ['required', 'string'],
+        ]);
+
+        $tgMiniApp = new TelegramMiniApp($request->input('initData'));
+
+        abort_unless($tgMiniApp->isSafe(), 422);
+
+        $user = $tgMiniApp->getUser();
+        $phones = Phone::where('telegram_id', $user->id)->get();
+
+        abort_unless($phones->count() === 1, 422);
+        $phone = $phones->first();
+
+        abort_unless($phone->entity_type::whereId($phone->entity_id)->canLogin()->exists(), 422);
+
+        return $this->logIn($phone, [
+            'via_telegram' => true,
         ]);
     }
 
     /**
      * Вход через ссылку
      */
-    public function magicLink(Request $request)
+    public function viaMagicLink(Request $request)
     {
         $request->validate([
             'link' => ['required', 'string'],
@@ -95,7 +121,9 @@ class AuthController extends Controller
         abort_if(! $phone, 422);
         abort_if(! Phone::auth($phone->number), 422);
 
-        return $this->logIn($phone, true);
+        return $this->logIn($phone, [
+            'via_magic_link' => true,
+        ]);
     }
 
     public function user()
