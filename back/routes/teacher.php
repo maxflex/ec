@@ -11,7 +11,6 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\Teacher\BalanceVerificationController;
 use App\Http\Controllers\Teacher\ClientController;
 use App\Http\Controllers\Teacher\ClientGroupController;
-use App\Http\Controllers\Teacher\ClientReviewController;
 use App\Http\Controllers\Teacher\GradeController;
 use App\Http\Controllers\Teacher\GroupController;
 use App\Http\Controllers\Teacher\HeadTeacherReportController;
@@ -49,7 +48,6 @@ Route::apiResources([
     'reports' => ReportController::class,
     'head-teacher-reports' => HeadTeacherReportController::class,
     'grades' => GradeController::class,
-    'client-reviews' => ClientReviewController::class,
     'scholarship-scores' => ScholarshipScoreController::class,
 ]);
 Route::middleware(HeadTeacherMiddleware::class)->group(function () {

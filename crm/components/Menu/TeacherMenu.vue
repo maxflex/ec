@@ -33,11 +33,6 @@ const menu: Menu = [
     count: 'reports',
   },
   {
-    icon: mdiStarBoxOutline,
-    title: 'Отзывы',
-    to: '/client-reviews',
-  },
-  {
     icon: mdiNumeric5BoxMultiple,
     title: 'Оценки',
     to: '/grades',
