@@ -9,8 +9,8 @@ class ContractPaymentMetric extends BaseMetric
 {
     protected $filters = [
         'equals' => ['is_confirmed', 'is_return'],
-        'contract' => ['company'],
-        'findInSet' => ['method', 'year'],
+        'contract' => ['company', 'year'],
+        'findInSet' => ['method'],
     ];
 
     public function getDateField(): string
@@ -32,6 +32,9 @@ class ContractPaymentMetric extends BaseMetric
 
     protected function filterContract($query, $value, $field)
     {
-        $query->whereHas('contract', fn ($q) => $q->where($field, $value));
+        $query->whereHas('contract', fn ($q) => is_array($value)
+                ? $q->whereIn($field, $value)
+                : $q->where($field, $value)
+        );
     }
 }
