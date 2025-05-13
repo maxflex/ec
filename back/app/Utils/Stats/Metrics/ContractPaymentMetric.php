@@ -32,9 +32,12 @@ class ContractPaymentMetric extends BaseMetric
 
     protected function filterContract($query, $value, $field)
     {
-        $query->whereHas('contract', fn ($q) => is_array($value)
-                ? $q->whereIn($field, $value)
-                : $q->where($field, $value)
-        );
+        if (is_array($value)) {
+            if (count($value)) {
+                $query->whereHas('contract', fn ($q) => $q->whereIn($field, $value));
+            }
+        } else {
+            $query->whereHas('contract', fn ($q) => $q->where($field, $value));
+        }
     }
 }
