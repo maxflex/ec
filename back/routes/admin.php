@@ -4,11 +4,11 @@ use App\Http\Controllers\Admin\AllLessonsController;
 use App\Http\Controllers\Admin\AllPaymentsController;
 use App\Http\Controllers\Admin\CabinetController;
 use App\Http\Controllers\Admin\CallController;
+use App\Http\Controllers\Admin\ClientComplaintController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\ClientGroupController;
 use App\Http\Controllers\Admin\ClientLessonController;
 use App\Http\Controllers\Admin\ClientPaymentController;
-use App\Http\Controllers\Admin\ClientReviewController;
 use App\Http\Controllers\Admin\ClientsBrowseController;
 use App\Http\Controllers\Admin\ClientTestController;
 use App\Http\Controllers\Admin\CommentController;
@@ -145,8 +145,6 @@ Route::get('all-lessons', AllLessonsController::class);
 
 Route::get('reports/tabs', [ReportController::class, 'tabs']);
 
-Route::post('client-reviews/send-message', [ClientReviewController::class, 'sendMessage']);
-
 Route::get('teachers/stats/{teacher}', [TeacherController::class, 'stats']);
 
 Route::apiResource('vacations', VacationController::class)->only(['index', 'store']);
@@ -168,13 +166,13 @@ Route::apiResources([
     'macros' => MacroController::class,
     'tests' => TestController::class,
     'client-tests' => ClientTestController::class,
+    'client-complaints' => ClientComplaintController::class,
     'teacher-services' => TeacherServiceController::class,
     'teacher-payments' => TeacherPaymentController::class,
     'teachers' => TeacherController::class,
     'users' => UserController::class,
     'comments' => CommentController::class,
     'lessons' => LessonController::class,
-    'client-reviews' => ClientReviewController::class,
     'client-payments' => ClientPaymentController::class,
     'web-reviews' => WebReviewController::class,
     'reports' => ReportController::class,

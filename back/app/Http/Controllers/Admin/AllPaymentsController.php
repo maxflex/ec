@@ -26,6 +26,7 @@ class AllPaymentsController extends Controller
         $query = AllPayments::query()
             ->orderBy('date', 'desc')
             ->orderBy('id', 'desc');
+
         $this->filter($request, $query);
 
         return $this->handleIndexRequest($request, $query, AllPaymentResource::class);

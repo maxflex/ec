@@ -91,7 +91,7 @@ defineExpose({ create, edit })
           Новая группа
         </template>
         <div>
-          <DialogDeleteBtn
+          <CrudDeleteBtn
             :id="itemId"
             api-url="groups"
             confirm-text="Вы уверены, что хотите удалить группу?"

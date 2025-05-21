@@ -5,10 +5,8 @@ namespace App\Http\Controllers\Pub;
 use App\Enums\TelegramTemplate;
 use App\Events\TelegramBotAdded;
 use App\Http\Controllers\Controller;
-use App\Models\Client;
 use App\Models\EventParticipant;
 use App\Models\Phone;
-use App\Utils\ClientReviewMessage;
 use Illuminate\Http\Request;
 use TelegramBot\Api\Exception;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
@@ -139,11 +137,6 @@ class TelegramBotController extends Controller
                 /**
                  * Произвольное сообщение клиента – в администрацию
                  */
-                // текст отзыва, обработка
-                $phone = Phone::where('telegram_id', $telegramId)->first();
-                if ($phone?->entity_type === Client::class) {
-                    ClientReviewMessage::setText($phone->entity, $message);
-                }
             }, function () {
                 return true;
             });

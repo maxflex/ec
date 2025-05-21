@@ -11,7 +11,6 @@ interface TeacherStats {
   report_fill_avg: number
   report_similarity_percent: number
   conducted_next_day_percent: number
-  client_reviews_avg: number
   client_lessons_late_percent: number
   client_lessons_online_percent: number
   client_lessons_absent_percent: number
@@ -19,7 +18,6 @@ interface TeacherStats {
   payback: number
 
   cancelled_lessons_count: number
-  client_reviews_count: number
   client_lessons_count: number
   reports_count: number
   conducted_lessons_count: number
@@ -96,12 +94,6 @@ export const categories: TeacherStatsCategory[] = [
     desc: 'Степень внутреннего плагиата при написании отчетов',
   },
   {
-    key: 'client_reviews_avg',
-    icon: mdiStarCircle,
-    title: 'Отзывы',
-    desc: 'Средняя оценка по отзывам преподавателя',
-  },
-  {
     key: 'payback',
     icon: mdiCurrencyRub,
     title: 'Маржинальность',
@@ -120,7 +112,6 @@ export const absoluteValues: Partial<Record<TeacherStatsKey, TeacherStatsKey>> =
   client_lessons_online_percent: 'client_lessons_online_count',
   conducted_next_day_percent: 'conducted_next_day_count',
   report_similarity_percent: 'reports_count',
-  client_reviews_avg: 'client_reviews_count',
 }
 
 export const options: ChartOptions<'bar'> = {

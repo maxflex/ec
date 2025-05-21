@@ -71,7 +71,7 @@ defineExpose({ create, edit })
           Добавить баллы
         </template>
         <div>
-          <DialogDeleteBtn
+          <CrudDeleteBtn
             :id="itemId"
             :api-url="API_URL"
             confirm-text="Вы уверены, что хотите удалить балл?"

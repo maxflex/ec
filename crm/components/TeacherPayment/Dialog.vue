@@ -108,7 +108,7 @@ defineExpose({ create, edit })
         </div>
         <span v-else> Добавить платеж </span>
         <div>
-          <DialogDeleteBtn
+          <CrudDeleteBtn
             :id="item.id"
             :api-url="apiUrl"
             confirm-text="Вы уверены, что хотите удалить платеж?"

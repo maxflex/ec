@@ -3,7 +3,6 @@
 namespace App\Enums;
 
 use App\Models\Report;
-use App\Utils\ClientReviewMessage;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 enum TelegramTemplate: string
@@ -14,8 +13,6 @@ enum TelegramTemplate: string
     case teacherConductMissing = 'teacherConductMissing';
     case paymentReminder = 'paymentReminder';
     case unplannedOrCancelled = 'unplannedOrCancelled';
-    case clientReviewRating = 'clientReviewRating';
-    case clientReviewText = 'clientReviewText';
 
     public static function tryFromId($templateId): ?self
     {
@@ -49,21 +46,6 @@ enum TelegramTemplate: string
                 ]],
             ]),
 
-            self::clientReviewRating => new InlineKeyboardMarkup([
-                [
-                    // ['text' => '1 💔', 'callback_data' => json_encode([...$callbackData, 'rating' => 1])],
-                    // ['text' => '2 👎', 'callback_data' => json_encode([...$callbackData, 'rating' => 2])],
-                    // ['text' => '3 😐', 'callback_data' => json_encode([...$callbackData, 'rating' => 3])],
-                    // ['text' => '4 👍', 'callback_data' => json_encode([...$callbackData, 'rating' => 4])],
-                    // ['text' => '5 ⭐', 'callback_data' => json_encode([...$callbackData, 'rating' => 5])],
-                    ['text' => '1 ⭐', 'callback_data' => json_encode([...$callbackData, 'rating' => 1])],
-                    ['text' => '2 ⭐', 'callback_data' => json_encode([...$callbackData, 'rating' => 2])],
-                    ['text' => '3 ⭐', 'callback_data' => json_encode([...$callbackData, 'rating' => 3])],
-                    ['text' => '4 ⭐', 'callback_data' => json_encode([...$callbackData, 'rating' => 4])],
-                    ['text' => '5 ⭐', 'callback_data' => json_encode([...$callbackData, 'rating' => 5])],
-                ],
-            ]),
-
             default => null
         };
     }
@@ -85,11 +67,6 @@ enum TelegramTemplate: string
             case self::reportPublished:
                 $report = Report::find($callbackData->id);
                 $report->read($telegramId);
-                break;
-
-            case self::clientReviewRating:
-                $clientReviewMessage = new ClientReviewMessage($callbackData->id);
-                $clientReviewMessage->setRating((int) $callbackData->rating);
                 break;
         }
     }

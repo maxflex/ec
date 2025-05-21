@@ -30,6 +30,7 @@ const menu: Menu = [
       { title: 'Все клиенты', to: '/clients' },
       { title: 'Договоры', to: '/contracts' },
       { title: 'Пройденные тесты', to: '/client-tests' },
+      { title: 'Жалобы', to: '/client-complaints' },
       { title: 'Обзор', to: '/clients/browse' },
     ],
   },
@@ -68,14 +69,6 @@ const menu: Menu = [
     ],
   },
   {
-    icon: mdiStarBoxOutline,
-    title: 'Отзывы',
-    items: [
-      { title: 'Отзывы клиентов', to: '/client-reviews' },
-      { title: 'Отзывы на сайте', to: '/web-reviews' },
-    ],
-  },
-  {
     icon: mdiCashMultiple,
     title: 'Финансы',
     items: [
@@ -96,11 +89,6 @@ const menu: Menu = [
     ],
   },
   {
-    icon: mdiSeatPassenger,
-    title: 'Кабинеты',
-    to: '/cabinets',
-  },
-  {
     icon: '$pass',
     title: 'Пропуски',
     items: [
@@ -110,11 +98,17 @@ const menu: Menu = [
     ],
   },
   {
+    icon: mdiSeatPassenger,
+    title: 'Кабинеты',
+    to: '/cabinets',
+  },
+  {
     icon: mdiLockOpenOutline,
     title: 'Административное',
     items: [
       { title: 'Итоги', to: '/stats' },
       { title: 'Пользователи', to: '/users' },
+      { title: 'Отзывы', to: '/web-reviews' },
       { title: 'Праздники', to: '/vacations' },
       { title: 'Экзамены', to: '/exam-dates' },
       { title: 'События', to: '/events' },

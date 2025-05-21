@@ -91,7 +91,7 @@ defineExpose({ create, edit })
           Добавить занятие
         </template>
         <div>
-          <DialogDeleteBtn
+          <CrudDeleteBtn
             v-if="itemId && lesson.conducted_at === null"
             :id="itemId"
             api-url="lessons"

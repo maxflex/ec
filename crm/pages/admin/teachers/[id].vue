@@ -11,7 +11,7 @@ const tabs = {
   payments: 'платежи',
   balance: 'баланс',
   reports: 'отчёты',
-  clientReviews: 'отзывы',
+  clientComplaints: 'жалобы',
   services: 'допуслуги',
   instructions: 'инструкции',
   stats: 'статистика',
@@ -101,7 +101,6 @@ nextTick(loadData)
       :teacher-id="teacher.id"
       show-teeth
     />
-    <ClientReviewTab v-else-if="selectedTab === 'clientReviews'" :teacher-id="teacher.id" />
     <InstructionTab v-else-if="selectedTab === 'instructions'" :teacher-id="teacher.id" />
     <ReportTab v-else-if="selectedTab === 'reports'" :teacher-id="teacher.id" />
     <TeacherPaymentTab v-else-if="selectedTab === 'payments'" :teacher-id="teacher.id" />

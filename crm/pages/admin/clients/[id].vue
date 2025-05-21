@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ClientDialog, ClientMarkSheetDialog, PrintSpravkaDialog } from '#build/components'
-import { mdiTable } from '@mdi/js'
 import type { ClientResource } from '~/components/Client'
+import { mdiTable } from '@mdi/js'
 
 const tabs = {
   requests: 'заявки',
@@ -12,10 +12,10 @@ const tabs = {
   examScores: 'баллы на экзаменах',
   grades: 'оценки',
   reports: 'отчёты',
-  clientReviews: 'отзывы',
-  webReviews: 'отзывы на сайте',
+  webReviews: 'отзывы',
   tests: 'тесты',
   logs: 'логи',
+  clientComplaints: 'жалобы',
 } as const
 
 const selectedTab = ref<keyof typeof tabs>('requests')
@@ -138,7 +138,6 @@ nextTick(loadData)
 
     <RequestTab v-if="selectedTab === 'requests'" :client-id="client.id" />
     <ReportTab v-else-if="selectedTab === 'reports'" :client-id="client.id" />
-    <ClientReviewTab v-else-if="selectedTab === 'clientReviews'" :client-id="client.id" />
     <ContractTab v-else-if="selectedTab === 'contracts'" :client-id="client.id" />
     <WebReviewTab v-else-if="selectedTab === 'webReviews'" :client-id="client.id" />
     <ExamScoreTab v-else-if="selectedTab === 'examScores'" :client-id="client.id" />
@@ -147,6 +146,7 @@ nextTick(loadData)
     <ClientGroupsTab v-else-if="selectedTab === 'groups'" :client-id="client.id" />
     <ClientTestTab v-else-if="selectedTab === 'tests'" :client-id="client.id" />
     <LogTab v-else-if="selectedTab === 'logs'" :client-id="client.id" />
+    <ClientComplaintTab v-else-if="selectedTab === 'clientComplaints'" :client-id="client.id" />
     <Schedule v-else :client-id="client.id" show-teeth program-filter />
     <ClientDialog ref="clientDialog" @updated="onClientUpdated" />
   </template>

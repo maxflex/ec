@@ -1,10 +1,12 @@
 <script setup lang="ts">
-const { label = 'Преподаватель', headTeachers } = defineProps<{
+const { label = 'Преподаватель', headTeachers, items } = defineProps<{
   label?: string
   // отображать кураторов (тех, у кого есть "русский" в предметах)
   headTeachers?: boolean
+  // можно передать конкретный список преподов
+  items?: TeacherListResource[]
 }>()
-const model = defineModel<number | null >()
+const model = defineModel<number | null>()
 const teachers = useTeachers()
 
 function isActive(teacher: TeacherListResource) {
@@ -14,7 +16,10 @@ function isActive(teacher: TeacherListResource) {
   return teacher.status === 'active'
 }
 
-const items = computed(() => {
+const computedItems = computed(() => {
+  if (items) {
+    return items
+  }
   if (!Array.isArray(teachers.value)) {
     return []
   }
@@ -33,7 +38,7 @@ const items = computed(() => {
   <UiClearableSelect
     v-model="model"
     v-bind="$attrs"
-    :items="items"
+    :items="computedItems"
     :item-title="formatFullName"
     item-value="id"
     :loading="teachers === undefined"

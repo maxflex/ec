@@ -5,6 +5,7 @@ namespace App\Console\Commands\Once;
 use App\Enums\Program;
 use App\Models\ContractVersionProgram;
 use App\Models\Group;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,7 @@ class UpdateProgramsCommand extends Command
     const TABLES = [
         'groups',
         'client_reviews',
+        'client_complaints',
         'client_tests',
         'tests',
         'reports',
@@ -232,7 +234,7 @@ from x;
             Program::mathProfSchool10 => Program::mathBaseSchool10,
             Program::mathProfSchool11 => Program::mathBaseSchool11,
             Program::mathProfExternal => Program::mathBaseExternal,
-            default => throw new \Exception('Cannot get new program from '.$program->value)
+            default => throw new Exception('Cannot get new program from '.$program->value)
         };
     }
 

@@ -251,7 +251,7 @@ export function formatDateMode(date: string, mode: StatsMode, dateTo: string | n
       return format(date, `d ${monthLabel} yyyy`)
 
     case 'week':
-      let end = endOfWeek(date)
+      let end = endOfWeek(date, { weekStartsOn: 1 })
       if (dateTo) {
         if (isAfter(end, dateTo)) {
           end = toDate(dateTo)

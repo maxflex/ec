@@ -76,7 +76,7 @@ defineExpose({ edit, create })
         </div>
         <div>
           <template v-if="item.id > 0">
-            <DialogDeleteBtn
+            <CrudDeleteBtn
               :id="item.id"
               :api-url="apiUrl"
               confirm-text="Вы уверены, что хотите удалить акт?"

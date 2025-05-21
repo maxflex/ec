@@ -85,7 +85,7 @@ defineExpose({ edit, create })
           Добавить отзыв
         </template>
         <div>
-          <DialogDeleteBtn
+          <CrudDeleteBtn
             :id="itemId"
             :api-url="apiUrl"
             confirm-text="Вы уверены, что хотите удалить отзыв?"

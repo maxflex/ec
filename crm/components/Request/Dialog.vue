@@ -88,7 +88,7 @@ defineExpose({ create, edit })
           Добавить заявку
         </template>
         <div>
-          <DialogDeleteBtn
+          <CrudDeleteBtn
             :id="request.id"
             :api-url="apiUrl"
             confirm-text="Вы уверены, что хотите удалить заявку?"

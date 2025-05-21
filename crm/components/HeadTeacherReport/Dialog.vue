@@ -75,7 +75,7 @@ defineExpose({ edit, create })
           Создать отчёт
         </template>
         <div>
-          <DialogDeleteBtn
+          <CrudDeleteBtn
             :id="item.id"
             :api-url="apiUrl"
             confirm-text="Вы уверены, что хотите удалить отчёт?"

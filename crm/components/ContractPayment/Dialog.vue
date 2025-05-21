@@ -81,7 +81,7 @@ defineExpose({ create, edit })
           <template
             v-if="itemId"
           >
-            <DialogDeleteBtn
+            <CrudDeleteBtn
               :id="itemId"
               :api-url="apiUrl"
               confirm-text="Вы уверены, что хотите удалить платеж?"

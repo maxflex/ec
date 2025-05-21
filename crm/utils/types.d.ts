@@ -831,7 +831,6 @@ declare global {
     | 'ParticipantConfirmationEvent'
     | 'TelegramListSentEvent'
     | 'AppUpdatedEvent'
-    | 'ClientReviewMessageEvent'
     | 'ClientTestUpdatedEvent'
 
   interface CallAppAonResource {

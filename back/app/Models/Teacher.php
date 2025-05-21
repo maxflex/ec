@@ -30,9 +30,9 @@ class Teacher extends Person implements HasTeeth
         'stats' => 'array',
     ];
 
-    public function clientReviews(): HasMany
+    public function clientComplaints(): HasMany
     {
-        return $this->hasMany(ClientReview::class);
+        return $this->hasMany(ClientComplaint::class);
     }
 
     public function scholarshipScores(): HasMany

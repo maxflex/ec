@@ -41,11 +41,6 @@ class User extends Person
         return $this->hasMany(WebReview::class);
     }
 
-    public function clientReviews(): HasMany
-    {
-        return $this->hasMany(ClientReview::class);
-    }
-
     public function instructions(): HasMany
     {
         return $this->hasMany(Instruction::class);

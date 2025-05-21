@@ -39,7 +39,6 @@ readonly class TeacherStats
     public function get(): array
     {
         $clientLessons = $this->getClientLessons();
-        $clientReviews = $this->getClientReviews();
         $conductedLessonsCount = $this->lessons->where('status', LessonStatus::conducted)->count();
         $cancelledLessonsCount = $this->lessons->where('status', LessonStatus::cancelled)->count();
         $conductedNextDayCount = $this->getConductedNextDayCount();
@@ -47,7 +46,6 @@ readonly class TeacherStats
         return [
             'lessons' => $this->getLessons(),
             'reports_count' => $this->reports->count(),
-            'client_reviews_count' => $clientReviews->count,
             'client_lessons_count' => $clientLessons->count, // не используется?
             'client_lessons_avg' => $clientLessons->avg,
             'conducted_lessons_count' => $conductedLessonsCount,
@@ -57,7 +55,6 @@ readonly class TeacherStats
             'report_similarity_percent' => $this->getReportSimilarityPercent(),
             'conducted_next_day_count' => $conductedNextDayCount,
             'conducted_next_day_percent' => $this->percent($conductedNextDayCount, $conductedLessonsCount),
-            'client_reviews_avg' => $clientReviews->avg,
             'client_lessons_late_count' => $clientLessons->late,
             'client_lessons_late_percent' => $this->percent($clientLessons->late, $clientLessons->count),
             'client_lessons_online_count' => $clientLessons->online,
@@ -139,36 +136,6 @@ readonly class TeacherStats
             'studentsLeftPercent' => $studentsLeftPercent,
             'count' => $count,
             'avg' => $lessons->count() ? round($count / $lessons->count(), 1) : 0,
-        ];
-    }
-
-    /**
-     * @return object{count: int, avg: float}
-     */
-    private function getClientReviews(): object
-    {
-        $query = $this->teacher->clientReviews()
-            ->whereRaw('exists (
-                select 1 from lessons l
-                join client_lessons cl on cl.lesson_id = l.id
-                join contract_version_programs cvp
-                    on cvp.id = cl.contract_version_program_id
-                    and cvp.program = client_reviews.program
-                join contract_versions cv on cv.id = cvp.contract_version_id
-                join contracts c
-                    on c.id = cv.contract_id
-                    and c.client_id = client_reviews.client_id
-                join `groups` g
-                    on g.id = l.group_id
-                    and g.year = ?
-                where l.teacher_id = client_reviews.teacher_id
-            )', [
-                $this->year,
-            ]);
-
-        return (object) [
-            'count' => $query->count(),
-            'avg' => round($query->avg('client_reviews.rating'), 1),
         ];
     }
 

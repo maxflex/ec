@@ -93,7 +93,7 @@ defineExpose({ create, edit })
         </div>
         <span v-else> Добавить допуслугу </span>
         <div>
-          <DialogDeleteBtn
+          <CrudDeleteBtn
             :id="item.id"
             :api-url="apiUrl"
             confirm-text="Вы уверены, что хотите удалить допуслугу?"

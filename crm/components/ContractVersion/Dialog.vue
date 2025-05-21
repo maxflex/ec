@@ -363,7 +363,7 @@ defineExpose({ edit, newContract, newVersion })
         </span>
         <div>
           <template v-if="mode === 'edit'">
-            <DialogDeleteBtn
+            <CrudDeleteBtn
               :id="item.id"
               api-url="contract-versions"
               confirm-text="Вы уверены, что хотите удалить договор?"

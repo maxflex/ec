@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { PassResource } from '.'
 import { cloneDeep } from 'lodash-es'
-import { apiUrl, modelDefaults, type PassResource } from '.'
+import { apiUrl, modelDefaults } from '.'
 
 const emit = defineEmits<{
   updated: [pass: PassResource]
@@ -81,7 +82,7 @@ defineExpose({ create, edit })
           </template>
         </template>
         <div v-if="!isDisabled">
-          <DialogDeleteBtn
+          <CrudDeleteBtn
             :id="item.id"
             :api-url="apiUrl"
             confirm-text="Вы уверены, что хотите удалить пропуск?"

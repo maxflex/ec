@@ -104,7 +104,7 @@ defineExpose({ create, edit })
           </template>
         </span>
         <div>
-          <DialogDeleteBtn
+          <CrudDeleteBtn
             v-if="itemId"
             :id="itemId"
             confirm-text="Вы уверены, что хотите удалить клиента?"

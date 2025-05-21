@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Http\Requests;
+
+use App\Enums\Program;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class ClientComplaintRequest extends FormRequest
+{
+    public function rules(): array
+    {
+        return [
+            'client_id' => ['required', 'exists:clients,id'],
+            'teacher_id' => ['required', 'exists:teachers,id'],
+            'program' => ['required', Rule::enum(Program::class)],
+            'text' => ['required'],
+        ];
+    }
+
+    public function authorize(): bool
+    {
+        return true;
+    }
+}

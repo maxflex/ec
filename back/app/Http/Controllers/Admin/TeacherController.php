@@ -15,6 +15,7 @@ class TeacherController extends Controller
         'equals' => ['status'],
         'findInSet' => ['subjects'],
         'search' => ['q'],
+        'client' => ['client_id'],
     ];
 
     public function index(Request $request)
@@ -76,5 +77,17 @@ class TeacherController extends Controller
                     ->orWhere('middle_name', 'like', "%{$word}%");
             }
         });
+    }
+
+    /**
+     * Все преподы, которые когда-либо вели занятия у client_id
+     * (используется в селекторе жалоб)
+     */
+    protected function filterClient($query, $clientId)
+    {
+        $query->whereHas(
+            'lessons.clientLessons.contractVersionProgram.contractVersion.contract',
+            fn ($q) => $q->where('client_id', $clientId)
+        );
     }
 }
