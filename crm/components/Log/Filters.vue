@@ -12,6 +12,7 @@ const rowId = ref(model.value.row_id)
 const q = ref(model.value.q)
 
 const tables = [
+  'client_complaints',
   'client_groups',
   'client_lessons',
   'client_parents',
@@ -27,7 +28,6 @@ const tables = [
   'contracts',
   'event_participants',
   'events',
-  'exam_dates',
   'grades',
   'group_acts',
   'groups',

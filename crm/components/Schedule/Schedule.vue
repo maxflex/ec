@@ -18,7 +18,7 @@ import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'dat
 import { groupBy } from 'lodash-es'
 import { formatDateMonth } from '~/utils'
 
-const { groupId, teacherId, clientId, program, showTeeth, year, programFilter, headTeacher } = defineProps<{
+const { groupId, teacherId, clientId, showTeeth, year, programFilter, headTeacher } = defineProps<{
   groupId?: number
   teacherId?: number
   clientId?: number
@@ -51,7 +51,6 @@ const lessonBulkUpdateDialog = ref<InstanceType<typeof LessonBulkUpdateDialog>>(
 const lessonBulkCreateDialog = ref<InstanceType<typeof LessonBulkCreateDialog>>()
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 const vacations = ref<Record<string, boolean>>({})
-const examDates = ref<ExamDateResource[]>([])
 const checkboxes = ref<{ [key: number]: boolean }>({})
 const lessonIds = computed((): number[] => {
   const result = []
@@ -67,34 +66,6 @@ if (year) {
   selectedYear.value = year
   loadData()
 }
-
-interface AvailableExamDates {
-  [key: string]: Array<{
-    id: number
-    exam: Exam
-    is_reserve: number
-  }>
-}
-
-const availableExamDates = computed<AvailableExamDates>(() => {
-  const result = {} as AvailableExamDates
-  for (const examDate of examDates.value) {
-    if (selectedProgram.value && !examDate.programs.includes(selectedProgram.value)) {
-      continue
-    }
-    for (const d of examDate.dates) {
-      if (!(d.date in result)) {
-        result[d.date] = []
-      }
-      result[d.date].push({
-        id: examDate.id,
-        exam: examDate.exam,
-        is_reserve: d.is_reserve,
-      })
-    }
-  }
-  return result
-})
 
 const filteredLessons = computed(() =>
   selectedProgram.value
@@ -124,7 +95,6 @@ const dates = computed(() => {
     if (hideEmptyDates.value) {
       if (
         filteredLessons.value.some(e => e.date === dateString)
-        || (dateString in availableExamDates.value)
       ) {
         result.push(dateString)
       }
@@ -212,21 +182,6 @@ async function loadVacations() {
   }
 }
 
-async function loadExamDates() {
-  const programs = program ? [program] : availablePrograms.value
-  const { data } = await useHttp<ApiResponse<ExamDateResource>>(
-    `exam-dates`,
-    {
-      params: {
-        'programs[]': programs,
-      },
-    },
-  )
-  if (data.value) {
-    examDates.value = data.value.data
-  }
-}
-
 async function loadData() {
   selectedProgram.value = undefined
   if (!selectedYear.value) {
@@ -234,7 +189,6 @@ async function loadData() {
   }
   await loadTeeth()
   await loadLessons()
-  await loadExamDates()
   await loadVacations()
 }
 
@@ -356,24 +310,6 @@ nextTick(loadAvailableYears)
       <div v-if="vacations[d]" class="lesson-item lesson-item__extra lesson-item__extra--vacation">
         Государственный праздник
       </div>
-      <template v-if="d in availableExamDates">
-        <div
-          v-for="ed in availableExamDates[d]"
-          :key="ed.id"
-          class="lesson-item lesson-item__extra lesson-item__extra--exam-date"
-          :class="{
-            'lesson-item__extra--exam-date-reserved': ed.is_reserve,
-          }"
-        >
-          Экзамен ({{ ExamLabel[ed.exam] }})
-          <template v-if="ed.is_reserve">
-            – резервная дата
-          </template>
-          <template v-else>
-            – основная дата
-          </template>
-        </div>
-      </template>
       <component
         :is="lessonComponent"
         v-for="item in itemsByDate[d]"

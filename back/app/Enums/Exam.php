@@ -63,4 +63,19 @@ enum Exam: string
             self::soch11 => 'Сочинение 11 класс',
         };
     }
+
+    /**
+     * @return array<int, Program>
+     */
+    public function getPrograms(): array
+    {
+        $result = [];
+        foreach (Program::cases() as $program) {
+            if ($program->getExam() === $this) {
+                $result[] = $program;
+            }
+        }
+
+        return $result;
+    }
 }

@@ -110,7 +110,7 @@ const menu: Menu = [
       { title: 'Пользователи', to: '/users' },
       { title: 'Отзывы', to: '/web-reviews' },
       { title: 'Праздники', to: '/vacations' },
-      { title: 'Экзамены', to: '/exam-dates' },
+      { title: 'Экзамены', to: '/exams' },
       { title: 'События', to: '/events' },
       { title: 'Тесты', to: '/tests' },
       { title: 'Ошибки', to: '/errors' },

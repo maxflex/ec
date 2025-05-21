@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\ContractVersionController;
 use App\Http\Controllers\Admin\ContractVersionProgramController;
 use App\Http\Controllers\Admin\ErrorController;
 use App\Http\Controllers\Admin\EventParticipantController;
+use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\ExamScoreController;
 use App\Http\Controllers\Admin\GradeController;
 use App\Http\Controllers\Admin\GroupActController;
@@ -51,7 +52,6 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WebReviewController;
 use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\EventController;
-use App\Http\Controllers\ExamDateController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\TeethController;
 use App\Http\Controllers\UploadController;
@@ -149,9 +149,9 @@ Route::get('teachers/stats/{teacher}', [TeacherController::class, 'stats']);
 
 Route::apiResource('vacations', VacationController::class)->only(['index', 'store']);
 Route::apiResource('logs', LogController::class)->only(['index', 'store']);
-Route::apiResource('exam-dates', ExamDateController::class)->only('index', 'update');
 
 Route::get('teeth', TeethController::class);
+Route::get('exams', ExamController::class);
 
 Route::apiResources([
     'telegram-lists' => TelegramListController::class,

@@ -812,16 +812,6 @@ declare global {
     client: PersonWithPhotoResource
   }
 
-  interface ExamDateResource {
-    id: number
-    exam: Exam
-    programs: Program[]
-    dates: {
-      date: string
-      is_reserve: number
-    }[]
-  }
-
   type CallState = 'Appeared' | 'Connected' | 'Disconnected'
 
   type CallType = 'incoming' | 'outgoing'

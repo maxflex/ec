@@ -6,7 +6,6 @@ use App\Http\Controllers\Admin\ExamScoreController;
 use App\Http\Controllers\Admin\TestController;
 use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\EventController;
-use App\Http\Controllers\ExamDateController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\Teacher\BalanceVerificationController;
 use App\Http\Controllers\Teacher\ClientController;
@@ -63,7 +62,6 @@ Route::prefix('balance-verification')->controller(BalanceVerificationController:
 Route::apiResource('logs', LogController::class)->only('store');
 Route::apiResource('vacations', VacationController::class)->only('index');
 Route::get('teeth', TeethController::class);
-Route::apiResource('exam-dates', ExamDateController::class)->only('index');
 Route::prefix('upload')->controller(UploadController::class)->group(function () {
     Route::post('files', 'files');
     Route::post('photos', 'photos');

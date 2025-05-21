@@ -8,7 +8,6 @@ use App\Http\Controllers\Client\JournalController;
 use App\Http\Controllers\Client\LessonController;
 use App\Http\Controllers\Client\ReportController;
 use App\Http\Controllers\EventController;
-use App\Http\Controllers\ExamDateController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\TeethController;
 use App\Http\Controllers\UploadController;
@@ -31,7 +30,6 @@ Route::get('journal', JournalController::class);
 Route::apiResource('logs', LogController::class)->only('store');
 Route::apiResource('vacations', VacationController::class)->only('index');
 Route::get('teeth', TeethController::class);
-Route::apiResource('exam-dates', ExamDateController::class)->only('index');
 Route::apiResource('events', EventController::class)->only('index');
 Route::prefix('upload')->controller(UploadController::class)->group(function () {
     Route::post('photos', 'photos');
