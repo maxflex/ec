@@ -7,6 +7,7 @@ import {
   mdiDotsTriangle,
   mdiFileDocumentEditOutline,
   mdiNumeric5BoxMultiple,
+  mdiTicket,
 } from '@mdi/js'
 
 export const clientMenu: MenuItem[] = [
@@ -34,6 +35,11 @@ export const clientMenu: MenuItem[] = [
     icon: mdiDotsTriangle,
     title: 'Тесты',
     to: '/tests',
+  },
+  {
+    icon: mdiTicket,
+    title: 'События',
+    to: '/events',
   },
   {
     icon: mdiCreditCardCheckOutline,

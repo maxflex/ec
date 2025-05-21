@@ -4,7 +4,7 @@ import { groupBy } from 'lodash-es'
 import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 import { formatDateMonth } from '~/utils'
 
-const { groupId, teacherId, clientId, program, year, programFilter } = defineProps<{
+const { groupId, teacherId, clientId, year, programFilter } = defineProps<{
   groupId?: number
   teacherId?: number
   clientId?: number
@@ -30,42 +30,12 @@ const params = {
 }
 const loading = ref(true)
 const lessons = ref<LessonListResource[]>([])
-const events = ref<EventListResource[]>([])
 const vacations = ref<Record<string, boolean>>({})
-const examDates = ref<ExamDateResource[]>([])
 
 if (year) {
   selectedYear.value = year
   loadData()
 }
-
-interface AvailableExamDates {
-  [key: string]: Array<{
-    id: number
-    exam: Exam
-    is_reserve: number
-  }>
-}
-
-const availableExamDates = computed<AvailableExamDates>(() => {
-  const result = {} as AvailableExamDates
-  for (const examDate of examDates.value) {
-    if (selectedProgram.value && !examDate.programs.includes(selectedProgram.value)) {
-      continue
-    }
-    for (const d of examDate.dates) {
-      if (!(d.date in result)) {
-        result[d.date] = []
-      }
-      result[d.date].push({
-        id: examDate.id,
-        exam: examDate.exam,
-        is_reserve: d.is_reserve,
-      })
-    }
-  }
-  return result
-})
 
 const filteredLessons = computed(() =>
   selectedProgram.value
@@ -98,13 +68,11 @@ const dates = computed(() => {
 
 function hasContentAtDate(d: string): boolean {
   return filteredLessons.value.some(e => e.date === d)
-    || events.value.some(e => e.date === d)
-    || (d in availableExamDates.value)
 }
 
 const itemsByDate = computed(
-  (): Record<string, Array<LessonListResource | EventListResource>> =>
-    groupBy([...filteredLessons.value, ...events.value], 'date'),
+  (): Record<string, Array<LessonListResource>> =>
+    groupBy([...filteredLessons.value], 'date'),
 )
 
 // если есть скрытый контент, то кнопка "показать более ранние даты"
@@ -162,25 +130,6 @@ async function loadLessons() {
   loading.value = false
 }
 
-async function loadEvents() {
-  // в группе не может быть событий
-  if (groupId) {
-    return
-  }
-  const { data } = await useHttp<ApiResponse<EventListResource>>(
-    `events`,
-    {
-      params: {
-        ...params,
-        year: selectedYear.value,
-      },
-    },
-  )
-  if (data.value) {
-    events.value = data.value.data
-  }
-}
-
 async function loadVacations() {
   vacations.value = {}
   const { data } = await useHttp<ApiResponse<VacationResource>>(
@@ -196,33 +145,12 @@ async function loadVacations() {
   }
 }
 
-async function loadExamDates() {
-  const programs = program ? [program] : availablePrograms.value
-  const { data } = await useHttp<ApiResponse<ExamDateResource>>(
-    `exam-dates`,
-    {
-      params: {
-        'programs[]': programs,
-      },
-    },
-  )
-  if (data.value) {
-    examDates.value = data.value.data
-  }
-}
-
-function isEvent(item: LessonListResource | EventListResource): item is EventListResource {
-  return 'participants_count' in item
-}
-
 async function loadData() {
   selectedProgram.value = undefined
   if (!selectedYear.value) {
     return
   }
   await loadLessons()
-  await loadExamDates()
-  await loadEvents()
   await loadVacations()
 }
 
@@ -274,15 +202,7 @@ nextTick(loadAvailableYears)
           </span>
         </div>
         <div>
-          <div v-if="itemsByDate[d] && itemsByDate[d].filter(e => !isEvent(e)).length">
-            {{ plural(itemsByDate[d].filter(e => !isEvent(e)).length, ['занятие', 'занятия', 'занятий']) }}
-          </div>
-          <div v-if="itemsByDate[d] && itemsByDate[d].filter(e => isEvent(e)).length">
-            {{ plural(itemsByDate[d].filter(e => isEvent(e)).length, ['событие', 'события', 'событий']) }}
-          </div>
-          <div v-if="availableExamDates[d]">
-            {{ plural(availableExamDates[d].length, ['экзамен', 'экзамена', 'экзаменов']) }}
-          </div>
+          {{ plural(itemsByDate[d].length, ['занятие', 'занятия', 'занятий']) }}
         </div>
         <div>
           <v-icon icon="$expand" color="gray" />
@@ -292,26 +212,7 @@ nextTick(loadAvailableYears)
         <div v-if="vacations[d]" class="lesson-item lesson-item__extra lesson-item__extra--vacation">
           Государственный праздник
         </div>
-        <template v-if="d in availableExamDates">
-          <div
-            v-for="ed in availableExamDates[d]" :key="ed.id"
-            class="lesson-item lesson-item__extra lesson-item__extra--exam-date" :class="{
-              'lesson-item__extra--exam-date-reserved': ed.is_reserve,
-            }"
-          >
-            {{ ExamLabel[ed.exam] }}
-            <template v-if="ed.is_reserve">
-              – резервная дата
-            </template>
-            <template v-else>
-              – основная дата
-            </template>
-          </div>
-        </template>
-        <template v-for="item in itemsByDate[d]">
-          <ScheduleRowEvent v-if="isEvent(item)" :key="`e-${item.id}`" :item="item" />
-          <ScheduleRowLesson v-else :id="`lesson-${item.id}`" :key="`l-${item.id}`" :item="item" />
-        </template>
+        <ScheduleRowLesson v-for="item in itemsByDate[d]" :id="`lesson-${item.id}`" :key="`l-${item.id}`" :item="item" />
       </Vue3SlideUpDown>
     </div>
   </div>

@@ -47,13 +47,8 @@ const { items } = defineProps<{
           {{ EventParticipantConfirmationLabel[item.participant.confirmation] }}
         </div>
       </div>
-      <div class="event-list__status">
-        <div>
-          {{ item.is_afterclass ? 'внеклассное' : 'учебное' }}
-        </div>
-        <div v-if="item.is_private" class="text-purple">
-          конфиденциальное
-        </div>
+      <div>
+        {{ item.is_afterclass ? 'внеклассное' : 'учебное' }}
       </div>
     </div>
   </div>

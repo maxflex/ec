@@ -64,13 +64,6 @@
   &__extra {
     font-weight: bold;
 
-    &--exam-date {
-      color: rgb(var(--v-theme-deepOrange));
-      &-reserved {
-        color: #7b1fa2 !important;
-      }
-    }
-
     &--vacation {
       color: rgb(var(--v-theme-red));
     }
