@@ -64,7 +64,7 @@ export default function<Resource extends object>(
     width,
     save,
     isEditing,
-    saving: saving.value,
+    saving,
   }
 
   return {

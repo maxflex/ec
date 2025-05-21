@@ -10,6 +10,7 @@ import {
   mdiLandPlots,
   mdiNumeric5BoxMultiple,
   mdiStarBoxOutline,
+  mdiTicket,
   mdiTrophy,
 } from '@mdi/js'
 
@@ -63,11 +64,15 @@ const menu: Menu = [
     to: '/instructions-check',
     hide: user?.id !== 24350,
   },
-
   {
     icon: mdiLandPlots,
     title: 'Тесты',
     to: '/tests',
+  },
+  {
+    icon: mdiTicket,
+    title: 'События',
+    to: '/events',
   },
 ]
 

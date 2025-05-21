@@ -7,9 +7,6 @@ import type {
   LessonDialog,
 } from '#build/components'
 import {
-  EventItemAdmin,
-  EventItemClient,
-  EventItemTeacher,
   LessonItemAdminClient,
   LessonItemAdminGroup,
   LessonItemAdminTeacher,
@@ -48,7 +45,6 @@ const params = {
 const loading = ref(true)
 const teeth = ref<Teeth>()
 const lessons = ref<LessonListResource[]>([])
-const events = ref<EventListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
 const clientLessonEditPriceDialog = ref<InstanceType<typeof ClientLessonEditPriceDialog>>()
 const lessonBulkUpdateDialog = ref<InstanceType<typeof LessonBulkUpdateDialog>>()
@@ -128,7 +124,6 @@ const dates = computed(() => {
     if (hideEmptyDates.value) {
       if (
         filteredLessons.value.some(e => e.date === dateString)
-        || events.value.some(e => e.date === dateString)
         || (dateString in availableExamDates.value)
       ) {
         result.push(dateString)
@@ -142,8 +137,8 @@ const dates = computed(() => {
 })
 
 const itemsByDate = computed(
-  (): Record<string, Array<LessonListResource | EventListResource>> =>
-    groupBy([...filteredLessons.value, ...events.value], 'date'),
+  (): Record<string, Array<LessonListResource>> =>
+    groupBy([...filteredLessons.value], 'date'),
 )
 
 const availableYears = ref<Year[]>()
@@ -182,25 +177,6 @@ async function loadLessons() {
     lessons.value = data.value.data
   }
   loading.value = false
-}
-
-async function loadEvents() {
-  // в группе не может быть событий
-  if (groupId) {
-    return
-  }
-  const { data } = await useHttp<ApiResponse<EventListResource>>(
-    `events`,
-    {
-      params: {
-        ...params,
-        year: selectedYear.value,
-      },
-    },
-  )
-  if (data.value) {
-    events.value = data.value.data
-  }
 }
 
 async function loadTeeth() {
@@ -251,10 +227,6 @@ async function loadExamDates() {
   }
 }
 
-function isEvent(item: LessonListResource | EventListResource): item is EventListResource {
-  return 'participants_count' in item
-}
-
 async function loadData() {
   selectedProgram.value = undefined
   if (!selectedYear.value) {
@@ -263,7 +235,6 @@ async function loadData() {
   await loadTeeth()
   await loadLessons()
   await loadExamDates()
-  await loadEvents()
   await loadVacations()
 }
 
@@ -289,16 +260,6 @@ function toggleCheckboxes(id: number) {
     }
   }
 }
-
-const eventComponent = (function () {
-  if (isClient) {
-    return EventItemClient
-  }
-  if (isTeacher) {
-    return EventItemTeacher
-  }
-  return EventItemAdmin
-})()
 
 const lessonComponent = (function () {
   if (isClient) {
@@ -413,28 +374,20 @@ nextTick(loadAvailableYears)
           </template>
         </div>
       </template>
-      <template v-for="item in itemsByDate[d]">
-        <component
-          :is="eventComponent"
-          v-if="isEvent(item)"
-          :key="`e-${item.id}`"
-          :item="item"
-        />
-        <component
-          :is="lessonComponent"
-          v-else
-          :id="`lesson-${item.id}`"
-          :key="`l-${item.id}`"
-          :item="item"
-          :checkboxes="checkboxes"
-          class="lesson-item lesson-item__lesson"
-          @edit="lessonDialog?.edit"
-          @conduct="conductDialog?.open"
-          @edit-price="clientLessonEditPriceDialog?.edit"
-          @click="onMassEditClick(item)"
-          @select="toggleCheckboxes"
-        />
-      </template>
+      <component
+        :is="lessonComponent"
+        v-for="item in itemsByDate[d]"
+        :id="`lesson-${item.id}`"
+        :key="`l-${item.id}`"
+        :item="item"
+        :checkboxes="checkboxes"
+        class="lesson-item lesson-item__lesson"
+        @edit="lessonDialog?.edit"
+        @conduct="conductDialog?.open"
+        @edit-price="clientLessonEditPriceDialog?.edit"
+        @click="onMassEditClick(item)"
+        @select="toggleCheckboxes"
+      />
     </div>
   </div>
   <LessonDialog ref="lessonDialog" />

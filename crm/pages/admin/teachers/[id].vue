@@ -8,6 +8,7 @@ const teacherDialog = ref<InstanceType<typeof TeacherDialog>>()
 const tabs = {
   groups: 'группы',
   schedule: 'расписание',
+  events: 'события',
   payments: 'платежи',
   balance: 'баланс',
   reports: 'отчёты',
@@ -103,6 +104,7 @@ nextTick(loadData)
     />
     <InstructionTab v-else-if="selectedTab === 'instructions'" :teacher-id="teacher.id" />
     <ReportTab v-else-if="selectedTab === 'reports'" :teacher-id="teacher.id" />
+    <EventTab v-else-if="selectedTab === 'events'" :teacher-id="teacher.id" />
     <TeacherPaymentTab v-else-if="selectedTab === 'payments'" :teacher-id="teacher.id" />
     <TeacherServiceTab v-else-if="selectedTab === 'services'" :teacher-id="teacher.id" />
     <Balance v-else-if="selectedTab === 'balance'" :teacher-id="teacher.id" :split="teacher.is_split_balance" />

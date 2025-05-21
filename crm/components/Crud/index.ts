@@ -1,6 +1,6 @@
 export interface CrudDialogData {
   width: number
-  saving: boolean
+  saving: Ref<boolean>
   isEditing: ComputedRef<boolean>
   save: () => void
 }

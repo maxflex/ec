@@ -23,11 +23,11 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
-        $request->validate([
-            'year' => ['required'],
-        ]);
-
-        $query = Event::withCount('participants')->latest();
+        $query = Event::withCount(['participants', 'telegramLists'])
+            ->orderByRaw('
+                date ASC,
+                time ASC
+            ');
 
         // конфиденциальные события видны только админам
         if (get_class(auth()->user()) !== User::class) {

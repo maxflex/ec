@@ -6,6 +6,7 @@ import {
   mdiDotsTriangle,
   mdiFileDocumentEditOutline,
   mdiNumeric5BoxMultiple,
+  mdiTicket,
 } from '@mdi/js'
 
 const { user } = useAuthStore()
@@ -36,6 +37,11 @@ const menu: Menu = [
     icon: mdiDotsTriangle,
     title: 'Тесты',
     to: '/tests',
+  },
+  {
+    icon: mdiTicket,
+    title: 'События',
+    to: '/events',
   },
   {
     icon: mdiCreditCardCheckOutline,

@@ -503,18 +503,36 @@ tr.hoverable {
   }
 }
 
-.event-item {
-  align-items: flex-start !important;
-  &__status {
-    margin-top: 3px;
-    width: 110px;
-    line-height: 18px;
-  }
-}
-
 .lowercase-select-items {
   .v-select__selection-text,
   .v-list-item-title {
     text-transform: lowercase;
+  }
+}
+
+.event-list {
+  &__status {
+    margin-top: 3px;
+    width: 160px;
+    line-height: 18px;
+    flex: initial !important;
+  }
+
+  &__confirmation {
+    font-size: 14px;
+    line-height: 14px;
+    .v-icon {
+      font-size: 14px;
+    }
+  }
+
+  &__description {
+    font-size: 14px;
+  }
+
+  &--for-lk {
+    & > div {
+      align-items: flex-start !important;
+    }
   }
 }

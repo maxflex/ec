@@ -90,7 +90,6 @@ nextTick(loadData)
     </template>
   </UiFilters>
   <div>
-    <UiLoader3 :loading="loading" />
     <EventList
       :items="items"
       :year="filters.year"

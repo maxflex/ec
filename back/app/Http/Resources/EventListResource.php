@@ -19,11 +19,12 @@ class EventListResource extends JsonResource
             'is_afterclass', 'participants_count',
             'description', 'is_private',
         ], [
+            'telegram_lists_count' => $this->telegram_lists_count,
             'user' => new PersonResource($this->user),
             'participant' => $this->whenLoaded(
                 'participants',
                 fn () => extract_fields($this->participants[0], [
-                    'is_confirmed',
+                    'confirmation',
                 ])
             ),
         ]);

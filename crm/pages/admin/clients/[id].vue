@@ -7,6 +7,7 @@ const tabs = {
   requests: 'заявки',
   contracts: 'договоры',
   schedule: 'расписание',
+  events: 'события',
   groups: 'группы',
   payments: 'платежи',
   examScores: 'баллы на экзаменах',
@@ -145,6 +146,7 @@ nextTick(loadData)
     <GradeTab v-else-if="selectedTab === 'grades'" :client-id="client.id" />
     <ClientGroupsTab v-else-if="selectedTab === 'groups'" :client-id="client.id" />
     <ClientTestTab v-else-if="selectedTab === 'tests'" :client-id="client.id" />
+    <EventTab v-else-if="selectedTab === 'events'" :client-id="client.id" />
     <LogTab v-else-if="selectedTab === 'logs'" :client-id="client.id" />
     <ClientComplaintTab v-else-if="selectedTab === 'clientComplaints'" :client-id="client.id" />
     <Schedule v-else :client-id="client.id" show-teeth program-filter />

@@ -4,23 +4,11 @@ import { mdiCheckAll } from '@mdi/js'
 const { items } = defineProps<{
   items: EventListResource[]
 }>()
-
-const emit = defineEmits<{
-  edit: [id: number]
-}>()
 </script>
 
 <template>
-  <div class="table event-list">
+  <div class="table table--padding event-list event-list--for-lk">
     <div v-for="item in items" :key="item.id">
-      <div class="table-actionss">
-        <v-btn
-          icon="$edit"
-          :size="48"
-          variant="plain"
-          @click="emit('edit', item.id)"
-        />
-      </div>
       <div style="width: 100px">
         {{ formatDate(item.date) }}
       </div>
@@ -30,13 +18,11 @@ const emit = defineEmits<{
           – {{ item.time_end }}
         </template>
       </div>
-      <div style="flex: 1" class="text-truncate pr-2">
-        <RouterLink :to="{ name: 'events-id', params: { id: item.id } }">
-          {{ item.name }}
-        </RouterLink>
-      </div>
-      <div style="width: 200px">
-        {{ formatName(item.user) }}
+      <div style="flex: 1">
+        {{ item.name }}
+        <div class="event-list__description text-gray">
+          {{ item.description }}
+        </div>
       </div>
       <div style="width: 180px">
         <span v-if="item.participants_count === 0" class="text-gray">
@@ -61,14 +47,6 @@ const emit = defineEmits<{
           {{ EventParticipantConfirmationLabel[item.participant.confirmation] }}
         </div>
       </div>
-      <div style="width: 120px;">
-        <span v-if="item.telegram_lists_count === 0" class="text-gray">
-          нет рассылок
-        </span>
-        <span v-else>
-          {{ item.telegram_lists_count }} рассылок
-        </span>
-      </div>
       <div class="event-list__status">
         <div>
           {{ item.is_afterclass ? 'внеклассное' : 'учебное' }}
@@ -80,22 +58,3 @@ const emit = defineEmits<{
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.event-list {
-  &__status {
-    margin-top: 3px;
-    width: 160px;
-    line-height: 18px;
-    flex: initial !important;
-  }
-
-  &__confirmation {
-    font-size: 14px;
-    line-height: 14px;
-    .v-icon {
-      font-size: 14px;
-    }
-  }
-}
-</style>

@@ -595,6 +595,7 @@ declare global {
     is_afterclass: boolean
     is_private: boolean
     participants_count: number
+    telegram_lists_count: number
     time?: string
     time_end?: string
     user: PersonResource
