@@ -35,10 +35,10 @@ const emit = defineEmits<{
           {{ item.name }}
         </RouterLink>
       </div>
-      <div style="width: 200px">
+      <div style="width: 180px">
         {{ formatName(item.user) }}
       </div>
-      <div style="width: 180px">
+      <div style="width: 150px">
         <span v-if="item.participants_count === 0" class="text-gray">
           нет участников
         </span>
@@ -54,14 +54,10 @@ const emit = defineEmits<{
             'text-gray': item.participant.confirmation === 'pending',
           }"
         >
-          <v-icon
-            :icon="item.participant.confirmation === 'confirmed' ? mdiCheckAll : (item.participant.confirmation === 'rejected' ? '$close' : '$complete')"
-            class="vfn-1"
-          />
           {{ EventParticipantConfirmationLabel[item.participant.confirmation] }}
         </div>
       </div>
-      <div style="width: 120px;">
+      <div style="width: 110px;">
         <span v-if="item.telegram_lists_count === 0" class="text-gray">
           нет рассылок
         </span>
@@ -80,22 +76,3 @@ const emit = defineEmits<{
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.event-list {
-  &__status {
-    margin-top: 3px;
-    width: 160px;
-    line-height: 18px;
-    flex: initial !important;
-  }
-
-  &__confirmation {
-    font-size: 14px;
-    line-height: 14px;
-    .v-icon {
-      font-size: 14px;
-    }
-  }
-}
-</style>

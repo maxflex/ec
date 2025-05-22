@@ -6,6 +6,11 @@ const { items, indexPageData } = useIndex<TelegramListResource, TelegramListFilt
   `telegram-lists`,
   filters,
 )
+
+function onDeleted(item: TelegramListResource) {
+  const index = items.value.findIndex(e => e.id === item.id)
+  items.value.splice(index, 1)
+}
 </script>
 
 <template>
@@ -13,6 +18,6 @@ const { items, indexPageData } = useIndex<TelegramListResource, TelegramListFilt
     <template #filters>
       <TelegramListFilters v-model="filters" />
     </template>
-    <TelegramList :items="items" />
+    <TelegramList :items="items" @deleted="onDeleted" />
   </UiIndexPage>
 </template>

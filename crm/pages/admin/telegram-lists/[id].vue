@@ -3,8 +3,7 @@ const route = useRoute()
 
 const { $addSseListener, $removeSseListener } = useNuxtApp()
 const item = ref<TelegramListResource>()
-const deleting = ref(false)
-const router = useRouter()
+const isExpanded = ref<boolean>(false)
 
 async function loadData() {
   const { data } = await useHttp<TelegramListResource>(
@@ -15,17 +14,25 @@ async function loadData() {
   }
 }
 
-async function destroy() {
-  if (!confirm('Вы уверены, что хотите удалить отправку?')) {
-    return
+const maxRows = computed<number>(() => {
+  if (!item.value) {
+    return 0
   }
-  await useHttp(
-    `telegram-lists/${item.value?.id}`,
-    {
-      method: 'delete',
-    },
-  )
-  await router.push({ name: 'telegram-lists' })
+  return Math.max(...Object.values(item.value.result).map(e => e.length))
+})
+
+const maxDisplayedRows = computed<number>(() => {
+  if (isExpanded.value) {
+    return maxRows.value
+  }
+  return 3
+})
+
+function isSelected(key: SendTo): boolean {
+  if (!item.value) {
+    return false
+  }
+  return item.value.send_to.includes(key)
 }
 
 $addSseListener('TelegramListSentEvent', (data: any) => {
@@ -41,97 +48,62 @@ nextTick(loadData)
 <template>
   <v-fade-transition>
     <UiLoader v-if="item === undefined" />
-    <div v-else class="show">
-      <div class="show__title">
+    <div v-else class="show pt-0">
+      <div class="show__title-new">
         <h2>
           Рассылка от {{ formatDateTime(item.created_at!) }}
         </h2>
-        <v-btn
-          v-if="item.status === 'scheduled'"
-          icon="$delete"
-          :size="48"
-          :loading="deleting"
-          class="remove-btn"
-          @click="destroy()"
-        />
+        <RouterLink v-if="item.event" :to="`/events/${item.event.id}`">
+          {{ item.event.name }}
+        </RouterLink>
       </div>
 
       <div class="show__content">
         <div>
-          <div>Создал</div>
-          <div>
-            {{ formatName(item.user) }}
-          </div>
-        </div>
-        <div>
-          <div> Статус </div>
-          <div>
-            <TelegramListStatus :item="item" />
-          </div>
-        </div>
-        <div>
-          <div>Время</div>
-          <div>
-            <template v-if="item.scheduled_at">
-              запланирована на {{ formatDateTime(item.scheduled_at) }}
-            </template>
-            <template v-else>
-              мгновенная отправка
-            </template>
-          </div>
-        </div>
-        <div>
-          <div> Кому отправлять </div>
-          <div>
-            <TelegramListRecipients :item="item" />
-          </div>
-        </div>
-        <div v-if="item.event">
-          <div>Событие</div>
-          <div>
-            <RouterLink :to="`/events/${item.event.id}`">
-              {{ item.event.name }}
-            </RouterLink>
-          </div>
-        </div>
-        <div>
-          <div>Сообщение</div>
-          <div style="white-space: pre-wrap;">
-            {{ item.text }}
-          </div>
-          <div v-if="item.event && item.is_confirmable" class="d-flex ga-2 mt-1">
-            <v-btn variant="tonal" size="small" :rounded="false">
-              подтвердить участие
-            </v-btn>
-            <v-btn variant="tonal" size="small" :rounded="false">
-              отказаться
-            </v-btn>
-          </div>
-        </div>
-        <template v-for="(items, key) in item.result">
-          <div v-if="items.length" :key="key" class="telegram-list__send-to">
-            <h2 class="mb-5">
-              {{ SendToLabel[key] }}
-            </h2>
-            <div class="table table--padding">
-              <div v-for="person in items" :key="person.id">
-                <div style="width: 300px">
-                  <UiPerson :item="person" />
-                </div>
-                <div>
-                  <div
-                    v-for="message in person.messages"
-                    :key="message.id"
-                    :class="{ 'text-secondary': !!message.telegram_id }"
-                  >
-                    {{ formatPhone(message.number) }}
+          <div></div>
+          <v-table class="send-to-table">
+            <thead>
+              <tr>
+                <th v-for="(label, key) in SendToLabel" :key="key">
+                  <div>
+                    <UiCheckbox :value="isSelected(key)" disabled />
+                    <span>
+                      {{ label }}
+                    </span>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </template>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="i in maxDisplayedRows" :key="i">
+                <td v-for="(label, key) in SendToLabel" :key="key">
+                  <div v-if="item.result[key] && i <= item.result[key].length" class="send-to-table__content">
+                    <UiPerson :item="item.result[key][i - 1]" />
+                    <div class="send-to-table__phones">
+                      <div
+                        v-for="message in item.result[key][i - 1].messages"
+                        :key="message.id"
+                        :class="{ 'text-secondary': !!message.telegram_id }"
+                      >
+                        {{ formatPhone(message.number) }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr v-if="maxDisplayedRows < maxRows" class="cursor-pointer" @click="isExpanded = true">
+                <td colspan="100">
+                  <a>
+                    показать все {{ maxRows }}
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </v-table>
+        </div>
       </div>
+
+      <TelegramMessageForm :item="item" />
     </div>
   </v-fade-transition>
 </template>

@@ -242,7 +242,7 @@ div.item-deleted:after {
 
 .opacity {
   &-6 {
-    opacity: 0.6;
+    opacity: 0.6 !important;
   }
   &-5 {
     opacity: 0.5;
@@ -513,7 +513,7 @@ tr.hoverable {
 .event-list {
   &__status {
     margin-top: 3px;
-    width: 160px;
+    width: 140px;
     line-height: 18px;
     flex: initial !important;
   }
@@ -534,5 +534,45 @@ tr.hoverable {
     & > div {
       align-items: flex-start !important;
     }
+  }
+}
+
+.send-to-table {
+  tr {
+    vertical-align: top;
+
+    th {
+      vertical-align: middle;
+
+      div {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+    }
+
+    td {
+      height: auto !important;
+      $padding: 16px !important;
+      padding-top: $padding;
+      padding-bottom: $padding;
+      width: 33%;
+    }
+  }
+
+  &__content {
+    display: flex;
+    gap: 8px;
+
+    & > *:first-child {
+      width: 180px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+  &__phones {
+    display: flex;
+    flex-direction: column;
   }
 }

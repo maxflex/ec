@@ -85,7 +85,7 @@ const menu: Menu = [
     items: [
       { title: 'Отправленные', to: '/telegram-messages' },
       { title: 'Групповое сообщение', to: '/group-message' },
-      { title: 'Проекты отправок', to: '/telegram-lists' },
+      { title: 'Рассылки', to: '/telegram-lists' },
     ],
   },
   {

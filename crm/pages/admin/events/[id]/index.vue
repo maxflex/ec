@@ -142,12 +142,12 @@ nextTick(loadData)
                               'text-gray': p.confirmation === 'pending',
                             }"
                           >
-                            <v-icon
-                              :icon="p.confirmation === 'confirmed' ? mdiCheckAll : (p.confirmation === 'rejected' ? '$close' : '$complete')"
-                              size="16"
-                              class="vfn-1 mr-1"
-                            />
                             {{ EventParticipantConfirmationLabel[p.confirmation] }}
+                            <v-icon
+                              icon="$expand"
+                              size="16"
+                              class="vfn-1 ml-1"
+                            />
                           </span>
                         </span>
                       </template>
@@ -183,7 +183,7 @@ nextTick(loadData)
         color="primary"
         :width="300"
         :to="{
-          name: 'group-message-send',
+          name: 'group-message',
           query: {
             event_id: item.id,
           },

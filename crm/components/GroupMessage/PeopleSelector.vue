@@ -9,6 +9,11 @@ const { event } = defineProps<{
   event?: EventResource
 }>()
 
+const route = useRoute()
+const router = useRouter()
+const loading = ref(false)
+const eventId = route.query.event_id
+
 const filters = ref<GroupMessageFilters>({
   mode: 'clients',
   direction: [],
@@ -17,10 +22,12 @@ const filters = ref<GroupMessageFilters>({
 const { items, extra, indexPageData } = useIndex<RecepientPerson, Extra>(
   `people-selector`,
   filters,
+  {
+    staticFilters: {
+      event_id: eventId,
+    },
+  },
 )
-
-const router = useRouter()
-const loading = ref(false)
 
 function getDefaultRecipientIds(): RecipientIds {
   if (event) {

@@ -2,9 +2,32 @@
   $padding: 20px;
   padding: $padding;
 
+  &__title-new {
+    // border-bottom: 1px solid rgb(var(--v-theme-border));
+    margin-left: -20px;
+    width: calc(100% + 40px);
+    min-width: calc(100% + 40px);
+    padding: 20px;
+
+    .remove-btn {
+      margin: 0;
+
+      &:not(:hover) {
+        opacity: 0.2;
+      }
+    }
+
+    .v-btn {
+      top: -1px;
+
+      &:not(.remove-btn) {
+        color: rgb(var(--v-theme-gray));
+      }
+    }
+  }
+
   &__title {
     display: flex;
-    height: 36px;
     align-items: center;
     gap: 10px;
 
@@ -53,7 +76,8 @@
       min-width: calc(100% + #{$padding * 2});
     }
 
-    .v-table td:first-child {
+    .v-table td:first-child,
+    .v-table th:first-child {
       padding-left: $padding !important;
     }
   }

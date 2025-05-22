@@ -8,6 +8,7 @@ use App\Enums\SendTo;
 use App\Enums\TelegramListStatus;
 use App\Events\TelegramListSentEvent;
 use App\Http\Resources\PersonResource;
+use App\Http\Resources\PersonWithPhonesResource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -30,16 +31,21 @@ class TelegramList extends Model
 
     public static function getPeople($recipients)
     {
-        $result = [
-            'clients' => [],
-            'teachers' => [],
-        ];
+        $result = [];
 
-        foreach ($result as $key => $val) {
-            $class = $key === 'clients' ? Client::class : Teacher::class;
-            $result[$key] = PersonResource::collection(
-                $class::whereIn('id', $recipients->{$key})->get()
-            );
+        foreach (['clients', 'teachers'] as $key) {
+            switch ($key) {
+                case 'clients':
+                    $clients = Client::with('parent')->whereIn('id', $recipients->clients)->get();
+                    $result['students'] = PersonWithPhonesResource::collection($clients);
+                    $result['parents'] = PersonWithPhonesResource::collection($clients->map(fn ($c) => $c->parent));
+                    break;
+
+                case 'teachers':
+                    $teachers = Teacher::whereIn('id', $recipients->teachers)->get();
+                    $result['teachers'] = PersonWithPhonesResource::collection($teachers);
+                    break;
+            }
         }
 
         return $result;

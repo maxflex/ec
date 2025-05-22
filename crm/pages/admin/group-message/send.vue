@@ -8,7 +8,8 @@ const modelDefaults: TelegramListResource = {
   text: '',
   status: 'scheduled',
   recipients: {
-    clients: [],
+    students: [],
+    parents: [],
     teachers: [],
   },
   result: {
@@ -69,16 +70,20 @@ async function save() {
   }
 }
 
-function select(key: 'clients' | 'teachers', p: PersonResource) {
-  const index = selected.value[key].findIndex(id => id === p.id)
+function select(key: SendTo) {
+  const index = item.value.send_to.findIndex(e => e === key)
   index === -1
-    ? selected.value[key].push(p.id)
-    : selected.value[key].splice(index, 1)
+    ? item.value.send_to.push(key)
+    : item.value.send_to.splice(index, 1)
 }
 
-function isSelected(key: 'clients' | 'teachers', p: PersonResource): boolean {
-  return selected.value[key].includes(p.id)
+function isSelected(key: SendTo): boolean {
+  return item.value.send_to.includes(key)
 }
+
+const maxRows = computed<number>(() =>
+  Math.max(...Object.values(item.value.recipients).map(e => e.length)),
+)
 
 watch(item, () => {
   [scheduledAt.date, scheduledAt.time] = item.value.scheduled_at
@@ -130,29 +135,45 @@ nextTick(async () => {
     <UiLoader v-if="loading" />
     <div v-else class="show">
       <div class="show__content mt-0">
-        <template v-for="(people, key) in item.recipients">
-          <div v-if="people.length" :key="key">
-            <h2 class="mb-5">
-              {{ key === 'clients' ? 'Клиенты' : 'Преподаватели' }}
-            </h2>
-            <v-table hover>
-              <tbody>
-                <tr
-                  v-for="p in people"
-                  :key="p.id"
-                  @click="select(key, p)"
-                >
-                  <td>
-                    <div class="d-flex ga-3">
-                      <UiCheckbox :value="isSelected(key, p)" />
-                      <UiPerson :item="p" />
+        <div>
+          <div></div>
+          <v-table class="send-to-table">
+            <thead>
+              <tr>
+                <th v-for="(label, key) in SendToLabel" :key="key">
+                  <div class="cursor-pointer" @click="select(key)">
+                    <UiCheckbox :value="isSelected(key)" />
+                    <span>
+                      {{ label }}
+                    </span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="i in maxRows" :key="i">
+                <td v-for="(label, key) in SendToLabel" :key="key">
+                  <div
+                    v-if="item.recipients[key] && i <= item.recipients[key].length"
+                    class="send-to-table__content"
+                    :class="{ 'opacity-3': !isSelected(key) }"
+                  >
+                    <UiPerson :item="item.recipients[key][i - 1]" />
+                    <div class="send-to-table__phones">
+                      <div
+                        v-for="phone in item.recipients[key][i - 1].phones"
+                        :key="phone.id"
+                        :class="{ 'text-secondary': !!phone.telegram_id }"
+                      >
+                        {{ formatPhone(phone.number) }}
+                      </div>
                     </div>
-                  </td>
-                </tr>
-              </tbody>
-            </v-table>
-          </div>
-        </template>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </v-table>
+        </div>
       </div>
       <div class="show__inputs mt-12">
         <div v-if="event">
@@ -161,14 +182,6 @@ nextTick(async () => {
             v-model="item.is_confirmable"
             label="Запросить подтверждение участия"
             color="secondary"
-          />
-        </div>
-        <div>
-          <v-select
-            v-model="item.send_to"
-            multiple
-            :items="selectItems(SendToAltLabel)"
-            label="Кому отправлять"
           />
         </div>
         <div>

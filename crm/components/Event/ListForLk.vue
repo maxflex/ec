@@ -24,7 +24,7 @@ const { items } = defineProps<{
           {{ item.description }}
         </div>
       </div>
-      <div style="width: 180px">
+      <div style="width: 150px">
         <span v-if="item.participants_count === 0" class="text-gray">
           нет участников
         </span>
@@ -40,14 +40,10 @@ const { items } = defineProps<{
             'text-gray': item.participant.confirmation === 'pending',
           }"
         >
-          <v-icon
-            :icon="item.participant.confirmation === 'confirmed' ? mdiCheckAll : (item.participant.confirmation === 'rejected' ? '$close' : '$complete')"
-            class="vfn-1"
-          />
           {{ EventParticipantConfirmationLabel[item.participant.confirmation] }}
         </div>
       </div>
-      <div>
+      <div class="event-list__status">
         {{ item.is_afterclass ? 'внеклассное' : 'учебное' }}
       </div>
     </div>

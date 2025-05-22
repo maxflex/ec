@@ -2,7 +2,10 @@
 const { items } = defineProps<{
   items: TelegramListResource[]
 }>()
-
+const emit = defineEmits<{
+  deleted: [item: TelegramListResource]
+}>()
+const router = useRouter()
 function getTotal(tgList: TelegramListResource, onlySent: boolean = false): number {
   let result = 0
 
@@ -14,16 +17,44 @@ function getTotal(tgList: TelegramListResource, onlySent: boolean = false): numb
 
   return result
 }
+
+async function destroy(item: TelegramListResource) {
+  await useHttp(
+    `telegram-lists/${item.id}`,
+    {
+      method: 'DELETE',
+    },
+  )
+  emit('deleted', item)
+  useGlobalMessage('рассылка удалена', 'success')
+}
 </script>
 
 <template>
   <div class="table table--hover">
-    <RouterLink
+    <div
       v-for="item in items"
       :key="item.id"
-      :to="{ name: 'telegram-lists-id', params: { id: item.id } }"
-      class="table-item"
+      class="table-item cursor-pointer"
+      @click="router.push({ name: 'telegram-lists-id', params: { id: item.id } })"
     >
+      <div v-if="item.status === 'scheduled'" class="table-actionss">
+        <v-menu>
+          <template #activator="{ props }">
+            <v-btn
+              icon="$more"
+              :size="48"
+              variant="plain"
+              v-bind="props"
+            />
+          </template>
+          <v-list>
+            <v-list-item class="text-error" @click="destroy(item)">
+              удалить
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
       <div style="width: 300px">
         <span v-if="item.status === 'sent'">
           отправлено {{ formatDateTime(item.scheduled_at || item.created_at!) }}
@@ -40,7 +71,6 @@ function getTotal(tgList: TelegramListResource, onlySent: boolean = false): numb
       <div style="width: 260px">
         <TelegramListRecipients :item="item" />
       </div>
-
       <div style="width: 150px">
         получатели: {{ getTotal(item) }}
       </div>
@@ -53,10 +83,10 @@ function getTotal(tgList: TelegramListResource, onlySent: boolean = false): numb
         </template>
       </div>
       <div class="text-truncate">
-        <RouterLink v-if="item.event" :to="{ name: 'events-id', params: { id: item.event.id } }">
+        <a v-if="item.event" @click.stop="router.push({ name: 'events-id', params: { id: item.event.id } })">
           {{ item.event.name }}
-        </RouterLink>
+        </a>
       </div>
-    </RouterLink>
+    </div>
   </div>
 </template>
