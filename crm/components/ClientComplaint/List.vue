@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ClientComplaintListResource } from '.'
+import { apiUrl } from '.'
 
 const { items, showClient } = defineProps<{
   items: ClientComplaintListResource[]
@@ -13,7 +14,7 @@ const emit = defineEmits<{
 
 <template>
   <div class="table">
-    <div v-for="item in items" :key="item.id">
+    <div v-for="item in items" :id="`${apiUrl}-${item.id}`" :key="item.id">
       <div class="table-actionss">
         <v-btn
           variant="plain"

@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import type { ClientComplaintResource } from '.'
+import type { ClientComplaintListResource, ClientComplaintResource } from '.'
 import { apiUrl, modelDefaults } from '.'
 
-const emit = defineEmits<{
-  updated: []
-}>()
+const items = defineModel<ClientComplaintListResource[]>({ required: true })
 const teachers = ref<TeacherListResource[]>([])
-const { item, expose, dialog, dialogData } = useCrud<ClientComplaintResource>(apiUrl, modelDefaults, {
-  afterOpen: loadTeachers,
-  afterSave() {
-    emit('updated')
-  }
-})
+
+const { item, expose, dialog, dialogData } = useCrud<ClientComplaintResource, ClientComplaintListResource>(
+  apiUrl,
+  modelDefaults,
+  items,
+  {
+    afterOpen: loadTeachers,
+  },
+)
 
 async function loadTeachers() {
   const { data } = await useHttp<ApiResponse<TeacherListResource>>(

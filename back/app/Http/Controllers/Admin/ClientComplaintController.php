@@ -34,8 +34,20 @@ class ClientComplaintController extends Controller
         return new ClientComplaintListResource($clientComplaint);
     }
 
+    public function update(ClientComplaint $clientComplaint, ClientComplaintRequest $request)
+    {
+        $clientComplaint->update($request->all());
+
+        return new ClientComplaintListResource($clientComplaint);
+    }
+
     public function show(ClientComplaint $clientComplaint)
     {
         return new ClientComplaintResource($clientComplaint);
+    }
+
+    public function destroy(ClientComplaint $clientComplaint)
+    {
+        $clientComplaint->delete();
     }
 }

@@ -30,5 +30,5 @@ const { items, indexPageData, reloadData } = useIndex<ClientComplaintListResourc
     </template>
     <ClientComplaintList :items="items" @edit="dialog?.edit" />
   </UiIndexPage>
-  <LazyClientComplaintDialog ref="dialog" @updated="reloadData" />
+  <ClientComplaintDialog ref="dialog" v-model="items" @updated="reloadData" />
 </template>

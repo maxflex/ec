@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { CrudDialogData } from '.'
+import type { CrudDialogData } from '~/composables/useCrud'
 
 const props = defineProps<{
   data: CrudDialogData
 }>()
 
-const { width, saving, save, isEditing } = props.data
+const { width, saving, deleting, isEditing, save, destroy } = props.data
 
 const model = defineModel<boolean>({ required: true })
 </script>
@@ -20,7 +20,18 @@ const model = defineModel<boolean>({ required: true })
         <slot v-else name="title-create">
           Добавить запись
         </slot>
-        <v-btn icon="$save" variant="text" :size="48" :loading="saving" @click="save()" />
+        <div>
+          <v-btn
+            v-if="isEditing"
+            :loading="deleting"
+            :size="48"
+            class="remove-btn"
+            icon="$delete"
+            variant="text"
+            @click="destroy()"
+          />
+          <v-btn icon="$save" variant="text" :size="48" :loading="saving" @click="save()" />
+        </div>
       </div>
       <div class="dialog-body">
         <slot />

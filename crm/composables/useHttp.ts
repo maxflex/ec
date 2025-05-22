@@ -1,8 +1,10 @@
+import type { UseFetchOptions } from '#app'
 import { useFetch } from '#app'
 
-type useFetchType = typeof useFetch
-
-export const useHttp: useFetchType = (path: string, options = {}) => {
+export function useHttp<T = any>(
+  path: string,
+  options: UseFetchOptions<T> = {},
+) {
   const { getCurrentToken, clearCurrentToken, getOriginalToken, isPreviewMode, clientParentId } = useAuthStore()
   let baseURL = useRuntimeConfig().public.baseUrl
   const token = getCurrentToken().value
