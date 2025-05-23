@@ -2,9 +2,13 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin Event
+ */
 class EventListResource extends JsonResource
 {
     /**
@@ -15,11 +19,9 @@ class EventListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'date', 'name', 'time', 'time_end',
-            'is_afterclass', 'participants_count',
-            'description', 'is_private',
+            'date', 'name', 'time', 'time_end', 'is_afterclass',
+            'description', 'is_private', 'telegram_lists_count',
         ], [
-            'telegram_lists_count' => $this->telegram_lists_count,
             'user' => new PersonResource($this->user),
             'participant' => $this->whenLoaded(
                 'participants',
@@ -27,6 +29,9 @@ class EventListResource extends JsonResource
                     'confirmation',
                 ])
             ),
+            'participants' => $this->participants()->get()
+                ->groupBy('confirmation')
+                ->mapWithKeys(fn ($a, $b) => [$b => count($a)]),
         ]);
     }
 }

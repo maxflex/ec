@@ -604,9 +604,9 @@ export const SwampFilterStatusLabel = {
 } as const
 
 export const EventParticipantConfirmationLabel = {
-  pending: 'не подтвердил',
   confirmed: 'участвует',
   rejected: 'отказался',
+  pending: 'не подтвердил',
 } as const
 
 export const TelegramListStatusLabel = {

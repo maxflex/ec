@@ -1,28 +1,23 @@
 <script setup lang="ts">
 import type { EventDialog } from '#components'
 
-const filters = ref<YearFilters>(loadFilters({
-  year: currentAcademicYear(),
-}))
+const filters = useAvailableYearsFilter()
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
-const { items, indexPageData } = useIndex<EventListResource>(`events`, filters)
+const { items, indexPageData, availableYears } = useIndex<EventListResource>(`events`, filters, {
+  loadAvailableYears: true,
+})
 </script>
 
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <v-select
-        v-model="filters.year"
-        label="Учебный год"
-        :items="selectItems(YearLabel)"
-        density="comfortable"
-      />
+      <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
     </template>
     <template #buttons>
       <v-btn
         append-icon="$next"
         color="primary"
-        @click="eventDialog?.create(filters.year)"
+        @click="eventDialog?.create()"
       >
         добавить событие
       </v-btn>

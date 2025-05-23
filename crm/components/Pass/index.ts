@@ -6,6 +6,7 @@ export interface PassResource {
   used_at: string | null
   is_expired: boolean
   request_id?: number
+  is_first_usage?: boolean
   user?: PersonResource
   created_at?: string
   request?: {

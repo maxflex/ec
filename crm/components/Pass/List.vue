@@ -30,7 +30,7 @@ function onPassDeleted(pass: PassResource) {
 </script>
 
 <template>
-  <v-table class="pass-list">
+  <v-table class="pass-list table-padding">
     <tbody>
       <tr v-for="item in items" :id="`pass-${item.id}`" :key="item.id">
         <td width="350">
@@ -56,16 +56,21 @@ function onPassDeleted(pass: PassResource) {
             </span>
           </td>
         </template>
-        <td class="flex-1">
-          <span v-if="item.used_at">
-            использован {{ formatDateTime(item.used_at) }}
-          </span>
-          <span v-else-if="item.is_expired" class="text-error">
-            истёк
-          </span>
-          <span v-else class="text-gray">
-            не использован
-          </span>
+        <td>
+          <div class="table-two-lines">
+            <span v-if="item.used_at">
+              использован {{ formatDateTime(item.used_at) }}
+            </span>
+            <span v-else-if="item.is_expired" class="text-error">
+              истёк
+            </span>
+            <span v-else class="text-gray">
+              не использован
+            </span>
+            <div v-if="item.is_first_usage" :class="item.used_at ? 'text-orange' : 'text-gray'">
+              впервые
+            </div>
+          </div>
         </td>
         <td class="text-gray" style="flex: initial; width: 160px">
           {{ formatDateTime(item.created_at!) }}

@@ -24,10 +24,9 @@ const item = ref<EventResource>(modelDefaults)
 const route = useRoute()
 const router = useRouter()
 
-function create(year: Year) {
+function create() {
   itemId.value = undefined
   item.value = cloneDeep(modelDefaults)
-  item.value.year = year
   dialog.value = true
 }
 

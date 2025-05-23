@@ -92,7 +92,7 @@ function isSelected(item: RecepientPerson): boolean {
   return isSelectedAll.value || selected.value[filters.value.mode].includes(item.id)
 }
 
-if (!event) {
+if (!event && !eventId) {
   watch(selected, (newVal) => {
     selectedTotal.value === 0
       ? localStorage.removeItem('selected-people')

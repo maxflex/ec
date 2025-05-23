@@ -14,6 +14,7 @@ class PassResource extends JsonResource
         return extract_fields($this, [
             'comment', 'date', 'created_at',
             'used_at', 'is_expired', 'name',
+            'is_first_usage',
         ], [
             'user' => new PersonResource($this->user),
             'request' => $this->when(

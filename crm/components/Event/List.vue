@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { mdiCheckAll } from '@mdi/js'
-
 const { items } = defineProps<{
   items: EventListResource[]
 }>()
@@ -8,6 +6,10 @@ const { items } = defineProps<{
 const emit = defineEmits<{
   edit: [id: number]
 }>()
+
+function getParticipantsCount(item: EventListResource): number {
+  return Object.values(item.participants).reduce((carry, x) => carry + x, 0)
+}
 </script>
 
 <template>
@@ -38,12 +40,12 @@ const emit = defineEmits<{
       <div style="width: 180px">
         {{ formatName(item.user) }}
       </div>
-      <div style="width: 150px">
-        <span v-if="item.participants_count === 0" class="text-gray">
+      <div style="width: 150px" class="event-list__participants">
+        <span v-if="getParticipantsCount(item) === 0" class="text-gray">
           нет участников
         </span>
         <span v-else>
-          {{ item.participants_count }} участников
+          {{ getParticipantsCount(item) }} участников
         </span>
         <div
           v-if="item.participant"
@@ -55,6 +57,15 @@ const emit = defineEmits<{
           }"
         >
           {{ EventParticipantConfirmationLabel[item.participant.confirmation] }}
+        </div>
+        <div v-else class="event-list__counts">
+          <span
+            v-for="(_, key) in EventParticipantConfirmationLabel"
+            :key="key"
+            :class="`event-list__counts--${key}`"
+          >
+            {{ item.participants[key] || 0 }}
+          </span>
         </div>
       </div>
       <div style="width: 110px;">
