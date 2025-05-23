@@ -29,9 +29,10 @@ class EventListResource extends JsonResource
                     'confirmation',
                 ])
             ),
-            'participants' => $this->participants()->get()
+            'participants' => $this->participants()
+                ->selectRaw('confirmation, COUNT(*) as cnt')
                 ->groupBy('confirmation')
-                ->mapWithKeys(fn ($a, $b) => [$b => count($a)]),
+                ->pluck('cnt', 'confirmation'),
         ]);
     }
 }

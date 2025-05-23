@@ -276,6 +276,10 @@ declare global {
     client_id: number
     year: Year
     company: Company
+    balances?: {
+      toPay: number
+      remainder: number
+    }
     versions: ContractVersionListResource[]
     payments: ContractPaymentResource[]
   }

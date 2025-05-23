@@ -29,11 +29,6 @@ class Contract extends Model
         return $this->belongsTo(Client::class);
     }
 
-    public function payments(): HasMany
-    {
-        return $this->hasMany(ContractPayment::class);
-    }
-
     public function getActiveVersionAttribute(): ContractVersion
     {
         return $this->versions->where('is_active', true)->first();
@@ -69,6 +64,34 @@ class Contract extends Model
     public function makeAllSearchableUsing(Builder $query): Builder
     {
         return $query->where('year', '>=', current_academic_year() - 3);
+    }
+
+    /**
+     * @return ?object{toPay: int, remainder: int}
+     */
+    public function getBalancesAttribute(): ?object
+    {
+        $payments = $this->payments()->get();
+
+        if ($payments->isEmpty()) {
+            return null;
+        }
+
+        $paid = 0;
+
+        foreach ($this->payments as $payment) {
+            $paid += $payment->sum * ($payment->is_return ? -1 : 1);
+        }
+
+        return (object) [
+            'toPay' => $this->active_version->sum - $paid,
+            'remainder' => $this->getBalance()->getCurrent(),
+        ];
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(ContractPayment::class);
     }
 
     public function getBalance(): Balance

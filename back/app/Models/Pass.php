@@ -59,7 +59,7 @@ class Pass extends Model
             )
             ->selectRaw('
                 MIN(CASE WHEN pl.id IS NOT NULL THEN pl.used_at ELSE NULL END) as min_used_at,
-                MIN(CASE WHEN pl.id IS NULL THEN passes.date ELSE NULL END) as min_unused_date
+                MIN(CASE WHEN pl.id IS NULL AND passes.date >= DATE(NOW()) THEN passes.date ELSE NULL END) as min_unused_date
             ')
             ->groupBy('request_id')
             ->get()[0];

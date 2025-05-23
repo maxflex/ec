@@ -35,8 +35,8 @@ const tableFields: Array<{
   { title: 'оплачено <br>по договору', field: 'contract_payments' },
   { title: 'начислено <br>за занятия', field: 'client_lessons' },
   { title: 'последний<br>платеж', field: 'latest_payment_date' },
-  { title: 'остаток по<br>договору', field: 'remainder' },
-  { title: 'неосвоенный<br>остаток', field: 'to_pay' },
+  { title: 'баланс по<br>услугам', field: 'remainder' },
+  { title: 'доплата по<br>договору', field: 'to_pay' },
 ]
 
 function toggleSort(field: ContractBalanceField) {

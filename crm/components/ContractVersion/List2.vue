@@ -62,6 +62,9 @@ const emit = defineEmits<{
         width: 220px;
       }
     }
+    &:not(:last-child) {
+      opacity: 0.5;
+    }
   }
   &__programs {
     display: flex;

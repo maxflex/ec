@@ -67,7 +67,10 @@ class Client extends Person implements HasTeeth
         return $this->belongsTo(Teacher::class, 'head_teacher_id');
     }
 
-    public function getRequestsAttribute()
+    /**
+     * @return array<int, Request>
+     */
+    public function getRequestsAttribute(): array
     {
         $allNumbers = $this->getPhoneNumbers()->merge($this->parent->getPhoneNumbers());
 

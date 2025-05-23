@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { mdiBookOpenBlankVariantOutline } from '@mdi/js'
-
 const {
   label = 'нет данных',
-  icon = mdiBookOpenBlankVariantOutline,
+  icon,
 } = defineProps<{
   label?: string
   icon?: string
@@ -13,7 +11,8 @@ const {
 <template>
   <div class="no-data">
     <div>
-      <v-icon :icon="icon" />
+      <v-icon v-if="icon" :icon="icon" />
+      <img src="/img/logo-gray.svg" v-else />
       <div>{{ label }}</div>
     </div>
   </div>
@@ -39,6 +38,10 @@ const {
   }
   .v-icon {
     font-size: 50px;
+    opacity: 0.5;
+  }
+  img {
+    width: 50px;
     opacity: 0.5;
   }
 }

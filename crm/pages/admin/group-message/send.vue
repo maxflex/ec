@@ -38,11 +38,6 @@ const timeMask = { mask: '##:##' }
 
 const isScheduled = computed(() => scheduledAt.date && scheduledAt.time.length === 5)
 
-const selectedTotal = computed(() => {
-  const { clients, teachers } = selected.value
-  return clients.length + teachers.length
-})
-
 async function save() {
   saving.value = true
   if (isScheduled.value) {
@@ -156,7 +151,7 @@ nextTick(async () => {
                   <div
                     v-if="item.recipients[key] && i <= item.recipients[key].length"
                     class="send-to-table__content"
-                    :class="{ 'opacity-3': !isSelected(key) }"
+                    :class="{ hidden: !isSelected(key) }"
                   >
                     <UiPerson :item="item.recipients[key][i - 1]" />
                     <div class="send-to-table__phones">
@@ -203,7 +198,7 @@ nextTick(async () => {
             />
           </div>
         </div>
-        <v-btn size="x-large" color="primary" :loading="saving" :disabled="!selectedTotal" @click="save()">
+        <v-btn size="x-large" :color="item.send_to.length ? 'primary' : undefined" :loading="saving" :disabled="!item.send_to.length" @click="save()">
           отправить
           <span v-if="isScheduled" class="ml-1">
             {{ formatDate(scheduledAt.date) }} в {{ scheduledAt.time }}

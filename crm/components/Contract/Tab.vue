@@ -156,7 +156,7 @@ nextTick(loadData)
     </template>
     <template v-if="selectedContract">
       <Balance v-if="showBalance" :contract-id="selectedContract.id" />
-      <template v-else>
+      <div v-else>
         <ContractVersionList2
           :items="selectedContract.versions"
           @edit="contractVersionDialog?.edit"
@@ -166,7 +166,30 @@ nextTick(loadData)
           :items="selectedContract.payments"
           @edit="contractPaymentDialog?.edit"
         />
-      </template>
+        <div v-if="selectedContract.balances" class="table contract-tab-balances table--padding">
+          <div>
+            <div style="width: 390px" class="font-weight-bold">
+              итого
+            </div>
+            <div style="width: 220px" class="font-weight-bold">
+              <div>
+                {{ formatPrice(selectedContract.balances.toPay, true) }} руб.
+              </div>
+              <div>
+                {{ formatPrice(selectedContract.balances.remainder, true) }} руб.
+              </div>
+            </div>
+            <div>
+              <div>
+                доплата по договору
+              </div>
+              <div>
+                баланс по услугам
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </template>
   </UiIndexPage>
 
@@ -186,6 +209,16 @@ nextTick(loadData)
 .contract-tab {
   .filters__inputs {
     flex-direction: row-reverse;
+  }
+
+  .index-page__content {
+    background: white !important;
+  }
+}
+.contract-tab-balances {
+  & > div {
+    align-items: flex-start !important;
+    border: none !important;
   }
 }
 </style>

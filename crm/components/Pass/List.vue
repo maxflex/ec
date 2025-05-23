@@ -67,7 +67,7 @@ function onPassDeleted(pass: PassResource) {
             <span v-else class="text-gray">
               не использован
             </span>
-            <div v-if="item.is_first_usage" :class="item.used_at ? 'text-orange' : 'text-gray'">
+            <div v-if="item.is_first_usage" class="text-orange">
               впервые
             </div>
           </div>

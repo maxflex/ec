@@ -101,13 +101,20 @@ defineExpose({ open })
         <div v-else>
           Проводка занятия
         </div>
-        <div>
+        <div class="pr-4">
           <v-btn
-            icon="$close"
-            :size="48"
             variant="text"
+            class="mr-2"
             @click="dialog = false"
-          />
+          >
+            закрыть
+          </v-btn>
+          <v-btn v-if="isConducted" color="primary" :loading="saving" @click="save()">
+            сохранить
+          </v-btn>
+          <v-btn v-else color="primary" :loading="saving" :disabled="!item.topic" @click="conduct()">
+            провести занятие
+          </v-btn>
         </div>
       </div>
       <UiLoader v-if="loading" />
@@ -147,6 +154,9 @@ defineExpose({ open })
               />
             </div>
             <div class="conduct-dialog__scores">
+              <div v-if="!s.comment && s.scores.length === 0" class="text-gray">
+                комментарий и оценки отсутствуют
+              </div>
               <div v-if="s.comment">
                 {{ s.comment }}
               </div>
@@ -167,13 +177,6 @@ defineExpose({ open })
               Тема урока не указана. Чтобы провести занятие, необходимо добавить тему урока.
             </v-alert>
           </div>
-
-          <v-btn v-if="isConducted" color="primary" :loading="saving" width="300" @click="save()">
-            сохранить
-          </v-btn>
-          <v-btn v-else color="primary" :loading="saving" width="300" :disabled="!item.topic" @click="conduct()">
-            провести занятие
-          </v-btn>
         </template>
       </div>
     </div>

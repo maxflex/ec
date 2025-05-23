@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { mdiCheckAll } from '@mdi/js'
-
 const { items } = defineProps<{
   items: EventListResource[]
 }>()
 </script>
 
 <template>
-  <div class="table table--padding event-list event-list--for-lk">
+  <div class="table table--padding event-list">
     <div v-for="item in items" :key="item.id">
       <div style="width: 100px">
         {{ formatDate(item.date) }}

@@ -60,7 +60,7 @@ const isConductDisabled = item.status !== 'conducted'
         {{ CabinetAllLabel[item.cabinet] }}
       </template>
     </div>
-    <div v-if="item.teacher" style="width: 140px">
+    <div v-if="item.teacher" style="width: 180px">
       <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }" @click.stop>
         {{ formatNameInitials(item.teacher) }}
       </NuxtLink>
@@ -73,7 +73,6 @@ const isConductDisabled = item.status !== 'conducted'
     <div style="width: 125px">
       {{ ProgramShortLabel[item.group.program] }}
     </div>
-
     <div style="width: 100px" class="lesson-item__icons">
       <div>
         <v-icon v-if="item.topic" :icon="mdiBookOpenOutline" :class="{ 'opacity-3': !item.is_topic_verified }" />

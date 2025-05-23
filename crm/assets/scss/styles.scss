@@ -512,9 +512,7 @@ tr.hoverable {
 
 .event-list {
   &__status {
-    margin-top: 3px;
     width: 140px;
-    line-height: 18px;
     flex: initial !important;
   }
 
@@ -563,10 +561,8 @@ tr.hoverable {
     font-size: 14px;
   }
 
-  &--for-lk {
-    & > div {
-      align-items: flex-start !important;
-    }
+  & > div {
+    align-items: flex-start !important;
   }
 }
 
@@ -623,7 +619,11 @@ tr.hoverable {
 }
 
 .table-two-lines {
-  & > *:last-child {
+  & > *:nth-child(2) {
     line-height: 14px;
   }
+}
+
+.hidden {
+  visibility: hidden;
 }

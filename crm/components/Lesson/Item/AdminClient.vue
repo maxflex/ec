@@ -68,7 +68,7 @@ const isConductDisabled = item.status !== 'conducted'
         {{ CabinetAllLabel[item.cabinet] }}
       </template>
     </div>
-    <div v-if="item.teacher" style="width: 140px">
+    <div v-if="item.teacher" style="width: 150px">
       <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }" @click.stop>
         {{ formatNameInitials(item.teacher) }}
       </NuxtLink>

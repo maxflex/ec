@@ -13,7 +13,7 @@ function getParticipantsCount(item: EventListResource): number {
 </script>
 
 <template>
-  <div class="table event-list">
+  <div class="table event-list table--padding">
     <div v-for="item in items" :key="item.id">
       <div class="table-actionss">
         <v-btn
@@ -40,7 +40,7 @@ function getParticipantsCount(item: EventListResource): number {
       <div style="width: 180px">
         {{ formatName(item.user) }}
       </div>
-      <div style="width: 150px" class="event-list__participants">
+      <div style="width: 150px" class="table-two-lines">
         <span v-if="getParticipantsCount(item) === 0" class="text-gray">
           нет участников
         </span>
@@ -76,7 +76,7 @@ function getParticipantsCount(item: EventListResource): number {
           {{ item.telegram_lists_count }} рассылок
         </span>
       </div>
-      <div class="event-list__status">
+      <div class="event-list__status table-two-lines">
         <div>
           {{ item.is_afterclass ? 'внеклассное' : 'учебное' }}
         </div>
