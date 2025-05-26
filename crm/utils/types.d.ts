@@ -247,6 +247,7 @@ declare global {
       year: Year
       company: Company
       client?: PersonResource
+      source: ?string
     }
     free_lessons_count?: number
     created_at?: string

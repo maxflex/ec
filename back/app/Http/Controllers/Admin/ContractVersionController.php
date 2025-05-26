@@ -77,6 +77,10 @@ class ContractVersionController extends Controller
         }
         sync_relation($contractVersion, 'payments', $request->all());
 
+        $contractVersion->contract->update([
+            'source' => $request->contract['source'] ?? null,
+        ]);
+
         return new ContractVersionListResource($contractVersion);
     }
 

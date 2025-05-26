@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#build/components'
-import { mdiArrowRightThin } from '@mdi/js'
+import { mdiArrowRightThin, mdiTextBoxCheckOutline, mdiTextBoxOutline } from '@mdi/js'
 import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{
@@ -17,11 +17,13 @@ const modelDefaults: ContractVersionResource = {
     id: newId(),
     year: currentAcademicYear(),
     company: 'ooo',
+    source: null,
   },
 }
 const { user } = useAuthStore()
 const item = ref<ContractVersionResource>(modelDefaults)
 const contractId = ref<number>()
+const isEditSource = ref(false)
 // только для отображения в заголовке
 const seq = ref<number>()
 const { dialog, width } = useDialog('medium')
@@ -60,6 +62,7 @@ async function newVersion(c: ContractResource) {
 async function edit(cv: ContractVersionListResource, m: ContractEditMode = 'edit') {
   mode.value = m
   contractId.value = cv.contract.id
+  isEditSource.value = false
   seq.value = cv.seq + (m === 'edit' ? 0 : 1)
   dialog.value = true
   loading.value = true
@@ -362,32 +365,40 @@ defineExpose({ edit, newContract, newVersion })
           <span>№{{ contractId }}–{{ seq }}</span>
         </span>
         <div>
-          <template v-if="mode === 'edit'">
-            <CrudDeleteBtn
-              :id="item.id"
-              api-url="contract-versions"
-              confirm-text="Вы уверены, что хотите удалить договор?"
-              @deleted="dialog = false"
-            />
-            <v-menu>
-              <template #activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  icon="$print"
-                  :size="48"
-                  variant="text"
-                />
-              </template>
-              <v-list>
-                <v-list-item
-                  v-for="p in printOptions" :key="p.id"
-                  @click="printDialog?.open(p, { contract_version_id: item.id })"
-                >
-                  {{ p.label }}
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </template>
+          <CrudDeleteBtn
+            v-if="mode === 'edit'"
+            :id="item.id"
+            api-url="contract-versions"
+            confirm-text="Вы уверены, что хотите удалить договор?"
+            @deleted="dialog = false"
+          />
+          <v-btn
+            :icon="item && item.contract.source ? mdiTextBoxCheckOutline : mdiTextBoxOutline"
+            :size="48"
+            :variant="isEditSource ? 'flat' : 'text'"
+            :color="isEditSource ? 'primary' : undefined"
+            @click="isEditSource = !isEditSource"
+          />
+          <v-menu
+            v-if="mode === 'edit'"
+          >
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                icon="$print"
+                :size="48"
+                variant="text"
+              />
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="p in printOptions" :key="p.id"
+                @click="printDialog?.open(p, { contract_version_id: item.id })"
+              >
+                {{ p.label }}
+              </v-list-item>
+            </v-list>
+          </v-menu>
           <v-btn
             icon="$save"
             :size="48"
@@ -399,6 +410,16 @@ defineExpose({ edit, newContract, newVersion })
         </div>
       </div>
       <UiLoader v-if="loading" />
+      <div v-else-if="isEditSource" class="dialog-body">
+        <div>
+          <v-textarea
+            v-model="item.contract.source"
+            label="Источник"
+            no-resize
+            rows="5"
+          />
+        </div>
+      </div>
       <div v-else class="dialog-body">
         <div class="double-input">
           <v-select

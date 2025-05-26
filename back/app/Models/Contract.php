@@ -17,7 +17,7 @@ class Contract extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'year', 'company', 'client_id',
+        'year', 'company', 'client_id', 'source',
     ];
 
     protected $casts = [
