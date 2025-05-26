@@ -13,6 +13,7 @@ class SwampController extends Controller
         'equals' => [
             'year', 'program', 'status', 'client_id',
         ],
+        'noGroup' => ['no_group'],
     ];
 
     public function index(Request $request)
@@ -33,5 +34,10 @@ class SwampController extends Controller
         $this->filter($request, $query);
 
         return $this->handleIndexRequest($request, $query, SwampListResource::class);
+    }
+
+    protected function filterNoGroup($query)
+    {
+        $query->whereDoesntHave('clientGroup');
     }
 }

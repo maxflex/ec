@@ -12,17 +12,13 @@ use Illuminate\Http\Request;
 
 class PeopleSelectorController extends Controller
 {
-    protected $clientFilters = [
-        'equals' => ['client_id'],
-        'direction' => ['direction'],
-        'searchByName' => ['q'],
-    ];
-
-    protected $teacherFilters = [
-    ];
-
     public function __invoke(Request $request)
     {
+        return [
+            'clients' => $this->getClients(),
+            '',
+        ];
+
         return $request->input('mode') === 'clients'
             ? $this->clients($request)
             : $this->teachers($request);

@@ -59,8 +59,8 @@ async function loadSwamps() {
     {
       params: {
         ...filters.value,
-        status: 'toFulfil' as ContractVersionProgramStatus,
         client_id: clientId,
+        no_group: 1,
       },
     },
   )
