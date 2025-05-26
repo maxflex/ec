@@ -1,5 +1,7 @@
 <!-- В общем списке в меню "Договоры" -->
 <script setup lang="ts">
+import { mdiTextBoxCheckOutline } from '@mdi/js'
+
 const { items } = defineProps<{
   items: ContractVersionListResource[]
 }>()
@@ -31,7 +33,12 @@ const emit = defineEmits<{
         </router-link>
       </div>
       <div style="width: 130px">
-        №{{ item.contract.id }}-{{ item.seq }}
+        <div class="d-flex ga-2 align-center">
+          <span>
+            №{{ item.contract.id }}-{{ item.seq }}
+          </span>
+          <v-icon v-if="item.contract.source" :icon="mdiTextBoxCheckOutline" :size="18" color="primary" />
+        </div>
       </div>
       <div style="width: 140px">
         от {{ formatDate(item.date) }}
