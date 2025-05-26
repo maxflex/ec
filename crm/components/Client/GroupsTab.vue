@@ -59,7 +59,7 @@ async function loadSwamps() {
     {
       params: {
         ...filters.value,
-        status: 'noGroup',
+        status: 'toFulfil' as ContractVersionProgramStatus,
         client_id: clientId,
       },
     },
@@ -83,20 +83,26 @@ async function loadGroups() {
     ...filters.value,
     client_id: clientId,
   }
-  const { data } = await useHttp<ApiResponse<GroupListResource>>(`groups`, { params })
+  const { data } = await useHttp<ApiResponse<GroupListResource>>(
+    `groups`,
+    { params },
+  )
   if (data.value) {
     clientGroups.value = data.value.data
   }
 }
 
 async function onGroupSelected(group: GroupListResource) {
-  await useHttp(`client-groups`, {
-    method: 'post',
-    params: {
-      group_id: group.id,
-      contract_version_program_id: selectedSwampId.value!,
+  await useHttp(
+    `client-groups`,
+    {
+      method: 'post',
+      params: {
+        group_id: group.id,
+        contract_version_program_id: selectedSwampId.value!,
+      },
     },
-  })
+  )
   back()
   await loadData()
 }
@@ -111,7 +117,7 @@ nextTick(loadAvailableYears)
 </script>
 
 <template>
-  <UiIndexPage v-if="selectedSwampId" :data="{ loading, noData }">
+  <UiIndexPage v-if="selectedSwampId" :data="{ loading, noData: !groups.length }">
     <template #filters>
       <GroupFilters v-model="groupFilters" disabled />
     </template>

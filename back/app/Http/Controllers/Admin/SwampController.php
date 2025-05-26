@@ -10,7 +10,9 @@ use Illuminate\Http\Request;
 class SwampController extends Controller
 {
     protected $filters = [
-        'equals' => ['year', 'program', 'status'],
+        'equals' => [
+            'year', 'program', 'status', 'client_id',
+        ],
     ];
 
     public function index(Request $request)
