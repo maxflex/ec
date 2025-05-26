@@ -268,6 +268,7 @@ declare global {
       year: Year
       client: PersonResource
       company: Company
+      source: ?string
     }
   }
 
