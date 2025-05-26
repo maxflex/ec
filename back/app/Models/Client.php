@@ -208,11 +208,9 @@ class Client extends Person implements HasTeeth
         return $this->hasMany(Contract::class)->orderBy('id', 'desc');
     }
 
-    // Upd. По результату телефонного разговора:
-    //  1) договоры только текущий год
-    //  2) отсеять: нет в группах
-    //  3) отсеять: услуги по договору оказаны
-    // 2-3 => оставить тех, кто: либо в группе, либо услуги по договору не оказаны
+    /**
+     * Могут логиниться те, у кого есть договоры в статусе
+     */
     public function scopeCanLogin($query, bool $onlyCurrentAcademicYear = false)
     {
         // tmp duplication

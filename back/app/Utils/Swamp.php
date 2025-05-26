@@ -4,6 +4,9 @@ namespace App\Utils;
 
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @DEPRICATED больше не используется
+ */
 class Swamp
 {
     public static function query(?int $clientId = null)

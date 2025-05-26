@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ContractVersionProgramStatus;
 use App\Enums\LessonStatus;
 use App\Enums\Program;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +22,7 @@ class ContractVersionProgram extends Model
 
     protected $casts = [
         'program' => Program::class,
+        'status' => ContractVersionProgramStatus::class,
     ];
 
     public static function booted()
@@ -33,11 +35,6 @@ class ContractVersionProgram extends Model
     public function contractVersion(): BelongsTo
     {
         return $this->belongsTo(ContractVersion::class);
-    }
-
-    public function clientGroup(): HasOne
-    {
-        return $this->hasOne(ClientGroup::class, 'contract_version_program_id', 'id');
     }
 
     /**
@@ -172,5 +169,55 @@ class ContractVersionProgram extends Model
 
         // If no match, return last price by default (fallback case)
         return $this->prices->last()->price;
+    }
+
+    public function getTotalPricePassedAttribute(): int
+    {
+        return $this->clientLessons()->sum('price');
+    }
+
+    public function getTotalPriceAttribute(): int
+    {
+        return $this->prices->sum(fn (ContractVersionProgramPrice $p) => $p->lessons * $p->price);
+    }
+
+    public function getStatus(): ?ContractVersionProgramStatus
+    {
+        if (! $this->contractVersion->is_active) {
+            return null;
+        }
+
+        $totalPricePassed = $this->total_price_passed;
+        $totalPrice = $this->total_price;
+        $hasGroup = $this->clientGroup()->exists();
+
+        if ($hasGroup) {
+            if ($totalPricePassed < $totalPrice) {
+                return ContractVersionProgramStatus::inProcess;
+            }
+            if ($totalPricePassed > $totalPrice) {
+                return ContractVersionProgramStatus::exceedInGroup;
+            }
+            if ($totalPricePassed === $totalPrice) {
+                return ContractVersionProgramStatus::finishedInGroup;
+            }
+        }
+
+        if ($totalPricePassed < $totalPrice) {
+            return ContractVersionProgramStatus::toFulfil;
+        }
+        if ($totalPricePassed > $totalPrice) {
+            return ContractVersionProgramStatus::exceedNoGroup;
+        }
+        if ($totalPricePassed === $totalPrice) {
+            return ContractVersionProgramStatus::finishedNoGroup;
+        }
+
+        return null;
+    }
+
+    public function clientGroup(): HasOne
+    {
+        return $this->hasOne(ClientGroup::class, 'contract_version_program_id', 'id');
     }
 }

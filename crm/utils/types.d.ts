@@ -3,6 +3,8 @@ import type { ContractPaymentResource } from '~/components/ContractPayment'
 declare global {
   type LogDevice = keyof typeof LogDeviceLabel
 
+  type ContractVersionProgramStatus = keyof typeof ContractVersionProgramStatusLabel
+
   type Recepient = keyof typeof RecepientLabel
 
   type InstructionStatus = keyof typeof InstructionStatusLabel
@@ -795,6 +797,7 @@ declare global {
     program: Program
     year: Year
     contract_id: number
+    status: ContractVersionProgramStatus
     group_id: null | number // group_id = null – ученик не прикреплён к группе по этой программе
   }
 
