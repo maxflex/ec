@@ -18,6 +18,9 @@ const filters = ref<Filters>({
   entity: client,
 })
 
+const year = currentAcademicYear()
+const nextYear = year + 1
+
 const { indexPageData, items, total } = useIndex<PersonResource>(`passes/permanent`, filters)
 </script>
 
@@ -40,28 +43,13 @@ const { indexPageData, items, total } = useIndex<PersonResource>(`passes/permane
           <tr>
             <td class="permanent-pass-info" style="">
               <template v-if="filters.entity === user">
-                Администраторы с параметром "действующий сотрудник"
+                Администраторы со статусом "действующий сотрудник"
               </template>
               <template v-else-if="filters.entity === teacher">
                 Преподаватели со статусом "ведет занятия сейчас"
               </template>
               <template v-else>
-                <p>
-                  {{ filters.entity === client ? 'Ученики' : 'Представители' }}, которые имеют хотя бы 1 нужный договор.
-                </p>
-
-                <p class="mt-2">
-                  Что такое нужные договоры:
-                </p>
-
-                <ul class="pl-6">
-                  <li>
-                    если сейчас период 01.01.23-31.07.23, то нужными договорами считаются договоры 2023-2024 или 2024-2025 учебных годов
-                  </li>
-                  <li>
-                    если сейчас период 01.08.23-31.12.23, то нужными договорами считаются договора 2024-2025 учебного года
-                  </li>
-                </ul>
+                Ученики, имеющие договоры {{ year }}–{{ nextYear }} (пропуск активен до 30 июня {{ nextYear }} года или до момента расторжения договора) и {{ nextYear }}–{{ nextYear + 1 }} (пропуск активен до 30 июня {{ nextYear + 1 }} года или до момента расторжения договора) учебных лет имеют постоянный пропуск и допущены на посту охраны института
               </template>
             </td>
           </tr>

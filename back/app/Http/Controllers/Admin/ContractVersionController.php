@@ -8,6 +8,7 @@ use App\Http\Resources\ContractVersionListResource;
 use App\Http\Resources\ContractVersionResource;
 use App\Models\ContractVersion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ContractVersionController extends Controller
 {
@@ -92,7 +93,8 @@ class ContractVersionController extends Controller
             $isRelinked = $contractVersion->prev->relinkIds($contractVersion);
             abort_if(! $isRelinked, 422);
         }
-        $contractVersion->delete();
+
+        DB::transaction(fn () => $contractVersion->delete());
 
         return new ContractVersionListResource($contractVersion);
     }

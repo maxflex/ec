@@ -67,26 +67,27 @@ class Contract extends Model
     }
 
     /**
-     * @return ?object{toPay: int, remainder: int}
+     * @return array{to_pay: int, remainder: int, contract_payments: int, client_lessons: int}
      */
-    public function getBalancesAttribute(): ?object
+    public function getBalancesAttribute(): array
     {
-        $payments = $this->payments()->get();
+        $contractPayments = $this->payments->reduce(fn ($carry, $p) => $carry + $p->realSum, 0);
+        $clientLessons = intval($this->clientLessonsQuery()->sum('price'));
 
-        if ($payments->isEmpty()) {
-            return null;
-        }
-
-        $paid = 0;
-
-        foreach ($this->payments as $payment) {
-            $paid += $payment->sum * ($payment->is_return ? -1 : 1);
-        }
-
-        return (object) [
-            'toPay' => $this->active_version->sum - $paid,
-            'remainder' => $this->getBalance()->getCurrent(),
+        return [
+            'contract_payments' => $contractPayments,
+            'client_lessons' => $clientLessons,
+            'to_pay' => $this->active_version->sum - $contractPayments,
+            'remainder' => $contractPayments - $clientLessons,
         ];
+    }
+
+    private function clientLessonsQuery()
+    {
+        return ClientLesson::whereHas(
+            'contractVersionProgram.contractVersion',
+            fn ($q) => $q->where('contract_id', $this->id)
+        );
     }
 
     public function payments(): HasMany
@@ -96,10 +97,7 @@ class Contract extends Model
 
     public function getBalance(): Balance
     {
-        $clientLessons = ClientLesson::whereHas(
-            'contractVersionProgram.contractVersion',
-            fn ($q) => $q->where('contract_id', $this->id)
-        )->get();
+        $clientLessons = $this->clientLessonsQuery()->get();
 
         $balance = new Balance;
 

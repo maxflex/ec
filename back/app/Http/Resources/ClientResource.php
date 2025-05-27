@@ -17,6 +17,7 @@ class ClientResource extends JsonResource
             'passport', 'is_remote', 'directions', 'email',
             'last_seen_at', 'heard_about_us', 'mark_sheet',
         ], [
+            'can_login' => Client::canLogin()->whereId($this->id)->exists(),
             'entity_type' => Client::class,
             'head_teacher' => new PersonResource($this->headTeacher),
             'user' => new PersonResource($this->user),

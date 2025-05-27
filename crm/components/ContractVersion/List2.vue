@@ -12,6 +12,7 @@ const emit = defineEmits<{
       v-for="version in items"
       :id="`contract-version-${version.id}`"
       :key="version.id"
+      :class="version.is_active ? 'contract-version--active' : 'contract-version--inactive'"
     >
       <div class="table-actionss">
         <v-btn
@@ -62,9 +63,6 @@ const emit = defineEmits<{
         width: 220px;
       }
     }
-    &:not(:last-child) {
-      opacity: 0.5;
-    }
   }
   &__programs {
     display: flex;
@@ -74,6 +72,17 @@ const emit = defineEmits<{
     & > div {
       display: flex;
       gap: 4px;
+    }
+  }
+}
+
+.contract-version {
+  &--active {
+    background: rgba(var(--v-theme-primary), 0.3);
+  }
+  &--inactive {
+    & > div {
+      opacity: 0.5;
     }
   }
 }

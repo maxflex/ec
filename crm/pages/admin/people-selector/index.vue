@@ -190,7 +190,14 @@ nextTick(async () => {
             сохранить
             ({{ selectedTotal }})
           </v-btn>
-          <v-btn v-else color="primary" @click="$router.push({ name: 'people-selector-send' })">
+          <v-btn
+            v-else color="primary" @click="$router.push({
+              name: 'people-selector-send',
+              query: {
+                event_id: sendEventId,
+              },
+            })"
+          >
             отправить
             ({{ selectedTotal }})
           </v-btn>

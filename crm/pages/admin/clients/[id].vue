@@ -44,13 +44,19 @@ nextTick(loadData)
     <div class="panel">
       <div class="panel-info">
         <div>
-          <UiAvatar :item="client" />
+          <UiAvatar :item="client" :size="140" />
         </div>
         <div>
           <div>ученик</div>
           <div class="text-truncate">
             {{ formatName(client) }}
             <UiLastSeenAt :item="client" />
+            <div v-if="client.can_login" class="text-success mb-5">
+              пропуск активен
+            </div>
+            <div v-else class="text-error mb-5">
+              пропуска нет
+            </div>
             <div v-if="client.phones">
               <PhoneList :items="client.phones" show-icons />
             </div>
@@ -61,6 +67,12 @@ nextTick(loadData)
           <div class="text-truncate">
             {{ formatName(client.parent) }}
             <UiLastSeenAt :item="client.parent" />
+            <div v-if="client.can_login" class="text-success mb-5">
+              пропуск активен
+            </div>
+            <div v-else class="text-error mb-5">
+              пропуска нет
+            </div>
             <div v-if="client.parent.phones">
               <PhoneList :items="client.parent.phones" show-icons />
             </div>

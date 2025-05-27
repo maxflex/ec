@@ -281,7 +281,7 @@ declare global {
     year: Year
     company: Company
     balances?: {
-      toPay: number
+      to_pay: number
       remainder: number
     }
     versions: ContractVersionListResource[]

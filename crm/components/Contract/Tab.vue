@@ -173,7 +173,7 @@ nextTick(loadData)
             </div>
             <div style="width: 220px" class="font-weight-bold">
               <div>
-                {{ formatPrice(selectedContract.balances.toPay, true) }} руб.
+                {{ formatPrice(selectedContract.balances.to_pay, true) }} руб.
               </div>
               <div>
                 {{ formatPrice(selectedContract.balances.remainder, true) }} руб.
