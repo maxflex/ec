@@ -7,6 +7,7 @@ interface Filters {
 
 const { client, clientParent, teacher, user } = EntityTypeValue
 const entityTypes = [client, clientParent, teacher, user] as const
+const q = ref<string>('')
 const selectItemsFiltered = Object.keys(EntityTypeLabel)
   .filter(key => entityTypes.includes(key as LocalEntityType))
   .map(value => ({
@@ -21,11 +22,23 @@ const filters = ref<Filters>({
 const year = currentAcademicYear()
 const nextYear = year + 1
 
-const { indexPageData, items, total } = useIndex<PersonResource>(`passes/permanent`, filters)
+const { indexPageData, items, total, loading } = useIndex<PersonResource>(`passes/permanent`, filters)
+
+const itemsFiltered = computed<PersonResource[]>(() => {
+  const query = q.value.trim().toLowerCase()
+  if (!query) {
+    return items.value
+  }
+  return items.value.filter(c => [c.last_name, c.first_name]
+    .join(' ')
+    .toLowerCase()
+    .includes(query),
+  )
+})
 </script>
 
 <template>
-  <UiIndexPage :data="indexPageData">
+  <UiIndexPage :data="{ loading, noData: itemsFiltered.length === 0 }">
     <template #filters>
       <v-select
         v-model="filters.entity"
@@ -33,9 +46,17 @@ const { indexPageData, items, total } = useIndex<PersonResource>(`passes/permane
         label="Тип"
         :items="selectItemsFiltered"
       />
-      <div class="text-gray">
+      <v-text-field
+        v-model="q"
+        label="Поиск"
+        density="comfortable"
+      />
+      <span>
         всего: {{ total }}
-      </div>
+      </span>
+      <span v-if="items.length !== itemsFiltered.length" class="text-gray ml-2">
+        найдено: {{ itemsFiltered.length }}
+      </span>
     </template>
     <template #header>
       <v-table>
@@ -61,7 +82,7 @@ const { indexPageData, items, total } = useIndex<PersonResource>(`passes/permane
     </template>
     <v-table>
       <tbody>
-        <tr v-for="item in items" :key="item.id">
+        <tr v-for="item in itemsFiltered" :key="item.id">
           <td>
             <UiPerson :item="item" :no-link="filters.entity === EntityTypeValue.user" />
           </td>

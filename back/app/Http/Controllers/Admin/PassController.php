@@ -39,10 +39,12 @@ class PassController extends Controller
     public function permanent(Request $request)
     {
         $request->validate(['entity' => ['required', 'string']]);
+        $entity = $request->entity;
+        $query = $entity::canLogin()->orderByRaw('last_name, first_name');
 
-        $query = $request->entity::canLogin();
+        $data = PersonResource::collection($query->get());
 
-        return $this->handleIndexRequest($request, $query, PersonResource::class);
+        return paginate($data);
     }
 
     public function stats(Request $request)
