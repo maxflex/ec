@@ -15,7 +15,9 @@ class ClientsBrowseController extends Controller
         $request->validate(['entity' => ['required', 'string']]);
         $entity = $request->entity;
 
-        $query = $entity::canLogin()->with(['phones']);
+        $query = $entity::canLogin()
+            ->with(['phones'])
+            ->orderByRaw('last_name, first_name');
 
         switch ($entity) {
             case Client::class:

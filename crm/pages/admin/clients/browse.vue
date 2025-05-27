@@ -69,7 +69,7 @@ function onEdit(p: ClientsBrowseResource) {
           <tr>
             <td class="browse-info" style="">
               <template v-if="filters.entity === user">
-                Администраторы с параметром "действующий сотрудник"
+                Администраторы со статусом "действующий сотрудник"
               </template>
               <template v-else-if="filters.entity === teacher">
                 Преподаватели со статусом "ведет занятия сейчас"
