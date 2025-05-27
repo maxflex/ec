@@ -40,7 +40,7 @@ class Pass extends Model
 
     /**
      * Первое использованное разрешение
-     * Для фактически использованных: used_at === minUsedAt
+     * Для фактически использованных: id === minUsedId
      * Для прогноза первого использования: date === minDate && id === minId
      */
     public function getIsFirstUsageAttribute(): bool
@@ -58,16 +58,14 @@ class Pass extends Model
                     ->where('pl.entity_type', Pass::class)
             )
             ->selectRaw('
-                MIN(CASE WHEN pl.id IS NOT NULL THEN pl.used_at ELSE NULL END) as min_used_at,
+                MIN(CASE WHEN pl.id IS NOT NULL THEN passes.id ELSE NULL END) as min_used_id,
                 MIN(CASE WHEN pl.id IS NULL AND passes.date >= DATE(NOW()) THEN passes.date ELSE NULL END) as min_unused_date
             ')
             ->groupBy('request_id')
             ->get()[0];
 
-        $usedAt = $this->used_at;
-
-        if ($usedAt) {
-            return $usedAt === $data->min_used_at;
+        if ($this->used_at) {
+            return $this->id === $data->min_used_id;
         }
 
         return $this->date === $data->min_unused_date && $this->id === $this->chain()->min('id');
