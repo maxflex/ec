@@ -11,22 +11,12 @@ class EventParticipant extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'entity_type', 'entity_id', 'confirmation'
+        'entity_type', 'entity_id', 'confirmation',
     ];
 
     protected $casts = [
         'confirmation' => EventParticipantConfirmation::class,
     ];
-
-    public function event()
-    {
-        return $this->belongsTo(Event::class);
-    }
-
-    public function entity()
-    {
-        return $this->morphTo('entity');
-    }
 
     public static function confirm($data, \TelegramBot\Api\Client $bot, CallbackQuery $callback)
     {
@@ -37,7 +27,6 @@ class EventParticipant extends Model
             ? '✅ Вы подтвердили участие'
             : '❌ Вы отказались от участия';
 
-
         $bot->answerCallbackQuery(
             $callback->getId(),
             $answerText,
@@ -46,10 +35,9 @@ class EventParticipant extends Model
         $bot->editMessageText(
             $message->getChat()->getId(),
             $message->getMessageId(),
-            $message->getText() . PHP_EOL . PHP_EOL . "<b>{$answerText}</b>",
+            $message->getText().PHP_EOL.PHP_EOL."<b>{$answerText}</b>",
             'HTML'
         );
-
 
         $phone = Phone::find($data->phone_id);
         $query = EventParticipant::where('event_id', $data->event_id);
@@ -70,5 +58,15 @@ class EventParticipant extends Model
         $participant?->update([
             'confirmation' => $confirmation,
         ]);
+    }
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
+
+    public function entity()
+    {
+        return $this->morphTo('entity');
     }
 }

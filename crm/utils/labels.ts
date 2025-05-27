@@ -594,13 +594,13 @@ export const CallAppStatusFilterLabel = {
   outgoing: 'исходящие',
 } as const
 
-export const SwampFilterStatusLabel = {
+export const ContractVersionProgramStatusLabel = {
   toFulfil: 'к исполнению',
   exceedNoGroup: 'избыток по услугам + не в группе',
-  completeNoGroup: 'исполнено + не в группе',
+  finishedNoGroup: 'исполнено + не в группе',
   inProcess: 'исполняется',
   exceedInGroup: 'избыток по услугам + в группе',
-  completeInGroup: 'исполнено + в группе',
+  finishedInGroup: 'исполнено + в группе',
 } as const
 
 export const EventParticipantConfirmationLabel = {

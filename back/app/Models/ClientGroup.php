@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Observers\ClientGroupObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[ObservedBy(ClientGroupObserver::class)]
 class ClientGroup extends Model
 {
     public $timestamps = false;
@@ -25,5 +28,4 @@ class ClientGroup extends Model
     {
         return $this->belongsTo(ClientLesson::class, 'contract_version_program_id', 'id');
     }
-
 }

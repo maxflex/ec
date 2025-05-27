@@ -12,13 +12,16 @@ async function onSelect(swamp: SwampListResource) {
   if (!group || !confirm(`Добавить ученика ${formatName(swamp.client)} в группу ${group.id}?`)) {
     return
   }
-  await useHttp(`client-groups`, {
-    method: 'post',
-    body: {
-      group_id: group.id,
-      contract_version_program_id: swamp.id,
+  await useHttp(
+    `client-groups`,
+    {
+      method: 'post',
+      body: {
+        group_id: group.id,
+        contract_version_program_id: swamp.id,
+      },
     },
-  })
+  )
   emit('selected')
 }
 

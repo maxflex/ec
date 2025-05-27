@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const { notSet = 'не установлено', nullify } = defineProps<{
+const { notSet = 'не установлено', nullify, expand } = defineProps<{
+  expand: boolean
   notSet?: string
   nullify?: boolean
 }>()
@@ -19,6 +20,7 @@ function clear() {
     v-model="model"
     :menu-props="{
       closeOnContentClick: true,
+      maxHeight: expand ? 'auto' : 300,
     }"
   >
     <template #prepend-item>

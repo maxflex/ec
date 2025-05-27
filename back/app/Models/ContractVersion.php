@@ -20,11 +20,6 @@ class ContractVersion extends Model
         'is_active' => 'boolean',
     ];
 
-    public function programs(): HasMany
-    {
-        return $this->hasMany(ContractVersionProgram::class);
-    }
-
     public function payments(): HasMany
     {
         return $this->hasMany(ContractVersionPayment::class)->orderBy('date');
@@ -104,11 +99,11 @@ class ContractVersion extends Model
     public function relinkIds(ContractVersion $old): bool
     {
         $result = [];
-        foreach ($old->programs as $program) {
-            $newProgram = $this->programs->where('program', $program->program)->first();
+        foreach ($old->programs as $oldProgram) {
+            $newProgram = $this->programs->where('program', $oldProgram->program)->first();
 
             foreach ([ClientGroup::class, ClientLesson::class] as $class) {
-                $query = $class::where('contract_version_program_id', $program->id);
+                $query = $class::where('contract_version_program_id', $oldProgram->id);
                 // есть что обновлять
                 if ($query->exists()) {
                     // ... но нет нужной программы в новой версии
@@ -125,7 +120,17 @@ class ContractVersion extends Model
             $query->update(['contract_version_program_id' => $newProgramId]);
         }
 
+        $old->programs()->update(['status' => null]);
+        foreach ($this->programs as $program) {
+            $program->updateStatus();
+        }
+
         return true;
+    }
+
+    public function programs(): HasMany
+    {
+        return $this->hasMany(ContractVersionProgram::class);
     }
 
     public function scopeActive($query)

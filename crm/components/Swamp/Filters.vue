@@ -2,7 +2,7 @@
 export interface SwampFilters {
   year: Year
   program?: Program
-  status?: SwampFilterStatus
+  status?: ContractVersionProgramStatus
 }
 
 const { disabled } = defineProps<{
@@ -29,7 +29,7 @@ const model = defineModel<SwampFilters>({ required: true })
   <UiClearableSelect
     v-model="model.status"
     label="Статус"
-    :items="selectItems(SwampFilterStatusLabel)"
+    :items="selectItems(ContractVersionProgramStatusLabel)"
     :disabled="disabled"
     density="comfortable"
     expand

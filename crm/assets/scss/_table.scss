@@ -57,7 +57,8 @@
     // }
   }
 
-  & > div:not(.slide-up-down__container),
+  .v-virtual-scroll__item > div,
+  & > div:not(.slide-up-down__container):not(.v-virtual-scroll),
   & > a {
     border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
     padding: 0 20px;

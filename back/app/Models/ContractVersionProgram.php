@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ContractVersionProgramStatus;
 use App\Enums\LessonStatus;
 use App\Enums\Program;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +22,7 @@ class ContractVersionProgram extends Model
 
     protected $casts = [
         'program' => Program::class,
+        'status' => ContractVersionProgramStatus::class,
     ];
 
     public static function booted()
@@ -33,11 +35,6 @@ class ContractVersionProgram extends Model
     public function contractVersion(): BelongsTo
     {
         return $this->belongsTo(ContractVersion::class);
-    }
-
-    public function clientGroup(): HasOne
-    {
-        return $this->hasOne(ClientGroup::class, 'contract_version_program_id', 'id');
     }
 
     /**
@@ -172,5 +169,39 @@ class ContractVersionProgram extends Model
 
         // If no match, return last price by default (fallback case)
         return $this->prices->last()->price;
+    }
+
+    public function getTotalPricePassedAttribute(): int
+    {
+        return $this->clientLessons()->sum('price');
+    }
+
+    public function getTotalPriceAttribute(): int
+    {
+        return $this->prices->sum(fn (ContractVersionProgramPrice $p) => $p->lessons * $p->price);
+    }
+
+    public function updateStatus(): bool
+    {
+        $totalPricePassed = $this->total_price_passed;
+        $totalPrice = $this->total_price;
+        $hasGroup = $this->clientGroup()->exists();
+
+        $this->status = match (true) {
+            $hasGroup && $totalPricePassed < $totalPrice => ContractVersionProgramStatus::inProcess,
+            $hasGroup && $totalPricePassed > $totalPrice => ContractVersionProgramStatus::exceedInGroup,
+            $hasGroup && $totalPricePassed === $totalPrice => ContractVersionProgramStatus::finishedInGroup,
+            // ниже будет только !$hasGroup
+            $totalPricePassed < $totalPrice => ContractVersionProgramStatus::toFulfil,
+            $totalPricePassed > $totalPrice => ContractVersionProgramStatus::exceedNoGroup,
+            $totalPricePassed === $totalPrice => ContractVersionProgramStatus::finishedNoGroup,
+        };
+
+        return $this->save();
+    }
+
+    public function clientGroup(): HasOne
+    {
+        return $this->hasOne(ClientGroup::class, 'contract_version_program_id', 'id');
     }
 }

@@ -14,6 +14,8 @@ class ContractVersionObserver
 
     public function deleting(ContractVersion $contractVersion): void
     {
+        // TODO: если contract_version в итоге не удалится из-за foreign key constraint
+        // платежи всё равно снесутся – это неправильно
         $contractVersion->payments->each->delete();
     }
 

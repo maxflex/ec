@@ -104,9 +104,6 @@ nextTick(async () => {
     if (selectedPeople) {
       selected.value = JSON.parse(selectedPeople) as RecipientIds
     }
-    else {
-      await router.push({ name: 'people-selector' })
-    }
   }
   const { data } = await useHttp<Recipients>(
     `telegram-lists/load-people`,
@@ -213,7 +210,7 @@ nextTick(async () => {
 </template>
 
 <style lang="scss">
-.page-group-message-send {
+.page-people-selector-send {
   .show__content {
     gap: 50px !important;
   }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\HasTeeth;
+use App\Enums\ContractVersionProgramStatus;
 use App\Enums\Direction;
 use App\Enums\HeadAboutUs;
 use App\Enums\LessonStatus;
@@ -15,7 +16,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class Client extends Person implements HasTeeth
 {
@@ -184,7 +184,7 @@ class Client extends Person implements HasTeeth
     }
 
     /**
-     * Получить все активные contract_version_program_id
+     * Получить все contract_version_program_id из активной версии договора
      */
     public function getContractVersionProgramIds()
     {
@@ -208,75 +208,21 @@ class Client extends Person implements HasTeeth
         return $this->hasMany(Contract::class)->orderBy('id', 'desc');
     }
 
-    // Upd. По результату телефонного разговора:
-    //  1) договоры только текущий год
-    //  2) отсеять: нет в группах
-    //  3) отсеять: услуги по договору оказаны
-    // 2-3 => оставить тех, кто: либо в группе, либо услуги по договору не оказаны
-    public function scopeCanLogin($query, bool $onlyCurrentAcademicYear = false)
+    /**
+     * Могут логиниться те, у кого есть cvp в статусе
+     */
+    public function scopeCanLogin($query)
     {
-        // tmp duplication
-        // сумма занятий и цен из ContractVersionProgramPrice
-        $totals = DB::table('contract_version_program_prices')
-            ->selectRaw('
-                contract_version_program_id,
-                CAST(SUM(`lessons`) AS UNSIGNED) AS total_lessons,
-                CAST(SUM(`price` * `lessons`) AS UNSIGNED) AS total_price
-            ')
-            ->groupBy('contract_version_program_id');
-
-        // сумма цен за проведённые занятия из ClientLesson
-        $totalPassed = DB::table('client_lessons')
-            ->selectRaw('
-                contract_version_program_id,
-                CAST(SUM(`price`) AS UNSIGNED) AS total_price_passed
-            ')
-            ->groupBy('contract_version_program_id');
-
-        /**
-         * Программы последней версии договора
-         */
-        $swampsCte = DB::table('contract_version_programs', 'cvp')
-            ->join('contract_versions as cv', fn ($join) => $join
-                ->on('cv.id', '=', 'cvp.contract_version_id')
-                ->where('cv.is_active', true)
+        return $query->whereHas('contracts', fn ($q) => $q
+            ->where('year', '>=', current_academic_year())
+            ->whereHas('versions.programs', fn ($q) => $q
+                ->whereIn('status', [
+                    ContractVersionProgramStatus::toFulfil,
+                    ContractVersionProgramStatus::inProcess,
+                    ContractVersionProgramStatus::finishedInGroup,
+                ])
             )
-            ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
-            ->joinSub($totals, 't', 't.contract_version_program_id', '=', 'cvp.id')
-            ->leftJoinSub($totalPassed, 'tp', 'tp.contract_version_program_id', '=', 'cvp.id')
-            ->leftJoin(
-                'client_groups as cg',
-                'cg.contract_version_program_id',
-                '=',
-                'cvp.id'
-            )
-            ->selectRaw('
-                cvp.id,
-                t.total_lessons,
-                t.total_price,
-                CAST(IFNULL(tp.total_price_passed, 0) AS UNSIGNED) AS `total_price_passed`,
-                `group_id`,
-                cv.contract_id,
-                c.year,
-                c.client_id,
-                cvp.program
-            ');
-
-        $years = $onlyCurrentAcademicYear
-            ? [current_academic_year()]
-            : [current_academic_year(), current_academic_year() + 1];
-
-        $query->whereHas('contracts', fn ($q) => $q
-            ->whereIn('contracts.year', $years)
-            ->whereRaw('EXISTS (
-                SELECT 1 FROM s
-                WHERE s.contract_id = contracts.id
-                AND (s.group_id IS NOT NULL OR total_price_passed < total_price)
-            )')
-            // 2-3 => оставить тех, кто: либо в группе, либо услуги по договору не оказаны
-        )
-            ->withExpression('s', $swampsCte)
-            ->groupByRaw('clients.id');
+        );
     }
 
     public function makeAllSearchableUsing(Builder $query): Builder
