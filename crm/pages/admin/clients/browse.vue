@@ -13,6 +13,8 @@ interface ClientsBrowseResource extends PersonResource {
   phones: PhoneResource[]
 }
 
+const year = currentAcademicYear()
+const nextYear = year + 1
 const { client, clientParent, teacher, user } = EntityTypeValue
 const entityTypes = [client, clientParent, teacher, user] as const
 const selectItemsFiltered = Object.keys(EntityTypeLabel)
@@ -73,22 +75,7 @@ function onEdit(p: ClientsBrowseResource) {
                 Преподаватели со статусом "ведет занятия сейчас"
               </template>
               <template v-else>
-                <p>
-                  {{ filters.entity === client ? 'Ученики' : 'Представители' }}, которые имеют хотя бы 1 нужный договор.
-                </p>
-
-                <p class="mt-2">
-                  Что такое нужные договоры:
-                </p>
-
-                <ui>
-                  <li>
-                    если сейчас период 01.01.23-31.07.23, то нужными договорами считаются договоры 2023-2024 или 2024-2025 учебных годов
-                  </li>
-                  <li>
-                    если сейчас период 01.08.23-31.12.23, то нужными договорами считаются договора 2024-2025 учебного года
-                  </li>
-                </ui>
+                Ученики, имеющие договоры {{ year }}–{{ nextYear }} (пропуск активен до 30 июня {{ nextYear }} года или до момента расторжения договора) и {{ nextYear }}–{{ nextYear + 1 }} (пропуск активен до 30 июня {{ nextYear + 1 }} года или до момента расторжения договора) учебных лет имеют постоянный пропуск и допущены на посту охраны института
               </template>
             </td>
           </tr>

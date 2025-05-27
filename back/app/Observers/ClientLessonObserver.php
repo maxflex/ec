@@ -24,5 +24,17 @@ class ClientLessonObserver
                 ['clientLesson' => $clientLesson]
             );
         }
+
+        $clientLesson->contractVersionProgram->updateStatus();
+    }
+
+    public function updated(ClientLesson $clientLesson): void
+    {
+        $clientLesson->contractVersionProgram->updateStatus();
+    }
+
+    public function deleted(ClientLesson $clientLesson): void
+    {
+        $clientLesson->contractVersionProgram->updateStatus();
     }
 }

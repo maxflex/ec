@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\Direction;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PeopleSelectorResource;
 use App\Http\Resources\PersonResource;
 use App\Models\Client;
+use App\Models\Event;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 
@@ -14,79 +14,47 @@ class PeopleSelectorController extends Controller
 {
     public function __invoke(Request $request)
     {
+        if ($request->has('event_id')) {
+            $event = Event::findOrFail($request->event_id);
+            [$clients, $teachers] = $this->getForEvent($event);
+        } else {
+            $clients = $this->getClients();
+            $teachers = $this->getTeachers();
+        }
+
         return [
-            'clients' => $this->getClients(),
-            '',
+            'clients' => PeopleSelectorResource::collection($clients),
+            'teachers' => PersonResource::collection($teachers),
         ];
-
-        return $request->input('mode') === 'clients'
-            ? $this->clients($request)
-            : $this->teachers($request);
     }
 
-    private function clients(Request $request)
+    private function getForEvent(Event $event): array
     {
-        $query = Client::canLogin(true)
-            ->orderByRaw('last_name, first_name, middle_name');
+        $participants = $event->participants()->with('entity')->get();
 
-        $this->filter($request, $query, $this->clientFilters);
-
-        $result = PeopleSelectorResource::collection((clone $query)->paginate(30));
-
-        if (intval($request->page) === 1) {
-            $result->additional([
-                'extra' => [
-                    'ids' => $query->pluck('clients.id')->all(),
-                ],
-            ]);
+        $result = [];
+        foreach ([Client::class, Teacher::class] as $entityType) {
+            $result[] = $participants
+                ->where('entity_type', $entityType)
+                ->map(fn ($e) => $e->entity)
+                ->sortBy(['last_name', 'first_name', 'middle_name'])
+                ->values();
         }
 
         return $result;
     }
 
-    private function teachers(Request $request)
+    private function getClients()
     {
-        $query = Teacher::query()
-            ->canLogin()
-            ->orderByRaw('last_name, first_name, middle_name');
-
-        $this->filter($request, $query, $this->teacherFilters);
-
-        $result = PersonResource::collection((clone $query)->paginate(30));
-
-        if (intval($request->page) === 1) {
-            $result->additional([
-                'extra' => [
-                    'ids' => $query->pluck('teachers.id')->all(),
-                ],
-            ]);
-        }
-
-        return $result;
+        return Client::canLogin()
+            ->orderByRaw('last_name, first_name, middle_name')
+            ->get();
     }
 
-    protected function filterDirection($query, array $values)
+    private function getTeachers()
     {
-        if (count($values) === 0) {
-            return;
-        }
-
-        $programs = collect();
-        foreach ($values as $directionString) {
-            $programs = $programs->concat(
-                Direction::from($directionString)->toPrograms()
-            );
-        }
-        $programs = $programs->unique();
-
-        $query->whereHas(
-            'contracts',
-            fn ($q) => $q
-                ->where('year', current_academic_year())
-                ->whereHas('versions', fn ($q) => $q
-                    ->where('is_active', true)
-                    ->whereHas('programs', fn ($q) => $q->whereIn('program', $programs))
-                )
-        );
+        return Teacher::canLogin()
+            ->orderByRaw('last_name, first_name, middle_name')
+            ->get();
     }
 }

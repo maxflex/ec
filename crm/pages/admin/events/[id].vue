@@ -116,7 +116,16 @@ nextTick(loadData)
           </template>
         </div>
         <div class="mb-8">
-          <v-btn color="primary" :width="300" :to="{ name: 'events-id-participants', params: { id: item.id } }">
+          <v-btn
+            color="primary"
+            :width="300"
+            :to="{
+              name: 'people-selector',
+              query: {
+                participants: item.id,
+              },
+            }"
+          >
             редактировать участников
           </v-btn>
         </div>
@@ -183,7 +192,7 @@ nextTick(loadData)
         color="primary"
         :width="300"
         :to="{
-          name: 'group-message',
+          name: 'people-selector',
           query: {
             event_id: item.id,
           },

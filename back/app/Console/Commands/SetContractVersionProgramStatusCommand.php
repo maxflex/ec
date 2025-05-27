@@ -25,8 +25,7 @@ class SetContractVersionProgramStatusCommand extends Command
         $bar = $this->output->createProgressBar(count($contractVersionPrograms));
 
         foreach ($contractVersionPrograms as $cvp) {
-            $cvp->status = $cvp->getStatus();
-            $cvp->save();
+            $cvp->updateStatus();
             $bar->advance();
         }
         $bar->finish();

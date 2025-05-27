@@ -74,6 +74,7 @@ class ContractVersionController extends Controller
         sync_relation($contractVersion, 'programs', $request->all());
         foreach ($contractVersion->programs as $index => $program) {
             sync_relation($program, 'prices', $request->programs[$index]);
+            $program->updateStatus();
         }
         sync_relation($contractVersion, 'payments', $request->all());
 

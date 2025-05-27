@@ -181,39 +181,23 @@ class ContractVersionProgram extends Model
         return $this->prices->sum(fn (ContractVersionProgramPrice $p) => $p->lessons * $p->price);
     }
 
-    public function getStatus(): ?ContractVersionProgramStatus
+    public function updateStatus(): bool
     {
-        if (! $this->contractVersion->is_active) {
-            return null;
-        }
-
         $totalPricePassed = $this->total_price_passed;
         $totalPrice = $this->total_price;
         $hasGroup = $this->clientGroup()->exists();
 
-        if ($hasGroup) {
-            if ($totalPricePassed < $totalPrice) {
-                return ContractVersionProgramStatus::inProcess;
-            }
-            if ($totalPricePassed > $totalPrice) {
-                return ContractVersionProgramStatus::exceedInGroup;
-            }
-            if ($totalPricePassed === $totalPrice) {
-                return ContractVersionProgramStatus::finishedInGroup;
-            }
-        }
+        $this->status = match (true) {
+            $hasGroup && $totalPricePassed < $totalPrice => ContractVersionProgramStatus::inProcess,
+            $hasGroup && $totalPricePassed > $totalPrice => ContractVersionProgramStatus::exceedInGroup,
+            $hasGroup && $totalPricePassed === $totalPrice => ContractVersionProgramStatus::finishedInGroup,
+            // ниже будет только !$hasGroup
+            $totalPricePassed < $totalPrice => ContractVersionProgramStatus::toFulfil,
+            $totalPricePassed > $totalPrice => ContractVersionProgramStatus::exceedNoGroup,
+            $totalPricePassed === $totalPrice => ContractVersionProgramStatus::finishedNoGroup,
+        };
 
-        if ($totalPricePassed < $totalPrice) {
-            return ContractVersionProgramStatus::toFulfil;
-        }
-        if ($totalPricePassed > $totalPrice) {
-            return ContractVersionProgramStatus::exceedNoGroup;
-        }
-        if ($totalPricePassed === $totalPrice) {
-            return ContractVersionProgramStatus::finishedNoGroup;
-        }
-
-        return null;
+        return $this->save();
     }
 
     public function clientGroup(): HasOne

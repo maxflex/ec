@@ -471,6 +471,7 @@ defineExpose({ edit, newContract, newVersion })
                   <div class="d-flex align-center ga-1">
                     <span>
                       {{ ProgramLabel[p.program] }}
+                      <pre>{{ p.status }}</pre>
                     </span>
                     <template v-if="p.group_id">
                       <v-icon :icon="mdiArrowRightThin" :size="22" />
