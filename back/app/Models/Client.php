@@ -215,12 +215,15 @@ class Client extends Person implements HasTeeth
     {
         return $query->whereHas('contracts', fn ($q) => $q
             ->where('year', '>=', current_academic_year())
-            ->whereHas('versions.programs', fn ($q) => $q
-                ->whereIn('status', [
-                    ContractVersionProgramStatus::toFulfil,
-                    ContractVersionProgramStatus::inProcess,
-                    ContractVersionProgramStatus::finishedInGroup,
-                ])
+            ->whereHas('versions', fn ($q) => $q
+                ->where('is_active', true)
+                ->whereHas('programs', fn ($q) => $q
+                    ->whereIn('status', [
+                        ContractVersionProgramStatus::toFulfil,
+                        ContractVersionProgramStatus::inProcess,
+                        ContractVersionProgramStatus::finishedInGroup,
+                    ])
+                )
             )
         );
     }

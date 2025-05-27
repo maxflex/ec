@@ -47,6 +47,7 @@ class PeopleSelectorController extends Controller
     private function getClients()
     {
         return Client::canLogin()
+            ->with(['contracts.versions.programs'])
             ->orderByRaw('last_name, first_name, middle_name')
             ->get();
     }
