@@ -27,6 +27,8 @@ class ReportController extends Controller
     {
         abort_if($report->status !== ReportStatus::published, 404);
         abort_if($report->client_id !== auth()->id(), 404);
+        $report->read();
+
         return new ReportResource($report);
     }
 }

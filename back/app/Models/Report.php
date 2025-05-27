@@ -253,15 +253,18 @@ class Report extends Model
     /**
      * Прочитать отчёт
      */
-    public function read(int $telegramId): void
+    public function read(?int $telegramId = null): void
     {
-        $phone = Phone::where('telegram_id', $telegramId)->first();
+        if ($telegramId !== null) {
+            $phone = Phone::where('telegram_id', $telegramId)->first();
 
-        TelegramMessage::sendTemplate(
-            TelegramTemplate::reportRead,
-            $phone,
-            ['report' => $this]
-        );
+            TelegramMessage::sendTemplate(
+                TelegramTemplate::reportRead,
+                $phone,
+                ['report' => $this]
+            );
+
+        }
 
         $this->update([
             'delivery' => ReportDelivery::read,
