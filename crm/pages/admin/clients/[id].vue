@@ -81,15 +81,7 @@ nextTick(loadData)
         <div>
           <div>направления</div>
           <div>
-            <template v-if="client.directions.length > 2">
-              {{ plural(client.directions.length, ['направление', 'направления', 'направлений']) }}
-            </template>
-            <template v-else-if="client.directions.length === 0">
-              не установлено
-            </template>
-            <template v-else>
-              {{ client.directions.map(e => DirectionLabel[e]).join(', ') }}
-            </template>
+            <ClientDirections :item="client.directions" />
           </div>
         </div>
         <div>

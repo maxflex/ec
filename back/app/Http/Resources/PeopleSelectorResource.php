@@ -14,8 +14,8 @@ class PeopleSelectorResource extends JsonResource
     {
         return extract_fields($this, [
             'first_name', 'last_name', 'middle_name',
+            'directions',
         ], [
-            'directions' => $this->current_year_directions,
             'years' => $this->contracts
                 ->where('year', '>=', current_academic_year())
                 ->filter(

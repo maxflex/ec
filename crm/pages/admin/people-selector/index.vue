@@ -283,9 +283,7 @@ nextTick(async () => {
               <UiPerson :item="item" teacher-format="full" />
             </div>
             <div>
-              <template v-if="item.directions">
-                {{ item.directions.map(e => DirectionLabel[e]).join(', ') }}
-              </template>
+              <ClientDirections v-if="item.directions" :item="item.directions" hide-old />
             </div>
           </div>
         </template>
@@ -321,10 +319,18 @@ nextTick(async () => {
 
     & > div {
       &:first-child {
-        width: 500px;
+        width: 350px;
         display: flex;
         align-items: center;
         gap: 8px;
+      }
+    }
+
+    .client-directions {
+      display: flex;
+      align-items: center;
+      & > div {
+        width: 180px;
       }
     }
   }

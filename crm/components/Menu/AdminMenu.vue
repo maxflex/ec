@@ -27,7 +27,6 @@ const menu: Menu = [
     icon: mdiAccount,
     title: 'Клиенты',
     items: [
-      { title: 'Все клиенты', to: '/clients' },
       { title: 'Договоры', to: '/contracts' },
       { title: 'Пройденные тесты', to: '/client-tests' },
       { title: 'Жалобы', to: '/client-complaints' },

@@ -26,7 +26,7 @@ export type MarkSheet = Partial<Record<Subject, number>>
 
 export interface ClientResource extends PersonWithPhotoResource, HasPhones {
   branches: Branch[]
-  directions: Direction[]
+  directions: Record<Year, Direction[]>
   head_teacher_id: number | null
   head_teacher?: PersonResource
   parent: ParentResource
