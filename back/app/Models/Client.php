@@ -278,21 +278,6 @@ class Client extends Person implements HasTeeth
         return $result;
     }
 
-    /**
-     * Направления текущего учебного года
-     * (используется на /people-selector)
-     */
-    public function getCurrentYearDirectionsAttribute()
-    {
-        return $this->contracts
-            ->where('year', current_academic_year())
-            ->map(fn ($c) => $c->active_version)
-            ->map(fn ($activeVersion) => $activeVersion->directions)
-            ->flatten()
-            ->unique()
-            ->all();
-    }
-
     public function getSearchWeight(): int
     {
         return intval($this->contracts()->max('year') ?? 1000);

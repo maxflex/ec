@@ -14,7 +14,7 @@ export interface ParentResource extends HasName, HasPhones {
 }
 
 export interface ClientListResource extends PersonResource {
-  directions: Direction[]
+  directions: Record<Year, Direction[]>
   created_at: string
 }
 

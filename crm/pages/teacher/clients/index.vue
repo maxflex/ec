@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ClientListResource } from '~/components/Client'
+
 const { items, indexPageData } = useIndex<ClientListResource>(
   `clients`,
 )

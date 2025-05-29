@@ -94,9 +94,7 @@ const itemsFiltered = computed<PersonResource[]>(() => {
 
 <style lang="scss">
 .permanent-pass-info {
-  $padding: 20px !important;
   background: #f5f5f5;
-  padding-top: $padding;
-  padding-bottom: $padding;
+  padding: var(--padding) !important;
 }
 </style>

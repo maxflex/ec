@@ -119,10 +119,8 @@ function onEdit(p: ClientsBrowseResource) {
 
 <style lang="scss">
 .browse-info {
-  $padding: 20px !important;
   background: #f5f5f5;
-  padding-top: $padding;
-  padding-bottom: $padding;
+  padding: var(--padding) !important;
 }
 .page-clients-browse {
   .phone-list__comment {
