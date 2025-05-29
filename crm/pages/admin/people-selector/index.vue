@@ -94,7 +94,32 @@ function select(item: RecepientPerson) {
 }
 
 function selectAll() {
-  selected.value[currentMode.value] = isSelectedAll.value ? [] : currentPeople.value.map(e => e.id)
+  if (isSelectedAll.value) {
+    if (mode.value === 'teachers') {
+      selected.value.teachers = []
+    }
+    else {
+      for (const client of currentPeople.value) {
+        const index = selected.value.clients.findIndex(id => id === client.id)
+        if (index !== -1) {
+          selected.value.clients.splice(index, 1)
+        }
+      }
+    }
+    return
+  }
+
+  if (mode.value === 'teachers') {
+    selected.value.teachers = people.value.teachers.map(t => t.id)
+  }
+  else {
+    for (const client of currentPeople.value) {
+      const exists = selected.value.clients.includes(client.id)
+      if (!exists) {
+        selected.value.clients.push(client.id)
+      }
+    }
+  }
 }
 
 function clearSelection() {
