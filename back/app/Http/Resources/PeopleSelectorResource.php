@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\ContractVersionProgramStatus;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -15,6 +16,15 @@ class PeopleSelectorResource extends JsonResource
             'first_name', 'last_name', 'middle_name',
         ], [
             'directions' => $this->current_year_directions,
+            'years' => $this->contracts
+                ->where('year', '>=', current_academic_year())
+                ->filter(
+                    fn ($c) => $c->active_version->programs->some(
+                        fn ($p) => in_array($p->status, ContractVersionProgramStatus::getActiveStatuses())
+                    ))
+                ->pluck('year')
+                ->unique()
+                ->all(),
         ]);
     }
 }

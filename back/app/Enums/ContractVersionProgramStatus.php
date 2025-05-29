@@ -10,4 +10,16 @@ enum ContractVersionProgramStatus: string
     case inProcess = 'inProcess';
     case exceedInGroup = 'exceedInGroup';
     case finishedInGroup = 'finishedInGroup';
+
+    /**
+     * @return array<int, self>
+     */
+    public static function getActiveStatuses(): array
+    {
+        return [
+            ContractVersionProgramStatus::toFulfil,
+            ContractVersionProgramStatus::inProcess,
+            ContractVersionProgramStatus::finishedInGroup,
+        ];
+    }
 }

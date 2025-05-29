@@ -1,4 +1,14 @@
 <script setup lang="ts">
+const currentYear = currentAcademicYear()
+const nextYear = currentYear + 1 as Year
+const modeLabel = {
+  clientsCurrentYear: `клиенты ${currentYear}-${nextYear}`,
+  clientsNextYear: `клиенты ${nextYear}-${nextYear + 1}`,
+  teachers: 'преподаватели',
+} as const
+
+type Mode = keyof typeof modeLabel
+
 const route = useRoute()
 const router = useRouter()
 const loading = ref(true)
@@ -10,7 +20,8 @@ const sendEventId = route.query.event_id
 const participantsEventId = route.query.participants
 
 const saving = ref(false)
-const mode = ref<Recepient>('clients')
+const mode = ref<Mode>('clientsCurrentYear')
+// const mode = ref<Recepient>('clients')
 const people = ref<Recipients>({
   clients: [],
   teachers: [],
@@ -30,7 +41,31 @@ const selected = ref<RecipientIds>({
 
 const noData = computed(() => !Object.values(people.value).some(e => !!e.length))
 
-const isSelectedAll = computed(() => selected.value[mode.value].length === people.value[mode.value].length)
+const currentPeople = computed<RecepientPerson[]>(() => {
+  if (mode.value === 'clientsCurrentYear') {
+    return people.value.clients.filter(c => c.years!.includes(currentYear))
+  }
+  if (mode.value === 'clientsNextYear') {
+    return people.value.clients.filter(c => c.years!.includes(nextYear))
+  }
+  return people.value.teachers
+})
+
+const currentMode = computed<Recepient>(() => mode.value === 'teachers' ? 'teachers' : 'clients')
+
+const isSelectedAll = computed<boolean>(() => {
+  if (mode.value === 'teachers') {
+    return people.value.teachers.length === selected.value.teachers.length
+  }
+
+  for (const client of currentPeople.value) {
+    if (!selected.value.clients.includes(client.id)) {
+      return false
+    }
+  }
+
+  return true
+})
 
 const selectedTotal = computed(() => {
   const { clients, teachers } = selected.value
@@ -52,14 +87,14 @@ async function loadData() {
 }
 
 function select(item: RecepientPerson) {
-  const index = selected.value[mode.value].findIndex(id => id === item.id)
+  const index = selected.value[currentMode.value].findIndex(id => id === item.id)
   index === -1
-    ? selected.value[mode.value].push(item.id)
-    : selected.value[mode.value].splice(index, 1)
+    ? selected.value[currentMode.value].push(item.id)
+    : selected.value[currentMode.value].splice(index, 1)
 }
 
 function selectAll() {
-  selected.value[mode.value] = isSelectedAll.value ? [] : people.value[mode.value].map(e => e.id)
+  selected.value[currentMode.value] = isSelectedAll.value ? [] : currentPeople.value.map(e => e.id)
 }
 
 function clearSelection() {
@@ -89,7 +124,7 @@ async function saveParticipants() {
 }
 
 function isSelected(item: RecepientPerson): boolean {
-  return isSelectedAll.value || selected.value[mode.value].includes(item.id)
+  return isSelectedAll.value || selected.value[currentMode.value].includes(item.id)
 }
 
 const itemsFiltered = computed<RecepientPerson[]>(() => {
@@ -100,7 +135,7 @@ const itemsFiltered = computed<RecepientPerson[]>(() => {
   const { q, directions } = clientLiveFilters.value
   const query = q.trim().toLowerCase()
 
-  return people.value.clients.filter((c) => {
+  return currentPeople.value.filter((c) => {
     const nameMatch = query
       ? [c.last_name, c.first_name]
           .join(' ')
@@ -159,14 +194,14 @@ nextTick(async () => {
       <v-select
         v-model="mode"
         label="Режим"
-        :items="selectItems(RecepientLabel)"
+        :items="selectItems(modeLabel)"
         density="comfortable"
         class="lowercase-select-items"
         :menu-props="{
           class: 'lowercase-select-items',
         }"
       />
-      <template v-if="mode === 'clients'">
+      <template v-if="currentMode === 'clients'">
         <UiMultipleSelect
           v-model="clientLiveFilters.directions"
           :items="selectItems(DirectionLabel)"
@@ -208,8 +243,8 @@ nextTick(async () => {
       <div class="people-selector__item">
         <div @click="selectAll()">
           <UiCheckbox :value="isSelectedAll" />
-          <span> всего: {{ people[mode].length }} </span>
-          <span v-if="people[mode].length !== itemsFiltered.length" class="text-gray ml-2">
+          <span> всего: {{ currentPeople.length }} </span>
+          <span v-if="currentPeople.length !== itemsFiltered.length" class="text-gray ml-2">
             найдено: {{ itemsFiltered.length }}
           </span>
         </div>

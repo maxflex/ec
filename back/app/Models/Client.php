@@ -218,11 +218,7 @@ class Client extends Person implements HasTeeth
             ->whereHas('versions', fn ($q) => $q
                 ->where('is_active', true)
                 ->whereHas('programs', fn ($q) => $q
-                    ->whereIn('status', [
-                        ContractVersionProgramStatus::toFulfil,
-                        ContractVersionProgramStatus::inProcess,
-                        ContractVersionProgramStatus::finishedInGroup,
-                    ])
+                    ->whereIn('status', ContractVersionProgramStatus::getActiveStatuses())
                 )
             )
         );

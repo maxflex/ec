@@ -904,6 +904,7 @@ declare global {
 
   interface RecepientPerson extends PersonResource {
     directions?: Direction[]
+    years?: Year[]
   }
 
   type Recipients = Record<Recepient, RecepientPerson[]>
