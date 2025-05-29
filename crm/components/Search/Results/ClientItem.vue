@@ -43,17 +43,15 @@ function getYearAgo(year: Year): string {
       {{ EntityTypeLabel[item.entity_type] }}
     </div>
     <div style="width: 200px">
-      <span v-if="client.directions.length === 0" class="text-gray">
+      <span v-if="Object.keys(client.directions).length === 0" class="text-gray">
         нет договоров
       </span>
       <span v-else>
-        {{ client.directions.map(e => DirectionLabel[e]).join(', ') }}
+        <ClientDirections :item="client.directions" />
       </span>
     </div>
     <div style="width: 250px">
-      <span v-if="item.is_active" class="text-success">
-        активный клиент
-      </span>
+      <span v-if="item.is_active" class="text-success"> активный клиент </span>
       <span v-else-if="client.max_contract_year">
         {{ getYearAgo(client.max_contract_year) }}
       </span>

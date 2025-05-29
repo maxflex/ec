@@ -21,7 +21,7 @@ declare global {
 
   type EventParticipantConfirmation = keyof typeof EventParticipantConfirmationLabel
 
-  type ErrorCode = typeof ErrorCodeLabel[number]
+  type ErrorCode = (typeof ErrorCodeLabel)[number]
 
   type CallAppStatusFilter = keyof typeof CallAppStatusFilterLabel
 
@@ -730,9 +730,11 @@ declare global {
 
   interface InstructionResource extends InstructionBaseResource {
     entry_id: number
-    teachers: Array<PersonWithPhotoResource & {
-      signed_at: ?string
-    }>
+    teachers: Array<
+      PersonWithPhotoResource & {
+        signed_at: ?string
+      }
+    >
     signs: Array<{
       id: number
       teacher: PersonWithPhotoResource
@@ -825,7 +827,8 @@ declare global {
 
   type CallType = 'incoming' | 'outgoing'
 
-  type SseEvent = 'CallEvent'
+  type SseEvent =
+    | 'CallEvent'
     | 'CallSummaryEvent'
     | 'TelegramBotAdded'
     | 'ParticipantConfirmationEvent'
@@ -902,8 +905,10 @@ declare global {
 
   type RecipientIds = Record<Recepient, number[]>
 
+  type ClientDirections = Record<Year, Direction[]>
+
   interface RecepientPerson extends PersonResource {
-    directions?: Record<Year, Direction[]>
+    directions?: ClientDirections
     years?: Year[]
   }
 

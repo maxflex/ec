@@ -14,7 +14,7 @@ export interface ParentResource extends HasName, HasPhones {
 }
 
 export interface ClientListResource extends PersonResource {
-  directions: Record<Year, Direction[]>
+  directions: ClientDirections
   created_at: string
 }
 
@@ -26,7 +26,7 @@ export type MarkSheet = Partial<Record<Subject, number>>
 
 export interface ClientResource extends PersonWithPhotoResource, HasPhones {
   branches: Branch[]
-  directions: Record<Year, Direction[]>
+  directions: ClientDirections
   head_teacher_id: number | null
   head_teacher?: PersonResource
   parent: ParentResource

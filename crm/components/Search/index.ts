@@ -4,7 +4,7 @@ export interface SearchResultResource extends PersonWithPhotoResource, HasPhones
   entity_type: EntityType
   is_active: boolean
   client?: {
-    directions: Direction[]
+    directions: ClientDirections
     max_contract_year: Year | null
   }
   teacher?: {
