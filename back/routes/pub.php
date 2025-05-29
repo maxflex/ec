@@ -31,7 +31,7 @@ Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::post('via-magic-link', 'viaMagicLink');
 });
 
-Route::apiResource('/teachers', TeacherController::class)->only('index');
+Route::apiResource('/teachers', TeacherController::class)->only(['index', 'store']);
 
 Route::prefix('security')->controller(SecurityController::class)->group(function () {
     Route::post('send-code', 'sendCode');

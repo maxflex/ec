@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Pub;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PubTeacherRequest;
 use App\Http\Resources\TeacherPubResource;
+use App\Mail\NewTeacherMail;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class TeacherController extends Controller
 {
@@ -23,6 +26,14 @@ class TeacherController extends Controller
         return TeacherPubResource::collection(
             $query->get()
         );
+    }
+
+    /**
+     * CV с сайта
+     */
+    public function store(PubTeacherRequest $request)
+    {
+        Mail::to('info@ege-centr.ru')->send(new NewTeacherMail($request->all()));
     }
 
     protected function filterIds($query, array $ids)

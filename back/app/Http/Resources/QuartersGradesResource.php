@@ -46,17 +46,16 @@ class QuartersGradesResource extends JsonResource
             // таким образом, в Quarter::final будут значения Quarter::q4
             // (значения от предыдущей итерации цикла)
             if ($quarter !== Quarter::final) {
-                $noPlannedLessons = !Lesson::query()
+                $noPlannedLessons = ! Lesson::query()
                     ->whereIn('group_id', $groupIds)
                     ->where('quarter', $quarter)
                     ->where('status', LessonStatus::planned)
                     ->exists();
 
-                $conductedLessonsCount = $this->{$quarter->value . '_conducted_lessons_count'};
+                $conductedLessonsCount = $this->{$quarter->value.'_conducted_lessons_count'};
 
                 $isGradeNeeded = $grade === null && $noPlannedLessons && $conductedLessonsCount > 0;
             }
-
 
             $quarterData = [
                 'grade' => new GradeResource($grade),
@@ -76,9 +75,9 @@ class QuartersGradesResource extends JsonResource
                         ->where('cvp.program', $this->program)
                         ->where('c.client_id', $this->client_id)
                         ->where('c.year', $this->year)
-                        ->whereHas('lesson', fn($q) => $q->where('quarter', $quarter))
+                        ->whereHas('lesson', fn ($q) => $q->where('quarter', $quarter))
                         ->get()
-                        ->sortBy(fn($cl) => $cl->lesson->date_time);
+                        ->sortBy(fn ($cl) => $cl->lesson->date_time);
 
                     $quarterData['client_lessons'] = JournalResource::collection($clientLessons);
 
@@ -95,7 +94,7 @@ class QuartersGradesResource extends JsonResource
             'year', 'program',
         ], [
             'quarters' => $quarters,
-            'client' => new PersonResource(Client::find($this->client_id))
+            'client' => new PersonResource(Client::find($this->client_id)),
         ]);
     }
 }
