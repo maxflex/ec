@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { ClientDirections } from '#components'
+import { flatten } from 'lodash-es'
+
 const currentYear = currentAcademicYear()
-const nextYear = currentYear + 1 as Year
+const nextYear = (currentYear + 1) as Year
 const modeLabel = {
   clientsCurrentYear: `клиенты ${currentYear}-${nextYear}`,
   clientsNextYear: `клиенты ${nextYear}-${nextYear + 1}`,
@@ -51,7 +54,7 @@ const currentPeople = computed<RecepientPerson[]>(() => {
   return people.value.teachers
 })
 
-const currentMode = computed<Recepient>(() => mode.value === 'teachers' ? 'teachers' : 'clients')
+const currentMode = computed<Recepient>(() => (mode.value === 'teachers' ? 'teachers' : 'clients'))
 
 const isSelectedAll = computed<boolean>(() => {
   if (mode.value === 'teachers') {
@@ -74,14 +77,11 @@ const selectedTotal = computed(() => {
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<Recipients>(
-    `people-selector`,
-    {
-      params: {
-        event_id: sendEventId,
-      },
+  const { data } = await useHttp<Recipients>(`people-selector`, {
+    params: {
+      event_id: sendEventId,
     },
-  )
+  })
   people.value = data.value!
   loading.value = false
 }
@@ -135,16 +135,13 @@ async function saveParticipants() {
   }
 
   saving.value = true
-  await useHttp(
-    `event-participants`,
-    {
-      method: 'post',
-      body: {
-        id: participantsEventId,
-        selected: selected.value,
-      },
+  await useHttp(`event-participants`, {
+    method: 'post',
+    body: {
+      id: participantsEventId,
+      selected: selected.value,
     },
-  )
+  })
   await router.push({ name: 'events-id', params: { id: participantsEventId as string } })
 }
 
@@ -162,14 +159,13 @@ const itemsFiltered = computed<RecepientPerson[]>(() => {
 
   return currentPeople.value.filter((c) => {
     const nameMatch = query
-      ? [c.last_name, c.first_name]
-          .join(' ')
-          .toLowerCase()
-          .includes(query)
+      ? [c.last_name, c.first_name].join(' ').toLowerCase().includes(query)
       : true
 
+    const clientDirections = flatten(Object.values(c.directions!))
+
     const directionsMatch = directions.length
-      ? directions.some(d => c.directions!.includes(d))
+      ? directions.some(d => clientDirections.includes(d))
       : true
 
     return nameMatch && directionsMatch
@@ -178,11 +174,15 @@ const itemsFiltered = computed<RecepientPerson[]>(() => {
 
 watch(mode, () => smoothScroll('main', 'top', 'instant'))
 
-watch(selected, (newVal) => {
-  selectedTotal.value === 0
-    ? localStorage.removeItem('selected-people')
-    : localStorage.setItem('selected-people', JSON.stringify(newVal))
-}, { deep: true })
+watch(
+  selected,
+  (newVal) => {
+    selectedTotal.value === 0
+      ? localStorage.removeItem('selected-people')
+      : localStorage.setItem('selected-people', JSON.stringify(newVal))
+  },
+  { deep: true },
+)
 
 nextTick(async () => {
   await loadData()
@@ -233,11 +233,7 @@ nextTick(async () => {
           label="Направления"
           density="comfortable"
         />
-        <v-text-field
-          v-model="clientLiveFilters.q"
-          label="Поиск"
-          density="comfortable"
-        />
+        <v-text-field v-model="clientLiveFilters.q" label="Поиск" density="comfortable" />
       </template>
       <div v-if="!!selectedTotal" class="people-selector__controls">
         <div>
@@ -246,20 +242,27 @@ nextTick(async () => {
           </v-btn>
         </div>
         <div>
-          <v-btn v-if="participantsEventId" color="primary" :loading="saving" @click="saveParticipants()">
-            сохранить
-            ({{ selectedTotal }})
+          <v-btn
+            v-if="participantsEventId"
+            color="primary"
+            :loading="saving"
+            @click="saveParticipants()"
+          >
+            сохранить ({{ selectedTotal }})
           </v-btn>
           <v-btn
-            v-else color="primary" @click="$router.push({
-              name: 'people-selector-send',
-              query: {
-                event_id: sendEventId,
-              },
-            })"
+            v-else
+            color="primary"
+            @click="
+              $router.push({
+                name: 'people-selector-send',
+                query: {
+                  event_id: sendEventId,
+                },
+              })
+            "
           >
-            отправить
-            ({{ selectedTotal }})
+            отправить ({{ selectedTotal }})
           </v-btn>
         </div>
       </div>
