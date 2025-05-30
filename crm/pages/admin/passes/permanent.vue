@@ -52,10 +52,7 @@ const itemsFiltered = computed<PersonResource[]>(() => {
         density="comfortable"
       />
       <span>
-        всего: {{ total }}
-      </span>
-      <span v-if="items.length !== itemsFiltered.length" class="text-gray ml-2">
-        найдено: {{ itemsFiltered.length }}
+        всего: {{ itemsFiltered.length }}
       </span>
     </template>
     <template #header>

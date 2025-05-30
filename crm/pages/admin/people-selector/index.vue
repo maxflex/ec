@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ClientDirections } from '#components'
-import { flatten } from 'lodash-es'
 
 const currentYear = currentAcademicYear()
 const nextYear = (currentYear + 1) as Year
@@ -54,15 +53,35 @@ const currentPeople = computed<RecepientPerson[]>(() => {
   return people.value.teachers
 })
 
+const itemsFiltered = computed<RecepientPerson[]>(() => {
+  if (mode.value === 'teachers') {
+    return people.value.teachers
+  }
+
+  const { q, directions } = clientLiveFilters.value
+  const query = q.trim().toLowerCase()
+  const year = mode.value === 'clientsCurrentYear' ? currentYear : nextYear
+
+  return currentPeople.value.filter((c) => {
+    const nameMatch = query
+      ? [c.last_name, c.first_name].join(' ').toLowerCase().includes(query)
+      : true
+
+    const clientDirections = c.directions![year] ?? []
+
+    const directionsMatch = directions.length
+      ? directions.some(d => clientDirections.includes(d))
+      : true
+
+    return nameMatch && directionsMatch
+  })
+})
+
 const currentMode = computed<Recepient>(() => (mode.value === 'teachers' ? 'teachers' : 'clients'))
 
 const isSelectedAll = computed<boolean>(() => {
-  if (mode.value === 'teachers') {
-    return people.value.teachers.length === selected.value.teachers.length
-  }
-
-  for (const client of currentPeople.value) {
-    if (!selected.value.clients.includes(client.id)) {
+  for (const p of itemsFiltered.value) {
+    if (!selected.value[currentMode.value].includes(p.id)) {
       return false
     }
   }
@@ -95,29 +114,19 @@ function select(item: RecepientPerson) {
 
 function selectAll() {
   if (isSelectedAll.value) {
-    if (mode.value === 'teachers') {
-      selected.value.teachers = []
-    }
-    else {
-      for (const client of currentPeople.value) {
-        const index = selected.value.clients.findIndex(id => id === client.id)
-        if (index !== -1) {
-          selected.value.clients.splice(index, 1)
-        }
+    for (const p of itemsFiltered.value) {
+      const index = selected.value[currentMode.value].findIndex(id => id === p.id)
+      if (index !== -1) {
+        selected.value[currentMode.value].splice(index, 1)
       }
     }
     return
   }
 
-  if (mode.value === 'teachers') {
-    selected.value.teachers = people.value.teachers.map(t => t.id)
-  }
-  else {
-    for (const client of currentPeople.value) {
-      const exists = selected.value.clients.includes(client.id)
-      if (!exists) {
-        selected.value.clients.push(client.id)
-      }
+  for (const p of itemsFiltered.value) {
+    const exists = selected.value[currentMode.value].includes(p.id)
+    if (!exists) {
+      selected.value[currentMode.value].push(p.id)
     }
   }
 }
@@ -148,29 +157,6 @@ async function saveParticipants() {
 function isSelected(item: RecepientPerson): boolean {
   return isSelectedAll.value || selected.value[currentMode.value].includes(item.id)
 }
-
-const itemsFiltered = computed<RecepientPerson[]>(() => {
-  if (mode.value === 'teachers') {
-    return people.value.teachers
-  }
-
-  const { q, directions } = clientLiveFilters.value
-  const query = q.trim().toLowerCase()
-
-  return currentPeople.value.filter((c) => {
-    const nameMatch = query
-      ? [c.last_name, c.first_name].join(' ').toLowerCase().includes(query)
-      : true
-
-    const clientDirections = flatten(Object.values(c.directions!))
-
-    const directionsMatch = directions.length
-      ? directions.some(d => clientDirections.includes(d))
-      : true
-
-    return nameMatch && directionsMatch
-  })
-})
 
 watch(mode, () => smoothScroll('main', 'top', 'instant'))
 
@@ -271,10 +257,7 @@ nextTick(async () => {
       <div class="people-selector__item">
         <div @click="selectAll()">
           <UiCheckbox :value="isSelectedAll" />
-          <span> всего: {{ currentPeople.length }} </span>
-          <span v-if="currentPeople.length !== itemsFiltered.length" class="text-gray ml-2">
-            найдено: {{ itemsFiltered.length }}
-          </span>
+          <span> всего: {{ itemsFiltered.length }} </span>
         </div>
         <div></div>
       </div>
