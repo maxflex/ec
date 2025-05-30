@@ -15,7 +15,7 @@ class ClientResource extends JsonResource
             'first_name', 'last_name', 'middle_name', 'branches',
             'head_teacher_id', 'photo_url', 'created_at',
             'passport', 'is_remote', 'directions', 'email',
-            'last_seen_at', 'heard_about_us', 'mark_sheet',
+            'heard_about_us', 'mark_sheet',
         ], [
             'can_login' => Client::canLogin()->whereId($this->id)->exists(),
             'entity_type' => Client::class,

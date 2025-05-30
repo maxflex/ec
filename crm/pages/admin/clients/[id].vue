@@ -50,7 +50,6 @@ nextTick(loadData)
           <div>ученик</div>
           <div class="text-truncate">
             {{ formatName(client) }}
-            <UiLastSeenAt :item="client" />
             <div v-if="client.can_login" class="text-success mb-5">
               пропуск активен
             </div>
@@ -66,7 +65,6 @@ nextTick(loadData)
           <div>представитель</div>
           <div class="text-truncate">
             {{ formatName(client.parent) }}
-            <UiLastSeenAt :item="client.parent" />
             <div v-if="client.can_login" class="text-success mb-5">
               пропуск активен
             </div>
