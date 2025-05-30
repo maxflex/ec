@@ -22,6 +22,7 @@
         "maatwebsite/excel": "^3.1",
         "staudenmeir/laravel-cte": "^1.10",
         "telegram-bot/api": "^2.5",
+        "tuncaybahadir/quar": "^1.5",
         "typesense/typesense-php": "^4.9"
     },
     "require-dev": {
