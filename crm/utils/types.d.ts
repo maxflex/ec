@@ -966,32 +966,6 @@ declare global {
     }
   }
 
-  interface ScholarshipScoreClient {
-    client: PersonResource
-    avg_score: number
-    scores_count: number
-    year: Year
-    month: Month
-  }
-
-  interface ScholarshipScoreTeacher {
-    teacher: PersonResource
-    scores_count: number
-    total: number
-    year: Year
-    month: Month
-  }
-
-  interface ScholarshipScoreResource {
-    id?: number
-    score?: number
-    year: year
-    month: Month
-    client: PersonResource
-    program: Program
-    client_id: number
-    lessons_count: number
-  }
 
   interface AllPaymentResource {
     id: number

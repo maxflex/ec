@@ -35,11 +35,6 @@ class Teacher extends Person implements HasTeeth
         return $this->hasMany(ClientComplaint::class);
     }
 
-    public function scholarshipScores(): HasMany
-    {
-        return $this->hasMany(ScholarshipScore::class);
-    }
-
     public function signs(): HasMany
     {
         return $this->hasMany(InstructionSign::class);
