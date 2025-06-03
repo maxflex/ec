@@ -80,7 +80,8 @@ const { items } = defineProps<{
         </span>
       </div>
       <div class="clients-browse__reports-read">
-        {{ item.parent.reports_read_count }} / {{ item.parent.reports_published_count }}
+        {{ item.parent.reports_published_count }} /
+        {{ item.parent.reports_read_count }}
       </div>
     </div>
   </div>
