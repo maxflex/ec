@@ -35,7 +35,6 @@ use App\Http\Controllers\Admin\PreviewController;
 use App\Http\Controllers\Admin\PrintController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RequestsController;
-use App\Http\Controllers\Admin\ScholarshipScoreController;
 use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Admin\StatsController;
 use App\Http\Controllers\Admin\StatsPresetController;
@@ -125,7 +124,6 @@ Route::get('people-selector', PeopleSelectorController::class);
 Route::get('cabinets/free', [CabinetController::class, 'free']);
 Route::get('cabinets', [CabinetController::class, 'index']);
 
-Route::get('scholarship-scores', ScholarshipScoreController::class);
 
 Route::post('telegram-lists/load-people', [TelegramListController::class, 'loadPeople']);
 

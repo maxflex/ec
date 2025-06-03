@@ -49,11 +49,6 @@ const menu: Menu = [
     to: '/payments',
   },
   {
-    icon: mdiTrophy,
-    title: 'Стипендия',
-    to: '/scholarship-scores',
-  },
-  {
     icon: mdiFileSign,
     title: 'Инструкции',
     to: '/instructions',

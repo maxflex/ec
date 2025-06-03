@@ -39,7 +39,6 @@ const tables = [
   'phones',
   'reports',
   'requests',
-  'scholarship_scores',
   'stats_presets',
   'teacher_payments',
   'teacher_services',

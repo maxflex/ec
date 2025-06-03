@@ -21,7 +21,6 @@ class UpdateProgramsCommand extends Command
         'tests',
         'reports',
         'grades',
-        'scholarship_scores',
         'contract_version_programs',
         'web_review_program',
     ];

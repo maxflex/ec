@@ -18,7 +18,6 @@ use App\Http\Controllers\Teacher\InstructionController;
 use App\Http\Controllers\Teacher\LessonController;
 use App\Http\Controllers\Teacher\MenuCountsController;
 use App\Http\Controllers\Teacher\ReportController;
-use App\Http\Controllers\Teacher\ScholarshipScoreController;
 use App\Http\Controllers\Teacher\TeacherPaymentController;
 use App\Http\Controllers\TeethController;
 use App\Http\Controllers\UploadController;
@@ -47,7 +46,6 @@ Route::apiResources([
     'reports' => ReportController::class,
     'head-teacher-reports' => HeadTeacherReportController::class,
     'grades' => GradeController::class,
-    'scholarship-scores' => ScholarshipScoreController::class,
 ]);
 Route::middleware(HeadTeacherMiddleware::class)->group(function () {
     Route::apiResource('exam-scores', ExamScoreController::class)->only('index');
