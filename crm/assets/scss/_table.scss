@@ -19,7 +19,8 @@
     text-align: right;
     // overflow: hidden;
     // background: red;
-    .v-btn {
+    & > .badge,
+    & > .v-btn {
       opacity: 0;
       box-shadow: 0 0 20px 20px rgba(white, 0.5);
       background: white;
@@ -38,7 +39,8 @@
       }
     }
     &:hover {
-      .v-btn {
+      & > .badge,
+      & > .v-btn {
         transform: translateX(0);
         opacity: 1 !important;
       }
@@ -121,5 +123,11 @@
     }
 
     pointer-events: none;
+  }
+
+  &.flex-start {
+    & > div {
+      align-items: flex-start !important;
+    }
   }
 }

@@ -43,6 +43,22 @@ export interface ClientResource extends PersonWithPhotoResource, HasPhones {
   }
 }
 
+export interface ClientsBrowseResource extends PersonResource {
+  last_seen_at: string | null
+  phones: PhoneResource[]
+  logs_count: number
+  tg_logs_count: number
+  comments_count: number
+  parent: PersonResource & {
+    phones: PhoneResource[]
+    last_seen_at: string | null
+    logs_count: number
+    tg_logs_count: number
+    reports_read_count: number
+    reports_published_count: number
+  }
+}
+
 export const modelDefaults: ClientResource = {
   id: newId(),
   first_name: null,
@@ -50,7 +66,7 @@ export const modelDefaults: ClientResource = {
   middle_name: null,
   head_teacher_id: null,
   branches: [],
-  directions: [],
+  directions: {},
   phones: [],
   photo_url: null,
   is_remote: false,

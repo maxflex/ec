@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use App\Casts\Timestamp;
+use App\Enums\CallType;
 use App\Http\Resources\CallAppAonResource;
 use App\Http\Resources\CallAppLastInteractionResource;
-use App\Enums\{CallType};
-use Illuminate\Database\Eloquent\Model;
 use App\Utils\Phone as UtilsPhone;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -16,14 +16,67 @@ class Call extends Model
     const DISABLE_LOGS = true;
 
     public $incrementing = false;
+
     public $timestamps = false;
+
     protected $guarded = [];
+
     protected $casts = [
         'type' => CallType::class,
         'created_at' => Timestamp::class,
         'answered_at' => Timestamp::class,
         'finished_at' => Timestamp::class,
     ];
+
+    public static function getActive()
+    {
+        $keys = cache()->connection()
+            ->zrange(cache()->getPrefix().'tag:calls:entries', 0, -1);
+        $keys = collect($keys)->map(fn ($key) => collect(explode(':', $key))->last());
+
+        return $keys
+            ->map(fn ($key) => cache()->tags('calls')->get($key))
+            ->filter(fn ($item) => $item !== null)
+            ->values();
+    }
+
+    /**
+     * АОН – автоматический определитель номера.
+     * Определяем модель по номеру телефона
+     */
+    public static function aon(string $number): ?CallAppAonResource
+    {
+        // Кто звонит?
+        $phone = Phone::where('number', $number)
+            ->where('entity_type', '<>', User::class)
+            ->orderByRaw('
+                CASE
+                    WHEN ENTITY_TYPE = ? THEN 4
+                    WHEN ENTITY_TYPE = ? THEN 3
+                    WHEN ENTITY_TYPE = ? THEN 2
+                    WHEN ENTITY_TYPE = ? THEN 1
+                END DESC
+            ', [
+                Client::class,
+                ClientParent::class,
+                Teacher::class,
+                Request::class,
+            ])
+            ->latest('id')
+            ->first();
+
+        return $phone ? new CallAppAonResource($phone) : null;
+    }
+
+    /**
+     * Когда было последнее взаимодействие с номером (отображается при входящем)
+     */
+    public static function getLastInteraction(string $number): ?CallAppLastInteractionResource
+    {
+        $call = Call::where('number', UtilsPhone::clean($number))->latest()->first();
+
+        return $call ? new CallAppLastInteractionResource($call) : null;
+    }
 
     public function user(): BelongsTo
     {
@@ -48,21 +101,20 @@ class Call extends Model
         return $this->is_missed && $this->callbacks()->exists();
     }
 
-    public function getHasRecordingAttribute(): bool
-    {
-        return $this->recording !== null;
-    }
-
-    // перезвоны
     public function callbacks()
     {
         // mega hack
-        $createdAt = $this->created_at ? "'" . $this->created_at . "'" : 'laravel_reserved_0.created_at';
+        $createdAt = $this->created_at ? "'".$this->created_at."'" : 'laravel_reserved_0.created_at';
 
         return $this->hasMany(Call::class, 'number', 'number')
             ->where('type', CallType::outgoing->name)
             ->whereRaw("calls.created_at > $createdAt")
             ->whereRaw("calls.created_at < $createdAt + INTERVAL 1 MONTH");
+    }
+
+    public function getHasRecordingAttribute(): bool
+    {
+        return $this->recording !== null;
     }
 
     /**
@@ -71,9 +123,9 @@ class Call extends Model
      */
     public function scopeMissed($query)
     {
-//        $keys = cache()->connection()
-//            ->zrange(cache()->getPrefix() . "tag:missed:entries", 0, -1);
-//        $hiddenIds = collect($keys)->map(fn($key) => collect(explode(":", $key))->last());
+        //        $keys = cache()->connection()
+        //            ->zrange(cache()->getPrefix() . "tag:missed:entries", 0, -1);
+        //        $hiddenIds = collect($keys)->map(fn($key) => collect(explode(":", $key))->last());
         return $query
 //            ->whereNotIn('id', $hiddenIds)
             ->where('type', CallType::incoming)
@@ -93,78 +145,21 @@ class Call extends Model
             config('mango.api_key'),
             $timestamp,
             $this->recording,
-            config('mango.api_salt')
+            config('mango.api_salt'),
         ]));
+
         return implode('/', [
             'https://app.mango-office.ru/vpbx/queries/recording/link',
             $this->recording,
             $action,
             config('mango.api_key'),
             $timestamp,
-            $sign
+            $sign,
         ]);
-    }
-
-    public static function getActive()
-    {
-        $keys = cache()->connection()
-            ->zrange(cache()->getPrefix() . "tag:calls:entries", 0, -1);
-        $keys = collect($keys)->map(fn($key) => collect(explode(":", $key))->last());
-        return $keys
-            ->map(fn($key) => cache()->tags('calls')->get($key))
-            ->filter(fn($item) => $item !== null)
-            ->values();
     }
 
     public function hide()
     {
         cache()->tags('missed')->put($this->id, 1, now()->addMonth());
     }
-
-    /**
-     * АОН – автоматический определитель номера.
-     * Определяем модель по номеру телефона
-     */
-    public static function aon(string $number): ?CallAppAonResource
-    {
-        // Кто звонит?
-         $phone = Phone::where('number', $number)
-            ->where('entity_type', '<>', User::class)
-            ->orderByRaw("
-                CASE
-                    WHEN ENTITY_TYPE = ? THEN 4
-                    WHEN ENTITY_TYPE = ? THEN 3
-                    WHEN ENTITY_TYPE = ? THEN 2
-                    WHEN ENTITY_TYPE = ? THEN 1
-                END DESC
-            ", [
-                Client::class,
-                ClientParent::class,
-                Teacher::class,
-                Request::class,
-            ])
-            ->latest('id')
-            ->first();
-
-         return $phone ? new CallAppAonResource($phone) : null;
-    }
-
-    /**
-     * Когда было последнее взаимодействие с номером (отображается при входящем)
-     */
-    public static function getLastInteraction(string $number): ?CallAppLastInteractionResource
-    {
-        $call = Call::where('number', UtilsPhone::clean($number))->latest()->first();
-        return $call ? new CallAppLastInteractionResource($call) : null;
-    }
-
-//    public static function getCounts()
-//    {
-//        return Call::missed()->count();
-//    }
-//
-//    public static function booted()
-//    {
-//        static::created(fn () => CountsUpdated::dispatch(self::class));
-//    }
 }

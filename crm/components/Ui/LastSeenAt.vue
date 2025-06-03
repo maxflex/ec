@@ -33,18 +33,18 @@ const dateFormatted = lastSeenAt === null
       }
 
       if (diffInDays < 14) {
-        return `${plural(diffInDays, ['день', 'дня', 'дней'])} назад`
+        return `${plural(diffInDays, ['день', 'дня', 'дней'])}`
       }
 
       if (diffInMonths < 1) {
-        return `${diffInWeeks} недели назад` // 2-4 недели
+        return `${diffInWeeks} недели` // 2-4 недели
       }
 
       if (diffInMonths < 12) {
-        return `${plural(diffInMonths, ['месяц', 'месяца', 'месяцев'])} назад`
+        return `${plural(diffInMonths, ['месяц', 'месяца', 'месяцев'])}`
       }
 
-      return `${plural(diffInYears, ['год', 'года', 'лет'])} назад`
+      return `${plural(diffInYears, ['год', 'года', 'лет'])}`
     })()
 </script>
 

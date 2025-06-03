@@ -11,12 +11,15 @@ const stage = ref<{ [key: number]: TestEvent | null }>({
 function testEvent(e: TestEvent) {
   stage.value[index.value] = e === 'disconnected' ? null : e
   setTimeout(() => {
-    useHttp(`mango-test/${e}`, {
-      method: 'post',
-      body: {
-        index: index.value,
+    useHttp(
+      `mango-test/${e}`,
+      {
+        method: 'post',
+        body: {
+          index: index.value,
+        },
       },
-    })
+    )
   }, e === 'summary' ? 3000 : 0)
 }
 
@@ -52,23 +55,6 @@ function getDisabled(s: TestEvent) {
         { value: 1, title: '+7 (925) 272-72-10' },
       ]"
     />
-    <div class="mt-12">
-      <v-menu contained target="cursor">
-        <template #activator="{ props }">
-          <v-chip v-bind="props">
-            very long text and i want it to be short
-          </v-chip>
-        </template>
-        <v-list width="150">
-          <v-list-item>
-            sment
-          </v-list-item>
-          <v-list-item>
-            sment2
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </div>
   </div>
 </template>
 

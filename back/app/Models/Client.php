@@ -7,6 +7,7 @@ use App\Enums\ContractVersionProgramStatus;
 use App\Enums\Direction;
 use App\Enums\HeadAboutUs;
 use App\Enums\LessonStatus;
+use App\Traits\HasComments;
 use App\Traits\IsSearchable;
 use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,7 +20,7 @@ use Illuminate\Support\Collection;
 
 class Client extends Person implements HasTeeth
 {
-    use IsSearchable;
+    use HasComments, IsSearchable;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'branches',
@@ -33,6 +34,11 @@ class Client extends Person implements HasTeeth
         'mark_sheet' => 'array',
         'heard_about_us' => HeadAboutUs::class,
     ];
+
+    public function reports(): HasMany
+    {
+        return $this->hasMany(Report::class);
+    }
 
     public function tests(): HasMany
     {
