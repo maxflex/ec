@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ClientDirections } from '#components'
-
 const currentYear = currentAcademicYear()
 const nextYear = (currentYear + 1) as Year
 const modeLabel = {
@@ -269,7 +267,10 @@ nextTick(async () => {
               <UiPerson :item="item" teacher-format="full" />
             </div>
             <div>
-              <ClientDirections v-if="item.directions" :item="item.directions" hide-old />
+              <template v-if="item.directions">
+                {{ item.directions[mode === 'clientsCurrentYear' ? currentYear : nextYear].map(e => DirectionLabel[e]).join(', ') }}
+              </template>
+              <!-- <ClientDirections v-if="item.directions" :item="item.directions" hide-old /> -->
             </div>
           </div>
         </template>

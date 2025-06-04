@@ -11,7 +11,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="table">
+  <div class="table table--padding flex-start">
     <div
       v-for="item in items"
       :id="`contract-version-${item.id}`"
@@ -47,7 +47,9 @@ const emit = defineEmits<{
         {{ YearLabel[item.contract.year] }}
       </div>
       <div style="width: 150px">
-        <ContractVersionDirections :item="item" />
+        <div v-for="(value, d) in item.directions" :key="d">
+          {{ DirectionLabel[d] }} / {{ value }}
+        </div>
       </div>
       <div style="width: 150px">
         <span v-if="!item.payments_count" class="text-gray">

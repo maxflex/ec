@@ -6,8 +6,8 @@ const { item, hideOld } = defineProps<{
 
 const currentYear = currentAcademicYear()
 const years = Object.keys(item)
-  .map((y) => Number.parseInt(y) as Year)
-  .filter((y) => (hideOld ? y >= currentYear : true))
+  .map(y => Number.parseInt(y) as Year)
+  .filter(y => (hideOld ? y >= currentYear : true))
 
 function formatYear(y: Year) {
   const year = y - 2000
@@ -18,10 +18,8 @@ function formatYear(y: Year) {
 
 <template>
   <div class="client-directions">
-    <template v-for="year in years" :key="year">
-      <div v-for="d in item[year]" :key="d" class="nowrap">
-        {{ DirectionLabel[d] }} / {{ formatYear(year) }}
-      </div>
-    </template>
+    <div v-for="year in years" :key="year">
+      {{ formatYear(year) }}: {{ item[year].map(d => DirectionLabel[d]).join(', ') }}
+    </div>
   </div>
 </template>

@@ -26,13 +26,14 @@ const { indexPageData, items } = useIndex<ClientsBrowseResource>(
       </v-btn>
     </template>
     <template #buttons>
-      <v-tooltip bottom :width="400">
+      <v-tooltip bottom :width="440">
         <template #activator="{ props }">
           <div class="browse-info" v-bind="props">
             ?
           </div>
         </template>
-        Ученики, имеющие договоры {{ year }}–{{ nextYear }} (пропуск активен до 30 июня {{ nextYear }} года или до момента расторжения договора) и {{ nextYear }}–{{ nextYear + 1 }} (пропуск активен до 30 июня {{ nextYear + 1 }} года или до момента расторжения договора) учебных лет имеют постоянный пропуск и допущены на посту охраны института
+        На данной странице отображаются клиенты, допущенные ко входу в личный кабинет.
+        Доступ закрывается 30 июня {{ filters.year + 1 }} для договоров {{ YearLabel[filters.year] }} или в случае расторжения
       </v-tooltip>
     </template>
     <ClientBrowseList :items="items" />
@@ -41,15 +42,16 @@ const { indexPageData, items } = useIndex<ClientsBrowseResource>(
 
 <style lang="scss">
 .browse-info {
-  $size: 42px;
+  $size: 44px;
   height: $size;
-  width: 52px;
+  width: $size;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgb(var(--v-theme-border));
+  border: 2px solid rgb(var(--v-theme-border));
   border-radius: 24px;
   color: rgb(var(--v-theme-gray));
-  font-weight: 500;
+  font-weight: bold;
+  user-select: none;
 }
 </style>

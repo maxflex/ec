@@ -43,7 +43,9 @@ const emit = defineEmits<{
         </template>
       </div>
       <div>
-        <ContractVersionDirections :item="version" />
+        <div v-for="(value, d) in version.directions" :key="d">
+          {{ DirectionLabel[d] }} / {{ value }}
+        </div>
       </div>
     </div>
   </div>

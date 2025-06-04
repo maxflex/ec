@@ -6,6 +6,7 @@ use App\Enums\LogDevice;
 use App\Enums\ReportDelivery;
 use App\Enums\ReportStatus;
 use App\Models\Client;
+use App\Models\ClientParent;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -33,15 +34,17 @@ class ClientsBrowseResource extends JsonResource
 
         return extract_fields($this, [
             'first_name', 'last_name', 'middle_name',
-            'last_seen_at',
+            'last_seen_at', 'directions',
         ], [
             'logs_count' => $logsCount,
             'tg_logs_count' => $tgLogsCount,
             'phones' => PhoneResource::collection($this->phones),
+            'entity_type' => Client::class,
             'parent' => extract_fields($this->parent, [
                 'first_name', 'last_name', 'middle_name',
                 'last_seen_at',
             ], [
+                'entity_type' => ClientParent::class,
                 'logs_count' => $parentLogsCount,
                 'tg_logs_count' => $parentTgLogsCount,
                 'phones' => PhoneResource::collection($this->parent->phones),

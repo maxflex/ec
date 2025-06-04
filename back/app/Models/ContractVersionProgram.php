@@ -32,6 +32,14 @@ class ContractVersionProgram extends Model
         });
     }
 
+    /**
+     * Программа активна
+     */
+    public function getIsActiveAttribute(): bool
+    {
+        return in_array($this->status, ContractVersionProgramStatus::getActiveStatuses(), true);
+    }
+
     public function contractVersion(): BelongsTo
     {
         return $this->belongsTo(ContractVersion::class);

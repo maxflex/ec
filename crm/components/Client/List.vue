@@ -9,7 +9,7 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
 </script>
 
 <template>
-  <div class="table">
+  <div class="table table--padding">
     <div
       v-for="item in items"
       :id="`clients-${item.id}`"

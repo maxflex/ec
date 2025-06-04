@@ -267,7 +267,7 @@ class Client extends Person implements HasTeeth
      */
     public function getDirectionsAttribute(): object
     {
-        $years = $this->contracts->pluck('year')->sort()->values();
+        $years = $this->contracts->where('year', '>=', current_academic_year())->pluck('year')->sort()->values();
         $result = (object) [];
 
         foreach ($years as $year) {

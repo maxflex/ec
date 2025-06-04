@@ -49,6 +49,7 @@ export interface ClientsBrowseResource extends PersonResource {
   logs_count: number
   tg_logs_count: number
   comments_count: number
+  directions: ClientDirections
   parent: PersonResource & {
     phones: PhoneResource[]
     last_seen_at: string | null

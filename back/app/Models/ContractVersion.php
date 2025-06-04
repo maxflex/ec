@@ -145,13 +145,37 @@ class ContractVersion extends Model
     }
 
     /**
+     * Active directions
+     *
      * @return Direction[]
      */
     public function getDirectionsAttribute(): array
     {
         return $this->programs
+            ->filter(fn (ContractVersionProgram $p) => $p->is_active)
             ->map(fn ($p) => $p->program->getDirection())
             ->unique()
             ->all();
+    }
+
+    /**
+     * @return Direction[]
+     */
+    public function getAllDirectionsAttribute(): array
+    {
+        $result = [];
+        foreach ($this->programs as $program) {
+            $direction = $program->program->getDirection()->value;
+            if (! isset($result[$direction])) {
+                $result[$direction] = 0;
+            }
+            $result[$direction]++;
+        }
+
+        return $result;
+        // return $this->programs
+        //     ->map(fn ($p) => $p->program->getDirection())
+        //     ->unique()
+        //     ->all();
     }
 }

@@ -17,7 +17,7 @@ const isToday = ref(false)
 const lastSeenAt = item.last_seen_at
 
 const dateFormatted = lastSeenAt === null
-  ? ''
+  ? 'не заходил'
   : (function () {
       const now = new Date()
 
@@ -50,7 +50,10 @@ const dateFormatted = lastSeenAt === null
 
 <template>
   <span
-    :class="{ 'text-success': isToday }"
+    :class="{
+      'text-success': isToday,
+      'text-gray': lastSeenAt === null,
+    }"
     class="last-seen-at"
   >
     {{ dateFormatted }}
