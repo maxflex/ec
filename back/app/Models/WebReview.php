@@ -31,7 +31,7 @@ class WebReview extends Model
     /**
      * @return Collection<int, ExamScore>
      */
-    public function getExamScoresAttribute(): Collection
+    public function getExamScores(bool $onlyPublished): Collection
     {
         $examScores = collect();
         foreach ($this->programs as $program) {
@@ -41,8 +41,8 @@ class WebReview extends Model
             }
             $examScore = ExamScore::query()
                 ->where('exam', $exam)
-                ->where('is_published', true)
                 ->where('client_id', $this->client_id)
+                ->when($onlyPublished, fn ($q) => $q->where('is_published', true))
                 ->first();
             if ($examScore === null) {
                 continue;

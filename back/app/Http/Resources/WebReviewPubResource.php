@@ -12,7 +12,7 @@ class WebReviewPubResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $examScores = $this->examScores
+        $examScores = $this->getExamScores(true)
             ->sortByDesc('score')
             ->values()
             ->map(fn (ExamScore $es) => extract_fields($es, [

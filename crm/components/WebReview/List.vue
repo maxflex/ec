@@ -9,7 +9,7 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="table">
+  <div class="table table--padding">
     <div
       v-for="item in items"
       :id="`web-review-${item.id}`"
@@ -41,10 +41,20 @@ defineEmits<{
         {{ item.text }}
       </div>
       <div
-        style="width: 200px"
+        style="width: 150px"
         class="text-truncate"
       >
         {{ item.signature }}
+      </div>
+
+      <div style="width: 250px" class="d-flex flex-column">
+        <span
+          v-for="es in item.exam_scores"
+          :key="es.id"
+          :class="{ 'text-gray': !es.is_published }"
+        >
+          {{ ExamLabel[es.exam] }}: {{ es.score }}
+        </span>
       </div>
 
       <div style="width: 60px" class="d-flex align-center ga-2">

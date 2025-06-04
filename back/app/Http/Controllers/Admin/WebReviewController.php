@@ -12,7 +12,6 @@ class WebReviewController extends Controller
     protected $filters = [
         'equals' => ['client_id', 'is_published'],
         'program' => ['program'],
-        // 'examScores' => ['exam_scores'],
     ];
 
     public function index(Request $request)
@@ -52,15 +51,6 @@ class WebReviewController extends Controller
         $webReview->delete();
     }
 
-    // public function filterExamScores($query, $value)
-    // {
-    //     $condition = $value ? 'exists' : 'not exists';
-    //     $query->whereRaw("$condition (
-    //         select 1 from exam_scores es
-    //         where es.is_published and es.client_id = web_reviews.client_id
-    //     )");
-    // }
-    //
     protected function filterProgram($query, $programs)
     {
         $query->where(function ($q) use ($programs) {
