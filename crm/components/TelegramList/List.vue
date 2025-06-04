@@ -38,7 +38,7 @@ async function destroy(item: TelegramListResource) {
       class="table-item cursor-pointer"
       @click="router.push({ name: 'telegram-lists-id', params: { id: item.id } })"
     >
-      <div v-if="item.status === 'scheduled'" class="table-actionss">
+      <UiTableActions v-if="item.status === 'scheduled'">
         <v-menu>
           <template #activator="{ props }">
             <v-btn
@@ -54,7 +54,7 @@ async function destroy(item: TelegramListResource) {
             </v-list-item>
           </v-list>
         </v-menu>
-      </div>
+</UiTableActions>
       <div style="width: 300px">
         <span v-if="item.status === 'sent'">
           отправлено {{ formatDateTime(item.scheduled_at || item.created_at!) }}

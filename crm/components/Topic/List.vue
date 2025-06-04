@@ -18,7 +18,7 @@ function onUpdated(item: TopicListResource) {
 <template>
   <div class="table">
     <div v-for="l in items" :id="`topic-${l.id}`" :key="l.id">
-      <div class="table-actionss">
+      <UiTableActions>
         <v-btn
           icon="$edit"
           :size="48"
@@ -26,7 +26,7 @@ function onUpdated(item: TopicListResource) {
           color="gray"
           @click="topicDialog?.edit(l)"
         />
-      </div>
+</UiTableActions>
       <div style="width: 100px">
         {{ formatDate(l.date) }}
       </div>

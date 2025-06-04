@@ -25,14 +25,14 @@ const emit = defineEmits<{
       <div>
         {{ formatDate(item.date) }}
       </div>
-      <div class="table-actionss">
+      <UiTableActions>
         <v-btn
           icon="$edit"
           :size="48"
           variant="plain"
           @click="emit('edit', item)"
         />
-      </div>
+</UiTableActions>
     </div>
   </div>
 </template>

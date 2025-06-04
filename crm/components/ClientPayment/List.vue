@@ -12,14 +12,14 @@ const emit = defineEmits<{
       :id="`client-payment-${item.id}`"
       :key="item.id"
     >
-      <div class="table-actionss">
+      <UiTableActions>
         <v-btn
           variant="plain"
           icon="$edit"
           :size="48"
           @click="emit('edit', item.id)"
         />
-      </div>
+</UiTableActions>
       <div style="width: 200px">
         <NuxtLink :to="{ name: 'clients-id', params: { id: item.client!.id } }">
           {{ formatName(item.client!) }}

@@ -25,7 +25,7 @@ const isConductDisabled = item.status !== 'conducted'
     <div v-if="Object.keys(checkboxes).length" class="lesson-item__checkbox">
       <UiCheckbox :value="checkboxes[item.id]" />
     </div>
-    <div v-else class="table-actionss">
+    <UiTableActions v-else>
       <v-menu>
         <template #activator="{ props }">
           <v-btn
@@ -51,7 +51,7 @@ const isConductDisabled = item.status !== 'conducted'
           </v-list-item>
         </v-list>
       </v-menu>
-    </div>
+</UiTableActions>
     <div style="width: 120px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>

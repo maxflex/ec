@@ -33,7 +33,7 @@ function onTeacherServiceDeleted(ts: TeacherServiceResource) {
 <template>
   <div class="table">
     <div v-for="payment in items" :key="payment.id">
-      <div class="table-actionss">
+      <UiTableActions>
         <v-btn
           icon="$edit"
           :size="48"
@@ -41,7 +41,7 @@ function onTeacherServiceDeleted(ts: TeacherServiceResource) {
           color="gray"
           @click="() => teacherServiceDialog?.edit(payment)"
         />
-      </div>
+</UiTableActions>
       <div
         v-if="!teacherId"
         style="width: 330px"

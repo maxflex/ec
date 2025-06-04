@@ -26,7 +26,7 @@ function isRealReport(r: ReportListResource): r is RealReport {
 
       <!--    real report -->
       <template v-if="isRealReport(r)">
-        <div class="table-actionss">
+        <UiTableActions>
           <v-btn
             icon="$edit"
             :size="48"
@@ -34,7 +34,7 @@ function isRealReport(r: ReportListResource): r is RealReport {
             color="gray"
             :to="{ name: 'reports-id-edit', params: { id: r.id } }"
           />
-        </div>
+</UiTableActions>
         <div style="width: 120px">
           занятий: {{ r.lessons_count }}
           <div v-if="r.count" class="text-gray text-caption">

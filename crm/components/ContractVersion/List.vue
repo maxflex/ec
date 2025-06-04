@@ -17,14 +17,14 @@ const emit = defineEmits<{
       :id="`contract-version-${item.id}`"
       :key="item.id"
     >
-      <div class="table-actionss">
+      <UiTableActions>
         <v-btn
           variant="plain"
           icon="$edit"
           :size="48"
           @click="emit('edit', item)"
         />
-      </div>
+</UiTableActions>
       <div style="width: 250px">
         <router-link
           :to="{ name: 'clients-id', params: { id: item.contract.client.id } }"

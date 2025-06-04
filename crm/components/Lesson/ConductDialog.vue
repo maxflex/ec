@@ -121,14 +121,14 @@ defineExpose({ open })
       <div v-else-if="item" class="dialog-body pt-0 conduct-dialog">
         <div v-if="item" class="table table--padding" :class="{ 'no-pointer-events': isAdmin }">
           <div v-for="s in item.students" :key="s.id">
-            <div class="table-actionss">
+            <UiTableActions>
               <v-btn
                 v-if="s.status !== 'absent'"
                 icon="$edit"
                 :size="48"
                 @click="scoresDialog.open(s)"
               />
-            </div>
+</UiTableActions>
             <div style="width: 250px">
               {{ formatName(s.client) }}
             </div>

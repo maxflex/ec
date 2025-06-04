@@ -14,14 +14,14 @@ const emit = defineEmits<{
       :key="version.id"
       :class="version.is_active ? 'contract-version--active' : 'contract-version--inactive'"
     >
-      <div class="table-actionss">
+      <UiTableActions>
         <v-btn
           icon="$edit"
           :size="48"
           variant="plain"
           @click="emit('edit', version)"
         />
-      </div>
+</UiTableActions>
       <div width="150">
         версия {{ version.seq }}
       </div>

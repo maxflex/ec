@@ -15,14 +15,14 @@ const emit = defineEmits<{
 <template>
   <div class="table">
     <div v-for="item in items" :id="`${apiUrl}-${item.id}`" :key="item.id">
-      <div class="table-actionss">
+      <UiTableActions>
         <v-btn
           variant="plain"
           icon="$edit"
           :size="48"
           @click="emit('edit', item.id)"
         />
-      </div>
+</UiTableActions>
       <div v-if="showClient" style="width: 160px">
         <UiPerson :item="item.client" />
       </div>

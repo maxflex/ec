@@ -57,14 +57,14 @@ function edit(item: AllPaymentResource) {
     </template>
     <div class="table">
       <div v-for="item in items" :key="(item.contract_id ? 'c' : 'p') + item.id">
-        <div class="table-actionss">
+        <UiTableActions>
           <v-btn
             icon="$edit"
             :size="48"
             variant="plain"
             @click="edit(item)"
           />
-        </div>
+</UiTableActions>
         <div style="width: 250px">
           <UiPerson :item="item.client" />
         </div>

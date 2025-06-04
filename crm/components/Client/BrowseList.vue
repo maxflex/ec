@@ -40,7 +40,7 @@ const { items } = defineProps<{
       </div>
     </div>
     <div v-for="item in items" :key="item.id">
-      <div class="table-actionss">
+      <UiTableActions>
         <CommentBtn
           :size="42"
           :class="{ 'no-items': item.comments_count === 0 }"
@@ -48,7 +48,7 @@ const { items } = defineProps<{
           :entity-id="item.id"
           :entity-type="EntityTypeValue.client"
         />
-      </div>
+</UiTableActions>
       <div class="clients-browse__name">
         <UiPerson :item="item" />
       </div>

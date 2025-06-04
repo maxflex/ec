@@ -10,7 +10,7 @@ const emit = defineEmits<{
 <template>
   <div class="table table--padding test-list">
     <div v-for="t in tests" :key="t.id">
-      <div class="table-actionss">
+      <UiTableActions>
         <v-btn
           variant="plain"
           color="gray"
@@ -18,7 +18,7 @@ const emit = defineEmits<{
           :size="48"
           @click="emit('open', t)"
         />
-      </div>
+</UiTableActions>
       <div style="width: 380px">
         {{ t.name }}
         <div v-if="t.description">

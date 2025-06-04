@@ -15,14 +15,14 @@ defineEmits<{
       :id="`web-review-${item.id}`"
       :key="item.id"
     >
-      <div class="table-actionss">
+      <UiTableActions>
         <v-btn
           icon="$edit"
           :size="48"
           variant="plain"
           @click="$emit('edit', item.id)"
         />
-      </div>
+</UiTableActions>
       <div style="width: 50px">
         {{ item.id }}
       </div>

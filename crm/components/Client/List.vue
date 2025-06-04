@@ -15,14 +15,14 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
       :id="`clients-${item.id}`"
       :key="item.id"
     >
-      <div class="table-actionss">
+      <UiTableActions>
         <v-btn
           icon="$edit"
           :size="48"
           variant="plain"
           @click="clientDialog?.edit(item.id)"
         />
-      </div>
+</UiTableActions>
       <div style="width: 40px">
         {{ item.id }}
       </div>
