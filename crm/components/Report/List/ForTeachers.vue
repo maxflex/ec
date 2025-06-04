@@ -29,7 +29,7 @@ function getFillColor(r: RealReport) {
         {{ ProgramShortLabel[r.program] }}
       </div>
       <template v-if="isRealReport(r)">
-        <div class="table-actionss">
+        <UiTableActions>
           <v-btn
             icon="$edit"
             :size="48"
@@ -37,7 +37,7 @@ function getFillColor(r: RealReport) {
             color="gray"
             :to="{ name: 'reports-id-edit', params: { id: r.id } }"
           />
-        </div>
+</UiTableActions>
         <div style="width: 180px">
           занятий: {{ r.lessons_count }}
           <div v-if="r.count" class="text-gray text-caption">
@@ -81,7 +81,7 @@ function getFillColor(r: RealReport) {
         </div>
       </template>
       <template v-else>
-        <div class="table-actionss">
+        <UiTableActions>
           <v-btn
             icon="$edit"
             :size="48"
@@ -97,7 +97,7 @@ function getFillColor(r: RealReport) {
               },
             }"
           />
-        </div>
+</UiTableActions>
         <div style="width: 100px; flex: 1">
           занятий: {{ r.lessons_count }}
           <div v-if="r.count" class="text-gray text-caption">

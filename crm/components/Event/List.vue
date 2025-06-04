@@ -15,14 +15,14 @@ function getParticipantsCount(item: EventListResource): number {
 <template>
   <div class="table event-list table--padding">
     <div v-for="item in items" :key="item.id">
-      <div class="table-actionss">
+      <UiTableActions>
         <v-btn
           icon="$edit"
           :size="48"
           variant="plain"
           @click="emit('edit', item.id)"
         />
-      </div>
+</UiTableActions>
       <div style="width: 100px">
         {{ formatDate(item.date) }}
       </div>

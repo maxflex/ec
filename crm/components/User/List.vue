@@ -11,7 +11,7 @@ const emit = defineEmits<{
       v-for="item in items"
       :key="item.id"
     >
-      <div class="table-actionss">
+      <UiTableActions>
         <v-btn
           icon="$edit"
           :size="48"
@@ -19,7 +19,7 @@ const emit = defineEmits<{
           color="gray"
           @click="emit('edit', item.id)"
         />
-      </div>
+</UiTableActions>
       <div style="width: 30px">
         {{ item.id }}
       </div>

@@ -33,7 +33,7 @@ const isConductDisabled = item.status !== 'conducted'
 
 <template>
   <div>
-    <div class="table-actionss">
+    <UiTableActions>
       <v-menu>
         <template #activator="{ props }">
           <v-btn
@@ -59,7 +59,7 @@ const isConductDisabled = item.status !== 'conducted'
           </v-list-item>
         </v-list>
       </v-menu>
-    </div>
+</UiTableActions>
     <div style="width: 110px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>

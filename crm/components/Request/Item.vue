@@ -15,14 +15,14 @@ const router = useRouter()
 
 <template>
   <div :id="`request-${item.id}`" class="request-item">
-    <div class="table-actionss">
+    <UiTableActions>
       <v-btn
         icon="$edit"
         :size="48"
         variant="plain"
         @click="emit('edit', item)"
       />
-    </div>
+</UiTableActions>
     <div style="width: 90px">
       <div class="d-flex align-center ga-2">
         <RequestStatus :item="item" />

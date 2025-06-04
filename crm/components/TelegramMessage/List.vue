@@ -10,9 +10,9 @@ const readDialog = ref()
 <template>
   <div class="table telegram-message-list">
     <div v-for="m in items" :key="m.id">
-      <div class="table-actionss">
+      <UiTableActions>
         <v-btn :icon="mdiEye" :size="40" variant="plain" @click="readDialog.open(m.text)" />
-      </div>
+</UiTableActions>
       <div class="telegram-message-list__avatar-name">
         <UiPerson :item="m.entity" />
       </div>

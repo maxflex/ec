@@ -22,7 +22,7 @@ const { isAdmin, isClient } = useAuthStore()
       :id="`client-test-${t.id}`"
       :key="t.id"
     >
-      <div v-if="isAdmin && !t.is_active" class="table-actionss d-flex align-center justify-end">
+      <UiTableActions v-if="isAdmin && !t.is_active" class="d-flex align-center justify-end">
         <v-btn
           icon="$close"
           :size="48"
@@ -30,7 +30,7 @@ const { isAdmin, isClient } = useAuthStore()
           variant="plain"
           @click="emit('destroy', t)"
         />
-      </div>
+</UiTableActions>
       <div v-if="showClient" style="width: 200px">
         <NuxtLink :to="{ name: 'clients-id', params: { id: t.client.id } }">
           {{ formatName(t.client) }}

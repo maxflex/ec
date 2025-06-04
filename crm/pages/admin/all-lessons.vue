@@ -220,7 +220,7 @@ nextTick(() => {
       .lesson-item {
         &:first-child {
           padding-top: 20px;
-          .table-actionss {
+          .table-actions {
             top: 4px !important;
           }
         }

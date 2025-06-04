@@ -25,7 +25,7 @@ const isConductDisabled = isEditDisabled || item.date > today() || item.status =
 
 <template>
   <div>
-    <div class="table-actionss">
+    <UiTableActions>
       <v-menu>
         <template #activator="{ props }">
           <v-btn
@@ -48,7 +48,7 @@ const isConductDisabled = isEditDisabled || item.date > today() || item.status =
           </v-list-item>
         </v-list>
       </v-menu>
-    </div>
+</UiTableActions>
     <div style="width: 120px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>

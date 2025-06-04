@@ -15,14 +15,14 @@ defineEmits<{
       :id="`head-teacher-report-${item.id}`"
       :key="item.id"
     >
-      <div class="table-actionss">
+      <UiTableActions>
         <v-btn
           icon="$edit"
           :size="48"
           variant="plain"
           @click="$emit('edit', item)"
         />
-      </div>
+</UiTableActions>
       <div v-if="showTeacher" style="width: 180px">
         <UiPerson :item="item.teacher!" />
       </div>

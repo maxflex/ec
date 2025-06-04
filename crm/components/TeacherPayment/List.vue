@@ -35,7 +35,7 @@ function onDeleted(tp: TeacherPaymentResource) {
     class="table"
   >
     <div v-for="payment in items" :key="payment.id">
-      <div v-if="isAdmin" class="table-actionss">
+      <UiTableActions v-if="isAdmin">
         <v-btn
           icon="$edit"
           :size="48"
@@ -43,7 +43,7 @@ function onDeleted(tp: TeacherPaymentResource) {
           color="gray"
           @click="() => teacherPaymentDialog?.edit(payment)"
         />
-      </div>
+</UiTableActions>
       <div v-if="isAdmin" style="width: 200px">
         <UiPerson :item="payment.teacher!" />
       </div>

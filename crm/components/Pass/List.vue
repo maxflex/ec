@@ -74,14 +74,14 @@ function onPassDeleted(pass: PassResource) {
         </td>
         <td class="text-gray" style="flex: initial; width: 160px">
           {{ formatDateTime(item.created_at!) }}
-          <div class="table-actionss">
+          <UiTableActions>
             <v-btn
               variant="plain"
               icon="$edit"
               :size="48"
               @click="passDialog?.edit(item)"
             />
-          </div>
+</UiTableActions>
         </td>
       </tr>
       <slot />
@@ -99,7 +99,7 @@ function onPassDeleted(pass: PassResource) {
   tr {
     position: relative;
   }
-  .table-actionss {
+  .table-actions {
     padding-top: 1px !important;
   }
 }
