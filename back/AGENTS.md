@@ -14,7 +14,7 @@ for some specific purpose and will be deleted any time
 
 ## Testing
 
-Never run test suites as there's no tests in this project
+Never run test suites as there's no testing code in this project
 
 ## Common info
 
