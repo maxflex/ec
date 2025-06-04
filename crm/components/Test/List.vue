@@ -47,7 +47,7 @@ const emit = defineEmits<{
 
 <style lang="scss">
 .test-list {
-  .table-actionss {
+  .table-actions {
     align-items: center;
     display: flex;
     justify-content: flex-end;

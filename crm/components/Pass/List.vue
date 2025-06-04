@@ -99,7 +99,7 @@ function onPassDeleted(pass: PassResource) {
   tr {
     position: relative;
   }
-  .table-actionss {
+  .table-actions {
     padding-top: 1px !important;
   }
 }

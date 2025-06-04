@@ -195,7 +195,7 @@ defineExpose({ open })
       margin-top: 8px;
     }
   }
-  .table-actionss {
+  .table-actions {
     display: flex;
     align-items: center;
     justify-content: flex-end;

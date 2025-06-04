@@ -22,14 +22,14 @@ const emit = defineEmits<{
       {{ ProgramLabel[swamp.program] }}
     </div>
     <div>{{ swamp.lessons }} уроков</div>
-    <div class="table-actions">
+    <UiTableActions>
       <v-btn
         color="primary"
         @click="emit('attach', swamp)"
       >
         прикрепить группу
       </v-btn>
-    </div>
+    </UiTableActions>
   </div>
 </template>
 

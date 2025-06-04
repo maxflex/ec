@@ -86,7 +86,7 @@ nextTick(loadData)
         <div>
           <TeethBar :items="item.teeth" :current="group.teeth!" />
         </div>
-        <div v-if="isEditable" class="text-left table-actions">
+        <UiTableActions v-if="isEditable" class="text-left">
           <v-menu>
             <template #activator="{ props }">
               <v-btn
@@ -112,7 +112,7 @@ nextTick(loadData)
               </v-list-item>
             </v-list>
           </v-menu>
-        </div>
+        </UiTableActions>
       </div>
       <div v-if="isEditable" style="border-bottom: none; background: white">
         <UiIconLink @click="tab = 'SwampSelector'">
