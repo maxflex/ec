@@ -47,6 +47,19 @@ defineEmits<{
         {{ item.signature }}
       </div>
 
+      <div
+        style="width: 220px; flex: initial !important"
+        class="d-flex flex-column"
+      >
+        <span
+          v-for="es in item.exam_scores"
+          :key="es.id"
+          :class="{ 'text-gray': !es.is_published }"
+        >
+          {{ ExamLabel[es.exam] }}: {{ es.score }}
+        </span>
+      </div>
+
       <div style="width: 60px" class="d-flex align-center ga-2">
         <v-icon :icon="mdiWeb" :class="item.is_published ? 'text-secondary' : 'opacity-2 text-gray'" />
         <v-icon :icon="mdiAccountCircleOutline" :class="item.has_photo ? 'text-secondary' : 'opacity-2 text-gray'" />

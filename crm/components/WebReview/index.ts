@@ -5,6 +5,7 @@ export interface WebReviewResource {
     id: number
     exam: Exam
     score: number
+    is_published: boolean
   }>
   text: string
   signature: string
