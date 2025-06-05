@@ -18,11 +18,11 @@ const { items, indexPageData, reloadData } = useIndex<ClientComplaintListResourc
 
 <template>
   <UiIndexPage :data="indexPageData">
-    <template #buttons>
+    <template v-if="clientId" #buttons>
       <v-btn
         color="primary"
         @click="dialog?.create({
-          client_id: clientId!,
+          client_id: clientId,
         })"
       >
         добавить жалобу

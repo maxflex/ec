@@ -29,7 +29,7 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
           </span>
         </div>
         <div class="clients-browse__directions">
-          <ClientDirections :item="item.directions" hide-old />
+          <ClientDirections :item="item.directions" />
         </div>
       </div>
       <div class="clients-browse__item-parent">

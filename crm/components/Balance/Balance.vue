@@ -75,7 +75,7 @@ const { indexPageData, availableYears, items } = useIndex<Balance>(
                   >
                     {{ formatPrice(balanceItem.sum) }} руб.
                   </span>
-                  <span v-else-if="balanceItem.sum === 0" class="text-gray">
+                  <span v-else-if="balanceItem.sum === 0" class="text-deepOrange">
                     бесплатно
                   </span>
                 </td>

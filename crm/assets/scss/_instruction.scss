@@ -4,7 +4,7 @@
   &__content {
     flex: 1;
     padding: 20px;
-    margin-right: 255px; /* Ensure space for the fixed panel */
+    margin-right: 250px; /* Ensure space for the fixed panel */
     & > h1 {
       margin-bottom: 36px;
       display: flex;
@@ -20,7 +20,7 @@
     }
   }
   &__panel {
-    width: 255px;
+    width: 250px;
     border-left: 1px solid #e0e0e0;
     position: fixed;
     right: 0;

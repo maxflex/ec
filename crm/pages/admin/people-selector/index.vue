@@ -270,7 +270,6 @@ nextTick(async () => {
               <template v-if="item.directions">
                 {{ item.directions[mode === 'clientsCurrentYear' ? currentYear : nextYear].map(e => DirectionLabel[e]).join(', ') }}
               </template>
-              <!-- <ClientDirections v-if="item.directions" :item="item.directions" hide-old /> -->
             </div>
           </div>
         </template>

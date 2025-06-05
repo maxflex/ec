@@ -1,5 +1,6 @@
 :root {
   --padding: 20px; // горизонтальный отступ контента
+  --menuWidth: 250px;
 }
 
 main {
@@ -161,7 +162,7 @@ a.table-item {
     // background: #fafafa;
     display: flex;
     gap: 50px;
-    padding: 10px 10px 10px 20px;
+    padding: 16px 10px 16px 20px;
     & > div:not(.client__actions) {
       // padding: 0 16px 20px;
       & > div {

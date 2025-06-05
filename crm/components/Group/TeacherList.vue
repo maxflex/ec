@@ -48,7 +48,7 @@ function onClick(g: GroupListResource) {
         {{ ProgramShortLabel[item.program] }}
       </div>
       <div style="width: 140px">
-        <GroupLessonCounts :item="item" />
+        <GroupLessonCounts :item="item" sum-free />
       </div>
       <div style="width: 60px">
         {{ item.client_groups_count }} уч.

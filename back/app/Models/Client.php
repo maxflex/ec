@@ -257,17 +257,14 @@ class Client extends Person implements HasTeeth
     }
 
     /**
-     * Направления клиента
-     *
-     * Если у клиента есть договоры текущего учебного года, берём их
-     * Если нет, то берем договоры последнего года
-     * Договоров может быть несколько в цепи, используем их все для вычисления направления
+     * Год: все направления клиента в этом году
+     * Все направления без учета активна / неактивна программа
      *
      * @return object<int, Direction[]>
      */
     public function getDirectionsAttribute(): object
     {
-        $years = $this->contracts->where('year', '>=', current_academic_year())->pluck('year')->sort()->values();
+        $years = $this->contracts->pluck('year')->sort()->values();
         $result = (object) [];
 
         foreach ($years as $year) {

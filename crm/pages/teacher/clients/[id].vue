@@ -14,7 +14,7 @@ if (!user?.is_head_teacher) {
 const tabs = {
   groups: 'группы',
   schedule: 'расписание',
-  examScores: 'баллы на экзаменах',
+  examScores: 'баллы',
   grades: 'оценки',
   reports: 'отчёты',
   tests: 'тесты',
@@ -58,8 +58,10 @@ nextTick(loadData)
           </div>
         </div>
         <div>
-          <div>филиалы</div>
-          <UiBranches :branches="client.branches" />
+          <div>направления</div>
+          <div>
+            <ClientDirections :item="client.directions" />
+          </div>
         </div>
         <div>
           <div>куратор</div>

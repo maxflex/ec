@@ -65,13 +65,7 @@ main {
   }
 }
 
-.v-table > .v-table__wrapper > table > tbody > tr > td,
-.v-table > .v-table__wrapper > table > tbody > tr > td,
-.v-table > .v-table__wrapper > table > tbody > tr > th,
-.v-table > .v-table__wrapper > table > thead > tr > td,
-.v-table > .v-table__wrapper > table > thead > tr > th,
-.v-table > .v-table__wrapper > table > tfoot > tr > td,
-.v-table > .v-table__wrapper > table > tfoot > tr > th {
+.v-table:not(.teacher-balances-table) > .v-table__wrapper > table > tbody > tr > td {
   padding-left: var(--padding) !important;
   padding-right: var(--padding) !important;
 }

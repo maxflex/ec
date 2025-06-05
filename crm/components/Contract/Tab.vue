@@ -157,7 +157,7 @@ nextTick(loadData)
     <template v-if="selectedContract">
       <Balance v-if="showBalance" :contract-id="selectedContract.id" />
       <div v-else>
-        <ContractVersionList2
+        <ContractVersionList
           :items="selectedContract.versions"
           @edit="contractVersionDialog?.edit"
         />

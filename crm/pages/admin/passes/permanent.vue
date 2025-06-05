@@ -22,7 +22,7 @@ const filters = ref<Filters>({
 const year = currentAcademicYear()
 const nextYear = year + 1
 
-const { indexPageData, items, total, loading } = useIndex<PersonResource>(`passes/permanent`, filters)
+const { items, loading } = useIndex<PersonResource>(`passes/permanent`, filters)
 
 const itemsFiltered = computed<PersonResource[]>(() => {
   const query = q.value.trim().toLowerCase()
@@ -51,47 +51,34 @@ const itemsFiltered = computed<PersonResource[]>(() => {
         label="Поиск"
         density="comfortable"
       />
-      <span>
+      <span v-if="!loading">
         всего: {{ itemsFiltered.length }}
       </span>
     </template>
-    <template #header>
-      <v-table>
-        <tbody>
-          <tr>
-            <td class="permanent-pass-info" style="">
-              <template v-if="filters.entity === user">
-                Администраторы со статусом "действующий сотрудник"
-              </template>
-              <template v-else-if="filters.entity === teacher">
-                Преподаватели со статусом "ведет занятия сейчас"
-              </template>
-              <template v-else>
-                Ученики, имеющие договоры {{ year }}–{{ nextYear }} (пропуск активен до 30 июня {{ nextYear }} года или до момента расторжения договора) и {{ nextYear }}–{{ nextYear + 1 }} (пропуск активен до 30 июня {{ nextYear + 1 }} года или до момента расторжения договора) учебных лет имеют постоянный пропуск и допущены на посту охраны института
-              </template>
-            </td>
-          </tr>
-          <tr style="display: none">
-            <td />
-          </tr>
-        </tbody>
-      </v-table>
+    <template #buttons>
+      <UiQuestionTooltip>
+        <template v-if="filters.entity === user">
+          Администраторы со статусом "действующий сотрудник"
+        </template>
+        <template v-else-if="filters.entity === teacher">
+          Преподаватели со статусом "ведет занятия сейчас"
+        </template>
+        <template v-else>
+          Ученики, имеющие договоры {{ year }}–{{ nextYear }} (пропуск активен до 30 июня {{ nextYear }} года или до момента расторжения договора) и {{ nextYear }}–{{ nextYear + 1 }} (пропуск активен до 30 июня {{ nextYear + 1 }} года или до момента расторжения договора) учебных лет имеют постоянный пропуск и допущены на посту охраны института
+        </template>
+      </UiQuestionTooltip>
     </template>
     <v-table>
       <tbody>
         <tr v-for="item in itemsFiltered" :key="item.id">
-          <td>
+          <td width="300">
             <UiPerson :item="item" :no-link="filters.entity === EntityTypeValue.user" />
+          </td>
+          <td>
+            <ClientDirections v-if="item.directions" :item="item.directions" class="py-4" />
           </td>
         </tr>
       </tbody>
     </v-table>
   </UiIndexPage>
 </template>
-
-<style lang="scss">
-.permanent-pass-info {
-  background: #f5f5f5;
-  padding: var(--padding) !important;
-}
-</style>

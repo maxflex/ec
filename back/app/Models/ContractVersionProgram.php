@@ -138,24 +138,6 @@ class ContractVersionProgram extends Model
         return $total + $groupLessons;
     }
 
-    /**
-     * Кол-во бесплатных занятий
-     */
-    public function getFreeLessonsCountAttribute(): int
-    {
-        $total = $this->clientLessons()->where('price', 0)->count();
-        $group = $this->group;
-
-        if (! $group) {
-            return $total;
-        }
-
-        return $total + $group->lessons()
-            ->where('status', LessonStatus::planned)
-            ->where('is_free', true)
-            ->count();
-    }
-
     public function getNextPrice(?int $lessonsPassed = null): int
     {
         if ($lessonsPassed === null) {

@@ -10,6 +10,7 @@ interface AllLessons {
     cancelled_count: number
     need_conduct_count: number
     unplanned_count: number
+    free_count: number
   }
 }
 
@@ -143,6 +144,9 @@ nextTick(() => {
           </div>
           <div style="width: 200px" class="text-purple">
             {{ formatPrice(response[d].unplanned_count) }}
+          </div>
+          <div style="width: 200px" class="text-deepOrange">
+            {{ formatPrice(response[d].free_count) }}
           </div>
         </template>
         <div>

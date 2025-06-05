@@ -245,7 +245,7 @@
     transition: none !important;
   }
   .dialog {
-    width: calc(100vw - 256px) !important;
+    width: calc(100vw - var(--menuWidth)) !important;
     box-shadow: none !important;
     right: 0 !important;
   }

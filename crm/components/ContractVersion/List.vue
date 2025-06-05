@@ -1,63 +1,91 @@
-<!-- В общем списке в меню "Договоры" -->
+<!-- Вкладка "Договоры" в клиенте -->
 <script setup lang="ts">
-import { mdiTextBoxCheckOutline } from '@mdi/js'
-
-const { items } = defineProps<{
-  items: ContractVersionListResource[]
-}>()
+const { items } = defineProps<{ items: ContractVersionListResource[] }>()
 const emit = defineEmits<{
-  edit: [i: ContractVersionListResource]
+  edit: [cv: ContractVersionListResource]
 }>()
 </script>
 
 <template>
-  <div class="table table--padding flex-start">
+  <div class="table contract-version-list-2 table--padding">
     <div
-      v-for="item in items"
-      :id="`contract-version-${item.id}`"
-      :key="item.id"
+      v-for="version in items"
+      :id="`contract-version-${version.id}`"
+      :key="version.id"
+      :class="version.is_active ? 'contract-version--active' : 'contract-version--inactive'"
     >
       <div class="table-actionss">
         <v-btn
-          variant="plain"
           icon="$edit"
           :size="48"
-          @click="emit('edit', item)"
+          variant="plain"
+          @click="emit('edit', version)"
         />
       </div>
-      <div style="width: 250px">
-        <router-link
-          :to="{ name: 'clients-id', params: { id: item.contract.client.id } }"
+      <div width="150">
+        версия {{ version.seq }}
+      </div>
+      <div width="220">
+        от {{ formatDate(version.date) }}
+      </div>
+      <div width="220">
+        {{ version.sum }} руб.
+      </div>
+      <div width="220">
+        <span
+          v-if="version.payments_count === 0"
+          class="text-grey"
         >
-          {{ formatName(item.contract.client) }}
-        </router-link>
+          платежей нет
+        </span>
+        <template v-else>
+          {{ version.payments_count }} платежей
+        </template>
       </div>
-      <div style="width: 130px">
-        <div class="d-flex ga-2 align-center">
-          <span>
-            №{{ item.contract.id }}-{{ item.seq }}
-          </span>
-          <v-icon v-if="item.contract.source" :icon="mdiTextBoxCheckOutline" :size="18" color="primary" />
-        </div>
-      </div>
-      <div style="width: 140px">
-        от {{ formatDate(item.date) }}
-      </div>
-      <div style="width: 160px">
-        {{ YearLabel[item.contract.year] }}
-      </div>
-      <div style="width: 150px">
-        <div v-for="(value, d) in item.directions" :key="d">
+      <div>
+        <div v-for="(value, d) in version.direction_counts" :key="d">
           {{ DirectionLabel[d] }} / {{ value }}
         </div>
       </div>
-      <div style="width: 150px">
-        <span v-if="!item.payments_count" class="text-gray">
-          платежей нет
-        </span>
-        <span v-else> платежей: {{ item.payments_count }} </span>
-      </div>
-      <div>{{ formatPrice(item.sum) }} руб.</div>
     </div>
   </div>
 </template>
+
+<style lang="scss">
+.contract-version-list-2 {
+  & > div {
+    align-items: flex-start !important;
+    & > div {
+      &:nth-child(2) {
+        width: 150px;
+      }
+      &:nth-child(3),
+      &:nth-child(4),
+      &:nth-child(5) {
+        width: 220px;
+      }
+    }
+  }
+  &__programs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 322px;
+    & > div {
+      display: flex;
+      gap: 4px;
+    }
+  }
+}
+
+.contract-version {
+  &--active {
+    background: rgba(var(--v-theme-primary), 0.3);
+  }
+  &--inactive {
+    & > div {
+      opacity: 0.5;
+    }
+  }
+}
+</style>

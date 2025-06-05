@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PassesPermanentResource;
 use App\Http\Resources\PassResource;
 use App\Http\Resources\PersonResource;
 use App\Models\Pass;
@@ -42,7 +43,7 @@ class PassController extends Controller
         $entity = $request->entity;
         $query = $entity::canLogin()->orderByRaw('last_name, first_name');
 
-        $data = PersonResource::collection($query->get());
+        $data = PassesPermanentResource::collection($query->get());
 
         return paginate($data);
     }

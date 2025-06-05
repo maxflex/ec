@@ -167,6 +167,13 @@ watch(filters.value, () => (sort.value = undefined))
       }
     }
     td {
+      &:first-child {
+        padding-left: var(--padding) !important;
+      }
+      &:not(:first-child) {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+      }
       &:nth-child(2) {
         color: rgb(var(--v-theme-gray));
       }

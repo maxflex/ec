@@ -95,9 +95,9 @@ nextTick(() => {
   &__banners {
     position: fixed;
     bottom: 0;
-    left: 256px;
+    left: var(--menuWidth);
     z-index: 101;
-    width: calc(100vw - 256px);
+    width: calc(100vw - var(--menuWidth));
   }
 }
 </style>

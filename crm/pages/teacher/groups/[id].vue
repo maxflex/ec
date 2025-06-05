@@ -48,7 +48,7 @@ nextTick(loadData)
             занятий
           </div>
           <div>
-            <GroupLessonCounts :item="group" />
+            <GroupLessonCounts :item="group" sum-free />
           </div>
         </div>
       </div>

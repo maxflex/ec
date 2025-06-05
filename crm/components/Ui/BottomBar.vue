@@ -19,12 +19,12 @@ const model = defineModel<boolean>({
 .bottom-bar {
   position: fixed !important;
   bottom: 0;
-  left: 256px;
+  left: var(--menuWidth);
   padding: 0 20px;
   height: 52px;
   z-index: 3;
   background: rgb(var(--v-theme-bg));
-  width: calc(100vw - 256px);
+  width: calc(100vw - var(--menuWidth));
   display: flex;
   align-items: center;
   justify-content: space-between;

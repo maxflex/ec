@@ -307,8 +307,8 @@ nextTick(() => statsDialog.value?.open())
   .loader {
     position: fixed;
     top: 0;
-    left: 255px;
-    width: calc(100% - 255px) !important;
+    left: 250px;
+    width: calc(100% - 250px) !important;
     background: rgba(white, 0.8);
     z-index: 9;
   }

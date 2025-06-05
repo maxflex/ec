@@ -13,7 +13,7 @@ const currentPageClass = computed(() => [
 <template>
   <ClientOnly>
     <v-app>
-      <v-navigation-drawer permanent>
+      <v-navigation-drawer permanent :width="250">
         <MenuBase />
       </v-navigation-drawer>
       <v-main :class="currentPageClass">

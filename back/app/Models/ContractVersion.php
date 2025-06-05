@@ -82,15 +82,6 @@ class ContractVersion extends Model
     }
 
     /**
-     * Кол-во бесплатных занятий в договоре
-     */
-    public function getFreeLessonsCountAttribute(): int
-    {
-        return $this->programs->reduce(
-            fn ($carry, $p) => $carry + $p->free_lessons_count, 0);
-    }
-
-    /**
      * Обновляем связи contract_version_program_id
      * новая версия – $this, старая $old
      *
@@ -145,23 +136,12 @@ class ContractVersion extends Model
     }
 
     /**
-     * Active directions
+     * Направление: кол-во программ
+     * Все направления без учета активна / неактивна программа
      *
-     * @return Direction[]
+     * @return array<string, int>
      */
-    public function getDirectionsAttribute(): array
-    {
-        return $this->programs
-            ->filter(fn (ContractVersionProgram $p) => $p->is_active)
-            ->map(fn ($p) => $p->program->getDirection())
-            ->unique()
-            ->all();
-    }
-
-    /**
-     * @return Direction[]
-     */
-    public function getAllDirectionsAttribute(): array
+    public function getDirectionCountsAttribute(): array
     {
         $result = [];
         foreach ($this->programs as $program) {
@@ -173,9 +153,18 @@ class ContractVersion extends Model
         }
 
         return $result;
-        // return $this->programs
-        //     ->map(fn ($p) => $p->program->getDirection())
-        //     ->unique()
-        //     ->all();
+    }
+
+    /**
+     * Все направления (без учета активна / неактивна программа)
+     *
+     * @return Direction[]
+     */
+    public function getDirectionsAttribute(): array
+    {
+        return $this->programs
+            ->map(fn ($p) => $p->program->getDirection())
+            ->unique()
+            ->all();
     }
 }

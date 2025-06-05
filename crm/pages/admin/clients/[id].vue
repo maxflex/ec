@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ClientDialog, ClientMarkSheetDialog, PrintSpravkaDialog } from '#build/components'
+import type { ClientDialog, PrintSpravkaDialog } from '#build/components'
 import type { ClientResource } from '~/components/Client'
 import { mdiTable } from '@mdi/js'
 
@@ -10,7 +10,8 @@ const tabs = {
   events: 'события',
   groups: 'группы',
   payments: 'платежи',
-  examScores: 'баллы на экзаменах',
+  examScores: 'баллы',
+  markSheet: 'ведомость',
   grades: 'оценки',
   reports: 'отчёты',
   webReviews: 'отзывы',
@@ -22,7 +23,6 @@ const tabs = {
 const selectedTab = ref<keyof typeof tabs>('requests')
 const route = useRoute()
 const client = ref<ClientResource>()
-const markSheetDialog = ref<InstanceType<typeof ClientMarkSheetDialog>>()
 const clientDialog = ref<InstanceType<typeof ClientDialog>>()
 
 const printSpravkaDialog = ref<InstanceType<typeof PrintSpravkaDialog>>()
@@ -43,20 +43,30 @@ nextTick(loadData)
   <template v-if="client">
     <div class="panel">
       <div class="panel-info">
-        <div>
+        <div class="client-avatar">
           <UiAvatar :item="client" :size="140" />
+          <!-- <v-tooltip :width="450">
+            <template #activator="{ props }">
+              <div
+                v-bind="props"
+                :class="`client-avatar-status client-avatar-status--${client.can_login ? 'active' : 'inactive'}`"
+              >
+              </div>
+            </template>
+            <template v-if="client.can_login">
+              У ученика и представителя есть доступ в личный кабинет и активный пропуск.
+              Доступ предоставляется до 30 июня при наличии нерасторгнутого договора на {{ currentYear }} или {{ currentYear + 1 }} учебный год
+            </template>
+            <template v-else>
+              Пропуск неактивен
+            </template>
+          </v-tooltip> -->
         </div>
         <div>
           <div>ученик</div>
           <div class="text-truncate">
             {{ formatName(client) }}
-            <div v-if="client.can_login" class="text-success mb-5">
-              пропуск активен
-            </div>
-            <div v-else class="text-error mb-5">
-              пропуска нет
-            </div>
-            <div v-if="client.phones">
+            <div v-if="client.phones" class="mt-5">
               <PhoneList :items="client.phones" show-icons />
             </div>
           </div>
@@ -65,13 +75,7 @@ nextTick(loadData)
           <div>представитель</div>
           <div class="text-truncate">
             {{ formatName(client.parent) }}
-            <div v-if="client.can_login" class="text-success mb-5">
-              пропуск активен
-            </div>
-            <div v-else class="text-error mb-5">
-              пропуска нет
-            </div>
-            <div v-if="client.parent.phones">
+            <div v-if="client.parent.phones" class="mt-5">
               <PhoneList :items="client.parent.phones" show-icons />
             </div>
           </div>
@@ -100,23 +104,6 @@ nextTick(loadData)
             variant="plain"
             @click="printSpravkaDialog?.open(client.id)"
           />
-          <div
-            class="badge"
-            @click="markSheetDialog?.open(client)"
-          >
-            <v-btn
-              v-bind="$attrs"
-              :size="48"
-              variant="plain"
-            >
-              <v-icon :size="24" :icon="mdiTable" class="vf-1"></v-icon>
-            </v-btn>
-            <v-badge
-              v-if="client.mark_sheet"
-              floating
-              :content="Object.keys(client.mark_sheet).length"
-            />
-          </div>
           <PreviewMode :client-id="client.id" />
           <v-btn
             icon="$edit"
@@ -150,12 +137,12 @@ nextTick(loadData)
     <ClientTestTab v-else-if="selectedTab === 'tests'" :client-id="client.id" />
     <EventTab v-else-if="selectedTab === 'events'" :client-id="client.id" />
     <LogTab v-else-if="selectedTab === 'logs'" :client-id="client.id" />
+    <ClientMarkSheetTab v-else-if="selectedTab === 'markSheet'" :client="client" />
     <ClientComplaintTab v-else-if="selectedTab === 'clientComplaints'" :client-id="client.id" />
     <Schedule v-else :client-id="client.id" show-teeth program-filter />
     <ClientDialog ref="clientDialog" @updated="onClientUpdated" />
   </template>
   <PrintSpravkaDialog ref="printSpravkaDialog" />
-  <ClientMarkSheetDialog ref="markSheetDialog" />
 </template>
 
 <style lang="scss">
@@ -163,6 +150,29 @@ nextTick(loadData)
   .last-seen-at {
     font-size: 14px;
     margin-left: 2px;
+  }
+}
+
+.client-avatar {
+  position: relative;
+  &-status {
+    $size: 18px;
+    height: $size;
+    width: $size;
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    border-radius: 50%;
+    border: 3px solid white;
+    cursor: default;
+
+    &--active {
+      background-color: rgb(var(--v-theme-success));
+    }
+
+    &--inactive {
+      background-color: rgb(var(--v-theme-gray));
+    }
   }
 }
 </style>

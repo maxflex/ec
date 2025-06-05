@@ -256,6 +256,8 @@ declare global {
     user?: PersonResource
   }
 
+  type DirectionCounts = Partial<Record<Direction, number>>
+
   interface ContractVersionListResource {
     id: number
     date: string
@@ -263,7 +265,7 @@ declare global {
     sum: number
     payments_count: number
     programs_count: number
-    directions: Direction[]
+    direction_counts: DirectionCounts
     is_active: boolean
     contract: {
       id: number
@@ -965,7 +967,6 @@ declare global {
       time_end: string
     }
   }
-
 
   interface AllPaymentResource {
     id: number

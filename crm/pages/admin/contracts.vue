@@ -43,7 +43,7 @@ function onClientCreated(c: ClientListResource) {
         </template>
       </v-btn>
     </template>
-    <ContractVersionList
+    <ContractVersionListAll
       :items="items"
       @edit="contractVersionDialog?.edit"
     />
