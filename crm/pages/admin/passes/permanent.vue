@@ -1,30 +1,31 @@
 <script setup lang="ts">
-type LocalEntityType = typeof entityTypes[number]
+const entityTypeLabel = {
+  [EntityTypeValue.client]: 'ученики и представители',
+  [EntityTypeValue.teacher]: 'преподаватели',
+  [EntityTypeValue.user]: 'администраторы',
+} as const
 
-interface Filters {
-  entity: LocalEntityType
+interface PassesPermanentResource extends PersonResource {
+  directions?: ClientDirections
+  parent?: PersonResource
 }
 
-const { client, clientParent, teacher, user } = EntityTypeValue
-const entityTypes = [client, clientParent, teacher, user] as const
+interface Filters {
+  entity: EntityType
+}
+
 const q = ref<string>('')
-const selectItemsFiltered = Object.keys(EntityTypeLabel)
-  .filter(key => entityTypes.includes(key as LocalEntityType))
-  .map(value => ({
-    value,
-    title: EntityTypeLabel[value as EntityType],
-  }))
 
 const filters = ref<Filters>({
-  entity: client,
+  entity: EntityTypeValue.client,
 })
 
 const currentYear = currentAcademicYear()
 const nextYear = currentYear + 1 as Year
 
-const { items, loading } = useIndex<PersonResource>(`passes/permanent`, filters)
+const { items, loading } = useIndex<PassesPermanentResource>(`passes/permanent`, filters)
 
-const itemsFiltered = computed<PersonResource[]>(() => {
+const itemsFiltered = computed<PassesPermanentResource[]>(() => {
   const query = q.value.trim().toLowerCase()
   if (!query) {
     return items.value
@@ -44,7 +45,7 @@ const itemsFiltered = computed<PersonResource[]>(() => {
         v-model="filters.entity"
         density="comfortable"
         label="Тип"
-        :items="selectItemsFiltered"
+        :items="selectItems(entityTypeLabel)"
       />
       <v-text-field
         v-model="q"
@@ -57,32 +58,33 @@ const itemsFiltered = computed<PersonResource[]>(() => {
     </template>
     <template #buttons>
       <UiQuestionTooltip>
-        <template v-if="filters.entity === user">
+        <template v-if="filters.entity === EntityTypeValue.user">
           На данной странице отображаются администраторы, имеющие активный постоянный пропуск.
           Пропуск активен для администраторов в статусе "действующий сотрудник"
         </template>
-        <template v-else-if="filters.entity === teacher">
+        <template v-else-if="filters.entity === EntityTypeValue.teacher">
           На данной странице отображаются преподаватели, имеющие активный постоянный пропуск.
           Пропуск активен только для преподавателей в статусе "ведет занятия сейчас"
         </template>
         <template v-else>
-          На данной странице отображаются {{ filters.entity === client ? 'ученики' : 'представители' }}, имеющие активный постоянный пропуск.
+          На данной странице отображаются ученики и представители, имеющие активный постоянный пропуск.
           Доступ закрывается 30 июня {{ nextYear }} для договоров {{ YearLabel[currentYear] }} и 30 июня {{ nextYear + 1 }}
           для договоров {{ YearLabel[nextYear] }} или в случае их расторжения
         </template>
       </UiQuestionTooltip>
     </template>
-    <v-table>
-      <tbody>
-        <tr v-for="item in itemsFiltered" :key="item.id">
-          <td width="300">
-            <UiPerson :item="item" :no-link="filters.entity === EntityTypeValue.user" />
-          </td>
-          <td>
-            <ClientDirections v-if="item.directions" :item="item.directions" class="py-4" />
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
+    <div class="table table--padding">
+      <div v-for="item in itemsFiltered" :key="item.id">
+        <div style="width: 300px">
+          <UiPerson :item="item" :no-link="filters.entity === EntityTypeValue.user" />
+          <div v-if="item.parent">
+            <UiPerson :item="item.parent" />
+          </div>
+        </div>
+        <div>
+          <ClientDirections v-if="item.directions" :item="item.directions" />
+        </div>
+      </div>
+    </div>
   </UiIndexPage>
 </template>
