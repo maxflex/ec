@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PassesPermanentResource;
 use App\Http\Resources\PassResource;
 use App\Http\Resources\PersonResource;
+use App\Models\Client;
 use App\Models\Pass;
 use App\Models\PassLog;
 use Illuminate\Http\Request;
@@ -42,6 +43,10 @@ class PassController extends Controller
         $request->validate(['entity' => ['required', 'string']]);
         $entity = $request->entity;
         $query = $entity::canLogin()->orderByRaw('last_name, first_name');
+
+        if ($entity === Client::class) {
+            $query->with(['parent', 'contracts.versions.programs']);
+        }
 
         $data = PassesPermanentResource::collection($query->get());
 
