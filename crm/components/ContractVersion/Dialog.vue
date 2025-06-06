@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#build/components'
 import { mdiArrowRightThin, mdiTextBoxCheckOutline, mdiTextBoxOutline } from '@mdi/js'
+import { addMonths } from 'date-fns';
 import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{
@@ -122,10 +123,12 @@ function onProgramsSaved(programs: Program[]) {
 }
 
 function addPayment() {
+  const lastPayment = item.value.payments[item.value.payments.length - 1]
+
   item.value.payments.push({
     id: newId(),
-    date: today(),
-    sum: 0,
+    date: lastPayment ? addMonths(lastPayment.date, 1) :  today(),
+    sum: lastPayment ? lastPayment.sum : 0,
     contract_version_id: item.value.id,
   })
   smoothScroll('dialog', 'bottom')
