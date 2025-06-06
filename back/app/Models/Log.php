@@ -76,6 +76,7 @@ class Log extends Model
                 ? LogDevice::telegram
                 : (request()->header('Mobile') ? LogDevice::mobile : LogDevice::desktop);
             $log->ip = request()->ip();
+            $log->ua = request()->userAgent();
         });
     }
 

@@ -72,7 +72,6 @@ class AuthController extends Controller
                 ...$meta,
                 'phone_id' => $phone->id,
                 'number' => $phone->number,
-                'ua' => $_SERVER['HTTP_USER_AGENT'],
             ],
         ]);
     }
