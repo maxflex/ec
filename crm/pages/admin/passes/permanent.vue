@@ -23,7 +23,7 @@ const filters = ref<Filters>({
 const currentYear = currentAcademicYear()
 const nextYear = currentYear + 1 as Year
 
-const { items, loading } = useIndex<PassesPermanentResource>(`passes/permanent`, filters)
+const { items, indexPageData } = useIndex<PassesPermanentResource>(`passes/permanent`, filters)
 
 const itemsFiltered = computed<PassesPermanentResource[]>(() => {
   const query = q.value.trim().toLowerCase()
@@ -39,7 +39,7 @@ const itemsFiltered = computed<PassesPermanentResource[]>(() => {
 </script>
 
 <template>
-  <UiIndexPage :data="{ loading, noData: itemsFiltered.length === 0 }">
+  <UiIndexPage :data="indexPageData">
     <template #filters>
       <v-select
         v-model="filters.entity"
@@ -52,7 +52,7 @@ const itemsFiltered = computed<PassesPermanentResource[]>(() => {
         label="Поиск"
         density="comfortable"
       />
-      <span v-if="!loading">
+      <span>
         всего: {{ itemsFiltered.length }}
       </span>
     </template>
