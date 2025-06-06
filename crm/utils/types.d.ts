@@ -332,6 +332,7 @@ declare global {
     user?: PersonResource
     zoom: Zoom
     lessons_planned: number
+    client_groups_count: number
     lessons: {
       conducted: number
       conducted_free: number
@@ -631,7 +632,7 @@ declare global {
     description: ?string
     is_afterclass: boolean
     is_private: boolean
-    user?: PersonResource
+    user?: PersonWithPhotoResource
     created_at?: string
     telegram_lists: Array<{
       id: number

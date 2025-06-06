@@ -40,21 +40,37 @@ function onClick(g: GroupListResource) {
         </NuxtLink>
       </div>
       <div style="width: 180px">
-        <div v-for="t in item.teachers" :key="t.id">
-          <UiPerson :item="t" no-link />
-        </div>
+        <template v-if="item.teachers.length">
+          <div v-for="t in item.teachers" :key="t.id">
+            <UiPerson :item="t" no-link />
+          </div>
+        </template>
+        <span v-else class="text-gray">
+          преподавателей нет
+        </span>
       </div>
       <div style="width: 150px">
         {{ ProgramShortLabel[item.program] }}
       </div>
       <div style="width: 140px">
-        <GroupLessonCounts :item="item" />
+        <GroupLessonCounts v-if="item.lessons.conducted || item.lessons.planned" :item="item" />
+        <span v-else class="text-gray">
+          занятий нет
+        </span>
       </div>
       <div style="width: 60px">
-        {{ item.client_groups_count }} уч.
+        <template v-if="item.client_groups_count">
+          {{ item.client_groups_count }} уч.
+        </template>
+        <span v-else class="text-gray">
+          0 уч.
+        </span>
       </div>
       <div style="flex: 1">
-        <TeethAsText :items="item.teeth" />
+        <TeethAsText v-if="Object.keys(item.teeth).length" :items="item.teeth" />
+        <span v-else class="text-gray">
+          расписание отсутствует
+        </span>
       </div>
       <div class="group-list__zoom">
         <span>

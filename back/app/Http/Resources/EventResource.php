@@ -38,7 +38,7 @@ class EventResource extends JsonResource
 
         return extract_fields($this, ['*'], [
             'telegram_lists' => $this->telegramLists,
-            'user' => new PersonResource($this->user),
+            'user' => new PersonWithPhotoResource($this->user),
             'participants' => $participants,
         ]);
     }

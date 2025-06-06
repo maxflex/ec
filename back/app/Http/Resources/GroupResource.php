@@ -17,8 +17,8 @@ class GroupResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $nonCancelledLessons = $this->lessons->filter(fn($lesson) => $lesson->status !== LessonStatus::cancelled);
-        $conductedLessons = $this->lessons->filter(fn($lesson) => $lesson->status === LessonStatus::conducted);
+        $nonCancelledLessons = $this->lessons->filter(fn ($lesson) => $lesson->status !== LessonStatus::cancelled);
+        $conductedLessons = $this->lessons->filter(fn ($lesson) => $lesson->status === LessonStatus::conducted);
 
         return extract_fields($this, ['*'], [
             'lessons' => [
@@ -27,10 +27,11 @@ class GroupResource extends JsonResource
                 'planned' => $nonCancelledLessons->where('is_free', false)->count(),
                 'planned_free' => $nonCancelledLessons->where('is_free', true)->count(),
             ],
+            'client_groups_count' => $this->clientGroups()->count(),
             'first_lesson_date' => $this->lessons->min('date'),
             'user' => new PersonResource($this->user),
             'teachers' => PersonResource::collection($this->teachers),
-            'teeth' => $this->getTeeth($this->year)
+            'teeth' => $this->getTeeth($this->year),
         ]);
     }
 }

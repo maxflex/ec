@@ -1,19 +1,20 @@
 <script setup lang="ts">
-const { items } = defineProps<{
+const { items, oneLine } = defineProps<{
   items: Teeth
+  oneLine?: boolean
 }>()
 </script>
 
 <template>
-  <div class="teeth-as-text">
+  <div class="teeth-as-text" :class="{ 'teeth-as-text--one-line': oneLine }">
     <div v-for="(teeth, weekday) in items" :key="weekday">
       <span>
         {{ WeekdayLabel[weekday] }}
       </span>
       <div class="teeth-as-text__times">
-        <div v-for="(t, index) in teeth.sort((a, b) => a.left - b.left)" :key="index">
+        <span v-for="(t, index) in teeth.sort((a, b) => a.left - b.left)" :key="index">
           {{ formatTime(t.time) }} – {{ formatTime(t.time_end) }}
-        </div>
+        </span>
       </div>
     </div>
   </div>
@@ -34,8 +35,28 @@ const { items } = defineProps<{
     display: flex;
     flex-direction: column;
     & > span {
-      &:not(:last-child):after {
-        content: ',';
+      margin-right: 4px;
+    }
+  }
+
+  &--one-line {
+    display: flex;
+    & > div {
+      white-space: nowrap;
+      margin-right: 40px;
+      & > span {
+        width: auto !important;
+        margin-right: 4px;
+      }
+    }
+    .teeth-as-text__times {
+      flex-direction: row !important;
+
+      & > span {
+        margin-right: 4px;
+        &:not(:last-child):after {
+          content: ', ';
+        }
       }
     }
   }

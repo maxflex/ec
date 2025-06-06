@@ -37,39 +37,57 @@ nextTick(loadData)
     <div class="panel">
       <div class="panel-info">
         <div>
-          <div>учебный год</div>
-          <div v-if="group.year">
-            {{ YearLabel[group.year] }}
-          </div>
+          <h2>Группа {{ group.id }}</h2>
         </div>
-        <div>
-          <div>программа</div>
-          <div v-if="group.program">
-            {{ ProgramLabel[group.program] }}
-          </div>
-        </div>
-        <div>
-          <div>преподаватели</div>
+
+        <div v-if="group.teachers.length">
           <div v-for="t in group.teachers" :key="t.id">
             <RouterLink :to="{ name: 'teachers-id', params: { id: t.id } }">
               {{ formatNameInitials(t) }}
             </RouterLink>
           </div>
         </div>
-        <div>
+        <div v-else>
           <div>
-            расписание
+            преподавателей нет
           </div>
-          <TeethAsText :items="group.teeth!" />
         </div>
         <div>
-          <div>
-            занятий
+          <div></div>
+          <div v-if="group.program">
+            {{ ProgramLabel[group.program] }}
           </div>
+        </div>
+
+        <div>
+          <div></div>
+          <div v-if="group.year">
+            {{ YearLabel[group.year] }}
+          </div>
+        </div>
+
+        <div>
           <div>
+          </div>
+          <div v-if="group.client_groups_count">
+            {{ group.client_groups_count }} уч.
+          </div>
+          <div v-else class="text-gray">
+            0 уч.
+          </div>
+        </div>
+
+        <div>
+          <div></div>
+          <div v-if="group.lessons.conducted || group.lessons.planned">
+            занятия:
             <GroupLessonCounts :item="group" />
           </div>
+          <div v-else class="text-gray">
+            занятий нет
+          </div>
         </div>
+
         <div class="panel-actions">
           <v-menu>
             <template #activator="{ props }">
@@ -110,12 +128,7 @@ nextTick(loadData)
         </div>
       </div>
     </div>
-    <Schedule
-      v-if="selectedTab === 'schedule'"
-      :group-id="group.id"
-      :year="group.year"
-      :program="group.program"
-    />
+    <Schedule v-if="selectedTab === 'schedule'" :group="group" />
     <GroupVisitsTab v-else-if="selectedTab === 'visits'" :id="group.id" />
     <GroupActTab v-else-if="selectedTab === 'acts'" :id="group.id" />
     <GroupStudentsTab v-else :group="group" />
@@ -127,3 +140,11 @@ nextTick(loadData)
   />
   <LazyPrintDialog ref="printDialog" />
 </template>
+
+<style lang="scss">
+.page-groups-id {
+  .panel-info {
+    align-items: center;
+  }
+}
+</style>

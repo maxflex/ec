@@ -14,33 +14,30 @@ import {
   LessonItemHeadTeacherLK,
   LessonItemTeacherLK,
 } from '#components'
+import { mdiCalendarClock } from '@mdi/js'
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { groupBy } from 'lodash-es'
 import { formatDateMonth } from '~/utils'
 
-const { groupId, teacherId, clientId, showTeeth, year, programFilter, headTeacher } = defineProps<{
-  groupId?: number
+const { group, teacherId, clientId, programFilter, headTeacher } = defineProps<{
+  group?: GroupResource
   teacherId?: number
   clientId?: number
-  year?: Year
-  program?: Program
-  showTeeth?: boolean
   programFilter?: boolean
   headTeacher?: boolean
 }>()
 
-// const tabName = teacherId ? 'TeacherSchedule' : groupId ? 'GroupSchedule' : 'ClientSchedule'
 const selectedProgram = ref<Program>()
 const selectedYear = ref<Year>()
 const hideEmptyDates = ref<number>(1)
 const { user, isTeacher, isClient } = useAuthStore()
-const isMassEditable = user?.entity_type === EntityTypeValue.user && !!groupId
+const isMassEditable = user?.entity_type === EntityTypeValue.user && group
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const params = {
   // только один из них НЕ undefined
   teacher_id: teacherId,
   client_id: clientId,
-  group_id: groupId,
+  group_id: group?.id,
 }
 const loading = ref(true)
 const teeth = ref<Teeth>()
@@ -62,8 +59,8 @@ const lessonIds = computed((): number[] => {
   return result
 })
 
-if (year) {
-  selectedYear.value = year
+if (group) {
+  selectedYear.value = group.year
   loadData()
 }
 
@@ -115,6 +112,11 @@ const availableYears = ref<Year[]>()
 const availablePrograms = computed(() => [...new Set(lessons.value.map(l => l.group.program))])
 
 async function loadAvailableYears() {
+  // в расписании группы не подгружаем
+  if (group) {
+    return
+  }
+
   const { data } = await useHttp<Year[]>(
     `groups`,
     {
@@ -139,7 +141,7 @@ async function loadLessons() {
     {
       params: {
         ...params,
-        year: groupId ? undefined : selectedYear.value,
+        year: group ? undefined : selectedYear.value,
       },
     },
   )
@@ -150,7 +152,7 @@ async function loadLessons() {
 }
 
 async function loadTeeth() {
-  if (!showTeeth) {
+  if (group) {
     return
   }
   const { data } = await useHttp<Teeth>(
@@ -247,8 +249,8 @@ nextTick(loadAvailableYears)
 
 <template>
   <UiFilters>
-    <!-- на странице группы год передаётся явно, там селектор не нужен (v-if="!year") -->
-    <AvailableYearsSelector v-if="!year" v-model="selectedYear" :items="availableYears" />
+    <!-- на странице группы год передаётся явно, там селектор не нужен -->
+    <AvailableYearsSelector v-if="!group" v-model="selectedYear" :items="availableYears" />
     <UiClearableSelect
       v-if="programFilter"
       v-model="selectedProgram"
@@ -261,6 +263,16 @@ nextTick(loadAvailableYears)
       "
       density="comfortable"
     />
+    <div v-if="group && group.teeth" style="width: fit-content" class="d-flex ga-2">
+      <template v-if="Object.keys(group.teeth).length">
+        <v-icon :icon="mdiCalendarClock" />
+        <TeethAsText :items="group.teeth!" one-line />
+      </template>
+      <span v-else class="text-gray">
+        расписание отсутствует
+      </span>
+    </div>
+
     <template #buttons>
       <div v-if="lessonIds.length" class="d-flex ga-4">
         <v-btn variant="text" @click="checkboxes = {}">
@@ -271,17 +283,17 @@ nextTick(loadAvailableYears)
           {{ lessonIds.length }}/{{ lessons.length }}
         </v-btn>
       </div>
-      <v-menu v-else-if="isMassEditable">
+      <v-menu v-else-if="group">
         <template #activator="{ props }">
           <v-btn color="primary" v-bind="props" :width="216">
             добавить занятия
           </v-btn>
         </template>
         <v-list>
-          <v-list-item @click="lessonDialog?.create(groupId!, year!)">
+          <v-list-item @click="lessonDialog?.create(group.id, group.year)">
             добавить одно занятие
           </v-list-item>
-          <v-list-item @click="lessonBulkCreateDialog?.create(groupId!, year!)">
+          <v-list-item @click="lessonBulkCreateDialog?.create(group.id, group.year)">
             добавить несколько занятий
           </v-list-item>
         </v-list>

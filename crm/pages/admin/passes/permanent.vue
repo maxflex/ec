@@ -67,7 +67,7 @@ const itemsFiltered = computed<PersonResource[]>(() => {
         </template>
         <template v-else>
           На данной странице отображаются {{ filters.entity === client ? 'ученики' : 'представители' }}, имеющие активный постоянный пропуск.
-          Доступ закрывается 30 июня {{ nextYear }} для договоров {{ YearLabel[currentYear] }} и до 30 июня {{ nextYear + 1 }}
+          Доступ закрывается 30 июня {{ nextYear }} для договоров {{ YearLabel[currentYear] }} и 30 июня {{ nextYear + 1 }}
           для договоров {{ YearLabel[nextYear] }} или в случае их расторжения
         </template>
       </UiQuestionTooltip>

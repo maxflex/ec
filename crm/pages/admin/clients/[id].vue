@@ -139,7 +139,7 @@ nextTick(loadData)
     <LogTab v-else-if="selectedTab === 'logs'" :client-id="client.id" />
     <ClientMarkSheetTab v-else-if="selectedTab === 'markSheet'" :client="client" />
     <ClientComplaintTab v-else-if="selectedTab === 'clientComplaints'" :client-id="client.id" />
-    <Schedule v-else :client-id="client.id" show-teeth program-filter />
+    <Schedule v-else :client-id="client.id" program-filter />
     <ClientDialog ref="clientDialog" @updated="onClientUpdated" />
   </template>
   <PrintSpravkaDialog ref="printSpravkaDialog" />
