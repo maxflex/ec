@@ -34,7 +34,7 @@ class ClientsBrowseResource extends JsonResource
 
         return extract_fields($this, [
             'first_name', 'last_name', 'middle_name',
-            'last_seen_at', 'directions',
+            'last_seen_at', 'directions', 'comments_count',
         ], [
             'logs_count' => $logsCount,
             'tg_logs_count' => $tgLogsCount,
