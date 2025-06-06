@@ -1,5 +1,18 @@
+<script setup lang="ts">
+const { offset } = defineProps<{
+  offset?: number
+}>()
+
+const style = offset
+  ? {
+      height: `calc(100% - ${offset}px)`,
+      top: `${offset}px`,
+    }
+  : {}
+</script>
+
 <template>
-  <div class="loader">
+  <div class="loader" :style="style">
     <span> загружаю... </span>
   </div>
 </template>

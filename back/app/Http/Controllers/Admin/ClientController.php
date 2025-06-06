@@ -11,6 +11,7 @@ use App\Models\Client;
 use App\Models\ClientParent;
 use App\Models\Phone;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ClientController extends Controller
@@ -21,6 +22,7 @@ class ClientController extends Controller
         'search' => ['q'],
         'request' => ['request_id'],
         'headTeacher' => ['head_teacher_id'],
+        'year' => ['year'],
     ];
 
     public function index(Request $request)
@@ -115,8 +117,16 @@ class ClientController extends Controller
     // https://doc.ege-centr.ru/tasks/834
     protected function filterHeadTeacher($query, $headTeacherId)
     {
-        $query
-            ->where('head_teacher_id', $headTeacherId)
-            ->whereHas('contracts', fn ($q) => $q->where('year', current_academic_year()));
+        $query->where('head_teacher_id', $headTeacherId);
+    }
+
+    protected function filterYear($query, $year)
+    {
+        $query->whereHas('contracts', fn ($q) => $q->where('year', $year));
+    }
+
+    protected function getAvailableYears($query): Collection
+    {
+        return $query->join('contracts as c', 'c.client_id', '=', 'clients.id')->pluck('year');
     }
 }

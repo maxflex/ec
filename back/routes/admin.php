@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\PrintController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RequestsController;
 use App\Http\Controllers\Admin\SearchController;
+use App\Http\Controllers\Admin\SmsController;
 use App\Http\Controllers\Admin\StatsController;
 use App\Http\Controllers\Admin\StatsPresetController;
 use App\Http\Controllers\Admin\SwampController;
@@ -124,7 +125,6 @@ Route::get('people-selector', PeopleSelectorController::class);
 Route::get('cabinets/free', [CabinetController::class, 'free']);
 Route::get('cabinets', [CabinetController::class, 'index']);
 
-
 Route::post('telegram-lists/load-people', [TelegramListController::class, 'loadPeople']);
 
 Route::get('requests/associated/{request}', [RequestsController::class, 'associated']);
@@ -150,6 +150,7 @@ Route::apiResource('logs', LogController::class)->only(['index', 'store']);
 
 Route::get('teeth', TeethController::class);
 Route::get('exams', ExamController::class);
+Route::apiResource('sms-messages', SmsController::class)->only('index');
 
 Route::apiResources([
     'telegram-lists' => TelegramListController::class,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { notSet = 'не установлено', nullify, expand } = defineProps<{
-  expand: boolean
+  expand?: boolean
   notSet?: string
   nullify?: boolean
 }>()

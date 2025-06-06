@@ -19,8 +19,8 @@ const filters = ref<Filters>({
   entity: client,
 })
 
-const year = currentAcademicYear()
-const nextYear = year + 1
+const currentYear = currentAcademicYear()
+const nextYear = currentYear + 1 as Year
 
 const { items, loading } = useIndex<PersonResource>(`passes/permanent`, filters)
 
@@ -58,13 +58,17 @@ const itemsFiltered = computed<PersonResource[]>(() => {
     <template #buttons>
       <UiQuestionTooltip>
         <template v-if="filters.entity === user">
-          Администраторы со статусом "действующий сотрудник"
+          На данной странице отображаются администраторы, имеющие активный постоянный пропуск.
+          Пропуск активен для администраторов в статусе "действующий сотрудник"
         </template>
         <template v-else-if="filters.entity === teacher">
-          Преподаватели со статусом "ведет занятия сейчас"
+          На данной странице отображаются преподаватели, имеющие активный постоянный пропуск.
+          Пропуск активен только для преподавателей в статусе "ведет занятия сейчас"
         </template>
         <template v-else>
-          Ученики, имеющие договоры {{ year }}–{{ nextYear }} (пропуск активен до 30 июня {{ nextYear }} года или до момента расторжения договора) и {{ nextYear }}–{{ nextYear + 1 }} (пропуск активен до 30 июня {{ nextYear + 1 }} года или до момента расторжения договора) учебных лет имеют постоянный пропуск и допущены на посту охраны института
+          На данной странице отображаются {{ filters.entity === client ? 'ученики' : 'представители' }}, имеющие активный постоянный пропуск.
+          Доступ закрывается 30 июня {{ nextYear }} для договоров {{ YearLabel[currentYear] }} и до 30 июня {{ nextYear + 1 }}
+          для договоров {{ YearLabel[nextYear] }} или в случае их расторжения
         </template>
       </UiQuestionTooltip>
     </template>

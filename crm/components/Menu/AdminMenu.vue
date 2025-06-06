@@ -81,7 +81,8 @@ const menu: Menu = [
     icon: mdiSendCircle,
     title: 'Сообщения',
     items: [
-      { title: 'Отправленные', to: '/telegram-messages' },
+      { title: 'История Telegram', to: '/telegram-messages' },
+      { title: 'История SMS', to: '/sms-messages' },
       { title: 'Групповое сообщение', to: '/people-selector' },
       { title: 'Рассылки', to: '/telegram-lists' },
     ],

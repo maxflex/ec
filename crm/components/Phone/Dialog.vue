@@ -1,23 +1,35 @@
 <script setup lang="ts">
+import type { SmsListResource } from '../Sms'
 import {
   mdiPhone,
   mdiSendVariant,
 } from '@mdi/js'
 
+const tabs = {
+  calls: 'история звонков',
+  telegramMessages: 'история telegram',
+  smsMessages: 'история sms',
+} as const
+type Tab = keyof typeof tabs
+
 const { dialog, width } = useDialog('default')
 const item = ref<PhoneResource>()
 const callsList = ref<CallListResource[]>([])
 const telegramMessages = ref<TelegramMessageResource[]>([])
-const tabs = {
-  calls: 'история звонков',
-  telegramMessages: 'история сообщений',
-} as const
-const selectedTab = ref<keyof typeof tabs>('calls')
+const smsMessages = ref<SmsListResource[]>([])
+const selectedTab = ref<Tab>('calls')
 const loading = ref(true)
 const wrapper = ref<HTMLDivElement | null>(null)
 const text = ref('')
 const input = ref<HTMLInputElement | null>(null)
 const sending = ref(false)
+
+// если вкладка была загружена, второй раз не загружаем
+const tabLoaded = ref<Record<Tab, boolean>>({
+  calls: true, // первая вкладка загружается всегда
+  telegramMessages: false,
+  smsMessages: false,
+})
 
 function open(p: PhoneResource) {
   selectedTab.value = 'calls'
@@ -51,16 +63,24 @@ async function send() {
 
 async function loadCalls() {
   loading.value = true
-  const { data } = await useHttp<ApiResponse<CallListResource>>(`calls`, {
-    params: {
-      q: item.value!.number,
+  const { data } = await useHttp<ApiResponse<CallListResource>>(
+    `calls`,
+    {
+      params: {
+        q: item.value!.number,
+      },
     },
-  })
+  )
   callsList.value = data.value!.data
   loading.value = false
 }
 
 async function loadTelegramMessages() {
+  if (tabLoaded.value.telegramMessages) {
+    scrollBottom()
+    return
+  }
+
   loading.value = true
   const { data } = await useHttp<ApiResponse<TelegramMessageResource>>(
     `telegram-messages`,
@@ -72,12 +92,44 @@ async function loadTelegramMessages() {
   )
   telegramMessages.value = data.value!.data
   loading.value = false
+  tabLoaded.value.telegramMessages = true
+  scrollBottom()
+}
+
+async function loadSmsMessages() {
+  if (tabLoaded.value.smsMessages) {
+    scrollBottom()
+    return
+  }
+
+  loading.value = true
+  const { data } = await useHttp<ApiResponse<SmsListResource>>(
+    `sms-messages`,
+    {
+      params: {
+        number: item.value!.number,
+      },
+    },
+  )
+  smsMessages.value = data.value!.data
+  loading.value = false
+  tabLoaded.value.smsMessages = true
   scrollBottom()
 }
 
 watch(selectedTab, (newVal) => {
-  if (newVal === 'telegramMessages') {
-    loadTelegramMessages()
+  switch (newVal) {
+    case 'calls':
+      smoothScroll('dialog', 'top', 'instant')
+      break
+
+    case 'telegramMessages':
+      loadTelegramMessages()
+      break
+
+    case 'smsMessages':
+      loadSmsMessages()
+      break
   }
 })
 
@@ -126,11 +178,12 @@ defineExpose({ open })
             {{ label }}
           </div>
         </div>
-        <UiLoader v-if="loading" />
+        <UiLoader v-if="loading" :offset="50" />
         <template v-else-if="selectedTab === 'calls'">
           <UiNoData v-if="callsList.length === 0" />
           <CallAppCallsList v-else :items="callsList" />
         </template>
+        <SmsHistoryList v-else-if="selectedTab === 'smsMessages'" :items="smsMessages" />
         <template v-else>
           <UiNoData v-if="telegramMessages.length === 0" />
           <TelegramMessageHistoryList :items="telegramMessages" />

@@ -151,7 +151,7 @@ nextTick(loadData)
           <td />
         </tr>
         <tr v-for="l in items" :key="l.id" :class="{ 'is-cancelled': l.status === 'cancelled' }">
-          <td>
+          <td class="pl-5">
             {{ formatTextDate(l.dateTime) }}
             <span class="text-gray ml-1">
               {{ dayLabels[getDay(l.dateTime)] }}

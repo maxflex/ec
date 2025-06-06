@@ -41,6 +41,7 @@
     padding: 30px $paddingX 30px;
     flex: 1;
     overflow-x: hidden;
+    position: relative;
 
     &-2-col {
       display: flex;
