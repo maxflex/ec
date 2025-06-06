@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { SmsListResource } from '.'
+import type { SmsMessageListResource } from '.'
 
 const { items } = defineProps<{
-  items: SmsListResource[]
+  items: SmsMessageListResource[]
 }>()
 </script>
 
@@ -10,10 +10,10 @@ const { items } = defineProps<{
   <div class="table">
     <div v-for="item in items" :key="item.id">
       <div style="width: 160px">
-        {{ formatPhone(item.phone) }}
+        {{ formatPhone(item.number) }}
       </div>
-      <div class="text-truncate pr-4" style="flex: 1" :title="item.message">
-        {{ item.message }}
+      <div class="text-truncate pr-4" style="flex: 1" :title="item.text">
+        {{ item.text }}
       </div>
       <div :class="{ 'text-success': item.status === 1 }" class="text-lowercase" style="width: 200px">
         {{ item.status_name }}

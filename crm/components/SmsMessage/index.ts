@@ -1,8 +1,8 @@
-export interface SmsListResource {
+export interface SmsMessageListResource {
   id: number
-  phone: string
+  number: string
   created_at: string
   status: number
   status_name: string
-  message: string
+  text: string
 }

@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import type { SmsListResource } from '~/components/Sms'
+import type { SmsMessageListResource } from '~/components/SmsMessage'
 
-const { items, indexPageData } = useIndex<SmsListResource>(`sms-messages`)
+const filters = ref<{ status?: number }>({})
+const { items, indexPageData } = useIndex<SmsMessageListResource>(`sms-messages`, filters)
 </script>
 
 <template>
   <UiIndexPage :data="indexPageData">
-    <SmsList :items="items" />
+    <template #filters>
+      <UiClearableSelect :items="yesNo('доставлено', 'не доставлено')" v-model="filters.status" label="Статус доставки" density="comfortable" />
+    </template>
+    <SmsMessageList :items="items" />
   </UiIndexPage>
 </template>

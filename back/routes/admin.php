@@ -36,7 +36,7 @@ use App\Http\Controllers\Admin\PrintController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RequestsController;
 use App\Http\Controllers\Admin\SearchController;
-use App\Http\Controllers\Admin\SmsController;
+use App\Http\Controllers\Admin\SmsMessageController;
 use App\Http\Controllers\Admin\StatsController;
 use App\Http\Controllers\Admin\StatsPresetController;
 use App\Http\Controllers\Admin\SwampController;
@@ -150,7 +150,7 @@ Route::apiResource('logs', LogController::class)->only(['index', 'store']);
 
 Route::get('teeth', TeethController::class);
 Route::get('exams', ExamController::class);
-Route::apiResource('sms-messages', SmsController::class)->only('index');
+Route::apiResource('sms-messages', SmsMessageController::class)->only('index');
 
 Route::apiResources([
     'telegram-lists' => TelegramListController::class,

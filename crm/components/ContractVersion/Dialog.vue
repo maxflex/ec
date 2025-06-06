@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#build/components'
 import { mdiArrowRightThin, mdiTextBoxCheckOutline, mdiTextBoxOutline } from '@mdi/js'
-import { addMonths } from 'date-fns';
+import { addMonths, format } from 'date-fns';
 import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{
@@ -127,7 +127,7 @@ function addPayment() {
 
   item.value.payments.push({
     id: newId(),
-    date: lastPayment ? addMonths(lastPayment.date, 1) :  today(),
+    date: lastPayment ? format(addMonths(lastPayment.date, 1), 'yyyy-MM-dd') :  today(),
     sum: lastPayment ? lastPayment.sum : 0,
     contract_version_id: item.value.id,
   })

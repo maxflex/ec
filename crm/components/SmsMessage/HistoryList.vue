@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { SmsListResource } from '.'
+import type { SmsMessageListResource } from '.'
 import { mdiAlertCircleOutline, mdiCheckAll } from '@mdi/js'
 import { format } from 'date-fns'
 
 const { items } = defineProps<{
-  items: SmsListResource[]
+  items: SmsMessageListResource[]
 }>()
 </script>
 
@@ -36,7 +36,7 @@ const { items } = defineProps<{
             </span>
           </span>
         </div>
-        <div class="sms-message__text" v-html="item.message" />
+        <div class="sms-message__text" v-html="item.text" />
       </div>
     </div>
   </div>

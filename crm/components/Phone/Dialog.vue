@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SmsListResource } from '../Sms'
+import type { SmsMessageListResource } from '../Sms'
 import {
   mdiPhone,
   mdiSendVariant,
@@ -16,7 +16,7 @@ const { dialog, width } = useDialog('default')
 const item = ref<PhoneResource>()
 const callsList = ref<CallListResource[]>([])
 const telegramMessages = ref<TelegramMessageResource[]>([])
-const smsMessages = ref<SmsListResource[]>([])
+const smsMessages = ref<SmsMessageListResource[]>([])
 const selectedTab = ref<Tab>('calls')
 const loading = ref(true)
 const wrapper = ref<HTMLDivElement | null>(null)
@@ -103,7 +103,7 @@ async function loadSmsMessages() {
   }
 
   loading.value = true
-  const { data } = await useHttp<ApiResponse<SmsListResource>>(
+  const { data } = await useHttp<ApiResponse<SmsMessageListResource>>(
     `sms-messages`,
     {
       params: {
@@ -183,7 +183,7 @@ defineExpose({ open })
           <UiNoData v-if="callsList.length === 0" />
           <CallAppCallsList v-else :items="callsList" />
         </template>
-        <SmsHistoryList v-else-if="selectedTab === 'smsMessages'" :items="smsMessages" />
+        <SmsMessageHistoryList v-else-if="selectedTab === 'smsMessages'" :items="smsMessages" />
         <template v-else>
           <UiNoData v-if="telegramMessages.length === 0" />
           <TelegramMessageHistoryList :items="telegramMessages" />
