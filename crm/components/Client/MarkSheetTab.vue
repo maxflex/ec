@@ -50,7 +50,7 @@ async function save() {
         <td width="300">
           {{ label }}
         </td>
-        <td width="120" class="mark-sheet__mark">
+        <td class="mark-sheet__mark">
           <span v-if="markSheet[subject]" :class="`text-score text-score--${markSheet[subject]}`">
             {{ markSheet[subject] }}
           </span>
