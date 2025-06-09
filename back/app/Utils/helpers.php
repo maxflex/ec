@@ -196,18 +196,6 @@ function get_preview_user(): ?User
     return null;
 }
 
-function save_csv(Collection $csv): string
-{
-    $file = $csv
-        ->map(fn ($row) => implode("\t", $row))
-        ->join("\n");
-
-    $filename = uniqid().'.csv';
-    Storage::put("crm/other/$filename", $file);
-
-    return cdn('other', $filename);
-}
-
 /**
  * Teacher => teachers
  * ClientParent => parents
@@ -236,4 +224,27 @@ function plural($n, $one, $few, $many)
     $text = $n % 10 == 1 && $n % 100 != 11 ? $one : ($n % 10 >= 2 && $n % 10 <= 4 && ($n % 100 < 10 || $n % 100 >= 20) ? $few : $many);
 
     return implode(' ', [$n, $text]);
+}
+
+function date_range(string $start, string $end): Generator
+{
+    $current = new DateTimeImmutable($start);
+    $end = new DateTimeImmutable($end);
+
+    while ($current <= $end) {
+        yield $current;
+        $current = $current->modify('+1 day');
+    }
+}
+
+function save_csv(array|Collection $csv): string
+{
+    $str = '';
+    foreach ($csv as $row) {
+        $str .= implode("\t", $row)."\n";
+    }
+    $filename = uniqid().'.tsv';
+    Storage::put("crm/other/$filename", $str);
+
+    return cdn('other', $filename);
 }
