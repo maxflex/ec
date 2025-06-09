@@ -39,8 +39,8 @@ class ClientLessonCountsCommand extends Command
                     $row = array_pad($row, 1 + count($counts), 0);
                 } else {
                     $matchingLessons = $lessons[$d]->filter(
-                        fn (Lesson $lesson) => $datetime->gte($lesson->date_time)
-                        && $datetime->lte(Carbon::parse($lesson->time_end))
+                        fn (Lesson $lesson) => $lesson->date_time->lte($datetime) &&
+                        $lesson->date_time->copy()->addMinutes($lesson->group->program->getDuration())->gt($datetime)
                     );
 
                     foreach ($counts as $i) {
