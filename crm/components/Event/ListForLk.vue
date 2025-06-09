@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { EventListResource } from '.'
+
 const { items } = defineProps<{
   items: EventListResource[]
 }>()

@@ -86,6 +86,12 @@ nextTick(loadData)
             <v-chip density="compact">
               {{ item.is_afterclass ? 'внеклассное' : 'учебное' }} событие
             </v-chip>
+            <v-btn
+              variant="plain"
+              icon="$edit"
+              :size="42"
+              @click="eventDialog?.edit(item.id)"
+            />
           </div>
           <span>
             {{ formatDate(item.date) }} {{ dayLabel }}
@@ -94,14 +100,6 @@ nextTick(loadData)
             </span>
           </span>
         </h2>
-        <!-- <div>
-          <v-btn
-            variant="plain"
-            icon="$edit"
-            :size="48"
-            @click="eventDialog?.edit(item.id)"
-          />
-        </div> -->
       </div>
       <div>
         {{ item.description }}
@@ -265,6 +263,9 @@ nextTick(loadData)
       display: inline-flex;
       align-items: center;
       gap: 10px;
+    }
+    .v-btn {
+      font-size: 16px;
     }
     span {
       // color: rgb(var(--v-theme-gray));

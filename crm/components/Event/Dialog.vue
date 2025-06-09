@@ -1,5 +1,7 @@
 <script lang="ts" setup>
+import type { EventListResource, EventResource } from '.'
 import { cloneDeep } from 'lodash-es'
+import { modelDefaults } from '.'
 
 const emit = defineEmits<{
   updated: [e: EventListResource]
@@ -10,17 +12,7 @@ const deleting = ref(false)
 const saving = ref(false)
 const loading = ref(false)
 const itemId = ref<number>()
-const modelDefaults: EventResource = {
-  id: newId(),
-  year: currentAcademicYear(),
-  date: today(),
-  name: '',
-  description: null,
-  duration: null,
-  is_afterclass: false,
-  is_private: false,
-}
-const item = ref<EventResource>(modelDefaults)
+const item = ref<EventResource>(cloneDeep(modelDefaults))
 const route = useRoute()
 const router = useRouter()
 
@@ -149,6 +141,9 @@ defineExpose({ create, edit })
         </div>
         <div>
           <v-textarea v-model="item.description" label="Описание" no-resize />
+        </div>
+        <div>
+          <FileUploader v-model="item.file" folder="events" />
         </div>
         <div>
           <v-checkbox

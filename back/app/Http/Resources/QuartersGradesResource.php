@@ -69,6 +69,7 @@ class QuartersGradesResource extends JsonResource
                     $quarterData['last_teacher_id'] = $quarters[Quarter::q4->value]['last_teacher_id'];
                 } else {
                     $clientLessons = ClientLesson::query()
+                        ->select('client_lessons.*') // 🛡️ критично важно!
                         ->join('contract_version_programs as cvp', 'cvp.id', '=', 'contract_version_program_id')
                         ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
                         ->join('contracts as c', 'c.id', '=', 'cv.contract_id')

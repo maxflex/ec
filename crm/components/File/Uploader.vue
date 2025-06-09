@@ -2,7 +2,7 @@
 import { mdiDownload } from '@mdi/js'
 
 const { folder } = defineProps<{
-  folder: 'lessons' | 'tests'
+  folder: 'lessons' | 'tests' | 'events'
 }>()
 
 const fileInput = ref<HTMLInputElement>()

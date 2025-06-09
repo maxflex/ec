@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { EventDialog } from '#components'
+import type { EventListResource } from '~/components/Event'
 
 const filters = useAvailableYearsFilter()
 const eventDialog = ref<InstanceType<typeof EventDialog>>()

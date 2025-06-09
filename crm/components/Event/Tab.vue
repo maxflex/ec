@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { EventDialog } from '#components'
+import type { EventListResource, EventResource } from '.'
 
 const { clientId, teacherId } = defineProps<{
   clientId?: number

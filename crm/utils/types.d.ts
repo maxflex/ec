@@ -598,52 +598,6 @@ declare global {
     }
   }
 
-  interface EventListResource {
-    id: number
-    name: string
-    date: string
-    description: ?string
-    is_afterclass: boolean
-    is_private: boolean
-    telegram_lists_count: number
-    time?: string
-    time_end?: string
-    user: PersonResource
-    participants: Record<EventParticipantConfirmation, number>
-    participant?: {
-      id: number
-      confirmation: EventParticipantConfirmation
-    }
-  }
-
-  interface EventParticipant {
-    id: number
-    confirmation: EventParticipantConfirmation
-    entity: PersonResource
-  }
-
-  interface EventResource {
-    id: number
-    name: string
-    year: Year
-    date: string
-    time?: string
-    duration: ?number
-    description: ?string
-    is_afterclass: boolean
-    is_private: boolean
-    user?: PersonWithPhotoResource
-    created_at?: string
-    telegram_lists: Array<{
-      id: number
-      created_at: string
-    }>
-    participants?: {
-      clients: EventParticipant[]
-      teachers: EventParticipant[]
-    }
-  }
-
   interface TopicListResource {
     id: number
     teacher: PersonResource

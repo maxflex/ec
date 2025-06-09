@@ -12,10 +12,11 @@ class Event extends Model
     protected $fillable = [
         'date', 'time', 'name', 'description',
         'is_afterclass', 'duration', 'year',
-        'is_private',
+        'is_private', 'file',
     ];
 
     protected $casts = [
+        'file' => 'array',
         'is_afterclass' => 'boolean',
         'is_private' => 'boolean',
         'duration' => 'int',
