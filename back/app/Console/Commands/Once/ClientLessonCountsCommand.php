@@ -38,8 +38,9 @@ class ClientLessonCountsCommand extends Command
                 if (! isset($lessons[$d])) {
                     $row = array_pad($row, 1 + count($counts), 0);
                 } else {
-                    $matchingLessons = $lessons[$d]->filter(fn (Lesson $lesson) => $lesson->date_time->lte($datetime) &&
-                        Carbon::parse($lesson->time_end)->gt($datetime)
+                    $matchingLessons = $lessons[$d]->filter(
+                        fn (Lesson $lesson) => $datetime->gte($lesson->date_time)
+                        && $datetime->lte(Carbon::parse($lesson->time_end))
                     );
 
                     foreach ($counts as $i) {
