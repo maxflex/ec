@@ -65,6 +65,10 @@ class SyncSmsCommand extends Command
 
         $bar = $this->output->createProgressBar(count($history));
         foreach ($history as $item) {
+            // импортируем только сообщения из EC
+            if ($item['comment'] !== 'EC') {
+                continue;
+            }
             $this->insert($item);
             $bar->advance();
         }
