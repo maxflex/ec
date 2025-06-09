@@ -37,7 +37,9 @@ nextTick(loadData)
     <div class="panel">
       <div class="panel-info">
         <div>
-          <h2>Группа {{ group.id }}</h2>
+          <h2 style="font-size: 28px">
+            Группа {{ group.id }}
+          </h2>
         </div>
 
         <div v-if="group.teachers.length">
@@ -85,6 +87,17 @@ nextTick(loadData)
           </div>
           <div v-else class="text-gray">
             занятий нет
+          </div>
+        </div>
+
+        <div>
+          <div>
+          </div>
+          <div>
+            <div>
+              {{ group.zoom.id }}
+            </div>
+            {{ group.zoom.password }}
           </div>
         </div>
 

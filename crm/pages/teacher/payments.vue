@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { mdiLockOpenOutline } from '@mdi/js'
 import type { TeacherPaymentResource } from '~/components/TeacherPayment'
+import { mdiLockOpenOutline } from '@mdi/js'
 
 const filters = useAvailableYearsFilter()
 
@@ -32,12 +32,14 @@ nextTick(checkVerification)
       <template #filters>
         <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
       </template>
+      <template #buttons>
+        <UiCountDown :seconds="seconds" @timeout="checkVerification()">
+          <v-icon :icon="mdiLockOpenOutline" color="gray" />
+          Просмотр разрешён ещё
+        </UiCountDown>
+      </template>
       <TeacherPaymentList :items="items" />
     </UiIndexPage>
-    <UiCountDown :seconds="seconds" @timeout="checkVerification()">
-      <v-icon :icon="mdiLockOpenOutline" color="gray" />
-      Просмотр разрешён ещё
-    </UiCountDown>
   </template>
   <BalanceVerification v-else @verified="checkVerification()" />
 </template>
@@ -45,10 +47,6 @@ nextTick(checkVerification)
 <style lang="scss">
 .page-payments.entity-teacher {
   .ui-countdown {
-    position: fixed;
-    top: 30px;
-    right: 0;
-    z-index: 1;
     color: rgb(var(--v-theme-gray));
     width: 280px;
   }

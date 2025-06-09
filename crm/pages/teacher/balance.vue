@@ -18,11 +18,12 @@ nextTick(checkVerification)
 <template>
   <UiLoader v-if="loading" />
   <template v-else-if="seconds > 0">
-    <Balance :teacher-id="user?.id!" />
-    <UiCountDown :seconds="seconds" @timeout="checkVerification()">
-      <v-icon :icon="mdiLockOpenOutline" color="gray" />
-      Просмотр разрешён ещё
-    </UiCountDown>
+    <Balance :teacher-id="user?.id!">
+      <UiCountDown :seconds="seconds" @timeout="checkVerification()">
+        <v-icon :icon="mdiLockOpenOutline" color="gray" />
+        Просмотр разрешён ещё
+      </UiCountDown>
+    </Balance>
   </template>
   <BalanceVerification v-else @verified="checkVerification()" />
 </template>
@@ -30,10 +31,6 @@ nextTick(checkVerification)
 <style lang="scss">
 .page-balance.entity-teacher {
   .ui-countdown {
-    position: fixed;
-    top: 30px;
-    right: 0;
-    z-index: 1;
     color: rgb(var(--v-theme-gray));
     width: 280px;
   }

@@ -26,32 +26,71 @@ nextTick(loadData)
     <div class="panel">
       <div class="panel-info">
         <div>
-          <div>группа</div>
+          <h2 style="font-size: 28px">
+            Группа {{ group.id }}
+          </h2>
+        </div>
+
+        <div v-if="group.teachers.length">
+          <div v-for="t in group.teachers" :key="t.id">
+            <RouterLink :to="{ name: 'teachers-id', params: { id: t.id } }">
+              {{ formatNameInitials(t) }}
+            </RouterLink>
+          </div>
+        </div>
+        <div v-else>
           <div>
-            номер {{ group.id }}
+            преподавателей нет
           </div>
         </div>
         <div>
-          <div>учебный год</div>
-          <div v-if="group.year">
-            {{ YearLabel[group.year] }}
-          </div>
-        </div>
-        <div>
-          <div>программа</div>
+          <div></div>
           <div v-if="group.program">
             {{ ProgramLabel[group.program] }}
           </div>
         </div>
+
+        <div>
+          <div></div>
+          <div v-if="group.year">
+            {{ YearLabel[group.year] }}
+          </div>
+        </div>
+
         <div>
           <div>
-            занятий
+          </div>
+          <div v-if="group.client_groups_count">
+            {{ group.client_groups_count }} уч.
+          </div>
+          <div v-else class="text-gray">
+            0 уч.
+          </div>
+        </div>
+
+        <div>
+          <div></div>
+          <div v-if="group.lessons.conducted || group.lessons.planned">
+            занятия:
+            <GroupLessonCounts :item="group" />
+          </div>
+          <div v-else class="text-gray">
+            занятий нет
+          </div>
+        </div>
+
+        <div>
+          <div>
           </div>
           <div>
-            <GroupLessonCounts :item="group" sum-free />
+            <div>
+              {{ group.zoom.id }}
+            </div>
+            {{ group.zoom.password }}
           </div>
         </div>
       </div>
+
       <div class="tabs">
         <div
           v-for="(label, key) in tabs"
@@ -71,3 +110,11 @@ nextTick(loadData)
     </div>
   </div>
 </template>
+
+<style lang="scss">
+.page-groups-id {
+  .panel-info {
+    align-items: center;
+  }
+}
+</style>

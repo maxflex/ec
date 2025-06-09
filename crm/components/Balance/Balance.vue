@@ -40,6 +40,9 @@ const { indexPageData, availableYears, items } = useIndex<Balance>(
         :items="yesNo('по занятиям', 'по остальным начислениям')"
       />
     </template>
+    <template #buttons>
+      <slot />
+    </template>
     <div class="table balance-table">
       <div v-for="item in items" :key="item.date">
         <div style="width: 200px">

@@ -283,7 +283,7 @@ nextTick(loadAvailableYears)
           {{ lessonIds.length }}/{{ lessons.length }}
         </v-btn>
       </div>
-      <v-menu v-else-if="group">
+      <v-menu v-else-if="isMassEditable">
         <template #activator="{ props }">
           <v-btn color="primary" v-bind="props" :width="216">
             добавить занятия
