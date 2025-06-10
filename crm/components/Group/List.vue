@@ -73,12 +73,9 @@ function onClick(g: GroupListResource) {
         </span>
       </div>
       <div class="group-list__zoom">
-        <span>
-          {{ item.zoom.id }}
-        </span>
-        <span>
-          {{ item.zoom.password }}
-        </span>
+        <template v-if="item.zoom.id">
+          {{ item.zoom.id }} / {{ item.zoom.password }}
+        </template>
       </div>
     </div>
   </div>

@@ -161,13 +161,14 @@ a.table-item {
     border-bottom: 1px solid #e0e0e0;
     // background: #fafafa;
     display: flex;
-    gap: 50px;
+    gap: 40px;
     padding: 16px 10px 16px 20px;
     & > div:not(.client__actions) {
       // padding: 0 16px 20px;
       & > div {
         &:first-child {
           color: rgb(var(--v-theme-gray));
+          font-size: 14px;
         }
       }
     }

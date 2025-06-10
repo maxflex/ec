@@ -32,12 +32,10 @@ const { item } = defineProps<{
       <LessonItemStatus :item="item" show-unplanned />
     </div>
     <div class="group-list__zoom">
-      <span>
-        {{ item.group.zoom.id }}
-      </span>
-      <span>
+      <template v-if="item.group.zoom?.id">
+        {{ item.group.zoom.id }} /
         {{ item.group.zoom.password }}
-      </span>
+      </template>
     </div>
   </div>
 </template>

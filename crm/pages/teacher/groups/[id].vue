@@ -32,6 +32,7 @@ nextTick(loadData)
         </div>
 
         <div v-if="group.teachers.length">
+          <div>преподаватели</div>
           <div v-for="t in group.teachers" :key="t.id">
             <RouterLink :to="{ name: 'teachers-id', params: { id: t.id } }">
               {{ formatNameInitials(t) }}
@@ -39,19 +40,20 @@ nextTick(loadData)
           </div>
         </div>
         <div v-else>
+          <div></div>
           <div>
             преподавателей нет
           </div>
         </div>
         <div>
-          <div></div>
+          <div>программа</div>
           <div v-if="group.program">
             {{ ProgramLabel[group.program] }}
           </div>
         </div>
 
         <div>
-          <div></div>
+          <div>учебный год</div>
           <div v-if="group.year">
             {{ YearLabel[group.year] }}
           </div>
@@ -59,6 +61,7 @@ nextTick(loadData)
 
         <div>
           <div>
+            численность
           </div>
           <div v-if="group.client_groups_count">
             {{ group.client_groups_count }} уч.
@@ -69,24 +72,21 @@ nextTick(loadData)
         </div>
 
         <div>
-          <div></div>
+          <div>уроки</div>
           <div v-if="group.lessons.conducted || group.lessons.planned">
-            занятия:
             <GroupLessonCounts :item="group" />
           </div>
           <div v-else class="text-gray">
-            занятий нет
+            уроков нет
           </div>
         </div>
 
         <div>
           <div>
+            zoom
           </div>
           <div>
-            <div>
-              {{ group.zoom.id }}
-            </div>
-            {{ group.zoom.password }}
+            {{ group.zoom.id }} / {{ group.zoom.password }}
           </div>
         </div>
       </div>

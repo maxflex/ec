@@ -57,7 +57,7 @@ nextTick(loadData)
           <div>преподаватель</div>
           <div>
             {{ formatFullName(teacher) }}
-            <div v-if="teacher.phones">
+            <div v-if="teacher.phones" class="mt-5">
               <PhoneList :items="teacher.phones" />
             </div>
           </div>

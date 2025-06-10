@@ -47,7 +47,7 @@ const filteredLessons = computed(() =>
 const allDates = computed<string[]>(() => selectedYear.value
   ? eachDayOfInterval({
       start: `${selectedYear.value}-09-01`,
-      end: `${selectedYear.value + 1}-05-31`,
+      end: `${selectedYear.value + 1}-06-31`,
     }).map(d => format(d, 'yyyy-MM-dd'))
   : [],
 )
@@ -79,6 +79,11 @@ const itemsByDate = computed(
 const hasHiddenContent = computed<boolean>(() => {
   if (showAllDates.value) {
     return false
+  }
+
+  // фикс для конца года
+  if (dates.value.length === 0 && allDates.value.length !== 0) {
+    return true
   }
 
   const firstShownDate = dates.value[0]
@@ -173,7 +178,9 @@ nextTick(loadAvailableYears)
     <!-- на странице группы год передаётся явно, там селектор не нужен (v-if="!year") -->
     <AvailableYearsSelector v-if="!year" v-model="selectedYear" :items="availableYears" />
     <UiClearableSelect
-      v-if="programFilter" v-model="selectedProgram" label="Программа" :items="availablePrograms.map((value) => ({
+      v-if="programFilter"
+      v-model="selectedProgram"
+      label="Программа" :items="availablePrograms.map((value) => ({
         value,
         title: ProgramLabel[value],
       }))
