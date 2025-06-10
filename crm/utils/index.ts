@@ -215,7 +215,7 @@ export function formatDate(dateTime: string | null): string {
   if (!dateTime) {
     return ''
   }
-  return format(dateTime, 'dd.MM.yyyy')
+  return format(dateTime, 'dd.MM.yy')
 }
 
 export function formatDateMob(dateTime: string | null): string {

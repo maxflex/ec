@@ -7,6 +7,7 @@ export interface EventListResource {
   is_private: boolean
   telegram_lists_count: number
   time?: string
+  file: UploadedFile | null
   time_end?: string
   user: PersonResource
   participants: Record<EventParticipantConfirmation, number>

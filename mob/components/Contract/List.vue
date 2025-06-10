@@ -35,7 +35,9 @@ async function preview(item: ContractVersionListResource) {
         {{ formatName(item.contract.client) }}
       </div>
       <div style="flex: 1">
-        <ContractDirections :item="item" />
+        <div v-for="(value, d) in item.direction_counts" :key="d">
+          {{ DirectionLabel[d] }} / {{ value }}
+        </div>
       </div>
       <div style="width: 20px; flex: initial; align-self: center;" class="text-right">
         <v-icon :icon="mdiChevronRight" color="gray" />

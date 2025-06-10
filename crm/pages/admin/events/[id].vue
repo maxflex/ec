@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { EventDialog } from '#components'
+import type { EventParticipant, EventResource } from '~/components/Event'
 import { mdiAccountGroup, mdiCalendar, mdiCheckAll, mdiPlus } from '@mdi/js'
 import { getDay } from 'date-fns'
 
@@ -76,8 +77,10 @@ nextTick(loadData)
   <v-fade-transition>
     <UiLoader v-if="item === undefined" />
     <div v-else class="show">
+      <div v-if="item.file" class="event__img" :style="{ backgroundImage: `url(${item.file.url})` }">
+      </div>
       <div class="show__title">
-        <h2 class="event__header">
+        <h1 class="event__header">
           <div>
             {{ item.name }}
             <v-chip density="compact">
@@ -93,15 +96,15 @@ nextTick(loadData)
               @click="eventDialog?.edit(item.id)"
             />
           </div>
-          <span>
+          <span class="event__header-date">
             {{ formatDate(item.date) }} {{ dayLabel }}
             <span v-if="item.time" class="event__header-time">
               {{ formatTime(item.time) }}
             </span>
           </span>
-        </h2>
+        </h1>
       </div>
-      <div>
+      <div class="event__desc">
         {{ item.description }}
         <div v-for="tl in item.telegram_lists" :key="tl.id">
           <RouterLink :to="{ name: 'telegram-lists-id', params: { id: tl.id } }">
@@ -273,12 +276,31 @@ nextTick(loadData)
     .v-chip {
       font-size: 12px;
     }
+
+    &-date {
+      position: relative;
+      font-size: 24px;
+      top: 8px;
+    }
+
     &-time {
       position: absolute;
-      top: 40px;
-      right: 20px;
+      top: 22px;
+      right: 0px;
       font-size: 60px;
     }
+  }
+
+  &__img {
+    width: 100%;
+    height: 300px;
+    background-size: cover;
+    background-position: center center;
+    margin-bottom: 30px;
+  }
+
+  &__desc {
+    width: 70%;
   }
 }
 </style>

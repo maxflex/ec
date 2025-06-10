@@ -25,15 +25,21 @@ function getParticipantsCount(item: EventListResource): number {
           @click="emit('edit', item.id)"
         />
       </div>
-      <div style="width: 100px">
-        {{ formatDate(item.date) }}
+      <div class="event-list__img">
+        <div v-if="item.file" :style="{ backgroundImage: `url(${item.file.url})` }" />
       </div>
-      <div style="width: 110px">
-        {{ formatTime(item.time!) }}
-        <template v-if="item.time_end">
-          – {{ item.time_end }}
-        </template>
+      <div style="width: 100px" class="table-two-lines">
+        <span>
+          {{ formatDate(item.date) }}
+        </span>
+        <div class="event-list__confirmation text-gray">
+          {{ formatTime(item.time!) }}
+          <template v-if="item.time_end">
+            – {{ item.time_end }}
+          </template>
+        </div>
       </div>
+
       <div style="flex: 1" class="text-truncate pr-2">
         <RouterLink :to="{ name: 'events-id', params: { id: item.id } }">
           {{ item.name }}
@@ -89,3 +95,18 @@ function getParticipantsCount(item: EventListResource): number {
     </div>
   </div>
 </template>
+
+<style lang="scss">
+.event-list {
+  &__img {
+    width: 120px;
+    & > div {
+      width: 100%;
+      // border-radius: 8px;
+      height: 80px;
+      background-size: cover;
+      background-position: center center;
+    }
+  }
+}
+</style>
