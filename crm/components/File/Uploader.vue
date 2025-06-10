@@ -1,9 +1,23 @@
 <script setup lang="ts">
 import { mdiDownload } from '@mdi/js'
 
-const { folder } = defineProps<{
+const { folder, label = 'прикрепить файл' } = defineProps<{
+  label?: string
   folder: 'lessons' | 'tests' | 'events'
 }>()
+
+const accept = (function () {
+  switch (folder) {
+    case 'tests':
+      return 'application/pdf'
+
+    case 'events':
+      return 'image/*'
+
+    default:
+      return undefined
+  }
+})()
 
 const fileInput = ref<HTMLInputElement>()
 
@@ -120,12 +134,7 @@ function onFileSelected(e: Event) {
     </template>
     <div v-if="model === null || Array.isArray(model)" class="mt-2">
       <UiIconLink icon="$file" prepend @click="selectFile()">
-        <template v-if="Array.isArray(model)">
-          прикрепить файлы
-        </template>
-        <template v-else>
-          прикрепить файл
-        </template>
+        {{ label }}
       </UiIconLink>
     </div>
     <input
@@ -133,7 +142,7 @@ function onFileSelected(e: Event) {
       style="display: none"
       type="file"
       :multiple="Array.isArray(model)"
-      :accept="folder === 'tests' ? 'application/pdf' : undefined"
+      :accept="accept"
       @change="onFileSelected"
     >
   </div>

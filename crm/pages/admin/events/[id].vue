@@ -77,8 +77,7 @@ nextTick(loadData)
   <v-fade-transition>
     <UiLoader v-if="item === undefined" />
     <div v-else class="show">
-      <div v-if="item.file" class="event__img" :style="{ backgroundImage: `url(${item.file.url})` }">
-      </div>
+      <div v-if="item.file" class="event__img" :style="{ backgroundImage: `url(${item.file.url})` }" />
       <div class="show__title">
         <h1 class="event__header">
           <div>

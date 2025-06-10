@@ -143,7 +143,7 @@ defineExpose({ create, edit })
           <v-textarea v-model="item.description" label="Описание" no-resize />
         </div>
         <div>
-          <FileUploader v-model="item.file" folder="events" />
+          <FileUploader v-model="item.file" folder="events" label="прикрепить изображение" />
         </div>
         <div>
           <v-checkbox
