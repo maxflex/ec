@@ -792,6 +792,7 @@ declare global {
     | 'TelegramListSentEvent'
     | 'AppUpdatedEvent'
     | 'ClientTestUpdatedEvent'
+    | 'RequestUpdatedEvent'
 
   interface CallAppAonResource {
     id: number

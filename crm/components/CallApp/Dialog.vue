@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
 import { CallAppStatusFilterLabel } from '~/utils/labels'
-import { callAppDialog, filters, missedCount, player } from '.'
+import { callAppDialog, filters, player } from '.'
 
 const { activeCalls } = defineProps<{
   activeCalls: CallEvent[]
@@ -59,7 +59,6 @@ async function onDeleted(call: CallListResource) {
     await useHttp(`calls/${call.id}`, {
       method: 'delete',
     })
-    missedCount.value--
   }
 }
 

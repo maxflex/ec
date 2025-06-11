@@ -48,3 +48,17 @@ export const modelDefaults: RequestResource = {
 }
 
 export const apiUrl = 'requests'
+
+export const newRequestsCount = ref(0)
+
+export const loadNewRequestsCount = async function () {
+  const { data } = await useHttp<string>(apiUrl, {
+    params: {
+      count: 1,
+      status: 'new',
+    },
+  })
+  if (data.value) {
+    newRequestsCount.value = Number.parseInt(data.value)
+  }
+}

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { callAppDialog, hasIncoming, isMissed, loadMissedCount } from '~/components/CallApp/index'
+import { callAppDialog, hasIncoming, isMissed } from '~/components/CallApp/index'
 
 const { user } = useAuthStore()
 const { $addSseListener } = useNuxtApp()
@@ -65,13 +65,11 @@ $addSseListener('CallEvent', (ce: CallEvent) => {
           banners.value.splice(bannerIndex, 1)
         }
       }
-      loadMissedCount()
   }
 })
 
 nextTick(() => {
   loadActiveCalls()
-  loadMissedCount()
 })
 </script>
 

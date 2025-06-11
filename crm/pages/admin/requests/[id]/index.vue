@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { RequestDialog } from '#components'
+import { loadNewRequestsCount } from '~/components/Request'
 
 const route = useRoute()
 const id = Number.parseInt(route.params.id)
@@ -23,6 +24,7 @@ function onRequestUpdated(r: RequestListResource) {
     items.value.unshift(r)
   }
   itemUpdated('request', r.id)
+  loadNewRequestsCount()
 }
 </script>
 
