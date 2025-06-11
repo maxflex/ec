@@ -1,3 +1,3 @@
 <template>
-  <ReportEditPage />
+  <ReportTabs />
 </template>
