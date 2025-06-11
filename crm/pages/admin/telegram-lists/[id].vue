@@ -102,7 +102,6 @@ nextTick(loadData)
           </v-table>
         </div>
       </div>
-
       <TelegramMessageForm :item="item" />
     </div>
   </v-fade-transition>

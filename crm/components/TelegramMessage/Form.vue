@@ -50,6 +50,9 @@ if (item.scheduled_at) {
     <v-btn size="x-large" disabled>
       <div>
         {{ TelegramListStatusLabel[item.status] }}
+        <template v-if="item.status === 'sent'">
+          {{ formatDateTime(item.scheduled_at || item.created_at!) }}
+        </template>
       </div>
       <div>
         {{ formatName(item.user) }}

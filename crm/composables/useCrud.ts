@@ -1,10 +1,17 @@
 import { cloneDeep } from 'lodash-es'
 
+interface AbstractItem {
+  id: number
+  user?: PersonResource
+  created_at?: string
+}
+
 export interface CrudDialogData {
   width: number
   saving: Ref<boolean>
   deleting: Ref<boolean>
   isEditing: ComputedRef<boolean>
+  item: Ref<AbstractItem>
   save: () => void
   destroy: () => void
 }
@@ -13,11 +20,7 @@ interface CrudDialogOptions {
   afterOpen?: () => void
 }
 
-interface HasId {
-  id: number
-}
-
-export default function<Resource extends HasId, ListResource extends HasId>(
+export default function<Resource extends AbstractItem, ListResource extends AbstractItem>(
   apiUrl: string,
   modelDefaults: Resource,
   items: Ref<ListResource[]>,
@@ -103,7 +106,7 @@ export default function<Resource extends HasId, ListResource extends HasId>(
     return data.value as ListResource
   }
 
-  function findIndex({ id }: HasId): Promise<number> {
+  function findIndex({ id }: AbstractItem): Promise<number> {
     const index = items.value.findIndex(e => e.id === id)
     if (index === -1) {
       return Promise.reject(new Error('index not found'))
@@ -140,6 +143,7 @@ export default function<Resource extends HasId, ListResource extends HasId>(
     deleting,
     save,
     destroy,
+    item,
   }
 
   return {

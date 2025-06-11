@@ -4,6 +4,7 @@ export interface ClientComplaintResource {
   teacher_id?: number
   program?: Program
   text: string
+  user?: PersonResource
 }
 
 export interface ClientComplaintListResource {

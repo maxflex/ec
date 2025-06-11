@@ -16,6 +16,11 @@ class ClientComplaint extends Model
         'program' => Program::class,
     ];
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);

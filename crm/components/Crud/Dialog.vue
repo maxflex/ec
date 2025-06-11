@@ -5,7 +5,7 @@ const props = defineProps<{
   data: CrudDialogData
 }>()
 
-const { width, saving, deleting, isEditing, save, destroy } = props.data
+const { width, saving, deleting, isEditing, save, destroy, item } = props.data
 
 const model = defineModel<boolean>({ required: true })
 </script>
@@ -14,12 +14,23 @@ const model = defineModel<boolean>({ required: true })
   <v-dialog v-model="model" :width="width">
     <div class="dialog-wrapper">
       <div class="dialog-header">
-        <slot v-if="isEditing" name="title-edit">
-          Редактирование записи
-        </slot>
-        <slot v-else name="title-create">
-          Добавить запись
-        </slot>
+        <div>
+          <slot v-if="isEditing" name="title-edit">
+            Редактирование записи
+          </slot>
+          <slot v-else name="title-create">
+            Добавить запись
+          </slot>
+          <div class="dialog-subheader">
+            <span v-if="item.user">
+              {{ formatName(item.user) }}
+            </span>
+            <span v-if="item.created_at">
+              {{ formatDateTime(item.created_at) }}
+            </span>
+          </div>
+        </div>
+
         <div>
           <v-btn
             v-if="isEditing"
