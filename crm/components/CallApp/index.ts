@@ -1,6 +1,5 @@
 export const isMissed = (ce: CallEvent) => ce.state === 'Disconnected' && !ce.user
 
-export const missedCount = ref(0)
 export const hasIncoming = ref(false)
 export const callAppDialog = ref(false)
 
@@ -32,22 +31,10 @@ export const filters = ref<CallAppFilters>({
   status: 'all',
 })
 
-export const openCallApp = function (number: string = '') {
+export function openCallApp(number: string = '') {
   callAppDialog.value = true
   filters.value = {
     q: number,
     status: 'all',
-  }
-}
-
-export const loadMissedCount = async function () {
-  const { data } = await useHttp<string>(`calls`, {
-    params: {
-      count: 1,
-      status: 'missed',
-    },
-  })
-  if (data.value) {
-    missedCount.value = Number.parseInt(data.value)
   }
 }

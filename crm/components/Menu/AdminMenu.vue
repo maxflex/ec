@@ -11,9 +11,10 @@ import {
   mdiLogout,
   mdiSeatPassenger,
   mdiSendCircle,
-  mdiStarBoxOutline,
 } from '@mdi/js'
-import { missedCount, openCallApp } from '~/components/CallApp'
+import { openCallApp } from '~/components/CallApp'
+
+const { $addSseListener, $removeSseListener } = useNuxtApp()
 
 const { logOut } = useAuthStore()
 
@@ -22,6 +23,7 @@ const menu: Menu = [
     icon: mdiInbox,
     title: 'Заявки',
     to: '/requests',
+    count: true,
   },
   {
     icon: mdiAccount,
@@ -119,6 +121,8 @@ const menu: Menu = [
   },
 ]
 
+$addSseListener('RequestUpdatedEvent', updateMenuCounts)
+onUnmounted(() => $removeSseListener('RequestUpdatedEvent'))
 nextTick(updateMenuCounts)
 </script>
 
@@ -135,16 +139,6 @@ nextTick(updateMenuCounts)
         <CallAppStateIcon />
       </template>
       Звонки
-      <template #append>
-        <v-fade-transition>
-          <v-badge
-            v-if="missedCount"
-            color="error"
-            inline
-            :content="missedCount"
-          />
-        </v-fade-transition>
-      </template>
     </v-list-item>
 
     <MenuList :items="menu" />

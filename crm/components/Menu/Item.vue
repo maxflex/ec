@@ -2,6 +2,14 @@
 const { item } = defineProps<{
   item: MenuItem
 }>()
+
+const count = computed<number | boolean>(() => {
+  if (!item.count) {
+    return 0
+  }
+  const key = item.to.slice(1) as MenuCountsKey
+  return menuCounts.value[key] || 0
+})
 </script>
 
 <template>
@@ -10,8 +18,14 @@ const { item } = defineProps<{
       <v-icon :icon="item.icon" />
     </template>
     {{ item.title }}
-    <template v-if="item.count && menuCounts[item.count]" #append>
-      <UiCircle color="error" class="pr-1" />
+    <template v-if="count" #append>
+      <UiCircle v-if="Number.isNaN(count)" color="error" class="pr-1" />
+      <v-badge
+        v-else
+        color="error"
+        inline
+        :content="count as number"
+      />
     </template>
   </v-list-item>
 </template>

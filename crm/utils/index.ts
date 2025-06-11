@@ -14,9 +14,7 @@ import {
   toDate,
 } from 'date-fns'
 
-export const menuCounts = ref<MenuCounts>({
-  reports: 0,
-})
+export const menuCounts = ref<MenuCounts>({ })
 
 export async function updateMenuCounts() {
   const { data } = await useHttp<MenuCounts>(`menu-counts`)

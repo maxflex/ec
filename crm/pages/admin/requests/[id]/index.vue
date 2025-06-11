@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { RequestDialog } from '#components'
+import type { RequestListResource } from '~/components/Request'
 
 const route = useRoute()
-const id = Number.parseInt(route.params.id)
+const id = Number.parseInt(route.params.id as string)
 const filters = ref({
   id,
 })

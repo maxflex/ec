@@ -35,6 +35,11 @@ class Request extends Model
         });
     }
 
+    public static function getMenuCount(): int
+    {
+        return Request::where('status', RequestStatus::new)->count();
+    }
+
     public function responsibleUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'responsible_user_id');

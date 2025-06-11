@@ -181,6 +181,14 @@ class Report extends Model
         return DB::table('requirements')->withExpression('requirements', $requirements);
     }
 
+    public static function getMenuCounts(int $teacherId): bool
+    {
+        return Report::query()
+            ->where('teacher_id', $teacherId)
+            ->where('status', ReportStatus::refused)
+            ->exists();
+    }
+
     public function teacher(): BelongsTo
     {
         return $this->belongsTo(Teacher::class);

@@ -133,16 +133,17 @@ declare global {
   // type Date = `${Year}-${number}${number}-${number}${number}`
   // type Time = `${number}${number}:${number}${number}:${number}${number}`
 
-  interface MenuCounts {
-    reports: number
-  }
+  type MenuCountsKey = 'reports' | 'requests'
+
+  // number – показывать цифру, boolean – показывать только кружок
+  type MenuCounts = Partial<Record<MenuCountsKey, number | boolean>>
 
   interface MenuItem {
     to: string
     title: string
     icon?: string
     hide?: boolean
-    count?: keyof MenuCounts
+    count?: boolean
   }
 
   interface Submenu {
@@ -792,6 +793,7 @@ declare global {
     | 'TelegramListSentEvent'
     | 'AppUpdatedEvent'
     | 'ClientTestUpdatedEvent'
+    | 'RequestUpdatedEvent'
 
   interface CallAppAonResource {
     id: number
