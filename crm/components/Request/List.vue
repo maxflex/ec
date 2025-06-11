@@ -2,6 +2,7 @@
 import type { RequestDialog } from '#build/components'
 import type { RequestListResource, RequestResource } from '.'
 import { Vue3SlideUpDown } from 'vue3-slide-up-down'
+import { loadNewRequestsCount } from '.'
 
 const model = defineModel<RequestListResource[]>({ default: () => [] })
 const requestDialog = ref<null | InstanceType<typeof RequestDialog>>()
@@ -17,6 +18,7 @@ function onRequestUpdated(r: RequestListResource) {
     model.value.unshift(r)
   }
   itemUpdated('request', r.id)
+  loadNewRequestsCount()
 }
 
 function onRequestDeleted(r: RequestResource) {
@@ -24,6 +26,7 @@ function onRequestDeleted(r: RequestResource) {
   if (index !== -1) {
     model.value.splice(index, 1)
   }
+  loadNewRequestsCount()
 }
 
 async function expand(r: RequestListResource) {

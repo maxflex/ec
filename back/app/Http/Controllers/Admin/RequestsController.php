@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Events\RequestUpdatedEvent;
 use App\Http\Resources\RequestListResource;
 use App\Http\Resources\RequestResource;
 use App\Models\Client;
@@ -41,7 +42,10 @@ class RequestsController extends Controller
         );
         sync_relation($clientRequest, 'phones', $request->all());
 
-        return new RequestListResource($clientRequest->fresh());
+        $clientRequest->refresh();
+        RequestUpdatedEvent::dispatch($clientRequest);
+
+        return new RequestListResource($clientRequest);
     }
 
     public function show($id)
@@ -57,6 +61,8 @@ class RequestsController extends Controller
         $clientRequest->update($request->all());
         sync_relation($clientRequest, 'phones', $request->all());
 
+        RequestUpdatedEvent::dispatch($clientRequest);
+
         return new RequestListResource($clientRequest);
     }
 
@@ -71,6 +77,7 @@ class RequestsController extends Controller
     {
         DB::transaction(function () use ($id) {
             $clientRequest = ClientRequest::findOrFail($id);
+            RequestUpdatedEvent::dispatch($clientRequest);
             $clientRequest->phones->each->delete();
             $clientRequest->delete();
         });

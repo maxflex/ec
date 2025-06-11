@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { nextTick, onUnmounted } from 'vue'
 import {
   mdiAccount,
   mdiAccountGroup,
@@ -13,16 +14,13 @@ import {
   mdiSendCircle,
   mdiStarBoxOutline,
 } from '@mdi/js'
-import { missedCount, openCallApp } from '~/components/CallApp'
+import { openCallApp } from '~/components/CallApp'
+import { newRequestsCount, loadNewRequestsCount } from '~/components/Request'
+const { $addSseListener, $removeSseListener } = useNuxtApp()
 
 const { logOut } = useAuthStore()
 
 const menu: Menu = [
-  {
-    icon: mdiInbox,
-    title: 'Заявки',
-    to: '/requests',
-  },
   {
     icon: mdiAccount,
     title: 'Клиенты',
@@ -119,7 +117,16 @@ const menu: Menu = [
   },
 ]
 
-nextTick(updateMenuCounts)
+$addSseListener('RequestUpdatedEvent', () => {
+  loadNewRequestsCount()
+})
+
+onUnmounted(() => $removeSseListener('RequestUpdatedEvent'))
+
+nextTick(() => {
+  updateMenuCounts()
+  loadNewRequestsCount()
+})
 </script>
 
 <template>
@@ -135,13 +142,20 @@ nextTick(updateMenuCounts)
         <CallAppStateIcon />
       </template>
       Звонки
+    </v-list-item>
+
+    <v-list-item :to="{ name: 'requests' }">
+      <template #prepend>
+        <v-icon :icon="mdiInbox" />
+      </template>
+      Заявки
       <template #append>
         <v-fade-transition>
           <v-badge
-            v-if="missedCount"
+            v-if="newRequestsCount"
             color="error"
             inline
-            :content="missedCount"
+            :content="newRequestsCount"
           />
         </v-fade-transition>
       </template>

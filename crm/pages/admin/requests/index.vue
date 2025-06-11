@@ -2,7 +2,7 @@
 import type { RequestDialog } from '#components'
 import type { RequestListResource } from '~/components/Request'
 import type { Filters } from '~/components/Request/Filters.vue'
-import { apiUrl } from '~/components/Request'
+import { apiUrl, loadNewRequestsCount } from '~/components/Request'
 
 const filters = ref<Filters>(loadFilters({
   direction: [],
@@ -24,6 +24,7 @@ function onRequestUpdated(r: RequestListResource) {
     items.value.unshift(r)
   }
   itemUpdated('request', r.id)
+  loadNewRequestsCount()
 }
 </script>
 
