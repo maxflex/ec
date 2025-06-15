@@ -9,15 +9,13 @@ export function useHttp<T = any>(
   let baseURL = useRuntimeConfig().public.baseUrl
   const token = getCurrentToken().value
 
-  if (token) {
-    options.headers = { Authorization: `Bearer ${token}` }
-    if (!path.startsWith('pub/')) {
-      baseURL += `${token.split('|')[0]}/`
-    }
+  if (token && !path.startsWith('pub/')) {
+    baseURL += `${token.split('|')[0]}/`
   }
 
   const headers: any = {
     Accept: 'application/json',
+    ...(options.headers as any),
   }
 
   if (token) {
