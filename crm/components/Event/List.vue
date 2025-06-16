@@ -76,7 +76,7 @@ function getParticipantsCount(item: EventListResource): number {
           </span>
         </div>
       </div>
-      <div style="width: 110px;">
+      <div style="width: 110px">
         <span v-if="item.telegram_lists_count === 0" class="text-gray">
           нет рассылок
         </span>
@@ -84,26 +84,11 @@ function getParticipantsCount(item: EventListResource): number {
           {{ item.telegram_lists_count }} рассылок
         </span>
       </div>
-      <div class="event-list__status table-two-lines">
-        <div v-if="item.is_private" class="text-purple">
+      <div style="width: 140px; flex: initial">
+        <span v-if="item.is_private" class="text-purple">
           конфиденциальное
-        </div>
+        </span>
       </div>
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.event-list {
-  &__img {
-    width: 120px;
-    & > div {
-      width: 100%;
-      // border-radius: 8px;
-      height: 80px;
-      background-size: cover;
-      background-position: center center;
-    }
-  }
-}
-</style>

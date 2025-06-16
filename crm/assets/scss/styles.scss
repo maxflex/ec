@@ -517,9 +517,15 @@ tr.hoverable {
 }
 
 .event-list {
-  &__status {
-    width: 140px;
-    flex: initial !important;
+  &__img {
+    width: 120px;
+    & > div {
+      width: 100%;
+      // border-radius: 8px;
+      height: 80px;
+      background-size: cover;
+      background-position: center center;
+    }
   }
 
   &__confirmation {

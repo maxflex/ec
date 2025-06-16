@@ -35,7 +35,7 @@ function getParticipantsCount(item: EventListResource): number {
           {{ item.description }}
         </div>
       </div>
-      <div style="width: 150px">
+      <div style="width: 150px; flex: initial">
         <span v-if="getParticipantsCount(item) === 0" class="text-gray">
           нет участников
         </span>
@@ -54,22 +54,6 @@ function getParticipantsCount(item: EventListResource): number {
           {{ EventParticipantConfirmationLabel[item.participant.confirmation] }}
         </div>
       </div>
-      <div class="event-list__status" />
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.event-list {
-  &__img {
-    width: 120px;
-    & > div {
-      width: 100%;
-      // border-radius: 8px;
-      height: 80px;
-      background-size: cover;
-      background-position: center center;
-    }
-  }
-}
-</style>
