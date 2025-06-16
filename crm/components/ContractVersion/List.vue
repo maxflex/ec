@@ -26,16 +26,9 @@ const emit = defineEmits<{
         версия {{ version.seq }}
       </div>
       <div width="220">
-        от {{ formatDate(version.date) }}
+        {{ formatDate(version.date) }}
       </div>
-      <div width="220">
-        <UiIfSet :value="version.sum">
-          <template #empty>
-            без суммы
-          </template>
-          {{ formatPrice(version.sum) }} руб.
-        </UiIfSet>
-      </div>
+
       <div width="220">
         <span
           v-if="version.payments_count === 0"
@@ -51,6 +44,14 @@ const emit = defineEmits<{
         <div v-for="(value, d) in version.direction_counts" :key="d">
           {{ DirectionLabel[d] }} / {{ value }}
         </div>
+      </div>
+      <div width="220">
+        <UiIfSet :value="version.sum">
+          <template #empty>
+            без суммы
+          </template>
+          {{ formatPrice(version.sum) }} руб.
+        </UiIfSet>
       </div>
     </div>
   </div>

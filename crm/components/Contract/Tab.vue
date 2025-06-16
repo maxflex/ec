@@ -168,23 +168,23 @@ nextTick(loadData)
         />
         <div v-if="selectedContract.balances" class="table contract-tab-balances table--padding">
           <div>
-            <div style="width: 390px" class="font-weight-bold">
+            <div style="width: 630px" class="font-weight-bold">
               итого
             </div>
-            <div style="width: 220px" class="font-weight-bold">
-              <div>
-                {{ formatPrice(selectedContract.balances.to_pay, true) }} руб.
-              </div>
-              <div>
-                {{ formatPrice(selectedContract.balances.remainder, true) }} руб.
-              </div>
-            </div>
-            <div>
+            <div style="width: 220px">
               <div>
                 доплата по договору
               </div>
               <div>
                 баланс по услугам
+              </div>
+            </div>
+            <div style="width: 120px" class="font-weight-bold">
+              <div>
+                {{ formatPrice(selectedContract.balances.to_pay, true) }} руб.
+              </div>
+              <div>
+                {{ formatPrice(selectedContract.balances.remainder, true) }} руб.
               </div>
             </div>
           </div>

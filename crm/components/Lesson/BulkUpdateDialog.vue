@@ -100,7 +100,7 @@ defineExpose({ open })
         <div>
           <UiClearableSelect
             v-model="lesson.quarter"
-            :items="selectItems(QuarterLabel, ['final' as Quarter])"
+            :items="selectItems(QuarterLabel, ['q1', 'q2', 'q3', 'q4'])"
             label="Четверть"
           />
         </div>

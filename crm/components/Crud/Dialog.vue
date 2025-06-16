@@ -21,7 +21,7 @@ const model = defineModel<boolean>({ required: true })
           <slot v-else name="title-create">
             Добавить запись
           </slot>
-          <div class="dialog-subheader">
+          <div v-if="isEditing" class="dialog-subheader">
             <span v-if="item.user">
               {{ formatName(item.user) }}
             </span>

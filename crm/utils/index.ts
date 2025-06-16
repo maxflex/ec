@@ -71,25 +71,32 @@ export function asInt(n: unknown) {
 //   }))
 // }
 
-export function selectItems(obj: object, skip: string[] = []): SelectItems {
-  const items = Object.entries(obj)
+export function selectItems<T extends Record<string, any>>(
+  labelObj: T,
+  available: Array<keyof T> | undefined = undefined,
+): SelectItems {
+  let items = Object.entries(labelObj)
     .map(([value, title]) => ({
-      value,
       title,
+      value,
     }))
-    .filter(e => !skip.includes(e.value))
 
-  // если ключ – это число (например, годы '2024'),
-  // то приводим к числу, чтоб чётенько было
+  if (available !== undefined) {
+    items = items.filter(e => available.includes(e.value))
+  }
+
+  // если ключ – это число (например, годы '2024'), то приводим к числу, чтоб чётенько было
   // и сортируем (сверху дополнительно)
-  if (Number.isFinite(+items[0].value)) {
-    return items
+  if (items.length && Number.isFinite(+items[0].value)) {
+    // @ts-expect-error
+    items = items
       .map(({ value, title }) => ({
         title,
-        value: Number.parseInt(value),
+        value: Number.parseInt(value as string),
       }))
       .sort((a, b) => b.value - a.value)
   }
+
   return items
 }
 

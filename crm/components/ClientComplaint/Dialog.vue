@@ -4,6 +4,7 @@ import { apiUrl, modelDefaults } from '.'
 
 const items = defineModel<ClientComplaintListResource[]>({ required: true })
 const teachers = ref<TeacherListResource[]>([])
+const programs = ref<Program[]>([])
 
 const { item, expose, dialog, dialogData } = useCrud<ClientComplaintResource, ClientComplaintListResource>(
   apiUrl,

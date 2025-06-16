@@ -32,7 +32,7 @@ const emit = defineEmits<{
           {{ formatName(item.contract.client) }}
         </router-link>
       </div>
-      <div style="width: 130px">
+      <div style="width: 150px">
         <div class="d-flex ga-2 align-center">
           <span>
             №{{ item.contract.id }}-{{ item.seq }}
@@ -40,18 +40,15 @@ const emit = defineEmits<{
           <v-icon v-if="item.contract.source" :icon="mdiTextBoxCheckOutline" :size="18" color="primary" />
         </div>
       </div>
-      <div style="width: 140px">
-        от {{ formatDate(item.date) }}
+      <div style="width: 170px">
+        {{ formatDate(item.date) }}
       </div>
-      <div style="width: 160px">
-        {{ YearLabel[item.contract.year] }}
-      </div>
-      <div style="width: 150px">
+      <div style="width: 170px">
         <div v-for="(value, d) in item.direction_counts" :key="d">
           {{ DirectionLabel[d] }} / {{ value }}
         </div>
       </div>
-      <div style="width: 150px">
+      <div style="width: 170px">
         <span v-if="!item.payments_count" class="text-gray">
           платежей нет
         </span>

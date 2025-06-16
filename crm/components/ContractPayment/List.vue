@@ -34,24 +34,25 @@ const emit = defineEmits<{
         </span>
       </div>
       <div style="width: 220px">
-        от {{ formatDate(item.date) }}
+        {{ formatDate(item.date) }}
       </div>
-      <div style="width: 220px">
-        {{ formatPrice(item.sum) }} руб.
-      </div>
+
       <div style="width: 220px">
         {{ ContractPaymentMethodLabel[item.method] }}
         <div v-if="item.pko_number" class="text-gray text-caption">
           ПКО: {{ item.pko_number }}
         </div>
       </div>
-      <div>
+      <div style="width: 220px">
         <span v-if="item.is_confirmed" class="text-success">
           подтверждён
         </span>
         <span v-else class="text-gray">
           не подтверждён
         </span>
+      </div>
+      <div>
+        {{ formatPrice(item.sum) }} руб.
       </div>
     </div>
   </div>
