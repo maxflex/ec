@@ -85,9 +85,6 @@ function getParticipantsCount(item: EventListResource): number {
         </span>
       </div>
       <div class="event-list__status table-two-lines">
-        <div>
-          {{ item.is_afterclass ? 'внеклассное' : 'учебное' }}
-        </div>
         <div v-if="item.is_private" class="text-purple">
           конфиденциальное
         </div>

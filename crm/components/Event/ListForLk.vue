@@ -54,9 +54,7 @@ function getParticipantsCount(item: EventListResource): number {
           {{ EventParticipantConfirmationLabel[item.participant.confirmation] }}
         </div>
       </div>
-      <div class="event-list__status">
-        {{ item.is_afterclass ? 'внеклассное' : 'учебное' }}
-      </div>
+      <div class="event-list__status" />
     </div>
   </div>
 </template>

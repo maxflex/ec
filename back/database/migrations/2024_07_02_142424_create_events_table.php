@@ -20,7 +20,6 @@ return new class extends Migration
             $table->unsignedSmallInteger('duration')->nullable();
             $table->string('name');
             $table->mediumText('description')->nullable();
-            $table->boolean('is_afterclass')->default(false);
             $table->foreignIdFor(User::class)->constrained();
             $table->timestamps();
         });

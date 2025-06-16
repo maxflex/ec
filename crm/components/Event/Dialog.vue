@@ -147,10 +147,6 @@ defineExpose({ create, edit })
         </div>
         <div>
           <v-checkbox
-            v-model="item.is_afterclass"
-            label="Внеклассное"
-          />
-          <v-checkbox
             v-model="item.is_private"
             label="Конфиденциальное"
           />

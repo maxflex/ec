@@ -3,7 +3,6 @@ export interface EventListResource {
   name: string
   date: string
   description: string | null
-  is_afterclass: boolean
   is_private: boolean
   telegram_lists_count: number
   time?: string
@@ -31,7 +30,6 @@ export interface EventResource {
   time?: string
   duration: number | null
   description: string | null
-  is_afterclass: boolean
   is_private: boolean
   user?: PersonWithPhotoResource
   created_at?: string
@@ -53,7 +51,6 @@ export const modelDefaults: EventResource = {
   name: '',
   description: null,
   duration: null,
-  is_afterclass: false,
   is_private: false,
   telegram_lists: [],
   file: null,
