@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('events', function (Blueprint $table) {
-            $table->string('file')->nullable()->after('is_afterclass');
+            $table->string('file')->nullable()->after('is_private');
         });
     }
 };

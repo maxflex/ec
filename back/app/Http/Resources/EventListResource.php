@@ -19,7 +19,7 @@ class EventListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'date', 'name', 'time', 'time_end', 'is_afterclass',
+            'date', 'name', 'time', 'time_end',
             'description', 'is_private', 'telegram_lists_count',
             'file',
         ], [

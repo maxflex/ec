@@ -85,9 +85,6 @@ nextTick(loadData)
             <v-chip density="compact">
               {{ item.is_private ? 'конфиденциальное' : 'публичное' }}
             </v-chip>
-            <v-chip density="compact">
-              {{ item.is_afterclass ? 'внеклассное' : 'учебное' }} событие
-            </v-chip>
             <v-btn
               variant="plain"
               icon="$edit"
