@@ -136,7 +136,6 @@ Route::get('menu-counts', MenuCountsController::class);
 
 Route::get('all-payments', AllPaymentsController::class);
 
-Route::apiResource('client-lessons', ClientLessonController::class);
 Route::get('contract-version-programs', ContractVersionProgramController::class);
 
 Route::get('all-lessons', AllLessonsController::class);
@@ -184,4 +183,5 @@ Route::apiResources([
     'head-teacher-reports' => HeadTeacherReportController::class,
     'stats-presets' => StatsPresetController::class,
     'events' => EventController::class,
+    'client-lessons' => ClientLessonController::class,
 ]);

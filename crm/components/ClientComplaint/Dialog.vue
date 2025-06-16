@@ -27,6 +27,29 @@ async function loadTeachers() {
   teachers.value = data.value!.data
 }
 
+async function loadPrograms() {
+  if (!item.value.teacher_id) {
+    programs.value = []
+    return
+  }
+  const { data } = await useHttp<Program[]>(
+    `client-lessons`,
+    {
+      params: {
+        pluck: 'program',
+        client_id: item.value.client_id,
+        teacher_id: item.value.teacher_id,
+      },
+    },
+  )
+  programs.value = data.value!
+}
+
+watch(() => item.value.teacher_id, async () => {
+  await loadPrograms()
+  item.value.program = programs.value.length === 1 ? programs.value[0] : undefined
+})
+
 defineExpose(expose)
 </script>
 
@@ -42,7 +65,12 @@ defineExpose(expose)
       <TeacherSelector v-model="item.teacher_id" :items="teachers" label="Преподаватель" />
     </div>
     <div>
-      <UiClearableSelect v-model="item.program" :items="selectItems(ProgramShortLabel)" label="Программа" />
+      <UiClearableSelect
+        v-model="item.program"
+        label="Программа"
+        :items="selectItems(ProgramShortLabel, programs)"
+        :disabled="programs.length < 2"
+      />
     </div>
     <div>
       <v-textarea v-model="item.text" label="Текст жалобы" auto-grow />

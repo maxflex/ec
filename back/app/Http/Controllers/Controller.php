@@ -32,6 +32,12 @@ class Controller extends BaseController
             return $query->count();
         }
 
+        if ($request->has('pluck')) {
+            $value = $request->input('pluck');
+
+            return $query->whereNotNull($value)->pluck($value)->unique()->values()->all();
+        }
+
         if ($request->has('with')) {
             $query->with($request->with);
         }
@@ -42,13 +48,6 @@ class Controller extends BaseController
 
         $result = (clone $query)->paginate($request->paginate ?? 30);
         $result = $resource::collection($result);
-
-        if ($request->has('pluck')) {
-            $value = $request->input('pluck');
-            $result->additional([
-                'ids' => $query->whereNotNull($value)->pluck($value)->values()->all(),
-            ]);
-        }
 
         if ($request->has('unique') && intval($request->page) === 1) {
             $value = $request->input('unique');
