@@ -57,7 +57,14 @@ const emit = defineEmits<{
         </span>
         <span v-else> платежей: {{ item.payments_count }} </span>
       </div>
-      <div>{{ formatPrice(item.sum) }} руб.</div>
+      <div>
+        <UiIfSet :value="item.sum">
+          <template #empty>
+            без суммы
+          </template>
+          {{ formatPrice(item.sum) }} руб.
+        </UiIfSet>
+      </div>
     </div>
   </div>
 </template>

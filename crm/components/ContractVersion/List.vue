@@ -29,7 +29,12 @@ const emit = defineEmits<{
         от {{ formatDate(version.date) }}
       </div>
       <div width="220">
-        {{ version.sum }} руб.
+        <UiIfSet :value="version.sum">
+          <template #empty>
+            без суммы
+          </template>
+          {{ formatPrice(version.sum) }} руб.
+        </UiIfSet>
       </div>
       <div width="220">
         <span
