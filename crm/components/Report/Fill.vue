@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const model = defineModel<number>({ required: true })
 
-function getFillColor() {
+const color = computed(() => {
   if (model.value > 80) {
     return 'success'
   }
@@ -9,9 +9,7 @@ function getFillColor() {
     return 'orange'
   }
   return 'error'
-}
-
-const color = getFillColor()
+})
 </script>
 
 <template>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { cloneDeep } from 'lodash-es'
+
 const { dialog, width } = useDialog('medium')
 const item = ref<ReportResource>()
 const deleting = ref(false)
@@ -31,7 +33,7 @@ const isDisabled = computed(() => {
 })
 
 function open(report: ReportResource) {
-  item.value = report
+  item.value = cloneDeep(report)
   dialog.value = true
 }
 
@@ -79,11 +81,42 @@ async function destroy() {
   }
 }
 
+/**
+ *   $max = 1000; // сколько символов = 100% заполняемость
+
+        $totalLength = collect([
+            $this->homework_comment,
+            $this->recommendation_comment,
+            $this->cognitive_ability_comment,
+            $this->knowledge_level_comment,
+        ])->reduce(fn ($carry, $comment) => $carry + mb_strlen($comment), 0);
+
+        return min(round($totalLength * 100 / $max), 100);
+ */
+const fill = computed<number>(() => {
+  if (!item.value) {
+    return 0
+  }
+
+  const max = 1000 // сколько символов = 100% заполняемость
+  let total = 0
+  for (const comment of [
+    item.value.homework_comment,
+    item.value.recommendation_comment,
+    item.value.cognitive_ability_comment,
+    item.value.knowledge_level_comment,
+  ]) {
+    total += (comment ? comment.length : 0)
+  }
+
+  return Math.min(Math.round(total * 100 / max), 100)
+})
+
 defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog v-model="dialog" :width="width">
+  <v-dialog v-model="dialog" :width="width" class="report-dialog">
     <div v-if="item" class="dialog-wrapper">
       <div class="dialog-header">
         <div v-if="item.id === -1">
@@ -95,6 +128,7 @@ defineExpose({ open })
             {{ formatDateTime(item.created_at!) }}
           </div>
         </div>
+        <ReportFill :model-value="fill" />
         <div>
           <v-btn
             v-if="item.id > 0 && !isDisabled"
@@ -207,3 +241,14 @@ defineExpose({ open })
     </div>
   </v-dialog>
 </template>
+
+<style lang="scss">
+.report-dialog {
+  .v-progress-linear {
+    position: absolute;
+    width: 100px;
+    top: 26px !important;
+    left: 360px;
+  }
+}
+</style>

@@ -9,7 +9,6 @@ const items = ref<ReportResource[]>([])
 const index = ref<number>(-1)
 const item = computed<ReportResource>(() => items.value[index.value])
 const reportDialog = ref<InstanceType<typeof ReportDialog>>()
-const { isTeacher } = useAuthStore()
 
 async function loadData() {
   loading.value = true
@@ -55,20 +54,12 @@ nextTick(loadData)
         <div class="align-self-center">
           <h2 style="font-size: 28px">
             <template v-if="item.id > 0">
-
-            Отчет {{ item.id }}
+              Отчет {{ item.id }}
             </template>
             <template v-else>
               Новый отчёт
             </template>
           </h2>
-        </div>
-
-        <div v-if="!isTeacher">
-          <div>преподаватель</div>
-          <div>
-            <UiPerson :item="item.teacher!" />
-          </div>
         </div>
 
         <div>
@@ -84,12 +75,7 @@ nextTick(loadData)
             {{ ProgramLabel[item.program!] }}
           </div>
         </div>
-        <div>
-          <div>учебный год</div>
-          <div>
-            {{ YearLabel[item.year] }}
-          </div>
-        </div>
+
         <div>
           <div>дата</div>
           <div>
@@ -100,24 +86,18 @@ nextTick(loadData)
           <div>статус</div>
           <div>
             <ReportStatus :status="item.status" />
-            <v-icon
-              v-if="item.delivery !== null"
-              class="ml-2"
-              :icon="mdiCheckAll"
-              size="20"
-              :color="item.delivery === 'read' ? 'secondary' : 'gray'"
-              :class="{
-                'opacity-5': item.delivery === 'delivered',
-              }"
-            />
+            <span v-if="item.delivery">
+              / {{ ReportDeliveryLabel[item.delivery] }}
+            </span>
           </div>
         </div>
 
         <div class="panel-actions">
           <CommentBtn
             v-if="item.id > 0"
+            :key="item.id"
             color="gray"
-            :entity-id="id"
+            :entity-id="item.id"
             :entity-type="EntityTypeValue.report"
           />
           <v-btn
@@ -130,6 +110,17 @@ nextTick(loadData)
       </div>
     </div>
     <div :key="index" class="report-view__content report-tabs__content">
+      <v-card variant="tonal" width="fit-content" class="pr-2">
+        <template #prepend>
+          <UiAvatar :item="item.teacher!" :size="80" class="mr-3" />
+        </template>
+        <template #title>
+          {{ formatName(item.teacher!, 'full') }}
+        </template>
+        <template #subtitle>
+          преподаватель по {{ item.teacher!.subjects.map(s => SubjectDativeLabel[s]).join(' и ') }} <br />
+        </template>
+      </v-card>
       <div>
         <div>Посещаемость и пройденные темы:</div>
         <div class="report-view__client-lessons">
@@ -257,7 +248,7 @@ nextTick(loadData)
       }
       &:first-child {
         font-size: 80px;
-        line-height: 80px;;
+        line-height: 80px;
       }
     }
   }
@@ -266,6 +257,15 @@ nextTick(loadData)
     padding: var(--padding);
     margin: 0 !important;
     position: relative;
+
+    .v-card {
+      .v-card-item {
+        padding-left: 0 !important;
+      }
+      .v-card__underlay {
+        display: none !important;
+      }
+    }
   }
 }
 </style>
