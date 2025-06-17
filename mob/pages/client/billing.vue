@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const selected = ref(0)
+const amount = ref('')
+const loading = ref(false)
 
 const { items, indexPageData } = useIndex<BillingResource>(`billing`)
 
@@ -10,6 +12,27 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
     (carry, e) => carry + e.sum * (e.is_return ? -1 : 1),
     0,
   )
+}
+
+async function pay() {
+  if (!amount.value) {
+    return
+  }
+  loading.value = true
+  const { data } = await useHttp<{ url: string }>(
+    `sbp`,
+    {
+      method: 'POST',
+      body: {
+        amount: amount.value,
+        contract_id: selectedContract.value.id,
+      },
+    },
+  )
+  if (data.value) {
+    window.open(data.value.url, '_blank')
+  }
+  loading.value = false
 }
 </script>
 
@@ -101,6 +124,26 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
         </div>
       </div>
     </div>
+    <div class="billing-qr">
+      <UiPageTitle>
+        Оплата через СБП
+      </UiPageTitle>
+      <div>
+        <v-text-field
+          v-model="amount"
+          v-maska="{ mask: '######' }"
+          hide-spin-buttons
+          label="Сумма"
+          suffix="руб."
+          type="number"
+          density="comfortable"
+          bg-color="white"
+        />
+      </div>
+      <v-btn color="primary" :loading="loading" @click="pay()">
+        Оплатить
+      </v-btn>
+    </div>
   </UiIndexPage>
 </template>
 
@@ -148,6 +191,20 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
     & > div:first-child {
       display: none;
     }
+  }
+}
+
+.billing-qr {
+  margin-top: 40px;
+  padding: 20px 20px 40px;
+  background: rgba(var(--v-theme-primary), 0.1);
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  .page-title {
+    padding: 0 !important;
+    text-align: center;
   }
 }
 </style>

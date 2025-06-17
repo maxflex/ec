@@ -10,7 +10,7 @@ class ContractPayment extends Model
 {
     protected $fillable = [
         'contract_id', 'sum', 'date', 'is_confirmed', 'is_return',
-        'card_number', 'pko_number', 'method',
+        'card_number', 'pko_number', 'method', 'sbp_id',
     ];
 
     protected $casts = [

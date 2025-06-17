@@ -643,3 +643,7 @@ tr.hoverable {
 .nowrap {
   white-space: nowrap;
 }
+
+.container {
+  padding: var(--padding);
+}

@@ -9,6 +9,7 @@ use App\Http\Controllers\Client\LessonController;
 use App\Http\Controllers\Client\ReportController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\Pub\SbpController;
 use App\Http\Controllers\TeethController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\VacationController;
@@ -19,6 +20,8 @@ Route::controller(ClientTestController::class)->prefix('client-tests')->group(fu
     Route::post('start/{clientTest}', 'start');
     Route::post('finish', 'finish');
 });
+
+Route::apiResource('sbp', SbpController::class)->only('store');
 Route::apiResource('lessons', LessonController::class)->only(['index', 'show']);
 Route::get('billing', BillingController::class);
 Route::apiResource('groups', GroupController::class)->only('index');

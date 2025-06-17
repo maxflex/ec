@@ -3,6 +3,7 @@
 use App\Http\Controllers\Pub\AuthController;
 use App\Http\Controllers\Pub\MangoController;
 use App\Http\Controllers\Pub\RequestsController;
+use App\Http\Controllers\Pub\SbpController;
 use App\Http\Controllers\Pub\SecurityController;
 use App\Http\Controllers\Pub\TeacherController;
 use App\Http\Controllers\Pub\TelegramBotController;
@@ -40,5 +41,7 @@ Route::prefix('security')->controller(SecurityController::class)->group(function
     Route::post('passes', 'usePass');
     Route::get('history', 'history');
 });
+
+Route::post('sbp', [SbpController::class, 'notification']);
 
 Route::apiResource('reviews', WebReviewController::class)->only('index', 'show');

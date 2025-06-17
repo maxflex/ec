@@ -23,7 +23,8 @@
         "staudenmeir/laravel-cte": "^1.10",
         "telegram-bot/api": "^2.5",
         "tuncaybahadir/quar": "^1.5",
-        "typesense/typesense-php": "^4.9"
+        "typesense/typesense-php": "^4.9",
+        "yoomoney/yookassa-sdk-php": "^3.8"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

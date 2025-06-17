@@ -165,10 +165,9 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
             Наведите на изображение. Все реквизиты будут подставлены автоматически.
           </p>
         </div>
-        <!-- <v-textarea :value="qrValue" /> -->
       </div>
     </div>
-  </uiindexpage>
+  </UiIndexPage>
 </template>
 
 <style lang="scss">
