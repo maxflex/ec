@@ -217,6 +217,12 @@ function toggleCheckboxes(id: number) {
   }
 }
 
+function selectAll() {
+  for (const lesson of lessons.value) {
+    checkboxes.value[lesson.id] = true
+  }
+}
+
 const lessonComponent = (function () {
   if (isClient) {
     console.log('LessonItemHeadTeacher')
@@ -277,6 +283,9 @@ nextTick(loadAvailableYears)
       <div v-if="lessonIds.length" class="d-flex ga-4">
         <v-btn variant="text" @click="checkboxes = {}">
           отмена
+        </v-btn>
+        <v-btn variant="text" @click="selectAll()">
+          выбрать всё
         </v-btn>
         <v-btn color="primary" :width="216" @click="lessonBulkUpdateDialog?.open(lessonIds, group.program)">
           редактировать
