@@ -35,42 +35,30 @@ nextTick(loadData)
       Отчёт {{ item.id }}
     </UiPageTitle>
     <div class="report-view">
-      <div class="report-view__info">
-        <div>
-          <div>программа</div>
-          <div>
-            {{ ProgramLabel[item.program!] }}
-          </div>
-        </div>
-
-        <div>
-          <div>дата</div>
-          <div>
-            {{ formatDate(item.created_at!) }}
-          </div>
-        </div>
-
-        <div v-if="item && item.grade" class="report-view__score" :class="`report-view__score--${item.grade}`">
-          <div>
-            оценка по отчёту
-          </div>
-          <div :class="`text-score text-score--${item.grade}`">
-            {{ item.grade }}
-          </div>
-        </div>
-      </div>
       <v-card variant="tonal" class="mt-4">
         <template #prepend>
           <UiAvatar :item="item.teacher!" :size="60" class="mr-2" />
         </template>
         <template #title>
-          {{ formatName(item.teacher!, 'initials') }}
+          {{ formatName(item.teacher!, 'full') }}
         </template>
         <template #subtitle>
           преподаватель по {{ item.teacher!.subjects.map(s => SubjectDativeLabel[s]).join(' и ') }} <br />
         </template>
       </v-card>
       <div class="report-view__content">
+        <div>
+          <div>Программа:</div>
+          <div>
+            {{ ProgramLabel[item.program!] }}
+          </div>
+        </div>
+        <div>
+          <div>Дата:</div>
+          <div>
+            {{ formatDate(item.created_at!) }}
+          </div>
+        </div>
         <div>
           <div>Посещаемость:</div>
           <div class="report-view__client-lessons">
@@ -143,6 +131,18 @@ nextTick(loadData)
           </div>
         </div>
       </div>
+      <div class="report-view__info">
+        <div></div>
+        <div v-if="item && item.grade" class="report-view__score" :class="`report-view__score--${item.grade}`">
+          <div>
+            оценка по отчёту
+          </div>
+          <div :class="`text-score text-score--${item.grade}`">
+            {{ item.grade }}
+          </div>
+        </div>
+        <div></div>
+      </div>
     </div>
   </template>
 </template>
@@ -165,6 +165,7 @@ nextTick(loadData)
     display: flex;
     gap: 10px;
     font-size: 14px;
+    margin-top: 20px;
     & > div {
       height: 90px;
       flex: 1;
@@ -173,7 +174,8 @@ nextTick(loadData)
       font-size: 14px;
       border-radius: 8px;
       &:not(.report-view__score) {
-        background: rgba(var(--v-theme-bg));
+        // background: rgba(var(--v-theme-bg));
+        background: none;
       }
       & > div {
         &:first-child {
