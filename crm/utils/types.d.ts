@@ -21,8 +21,6 @@ declare global {
 
   type EventParticipantConfirmation = keyof typeof EventParticipantConfirmationLabel
 
-  type ErrorCode = (typeof ErrorCodeLabel)[number]
-
   type CallAppStatusFilter = keyof typeof CallAppStatusFilterLabel
 
   type SwampFilterStatus = keyof typeof SwampFilterStatusLabel
@@ -836,15 +834,6 @@ declare global {
     finished_at: string
     answered_at: ?string
     aon: ?CallAppAonResource
-  }
-
-  interface ErrorResource {
-    id: number
-    code: ErrorCode
-    entity_id: number
-    entity_type: EntityType
-    number?: string
-    person?: PersonResource
   }
 
   interface PrintOption {

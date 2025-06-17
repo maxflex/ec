@@ -14,17 +14,16 @@ class ErrorResource extends JsonResource
         $extra = match ($this->code) {
             // Phone::class
             1000 => [
-                'entity_id' => $this->entity->entity_id,
-                'entity_type' => $this->entity->entity_type,
                 'number' => $this->entity->number,
                 'person' => new PersonResource($this->entity->entity),
             ],
-            default => [
-                'entity_id' => $this->entity_id,
-                'entity_type' => $this->entity_type,
-            ]
+            2000 => [
+                'person' => new PersonResource($this->entity->client),
+            ],
         };
 
-        return extract_fields($this, ['code'], $extra);
+        return extract_fields($this, [
+            'code', 'entity_id', 'entity_type',
+        ], $extra);
     }
 }

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import type { ErrorCode, ErrorResource } from '~/components/Error'
+import { ErrorCodeLabel } from '~/components/Error'
+
 const filters = ref<{
   code?: ErrorCode
 }>({})
@@ -20,7 +23,7 @@ async function check() {
     <template #filters>
       <UiClearableSelect
         v-model="filters.code"
-        :items="selectItems(ErrorCodeLabel)"
+        :items="ErrorCodeLabel"
         label="Код ошибки"
         density="comfortable"
       />

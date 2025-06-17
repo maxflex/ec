@@ -615,8 +615,6 @@ export const TelegramListStatusLabel = {
   sent: 'отправлено',
 } as const
 
-export const ErrorCodeLabel = [1000] as const
-
 export const PassStatusLabel = {
   active: 'не использован',
   used: 'использован',

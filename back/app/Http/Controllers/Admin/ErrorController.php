@@ -10,13 +10,14 @@ use Illuminate\Http\Request;
 class ErrorController extends Controller
 {
     protected $filters = [
-        'equals' => ['code']
+        'equals' => ['code'],
     ];
 
     public function index(Request $request)
     {
-        $query = Error::query();
+        $query = Error::with('entity');
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, ErrorResource::class);
     }
 

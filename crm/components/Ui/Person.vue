@@ -26,7 +26,7 @@ switch (item.entity_type) {
     format = 'last-first'
 }
 
-const name = formatName(item, format)
+const name = formatName(item, format).trim() || 'имя не указано'
 </script>
 
 <template>
