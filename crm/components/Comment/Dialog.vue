@@ -16,7 +16,7 @@ const text = ref('')
 const noScroll = ref(false)
 const isLoaded = ref(false)
 const editId = ref<number>()
-const { user } = useAuthStore()
+const { user, isAdmin } = useAuthStore()
 
 function scrollBottom() {
   nextTick(() => {
@@ -177,7 +177,7 @@ defineExpose({ open })
           </div>
         </div>
       </transition-group>
-      <div class="comments__input">
+      <div v-if="isAdmin" class="comments__input">
         <template v-if="editId">
           <span class="text-gray">Редактирование комментария</span>
           <v-textarea

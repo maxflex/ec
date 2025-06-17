@@ -567,9 +567,10 @@ declare global {
     cognitive_ability_comment?: string
     knowledge_level_comment?: string
     recommendation_comment?: string
+    delivery: ?ReportDelivery
     grade: ?LessonScore
     price: ?number
-    teacher?: TeacherListResource
+    teacher?: PersonResource
     client?: PersonResource
     program?: Program
     created_at?: string

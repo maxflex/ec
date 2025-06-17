@@ -32,7 +32,7 @@ nextTick(loadData)
       </RouterLink>
     </UiFilters>
     <UiPageTitle>
-      Отчёт от {{ formatDate(item.created_at!) }}
+      Отчёт {{ item.id }}
     </UiPageTitle>
     <div class="report-view">
       <v-card variant="tonal" class="mt-4">
@@ -40,7 +40,7 @@ nextTick(loadData)
           <UiAvatar :item="item.teacher!" :size="60" class="mr-2" />
         </template>
         <template #title>
-          {{ formatName(item.teacher!, 'initials') }}
+          {{ formatName(item.teacher!, 'full') }}
         </template>
         <template #subtitle>
           преподаватель по {{ item.teacher!.subjects.map(s => SubjectDativeLabel[s]).join(' и ') }} <br />
@@ -53,7 +53,12 @@ nextTick(loadData)
             {{ ProgramLabel[item.program!] }}
           </div>
         </div>
-
+        <div>
+          <div>Дата:</div>
+          <div>
+            {{ formatDate(item.created_at!) }}
+          </div>
+        </div>
         <div>
           <div>Посещаемость:</div>
           <div class="report-view__client-lessons">
@@ -126,14 +131,18 @@ nextTick(loadData)
           </div>
         </div>
       </div>
-    </div>
-    <div v-if="item && item.grade" class="report-view__final">
-      <div class="report-view__final-title">
-        Оценка по отчету:
+      <div class="report-view__info">
+        <div></div>
+        <div v-if="item && item.grade" class="report-view__score" :class="`report-view__score--${item.grade}`">
+          <div>
+            оценка по отчёту
+          </div>
+          <div :class="`text-score text-score--${item.grade}`">
+            {{ item.grade }}
+          </div>
+        </div>
+        <div></div>
       </div>
-      <span :class="`text-score text-score--${item.grade}`">
-        {{ item.grade }}
-      </span>
     </div>
   </template>
 </template>
@@ -141,7 +150,49 @@ nextTick(loadData)
 <style lang="scss">
 .report-view {
   flex: 1;
-  padding: 0 var(--offset);
+  padding: 0 var(--offset) 50px;
+
+  .v-card {
+    .v-card-item {
+      padding-left: 0 !important;
+    }
+    .v-card__underlay {
+      display: none !important;
+    }
+  }
+
+  &__info {
+    display: flex;
+    gap: 10px;
+    font-size: 14px;
+    margin-top: 20px;
+    & > div {
+      height: 90px;
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 8px;
+      &:not(.report-view__score) {
+        // background: rgba(var(--v-theme-bg));
+        background: none;
+      }
+      & > div {
+        &:first-child {
+          // color: rgb(var(--v-theme-gray));
+          color: #7a7a7a;
+          font-size: 12px;
+          margin-bottom: 2px;
+          line-height: 14px;
+        }
+      }
+
+      .text-score {
+        font-size: 24px;
+      }
+    }
+  }
+
   &__content {
     margin-top: 30px;
     display: flex;
@@ -159,6 +210,7 @@ nextTick(loadData)
       }
     }
   }
+
   &__final {
     flex: initial !important;
     padding-top: 20px;
@@ -192,6 +244,25 @@ nextTick(loadData)
     padding: 0 !important;
     font-size: 12px !important;
     line-height: 14px !important;
+  }
+
+  &__score {
+    &--5 {
+      background-color: rgba(var(--v-theme-success), 0.1);
+    }
+
+    &--4 {
+      background-color: rgba(#e28f2d, 0.1);
+      //background-color: #62b44b;
+      //background-color: #4cb02f;
+      //background-color: #48ad36;
+    }
+
+    &--3,
+    &--2,
+    &--1 {
+      background-color: rgba(var(--v-theme-error), 0.1);
+    }
   }
 }
 </style>

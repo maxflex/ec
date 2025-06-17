@@ -19,7 +19,7 @@ const count = computed<number | boolean>(() => {
     </template>
     {{ item.title }}
     <template v-if="count" #append>
-      <UiCircle v-if="Number.isNaN(count)" color="error" class="pr-1" />
+      <UiCircle v-if="typeof (count) === 'boolean'" color="error" class="pr-1" />
       <v-badge
         v-else
         color="error"

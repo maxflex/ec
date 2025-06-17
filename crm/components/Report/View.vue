@@ -22,11 +22,42 @@ nextTick(loadData)
 
 <template>
   <UiLoader v-if="item === undefined" />
-  <div v-else class="report-view pa-6">
-    <h2 class="mb-6">
-      Отчёт от {{ formatDate(item.created_at!) }}
-    </h2>
+  <div v-if="item" class="panel">
+    <div class="panel-info">
+      <div class="align-self-center">
+        <h2 style="font-size: 28px">
+          <template v-if="item.id > 0">
+            Отчет {{ item.id }}
+          </template>
+          <template v-else>
+            Новый отчёт
+          </template>
+        </h2>
+      </div>
 
+      <div>
+        <div>ученик</div>
+        <div>
+          <UiPerson :item="item.client!" />
+        </div>
+      </div>
+
+      <div>
+        <div>программа</div>
+        <div>
+          {{ ProgramLabel[item.program!] }}
+        </div>
+      </div>
+
+      <div>
+        <div>дата</div>
+        <div>
+          {{ formatDate(item.created_at!) }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div v-if="item" class="report-view pa-6">
     <v-card variant="tonal" width="fit-content" class="pr-2">
       <template #prepend>
         <UiAvatar :item="item.teacher!" :size="80" class="mr-3" />
@@ -54,12 +85,6 @@ nextTick(loadData)
           </template>
         </div>
       </div> -->
-      <div>
-        <div>Программа:</div>
-        <div>
-          {{ ProgramLabel[item.program!] }}
-        </div>
-      </div>
 
       <div>
         <div>Посещаемость и пройденные темы:</div>
@@ -132,14 +157,12 @@ nextTick(loadData)
           {{ item.recommendation_comment }}
         </div>
       </div>
-      <div v-if="item && item.grade" class="report-view__score">
-        <div class="d-flex align-center ga-2">
-          Оценка по отчету:
-          <span :class="`text-score text-score--${item.grade}`">
-            {{ item.grade }}
-          </span>
+      <div v-if="item && item.grade" class="report-view__score" :class="`report-view__score--${item.grade}`">
+        <div :class="`text-score text-score--${item.grade}`">
+          {{ item.grade }}
         </div>
         <div>
+          Оценка<br /> по отчету
         </div>
       </div>
     </div>
@@ -154,52 +177,50 @@ nextTick(loadData)
 
 <style lang="scss">
 .report-view {
-  flex: 1;
-  &__content {
-    margin-top: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
+  .v-card {
+    .v-card-item {
+      padding-left: 0 !important;
+    }
+    .v-card__underlay {
+      display: none !important;
+    }
+  }
+
+  &__score {
+    position: absolute;
+    top: var(--padding);
+    right: var(--padding);
+    // border: 1px solid ;
+    border-radius: 8px;
+    padding: 12px;
+    width: 160px;
+    &--5 {
+      background-color: rgba(var(--v-theme-success), 0.1);
+    }
+
+    &--4 {
+      background-color: rgba(#e28f2d, 0.1);
+      //background-color: #62b44b;
+      //background-color: #4cb02f;
+      //background-color: #48ad36;
+    }
+
+    &--3,
+    &--2,
+    &--1 {
+      background-color: rgba(var(--v-theme-error), 0.1);
+    }
     & > div {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      & > div {
-        &:first-child {
-          font-weight: bold;
-        }
-        &:last-child {
-          // word-wrap: break-word;
-          // white-space: pre-wrap;
-          // max-width: 1000px;
-        }
+      text-align: center;
+      text-transform: lowercase;
+      &:last-child {
+        font-size: 16px;
+      }
+      &:first-child {
+        font-size: 80px;
+        line-height: 80px;
       }
     }
-  }
-
-  &__client-lessons {
-    & > div {
-      // display: flex;
-    }
-  }
-
-  .text-score,
-  &__score {
-    font-size: 24px;
-  }
-
-  .v-card__underlay {
-    background: rgb(var(--v-theme-gray)) !important;
-    // opacity: 1 !important;
-  }
-
-  .v-card-title {
-    font-weight: bold !important;
-    font-size: 16px !important;
-  }
-
-  .v-card-subtitle {
-    font-size: 16px !important;
   }
 }
 </style>
