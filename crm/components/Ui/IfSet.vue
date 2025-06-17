@@ -9,6 +9,8 @@ const { value } = defineProps<{
     {{ value }}
   </slot>
   <span v-else class="text-gray">
-    <slot name="empty" />
+    <slot name="empty">
+      не установлено
+    </slot>
   </span>
 </template>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { quarterEditablePrograms } from '.'
+
 const emit = defineEmits<{ (e: 'updated'): void }>()
 
 interface BulkItem {
@@ -15,11 +17,13 @@ const { dialog, width } = useDialog('default')
 const lesson = ref<BulkItem>({})
 // const deleting = ref(false)
 const ids = ref<number[]>([])
+const isQuarterEditable = ref(false)
 
-function open(lessonIds: number[]) {
+function open(lessonIds: number[], p: Program) {
   ids.value = lessonIds
   lesson.value = {}
   dialog.value = true
+  isQuarterEditable.value = quarterEditablePrograms.includes(p)
 }
 
 async function save() {
@@ -97,7 +101,7 @@ defineExpose({ open })
             label="Кабинет"
           />
         </div>
-        <div>
+        <div v-if="isQuarterEditable">
           <UiClearableSelect
             v-model="lesson.quarter"
             :items="selectItems(QuarterLabel, ['q1', 'q2', 'q3', 'q4'])"

@@ -278,7 +278,7 @@ nextTick(loadAvailableYears)
         <v-btn variant="text" @click="checkboxes = {}">
           отмена
         </v-btn>
-        <v-btn color="primary" :width="216" @click="lessonBulkUpdateDialog?.open(lessonIds)">
+        <v-btn color="primary" :width="216" @click="lessonBulkUpdateDialog?.open(lessonIds, group.program)">
           редактировать
           {{ lessonIds.length }}/{{ lessons.length }}
         </v-btn>
@@ -290,10 +290,10 @@ nextTick(loadAvailableYears)
           </v-btn>
         </template>
         <v-list>
-          <v-list-item @click="lessonDialog?.create(group.id, group.year)">
+          <v-list-item @click="lessonDialog?.create(group.id, group!.year, group.program)">
             добавить одно занятие
           </v-list-item>
-          <v-list-item @click="lessonBulkCreateDialog?.create(group.id, group.year)">
+          <v-list-item @click="lessonBulkCreateDialog?.create(group.id, group.year, group.program)">
             добавить несколько занятий
           </v-list-item>
         </v-list>

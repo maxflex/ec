@@ -12,7 +12,7 @@ const {
   <div class="no-data">
     <div>
       <v-icon v-if="icon" :icon="icon" />
-      <img src="/img/logo-gray.svg" v-else />
+      <img v-else src="/img/logo-gray.svg" />
       <div>{{ label }}</div>
     </div>
   </div>
@@ -33,15 +33,16 @@ const {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 0;
     opacity: 0.5;
+    font-size: 30px;
   }
   .v-icon {
     font-size: 50px;
     opacity: 0.5;
   }
   img {
-    width: 50px;
+    width: 100px;
     opacity: 0.5;
   }
 }

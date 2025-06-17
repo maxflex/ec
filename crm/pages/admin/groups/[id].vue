@@ -52,7 +52,7 @@ nextTick(loadData)
         </div>
         <div v-else>
           <div></div>
-          <div>
+          <div class="text-gray">
             преподавателей нет
           </div>
         </div>
@@ -97,7 +97,9 @@ nextTick(loadData)
             zoom
           </div>
           <div>
-            {{ group.zoom.id }} / {{ group.zoom.password }}
+            <UiIfSet :value="group.zoom.id">
+              {{ group.zoom.id }} / {{ group.zoom.password }}
+            </UiIfSet>
           </div>
         </div>
 

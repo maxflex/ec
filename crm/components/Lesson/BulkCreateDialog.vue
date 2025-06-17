@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { cloneDeep } from 'lodash-es'
+import { quarterEditablePrograms } from '.'
 
 interface BulkItem {
   weekdays: { [key in Weekday]: string }
@@ -47,18 +48,20 @@ const { dialog, width } = useDialog('default')
 const loading = ref(false)
 const lesson = ref(cloneDeep(modelDefaults))
 const year = ref<Year>()
+const isQuarterEditable = ref(false)
 
 // групповое добавление
 const bulk = ref(cloneDeep(bulkDefaults))
 
 const isBulkAdd = computed(() => Object.values(bulk.value.weekdays).some(e => !!e))
 
-function create(groupId: number, y: Year) {
+function create(groupId: number, y: Year, p: Program) {
   year.value = y
   lesson.value = cloneDeep(modelDefaults)
   lesson.value.group_id = groupId
   bulk.value = cloneDeep(bulkDefaults)
   dialog.value = true
+  isQuarterEditable.value = quarterEditablePrograms.includes(p)
 }
 
 async function save() {
@@ -169,6 +172,7 @@ defineExpose({ create })
             hide-spin-buttons
           />
           <UiClearableSelect
+            v-if="isQuarterEditable"
             v-model="lesson.quarter"
             :items="selectItems(QuarterLabel, ['q1', 'q2', 'q3', 'q4'])"
             label="Четверть"

@@ -261,6 +261,24 @@
   }
 }
 
+.dialog-fullwidth-2 {
+  &:not(.calendar-dialog) .dialog {
+    transition: none !important;
+  }
+  .dialog {
+    width: 100vw !important;
+    max-width: initial !important;
+    box-shadow: none !important;
+    left: 0 !important;
+  }
+  .v-overlay__scrim {
+    display: none;
+  }
+  .dialog-header {
+    background: white !important;
+  }
+}
+
 .v-dialog > .v-overlay__content {
   margin: 0 !important;
 }

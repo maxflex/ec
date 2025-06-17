@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { cloneDeep } from 'lodash-es'
+import { quarterEditablePrograms } from '.'
 
 const emit = defineEmits<{
   updated: [l: LessonListResource]
@@ -27,13 +28,15 @@ const lesson = ref<LessonResource>(cloneDeep(modelDefaults))
 const year = ref<Year>()
 // если занятие проведено, нельзя менять статус на "отмена"
 const isConducted = ref(false)
+const isQuarterEditable = ref(false)
 
-function create(groupId: number, y: Year) {
+function create(groupId: number, y: Year, p: Program) {
   itemId.value = undefined
   year.value = y
   lesson.value = cloneDeep(modelDefaults)
   lesson.value.group_id = groupId
   isConducted.value = false
+  isQuarterEditable.value = quarterEditablePrograms.includes(p)
   dialog.value = true
 }
 
@@ -46,6 +49,7 @@ async function edit(lessonId: number) {
     lesson.value = data.value
     year.value = getAcademicYear(lesson.value.date!)
     isConducted.value = lesson.value.status === 'conducted'
+    isQuarterEditable.value = lesson.value.group ? quarterEditablePrograms.includes(lesson.value.group.program) : false
   }
   loading.value = false
 }
@@ -127,7 +131,7 @@ defineExpose({ create, edit })
             :disabled="isConducted"
           />
         </div>
-        <div v-if="isAdmin">
+        <div v-if="isAdmin && isQuarterEditable">
           <UiClearableSelect
             v-model="lesson.quarter"
             :items="selectItems(QuarterLabel, ['q1', 'q2', 'q3', 'q4'])"

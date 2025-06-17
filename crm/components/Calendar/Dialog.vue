@@ -86,7 +86,7 @@ defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog v-model="dialog" class="dialog-fullwidth calendar-dialog" :transition="{ component: VDialogTransition }">
+  <v-dialog v-model="dialog" class="dialog-fullwidth-2 calendar-dialog" :transition="{ component: VDialogTransition }">
     <v-fade-transition>
       <UiLoader v-if="scrolling" style="z-index: 1" />
     </v-fade-transition>
