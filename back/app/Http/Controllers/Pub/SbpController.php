@@ -70,11 +70,11 @@ class SbpController extends Controller
     public function notification(Request $request)
     {
         if (is_localhost()) {
-            logger('SBP', $request->all());
+            logger(json_encode($request->all(), JSON_PRETTY_PRINT));
         }
 
         $contractPayment = ContractPayment::query()
-            ->where('sbp_id', $request->object['id'])
+            ->where('sbp_id', $request->object['payment_id'] ?? $request->object['id'])
             ->first();
 
         if ($contractPayment === null) {

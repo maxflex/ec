@@ -103,6 +103,7 @@ async function onOtpFinish() {
     },
   )
   if (error.value) {
+    otp.code = ''
     otp.loading = false
     errors.value = error.value.data.errors
     nextTick(() => otpInput.value.focus())
@@ -220,7 +221,13 @@ definePageMeta({ layout: 'login' })
           <div class="login__info-title">
             Проверьте {{ currentPhone?.telegram_id ? 'Telegram' : 'СМС' }}
           </div>
-          <div>Введите код, который пришёл к вам в сообщения</div>
+          <div v-if="!!errors.code" class="text-error">
+            Введённый код неверный<br />
+            Попробуйте ещё раз
+          </div>
+          <div v-else>
+            Введите код, который пришёл к вам в сообщения
+          </div>
         </div>
         <v-otp-input
           ref="otpInput"
@@ -232,9 +239,6 @@ definePageMeta({ layout: 'login' })
           width="240"
           @finish="onOtpFinish"
         />
-        <v-btn color="primary" :loading="otp.loading" block size="x-large" @click="onOtpFinish()">
-          Войти
-        </v-btn>
       </v-window-item>
 
       <!-- reverse transition fix -->
