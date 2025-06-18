@@ -89,6 +89,10 @@ class SbpController extends Controller
             case NotificationEventType::PAYMENT_CANCELED:
                 $contractPayment->delete();
                 break;
+
+            case NotificationEventType::REFUND_SUCCEEDED:
+                $contractPayment->update(['is_return' => true]);
+                break;
         }
     }
 }
