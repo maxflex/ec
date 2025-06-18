@@ -19,7 +19,7 @@ async function pay() {
     return
   }
   loading.value = true
-  const { data } = await useHttp<{ url: string }>(
+  const { data, error } = await useHttp<{ url: string }>(
     `sbp`,
     {
       method: 'POST',
@@ -29,10 +29,11 @@ async function pay() {
       },
     },
   )
-  if (data.value) {
-    window.location = data.value.url as string & Location
+  if (error.value) {
+    loading.value = false
+    return
   }
-  loading.value = false
+  window.location = data.value!.url as string & Location
 }
 </script>
 
@@ -197,7 +198,7 @@ async function pay() {
 
 .billing-qr {
   margin-top: 40px;
-  padding: 20px 40px;
+  padding: 40px 20px;
   background: rgba(var(--v-theme-primary), 0.1);
   // background-color: rgb(var(--v-theme-bg));
   // border-radius: 8px 8px 0 0;

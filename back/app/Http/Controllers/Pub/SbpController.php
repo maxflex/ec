@@ -33,8 +33,8 @@ class SbpController extends Controller
                     'currency' => 'RUB',
                 ],
                 'confirmation' => [
-                    'type' => 'redirect',
-                    'return_url' => config('app.frontend_url').'/_test/sbp',
+                    'type' => 'qr',
+                    'return_url' => config('app.frontend_url').'/billing',
                 ],
                 'payment_method_data' => [
                     'type' => 'sbp',
@@ -48,6 +48,8 @@ class SbpController extends Controller
             ]
         );
 
+        logger(json_encode($payment, JSON_PRETTY_PRINT));
+
         $contract->payments()->create([
             'sum' => $amount,
             'date' => now()->format('Y-m-d'),
@@ -56,7 +58,7 @@ class SbpController extends Controller
         ]);
 
         return [
-            'url' => $payment->getConfirmation()->getConfirmationUrl(),
+            'url' => $payment->getConfirmation()->getConfirmationData(),
         ];
     }
 
