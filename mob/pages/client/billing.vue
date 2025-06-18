@@ -125,9 +125,10 @@ async function pay() {
       </div>
     </div>
     <div class="billing-qr">
-      <UiPageTitle>
-        Оплата через СБП
-      </UiPageTitle>
+      <div class="billing-qr__title">
+        <img src="/img/sbp.svg" />
+        Оплатить через СБП
+      </div>
       <div>
         <v-text-field
           v-model="amount"
@@ -198,13 +199,22 @@ async function pay() {
   margin-top: 40px;
   padding: 20px 20px 40px;
   background: rgba(var(--v-theme-primary), 0.1);
-  border-radius: 8px 8px 0 0;
+  // background-color: rgb(var(--v-theme-bg));
+  // border-radius: 8px 8px 0 0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  .page-title {
-    padding: 0 !important;
-    text-align: center;
+  & > div:nth-child(2) {
+    margin: 30px 0 20px;
+  }
+  &__title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    gap: 10px;
+    img {
+      height: 30px;
+    }
   }
 }
 </style>

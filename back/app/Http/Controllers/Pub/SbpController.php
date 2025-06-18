@@ -13,31 +13,6 @@ use YooKassa\Model\Notification\NotificationEventType;
 
 class SbpController extends Controller
 {
-    public function notification(Request $request)
-    {
-        if (is_localhost()) {
-            logger('SBP', $request->all());
-        }
-
-        $contractPayment = ContractPayment::query()
-            ->where('sbp_id', $request->object['id'])
-            ->first();
-
-        if ($contractPayment === null) {
-            return;
-        }
-
-        switch ($request->event) {
-            case NotificationEventType::PAYMENT_SUCCEEDED:
-                $contractPayment->update(['is_confirmed' => true]);
-                break;
-
-            case NotificationEventType::PAYMENT_CANCELED:
-                $contractPayment->delete();
-                break;
-        }
-    }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -61,6 +36,9 @@ class SbpController extends Controller
                     'type' => 'redirect',
                     'return_url' => config('app.frontend_url').'/_test/sbp',
                 ],
+                'payment_method_data' => [
+                    'type' => 'sbp',
+                ],
                 'capture' => true,
                 'description' => sprintf(
                     'Платные образовательные услуги по договору №%d от %sг.',
@@ -70,7 +48,7 @@ class SbpController extends Controller
             ]
         );
 
-        $contractPayment = $contract->payments()->create([
+        $contract->payments()->create([
             'sum' => $amount,
             'date' => now()->format('Y-m-d'),
             'method' => ContractPaymentMethod::sbp,
@@ -80,5 +58,33 @@ class SbpController extends Controller
         return [
             'url' => $payment->getConfirmation()->getConfirmationUrl(),
         ];
+    }
+
+    /**
+     * Обработка уведомлений от ЮКасса
+     */
+    public function notification(Request $request)
+    {
+        if (is_localhost()) {
+            logger('SBP', $request->all());
+        }
+
+        $contractPayment = ContractPayment::query()
+            ->where('sbp_id', $request->object['id'])
+            ->first();
+
+        if ($contractPayment === null) {
+            return;
+        }
+
+        switch ($request->event) {
+            case NotificationEventType::PAYMENT_SUCCEEDED:
+                $contractPayment->update(['is_confirmed' => true]);
+                break;
+
+            case NotificationEventType::PAYMENT_CANCELED:
+                $contractPayment->delete();
+                break;
+        }
     }
 }
