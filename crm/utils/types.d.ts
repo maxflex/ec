@@ -307,6 +307,7 @@ declare global {
   interface GroupListResource {
     id: number
     lessons_planned: number
+    counts_by_teacher: Record<number, number>
     lessons: {
       conducted: number
       conducted_free: number
@@ -332,6 +333,8 @@ declare global {
     zoom: Zoom
     lessons_planned: number
     client_groups_count: number
+    acts_count: number
+    counts_by_teacher: Record<number, number>
     lessons: {
       conducted: number
       conducted_free: number

@@ -5,7 +5,11 @@ const tabs = {
   students: 'ученики',
 } as const
 
+type Tab = keyof typeof tabs
+type TabCounts = Partial<Record<Tab, number>>
+
 const selectedTab = ref<keyof typeof tabs>('schedule')
+const tabCounts = ref<TabCounts>({})
 
 const route = useRoute()
 const group = ref<GroupResource>()
@@ -13,6 +17,7 @@ const group = ref<GroupResource>()
 async function loadData() {
   const { data } = await useHttp(`groups/${route.params.id}`)
   group.value = data.value as GroupResource
+  tabCounts.value.students = group.value.client_groups_count
 }
 
 nextTick(loadData)
@@ -24,75 +29,7 @@ nextTick(loadData)
     class="group"
   >
     <div class="panel">
-      <div class="panel-info">
-        <div>
-          <h2 style="font-size: 28px">
-            Группа {{ group.id }}
-          </h2>
-        </div>
-
-        <div v-if="group.teachers.length">
-          <div>преподаватели</div>
-          <div v-for="t in group.teachers" :key="t.id">
-            <RouterLink :to="{ name: 'teachers-id', params: { id: t.id } }">
-              {{ formatNameInitials(t) }}
-            </RouterLink>
-          </div>
-        </div>
-        <div v-else>
-          <div></div>
-          <div class="text-gray">
-            преподавателей нет
-          </div>
-        </div>
-        <div>
-          <div>программа</div>
-          <div v-if="group.program">
-            {{ ProgramLabel[group.program] }}
-          </div>
-        </div>
-
-        <div>
-          <div>учебный год</div>
-          <div v-if="group.year">
-            {{ YearLabel[group.year] }}
-          </div>
-        </div>
-
-        <div>
-          <div>
-            численность
-          </div>
-          <div v-if="group.client_groups_count">
-            {{ group.client_groups_count }} уч.
-          </div>
-          <div v-else class="text-gray">
-            0 уч.
-          </div>
-        </div>
-
-        <div>
-          <div>уроки</div>
-          <div v-if="group.lessons.conducted || group.lessons.planned">
-            <GroupLessonCounts :item="group" />
-          </div>
-          <div v-else class="text-gray">
-            уроков нет
-          </div>
-        </div>
-
-        <div>
-          <div>
-            zoom
-          </div>
-          <div>
-            <UiIfSet :value="group.zoom.id">
-              {{ group.zoom.id }} / {{ group.zoom.password }}
-            </UiIfSet>
-          </div>
-        </div>
-      </div>
-
+      <GroupPanel :item="group" />
       <div class="tabs">
         <div
           v-for="(label, key) in tabs"
@@ -102,6 +39,12 @@ nextTick(loadData)
           @click="selectedTab = key"
         >
           {{ label }}
+          <v-badge
+            v-if="tabCounts[key]"
+            color="grey-darken-3"
+            inline
+            :content="tabCounts[key]"
+          />
         </div>
       </div>
     </div>

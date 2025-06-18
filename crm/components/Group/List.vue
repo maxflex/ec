@@ -43,6 +43,9 @@ function onClick(g: GroupListResource) {
         <template v-if="item.teachers.length">
           <div v-for="t in item.teachers" :key="t.id">
             <UiPerson :item="t" no-link />
+            <span class="teacher-lesson-counts">
+              {{ item.counts_by_teacher[t.id] }}
+            </span>
           </div>
         </template>
         <span v-else class="text-gray">

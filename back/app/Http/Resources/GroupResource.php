@@ -20,6 +20,15 @@ class GroupResource extends JsonResource
         $nonCancelledLessons = $this->lessons->filter(fn ($lesson) => $lesson->status !== LessonStatus::cancelled);
         $conductedLessons = $this->lessons->filter(fn ($lesson) => $lesson->status === LessonStatus::conducted);
 
+        $teachers = $this->teachers;
+        $countsByTeacher = [];
+        foreach ($teachers as $teacher) {
+            $countsByTeacher[$teacher->id] = $this->lessons
+                ->where('teacher_id', $teacher->id)
+                ->where('status', '<>', LessonStatus::cancelled)
+                ->count();
+        }
+
         return extract_fields($this, ['*'], [
             'lessons' => [
                 'conducted' => $conductedLessons->where('is_free', false)->count(),
@@ -27,10 +36,12 @@ class GroupResource extends JsonResource
                 'planned' => $nonCancelledLessons->where('is_free', false)->count(),
                 'planned_free' => $nonCancelledLessons->where('is_free', true)->count(),
             ],
+            'counts_by_teacher' => (object) $countsByTeacher,
             'client_groups_count' => $this->clientGroups()->count(),
+            'acts_count' => $this->acts()->count(),
             'first_lesson_date' => $this->lessons->min('date'),
             'user' => new PersonResource($this->user),
-            'teachers' => PersonResource::collection($this->teachers),
+            'teachers' => PersonResource::collection($teachers),
             'teeth' => $this->getTeeth($this->year),
         ]);
     }

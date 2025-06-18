@@ -26,6 +26,11 @@ class Group extends Model implements HasTeeth
         return $this->belongsTo(User::class);
     }
 
+    public function acts(): HasMany
+    {
+        return $this->hasMany(GroupAct::class);
+    }
+
     public function clientGroups(): HasMany
     {
         return $this->hasMany(ClientGroup::class);
@@ -98,22 +103,7 @@ class Group extends Model implements HasTeeth
      */
     public function getTeachersAttribute(): array
     {
-        $teacherIds = $this->lessons
-            ->where('status', LessonStatus::planned)
-            ->where('is_unplanned', false)
-            ->pluck('teacher_id')
-            ->unique();
-
-        // если запланированных занятий нет, берём из последнего
-        // https://doc.ege-centr.ru/doc/49
-        if ($teacherIds->count() === 0) {
-            if ($this->lessons->count() === 0) {
-                return [];
-            }
-            $teacherIds = [
-                $this->lessons->sortByDesc('date')->first()->teacher_id,
-            ];
-        }
+        $teacherIds = $this->lessons->where('status', '<>', LessonStatus::cancelled)->pluck('teacher_id')->unique();
 
         return Teacher::whereIn('id', $teacherIds)->get()->all();
     }
