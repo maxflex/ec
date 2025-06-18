@@ -48,7 +48,9 @@ class SbpController extends Controller
             ]
         );
 
-        logger(json_encode($payment, JSON_PRETTY_PRINT));
+        if (is_localhost()) {
+            logger(json_encode($payment, JSON_PRETTY_PRINT));
+        }
 
         $contract->payments()->create([
             'sum' => $amount,
