@@ -198,7 +198,7 @@ async function pay() {
 
 .billing-qr {
   margin-top: 40px;
-  padding: 40px 20px;
+  padding: 20px 20px 100px;
   background: rgba(var(--v-theme-primary), 0.1);
   // background-color: rgb(var(--v-theme-bg));
   // border-radius: 8px 8px 0 0;
