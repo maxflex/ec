@@ -30,7 +30,7 @@ async function pay() {
     },
   )
   if (data.value) {
-    window.open(data.value.url, '_blank')
+    window.location = data.value.url as string & Location
   }
   loading.value = false
 }
@@ -197,7 +197,7 @@ async function pay() {
 
 .billing-qr {
   margin-top: 40px;
-  padding: 20px 20px 40px;
+  padding: 20px 40px;
   background: rgba(var(--v-theme-primary), 0.1);
   // background-color: rgb(var(--v-theme-bg));
   // border-radius: 8px 8px 0 0;
