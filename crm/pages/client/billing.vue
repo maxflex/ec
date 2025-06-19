@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import VueQrcode from '@chenfengyuan/vue-qrcode'
+import QrcodeVue from 'qrcode.vue'
 
 const selected = ref(0)
-const qrSize = 600
 
 const { items, indexPageData } = useIndex<BillingResource>(`billing`)
 
@@ -158,11 +157,21 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
             </tbody>
           </table>
         </div>
-        <div v-if="selectedContract.year >= currentAcademicYear()">
-          <VueQrcode :value="qrValue" :options="{ width: qrSize, height: qrSize }" class="billing__qr" />
+        <div v-if="selectedContract.year >= currentAcademicYear()" class="billing__qr">
+          <QrcodeVue
+            render-as="svg"
+            :value="qrValue"
+            :height="200"
+            :width="200"
+            :image-settings="{
+              height: 30,
+              width: 30,
+              src: '/img/logo-for-qr.svg',
+              excavate: true,
+            }"
+          />
           <p>
-            Откройте приложение вашего банка. Выберите в меню "Оплата по QR-коду".
-            Наведите на изображение. Все реквизиты будут подставлены автоматически.
+            QR-код для оплаты
           </p>
         </div>
       </div>
@@ -173,9 +182,13 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
 <style lang="scss">
 .billing {
   &__qr {
-    --size: 300px;
-    width: var(--size) !important;
-    height: var(--size) !important;
+    p {
+      // color: rgb(var(--v-theme-gray));
+      font-size: 14px;
+      max-width: 300px;
+      padding: 0 14px;
+      text-align: center;
+    }
   }
   &__content {
     display: flex;
@@ -188,15 +201,6 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
     & > div {
       &:first-child {
         width: 650px;
-      }
-      &:last-child {
-        // text-align: center;
-        p {
-          color: rgb(var(--v-theme-gray));
-          font-size: 14px;
-          max-width: 300px;
-          padding: 0 14px;
-        }
       }
       table {
         margin-bottom: 50px;

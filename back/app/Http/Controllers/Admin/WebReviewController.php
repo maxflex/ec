@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class WebReviewController extends Controller
 {
     protected $filters = [
-        'equals' => ['client_id', 'is_published'],
+        'equals' => ['client_id'],
         'program' => ['program'],
     ];
 
