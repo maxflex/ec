@@ -91,7 +91,9 @@ class SbpController extends Controller
                 break;
 
             case NotificationEventType::REFUND_SUCCEEDED:
-                $contractPayment->update(['is_return' => true]);
+                $refund = $contractPayment->replicate();
+                $refund->is_return = true;
+                $refund->save();
                 break;
         }
     }

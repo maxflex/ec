@@ -12,7 +12,6 @@ const {
   <div class="no-data">
     <div>
       <v-icon v-if="icon" :icon="icon" />
-      <img v-else src="/img/logo-gray.svg" />
       <div>{{ label }}</div>
     </div>
   </div>
@@ -39,10 +38,6 @@ const {
   }
   .v-icon {
     font-size: 50px;
-    opacity: 0.5;
-  }
-  img {
-    width: 100px;
     opacity: 0.5;
   }
 }
