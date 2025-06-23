@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Enums\ContractVersionProgramStatus;
 use App\Enums\LessonStatus;
 use App\Enums\Program;
+use App\Enums\SwampStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -22,7 +22,7 @@ class ContractVersionProgram extends Model
 
     protected $casts = [
         'program' => Program::class,
-        'status' => ContractVersionProgramStatus::class,
+        'status' => SwampStatus::class,
     ];
 
     public static function booted()
@@ -37,7 +37,7 @@ class ContractVersionProgram extends Model
      */
     public function getIsActiveAttribute(): bool
     {
-        return in_array($this->status, ContractVersionProgramStatus::getActiveStatuses(), true);
+        return in_array($this->status, SwampStatus::getActiveStatuses(), true);
     }
 
     public function contractVersion(): BelongsTo
@@ -80,7 +80,7 @@ class ContractVersionProgram extends Model
 
     /**
      * Сколько занятий по программе прошло
-     * бесплатные и price=0 не учитываем ("слепой режим")
+     * бесплатные и price=0 не учитываем
      */
     public function getLessonsConductedAttribute(): int
     {
@@ -171,6 +171,11 @@ class ContractVersionProgram extends Model
         return $this->prices->sum(fn (ContractVersionProgramPrice $p) => $p->lessons * $p->price);
     }
 
+    public function getTotalLessonsAttribute(): int
+    {
+        return $this->prices->sum('lessons');
+    }
+
     public function updateStatus(): bool
     {
         $totalPricePassed = $this->total_price_passed;
@@ -178,13 +183,13 @@ class ContractVersionProgram extends Model
         $hasGroup = $this->clientGroup()->exists();
 
         $this->status = match (true) {
-            $hasGroup && $totalPricePassed < $totalPrice => ContractVersionProgramStatus::inProcess,
-            $hasGroup && $totalPricePassed > $totalPrice => ContractVersionProgramStatus::exceedInGroup,
-            $hasGroup && $totalPricePassed === $totalPrice => ContractVersionProgramStatus::finishedInGroup,
+            $hasGroup && $totalPricePassed < $totalPrice => SwampStatus::inProcess,
+            $hasGroup && $totalPricePassed > $totalPrice => SwampStatus::exceedInGroup,
+            $hasGroup && $totalPricePassed === $totalPrice => SwampStatus::finishedInGroup,
             // ниже будет только !$hasGroup
-            $totalPricePassed < $totalPrice => ContractVersionProgramStatus::toFulfil,
-            $totalPricePassed > $totalPrice => ContractVersionProgramStatus::exceedNoGroup,
-            $totalPricePassed === $totalPrice => ContractVersionProgramStatus::finishedNoGroup,
+            $totalPricePassed < $totalPrice => SwampStatus::toFulfil,
+            $totalPricePassed > $totalPrice => SwampStatus::exceedNoGroup,
+            $totalPricePassed === $totalPrice => SwampStatus::finishedNoGroup,
         };
 
         return $this->save();

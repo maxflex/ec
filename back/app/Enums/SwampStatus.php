@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum ContractVersionProgramStatus: string
+enum SwampStatus: string
 {
     case toFulfil = 'toFulfil';
     case exceedNoGroup = 'exceedNoGroup';
@@ -17,9 +17,9 @@ enum ContractVersionProgramStatus: string
     public static function getActiveStatuses(): array
     {
         return [
-            ContractVersionProgramStatus::toFulfil,
-            ContractVersionProgramStatus::inProcess,
-            ContractVersionProgramStatus::finishedInGroup,
+            SwampStatus::toFulfil,
+            SwampStatus::inProcess,
+            SwampStatus::finishedInGroup,
         ];
     }
 }

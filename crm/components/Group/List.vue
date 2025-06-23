@@ -40,40 +40,34 @@ function onClick(g: GroupListResource) {
         </NuxtLink>
       </div>
       <div style="width: 180px">
-        <template v-if="item.teachers.length">
-          <div v-for="t in item.teachers" :key="t.id">
-            <UiPerson :item="t" no-link />
-            <span class="teacher-lesson-counts">
-              {{ item.counts_by_teacher[t.id] }}
-            </span>
-          </div>
-        </template>
-        <span v-else class="text-gray">
-          преподавателей нет
-        </span>
+        <GroupTeachers :item="item" />
       </div>
       <div style="width: 150px">
         {{ ProgramShortLabel[item.program] }}
       </div>
       <div style="width: 140px">
-        <GroupLessonCounts v-if="item.lessons.conducted || item.lessons.planned" :item="item" />
-        <span v-else class="text-gray">
-          занятий нет
-        </span>
+        <UiIfSet :value="item.lesson_counts.conducted || item.lesson_counts.planned">
+          <template #empty>
+            занятий нет
+          </template>
+          <GroupLessonCounts :item="item" />
+        </UiIfSet>
       </div>
       <div style="width: 60px">
-        <template v-if="item.client_groups_count">
+        <UiIfSet :value="!!item.client_groups_count">
+          <template #empty>
+            0 уч.
+          </template>
           {{ item.client_groups_count }} уч.
-        </template>
-        <span v-else class="text-gray">
-          0 уч.
-        </span>
+        </UiIfSet>
       </div>
       <div style="flex: 1">
-        <TeethAsText v-if="Object.keys(item.teeth).length" :items="item.teeth" />
-        <span v-else class="text-gray">
-          расписание отсутствует
-        </span>
+        <UiIfSet :value="Object.keys(item.teeth).length > 0">
+          <template #empty>
+            расписание отсутствует
+          </template>
+          <TeethAsText :items="item.teeth" />
+        </UiIfSet>
       </div>
       <div class="group-list__zoom">
         <template v-if="item.zoom.id">

@@ -19,7 +19,7 @@ const { item } = defineProps<{
           {{ formatNameInitials(t) }}
         </RouterLink>
         <span class="teacher-lesson-counts">
-          {{ item.counts_by_teacher[t.id] }}
+          {{ item.teacher_counts[t.id] }}
         </span>
       </div>
     </div>
@@ -38,11 +38,13 @@ const { item } = defineProps<{
 
     <div>
       <div>уроки</div>
-      <div v-if="item.lessons.conducted || item.lessons.planned">
-        <GroupLessonCounts :item="item" />
-      </div>
-      <div v-else class="text-gray">
-        уроков нет
+      <div>
+        <UiIfSet :value="item.lesson_counts.conducted || item.lesson_counts.planned">
+          <template #empty>
+            уроков нет
+          </template>
+          <GroupLessonCounts :item="item" />
+        </UiIfSet>
       </div>
     </div>
 

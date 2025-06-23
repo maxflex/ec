@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 export interface SwampFilters {
   year: Year
-  program?: Program
-  status?: ContractVersionProgramStatus
+  program: Program[]
+  status?: SwampStatus
 }
 
 const { disabled } = defineProps<{
@@ -19,9 +19,9 @@ const model = defineModel<SwampFilters>({ required: true })
     density="comfortable"
     :disabled="disabled"
   />
-  <UiClearableSelect
+  <ProgramSelector
     v-model="model.program"
-    label="Программа"
+    multiple
     :items="selectItems(ProgramLabel)"
     density="comfortable"
     :disabled="disabled"
@@ -29,7 +29,7 @@ const model = defineModel<SwampFilters>({ required: true })
   <UiClearableSelect
     v-model="model.status"
     label="Статус"
-    :items="selectItems(ContractVersionProgramStatusLabel)"
+    :items="selectItems(SwampStatusLabel)"
     :disabled="disabled"
     density="comfortable"
     expand

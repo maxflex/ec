@@ -103,8 +103,48 @@ class Group extends Model implements HasTeeth
      */
     public function getTeachersAttribute(): array
     {
-        $teacherIds = $this->lessons->where('status', '<>', LessonStatus::cancelled)->pluck('teacher_id')->unique();
+        return once(fn () => Teacher::query()
+            ->whereIn('id', $this->lessons
+                ->where('status', '<>', LessonStatus::cancelled)
+                ->pluck('teacher_id')
+                ->unique()
+            )
+            ->get()
+            ->all()
+        );
+    }
 
-        return Teacher::whereIn('id', $teacherIds)->get()->all();
+    /**
+     * Препод: кол-во занятий у этого препода в этой группе
+     */
+    public function getTeacherCountsAttribute(): object
+    {
+        $result = [];
+        foreach ($this->teachers as $teacher) {
+            $result[$teacher->id] = $this->lessons
+                ->where('teacher_id', $teacher->id)
+                ->where('status', '<>', LessonStatus::cancelled)
+                ->count();
+        }
+
+        return (object) $result;
+    }
+
+    public function getLessonCountsAttribute(): array
+    {
+        $nonCancelledLessons = $this->lessons->filter(fn (Lesson $l) => $l->status !== LessonStatus::cancelled);
+        $conductedLessons = $this->lessons->filter(fn (Lesson $l) => $l->status === LessonStatus::conducted);
+
+        return [
+            'conducted' => $conductedLessons->where('is_free', false)->count(),
+            'conducted_free' => $conductedLessons->where('is_free', true)->count(),
+            'planned' => $nonCancelledLessons->where('is_free', false)->count(),
+            'planned_free' => $nonCancelledLessons->where('is_free', true)->count(),
+        ];
+    }
+
+    public function getFirstLessonDateAttribute(): ?string
+    {
+        return $this->lessons->min('date');
     }
 }

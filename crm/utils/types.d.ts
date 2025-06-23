@@ -3,7 +3,7 @@ import type { ContractPaymentResource } from '~/components/ContractPayment'
 declare global {
   type LogDevice = keyof typeof LogDeviceLabel
 
-  type ContractVersionProgramStatus = keyof typeof ContractVersionProgramStatusLabel
+  type SwampStatus = keyof typeof SwampStatusLabel
 
   type Recepient = keyof typeof RecepientLabel
 
@@ -304,16 +304,18 @@ declare global {
     password: string
   }
 
+  interface GroupLessonCounts {
+    conducted: number
+    conducted_free: number
+    planned: number
+    planned_free: number
+  }
+
   interface GroupListResource {
     id: number
     lessons_planned: number
-    counts_by_teacher: Record<number, number>
-    lessons: {
-      conducted: number
-      conducted_free: number
-      planned: number
-      planned_free: number
-    }
+    teacher_counts: Record<number, number>
+    lesson_counts: GroupLessonCounts
     client_groups_count: number
     first_lesson_date?: string
     program: Program
@@ -332,15 +334,11 @@ declare global {
     user?: PersonResource
     zoom: Zoom
     lessons_planned: number
+    first_lesson_date?: string
     client_groups_count: number
     acts_count: number
-    counts_by_teacher: Record<number, number>
-    lessons: {
-      conducted: number
-      conducted_free: number
-      planned: number
-      planned_free: number
-    }
+    teacher_counts: Record<number, number>
+    lesson_counts: GroupLessonCounts
   }
 
   interface UploadedFile {
@@ -750,19 +748,6 @@ declare global {
       index: number
     }
     diff: string
-  }
-
-  interface SwampListResource {
-    id: number
-    total_lessons: number
-    total_price: number
-    total_price_passed: number
-    client: PersonResource
-    program: Program
-    year: Year
-    contract_id: number
-    status: ContractVersionProgramStatus
-    group_id: null | number // group_id = null – ученик не прикреплён к группе по этой программе
   }
 
   interface Tooth {

@@ -26,10 +26,16 @@ class SbpController extends Controller
         $client = new Client;
         $client->setAuth(config('sbp.shop_id'), config('sbp.api_key'));
 
+        $description = sprintf(
+            'Платные образовательные услуги по договору №%d от %sг.',
+            $contract->id,
+            Carbon::parse($contract->active_version->date)->format('d.m.Y')
+        );
+
         $payment = $client->createPayment(
             [
                 'amount' => [
-                    'value' => $request->input('amount'),
+                    'value' => $amount,
                     'currency' => 'RUB',
                 ],
                 'confirmation' => [
@@ -40,11 +46,28 @@ class SbpController extends Controller
                     'type' => 'sbp',
                 ],
                 'capture' => true,
-                'description' => sprintf(
-                    'Платные образовательные услуги по договору №%d от %sг.',
-                    $contract->id,
-                    Carbon::parse($contract->active_version->date)->format('d.m.Y')
-                ),
+                // 'receipt' => [
+                //     'customer' => [
+                //         'full_name' => $contract->client->parent->formatName('full'),
+                //         'phone' => $contract->client->parent->getPhoneNumbers()->first(),
+                //     ],
+                //     'items' => [
+                //         [
+                //             'description' => $description,
+                //             'quantity' => 1.0,
+                //             'amount' => [
+                //                 'value' => $amount,
+                //                 'currency' => 'RUB',
+                //             ],
+                //             'vat_code' => 9,
+                //             'payment_subject' => 'service',
+                //             'payment_mode' => 'full_prepayment',
+                //             'measure' => 'piece',
+                //             'type' => 'prepayment',
+                //         ],
+                //     ],
+                // ],
+                'description' => $description,
             ]
         );
 

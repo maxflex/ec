@@ -648,8 +648,29 @@ tr.hoverable {
   padding: var(--padding);
 }
 
-.teacher-lesson-counts {
-  color: rgb(var(--v-theme-gray));
-  font-size: 14px;
-  margin-left: 8px;
+.swamp-status {
+  // "toFulfil" | "exceedNoGroup" | "finishedNoGroup" | "inProcess" | "exceedInGroup" | "finishedInGroup"
+  &--inProcess,
+  &--finishedNoGroup,
+  &--finishedInGroup {
+    --bg-color: #eaf5f1;
+    --color: var(--v-theme-success);
+  }
+
+  &--toFulfil {
+    --bg-color: #fff9ec;
+    --color: var(--v-theme-orange);
+  }
+
+  &--exceedNoGroup,
+  &--exceedInGroup {
+    --bg-color: #feeceb;
+    --color: var(--v-theme-error);
+  }
+
+  background-color: var(--bg-color);
+
+  span {
+    color: rgb(var(--color));
+  }
 }

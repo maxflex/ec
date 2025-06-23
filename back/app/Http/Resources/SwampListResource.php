@@ -21,10 +21,9 @@ class SwampListResource extends JsonResource
     {
         return extract_fields($this, [
             'contract_id', 'year', 'status', 'program',
-            'total_price', 'total_price_passed',
+            'total_lessons', 'lessons_conducted',
         ], [
-            'total_lessons' => $this->prices->sum('lessons'),
-            'group_id' => $this->clientGroup?->group_id,
+            'group' => new GroupListResource($this->clientGroup?->group),
             'client' => new PersonResource(Client::find($this->client_id)),
         ]);
     }

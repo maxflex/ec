@@ -1,13 +1,20 @@
 <script setup lang="ts">
+import type { SwampCountsResource } from '~/components/Swamp'
 import type { SwampFilters } from '~/components/Swamp/Filters.vue'
 
 const filters = ref<SwampFilters>(loadFilters({
   year: currentAcademicYear(),
+  program: [],
 }))
 
-const { items, indexPageData } = useIndex<SwampListResource>(
+const { items, indexPageData } = useIndex<SwampCountsResource>(
   `swamps`,
   filters,
+  {
+    staticFilters: {
+      counts: 1,
+    },
+  },
 )
 </script>
 
@@ -16,6 +23,6 @@ const { items, indexPageData } = useIndex<SwampListResource>(
     <template #filters>
       <SwampFilters v-model="filters" />
     </template>
-    <SwampList :items="items" />
+    <SwampCounts :items="items" />
   </UiIndexPage>
 </template>

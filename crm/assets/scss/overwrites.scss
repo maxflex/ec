@@ -66,6 +66,11 @@ main {
 }
 
 .v-table:not(.teacher-balances-table):not(.group-visits) > .v-table__wrapper > table > tbody > tr > td {
-  padding-left: var(--padding) !important;
-  padding-right: var(--padding) !important;
+  &:first-child {
+    padding-left: var(--padding) !important;
+  }
+  &:not(:first-child) {
+    padding-left: calc(var(--padding) / 2) !important;
+  }
+  padding-right: calc(var(--padding) / 2) !important;
 }

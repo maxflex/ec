@@ -26,13 +26,6 @@ const { items: groups } = useIndex<GroupListResource>(
   },
 )
 
-async function loadData() {
-  loading.value = true
-  await loadGroups()
-  await loadSwamps()
-  loading.value = false
-}
-
 async function loadAvailableYears() {
   loading.value = true
   const { data } = await useHttp<Year[]>(
@@ -52,7 +45,7 @@ async function loadAvailableYears() {
   loading.value = false
 }
 
-async function loadSwamps() {
+async function loadData() {
   loading.value = true
   const { data } = await useHttp<ApiResponse<SwampListResource>>(
     `swamps`,
@@ -60,7 +53,6 @@ async function loadSwamps() {
       params: {
         ...filters.value,
         client_id: clientId,
-        no_group: 1,
       },
     },
   )
@@ -75,20 +67,6 @@ function onAttachStart(swamp: SwampListResource) {
   groupFilters.value = {
     year: filters.value.year!,
     program: [swamp.program],
-  }
-}
-
-async function loadGroups() {
-  const params = {
-    ...filters.value,
-    client_id: clientId,
-  }
-  const { data } = await useHttp<ApiResponse<GroupListResource>>(
-    `groups`,
-    { params },
-  )
-  if (data.value) {
-    clientGroups.value = data.value.data
   }
 }
 
@@ -135,7 +113,6 @@ nextTick(loadAvailableYears)
     <template #filters>
       <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
     </template>
-    <GroupList :items="clientGroups" />
-    <SwampList :items="swamps" @attach="onAttachStart" />
+    <SwampList :items="swamps" />
   </UiIndexPage>
 </template>

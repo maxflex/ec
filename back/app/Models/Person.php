@@ -42,6 +42,9 @@ abstract class Person extends Authenticatable implements CanLogin
         return $this->morphMany(TelegramMessage::class, 'entity');
     }
 
+    /**
+     * @param  'last-first'|'initials'|'full'|'first-middle'  $format
+     */
     public function formatName(string $format = 'last-first'): string
     {
         $name = match ($format) {
