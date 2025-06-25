@@ -132,8 +132,8 @@ class Group extends Model implements HasTeeth
 
     public function getLessonCountsAttribute(): array
     {
-        $nonCancelledLessons = $this->lessons->filter(fn (Lesson $l) => $l->status !== LessonStatus::cancelled);
-        $conductedLessons = $this->lessons->filter(fn (Lesson $l) => $l->status === LessonStatus::conducted);
+        $nonCancelledLessons = $this->lessons()->where('status', '<>', LessonStatus::cancelled)->get();
+        $conductedLessons = $this->lessons()->where('status', LessonStatus::conducted)->get();
 
         return [
             'conducted' => $conductedLessons->where('is_free', false)->count(),

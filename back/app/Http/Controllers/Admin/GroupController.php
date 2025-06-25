@@ -72,7 +72,9 @@ class GroupController extends Controller
     private function getForClientTab(Request $request, $query)
     {
         $client = Client::find($request->tab_client_id);
-        $clientPlannedLessons = Lesson::query()
+
+        // Все планируемые занятия ученика, сгруппированные по дате
+        $clientLessons = Lesson::query()
             ->with('group')
             ->whereHas(
                 'group.clientGroups.contractVersionProgram.contractVersion.contract',
@@ -82,7 +84,18 @@ class GroupController extends Controller
             )
             ->where('status', LessonStatus::planned)
             ->where('is_unplanned', 0)
-            ->get();
+            ->get()
+            ->groupBy('date');
+
+        $usedPrograms = ClientGroup::query()
+            ->whereHas(
+                'contractVersionProgram.contractVersion.contract',
+                fn ($q) => $q->where('client_id', $client->id)
+            )
+            ->with('contractVersionProgram')
+            ->get()
+            ->map(fn ($e) => $e->contractVersionProgram->program)
+            ->unique();
 
         $query
             ->with(
@@ -98,29 +111,39 @@ class GroupController extends Controller
 
         $data = GroupListResource::collection($query->get());
 
-        $groupPlannedLessons = Lesson::query()
+        $groupLessons = Lesson::query()
             ->whereIn('group_id', $data->collection->pluck('id'))
             ->where('status', LessonStatus::planned)
             ->where('is_unplanned', 0)
             ->get()
             ->groupBy('group_id');
 
-        $data->collection->transform(function ($item) use ($clientPlannedLessons, $groupPlannedLessons) {
+        // добавляем кол-во пересечений в каждую группу
+        $data->collection->transform(function ($item) use ($clientLessons, $groupLessons, $usedPrograms) {
+            // если ученик уже в группе, кол-во пересечений не считаем
             if ($item->swamp) {
                 return $item;
             }
 
+            $item->is_program_used = $usedPrograms->contains($item->program);
+
             $overlapCount = 0;
 
-            foreach ($groupPlannedLessons[$item->id] as $lesson) {
-                $start = $lesson->date_time;
-                $end = $lesson->date_time->copy()->addMinutes($item->program->getDuration());
+            foreach ($groupLessons[$item->id] as $groupLesson) {
+                $start = $groupLesson->date_time;
+                $end = $groupLesson->date_time->copy()->addMinutes($item->program->getDuration());
 
-                foreach ($clientPlannedLessons as $other) {
-                    $otherStart = $other->date_time;
-                    $otherEnd = $other->date_time->copy()->addMinutes($other->group->program->getDuration());
+                // Берем занятия клиента только с той же датой
+                $clientLessonsAtDate = $clientLessons[$groupLesson->date] ?? collect();
 
-                    // Проверка на пересечение
+                if ($item->is_program_used) {
+                    $clientLessonsAtDate = $clientLessonsAtDate->filter(fn ($lesson) => $lesson->group->program !== $item->program);
+                }
+
+                foreach ($clientLessonsAtDate as $lesson) {
+                    $otherStart = $lesson->date_time;
+                    $otherEnd = $otherStart->copy()->addMinutes($lesson->group->program->getDuration());
+
                     if ($start < $otherEnd && $end > $otherStart) {
                         $overlapCount++;
                     }

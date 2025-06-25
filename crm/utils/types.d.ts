@@ -326,9 +326,6 @@ declare global {
      * В режиме "управление группами" показывает процесс по договору, если он есть
      */
     swamp?: {
-      /**
-       * client_groups.id для удаления из группы
-       */
       id: number
       status: SwampStatus
       total_lessons: number
@@ -339,6 +336,10 @@ declare global {
      * В режиме "управление группами": кол-во пересечений в расписании
      */
     overlap_count?: number
+    /**
+     * В режиме "управление группами": использована ли программа?
+     */
+    is_program_used?: boolean
   }
 
   interface GroupResource {

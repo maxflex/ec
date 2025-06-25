@@ -100,9 +100,7 @@ async function addToGroup(g: GroupListResource) {
 }
 
 async function removeFromGroup(g: GroupListResource) {
-  await useHttp(`client-groups/${g.swamp!.id}`, {
-    method: 'delete',
-  })
+  await useHttp(`client-groups/${g.swamp!.id}`, { method: 'delete' })
   await loadGroups()
   itemUpdated('group', g.id, false)
   await loadTeeth()
@@ -166,15 +164,18 @@ nextTick(loadAvailableYears)
           </td>
         </template>
         <template v-else>
-          <td>
-            <UiIfSet :value="group.overlap_count">
-              <template #empty>
-                нет пересечений
-              </template>
-              {{ group.overlap_count }} пересечений
-            </UiIfSet>
-          </td>
           <td colspan="100">
+            <div class="pl-3">
+              <div v-if="group.is_program_used" class="text-success">
+                программа использована
+              </div>
+              <UiIfSet :value="group.overlap_count">
+                <template #empty>
+                  нет пересечений
+                </template>
+                {{ group.overlap_count }} пересечений
+              </UiIfSet>
+            </div>
             <div class="table-actionss">
               <v-btn color="secondary" density="comfortable" @click="addToGroup(group)">
                 добавить в группу

@@ -33,6 +33,7 @@ class GroupListResource extends JsonResource
                 ]);
             } else {
                 $extra['overlap_count'] = $this->overlap_count;
+                $extra['is_program_used'] = $this->is_program_used;
             }
         }
 
