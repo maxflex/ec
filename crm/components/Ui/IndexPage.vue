@@ -1,10 +1,14 @@
 <script setup lang="ts">
-const { data } = defineProps<{ data: IndexPageData }>()
+const { data, sticky } = defineProps<{
+  data: IndexPageData
+  sticky?: boolean
+}>()
 </script>
 
 <template>
   <UiFilters
     v-if="$slots.filters || $slots.buttons"
+    :sticky="sticky"
     :class="$attrs.class ? `${$attrs.class}__filters` : undefined"
   >
     <slot name="filters" />

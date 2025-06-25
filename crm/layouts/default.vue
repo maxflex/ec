@@ -20,7 +20,7 @@ const currentPageClass = computed(() => [
         <NuxtPage />
       </v-main>
       <UiBottomBar v-model="globalMessage.value" :color="globalMessage.color">
-        {{ globalMessage.text }}
+        <span v-html="globalMessage.text" />
       </UiBottomBar>
     </v-app>
   </ClientOnly>

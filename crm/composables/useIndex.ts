@@ -1,10 +1,37 @@
 interface UseIndexOptions {
+  /**
+   * Мгновенно загружать данные
+   */
   instantLoad?: boolean
-  scrollContainerSelector?: string
+
+  /**
+   * CSS-selector скролл-контейнера
+   */
+  scrollContainerSelector?: string | boolean
+
+  /**
+   * Нерегулируемые предустановленные фильтры (отправляются всегда)
+   */
   staticFilters?: object
+
+  /**
+   * Сохранять фильтры в localStorage
+   */
+  saveFilters?: boolean
+
+  /**
+   * Название вкладки для сохранения фильтров в localStorage
+   */
   tabName?: string | null
-  disableSaveFilters?: boolean
+
+  /**
+   * Автоматически перезагружать данные при изменении фильтров
+   */
   watchFilters?: boolean
+
+  /**
+   * Сначала загрузить доступные учебные годы для селектора
+   */
   loadAvailableYears?: boolean
 }
 
@@ -18,7 +45,7 @@ export default function<T, E extends object = object>(
     scrollContainerSelector = 'main',
     staticFilters = {},
     tabName = null,
-    disableSaveFilters = false,
+    saveFilters: isSaveFilters = true,
     watchFilters = true,
     loadAvailableYears = false,
   } = options
@@ -91,7 +118,6 @@ export default function<T, E extends object = object>(
       total.value = meta.total
     }
     loading.value = false
-    setScrollContainer()
   }
 
   async function loadAvailableYearsGo() {
@@ -114,20 +140,20 @@ export default function<T, E extends object = object>(
     }
   }
 
-  function reloadData() {
+  async function reloadData() {
     page = 0
     isLastPage = false
     if (loadAvailableYears && !availableYears.value?.length) {
       loadAvailableYearsGo()
     }
     else {
-      loadData()
+      await loadData()
     }
   }
 
   watchFilters && watch(filters, (newVal) => {
     reloadData()
-    !disableSaveFilters && saveFilters(newVal, tabName)
+    isSaveFilters && saveFilters(newVal, tabName)
   }, { deep: true })
 
   function onScroll() {
@@ -144,12 +170,14 @@ export default function<T, E extends object = object>(
   }
 
   function setScrollContainer() {
-    if (scrollContainer !== null) {
+    if (scrollContainerSelector === false) {
       return
     }
-    scrollContainer = document.documentElement.querySelector(scrollContainerSelector)
+    scrollContainer = document.documentElement.querySelector(scrollContainerSelector as string)
     scrollContainer?.addEventListener('scroll', onScroll)
   }
+
+  onMounted(setScrollContainer)
 
   onUnmounted(() => {
     scrollContainer?.removeEventListener('scroll', onScroll)

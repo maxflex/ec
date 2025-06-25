@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import type { GroupFilters } from '../Group/Filters.vue'
+import type { SwampListResource } from '../Swamp'
+import { mdiArrowRightThin } from '@mdi/js'
 
 const { clientId } = defineProps<{ clientId: number }>()
 
 const filters = useAvailableYearsFilter()
+const isGroupControlWindow = ref(false)
 
 const groupFilters = ref<GroupFilters>({
   year: currentAcademicYear(),
@@ -11,18 +14,21 @@ const groupFilters = ref<GroupFilters>({
 })
 
 const loading = ref(true)
-const selectedSwampId = ref<number>()
 const swamps = ref<SwampListResource[]>([])
-const clientGroups = ref<GroupListResource[]>([])
 const availableYears = ref<Year[]>()
 const noData = computed(() => availableYears.value?.length === 0)
+const teeth = ref<Teeth>()
 
-const { items: groups } = useIndex<GroupListResource>(
+const { items: groups, indexPageData, reloadData: loadGroups } = useIndex<GroupListResource>(
   `groups`,
   groupFilters,
   {
     instantLoad: false,
-    disableSaveFilters: true,
+    saveFilters: false,
+    scrollContainerSelector: false,
+    staticFilters: {
+      tab_client_id: clientId,
+    },
   },
 )
 
@@ -45,7 +51,7 @@ async function loadAvailableYears() {
   loading.value = false
 }
 
-async function loadData() {
+async function loadSwamps() {
   loading.value = true
   const { data } = await useHttp<ApiResponse<SwampListResource>>(
     `swamps`,
@@ -62,42 +68,71 @@ async function loadData() {
   loading.value = false
 }
 
-function onAttachStart(swamp: SwampListResource) {
-  selectedSwampId.value = swamp.id
-  groupFilters.value = {
-    year: filters.value.year!,
-    program: [swamp.program],
-  }
+async function loadTeeth() {
+  const { data } = await useHttp<Teeth>(`teeth`, {
+    params: {
+      year: filters.value.year,
+      client_id: clientId,
+    },
+  })
+  teeth.value = data.value!
 }
 
-async function onGroupSelected(group: GroupListResource) {
-  await useHttp(
+async function addToGroup(g: GroupListResource) {
+  const { error } = await useHttp(
     `client-groups`,
     {
       method: 'post',
       params: {
-        group_id: group.id,
-        contract_version_program_id: selectedSwampId.value!,
+        group_id: g.id,
+        client_id: clientId,
       },
     },
   )
-  back()
-  await loadData()
+  if (error.value) {
+    useGlobalMessage(error.value.data.message, 'error')
+    return
+  }
+  await loadGroups()
+  // itemUpdated('group', g.id, false)
+  await loadTeeth()
+  await loadSwamps()
+}
+
+async function removeFromGroup(g: GroupListResource) {
+  await useHttp(`client-groups/${g.swamp!.id}`, {
+    method: 'delete',
+  })
+  await loadGroups()
+  itemUpdated('group', g.id, false)
+  await loadTeeth()
+  await loadSwamps()
+}
+
+function goGroupControl() {
+  isGroupControlWindow.value = true
+  // изменение фильтра вызовет загрузку данных
+  groupFilters.value = {
+    year: filters.value.year!,
+    program: [...new Set(swamps.value.map(s => s.program))],
+  }
+  loadTeeth()
 }
 
 function back() {
-  selectedSwampId.value = undefined
+  isGroupControlWindow.value = false
 }
 
-watch(filters, loadData, { deep: true })
+watch(filters, loadSwamps, { deep: true })
 
 nextTick(loadAvailableYears)
 </script>
 
 <template>
-  <UiIndexPage v-if="selectedSwampId" :data="{ loading, noData: !groups.length }">
+  <UiIndexPage v-if="isGroupControlWindow" :data="indexPageData" sticky>
     <template #filters>
-      <GroupFilters v-model="groupFilters" disabled />
+      <ProgramSelector v-model="groupFilters.program" multiple />
+      <TeethBar v-if="teeth" :items="teeth" style="width: fit-content" />
     </template>
     <template #buttons>
       <v-btn color="primary" @click="back()">
@@ -107,11 +142,57 @@ nextTick(loadAvailableYears)
         назад
       </v-btn>
     </template>
-    <GroupList :items="groups" selectable @selected="onGroupSelected" />
+    <GroupList :items="groups">
+      <template #default="{ group }">
+        <template v-if="group.swamp">
+          <td :class="`swamp-status swamp-status--${group.swamp.status}`">
+            <div class="pl-3">
+              {{ group.swamp.lessons_conducted }}
+              <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
+              {{ group.swamp.total_lessons }}
+            </div>
+          </td>
+          <td :class="`swamp-status swamp-status--${group.swamp.status}`">
+            <span>
+              {{ SwampStatusLabel[group.swamp.status] }}
+            </span>
+            <div class="table-actionss">
+              <v-btn color="error" density="comfortable" @click="removeFromGroup(group)">
+                <span class="text-white">
+                  убрать из группы
+                </span>
+              </v-btn>
+            </div>
+          </td>
+        </template>
+        <template v-else>
+          <td>
+            <UiIfSet :value="group.overlap_count">
+              <template #empty>
+                нет пересечений
+              </template>
+              {{ group.overlap_count }} пересечений
+            </UiIfSet>
+          </td>
+          <td colspan="100">
+            <div class="table-actionss">
+              <v-btn color="secondary" density="comfortable" @click="addToGroup(group)">
+                добавить в группу
+              </v-btn>
+            </div>
+          </td>
+        </template>
+      </template>
+    </GroupList>
   </UiIndexPage>
   <UiIndexPage v-else :data="{ loading, noData }">
     <template #filters>
       <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
+    </template>
+    <template #buttons>
+      <v-btn color="primary" @click="goGroupControl()">
+        управление группами
+      </v-btn>
     </template>
     <SwampList :items="swamps" />
   </UiIndexPage>

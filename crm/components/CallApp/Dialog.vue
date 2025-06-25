@@ -13,7 +13,7 @@ const { $addSseListener } = useNuxtApp()
 const { width, transition } = useDialog('default')
 const { items, loading } = useIndex<CallListResource>('calls', filters, {
   instantLoad: false,
-  disableSaveFilters: true,
+  saveFilters: false,
   scrollContainerSelector: '.call-app-dialog .dialog-body',
 })
 

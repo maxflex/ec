@@ -17,7 +17,7 @@ const { items, indexPageData } = useIndex<GroupListResource>(
   `groups`,
   filters,
   {
-    disableSaveFilters: true,
+    saveFilters: false,
   },
 )
 </script>

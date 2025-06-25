@@ -15,7 +15,7 @@ const { items, indexPageData } = useIndex<SwampListResource>(
   `swamps`,
   filters,
   {
-    disableSaveFilters: true,
+    saveFilters: false,
   },
 )
 </script>

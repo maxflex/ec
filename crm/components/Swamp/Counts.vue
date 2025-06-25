@@ -8,6 +8,10 @@ const { items } = defineProps<{
 function sum(status: SwampStatus) {
   return items.reduce((carry, x) => carry + x.counts[status], 0)
 }
+
+function formatLabel(label: string) {
+  return label.split(' + ').join('<br/>')
+}
 </script>
 
 <template>
@@ -16,8 +20,7 @@ function sum(status: SwampStatus) {
       <tr>
         <th>
         </th>
-        <th v-for="(label, status) in SwampStatusLabel" :key="status" width="140" :class="`swamp-status swamp-status--${status}`">
-          {{ label }}
+        <th v-for="(label, status) in SwampStatusLabel" :key="status" width="140" :class="`swamp-status swamp-status--${status}`" v-html="formatLabel(label)">
         </th>
       </tr>
     </thead>

@@ -15,7 +15,7 @@ class TeethController extends Controller
             'group_id' => ['sometimes', 'numeric', 'exists:groups,id'],
             'client_id' => ['sometimes', 'numeric', 'exists:clients,id'],
             'teacher_id' => ['sometimes', 'numeric', 'exists:teachers,id'],
-            'year' => ['sometimes', 'required', 'numeric', 'min:2015'],
+            'year' => ['required_without:group_id', 'required', 'numeric', 'min:2015'],
         ]);
 
         $entity = match (true) {

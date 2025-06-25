@@ -24,12 +24,12 @@ const { items } = defineProps<{
     <tbody>
       <tr v-for="item in items" :key="item.id">
         <template v-if="item.group">
-          <td>
+          <td width="80">
             <NuxtLink :to="{ name: 'groups-id', params: { id: item.group!.id } }">
               ГР-{{ item.group!.id }}
             </NuxtLink>
           </td>
-          <td>
+          <td width="180">
             <GroupTeachers :item="item.group" />
           </td>
           <td>
@@ -93,8 +93,12 @@ const { items } = defineProps<{
     th {
       height: 0 !important;
       border: 0 !important;
-      box-sizing: content-box;
     }
+  }
+
+  th,
+  td {
+    box-sizing: content-box;
   }
 }
 </style>

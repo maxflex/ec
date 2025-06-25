@@ -62,6 +62,7 @@ class ContractVersionProgram extends Model
 
     /**
      * Отзанимался по всем занятиям?
+     * TODO: снести?
      */
     public function getIsClosedAttribute(): bool
     {

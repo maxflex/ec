@@ -598,9 +598,9 @@ export const SwampStatusLabel = {
   exceedInGroup: 'перевыполнено + в группе',
   exceedNoGroup: 'перевыполнено + не в группе',
   toFulfil: 'к исполнению',
+  finishedInGroup: 'исполнено + в группе',
   finishedNoGroup: 'исполнено + не в группе',
   inProcess: 'исполняется',
-  finishedInGroup: 'исполнено + в группе',
 } as const
 
 export const EventParticipantConfirmationLabel = {

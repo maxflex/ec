@@ -322,6 +322,23 @@ declare global {
     teachers: PersonResource[]
     teeth: Teeth
     zoom: Zoom
+    /**
+     * В режиме "управление группами" показывает процесс по договору, если он есть
+     */
+    swamp?: {
+      /**
+       * client_groups.id для удаления из группы
+       */
+      id: number
+      status: SwampStatus
+      total_lessons: number
+      lessons_conducted: number
+      client_group_id: number
+    }
+    /**
+     * В режиме "управление группами": кол-во пересечений в расписании
+     */
+    overlap_count?: number
   }
 
   interface GroupResource {

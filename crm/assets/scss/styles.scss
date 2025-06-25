@@ -478,17 +478,24 @@ tr.hoverable {
 }
 
 .group-list {
-  & > div {
-    align-items: flex-start !important;
+  td {
+    box-sizing: content-box;
+    position: relative;
   }
-  &--selectable {
-    & > div {
-      cursor: pointer;
-      & > div:first-child {
-        width: 120px !important;
-      }
+
+  .table-actionss {
+    top: 5px !important;
+    width: 200px !important;
+    .v-btn {
+      width: 160px;
+      font-size: 14px !important;
     }
   }
+
+  .v-table__wrapper {
+    overflow: hidden !important;
+  }
+
   &__item {
     &--blur {
       & > div {

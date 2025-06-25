@@ -12,7 +12,9 @@ class ClientGroup extends Model
 {
     public $timestamps = false;
 
-    protected $fillable = ['contract_version_program_id', 'group_id'];
+    protected $fillable = [
+        'contract_version_program_id', 'group_id',
+    ];
 
     public function contractVersionProgram(): BelongsTo
     {

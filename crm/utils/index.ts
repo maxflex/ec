@@ -178,17 +178,22 @@ export function loadFilters<T>(defaultFilters: T, tabName: string | null = null)
   return filters === null ? defaultFilters : JSON.parse(filters)
 }
 
-export function highlight(entity: string, id: number, className: 'item-updated' | 'item-deleted') {
+export function highlight(
+  entity: string,
+  id: number,
+  className: 'item-updated' | 'item-deleted',
+  scroll: boolean = true,
+) {
   nextTick(() => {
     const el = document?.querySelector(`#${entity}-${id}`)
-    el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    scroll && el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
     el?.classList.remove(className)
     setTimeout(() => el?.classList.add(className), 0)
   })
 }
 
-export function itemUpdated(entity: string, id: number) {
-  highlight(entity, id, 'item-updated')
+export function itemUpdated(entity: string, id: number, scroll: boolean = true) {
+  highlight(entity, id, 'item-updated', scroll)
 }
 
 export async function itemDeleted(entity: string, id: number) {
