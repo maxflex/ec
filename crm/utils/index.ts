@@ -182,17 +182,17 @@ export function highlight(
   entity: string,
   id: number,
   className: 'item-updated' | 'item-deleted',
-  scroll: boolean = true,
+  scroll: ScrollBehavior | boolean = 'smooth',
 ) {
   nextTick(() => {
     const el = document?.querySelector(`#${entity}-${id}`)
-    scroll && el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    scroll && el?.scrollIntoView({ block: 'center', behavior: 'instant' })
     el?.classList.remove(className)
     setTimeout(() => el?.classList.add(className), 0)
   })
 }
 
-export function itemUpdated(entity: string, id: number, scroll: boolean = true) {
+export function itemUpdated(entity: string, id: number, scroll: ScrollBehavior | boolean = 'smooth') {
   highlight(entity, id, 'item-updated', scroll)
 }
 

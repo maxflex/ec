@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\DB;
 class ContractVersionController extends Controller
 {
     protected $filters = [
-        'equals' => ['is_active'],
         'contract' => ['year', 'company'],
         'direction' => ['direction'],
+        'isActive' => ['is_active'],
     ];
 
     public function index(Request $request)
@@ -122,5 +122,17 @@ class ContractVersionController extends Controller
         }
 
         $query->whereHas('programs', fn ($q) => $q->whereIn('program', $programs));
+    }
+
+    protected function filterIsActive($query, $value)
+    {
+        $value
+            ? $query->where('is_active', true)
+            : $query->whereRaw('
+                contract_versions.id = (
+                    select min(id) from contract_versions as cv2
+                    where cv2.contract_id = contract_versions.contract_id
+                )
+            ');
     }
 }

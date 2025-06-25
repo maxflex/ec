@@ -32,7 +32,7 @@ class GroupListResource extends JsonResource
                     'id' => $clientGroup->id,
                 ]);
             } else {
-                $extra['overlap_count'] = $this->overlap_count;
+                $extra['overlap'] = $this->overlap;
                 $extra['is_program_used'] = $this->is_program_used;
             }
         }

@@ -12,23 +12,11 @@ const { item } = defineProps<{
       </h2>
     </div>
 
-    <div v-if="item.teachers.length">
+    <div>
       <div>преподаватели</div>
-      <div v-for="t in item.teachers" :key="t.id">
-        <RouterLink :to="{ name: 'teachers-id', params: { id: t.id } }">
-          {{ formatNameInitials(t) }}
-        </RouterLink>
-        <span class="teacher-lesson-counts">
-          {{ item.teacher_counts[t.id] }}
-        </span>
-      </div>
+      <GroupTeachers :item="item" :no-link="false" />
     </div>
-    <div v-else>
-      <div></div>
-      <div class="text-gray">
-        преподавателей нет
-      </div>
-    </div>
+
     <div>
       <div>программа</div>
       <div v-if="item.program">

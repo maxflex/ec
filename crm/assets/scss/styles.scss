@@ -66,6 +66,12 @@ a.table-item {
   pointer-events: none;
 }
 
+// элемент в состоянии загрузки (блёклый и некликабельный)
+.element-loading {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 .double-input {
   display: flex;
   align-items: flex-start;
@@ -483,6 +489,12 @@ tr.hoverable {
     position: relative;
   }
 
+  // &__separate {
+  //   td {
+  //     border-top: 2px solid rgb(var(--v-theme-orange)) !important;
+  //   }
+  // }
+
   .table-actionss {
     top: 5px !important;
     width: 200px !important;
@@ -680,4 +692,8 @@ tr.hoverable {
   span {
     color: rgb(var(--color));
   }
+}
+
+.is-comment-editing {
+  background: rgba(var(--v-theme-primary), 0.3);
 }

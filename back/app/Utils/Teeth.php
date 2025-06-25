@@ -16,7 +16,7 @@ class Teeth
     {
         $query = $lessonsQuery
             ->join('groups as g', 'g.id', '=', 'lessons.group_id')
-            ->where('is_unplanned', 0)
+            ->where('is_unplanned', false)
             ->where('g.year', $year);
 
         // Если группа приближается к концу, расписание в ней не должно меняться

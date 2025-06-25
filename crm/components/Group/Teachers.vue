@@ -1,5 +1,11 @@
 <script setup lang="ts">
-const { item } = defineProps<{ item: GroupListResource }>()
+const { item, noLink = true } = defineProps<{
+  noLink?: boolean
+  item: {
+    teacher_counts: Record<number, number>
+    teachers: PersonResource[]
+  }
+}>()
 </script>
 
 <template>
@@ -8,7 +14,7 @@ const { item } = defineProps<{ item: GroupListResource }>()
       преподавателей нет
     </template>
     <div v-for="t in item.teachers" :key="t.id">
-      <UiPerson :item="t" no-link />
+      <UiPerson :item="t" :no-link="noLink" />
       <span class="counts-by-teacher">
         {{ item.teacher_counts[t.id] }}
       </span>

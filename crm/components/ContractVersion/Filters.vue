@@ -25,6 +25,7 @@ const model = defineModel<ContractVersionFilters>({ required: true })
   <UiClearableSelect
     v-model="model.is_active"
     :items="[
+      { value: 0, title: 'первая' },
       { value: 1, title: 'активная' },
     ]"
     density="comfortable"

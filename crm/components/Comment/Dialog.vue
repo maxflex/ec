@@ -116,6 +116,20 @@ function quitEdit() {
   text.value = ''
 }
 
+watch(dialog, (isOpen) => {
+  if (entityType !== EntityTypeValue.request) {
+    return
+  }
+  const el = document.documentElement.querySelector(`#request-${entityId}`)
+
+  if (isOpen) {
+    el?.classList.add('is-comment-editing')
+  }
+  else {
+    el?.classList.remove('is-comment-editing')
+  }
+})
+
 defineExpose({ open })
 </script>
 

@@ -18,19 +18,36 @@ const swamps = ref<SwampListResource[]>([])
 const availableYears = ref<Year[]>()
 const noData = computed(() => availableYears.value?.length === 0)
 const teeth = ref<Teeth>()
+const groups = ref<GroupListResource[]>()
+const noGroups = computed(() => groups.value !== undefined && groups.value.length === 0)
 
-const { items: groups, indexPageData, reloadData: loadGroups } = useIndex<GroupListResource>(
-  `groups`,
-  groupFilters,
-  {
-    instantLoad: false,
-    saveFilters: false,
-    scrollContainerSelector: false,
-    staticFilters: {
-      tab_client_id: clientId,
+// const { items: groups, indexPageData, reloadData: loadGroups } = useIndex<GroupListResource>(
+//   `groups`,
+//   groupFilters,
+//   {
+//     instantLoad: false,
+//     saveFilters: false,
+//     scrollContainerSelector: false,
+//     staticFilters: {
+//       tab_client_id: clientId,
+//     },
+//   },
+// )
+
+async function loadGroups() {
+  loading.value = true
+  const { data } = await useHttp<ApiResponse<GroupListResource>>(
+    `groups`,
+    {
+      params: {
+        tab_client_id: clientId,
+        ...transformArrayKeys(groupFilters.value),
+      },
     },
-  },
-)
+  )
+  groups.value = data.value!.data
+  loading.value = false
+}
 
 async function loadAvailableYears() {
   loading.value = true
@@ -94,7 +111,7 @@ async function addToGroup(g: GroupListResource) {
     return
   }
   await loadGroups()
-  // itemUpdated('group', g.id, false)
+  // itemUpdated('group', g.id, 'instant')
   await loadTeeth()
   await loadSwamps()
 }
@@ -102,7 +119,7 @@ async function addToGroup(g: GroupListResource) {
 async function removeFromGroup(g: GroupListResource) {
   await useHttp(`client-groups/${g.swamp!.id}`, { method: 'delete' })
   await loadGroups()
-  itemUpdated('group', g.id, false)
+  // itemUpdated('group', g.id, 'instant')
   await loadTeeth()
   await loadSwamps()
 }
@@ -122,12 +139,13 @@ function back() {
 }
 
 watch(filters, loadSwamps, { deep: true })
+watch(groupFilters, loadGroups, { deep: true })
 
 nextTick(loadAvailableYears)
 </script>
 
 <template>
-  <UiIndexPage v-if="isGroupControlWindow" :data="indexPageData" sticky>
+  <UiIndexPage v-if="isGroupControlWindow" :data="{ loading: loading && !groups, noData: noGroups }" sticky>
     <template #filters>
       <ProgramSelector v-model="groupFilters.program" multiple />
       <TeethBar v-if="teeth" :items="teeth" style="width: fit-content" />
@@ -140,7 +158,7 @@ nextTick(loadAvailableYears)
         назад
       </v-btn>
     </template>
-    <GroupList :items="groups">
+    <GroupList v-if="groups" :items="groups" :class="{ 'element-loading': loading }">
       <template #default="{ group }">
         <template v-if="group.swamp">
           <td :class="`swamp-status swamp-status--${group.swamp.status}`">
@@ -169,11 +187,12 @@ nextTick(loadAvailableYears)
               <div v-if="group.is_program_used" class="text-success">
                 программа использована
               </div>
-              <UiIfSet :value="group.overlap_count">
+              <UiIfSet :value="group.overlap?.count">
                 <template #empty>
                   нет пересечений
                 </template>
-                {{ group.overlap_count }} пересечений
+                {{ group.overlap!.count }} пересечений
+                ({{ group.overlap!.programs.map(e => ProgramShortLabel[e]).join(', ') }})
               </UiIfSet>
             </div>
             <div class="table-actionss">

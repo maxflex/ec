@@ -6,6 +6,7 @@ interface UseIndexOptions {
 
   /**
    * CSS-selector скролл-контейнера
+   * false когда без infinite скролла (когда грузим сразу всё)
    */
   scrollContainerSelector?: string | boolean
 

@@ -109,7 +109,8 @@ class GroupController extends Controller
                 fn ($q) => $q->where('status', LessonStatus::planned)
             );
 
-        $data = GroupListResource::collection($query->get());
+        $data = $query->get()->sortBy('program')->values();
+        $data = GroupListResource::collection($data);
 
         $groupLessons = Lesson::query()
             ->whereIn('group_id', $data->collection->pluck('id'))
@@ -127,7 +128,10 @@ class GroupController extends Controller
 
             $item->is_program_used = $usedPrograms->contains($item->program);
 
-            $overlapCount = 0;
+            $overlap = (object) [
+                'count' => 0,
+                'programs' => collect(),
+            ];
 
             foreach ($groupLessons[$item->id] as $groupLesson) {
                 $start = $groupLesson->date_time;
@@ -140,17 +144,21 @@ class GroupController extends Controller
                     $clientLessonsAtDate = $clientLessonsAtDate->filter(fn ($lesson) => $lesson->group->program !== $item->program);
                 }
 
-                foreach ($clientLessonsAtDate as $lesson) {
-                    $otherStart = $lesson->date_time;
-                    $otherEnd = $otherStart->copy()->addMinutes($lesson->group->program->getDuration());
+                foreach ($clientLessonsAtDate as $clientLesson) {
+                    $program = $clientLesson->group->program;
+                    $otherStart = $clientLesson->date_time;
+                    $otherEnd = $otherStart->copy()->addMinutes($program->getDuration());
 
                     if ($start < $otherEnd && $end > $otherStart) {
-                        $overlapCount++;
+                        $overlap->count++;
+                        if (! $overlap->programs->contains($program)) {
+                            $overlap->programs->push($program);
+                        }
                     }
                 }
             }
 
-            $item->overlap_count = $overlapCount;
+            $item->overlap = $overlap;
 
             return $item;
         });
