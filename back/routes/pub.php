@@ -10,6 +10,8 @@ use App\Http\Controllers\Pub\TelegramBotController;
 use App\Http\Controllers\Pub\WebReviewController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/', fn () => phpinfo());
+
 Route::post('telegram', TelegramBotController::class)->withoutMiddleware('throttle:pub');
 
 Route::post('mango/events/{event}', MangoController::class)

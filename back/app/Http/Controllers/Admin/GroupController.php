@@ -122,9 +122,9 @@ class GroupController extends Controller
         // добавляем кол-во пересечений в каждую группу
         $data->collection->transform(function ($item) use ($clientLessons, $groupLessons, $usedPrograms) {
             // если ученик уже в группе, кол-во пересечений не считаем
-            if ($item->swamp) {
-                return $item;
-            }
+            // if ($item->swamp) {
+            //     return $item;
+            // }
 
             $item->is_program_used = $usedPrograms->contains($item->program);
 
@@ -134,6 +134,10 @@ class GroupController extends Controller
             ];
 
             foreach ($groupLessons[$item->id] as $groupLesson) {
+                // не учитываем пересечения с самим собой
+                // if ($groupLesson->group_id === $item->id) {
+                //     continue;
+                // }
                 $start = $groupLesson->date_time;
                 $end = $groupLesson->date_time->copy()->addMinutes($item->program->getDuration());
 

@@ -31,10 +31,10 @@ class GroupListResource extends JsonResource
                 ], [
                     'id' => $clientGroup->id,
                 ]);
-            } else {
-                $extra['overlap'] = $this->overlap;
-                $extra['is_program_used'] = $this->is_program_used;
             }
+
+            $extra['overlap'] = $this->overlap;
+            $extra['is_program_used'] = $this->is_program_used;
         }
 
         return extract_fields($this, [

@@ -489,11 +489,11 @@ tr.hoverable {
     position: relative;
   }
 
-  // &__separate {
-  //   td {
-  //     border-top: 2px solid rgb(var(--v-theme-orange)) !important;
-  //   }
-  // }
+  &__separate {
+    td {
+      border-top: 2px solid rgb(var(--v-theme-orange)) !important;
+    }
+  }
 
   .table-actionss {
     top: 5px !important;
@@ -668,7 +668,12 @@ tr.hoverable {
 }
 
 .swamp-status {
-  // "toFulfil" | "exceedNoGroup" | "finishedNoGroup" | "inProcess" | "exceedInGroup" | "finishedInGroup"
+  background-color: var(--bg-color);
+
+  span {
+    color: rgb(var(--color));
+  }
+
   &--inProcess,
   &--finishedNoGroup,
   &--finishedInGroup {
@@ -685,12 +690,6 @@ tr.hoverable {
   &--exceedInGroup {
     --bg-color: #feeceb;
     --color: var(--v-theme-error);
-  }
-
-  background-color: var(--bg-color);
-
-  span {
-    color: rgb(var(--color));
   }
 }
 

@@ -6,13 +6,15 @@ export function useHttp<T = any>(
   options: UseFetchOptions<T> = {},
 ) {
   const { getCurrentToken, clearCurrentToken, getOriginalToken, isPreviewMode, clientParentId } = useAuthStore()
-  let baseURL = useRuntimeConfig().public.baseUrl
+  const { public: { baseUrl, env } } = useRuntimeConfig()
   const token = getCurrentToken().value
+
+  let url = baseUrl
 
   if (token) {
     options.headers = { Authorization: `Bearer ${token}` }
     if (!path.startsWith('pub/')) {
-      baseURL += `${token.split('|')[0]}/`
+      url += `${token.split('|')[0]}/`
     }
   }
 
@@ -32,9 +34,14 @@ export function useHttp<T = any>(
     headers['Client-Parent-Id'] = clientParentId
   }
 
+  if (env === 'local') {
+    options.credentials = 'include'
+    headers.Cookie = 'XDEBUG_SESSION=PHPSTORM'
+  }
+
   return useFetch(path, {
     ...options,
-    baseURL,
+    baseURL: url,
     headers,
     async onResponseError({ response: { status } }) {
       switch (status) {
