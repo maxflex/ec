@@ -119,7 +119,7 @@ nextTick(loadData)
           №{{ contract.id }} {{ CompanyLabel[contract.company] }}
         </div>
         <div>
-          на {{ formatYear(contract.year) }}
+          на {{ YearLabel[contract.year] }}
         </div>
       </v-btn>
     </template>

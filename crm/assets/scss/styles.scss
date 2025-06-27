@@ -68,7 +68,7 @@ a.table-item {
 
 // элемент в состоянии загрузки (блёклый и некликабельный)
 .element-loading {
-  opacity: 0.5;
+  opacity: 0.4;
   pointer-events: none;
 }
 
@@ -491,7 +491,7 @@ tr.hoverable {
 
   &__separate {
     td {
-      border-top: 2px solid rgb(var(--v-theme-orange)) !important;
+      border-bottom: 2px solid rgb(var(--v-theme-orange)) !important;
     }
   }
 

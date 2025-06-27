@@ -1,18 +1,14 @@
 <script setup lang="ts">
-const {
-  label = 'нет данных',
-  icon,
-} = defineProps<{
-  label?: string
-  icon?: string
-}>()
+const { icon } = defineProps<{ icon?: string }>()
 </script>
 
 <template>
   <div class="no-data">
     <div>
       <v-icon v-if="icon" :icon="icon" />
-      <div>{{ label }}</div>
+      <div>
+        <slot />
+      </div>
     </div>
   </div>
 </template>
@@ -35,6 +31,7 @@ const {
     gap: 0;
     opacity: 0.5;
     font-size: 30px;
+    text-align: center;
   }
   .v-icon {
     font-size: 50px;

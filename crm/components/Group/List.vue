@@ -17,7 +17,7 @@ const { items, blurOthers } = defineProps<{
         :id="`group-${item.id}`"
         :key="item.id"
         :class="{
-          'group-list__separate': i > 0 && item.program !== items[i - 1].program,
+          'group-list__separate': i + 1 < items.length && item.program !== items[i + 1].program,
           'group-list__item--blur': blurOthers && !item.teachers.map(e => e.id).includes(blurOthers),
         }"
       >

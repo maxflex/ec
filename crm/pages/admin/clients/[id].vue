@@ -133,7 +133,7 @@ nextTick(loadData)
     <ExamScoreTab v-else-if="selectedTab === 'examScores'" :client-id="client.id" />
     <ClientPaymentTab v-else-if="selectedTab === 'payments'" :client-id="client.id" />
     <GradeTab v-else-if="selectedTab === 'grades'" :client-id="client.id" />
-    <ClientGroupsTab v-else-if="selectedTab === 'groups'" :client-id="client.id" />
+    <ClientGroupsTab v-else-if="selectedTab === 'groups'" :client="client" />
     <ClientTestTab v-else-if="selectedTab === 'tests'" :client-id="client.id" />
     <EventTab v-else-if="selectedTab === 'events'" :client-id="client.id" />
     <LogTab v-else-if="selectedTab === 'logs'" :client-id="client.id" />

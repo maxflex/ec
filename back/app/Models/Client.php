@@ -232,9 +232,7 @@ class Client extends Person implements HasTeeth
 
     public function makeAllSearchableUsing(Builder $query): Builder
     {
-        return $query
-            ->with('phones')
-            ->whereRaw('`created_at` >= NOW() - INTERVAL 5 YEAR');
+        return $query->with('phones');
     }
 
     public function getPassportAttribute($value)

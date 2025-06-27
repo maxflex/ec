@@ -74,7 +74,7 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
               Договор №{{ contract.id }}
             </div>
             <div>
-              на {{ formatYear(contract.year) }}
+              на {{ YearLabel[contract.year] }}
             </div>
           </v-btn>
         </div>

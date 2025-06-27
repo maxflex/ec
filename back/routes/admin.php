@@ -97,6 +97,8 @@ Route::get('instructions/diff/{instruction}', [InstructionController::class, 'di
 
 Route::apiResource('swamps', SwampController::class)->only('index');
 
+Route::post('swamps/editor', [SwampController::class, 'editor']);
+
 Route::prefix('event-participants')->controller(EventParticipantController::class)->group(function () {
     Route::post('/', 'store');
     Route::put('/{eventParticipant}', 'update');

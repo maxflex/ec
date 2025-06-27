@@ -1,6 +1,7 @@
 <script setup lang="ts">
-const { preSelected } = defineProps<{
+const { preSelected, noDisable } = defineProps<{
   preSelected: Program[]
+  noDisable?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -50,7 +51,7 @@ watch(menu, (newVal) => {
       <v-list-item
         v-for="(label, key) in ProgramLabel"
         :key="key"
-        :class="{ 'opacity-3 no-pointer-events': preSelected.includes(key) }"
+        :class="{ 'opacity-3 no-pointer-events': !noDisable && preSelected.includes(key) }"
         @click="select(key)"
       >
         <div class="d-flex align-center ga-4">

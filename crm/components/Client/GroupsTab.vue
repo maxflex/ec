@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import type { ClientResource } from '.'
 import type { SwampListResource } from '../Swamp'
 
-const { clientId } = defineProps<{ clientId: number }>()
+const { client } = defineProps <{ client: ClientResource }>()
 
 const filters = useAvailableYearsFilter()
 const isSwampEditor = ref(false)
@@ -12,14 +13,14 @@ const { items, indexPageData, availableYears } = useIndex<SwampListResource>(
   {
     loadAvailableYears: true,
     staticFilters: {
-      client_id: clientId,
+      client_id: client.id,
     },
   },
 )
 </script>
 
 <template>
-  <SwampEditor v-if="isSwampEditor && filters.year" :client-id="clientId" :year="filters.year" :swamps="items" @back="isSwampEditor = false" />
+  <SwampEditor v-if="isSwampEditor && filters.year" :client="client" :year="filters.year" :swamps="items" @back="isSwampEditor = false" />
   <UiIndexPage v-else :data="indexPageData">
     <template #filters>
       <AvailableYearsSelector v-model="filters.year" :items="availableYears" />

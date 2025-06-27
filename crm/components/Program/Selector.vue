@@ -1,6 +1,9 @@
 <script setup lang="ts">
-const { disabled } = defineProps<{
+import type { Density } from 'vuetify/lib/composables/density.mjs'
+
+const { disabled, density = 'comfortable' } = defineProps<{
   disabled?: boolean
+  density?: Density
 }>()
 
 const model = defineModel<Program | Program[]>({ required: true })
@@ -17,7 +20,7 @@ function clear() {
     :items="selectItems(ProgramLabel)"
     label="Программа"
     variant="outlined"
-    density="comfortable"
+    :density="density"
     hide-details
     :disabled="disabled"
   >

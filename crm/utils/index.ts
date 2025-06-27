@@ -346,10 +346,6 @@ export function formatPhone(number: string): string {
   ].join('')
 }
 
-export function formatYear(year: Year): string {
-  return `${year}-${year + 1} уч. г.`
-}
-
 export function formatName(
   person: HasName,
   format: NameFormat = 'last-first',
