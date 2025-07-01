@@ -33,5 +33,6 @@ const name = formatName(item, format).trim() || 'имя не указано'
   <span v-if="isNoLink">{{ name }}</span>
   <RouterLink v-else :to="{ name: to, params: { id: item.id } }" @click.stop>
     {{ name }}
+    <slot />
   </RouterLink>
 </template>

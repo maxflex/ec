@@ -119,6 +119,7 @@ export default function<T, E extends object = object>(
       total.value = meta.total
     }
     loading.value = false
+    setScrollContainer()
   }
 
   async function loadAvailableYearsGo() {
@@ -177,10 +178,9 @@ export default function<T, E extends object = object>(
       return
     }
     scrollContainer = document.documentElement.querySelector(scrollContainerSelector as string)
+    console.log('scrollContainer', scrollContainer, scrollContainerSelector)
     scrollContainer?.addEventListener('scroll', onScroll)
   }
-
-  onMounted(setScrollContainer)
 
   onUnmounted(() => {
     scrollContainer?.removeEventListener('scroll', onScroll)

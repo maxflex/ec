@@ -1,45 +1,9 @@
 <script setup lang="ts">
-import { mdiChevronDown, mdiPhoneIncoming, mdiPhoneMissed, mdiPhoneOutgoing } from '@mdi/js'
-import { differenceInWeeks, format, isSameDay, parse } from 'date-fns'
-import { ru } from 'date-fns/locale'
-import { Vue3SlideUpDown } from 'vue3-slide-up-down'
+import { mdiCallMade, mdiCallMissed, mdiCallReceived } from '@mdi/js'
 
 const { items } = defineProps<{
   items: CallListResource[]
 }>()
-const emit = defineEmits<{
-  deleted: [call: CallListResource]
-}>()
-const dateFormat = 'yyyy-MM-dd HH:mm:ss'
-const expanded = ref<{ [key: string]: boolean }>({})
-
-function formatCallDate(call: CallListResource) {
-  const date = parse(call.created_at, dateFormat, new Date())
-
-  if (isSameDay(date, new Date())) {
-    return format(date, 'сегодня в HH:mm')
-  }
-
-  if (differenceInWeeks(new Date(), date) < 1) {
-    return format(date, 'eeeeee в HH:mm', { locale: ru })
-  }
-
-  return format(date, 'dd.MM.yy')
-}
-
-function onClick(call: CallListResource) {
-  if (call.id in expanded.value) {
-    delete expanded.value[call.id]
-  }
-  else {
-    expanded.value[call.id] = true
-  }
-}
-
-function onDelete(e: MouseEvent, call: CallListResource) {
-  e.stopPropagation()
-  emit('deleted', call)
-}
 </script>
 
 <template>
@@ -47,49 +11,49 @@ function onDelete(e: MouseEvent, call: CallListResource) {
     <div
       v-for="call in items"
       :key="call.id"
-      :class="{
-        'calls-list__item--expanded': expanded[call.id],
-      }"
-      class="calls-list__item cursor-pointer"
-      @click="onClick(call)"
+      class="calls-list__item"
     >
       <div>
-        <div class="calls-list__number">
-          <v-icon
-            v-if="call.is_missed"
-            :icon="mdiPhoneMissed"
-            :color="call.is_missed_callback ? 'orange' : 'error'"
-          />
-          <v-icon v-else-if="call.type === 'incoming'" color="gray" :icon="mdiPhoneIncoming" />
-          <v-icon v-else color="gray" :icon="mdiPhoneOutgoing" />
-          <span>
+        <div class="d-flex ga-2">
+          <div class="calls-list__number">
             {{ formatPhone(call.number) }}
-          </span>
+          </div>
+          <div v-if="call.aon?.comment" class="calls-list__comment text-truncate">
+            {{ call.aon.comment }}
+          </div>
         </div>
+        <div class="calls-list__date">
+          {{ formatDateTime(call.created_at) }}
+        </div>
+      </div>
+      <div>
+        <CallAppPerson :item="call.aon" />
         <div v-if="call.answered_at">
           <CallAppDuration :item="call" />
         </div>
-        <div class="calls-list__date">
-          {{ formatCallDate(call) }}
-          <v-icon :icon="mdiChevronDown" />
-        </div>
       </div>
-      <CallAppAon :item="call.aon" />
-      <Vue3SlideUpDown :model-value="expanded[call.id]" :duration="200">
-        <div v-if="call.aon?.comment">
-          {{ call.aon.comment }}
+      <div>
+        <div
+          v-if="call.is_missed"
+          class="calls-list__user"
+        >
+          <v-icon
+            :icon="mdiCallMissed"
+            color="error"
+          />
+          Пропущенный
         </div>
-        <div v-if="call.user">
-          {{ call.type === 'incoming' ? 'Принял' : 'Позвонил' }}
+        <div v-else-if="call.user" class="calls-list__user">
+          <v-icon
+            :icon="call.type === 'incoming' ? mdiCallReceived : mdiCallMade"
+            :class="`calls-list--${call.type}`"
+          />
           {{ formatName(call.user) }}
         </div>
-        <div v-if="call.is_missed && !call.is_missed_callback">
-          <a class="text-error" @click="e => onDelete(e, call)">
-            Удалить
-          </a>
+        <div>
+          <CallAppDownload v-if="call.has_recording" :item="call" />
         </div>
-        <CallAppPlayer v-if="call.has_recording" :item="call" />
-      </Vue3SlideUpDown>
+      </div>
     </div>
   </div>
 </template>

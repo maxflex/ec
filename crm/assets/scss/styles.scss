@@ -489,11 +489,11 @@ tr.hoverable {
     position: relative;
   }
 
-  &__separate {
-    td {
-      border-bottom: 2px solid rgb(var(--v-theme-orange)) !important;
-    }
-  }
+  // &__separate {
+  //   td {
+  //     border-bottom: 2px solid rgb(var(--v-theme-orange)) !important;
+  //   }
+  // }
 
   .table-actionss {
     top: 5px !important;

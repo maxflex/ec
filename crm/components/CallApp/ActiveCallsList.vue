@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { mdiCallMade, mdiCallReceived } from '@mdi/js'
+
 const { items } = defineProps<{
   items: CallEvent[]
 }>()
@@ -13,12 +15,17 @@ const timerKey = computed(() => items.filter(e => e.state === 'Connected').lengt
       class="calls-list__item"
     >
       <div>
-        <div class="calls-list__number">
-          <CallAppStateIcon :state="item.state" />
-          <span>
+        <div class="d-flex ga-2">
+          <div class="calls-list__number">
             {{ formatPhone(item.number) }}
-          </span>
+          </div>
+          <div v-if="item.aon?.comment" class="calls-list__comment text-truncate">
+            {{ item.aon.comment }}
+          </div>
         </div>
+      </div>
+      <div>
+        <CallAppPerson :item="item.aon" />
         <div>
           <CallAppCallTimer v-if="item.state === 'Connected'" :key="timerKey" :item="item" />
         </div>
@@ -26,19 +33,26 @@ const timerKey = computed(() => items.filter(e => e.state === 'Connected').lengt
       <div>
         <transition name="call-title-transition">
           <div v-if="item.state === 'Connected'" :key="1">
-            Разговаривает
+            <v-icon
+              :icon="item.type === 'incoming' ? mdiCallReceived : mdiCallMade"
+              :class="`calls-list--${item.type}`"
+            />
             {{ formatName(item.user!) }}
           </div>
-
           <div v-else :key="2">
-            Входящий звонок
+            <v-icon :icon="mdiCallReceived" :class="`calls-list--${item.type}`" />
+            Входящий
           </div>
         </transition>
-      </div>
-      <CallAppAon :item="item.aon" />
-      <div v-if="item.aon?.comment">
-        {{ item.aon.comment }}
       </div>
     </div>
   </div>
 </template>
+
+<style lang="scss">
+.active-calls {
+  .calls-list__item {
+    background: rgba(var(--v-theme-primary), 0.3);
+  }
+}
+</style>
