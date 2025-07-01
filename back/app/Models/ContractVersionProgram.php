@@ -85,9 +85,10 @@ class ContractVersionProgram extends Model
      */
     public function getLessonsConductedAttribute(): int
     {
-        return $this->clientLessons()
+        return once(fn () => $this->clientLessons()
             ->where('price', '>', 0)
-            ->count();
+            ->count()
+        );
     }
 
     /**
@@ -122,6 +123,9 @@ class ContractVersionProgram extends Model
             ->pluck('client_lessons.price');
     }
 
+    /**
+     * TODO: есть lessons_total и total_lessons :)
+     */
     public function getLessonsTotalAttribute(): int
     {
         $total = $this->lessons_conducted;
@@ -174,26 +178,33 @@ class ContractVersionProgram extends Model
 
     public function getTotalLessonsAttribute(): int
     {
-        return $this->prices->sum('lessons');
+        return once(
+            fn () => $this->prices->sum('lessons')
+        );
     }
 
     public function updateStatus(): bool
     {
-        $totalPricePassed = $this->total_price_passed;
-        $totalPrice = $this->total_price;
-        $hasGroup = $this->clientGroup()->exists();
-
-        $this->status = match (true) {
-            $hasGroup && $totalPricePassed < $totalPrice => SwampStatus::inProcess,
-            $hasGroup && $totalPricePassed > $totalPrice => SwampStatus::exceedInGroup,
-            $hasGroup && $totalPricePassed === $totalPrice => SwampStatus::finishedInGroup,
-            // ниже будет только !$hasGroup
-            $totalPricePassed < $totalPrice => SwampStatus::toFulfil,
-            $totalPricePassed > $totalPrice => SwampStatus::exceedNoGroup,
-            $totalPricePassed === $totalPrice => SwampStatus::finishedNoGroup,
-        };
+        $this->status = self::getStatus(
+            $this->lessons_conducted,
+            $this->total_lessons,
+            $this->clientGroup()->exists()
+        );
 
         return $this->save();
+    }
+
+    public static function getStatus(int $lessonsConducted, int $totalLessons, bool $hasGroup): SwampStatus
+    {
+        return match (true) {
+            $hasGroup && $lessonsConducted < $totalLessons => SwampStatus::inProcess,
+            $hasGroup && $lessonsConducted > $totalLessons => SwampStatus::exceedInGroup,
+            $hasGroup && $lessonsConducted === $totalLessons => SwampStatus::finishedInGroup,
+            // ниже будет только !$hasGroup
+            $lessonsConducted < $totalLessons => SwampStatus::toFulfil,
+            $lessonsConducted > $totalLessons => SwampStatus::exceedNoGroup,
+            $lessonsConducted === $totalLessons => SwampStatus::finishedNoGroup,
+        };
     }
 
     public function clientGroup(): HasOne

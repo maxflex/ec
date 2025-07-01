@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
-import { CallAppStatusFilterLabel } from '~/utils/labels'
 import { callAppDialog, filters, player } from '.'
 
 const { activeCalls } = defineProps<{
@@ -75,16 +74,6 @@ $addSseListener('CallSummaryEvent', (call: CallListResource) => {
     <div class="dialog-wrapper call-app-dialog">
       <UiLoader3 :loading="loading" />
       <div class="dialog-body pa-0 ga-0">
-        <div class="call-app-search">
-          <v-text-field v-model="q" density="comfortable" placeholder="Поиск...">
-            <template #append>
-              <UiDropdown
-                v-model="filters.status"
-                :items="selectItems(CallAppStatusFilterLabel)"
-              />
-            </template>
-          </v-text-field>
-        </div>
         <div>
           <CallAppActiveCallsList v-if="showActiveCalls" :items="activeCalls" />
           <CallAppCallsList v-if="items.length" :items="items" @deleted="onDeleted" />

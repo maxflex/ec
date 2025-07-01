@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { EventDialog } from '#components'
 import type { EventParticipant, EventResource } from '~/components/Event'
-import { mdiAccountGroup, mdiCalendar, mdiCheckAll, mdiPlus } from '@mdi/js'
+import { mdiPlus } from '@mdi/js'
 import { getDay } from 'date-fns'
 
 const eventDialog = ref<InstanceType<typeof EventDialog>>()

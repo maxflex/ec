@@ -35,6 +35,7 @@ use App\Http\Controllers\Admin\PreviewController;
 use App\Http\Controllers\Admin\PrintController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RequestsController;
+use App\Http\Controllers\Admin\ScheduleDraftController;
 use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Admin\SmsMessageController;
 use App\Http\Controllers\Admin\StatsController;
@@ -97,7 +98,11 @@ Route::get('instructions/diff/{instruction}', [InstructionController::class, 'di
 
 Route::apiResource('swamps', SwampController::class)->only('index');
 
-Route::post('swamps/editor', [SwampController::class, 'editor']);
+Route::prefix('schedule-drafts')->controller(ScheduleDraftController::class)->group(function () {
+    Route::post('/get-data', 'getData');
+    Route::post('/add-to-group', 'addToGroup');
+    Route::post('/save', 'save');
+});
 
 Route::prefix('event-participants')->controller(EventParticipantController::class)->group(function () {
     Route::post('/', 'store');

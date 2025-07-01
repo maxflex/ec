@@ -21,8 +21,6 @@ declare global {
 
   type EventParticipantConfirmation = keyof typeof EventParticipantConfirmationLabel
 
-  type CallAppStatusFilter = keyof typeof CallAppStatusFilterLabel
-
   type SwampFilterStatus = keyof typeof SwampFilterStatusLabel
 
   type TelegramTemplate = keyof typeof TelegramTemplateLabel

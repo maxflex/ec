@@ -1,9 +1,9 @@
 <script setup lang="ts">
-const { isAdmin, isTeacher } = useAuthStore()
+const { isAdmin, isTeacher, user } = useAuthStore()
 </script>
 
 <template>
-  <RouterLink to="/" class="menu-logo">
+  <RouterLink :to="(isAdmin && user?.id) === 5 ? '/_test' : '/'" class="menu-logo">
     <img alt="" src="/img/logo.svg">
     <h3>ЕГЭ-Центр</h3>
   </RouterLink>

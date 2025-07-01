@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#build/components'
 import { mdiArrowRightThin, mdiTextBoxCheckOutline, mdiTextBoxOutline } from '@mdi/js'
-import { addMonths, format } from 'date-fns';
+import { addMonths, format, getYear } from 'date-fns'
 import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{
@@ -16,8 +16,8 @@ const modelDefaults: ContractVersionResource = {
   payments: [],
   contract: {
     id: newId(),
-    year: currentAcademicYear(),
-    company: 'ooo',
+    year: getYear(new Date()) as Year,
+    company: null,
     source: null,
   },
 }
@@ -127,7 +127,7 @@ function addPayment() {
 
   item.value.payments.push({
     id: newId(),
-    date: lastPayment ? format(addMonths(lastPayment.date, 1), 'yyyy-MM-dd') :  today(),
+    date: lastPayment ? format(addMonths(lastPayment.date, 1), 'yyyy-MM-dd') : today(),
     sum: lastPayment ? lastPayment.sum : 0,
     contract_version_id: item.value.id,
   })
@@ -431,7 +431,7 @@ defineExpose({ edit, newContract, newVersion })
             :items="selectItems(YearLabel)"
             :disabled="mode !== 'new-contract'"
           />
-          <v-select
+          <UiClearableSelect
             v-model="item.contract.company"
             label="Компания"
             :disabled="mode !== 'new-contract'"

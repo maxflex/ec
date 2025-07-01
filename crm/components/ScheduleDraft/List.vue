@@ -8,7 +8,7 @@ const { items } = defineProps<{
 </script>
 
 <template>
-  <v-table class="table-padding swamp-editor-groups">
+  <v-table class="table-padding schedule-project-list">
     <tbody>
       <tr
         v-for="(item, i) in items"

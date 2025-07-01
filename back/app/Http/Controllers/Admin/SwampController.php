@@ -8,7 +8,6 @@ use App\Http\Resources\PersonResource;
 use App\Http\Resources\SwampListResource;
 use App\Models\Client;
 use App\Models\ContractVersionProgram;
-use App\Utils\SwampEditor;
 use Illuminate\Http\Request;
 
 class SwampController extends Controller
@@ -58,24 +57,5 @@ class SwampController extends Controller
         }
 
         return paginate($result);
-    }
-
-    /**
-     * Вкладка "группы" у клиента -> управление группами
-     */
-    public function editor(Request $request)
-    {
-        $request->validate([
-            'client_id' => ['required', 'exists:clients,id'],
-            'year' => ['required', 'numeric'],
-            'programs' => ['required', 'array'],
-        ]);
-
-        $client = Client::find($request->client_id);
-        $year = intval($request->year);
-
-        $swampEditor = new SwampEditor($client, $year, $request->programs);
-
-        return $swampEditor->getData();
     }
 }

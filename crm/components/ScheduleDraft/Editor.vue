@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { SwampEditorData, SwampEditorProgram } from '.'
-import type { SwampListResource } from '..'
+import type { SwampListResource } from '../Swamp'
 import type { ClientResource } from '~/components/Client'
 import { mdiArrowRightThin } from '@mdi/js'
+import { apiUrl } from '.'
 
 const { client, year, swamps } = defineProps<{
   swamps: SwampListResource[]
@@ -13,6 +14,7 @@ const { client, year, swamps } = defineProps<{
 defineEmits<{ back: [] }>()
 
 const loading = ref(false)
+const btnLoading = ref(false)
 const teeth = ref<Teeth>()
 const swampEditorData = ref<SwampEditorData>()
 
@@ -37,7 +39,7 @@ const programsWithData = computed(() => {
 async function loadData() {
   loading.value = true
   const { data } = await useHttp<SwampEditorData>(
-    `swamps/editor`,
+    `${apiUrl}/get-data`,
     {
       method: 'POST',
       body: {
@@ -83,6 +85,25 @@ async function loadTeeth() {
   teeth.value = data.value!
 }
 
+async function save() {
+  btnLoading.value = true
+  await useHttp(
+    `${apiUrl}/save`,
+    {
+      method: 'POST',
+      body: {
+        year,
+        client_id: client.id,
+        data: programs.value.map(p => ({
+          ...p,
+          group_id: swampEditorData.value![p.id].swamp?.group_id || null,
+        })),
+      },
+    },
+  )
+  btnLoading.value = false
+}
+
 async function removeFromGroup(g: GroupListResource) {
   await useHttp(
     `client-groups/${g.swamp!.id}`,
@@ -114,7 +135,7 @@ nextTick(loadData)
 
 <template>
   <UiIndexPage
-    class="swamp-editor"
+    class="schedule-project"
     :data="{ loading: loading && !swampEditorData, noData: false }"
     sticky
   >
@@ -132,7 +153,7 @@ nextTick(loadData)
           </div>
         </div>
       </div> -->
-      <div class="swamp-editor__header">
+      <div class="schedule-project__header">
         <v-btn icon="$back" :size="44" variant="plain" @click="$emit('back')" />
         {{ formatName(client) }}
       </div>
@@ -140,16 +161,31 @@ nextTick(loadData)
     </template>
     <template #buttons>
       <div class="d-flex align-center ga-4">
-        <v-btn color="primary">
-          применить проект
-        </v-btn>
+        <v-menu>
+          <template #activator="{ props }">
+            <v-btn color="primary" v-bind="props" :loading="btnLoading">
+              действия
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item @click="save()">
+              сохранить проект
+            </v-list-item>
+            <v-list-item @click="() => contractVersionDialog?.newVersion(selectedContract!)">
+              загрузить проект
+            </v-list-item>
+            <v-list-item @click="() => contractPaymentDialog?.create(selectedContract!)">
+              применить проект
+            </v-list-item>
+          </v-list>
+        </v-menu>
         <!-- <v-btn icon="$close" :size="44" color="primary" @click="$emit('back')" /> -->
       </div>
     </template>
     <template v-if="swampEditorData">
-      <div v-for="p in programsWithData" :key="p.id" class="swamp-editor__data" :class="{ 'element-loading': loading }">
-        <div class="swamp-editor__contract">
-          <div class="swamp-editor__contract-header">
+      <div v-for="p in programsWithData" :key="p.id" class="schedule-project__data" :class="{ 'element-loading': loading }">
+        <div class="schedule-project__contract">
+          <div class="schedule-project__contract-header">
             <span>
               <template v-if="swampEditorData[p.id].contract">
                 Договор №{{ swampEditorData[p.id].contract.id }}
@@ -175,15 +211,15 @@ nextTick(loadData)
             </template>
           </div>
         </div>
-        <SwampEditorGroups v-if="swampEditorData[p.id].groups.length" :items="swampEditorData[p.id].groups" />
-        <div v-else class="swamp-editor__no-groups">
+        <ScheduleDraftList v-if="swampEditorData[p.id].groups.length" :items="swampEditorData[p.id].groups" />
+        <div v-else class="schedule-project__no-groups">
           <UiNoData>
             не найдено групп
           </UiNoData>
         </div>
       </div>
-      <div class="swamp-editor__data" :class="{ 'element-loading': loading }">
-        <div class="swamp-editor__contract">
+      <div class="schedule-project__data" :class="{ 'element-loading': loading }">
+        <div class="schedule-project__contract">
           <ProgramSelectorMenu :pre-selected="newPrograms" @saved="onNewProgramsSaved" />
         </div>
       </div>
@@ -192,7 +228,7 @@ nextTick(loadData)
 </template>
 
 <style lang="scss">
-.swamp-editor {
+.schedule-project {
   &__header {
     font-weight: bold;
     display: flex;
@@ -204,7 +240,9 @@ nextTick(loadData)
 
   &__filters {
     --height: 64px !important;
+    padding-left: 7px !important;
   }
+
   &__contract {
     // padding: var(--padding);
     padding: var(--padding);
@@ -236,7 +274,7 @@ nextTick(loadData)
 
   &__data {
     &:first-child {
-      .swamp-editor__contract {
+      .schedule-project__contract {
         border-top: none !important;
       }
     }

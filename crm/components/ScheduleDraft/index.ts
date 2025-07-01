@@ -1,3 +1,5 @@
+export const apiUrl = 'schedule-drafts'
+
 export interface SwampEditorProgram {
   id: number
   program: Program
@@ -22,19 +24,16 @@ export interface SwampEditorGroup extends GroupListResource {
     count: number
     programs: Program[]
   }
-  /**
-   * В режиме "управление группами": использована ли программа?
-   */
-  is_program_used?: boolean
 }
 
 export type SwampEditorData = Record<number, {
-  contract: ContractResource
-  swamp: {
-    id: number
+  contract?: ContractResource
+  swamp?: {
+    id: number // ID client_groups
     status: SwampStatus
     total_lessons: number
     lessons_conducted: number
+    group_id: number
   }
   groups: SwampEditorGroup[]
 }>

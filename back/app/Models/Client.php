@@ -254,6 +254,11 @@ class Client extends Person implements HasTeeth
         return $this->hasMany(Grade::class);
     }
 
+    public function scheduleDrafts(): HasMany
+    {
+        return $this->hasMany(ScheduleDraft::class);
+    }
+
     /**
      * Год: все направления клиента в этом году
      * Все направления без учета активна / неактивна программа

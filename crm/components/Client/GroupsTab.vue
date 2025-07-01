@@ -20,7 +20,13 @@ const { items, indexPageData, availableYears } = useIndex<SwampListResource>(
 </script>
 
 <template>
-  <SwampEditor v-if="isSwampEditor && filters.year" :client="client" :year="filters.year" :swamps="items" @back="isSwampEditor = false" />
+  <ScheduleDraftEditor
+    v-if="isSwampEditor && filters.year"
+    :client="client"
+    :year="filters.year"
+    :swamps="items"
+    @back="isSwampEditor = false"
+  />
   <UiIndexPage v-else :data="indexPageData">
     <template #filters>
       <AvailableYearsSelector v-model="filters.year" :items="availableYears" />

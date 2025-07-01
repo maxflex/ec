@@ -587,13 +587,6 @@ export const ClientTestStatusLabel = {
   timeout: 'время истекло',
 } as const
 
-export const CallAppStatusFilterLabel = {
-  all: 'все звонки',
-  missed: 'пропущенные',
-  active: 'активные',
-  outgoing: 'исходящие',
-} as const
-
 export const SwampStatusLabel = {
   exceedInGroup: 'перевыполнено + в группе',
   exceedNoGroup: 'перевыполнено + не в группе',
