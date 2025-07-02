@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
-use App\Models\Group;
 use App\Models\ScheduleDraft;
 use Illuminate\Http\Request;
 
@@ -13,42 +12,66 @@ class ScheduleDraftController extends Controller
     /**
      * Вкладка управление группами у клиента
      */
-    public function getData(Request $request)
+    public function getInitial(Request $request)
     {
         $request->validate([
             'client_id' => ['required', 'exists:clients,id'],
             'year' => ['required', 'numeric'],
-            'new_programs' => ['sometimes', 'array'],
         ]);
 
         $client = Client::find($request->client_id);
         $year = intval($request->year);
-        $newPrograms = $request->new_programs;
 
-        return ScheduleDraft::createEmptyDraft($client, $year, $newPrograms);
+        $scheduleDraft = ScheduleDraft::fromActualContracts($client, $year);
+        $scheduleDraft->user_id = auth()->id();
+        $scheduleDraft->toRam();
 
-        // return ScheduleDraft::first()->loadDraft();
-        // return ScheduleDraft::getData($client, $year, $request->programs);
+        return $scheduleDraft->getData();
+    }
+
+    public function removeFromGroup(Request $request)
+    {
+        $request->validate([
+            // может быть -1 для несуществующих программ
+            'program_id' => ['required', 'numeric'],
+        ]);
+
+        $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
+        $scheduleDraft->removeFromGroup(intval($request->program_id));
+        $scheduleDraft->toRam();
+
+        return $scheduleDraft->getData();
     }
 
     public function addToGroup(Request $request)
     {
         $request->validate([
             // может быть -1 для несуществующих программ
-            'id' => ['required', 'numeric'],
-            'program' => ['required'],
+            'program_id' => ['required', 'numeric'],
             'group_id' => ['required', 'exists:groups,id'],
-            'client_id' => ['required', 'exists:clients,id'],
-            'year' => ['required', 'numeric'],
         ]);
 
-        $group = Group::find($request->group_id);
-        $client = Client::find($request->client_id);
-        $year = intval($request->year);
+        $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
+        $scheduleDraft->addToGroup(
+            intval($request->program_id),
+            intval($request->group_id)
+        );
+        $scheduleDraft->toRam();
 
-        $draft = ScheduleDraft::getDraft(auth()->user(), $client, $year);
+        return $scheduleDraft->getData();
+    }
 
-        // ScheduleDraft::addToGroup($group, $client, $request->program);
+    public function newPrograms(Request $request)
+    {
+        $request->validate([
+            'new_programs' => ['required', 'array'],
+        ]);
+
+        $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
+        $scheduleDraft->newPrograms($request->new_programs);
+        $scheduleDraft->toRam();
+
+        return $scheduleDraft->getData();
     }
 
     public function save(Request $request)

@@ -25,7 +25,7 @@ export interface ScheduleDraftGroup extends GroupListResource {
 export interface ScheduleDraftProgram {
   id: number // ID contract_version_programs
   program: Program
-  group_id: number
+  group_id?: number
   contract?: ContractResource
   swamp?: ScheduleDraftSwamp
   groups: ScheduleDraftGroup[]

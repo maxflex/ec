@@ -19,20 +19,19 @@ const teeth = ref<Teeth>()
 const items = ref<ScheduleDraftProgram[]>()
 
 // TODO: переделать в диалог
-const panelElement = document.documentElement.querySelector('.panel')!
+const panelElement = document.documentElement.querySelector('.panel')! as HTMLElement
 
 const newPrograms = ref<Program[]>([])
 
 async function loadData() {
   loading.value = true
   const { data } = await useHttp<ScheduleDraftProgram[]>(
-    `${apiUrl}/get-data`,
+    `${apiUrl}/get-initial`,
     {
       method: 'POST',
       body: {
         client_id: client.id,
         year,
-        new_programs: newPrograms.value,
       },
     },
   )
@@ -74,39 +73,53 @@ async function save() {
 }
 
 async function addToGroup(p: ScheduleDraftProgram, g: ScheduleDraftGroup) {
-  const { error } = await useHttp(
+  loading.value = true
+  const { data } = await useHttp<ScheduleDraftProgram[]>(
     `${apiUrl}/add-to-group`,
     {
       method: 'post',
-      params: {
-        year,
-        id: p.id,
-        program: p.program,
+      body: {
+        program_id: p.id,
         group_id: g.id,
-        client_id: client.id,
       },
     },
   )
-  if (error.value) {
-    useGlobalMessage(error.value.data.message, 'error')
-    return
-  }
-  await loadData()
+  items.value = data.value!
+  loading.value = false
 }
 
-async function removeFromGroup(g: GroupListResource) {
-  await useHttp(
-    `client-groups/${g.swamp!.id}`,
-    { method: 'delete' },
+async function removeFromGroup(g: ScheduleDraftGroup) {
+  loading.value = true
+  const { data } = await useHttp<ScheduleDraftProgram[]>(
+    `${apiUrl}/remove-from-group`,
+    {
+      method: 'post',
+      body: {
+        program_id: g.swamp!.id,
+      },
+    },
   )
-  await loadData()
+  items.value = data.value!
+  loading.value = false
 }
 
-async function onNewProgramsSaved(p: Program[]) {
-  newPrograms.value = p
-  await loadData()
+async function onNewProgramsUpdated(newVal: Program[]) {
+  loading.value = true
+  const { data } = await useHttp<ScheduleDraftProgram[]>(
+    `${apiUrl}/new-programs`,
+    {
+      method: 'post',
+      body: {
+        new_programs: newVal,
+      },
+    },
+  )
+  items.value = data.value!
+  loading.value = false
   smoothScroll('main', 'bottom', 'instant')
 }
+
+watch(newPrograms, onNewProgramsUpdated)
 
 onMounted(() => {
   panelElement.style.display = 'none'
@@ -189,7 +202,7 @@ nextTick(loadData)
                   {{ SwampStatusLabel[item.swamp.status] }}
                 </span>
               </span>
-              <span>
+              <span v-if="item.contract">
                 {{ item.swamp.lessons_conducted }}
                 <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
                 {{ item.swamp.total_lessons }}
@@ -201,7 +214,7 @@ nextTick(loadData)
           v-if="item.groups.length"
           :items="item.groups"
           @add-to-group="g => addToGroup(item, g)"
-          @remove-from-group="g => removeFromGroup(item, g)"
+          @remove-from-group="removeFromGroup"
         />
         <div v-else class="schedule-project__no-groups">
           <UiNoData>
@@ -211,7 +224,10 @@ nextTick(loadData)
       </div>
       <div class="schedule-project__data" :class="{ 'element-loading': loading }">
         <div class="schedule-project__contract">
-          <ProgramSelectorMenu :pre-selected="newPrograms" @saved="onNewProgramsSaved" />
+          <ProgramSelectorMenu
+            :pre-selected="newPrograms"
+            @saved="newVal => (newPrograms = newPrograms.concat(newVal))"
+          />
         </div>
       </div>
     </template>
