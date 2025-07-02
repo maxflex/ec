@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { logOut } = useAuthStore()
+const { $isTgMiniApp } = useNuxtApp()
 
 const loading = ref(false)
 
@@ -15,7 +16,7 @@ function doLogout() {
       Для сотрудников и преподавателей ЕГЭ-Центра личный кабинет доступен только на компьютере 😔
       <br />
       <br />
-      <v-btn block color="primary" :loading="loading" @click="doLogout()">
+      <v-btn v-if="!$isTgMiniApp" block color="primary" :loading="loading" @click="doLogout()">
         выйти
       </v-btn>
     </p>

@@ -132,9 +132,9 @@ export default function<T, E extends object = object>(
     // это установит самый первый год, если есть доступные год
     // + запустит watcher на фильтры и загрузит данные loadData
     if ('year' in filters.value && availableYears.value.length > 0) {
-      // IMPORTANT!!! на время тестирования
-      // filters.value.year = availableYears.value[0]
-      filters.value.year = availableYears.value[availableYears.value.length - 1]
+      // TODO: IMPORTANT!!! на время тестирования
+      filters.value.year = availableYears.value[0]
+      // filters.value.year = availableYears.value[availableYears.value.length - 1]
     }
     else {
       indexPageData.value = {

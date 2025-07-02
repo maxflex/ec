@@ -399,6 +399,14 @@ definePageMeta({ layout: 'login' })
     font-size: 18px !important;
   }
 
+  .v-card-item {
+    padding-left: 0 !important;
+  }
+
+  .v-card__underlay {
+    background: none !important;
+  }
+
   .v-window {
     &-item {
       padding: 30px;

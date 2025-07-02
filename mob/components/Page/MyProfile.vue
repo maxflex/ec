@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { user, logOut } = useAuthStore()
+const { $isTgMiniApp } = useNuxtApp()
 </script>
 
 <template>
@@ -18,7 +19,7 @@ const { user, logOut } = useAuthStore()
         </div>
       </div>
     </div>
-    <v-btn color="primary" style="width: 300px" @click="logOut()">
+    <v-btn v-if="!$isTgMiniApp" color="primary" style="width: 300px" @click="logOut()">
       выйти из профиля
     </v-btn>
   </div>

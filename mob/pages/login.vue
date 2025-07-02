@@ -162,21 +162,19 @@ definePageMeta({ layout: 'login' })
     <div class="login__logo">
       <img src="/img/logo.svg" />
     </div>
-    <v-fade-transition>
-      <div v-if="isCandidatesError" class="fullscreen-message">
-        <p>
-          Не получается войти в личный кабинет 😔
-          <br />
-          <br />
-          Обратитесь, пожалуйста, в учебную часть, и мы всё исправим.
+    <div v-if="isCandidatesError" class="fullscreen-message">
+      <p>
+        Не получается войти в личный кабинет 😔
+        <br />
+        <br />
+        Обратитесь, пожалуйста, в учебную часть, и мы всё исправим.
 
-          <v-btn color="primary" block size="x-large" @click="isCandidatesError = false">
-            назад
-          </v-btn>
-        </p>
-      </div>
-    </v-fade-transition>
-    <TgMiniAppAuth v-if="authViaTelegram" />
+        <v-btn color="primary" block size="x-large" @click="isCandidatesError = false">
+          назад
+        </v-btn>
+      </p>
+    </div>
+    <TgMiniAppAuth v-else-if="authViaTelegram" />
     <v-window v-else v-model="tab" :touch="false">
       <v-window-item>
         <v-text-field

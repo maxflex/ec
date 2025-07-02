@@ -127,12 +127,12 @@ export function smoothScroll(
 
 /**
  * Получить академический год по дате
- * Новый академический год начинается с 1 сентября
+ * Новый академический год начинается с 1 июля
  */
 export function getAcademicYear(d: string): Year {
   const year = getYear(d)
   const month = getMonth(d) + 1
-  const academicYear = month >= 9 ? year : year - 1
+  const academicYear = month >= 7 ? year : year - 1
   return academicYear as Year
 }
 
