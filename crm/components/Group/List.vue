@@ -13,11 +13,10 @@ const { items, blurOthers } = defineProps<{
   <v-table class="table-padding group-list">
     <tbody>
       <tr
-        v-for="(item, i) in items"
+        v-for="item in items"
         :id="`group-${item.id}`"
         :key="item.id"
         :class="{
-          'group-list__separate': i + 1 < items.length && item.program !== items[i + 1].program,
           'group-list__item--blur': blurOthers && !item.teachers.map(e => e.id).includes(blurOthers),
         }"
       >

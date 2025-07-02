@@ -35,7 +35,7 @@ class SubmitPhoneRequest extends FormRequest
                 if ($phone === null) {
                     $validator->errors()->add('number', 'кандидаты <> 1');
                 }
-            }
+            },
         ];
     }
 }

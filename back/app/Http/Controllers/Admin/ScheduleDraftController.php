@@ -18,14 +18,16 @@ class ScheduleDraftController extends Controller
         $request->validate([
             'client_id' => ['required', 'exists:clients,id'],
             'year' => ['required', 'numeric'],
-            'programs' => ['required', 'array'],
+            'new_programs' => ['sometimes', 'array'],
         ]);
 
         $client = Client::find($request->client_id);
         $year = intval($request->year);
+        $newPrograms = $request->new_programs;
 
-        return ScheduleDraft::first()->loadDraft();
+        return ScheduleDraft::createEmptyDraft($client, $year, $newPrograms);
 
+        // return ScheduleDraft::first()->loadDraft();
         // return ScheduleDraft::getData($client, $year, $request->programs);
     }
 
@@ -33,12 +35,18 @@ class ScheduleDraftController extends Controller
     {
         $request->validate([
             // может быть -1 для несуществующих программ
+            'id' => ['required', 'numeric'],
             'program' => ['required'],
             'group_id' => ['required', 'exists:groups,id'],
             'client_id' => ['required', 'exists:clients,id'],
+            'year' => ['required', 'numeric'],
         ]);
+
         $group = Group::find($request->group_id);
         $client = Client::find($request->client_id);
+        $year = intval($request->year);
+
+        $draft = ScheduleDraft::getDraft(auth()->user(), $client, $year);
 
         // ScheduleDraft::addToGroup($group, $client, $request->program);
     }

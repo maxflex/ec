@@ -15,7 +15,7 @@ class PassNotificationCommand extends Command
 
     public function handle(): void
     {
-        $message = 'ЕГЭ-Центр напоминает: завтра Вы записаны на встречу в ЕГЭ-Центре. С уважением, администрация.';
+        $message = 'Здравствуйте. Напоминаем, что завтра Вы записаны на встречу в ЕГЭ-Центр. С уважением, учебная часть.';
 
         $requestIds = Pass::query()
             ->where('date', now()->addDay()->format('Y-m-d'))

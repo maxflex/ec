@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { SwampEditorData, SwampEditorProgram } from '.'
+import type { ScheduleDraftGroup, ScheduleDraftProgram } from '.'
 import type { SwampListResource } from '../Swamp'
 import type { ClientResource } from '~/components/Client'
 import { mdiArrowRightThin } from '@mdi/js'
 import { apiUrl } from '.'
 
-const { client, year, swamps } = defineProps<{
+const { client, year } = defineProps<{
   swamps: SwampListResource[]
   client: ClientResource
   year: Year
@@ -16,60 +16,29 @@ defineEmits<{ back: [] }>()
 const loading = ref(false)
 const btnLoading = ref(false)
 const teeth = ref<Teeth>()
-const swampEditorData = ref<SwampEditorData>()
+const items = ref<ScheduleDraftProgram[]>()
 
 // TODO: переделать в диалог
 const panelElement = document.documentElement.querySelector('.panel')!
 
-const programs = ref<SwampEditorProgram[]>(swamps.map(swamp => ({
-  id: swamp.id,
-  program: swamp.program,
-})),
-)
-
 const newPrograms = ref<Program[]>([])
-
-const programsWithData = computed(() => {
-  if (swampEditorData.value === undefined) {
-    return []
-  }
-  return programs.value.filter(p => p.id in swampEditorData.value!)
-})
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<SwampEditorData>(
+  const { data } = await useHttp<ScheduleDraftProgram[]>(
     `${apiUrl}/get-data`,
     {
       method: 'POST',
       body: {
         client_id: client.id,
         year,
-        programs: programs.value,
+        new_programs: newPrograms.value,
       },
     },
   )
-  swampEditorData.value = data.value!
+  items.value = data.value!
   loading.value = false
   await loadTeeth()
-}
-
-async function addToGroup(g: GroupListResource) {
-  const { error } = await useHttp(
-    `client-groups`,
-    {
-      method: 'post',
-      params: {
-        group_id: g.id,
-        client_id: client.id,
-      },
-    },
-  )
-  if (error.value) {
-    useGlobalMessage(error.value.data.message, 'error')
-    return
-  }
-  await loadData()
 }
 
 async function loadTeeth() {
@@ -94,14 +63,35 @@ async function save() {
       body: {
         year,
         client_id: client.id,
-        data: programs.value.map(p => ({
+        data: items.value.map(p => ({
           ...p,
-          group_id: swampEditorData.value![p.id].swamp?.group_id || null,
+          group_id: items.value![p.id].swamp?.group_id || null,
         })),
       },
     },
   )
   btnLoading.value = false
+}
+
+async function addToGroup(p: ScheduleDraftProgram, g: ScheduleDraftGroup) {
+  const { error } = await useHttp(
+    `${apiUrl}/add-to-group`,
+    {
+      method: 'post',
+      params: {
+        year,
+        id: p.id,
+        program: p.program,
+        group_id: g.id,
+        client_id: client.id,
+      },
+    },
+  )
+  if (error.value) {
+    useGlobalMessage(error.value.data.message, 'error')
+    return
+  }
+  await loadData()
 }
 
 async function removeFromGroup(g: GroupListResource) {
@@ -114,10 +104,6 @@ async function removeFromGroup(g: GroupListResource) {
 
 async function onNewProgramsSaved(p: Program[]) {
   newPrograms.value = p
-  p.every(e => programs.value.push({
-    id: newId(),
-    program: e,
-  }))
   await loadData()
   smoothScroll('main', 'bottom', 'instant')
 }
@@ -136,7 +122,7 @@ nextTick(loadData)
 <template>
   <UiIndexPage
     class="schedule-project"
-    :data="{ loading: loading && !swampEditorData, noData: false }"
+    :data="{ loading: loading && !items, noData: false }"
     sticky
   >
     <template #filters>
@@ -182,36 +168,41 @@ nextTick(loadData)
         <!-- <v-btn icon="$close" :size="44" color="primary" @click="$emit('back')" /> -->
       </div>
     </template>
-    <template v-if="swampEditorData">
-      <div v-for="p in programsWithData" :key="p.id" class="schedule-project__data" :class="{ 'element-loading': loading }">
+    <template v-if="items">
+      <div v-for="item in items" :key="item.id" class="schedule-project__data" :class="{ 'element-loading': loading }">
         <div class="schedule-project__contract">
           <div class="schedule-project__contract-header">
             <span>
-              <template v-if="swampEditorData[p.id].contract">
-                Договор №{{ swampEditorData[p.id].contract.id }}
+              <template v-if="item.contract">
+                Договор №{{ item.contract.id }}
               </template>
               <span v-else class="text-gray">
                 Проект договора
               </span>
             </span>
             <span>
-              {{ ProgramLabel[p.program] }}
+              {{ ProgramLabel[item.program] }}
             </span>
-            <template v-if="swampEditorData[p.id].swamp">
-              <span :class="`swamp-status swamp-status--${swampEditorData[p.id].swamp.status}`" style="background-color: transparent;">
+            <template v-if="item.swamp">
+              <span :class="`swamp-status swamp-status--${item.swamp.status}`" style="background-color: transparent;">
                 <span>
-                  {{ SwampStatusLabel[swampEditorData[p.id].swamp.status] }}
+                  {{ SwampStatusLabel[item.swamp.status] }}
                 </span>
               </span>
               <span>
-                {{ swampEditorData[p.id].swamp.lessons_conducted }}
+                {{ item.swamp.lessons_conducted }}
                 <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
-                {{ swampEditorData[p.id].swamp.total_lessons }}
+                {{ item.swamp.total_lessons }}
               </span>
             </template>
           </div>
         </div>
-        <ScheduleDraftList v-if="swampEditorData[p.id].groups.length" :items="swampEditorData[p.id].groups" />
+        <ScheduleDraftList
+          v-if="item.groups.length"
+          :items="item.groups"
+          @add-to-group="g => addToGroup(item, g)"
+          @remove-from-group="g => removeFromGroup(item, g)"
+        />
         <div v-else class="schedule-project__no-groups">
           <UiNoData>
             не найдено групп

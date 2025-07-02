@@ -3,10 +3,11 @@ import { useBackButton, useMiniApp } from 'vue-tg'
 
 const { logInAndRemember } = useAuthStore()
 
+// выполняется авто-вход...
+const autoLogIn = ref(true)
+
 const loading = ref(false)
 const isError = ref(false)
-
-const { user } = useMiniApp().initDataUnsafe
 
 async function auth() {
   loading.value = true
@@ -21,6 +22,7 @@ async function auth() {
   )
 
   if (error.value) {
+    autoLogIn.value = false
     isError.value = true
     loading.value = false
     return
@@ -30,35 +32,42 @@ async function auth() {
 }
 
 useBackButton().hide!()
+
+nextTick(auth)
 </script>
 
 <template>
-  <v-window>
-    <v-window-item>
-      <v-card v-if="user" variant="tonal">
-        <template #title>
-          {{ user.first_name }}
-          {{ user.last_name }}
-        </template>
-        <template #subtitle>
-          @{{ user.username }}
-        </template>
-        <template #prepend>
-          <UiAvatar :item="user" :size="63" class="mr-3" />
-        </template>
-      </v-card>
-      <div v-if="isError" class="text-error text-center mt-3">
-        ошибка доступа
-      </div>
-      <v-btn
-        color="primary"
-        :loading="loading"
-        block
-        size="x-large"
-        @click="auth()"
-      >
-        Продолжить
-      </v-btn>
-    </v-window-item>
-  </v-window>
+  <div class="fullscreen-message">
+    <img v-if="autoLogIn" src="/img/logo-gray.svg" />
+    <p v-else>
+      Не получается войти в приложение 😔
+      <br />
+      <br />
+      Обратитесь, пожалуйста, в учебную часть, и мы всё исправим.
+    </p>
+  </div>
 </template>
+
+<style lang="scss">
+.fullscreen-message {
+  img {
+    width: 50px;
+    animation-name: tgMiniAppLoading;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-duration: 2s;
+  }
+}
+
+@keyframes tgMiniAppLoading {
+  from {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 0.8;
+  }
+}
+</style>

@@ -1,8 +1,10 @@
 <script setup lang="ts">
 const route = useRoute()
 const { user, isClient } = useAuthStore()
+const { $isTgMiniApp } = useNuxtApp()
 
 const currentPageClass = computed(() => [
+  $isTgMiniApp ? 'tg-mini-app' : '',
   `page-${(route.name as string) || 'default'}`,
   `entity-${user ? getEntityString(user.entity_type) : 'default'}`,
 ])

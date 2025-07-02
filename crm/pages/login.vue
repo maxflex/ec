@@ -28,6 +28,8 @@ enum Step {
   MagicLink,
 }
 
+const isCandidatesError = ref(false)
+
 const window = ref(
   magicLink.hasMagicLink
     ? Step.MagicLink
@@ -64,6 +66,9 @@ async function onPhoneEnter() {
   setTimeout(() => (loading.value = false), 300)
   if (error.value) {
     errors.value = error.value.data.errors
+    if (error.value.data.message === 'кандидаты <> 1') {
+      isCandidatesError.value = true
+    }
     return
   }
   const { user, phone } = data.value!
@@ -140,10 +145,23 @@ definePageMeta({ layout: 'login' })
 
 <template>
   <form class="login">
-    <div class="login__logo">
+    <v-window v-if="isCandidatesError">
+      <v-window-item>
+        <div class="login__candidates-error">
+          Не получается войти в личный кабинет 😔
+          <br />
+          <br />
+          Обратитесь, пожалуйста, в учебную часть, и мы всё исправим.
+        </div>
+        <v-btn color="primary" block size="x-large" @click="isCandidatesError = false">
+          назад
+        </v-btn>
+      </v-window-item>
+    </v-window>
+    <div v-if="!isCandidatesError" class="login__logo">
       <img src="/img/logo.svg" />
     </div>
-    <v-window v-model="window">
+    <v-window v-if="!isCandidatesError" v-model="window">
       <v-window-item class="form-step-phone">
         <v-text-field
           id="form-phone"
@@ -346,6 +364,15 @@ definePageMeta({ layout: 'login' })
     align-items: center;
     justify-content: center;
     text-align: center;
+  }
+
+  &__candidates-error {
+    text-align: center;
+    height: 202px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   &__other {

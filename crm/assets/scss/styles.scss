@@ -495,19 +495,6 @@ tr.hoverable {
   //   }
   // }
 
-  .table-actionss {
-    top: 5px !important;
-    width: 200px !important;
-    .v-btn {
-      width: 160px;
-      font-size: 14px !important;
-    }
-  }
-
-  .v-table__wrapper {
-    overflow: hidden !important;
-  }
-
   &__item {
     &--blur {
       & > div {

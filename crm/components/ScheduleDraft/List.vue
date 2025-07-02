@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import type { SwampEditorGroup } from '.'
+import type { ScheduleDraftGroup } from '.'
 import { mdiArrowRightThin } from '@mdi/js'
 
 const { items } = defineProps<{
-  items: SwampEditorGroup[]
+  items: ScheduleDraftGroup[]
+}>()
+
+const emit = defineEmits<{
+  addToGroup: [e: ScheduleDraftGroup]
+  removeFromGroup: [e: ScheduleDraftGroup]
 }>()
 </script>
 
 <template>
-  <v-table class="table-padding schedule-project-list">
+  <v-table class="table-padding schedule-draft-list">
     <tbody>
       <tr
         v-for="(item, i) in items"
@@ -37,7 +42,7 @@ const { items } = defineProps<{
             <GroupLessonCounts :item="item" />
           </UiIfSet>
         </td>
-        <td width="60">
+        <td width="70">
           <UiIfSet :value="!!item.client_groups_count">
             <template #empty>
               0 уч.
@@ -63,7 +68,7 @@ const { items } = defineProps<{
               </div>
             </div>
             <div class="table-actionss">
-              <v-btn color="error" density="comfortable" @click="removeFromGroup(item)">
+              <v-btn color="error" density="comfortable" @click="emit('removeFromGroup', item)">
                 <span class="text-white">
                   убрать из группы
                 </span>
@@ -80,7 +85,7 @@ const { items } = defineProps<{
               </template>
             </div>
             <div class="table-actionss">
-              <v-btn color="secondary" density="comfortable" @click="addToGroup(item)">
+              <v-btn color="secondary" density="comfortable" @click="emit('addToGroup', item)">
                 добавить в группу
               </v-btn>
             </div>
@@ -90,3 +95,25 @@ const { items } = defineProps<{
     </tbody>
   </v-table>
 </template>
+
+<style lang="scss">
+.schedule-draft-list {
+  td {
+    box-sizing: content-box;
+    position: relative;
+  }
+
+  .table-actionss {
+    top: 5px !important;
+    width: 200px !important;
+    .v-btn {
+      width: 160px;
+      font-size: 14px !important;
+    }
+  }
+
+  .v-table__wrapper {
+    overflow: hidden !important;
+  }
+}
+</style>

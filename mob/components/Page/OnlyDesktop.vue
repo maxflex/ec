@@ -1,26 +1,23 @@
 <script setup lang="ts">
-import { mdiMonitor } from '@mdi/js'
+const { logOut } = useAuthStore()
+
+const loading = ref(false)
+
+function doLogout() {
+  loading.value = true
+  logOut()
+}
 </script>
 
 <template>
-  <UiNoData
-    :icon="mdiMonitor"
-    class="text-black page-only-desktop"
-  >
-    Личный кабинет доступен<br />
-    только на компьютере
-  </UiNoData>
+  <div class="fullscreen-message">
+    <p>
+      Для сотрудников и преподавателей ЕГЭ-Центра личный кабинет доступен только на компьютере 😔
+      <br />
+      <br />
+      <v-btn block color="primary" :loading="loading" @click="doLogout()">
+        выйти
+      </v-btn>
+    </p>
+  </div>
 </template>
-
-<style lang="scss">
-.page-only-desktop {
-  & > div {
-    font-size: 20px;
-    opacity: 0.8 !important;
-  }
-  .v-icon {
-    font-size: 54px !important;
-    opacity: 0.8 !important;
-  }
-}
-</style>

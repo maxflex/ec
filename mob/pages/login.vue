@@ -28,6 +28,8 @@ enum Step {
   MagicLink,
 }
 
+const isCandidatesError = ref(false)
+
 const tab = ref(
   magicLink.hasMagicLink
     ? Step.MagicLink
@@ -66,6 +68,9 @@ async function onPhoneEnter() {
   setTimeout(() => (loading.value = false), 300)
   if (error.value) {
     errors.value = error.value.data.errors
+    if (error.value.data.message === 'кандидаты <> 1') {
+      isCandidatesError.value = true
+    }
     return
   }
   const { user, phone } = data.value!
@@ -157,6 +162,20 @@ definePageMeta({ layout: 'login' })
     <div class="login__logo">
       <img src="/img/logo.svg" />
     </div>
+    <v-fade-transition>
+      <div v-if="isCandidatesError" class="fullscreen-message">
+        <p>
+          Не получается войти в личный кабинет 😔
+          <br />
+          <br />
+          Обратитесь, пожалуйста, в учебную часть, и мы всё исправим.
+
+          <v-btn color="primary" block size="x-large" @click="isCandidatesError = false">
+            назад
+          </v-btn>
+        </p>
+      </div>
+    </v-fade-transition>
     <TgMiniAppAuth v-if="authViaTelegram" />
     <v-window v-else v-model="tab" :touch="false">
       <v-window-item>
@@ -364,8 +383,17 @@ definePageMeta({ layout: 'login' })
     }
   }
 
+  .v-card-item {
+    padding-left: 0 !important;
+  }
+
+  .v-btn__underlay {
+    border-radius: 50px !important;
+  }
+
   .v-card__underlay {
-    background: rgb(var(--v-theme-gray)) !important;
+    // background: rgb(var(--v-theme-gray)) !important;
+    background: none !important;
     // opacity: 1 !important;
   }
 

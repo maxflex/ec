@@ -52,7 +52,7 @@ const timerKey = computed(() => items.filter(e => e.state === 'Connected').lengt
 <style lang="scss">
 .active-calls {
   .calls-list__item {
-    background: rgba(var(--v-theme-primary), 0.3);
+    background: rgba(var(--v-theme-primary), 0.2);
   }
 }
 </style>
