@@ -753,6 +753,7 @@ declare global {
     width: number
     time: string
     time_end: string
+    is_past: boolean
   }
 
   type Teeth = {

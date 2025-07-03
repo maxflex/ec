@@ -28,12 +28,13 @@ class LessonController extends Controller
         return Lesson::withSequenceNumber($lessons);
     }
 
+    // TODO: проанализировать использование, выглядит странно
     public function show(Lesson $lesson)
     {
         $clientLesson = $lesson->clientLessons()
             ->whereIn(
                 'contract_version_program_id',
-                auth()->user()->getContractVersionProgramIds(),
+                auth()->user()->getContractVersionProgramIds($lesson->group->year),
             )
             ->first();
 
@@ -43,9 +44,8 @@ class LessonController extends Controller
         ];
     }
 
-
     protected function filterGroup($query, $value, $field)
     {
-        $query->whereHas('group', fn($q) => $q->where($field, $value));
+        $query->whereHas('group', fn ($q) => $q->where($field, $value));
     }
 }

@@ -31,6 +31,7 @@ function isCurrent(weekday: Weekday, tooth: Tooth): boolean {
         class="teeth__tooth"
         :class="{
           'teeth__tooth--current': isCurrent(weekday, tooth),
+          'teeth__tooth--is-past': tooth.is_past,
         }"
         :style="{
           left: `${tooth.left}%`,
@@ -87,6 +88,10 @@ function isCurrent(weekday: Weekday, tooth: Tooth): boolean {
     }
     &--current {
       background: rgb(var(--v-theme-success));
+    }
+
+    &--is-past {
+      background: #adc9e1;
     }
   }
 }

@@ -83,9 +83,9 @@ class Group extends Model implements HasTeeth
     /**
      * Получить "зубы" группы
      */
-    public function getTeeth(int $year): object
+    public function getTeeth(?int $year = null): object
     {
-        return Teeth::get($this->lessons()->getQuery(), $year, true);
+        return Teeth::get($this->lessons()->getQuery());
     }
 
     public function lessons(): HasMany
@@ -132,8 +132,8 @@ class Group extends Model implements HasTeeth
 
     public function getLessonCountsAttribute(): array
     {
-        $nonCancelledLessons = $this->lessons()->where('status', '<>', LessonStatus::cancelled)->get();
-        $conductedLessons = $this->lessons()->where('status', LessonStatus::conducted)->get();
+        $nonCancelledLessons = $this->lessons->where('status', '<>', LessonStatus::cancelled);
+        $conductedLessons = $this->lessons->where('status', LessonStatus::conducted);
 
         return [
             'conducted' => $conductedLessons->where('is_free', false)->count(),

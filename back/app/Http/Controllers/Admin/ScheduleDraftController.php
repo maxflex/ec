@@ -94,9 +94,7 @@ class ScheduleDraftController extends Controller
 
     public function getTeeth()
     {
-        $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
-
-        return $scheduleDraft->getTeeth($scheduleDraft->year);
+        return ScheduleDraft::fromRam(auth()->id())->getTeeth();
     }
 
     public function apply()

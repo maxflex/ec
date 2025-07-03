@@ -3,8 +3,10 @@
 namespace App\Utils;
 
 use App\Enums\LessonStatus;
+use App\Enums\Program;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 class Teeth
 {
@@ -12,70 +14,64 @@ class Teeth
 
     const MAX_SECONDS = 74400; // TIME_TO_SEC("20:40")
 
-    public static function get(Builder $lessonsQuery, int $year, bool $isGroup = false): object
+    public static function get(Builder $lessonsQuery): object
     {
-        $query = $lessonsQuery
+        $lessons = $lessonsQuery
             ->join('groups as g', 'g.id', '=', 'lessons.group_id')
             ->where('is_unplanned', false)
-            ->where('g.year', $year);
+            ->where('status', '<>', LessonStatus::cancelled)
+            ->select([
+                'lessons.date',
+                'lessons.time',
+                'lessons.status',
+                'g.program',
+            ])
+            ->get();
 
-        // Если группа приближается к концу, расписание в ней не должно меняться
-        // (исчезать и т.д), поэтому мы анализируем (максимальная дата занятия – 1 месяц)
-        // и занятия во всех статусах. Иначе только занятия в статусе planned
-        $flag = false;
-        if ($isGroup) {
-            $maxLessonDateSubMonth = Carbon::parse($query->max('lessons.date'))->subMonth();
-            if (now()->gt($maxLessonDateSubMonth)) {
-                $flag = true;
-                $query
-                    ->where('status', '<>', LessonStatus::cancelled) // conducted | planned
-                    ->where('lessons.date', '>=', $maxLessonDateSubMonth->format('Y-m-d'));
+        // Расчёт длительности
+        foreach ($lessons as $l) {
+            $l->duration = Program::from($l->program)->getDuration();
+            $l->start = self::timeToSeconds($l->time);
+            $l->end = $l->start + $l->duration * 60;
+            $l->weekday = Carbon::parse($l->date)->dayOfWeekIso - 1; // 0 = Пн
+        }
+
+        // Удалим одиночки по (weekday, time)
+        $lessons = $lessons
+            ->groupBy(fn ($l) => $l->weekday.'|'.$l->time)
+            ->filter(fn ($g) => $g->count() > 1)
+            ->flatten();
+
+        // Разделим на планируемые и проведённые
+        $planned = $lessons->where('status', LessonStatus::planned)->sortBy(['date', 'time']);
+        $conducted = $lessons->where('status', LessonStatus::conducted)->sortByDesc(['date', 'time']);
+
+        // Итерация вперёд — X
+        $resultX = collect();
+        foreach ($planned as $lesson) {
+            if (! self::conflicts($lesson, $resultX)) {
+                $resultX->push($lesson);
             }
         }
 
-        if (! $flag) {
-            $query->where('status', LessonStatus::planned);
+        // Итерация назад — Y
+        $resultY = collect();
+        foreach ($conducted as $lesson) {
+            if (! self::conflicts($lesson, $resultX) && ! self::conflicts($lesson, $resultY)) {
+                $resultY->push($lesson);
+            }
         }
 
-        $query
-            ->selectRaw("
-                DAYOFWEEK(`date`) as `weekday`,
-                `time`,
-                IF(g.program LIKE '%School8' OR g.program LIKE '%School9', 55, 125) as `duration`,
-                count(*) as cnt
-            ")
-            ->groupBy('weekday', 'time', 'duration')
-            ->having('cnt', '>', 1); // должно быть более 1 совпадения
+        // Финальная фильтрация Y: если есть конфликт с X, то пропускаем
+        $resultY = $resultY->reject(fn ($l) => self::conflicts($l, $resultX));
 
-        $lessons = $query->get();
+        // Объединяем X + Y
+        $final = $resultX
+            ->map(fn ($l) => self::formatTooth($l, false))
+            ->concat($resultY->map(fn ($l) => self::formatTooth($l, true)));
 
-        $teeth = [];
-        foreach ($lessons as $l) {
-            $weekday = $l->weekday === 1 ? 6 : $l->weekday - 2;
-            [$start, $end] = self::getPercents($l);
-            $teeth[$weekday][] = [
-                'time' => $l->time,
-                'time_end' => self::time($l->time)->addMinutes($l->duration)->format('H:i:s'),
-                'left' => $start,
-                'width' => $end - $start,
-            ];
-        }
-
-        return (object) $teeth;
-    }
-
-    /**
-     * @return array{int, int}
-     */
-    private static function getPercents($l): array
-    {
-        $startSeconds = self::timeToSeconds($l->time);
-        $endSeconds = $startSeconds + $l->duration * 60;
-
-        return [
-            self::secondsToPercent($startSeconds),
-            self::secondsToPercent($endSeconds),
-        ];
+        // Группируем по дню недели
+        return (object) $final->groupBy('weekday')->toArray();
     }
 
     private static function timeToSeconds(string $time): int
@@ -86,6 +82,28 @@ class Teeth
     private static function time(string $time)
     {
         return Carbon::createFromFormat('H:i:s', $time);
+    }
+
+    private static function conflicts($lesson, Collection $set): bool
+    {
+        return $set->contains(
+            fn ($e) => $lesson->weekday === $e->weekday
+                && max($lesson->start, $e->start) < min($lesson->end, $e->end)
+        );
+    }
+
+    private static function formatTooth($lesson, bool $isPast): array
+    {
+        [$start, $end] = [self::secondsToPercent($lesson->start), self::secondsToPercent($lesson->end)];
+
+        return [
+            'weekday' => $lesson->weekday,
+            'time' => $lesson->time,
+            'time_end' => self::time($lesson->time)->addMinutes($lesson->duration)->format('H:i:s'),
+            'left' => $start,
+            'width' => $end - $start,
+            'is_past' => $isPast,
+        ];
     }
 
     /**

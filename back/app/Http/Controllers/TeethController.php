@@ -24,6 +24,8 @@ class TeethController extends Controller
             $request->has('group_id') => Group::find($request->group_id)
         };
 
-        return $entity->getTeeth(intval($request->year));
+        $year = $request->has('year') ? intval($request->year) : null;
+
+        return $entity->getTeeth($year);
     }
 }

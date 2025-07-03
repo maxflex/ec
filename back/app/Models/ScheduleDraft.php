@@ -150,10 +150,7 @@ class ScheduleDraft extends Model implements HasTeeth
             ->where('year', $year)
             ->withCount('clientGroups')
             ->whereIn('program', $this->programs->pluck('program')->unique())
-            ->with(
-                'lessons',
-                fn ($q) => $q->where('status', LessonStatus::planned)
-            )
+            ->with('lessons')
             ->get();
 
         $swamps = $this->programs->map(function ($p) use ($contractVersionPrograms) {
@@ -176,13 +173,6 @@ class ScheduleDraft extends Model implements HasTeeth
             ];
         })->keyBy('id');
 
-        $groupLessons = Lesson::query()
-            ->whereIn('group_id', $groups->pluck('id'))
-            ->where('status', LessonStatus::planned)
-            ->where('is_unplanned', 0)
-            ->get()
-            ->groupBy('group_id');
-
         // добавляем информацию о пересечениях и процессе по договору в каждую группу
         foreach ($groups as $group) {
             $isProgramUsed = false;
@@ -204,7 +194,11 @@ class ScheduleDraft extends Model implements HasTeeth
                 'programs' => collect(),
             ];
 
-            foreach ($groupLessons[$group->id] as $groupLesson) {
+            foreach ($group->lessons as $groupLesson) {
+                if ($groupLesson->status !== LessonStatus::planned || $groupLesson->is_unplanned) {
+                    continue;
+                }
+
                 // не учитываем пересечения с самим собой
                 // if ($groupLesson->group_id === $item->id) {
                 //     continue;
@@ -237,7 +231,7 @@ class ScheduleDraft extends Model implements HasTeeth
         }
 
         $result = [];
-        $groups = $groups
+        $groupsByProgram = $groups
             ->map(fn ($g) => extract_fields($g, [
                 'program', 'client_groups_count', 'zoom', 'lessons_planned',
                 'teacher_counts', 'lesson_counts', 'first_lesson_date', 'swamp',
@@ -252,7 +246,7 @@ class ScheduleDraft extends Model implements HasTeeth
             $swamp = $swamps[$p->id];
             $item->swamp = $swamp;
             $item->contract = $swamp->contract;
-            $item->groups = $groups->has($p->program) ? $groups[$p->program] : [];
+            $item->groups = $groupsByProgram->has($p->program) ? $groupsByProgram[$p->program] : [];
             $result[] = $item;
         }
 
@@ -300,9 +294,9 @@ class ScheduleDraft extends Model implements HasTeeth
         $this->data = $data;
     }
 
-    public function getTeeth(int $year): object
+    public function getTeeth(?int $year = null): object
     {
-        return Teeth::get($this->getLessonsQuery(), $year);
+        return Teeth::get($this->getLessonsQuery());
     }
 
     public function getProgramsAttribute(): Collection

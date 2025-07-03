@@ -8,6 +8,7 @@ use App\Enums\TeacherStatus;
 use App\Traits\IsSearchable;
 use App\Utils\Balance\Balance;
 use App\Utils\Teeth;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -63,11 +64,17 @@ class Teacher extends Person implements HasTeeth
         $query->where('status', TeacherStatus::active);
     }
 
-    public function getTeeth(int $year): object
+    public function getTeeth(?int $year = null): object
     {
-        $query = Lesson::query()->where('teacher_id', $this->id);
+        if (is_null($year)) {
+            throw new Exception('Year is required');
+        }
 
-        return Teeth::get($query, $year);
+        $query = Lesson::query()
+            ->where('teacher_id', $this->id)
+            ->whereHas('group', fn ($q) => $q->where('year', $year));
+
+        return Teeth::get($query);
     }
 
     public function makeAllSearchableUsing(Builder $query): Builder

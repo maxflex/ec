@@ -53,11 +53,12 @@ const emit = defineEmits<{
         <template v-if="item.swamp">
           <td :class="`swamp-status--${item.swamp.status}`">
             <div class="pl-3">
-              <div v-if="item.contract">
+              <!-- в "проект по договору" не показываем -->
+              <template v-if="item.swamp.id > 0">
                 {{ item.swamp.lessons_conducted }}
                 <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
                 {{ item.swamp.total_lessons }}
-              </div>
+              </template>
               <div>
                 {{ SwampStatusLabel[item.swamp.status] }}
               </div>

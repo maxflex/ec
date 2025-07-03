@@ -282,15 +282,15 @@ nextTick(getInitial)
               {{ ProgramLabel[item.program] }}
             </span>
             <template v-if="item.swamp">
-              <span :class="`swamp-status swamp-status--${item.swamp.status}`" style="background-color: transparent;">
-                <span>
-                  {{ SwampStatusLabel[item.swamp.status] }}
-                </span>
-              </span>
               <span v-if="item.contract">
                 {{ item.swamp.lessons_conducted }}
                 <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
                 {{ item.swamp.total_lessons }}
+              </span>
+              <span :class="`swamp-status swamp-status--${item.swamp.status}`" style="background-color: transparent;">
+                <span>
+                  {{ SwampStatusLabel[item.swamp.status] }}
+                </span>
               </span>
             </template>
             <v-btn

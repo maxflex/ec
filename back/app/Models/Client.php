@@ -10,6 +10,7 @@ use App\Enums\SwampStatus;
 use App\Traits\HasComments;
 use App\Traits\IsSearchable;
 use App\Utils\Teeth;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -177,24 +178,40 @@ class Client extends Person implements HasTeeth
         return $schedule;
     }
 
-    public function getTeeth(int $year): object
+    public function getTeeth(?int $year = null): object
     {
-        $query = Lesson::query()
-            ->join('client_groups as cg', 'cg.group_id', '=', 'lessons.group_id')
-            ->whereIn(
-                'cg.contract_version_program_id',
-                $this->getContractVersionProgramIds(),
-            );
+        if (is_null($year)) {
+            throw new Exception('Year is required');
+        }
 
-        return Teeth::get($query, $year);
+        $cvpIds = $this->getContractVersionProgramIds($year);
+
+        /**
+         * Все занятия из групп, в которых клиент в данный момент находится.
+         * Или все занятия, на которых ученик реально присутствовал
+         */
+        $query = Lesson::query()->where(
+            fn ($q) => $q->whereExists(fn ($q) => $q->selectRaw(1)
+                ->from('client_groups as cg')
+                ->whereColumn('cg.group_id', 'lessons.group_id')
+                ->whereIn('cg.contract_version_program_id', $cvpIds)
+            )->orWhereExists(fn ($q) => $q->selectRaw(1)
+                ->from('client_lessons as cl')
+                ->whereColumn('cl.lesson_id', 'lessons.id')
+                ->whereIn('cl.contract_version_program_id', $cvpIds)
+            )
+        );
+
+        return Teeth::get($query);
     }
 
     /**
-     * Получить все contract_version_program_id из активной версии договора
+     * Получить все contract_version_program_id из активных версий договора
      */
-    public function getContractVersionProgramIds()
+    public function getContractVersionProgramIds(int $year): Collection
     {
         return $this->contracts()
+            ->where('year', $year)
             ->join('contract_versions as cv',
                 fn ($join) => $join
                     ->on('cv.contract_id', '=', 'contracts.id')
