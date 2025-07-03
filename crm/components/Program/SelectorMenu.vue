@@ -1,7 +1,14 @@
 <script setup lang="ts">
-const { preSelected, noDisable } = defineProps<{
+/**
+ * TODO: переделать на v-model
+ */
+const { preSelected, noDisable, includePreSelected } = defineProps<{
   preSelected: Program[]
   noDisable?: boolean
+  /**
+   * Включить предвыбранные программы в emit (иначе отправляются только ново-выбранные программы)
+   */
+  includePreSelected?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -18,7 +25,7 @@ function select(p: Program) {
 
 function save() {
   menu.value = false
-  emit('saved', selected.value)
+  emit('saved', includePreSelected ? [...selected.value, ...preSelected] : selected.value)
 }
 
 watch(menu, (newVal) => {

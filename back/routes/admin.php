@@ -99,12 +99,15 @@ Route::get('instructions/diff/{instruction}', [InstructionController::class, 'di
 Route::apiResource('swamps', SwampController::class)->only('index');
 
 Route::prefix('schedule-drafts')->controller(ScheduleDraftController::class)->group(function () {
-    Route::post('/get-initial', 'getInitial');
     Route::post('/add-to-group', 'addToGroup');
     Route::post('/remove-from-group', 'removeFromGroup');
     Route::post('/new-programs', 'newPrograms');
     Route::post('/save', 'save');
+    Route::post('/apply', 'apply');
+    Route::get('/get-initial', 'getInitial');
+    Route::get('/get-teeth', 'getTeeth');
 });
+Route::apiResource('schedule-drafts', ScheduleDraftController::class)->only(['index', 'show', 'destroy']);
 
 Route::prefix('event-participants')->controller(EventParticipantController::class)->group(function () {
     Route::post('/', 'store');

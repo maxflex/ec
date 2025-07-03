@@ -7,7 +7,7 @@ const { client } = defineProps <{ client: ClientResource }>()
 const filters = useAvailableYearsFilter()
 const isSwampEditor = ref(false)
 
-const { items, indexPageData, availableYears } = useIndex<SwampListResource>(
+const { items, indexPageData, reloadData, availableYears } = useIndex<SwampListResource>(
   `swamps`,
   filters,
   {
@@ -17,6 +17,12 @@ const { items, indexPageData, availableYears } = useIndex<SwampListResource>(
     },
   },
 )
+
+function onBack() {
+  reloadData()
+  isSwampEditor.value = false
+  smoothScroll('main', 'top', 'instant')
+}
 </script>
 
 <template>
@@ -25,7 +31,7 @@ const { items, indexPageData, availableYears } = useIndex<SwampListResource>(
     :client="client"
     :year="filters.year"
     :swamps="items"
-    @back="isSwampEditor = false"
+    @back="onBack()"
   />
   <UiIndexPage v-else :data="indexPageData">
     <template #filters>

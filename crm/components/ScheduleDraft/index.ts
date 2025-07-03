@@ -1,6 +1,15 @@
 export const apiUrl = 'schedule-drafts'
 
 /**
+ * Сохраненные проекты расписания
+ */
+export interface ScheduleDraftResource {
+  id: number
+  user: PersonResource
+  created_at: string
+}
+
+/**
  * Процесс по договору
  */
 interface ScheduleDraftSwamp {

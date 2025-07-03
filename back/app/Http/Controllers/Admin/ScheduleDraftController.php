@@ -3,12 +3,27 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ScheduleDraftResource;
 use App\Models\Client;
 use App\Models\ScheduleDraft;
+use Exception;
 use Illuminate\Http\Request;
 
 class ScheduleDraftController extends Controller
 {
+    protected $filters = [
+        'equals' => ['client_id', 'year'],
+    ];
+
+    public function index(Request $request)
+    {
+        $query = ScheduleDraft::latest();
+
+        $this->filter($request, $query);
+
+        return $this->handleIndexRequest($request, $query, ScheduleDraftResource::class);
+    }
+
     /**
      * Вкладка управление группами у клиента
      */
@@ -52,10 +67,13 @@ class ScheduleDraftController extends Controller
         ]);
 
         $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
-        $scheduleDraft->addToGroup(
+        $wasAdded = $scheduleDraft->addToGroup(
             intval($request->program_id),
             intval($request->group_id)
         );
+
+        abort_if(! $wasAdded, 422);
+
         $scheduleDraft->toRam();
 
         return $scheduleDraft->getData();
@@ -64,7 +82,7 @@ class ScheduleDraftController extends Controller
     public function newPrograms(Request $request)
     {
         $request->validate([
-            'new_programs' => ['required', 'array'],
+            'new_programs' => ['sometimes', 'array'],
         ]);
 
         $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
@@ -74,20 +92,49 @@ class ScheduleDraftController extends Controller
         return $scheduleDraft->getData();
     }
 
-    public function save(Request $request)
+    public function getTeeth()
     {
-        $request->validate([
-            'client_id' => ['required', 'exists:clients,id'],
-            'year' => ['required', 'numeric'],
-            'data' => ['required', 'array'],
-        ]);
+        $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
 
-        $client = Client::find($request->client_id);
+        return $scheduleDraft->getTeeth($scheduleDraft->year);
+    }
 
-        return $client->scheduleDrafts()->create([
-            'data' => $request->data,
-            'year' => $request->year,
-            'user_id' => auth()->id(),
-        ]);
+    public function apply()
+    {
+        $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
+        try {
+            $scheduleDraft->apply();
+        } catch (Exception $e) {
+            abort(422, $e->getMessage());
+        }
+
+        return $scheduleDraft;
+    }
+
+    public function save()
+    {
+        $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
+        $scheduleDraft->save();
+
+        return new ScheduleDraftResource($scheduleDraft);
+    }
+
+    /**
+     * Загрузить сохранённый проект
+     */
+    public function show(ScheduleDraft $scheduleDraft)
+    {
+        $scheduleDraft->user_id = auth()->id();
+        $scheduleDraft->toRam();
+
+        return $scheduleDraft->getData();
+    }
+
+    /**
+     * Удалить сохранённый проект
+     */
+    public function destroy(ScheduleDraft $scheduleDraft)
+    {
+        $scheduleDraft->delete();
     }
 }

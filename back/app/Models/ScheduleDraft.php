@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Contracts\HasTeeth;
 use App\Enums\LessonStatus;
 use App\Http\Resources\PersonResource;
+use App\Utils\Teeth;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Collection;
 
-class ScheduleDraft extends Model
+class ScheduleDraft extends Model implements HasTeeth
 {
     protected $fillable = [
         'data', 'client_id', 'user_id', 'year',
@@ -55,8 +59,15 @@ class ScheduleDraft extends Model
         ]);
     }
 
-    public function addToGroup(int $programId, int $groupId)
+    public function addToGroup(int $programId, int $groupId): bool
     {
+        // программа уже добавлена в другую группу
+        $wasAdded = $this->data->contains(fn ($e) => $e['id'] === $programId && $e['group_id']);
+
+        if ($wasAdded) {
+            return false;
+        }
+
         $this->data = $this->data->map(function ($item) use ($programId, $groupId) {
             if ($item['id'] === $programId) {
                 $item['group_id'] = $groupId;
@@ -64,6 +75,8 @@ class ScheduleDraft extends Model
 
             return $item;
         });
+
+        return true;
     }
 
     public function removeFromGroup(int $programId)
@@ -85,39 +98,65 @@ class ScheduleDraft extends Model
         return cache()->put(self::getCacheKey($this->user_id), $this, now()->addDay());
     }
 
+    /**
+     * Применить текущий проект
+     */
+    public function apply()
+    {
+        if ($this->programs->where('id', '<', 0)->count()) {
+            throw new Exception('Невозможно применить программы из "проекта договора"');
+        }
+
+        // сначала удаляем все группы клиента
+        // возможно в будущем нужно будет удалять не по ID, а всё по году
+        $clientGroups = ClientGroup::whereIn('contract_version_program_id', $this->programs->pluck('id'))->get();
+        $clientGroups->each->delete();
+
+        $programs = $this->programs
+            // применяем только те, где установлен group_id
+            ->whereNotNull('group_id')
+            // "проект договора" пока исключаем
+            ->where('id', '>', 0)
+            ->values();
+
+        foreach ($programs as $p) {
+            ClientGroup::create([
+                'contract_version_program_id' => $p->id,
+                'group_id' => $p->group_id,
+            ]);
+        }
+    }
+
     public function getData()
     {
         $year = $this->year;
-        $programs = collect($this->data)->map(fn ($p) => (object) $p);
-
-        $contractVersionPrograms = ContractVersionProgram::query()
-            ->with('contractVersion.contract')
-            ->whereIn('id', $programs->where('id', '>', 0)->pluck('id'))
-            ->get()
-            ->keyBy('id');
-
-        $groupIds = $programs->whereNotNull('group_id')->pluck('group_id')->unique();
 
         // Все планируемые занятия ученика, сгруппированные по дате
-        $clientLessons = Lesson::query()
+        // НЕ client_lessons, а lessons
+        $clientLessons = $this->getLessonsQuery()
             ->with('group')
-            ->whereIn('group_id', $groupIds)
             ->where('status', LessonStatus::planned)
             ->where('is_unplanned', 0)
             ->get()
             ->groupBy('date');
 
+        $contractVersionPrograms = ContractVersionProgram::query()
+            ->with('contractVersion.contract')
+            ->whereIn('id', $this->programs->where('id', '>', 0)->pluck('id'))
+            ->get()
+            ->keyBy('id');
+
         $groups = Group::query()
             ->where('year', $year)
             ->withCount('clientGroups')
-            ->whereIn('program', $programs->pluck('program')->unique())
+            ->whereIn('program', $this->programs->pluck('program')->unique())
             ->with(
                 'lessons',
                 fn ($q) => $q->where('status', LessonStatus::planned)
             )
             ->get();
 
-        $swamps = $programs->map(function ($p) use ($contractVersionPrograms) {
+        $swamps = $this->programs->map(function ($p) use ($contractVersionPrograms) {
             $cvp = $p->id > 0 ? $contractVersionPrograms[$p->id] : null;
             $lessonsConducted = $cvp ? $cvp->lessons_conducted : 0;
             $totalLessons = $cvp ? $cvp->total_lessons : 33; // 33 – прогноз по занятиям, чтобы статус был "к исполнению"
@@ -147,7 +186,7 @@ class ScheduleDraft extends Model
         // добавляем информацию о пересечениях и процессе по договору в каждую группу
         foreach ($groups as $group) {
             $isProgramUsed = false;
-            $p = $programs->where('group_id', $group->id)->first();
+            $p = $this->programs->where('group_id', $group->id)->first();
 
             // есть процесс по договору
             if ($p) {
@@ -208,7 +247,7 @@ class ScheduleDraft extends Model
             ]))
             ->groupBy('program');
 
-        foreach ($programs as $p) {
+        foreach ($this->programs as $p) {
             $item = $p;
             $swamp = $swamps[$p->id];
             $item->swamp = $swamp;
@@ -220,27 +259,38 @@ class ScheduleDraft extends Model
         return $result;
     }
 
+    private function getLessonsQuery()
+    {
+        $groupIds = $this->programs->whereNotNull('group_id')->pluck('group_id')->unique();
+
+        return Lesson::query()->whereIn('group_id', $groupIds);
+    }
+
     /**
      * Добавить (или удалить) новые программы в проект договора
      *
-     * - удалить старые с id < 0, если их нет в $programs;
-     * - добавить новые с id < 0, если их нет в $programs;
+     * - удалить старые с id < 0, если их нет в $newPrograms;
+     * - добавить новые с id < 0, если их нет в $newPrograms;
      * - оставить всё остальное как есть.
      */
     public function newPrograms(array $newPrograms)
     {
         $newPrograms = collect($newPrograms);
 
-        // убираем удалённые
+        $id = min($this->data->min('id'), 0);
+
+        // удаление программ
         $data = $this->data
+            // логика: оставляем только реальные (ID > 0) или те, что есть в актуальном $newPrograms
             ->filter(fn ($e) => $e['id'] > 0 || $newPrograms->contains($e['program']))
             ->values();
 
         // Добавляем недостающие новые программы (id < 0)
-        foreach ($newPrograms as $index => $program) {
+        foreach ($newPrograms as $program) {
             if (! $data->contains(fn ($e) => $e['id'] < 0 && $e['program'] === $program)) {
+                $id--;
                 $data->push([
-                    'id' => ($index + 1) * -1,
+                    'id' => $id,
                     'program' => $program,
                     'group_id' => null,
                 ]);
@@ -248,6 +298,16 @@ class ScheduleDraft extends Model
         }
 
         $this->data = $data;
+    }
+
+    public function getTeeth(int $year): object
+    {
+        return Teeth::get($this->getLessonsQuery(), $year);
+    }
+
+    public function getProgramsAttribute(): Collection
+    {
+        return once(fn () => collect($this->data)->map(fn ($p) => (object) $p));
     }
 
     public function user(): BelongsTo
