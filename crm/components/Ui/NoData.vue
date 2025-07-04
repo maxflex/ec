@@ -7,7 +7,9 @@ const { icon } = defineProps<{ icon?: string }>()
     <div>
       <v-icon v-if="icon" :icon="icon" />
       <div>
-        <slot />
+        <slot>
+          нет данных
+        </slot>
       </div>
     </div>
   </div>

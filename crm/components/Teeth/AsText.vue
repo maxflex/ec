@@ -12,7 +12,7 @@ const { items, oneLine } = defineProps<{
         {{ WeekdayLabel[weekday] }}
       </span>
       <div class="teeth-as-text__times">
-        <span v-for="(t, index) in teeth.sort((a, b) => a.left - b.left)" :key="index">
+        <span v-for="(t, index) in teeth.sort((a, b) => a.left - b.left)" :key="index" :class="{ 'teeth-as-text__past': t.is_past }">
           {{ formatTime(t.time) }} – {{ formatTime(t.time_end) }}
         </span>
       </div>
@@ -59,6 +59,10 @@ const { items, oneLine } = defineProps<{
         }
       }
     }
+  }
+
+  &__is-past {
+    opacity: 0.5;
   }
 }
 </style>

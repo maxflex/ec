@@ -29,6 +29,8 @@ export interface ScheduleDraftGroup extends GroupListResource {
     programs: Program[]
   }
   swamp?: ScheduleDraftSwamp
+  uncunducted_count: number
+  draft_status?: number
 }
 
 export interface ScheduleDraftProgram {

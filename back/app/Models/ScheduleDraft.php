@@ -131,6 +131,8 @@ class ScheduleDraft extends Model implements HasTeeth
     {
         $year = $this->year;
 
+        $realProgramIds = $this->programs->where('id', '>', 0)->pluck('id');
+
         // Все планируемые занятия ученика, сгруппированные по дате
         // НЕ client_lessons, а lessons
         $clientLessons = $this->getLessonsQuery()
@@ -142,7 +144,7 @@ class ScheduleDraft extends Model implements HasTeeth
 
         $contractVersionPrograms = ContractVersionProgram::query()
             ->with('contractVersion.contract')
-            ->whereIn('id', $this->programs->where('id', '>', 0)->pluck('id'))
+            ->whereIn('id', $realProgramIds)
             ->get()
             ->keyBy('id');
 
@@ -152,6 +154,10 @@ class ScheduleDraft extends Model implements HasTeeth
             ->whereIn('program', $this->programs->pluck('program')->unique())
             ->with('lessons')
             ->get();
+
+        $clientGroups = ClientGroup::query()
+            ->whereIn('contract_version_program_id', $realProgramIds)
+            ->pluck('group_id', 'contract_version_program_id');
 
         $swamps = $this->programs->map(function ($p) use ($contractVersionPrograms) {
             $cvp = $p->id > 0 ? $contractVersionPrograms[$p->id] : null;
@@ -178,10 +184,22 @@ class ScheduleDraft extends Model implements HasTeeth
             $isProgramUsed = false;
             $p = $this->programs->where('group_id', $group->id)->first();
 
+            $group->draft_status = 0;
+
             // есть процесс по договору
             if ($p) {
                 $isProgramUsed = true;
                 $group->swamp = $swamps[$p->id];
+
+                // процесс по договору есть в черновике, но нет в реальности
+                if (@$clientGroups[$p->id] !== $group->id) {
+                    $group->draft_status = 1;
+                }
+            } else {
+                // процесса по договору нет в черновике, но есть в реальности
+                if ($clientGroups->contains($group->id)) {
+                    $group->draft_status = 2;
+                }
             }
 
             // если ученик уже в группе, кол-во пересечений не считаем
@@ -195,6 +213,10 @@ class ScheduleDraft extends Model implements HasTeeth
             ];
 
             foreach ($group->lessons as $groupLesson) {
+                if (now()->format('Y-m-d H:i:s') >= $groupLesson->date_time && $groupLesson->status !== LessonStatus::conducted) {
+                    @$group->uncunducted_count++;
+                }
+
                 if ($groupLesson->status !== LessonStatus::planned || $groupLesson->is_unplanned) {
                     continue;
                 }
@@ -235,8 +257,9 @@ class ScheduleDraft extends Model implements HasTeeth
             ->map(fn ($g) => extract_fields($g, [
                 'program', 'client_groups_count', 'zoom', 'lessons_planned',
                 'teacher_counts', 'lesson_counts', 'first_lesson_date', 'swamp',
-                'overlap',
+                'overlap', 'uncunducted_count', 'draft_status',
             ], [
+                'teeth' => $g->getTeeth(),
                 'teachers' => PersonResource::collection($g->teachers),
             ]))
             ->groupBy('program');
@@ -258,6 +281,11 @@ class ScheduleDraft extends Model implements HasTeeth
         $groupIds = $this->programs->whereNotNull('group_id')->pluck('group_id')->unique();
 
         return Lesson::query()->whereIn('group_id', $groupIds);
+    }
+
+    public function getTeeth(?int $year = null): object
+    {
+        return Teeth::get($this->getLessonsQuery());
     }
 
     /**
@@ -292,11 +320,6 @@ class ScheduleDraft extends Model implements HasTeeth
         }
 
         $this->data = $data;
-    }
-
-    public function getTeeth(?int $year = null): object
-    {
-        return Teeth::get($this->getLessonsQuery());
     }
 
     public function getProgramsAttribute(): Collection

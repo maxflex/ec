@@ -69,17 +69,17 @@ const { items } = defineProps<{
           </td>
           <td colspan="3" />
         </template>
-        <td :class="`swamp-status swamp-status--${item.status}`">
+        <td :class="`swamp-status swamp-status--${item.status}`" colspan="2">
           <div class="pl-3">
-            {{ item.lessons_conducted }}
-            <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
-            {{ item.total_lessons }}
+            <div>
+              {{ item.lessons_conducted }}
+              <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
+              {{ item.total_lessons }}
+            </div>
+            <div>
+              {{ SwampStatusLabel[item.status] }}
+            </div>
           </div>
-        </td>
-        <td :class="`swamp-status swamp-status--${item.status}`">
-          <span>
-            {{ SwampStatusLabel[item.status] }}
-          </span>
         </td>
       </tr>
     </tbody>

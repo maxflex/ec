@@ -50,8 +50,16 @@ const emit = defineEmits<{
             {{ item.client_groups_count }} уч.
           </UiIfSet>
         </td>
+        <td width="140">
+          <UiIfSet :value="Object.keys(item.teeth).length > 0">
+            <template #empty>
+              расписание отсутствует
+            </template>
+            <TeethAsText :items="item.teeth" />
+          </UiIfSet>
+        </td>
         <template v-if="item.swamp">
-          <td :class="`swamp-status--${item.swamp.status}`">
+          <td :class="`swamp-status swamp-status--${item.swamp.status}`">
             <div class="pl-3">
               <!-- в "проект по договору" не показываем -->
               <template v-if="item.swamp.id > 0">
@@ -62,10 +70,15 @@ const emit = defineEmits<{
               <div>
                 {{ SwampStatusLabel[item.swamp.status] }}
               </div>
-
               <div v-if="item.overlap?.count">
                 {{ item.overlap!.count }} пересечений
                 ({{ item.overlap!.programs.map(e => ProgramShortLabel[e]).join(', ') }})
+              </div>
+              <div v-if="item.uncunducted_count" class="text-error">
+                {{ item.uncunducted_count }} непроведенных занятий
+              </div>
+              <div v-if="item.draft_status" class="text-gray">
+                добавлен в черновике, но нет в реальности
               </div>
             </div>
             <div class="table-actionss">
@@ -79,6 +92,9 @@ const emit = defineEmits<{
         </template>
         <template v-else>
           <td colspan="100">
+            <div v-if="item.draft_status" class="text-gray">
+              добавлен в реальности, но нет в черновике
+            </div>
             <div class="pl-3">
               <template v-if="item.overlap?.count">
                 {{ item.overlap!.count }} пересечений
