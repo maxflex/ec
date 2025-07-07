@@ -9,13 +9,21 @@ interface CabinetTeeth {
   } | null
 }
 
+const filters = ref<YearFilters>({
+  year: currentAcademicYear(),
+})
+
 const { items, indexPageData } = useIndex<CabinetTeeth>(
   `cabinets`,
+  filters,
 )
 </script>
 
 <template>
   <UiIndexPage :data="indexPageData">
+    <template #filters>
+      <UiYearSelector v-model="filters.year" density="comfortable" />
+    </template>
     <div class="cabinets">
       <div v-for="item in items" :key="item.cabinet">
         <div class="cabinets__title">

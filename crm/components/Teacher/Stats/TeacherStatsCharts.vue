@@ -82,7 +82,7 @@ async function loadData() {
     }
   }
   const arr = Array.from({ length: Object.keys(stats.avg).length })
-  const lessons = stats.teacher[currentAcademicYear()].lessons
+  const lessons = stats.teacher[currentAcademicYear()]?.lessons || []
   lessonsChart.labels = arr.map((_, i) => lessons[i] ? DirectionLabel[lessons[i].direction] : '')
   lessonsChart.datasets.push({
     label: LessonStatusLabel.conducted,

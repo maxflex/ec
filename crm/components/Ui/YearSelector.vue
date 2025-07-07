@@ -4,6 +4,7 @@ const model = defineModel<Year>({ required: true })
 
 <template>
   <v-select
+    v-bind="$attrs"
     v-model="model"
     :items="selectItems(YearLabel)"
     label="Учебный год"

@@ -14,17 +14,23 @@ use Illuminate\Support\Carbon;
 
 class CabinetController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $request->validate([
+            'year' => ['required'],
+        ]);
+
         $result = [];
         foreach (Cabinet::cases() as $cabinet) {
             if (str($cabinet->value)->startsWith('tur')) {
                 continue;
             }
-            $query = Lesson::query()->where('cabinet', $cabinet);
+            $query = Lesson::query()
+                ->whereHas('group', fn ($q) => $q->where('year', $request->year))
+                ->where('cabinet', $cabinet);
             $result[] = [
                 'cabinet' => $cabinet,
-                'teeth' => Teeth::get($query, current_academic_year()),
+                'teeth' => Teeth::get($query),
                 ...$this->getFreeCabinetData($cabinet),
             ];
         }
