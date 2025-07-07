@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { CallEvent } from '.'
 import { mdiPhoneIncoming, mdiPhoneMissed, mdiPhoneOutgoing } from '@mdi/js'
 import { isMissed } from '.'
 

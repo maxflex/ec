@@ -12,7 +12,7 @@ import {
   mdiSeatPassenger,
   mdiSendCircle,
 } from '@mdi/js'
-import { openCallApp } from '~/components/CallApp'
+import { callAppDialog } from '~/components/CallApp'
 
 const { $addSseListener, $removeSseListener } = useNuxtApp()
 
@@ -134,7 +134,7 @@ nextTick(updateMenuCounts)
       </template>
       Поиск
     </v-list-item>
-    <v-list-item :active="false" @click="openCallApp()">
+    <v-list-item :active="false" @click="callAppDialog = true">
       <template #prepend>
         <CallAppStateIcon />
       </template>

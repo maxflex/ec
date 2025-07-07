@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { CallEvent } from '.'
 import { differenceInSeconds, format, parse } from 'date-fns'
 
 // Define props with types using defineProps

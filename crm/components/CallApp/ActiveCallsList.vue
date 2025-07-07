@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { CallEvent } from '.'
 import { mdiCallMade, mdiCallReceived } from '@mdi/js'
 
 const { items } = defineProps<{

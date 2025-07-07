@@ -21,12 +21,12 @@ class CallAppAonResource extends JsonResource
                 'request_id' => $this->entity_id,
             ],
             default => [
-                'entity' => new PersonResource($this->entity)
+                'entity' => new PersonResource($this->entity),
             ],
         };
 
         return extract_fields($this, [
-            'comment'
+            'number', 'comment', 'telegram_id', 'is_telegram_disabled',
         ], $extra);
     }
 }

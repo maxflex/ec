@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { CallListResource } from '.'
 import { mdiDownload } from '@mdi/js'
 
 const { item } = defineProps<{

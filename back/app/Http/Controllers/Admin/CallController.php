@@ -5,15 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CallListResource;
 use App\Models\Call;
-use App\Models\Client;
-use App\Models\ClientParent;
-use App\Models\Teacher;
 use Illuminate\Http\Request;
 
 class CallController extends Controller
 {
     protected $filters = [
-        'search' => ['q'],
+        'equals' => ['number'],
     ];
 
     public function index(Request $request)
@@ -39,26 +36,6 @@ class CallController extends Controller
     {
         if ($call->is_missed && ! $call->is_missed_callback) {
             $call->delete();
-        }
-    }
-
-    public function filterSearch($query, $value)
-    {
-        if (! $value) {
-            return;
-        }
-        if (is_numeric($value)) {
-            $query->where('number', 'like', '%'.$value.'%');
-        } else {
-            $query->whereHas('phone', fn ($q) => $q
-                ->whereHasMorph('entity', [
-                    Client::class,
-                    ClientParent::class,
-                    Teacher::class,
-                ], fn ($q) => $q->whereRaw('
-                CONCAT(last_name, first_name) LIKE ?
-            ', ["%$value%"])
-                ));
         }
     }
 }

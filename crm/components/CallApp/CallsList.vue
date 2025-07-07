@@ -4,6 +4,10 @@ import { mdiCallMade, mdiCallMissed, mdiCallReceived } from '@mdi/js'
 const { items } = defineProps<{
   items: CallListResource[]
 }>()
+
+const emit = defineEmits<{
+  history: [e: CallListResource]
+}>()
 </script>
 
 <template>
@@ -15,7 +19,7 @@ const { items } = defineProps<{
     >
       <div>
         <div class="d-flex ga-2">
-          <div class="calls-list__number">
+          <div class="calls-list__number" @click="emit('history', call)">
             {{ formatPhone(call.number) }}
           </div>
           <div v-if="call.aon?.comment" class="calls-list__comment text-truncate">

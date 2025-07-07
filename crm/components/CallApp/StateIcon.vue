@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import type { CallState } from '.'
 import { mdiPhone, mdiPhoneIncoming, mdiPhoneInTalk, mdiPhoneMissed } from '@mdi/js'
 import { hasIncoming } from '.'
 

@@ -34,7 +34,6 @@ nextTick(checkVerification)
       </template>
       <template #buttons>
         <UiCountDown :seconds="seconds" @timeout="checkVerification()">
-          <v-icon :icon="mdiLockOpenOutline" color="gray" />
           Просмотр разрешён ещё
         </UiCountDown>
       </template>

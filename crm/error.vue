@@ -18,9 +18,6 @@ const { error } = defineProps({
           {{ error.statusCode }}
         </h1>
         <span v-else>
-          <div>
-            <v-icon :icon="mdiCancel" />
-          </div>
           У вас нет доступа к этой странице
         </span>
       </v-main>

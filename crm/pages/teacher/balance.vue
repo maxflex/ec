@@ -20,7 +20,6 @@ nextTick(checkVerification)
   <template v-else-if="seconds > 0">
     <Balance :teacher-id="user?.id!">
       <UiCountDown :seconds="seconds" @timeout="checkVerification()">
-        <v-icon :icon="mdiLockOpenOutline" color="gray" />
         Просмотр разрешён ещё
       </UiCountDown>
     </Balance>

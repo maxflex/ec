@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { mdiLockOutline } from '@mdi/js'
-
 const emit = defineEmits(['verified'])
 
 const otp = reactive({
@@ -15,9 +13,12 @@ const isSent = ref(false)
 function sendCode() {
   isSent.value = true
   nextTick(() => otpInput.value.focus())
-  useHttp(`balance-verification/send-code`, {
-    method: 'post',
-  })
+  useHttp(
+    `balance-verification/send-code`,
+    {
+      method: 'post',
+    },
+  )
 }
 
 async function onOtpFinish() {
@@ -45,7 +46,6 @@ async function onOtpFinish() {
 
 <template>
   <div class="balance-verification">
-    <v-icon :icon="mdiLockOutline" color="gray" />
     <p>
       Для просмотра этой страницы<br>
       необходимо подтверждение доступа

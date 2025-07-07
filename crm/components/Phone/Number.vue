@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { RequestListResource } from '../Request'
+
 const { item, request } = defineProps<{
   item: PhoneResource
   request?: RequestListResource

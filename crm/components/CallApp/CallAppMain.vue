@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { CallEvent } from '~/components/CallApp/index'
 import { callAppDialog, hasIncoming, isMissed } from '~/components/CallApp/index'
 
 const { user } = useAuthStore()

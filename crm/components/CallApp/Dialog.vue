@@ -1,18 +1,17 @@
 <script setup lang="ts">
-import { useDebounceFn } from '@vueuse/core'
-import { callAppDialog, filters, player } from '.'
+import type { CallEvent, CallListResource } from '.'
+import { callAppDialog } from '.'
 
 const { activeCalls } = defineProps<{
   activeCalls: CallEvent[]
 }>()
 
-const q = ref('')
-
 const { $addSseListener } = useNuxtApp()
 const { width, transition } = useDialog('default')
-const { items, loading } = useIndex<CallListResource>(
+const historyItem = ref<PhoneResource>()
+const { items, loading, reloadData } = useIndex<CallListResource>(
   `calls`,
-  filters,
+  ref({}),
   {
     instantLoad: false,
     saveFilters: false,
@@ -20,19 +19,9 @@ const { items, loading } = useIndex<CallListResource>(
   },
 )
 
-const showActiveCalls = computed(() => !filters.value.q && ['all', 'active'].includes(filters.value.status))
-
-const debounceSearch = useDebounceFn(() => (filters.value.q = q.value), 300)
-
-watch(q, debounceSearch)
-
 watch(callAppDialog, (isOpen) => {
   if (isOpen) {
-    q.value = filters.value.q
-  }
-  else {
-    // clear items
-    setTimeout(() => (items.value = []), 300)
+    reloadData()
   }
 
   // copied from useDialog.ts
@@ -58,13 +47,28 @@ $addSseListener('CallSummaryEvent', (call: CallListResource) => {
 </script>
 
 <template>
-  <v-dialog v-model="callAppDialog" :width="width" :transition="transition">
+  <v-dialog
+    v-model="callAppDialog"
+    :width="width"
+    :transition="transition"
+    class="call-app"
+    :class="{ 'call-app__phone-dialog-active': historyItem !== undefined }"
+  >
+    <v-slide-x-reverse-transition>
+      <PhoneDialogContent
+        v-if="historyItem"
+        :item="historyItem"
+        back-btn
+        class="call-app__phone-dialog"
+        @back="historyItem = undefined"
+      />
+    </v-slide-x-reverse-transition>
     <div class="dialog-wrapper call-app-dialog">
       <div class="dialog-body pa-0 ga-0">
         <div>
-          <CallAppActiveCallsList v-if="showActiveCalls" :items="activeCalls" />
-          <CallAppCallsList v-if="items.length" :items="items" />
-          <UiNoData v-else-if="!loading && (!showActiveCalls || activeCalls.length === 0)" />
+          <CallAppActiveCallsList :items="activeCalls" />
+          <CallAppCallsList v-if="items.length" :items="items" @history="e => (historyItem = e)" />
+          <UiNoData v-else-if="!loading && activeCalls.length === 0" />
         </div>
       </div>
     </div>

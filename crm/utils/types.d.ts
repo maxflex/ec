@@ -767,10 +767,6 @@ declare global {
     client: PersonWithPhotoResource
   }
 
-  type CallState = 'Appeared' | 'Connected' | 'Disconnected'
-
-  type CallType = 'incoming' | 'outgoing'
-
   type SseEvent =
     | 'CallEvent'
     | 'CallSummaryEvent'
@@ -780,48 +776,6 @@ declare global {
     | 'AppUpdatedEvent'
     | 'ClientTestUpdatedEvent'
     | 'RequestUpdatedEvent'
-
-  interface CallAppAonResource {
-    id: number
-    comment: ?string
-    entity?: PersonResource
-    request_id?: number
-  }
-
-  interface CallEvent {
-    state: CallState
-    type: CallType
-    user?: PersonResource
-    aon: ?CallAppAonResource
-    last_interaction: ?CallAppLastInteractionResource
-    number: string
-    answered_at?: string
-  }
-
-  interface CallAppLastInteractionResource {
-    id: string
-    user: ?PersonResource
-    type: CallType
-    is_missed: boolean
-    is_missed_callback: boolean
-    created_at: string
-    finished_at: string
-    answered_at: ?string
-  }
-
-  interface CallListResource {
-    id: string
-    user: ?PersonResource
-    type: CallType
-    number: string
-    has_recording: boolean
-    is_missed: boolean
-    is_missed_callback: boolean
-    created_at: string
-    finished_at: string
-    answered_at: ?string
-    aon: ?CallAppAonResource
-  }
 
   interface PrintOption {
     id: number

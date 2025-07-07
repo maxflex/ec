@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { CallAppAonResource } from '.'
+
 const { item, full } = defineProps<{
   item: CallAppAonResource | null
   full?: boolean

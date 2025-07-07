@@ -1,3 +1,23 @@
+.call-app {
+  .call-app-dialog .dialog-body {
+    transition: all cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+  }
+
+  &__phone-dialog {
+    position: absolute;
+    background: white;
+    z-index: 1;
+    width: 100%;
+  }
+
+  &__phone-dialog-active {
+    .call-app-dialog .dialog-body {
+      transform: translateX(-15px);
+      opacity: 0;
+    }
+  }
+}
+
 // doesnt work on `enter`
 .call-banner-transition {
   $ms: 0.3s;
@@ -106,6 +126,11 @@
   &__number {
     font-weight: bold;
     white-space: nowrap;
+    cursor: pointer;
+
+    &:hover {
+      color: rgb(var(--v-theme-secondary));
+    }
   }
 
   &__comment {
