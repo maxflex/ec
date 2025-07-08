@@ -3,6 +3,7 @@ import type { CallListResource } from '../CallApp'
 import type { SmsMessageListResource } from '../SmsMessage'
 
 import {
+  mdiContentCopy,
   mdiPhone,
   mdiSendVariant,
 } from '@mdi/js'
@@ -14,6 +15,7 @@ const { item } = defineProps<{
 const emit = defineEmits<{ back: [] }>()
 
 const { number } = item
+const copied = ref(false)
 
 const tabs = {
   calls: 'история звонков',
@@ -131,6 +133,11 @@ function scrollBottom() {
   })
 }
 
+function copyToClipboard() {
+  copied.value = true
+  navigator.clipboard.writeText(item.number)
+}
+
 nextTick(loadCalls)
 </script>
 
@@ -145,6 +152,14 @@ nextTick(loadCalls)
         </div>
       </div>
       <div>
+        <v-btn
+          :size="48"
+          :icon="mdiContentCopy"
+          variant="text"
+          color="black"
+          :disabled="copied"
+          @click="copyToClipboard()"
+        />
         <v-btn
           :size="48"
           :icon="mdiPhone"

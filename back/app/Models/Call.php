@@ -113,8 +113,8 @@ class Call extends Model
         return $this->is_missed
             && $this->chain()
                 ->answered()
-                ->where('created_at', '>', $this->created_at->format('Y-m-d H:i:s'))
-                ->whereRaw('TIMESTAMPDIFF(second, created_at, answered_at) > 10')
+                ->where('created_at', '>', $this->created_at)
+                ->whereRaw('TIMESTAMPDIFF(second, answered_at, finished_at) > 10')
                 ->exists();
     }
 
@@ -161,6 +161,6 @@ class Call extends Model
      */
     public function scopeAnswered($query)
     {
-        return $query->whereNotNull('answered_at');
+        $query->whereNotNull('answered_at');
     }
 }
