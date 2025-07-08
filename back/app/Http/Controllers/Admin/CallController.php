@@ -31,11 +31,4 @@ class CallController extends Controller
     {
         return $call->getRecording($action);
     }
-
-    public function destroy(Call $call)
-    {
-        if ($call->is_missed && ! $call->is_missed_callback) {
-            $call->delete();
-        }
-    }
 }

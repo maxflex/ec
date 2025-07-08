@@ -18,7 +18,7 @@ class CallListResource extends JsonResource
     {
         return extract_fields($this, [
             'type', 'number', 'created_at', 'finished_at', 'answered_at',
-            'is_missed', 'is_missed_callback', 'has_recording'
+            'is_missed', 'is_missed_callback', 'has_recording',
         ], [
             'user' => new PersonResource($this->user),
             'aon' => Call::aon($this->number),

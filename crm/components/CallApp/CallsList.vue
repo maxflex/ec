@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { CallListResource } from '.'
 import { mdiCallMade, mdiCallMissed, mdiCallReceived } from '@mdi/js'
 
 const { items } = defineProps<{
@@ -41,11 +42,20 @@ const emit = defineEmits<{
           v-if="call.is_missed"
           class="calls-list__user"
         >
-          <v-icon
-            :icon="mdiCallMissed"
-            color="error"
-          />
-          Пропущенный
+          <template v-if="call.is_missed_callback">
+            <v-icon
+              :icon="mdiCallMissed"
+              color="orange"
+            />
+            Перезвонили
+          </template>
+          <template v-else>
+            <v-icon
+              :icon="mdiCallMissed"
+              color="error"
+            />
+            Пропущенный
+          </template>
         </div>
         <div v-else-if="call.user" class="calls-list__user">
           <v-icon

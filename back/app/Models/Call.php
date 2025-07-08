@@ -9,6 +9,7 @@ use App\Http\Resources\CallAppLastInteractionResource;
 use App\Utils\Phone as UtilsPhone;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Call extends Model
@@ -28,6 +29,10 @@ class Call extends Model
         'finished_at' => Timestamp::class,
     ];
 
+    /**
+     * Получить активные разговоры
+     * Те, которые разговаривают прямо сейчас
+     */
     public static function getActive()
     {
         $keys = cache()->connection()
@@ -91,47 +96,39 @@ class Call extends Model
         return $this->hasOne(Phone::class, 'number', 'number');
     }
 
+    /**
+     * Пропущенный
+     */
     public function getIsMissedAttribute(): bool
     {
         return $this->type === CallType::incoming && $this->answered_at === null;
     }
 
+    /**
+     * Пропущенный, но после этого был контакт
+     * После пропущенного должен быть контакт более 10 сек
+     */
     public function getIsMissedCallbackAttribute(): bool
     {
-        return $this->is_missed && $this->callbacks()->exists();
+        return $this->is_missed
+            && $this->chain()
+                ->answered()
+                ->where('created_at', '>', $this->created_at)
+                ->whereRaw('TIMESTAMPDIFF(second, created_at, answered_at) > 10')
+                ->exists();
     }
 
-    public function callbacks()
+    /**
+     * Цепочка звонков по номеру телефона
+     */
+    public function chain(): HasMany
     {
-        // mega hack
-        $createdAt = $this->created_at ? "'".$this->created_at."'" : 'laravel_reserved_0.created_at';
-
-        return $this->hasMany(Call::class, 'number', 'number')
-            ->where('type', CallType::outgoing->name)
-            ->whereRaw("calls.created_at > $createdAt")
-            ->whereRaw("calls.created_at < $createdAt + INTERVAL 1 MONTH");
+        return $this->hasMany(Call::class, 'number', 'number');
     }
 
     public function getHasRecordingAttribute(): bool
     {
         return $this->recording !== null;
-    }
-
-    /**
-     * Входящие звонки без ответа за месяц
-     * + по ним не было перезвона в течение месяца с момента звонка
-     */
-    public function scopeMissed($query)
-    {
-        //        $keys = cache()->connection()
-        //            ->zrange(cache()->getPrefix() . "tag:missed:entries", 0, -1);
-        //        $hiddenIds = collect($keys)->map(fn($key) => collect(explode(":", $key))->last());
-        return $query
-//            ->whereNotIn('id', $hiddenIds)
-            ->where('type', CallType::incoming)
-            ->whereNull('answered_at')
-            ->whereRaw('created_at > NOW() - INTERVAL 1 MONTH')
-            ->whereDoesntHave('callbacks');
     }
 
     /**
@@ -158,8 +155,12 @@ class Call extends Model
         ]);
     }
 
-    public function hide()
+    /**
+     * Отвеченные звонки
+     * Те, где состоялся разговор
+     */
+    public function scopeAnswered($query)
     {
-        cache()->tags('missed')->put($this->id, 1, now()->addMonth());
+        return $query->whereNotNull('answered_at');
     }
 }
