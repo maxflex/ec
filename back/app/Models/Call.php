@@ -113,7 +113,7 @@ class Call extends Model
         return $this->is_missed
             && $this->chain()
                 ->answered()
-                ->where('created_at', '>', $this->created_at)
+                ->where('created_at', '>', $this->created_at->format('Y-m-d H:i:s'))
                 ->whereRaw('TIMESTAMPDIFF(second, created_at, answered_at) > 10')
                 ->exists();
     }
