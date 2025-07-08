@@ -1,6 +1,6 @@
 .call-app {
   .call-app-dialog .dialog-body {
-    transition: all cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+    transition: all cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
   }
 
   &__phone-dialog {
@@ -15,6 +15,10 @@
       transform: translateX(-15px);
       opacity: 0;
     }
+  }
+
+  .dialog {
+    overflow: hidden;
   }
 }
 

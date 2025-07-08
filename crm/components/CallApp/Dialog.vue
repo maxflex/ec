@@ -54,7 +54,8 @@ $addSseListener('CallSummaryEvent', (call: CallListResource) => {
     class="call-app"
     :class="{ 'call-app__phone-dialog-active': historyItem !== undefined }"
   >
-    <v-slide-x-reverse-transition>
+    <!-- <v-slide-x-reverse-transition> -->
+    <transition name="call-slide-transition">
       <PhoneDialogContent
         v-if="historyItem"
         :item="historyItem"
@@ -62,7 +63,9 @@ $addSseListener('CallSummaryEvent', (call: CallListResource) => {
         class="call-app__phone-dialog"
         @back="historyItem = undefined"
       />
-    </v-slide-x-reverse-transition>
+    </transition>
+
+    <!-- </v-slide-x-reverse-transition> -->
     <div class="dialog-wrapper call-app-dialog">
       <div class="dialog-body pa-0 ga-0">
         <div>
@@ -74,3 +77,26 @@ $addSseListener('CallSummaryEvent', (call: CallListResource) => {
     </div>
   </v-dialog>
 </template>
+
+<style lang="scss">
+.call-slide-transition {
+  &-enter-active,
+  &-leave-active {
+    position: absolute;
+    width: 100%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+    box-shadow: 0 0 3px 3px rgba(black, 0.1);
+  }
+
+  &-leave-from,
+  &-enter-to {
+    transform: translateX(0%);
+  }
+
+  &-enter-from,
+  &-leave-to {
+    transform: translateX(100%);
+  }
+}
+</style>
