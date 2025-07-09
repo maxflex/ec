@@ -269,7 +269,7 @@ export const BranchLabel = {
 export const RequestStatusLabel = {
   new: 'новые',
   finished: 'выполненные',
-  waiting: 'без контакта',
+  waiting: 'нерабочая',
   refused: 'отказ',
 } as const
 

@@ -7,6 +7,7 @@ const { notSet = 'не установлено', nullify, expand } = defineProps<
 const model = defineModel<any>({ required: true })
 const setNull = nullify || model.value === null
 const input = ref()
+
 function clear() {
   model.value = setNull ? null : undefined
   nextTick(() => input.value.blur())
