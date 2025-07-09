@@ -55,7 +55,7 @@ async function pay() {
           Договор №{{ contract.id }}
         </div>
         <div>
-          на {{ formatYear(contract.year) }}
+          на {{ YearLabel[contract.year] }}
         </div>
       </v-chip>
     </template>
@@ -101,7 +101,7 @@ async function pay() {
         <div></div>
         <div>
           <b>
-            {{ formatPrice(totalSum(selectedContract.payments)) }} руб.
+            {{ formatPrice(totalSum(selectedContract.payments)) || 0 }} руб.
           </b>
         </div>
       </div>

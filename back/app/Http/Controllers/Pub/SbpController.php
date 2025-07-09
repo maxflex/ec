@@ -32,6 +32,10 @@ class SbpController extends Controller
             Carbon::parse($contract->active_version->date)->format('d.m.Y')
         );
 
+        // для чека
+        $fullName = $contract->client->parent->formatName('full');
+        $phone = is_localhost() ? '79252727210' : $contract->client->parent->getPhoneNumbers()->first();
+
         $payment = $client->createPayment(
             [
                 'amount' => [
@@ -46,27 +50,27 @@ class SbpController extends Controller
                     'type' => 'sbp',
                 ],
                 'capture' => true,
-                // 'receipt' => [
-                //     'customer' => [
-                //         'full_name' => $contract->client->parent->formatName('full'),
-                //         'phone' => $contract->client->parent->getPhoneNumbers()->first(),
-                //     ],
-                //     'items' => [
-                //         [
-                //             'description' => $description,
-                //             'quantity' => 1.0,
-                //             'amount' => [
-                //                 'value' => $amount,
-                //                 'currency' => 'RUB',
-                //             ],
-                //             'vat_code' => 9,
-                //             'payment_subject' => 'service',
-                //             'payment_mode' => 'full_prepayment',
-                //             'measure' => 'piece',
-                //             'type' => 'prepayment',
-                //         ],
-                //     ],
-                // ],
+                'receipt' => [
+                    'customer' => [
+                        'full_name' => $fullName,
+                        'phone' => $phone,
+                    ],
+                    'items' => [
+                        [
+                            'description' => $description,
+                            'quantity' => 1.0,
+                            'amount' => [
+                                'value' => $amount,
+                                'currency' => 'RUB',
+                            ],
+                            'vat_code' => 9,
+                            'payment_subject' => 'service',
+                            'payment_mode' => 'full_prepayment',
+                            'measure' => 'piece',
+                            'type' => 'prepayment',
+                        ],
+                    ],
+                ],
                 'description' => $description,
             ]
         );
