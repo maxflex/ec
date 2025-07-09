@@ -123,9 +123,7 @@ class Lesson extends Model
             $s = (object) $s;
 
             $contractVersionProgram = ContractVersionProgram::find($s->contract_version_program_id);
-
-            $this->clientLessons()->create([
-                'contract_version_program_id' => $contractVersionProgram->id,
+            $clientLesson = new ClientLesson([
                 'status' => $s->status,
                 'comment' => $s->comment,
                 'minutes_late' => $s->status === ClientLessonStatus::late->value
@@ -134,6 +132,8 @@ class Lesson extends Model
                 'price' => $this->is_free ? 0 : $contractVersionProgram->getNextPrice(),
                 'scores' => $s->scores,
             ]);
+            $clientLesson->contract_version_program_id = $contractVersionProgram->id;
+            $this->clientLessons()->save($clientLesson);
         }
 
         $this->update([

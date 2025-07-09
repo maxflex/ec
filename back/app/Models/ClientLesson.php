@@ -13,8 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ClientLesson extends Model
 {
     protected $fillable = [
-        'price', 'status', 'minutes_late', 'scores',
-        'contract_version_program_id', 'comment',
+        'price', 'status', 'minutes_late', 'scores', 'comment',
     ];
 
     protected $casts = [
