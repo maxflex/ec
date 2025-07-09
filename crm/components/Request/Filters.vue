@@ -7,7 +7,7 @@ export interface Filters {
 const requestStatusDescription: Record<RequestStatus, string> = {
   new: 'Необработанные заявки',
   finished: 'Заявки от реальных потенциальных клиентов',
-  waiting: 'НБТ, дубли, невозможно связаться, бесплатное или онлайн обучение и заявки с неподтвержденными номерами',
+  waiting: 'НБТ, дубли, невозможно связаться, бесплатное обучение и заявки с неподтвержденными номерами',
   refused: 'Отказы со стороны ЕГЭ-Центра потенциальным ученикам',
 } as const
 
@@ -20,12 +20,13 @@ const model = defineModel<Filters>({ required: true })
     label="Статус"
     :items="selectItems(RequestStatusLabel)"
     density="comfortable"
+    expand
   >
     <template #item="{ item, props }">
       <v-list-item v-bind="props">
         <template #prepend />
         <template #title>
-          <div style="padding: 2px 0">
+          <div style="" class="request-status-selector">
             <div>
               {{ item.title }}
             </div>
@@ -45,3 +46,13 @@ const model = defineModel<Filters>({ required: true })
     density="comfortable"
   />
 </template>
+
+<style lang="scss">
+.request-status-selector {
+  padding: 2px 0;
+  max-width: 400px;
+  .gray-subtitle {
+    white-space: break-spaces;
+  }
+}
+</style>
