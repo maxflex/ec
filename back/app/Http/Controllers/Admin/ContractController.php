@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ContractResource;
+use App\Models\Client;
 use App\Models\Contract;
 use App\Models\ContractVersionProgram;
 use Illuminate\Http\Request;
@@ -31,18 +32,15 @@ class ContractController extends Controller
             'client_id' => ['required', 'exists:clients,id'],
             'sum' => ['required', 'numeric'],
         ]);
-        $contract = Contract::create([
-            ...$request->contract,
-            'client_id' => $request->client_id,
-        ]);
-        $contractVersion = auth()->user()->contractVersions()->create([
+        $client = Client::find($request->client_id);
+        $contract = $client->contracts()->create($request->contract);
+        $contractVersion = $contract->versions()->create([
             ...$request->all(),
-            'contract_id' => $contract->id,
+            'user_id' => auth()->id(),
         ]);
-        sync_relation($contractVersion, 'programs', $request->all());
-        foreach ($contractVersion->programs as $index => $program) {
-            sync_relation($program, 'prices', $request->programs[$index]);
-            $program->updateStatus();
+        foreach ($request->programs as $p) {
+            $contractVersionProgram = $contractVersion->programs()->create($p);
+            $contractVersionProgram->prices()->createMany($p['prices']);
         }
         sync_relation($contractVersion, 'payments', $request->all());
 

@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class ContractVersion extends Model
 {
     protected $fillable = [
-        'contract_id', 'date', 'sum', 'is_active',
+        'user_id', 'date', 'sum', 'is_active',
     ];
 
     protected $casts = [

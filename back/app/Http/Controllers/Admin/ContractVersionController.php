@@ -6,6 +6,7 @@ use App\Enums\Direction;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ContractVersionListResource;
 use App\Http\Resources\ContractVersionResource;
+use App\Models\Contract;
 use App\Models\ContractVersion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -47,11 +48,15 @@ class ContractVersionController extends Controller
         $request->validate([
             'contract.id' => ['required', 'exists:contracts,id'],
         ]);
-        $request->merge(['contract_id' => $request->contract['id']]);
-        $contractVersion = auth()->user()->contractVersions()->create($request->all());
-        sync_relation($contractVersion, 'programs', $request->all());
-        foreach ($contractVersion->programs as $index => $program) {
-            sync_relation($program, 'prices', $request->programs[$index]);
+        $contract = Contract::find($request->contract['id']);
+        $contractVersion = $contract->versions()->create([
+            ...$request->all(),
+            'user_id' => auth()->id(),
+        ]);
+
+        foreach ($request->programs as $p) {
+            $contractVersionProgram = $contractVersion->programs()->create($p);
+            $contractVersionProgram->prices()->createMany($p['prices']);
         }
 
         $isRelinked = $contractVersion->relinkIds(
