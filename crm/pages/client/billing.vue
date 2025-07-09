@@ -127,7 +127,7 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
                 <td colspan="2" />
                 <td>
                   <b>
-                    {{ formatPrice(totalSum(selectedContract.payments)) }} руб.
+                    {{ formatPrice(totalSum(selectedContract.payments)) || 0 }} руб.
                   </b>
                 </td>
               </tr>
@@ -159,13 +159,11 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
         </div>
         <div v-if="selectedContract.year >= currentAcademicYear()" class="billing__qr">
           <QrcodeVue
-            render-as="svg"
             :value="qrValue"
-            :height="200"
-            :width="200"
+            :size="300"
             :image-settings="{
-              height: 30,
-              width: 30,
+              width: 80,
+              height: 80,
               src: '/img/logo-for-qr.svg',
               excavate: true,
             }"
