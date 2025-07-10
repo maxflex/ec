@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enums\LessonStatus;
 use App\Enums\Program;
 use App\Enums\SwampStatus;
+use App\Observers\ContractVersionProgramObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Collection;
 
+#[ObservedBy(ContractVersionProgramObserver::class)]
 class ContractVersionProgram extends Model
 {
     public $timestamps = false;
@@ -24,13 +27,6 @@ class ContractVersionProgram extends Model
         'program' => Program::class,
         'status' => SwampStatus::class,
     ];
-
-    public static function booted()
-    {
-        static::deleting(function (ContractVersionProgram $contractVersionProgram) {
-            $contractVersionProgram->prices->each->delete();
-        });
-    }
 
     /**
      * Программа активна

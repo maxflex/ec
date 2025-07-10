@@ -90,14 +90,18 @@ class AuthController extends Controller
         abort_unless($tgMiniApp->isSafe(), 422);
 
         $user = $tgMiniApp->getUser();
-        $phones = Phone::where('telegram_id', $user->id)->get();
 
-        abort_unless($phones->count() === 1, 422);
-        $phone = $phones->first();
+        $candidates = Phone::query()
+            ->where('telegram_id', $user->id)
+            ->get()
+            ->filter(
+                fn ($phone) => $phone->entity_type::whereId($phone->entity_id)->canLogin()->exists()
+            );
 
-        abort_unless($phone->entity_type::whereId($phone->entity_id)->canLogin()->exists(), 422);
+        // должен быть в итоге единственный кандидат к логину
+        abort_unless($candidates->count() === 1, 422);
 
-        return $this->logIn($phone, [
+        return $this->logIn($candidates->first(), [
             'via_telegram' => true,
         ]);
     }
