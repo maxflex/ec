@@ -120,14 +120,15 @@ class TelegramMessage extends Model
     public static function sendNumberChanged(Phone $phone)
     {
         $buttons = [[
-            ['text' => 'Отправить мой номер телефона', 'request_contact' => true],
+            [['text' => '📱Отправить мой номер телефона', 'request_contact' => true]],
         ]];
 
         $replyMarkup = new ReplyKeyboardMarkup(
             $buttons,
             oneTimeKeyboard: true,
             resizeKeyboard: true,
-            isPersistent: true
+            isPersistent: true,
+            inputFieldPlaceholder: 'Нажмите кнопку ниже 👇'
         );
 
         TelegramMessage::send(
