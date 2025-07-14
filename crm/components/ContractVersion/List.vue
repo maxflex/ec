@@ -51,6 +51,7 @@ const emit = defineEmits<{
             без суммы
           </template>
           {{ formatPrice(version.sum) }} руб.
+          <ContractVersionSumChange :item="version" />
         </UiIfSet>
       </div>
     </div>

@@ -82,6 +82,18 @@ class ContractVersion extends Model
     }
 
     /**
+     * Изменение суммы по сравнению с предыдущей версией
+     */
+    public function getSumChangeAttribute(): int
+    {
+        if (! $this->prev) {
+            return 0;
+        }
+
+        return $this->sum - $this->prev->sum;
+    }
+
+    /**
      * Обновляем связи contract_version_program_id
      * новая версия – $this, старая $old
      *

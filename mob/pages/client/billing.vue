@@ -125,7 +125,7 @@ async function pay() {
         </div>
       </div>
     </div>
-    <div class="billing-qr">
+    <!-- <div class="billing-qr">
       <div class="billing-qr__title">
         <img src="/img/sbp.svg" />
         Оплатить через СБП
@@ -145,7 +145,7 @@ async function pay() {
       <v-btn color="primary" :loading="loading" @click="pay()">
         Оплатить
       </v-btn>
-    </div>
+    </div> -->
   </UiIndexPage>
 </template>
 

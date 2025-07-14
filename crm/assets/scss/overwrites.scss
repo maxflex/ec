@@ -65,12 +65,19 @@ main {
   }
 }
 
-.v-table:not(.teacher-balances-table):not(.group-visits) > .v-table__wrapper > table > tbody > tr > td {
-  &:first-child {
-    padding-left: var(--padding) !important;
+.v-table:not(.teacher-balances-table):not(.group-visits) > .v-table__wrapper > table {
+  & > thead,
+  & > tbody,
+  & > tfoot {
+    & > tr > td,
+    & > tr > th {
+      &:first-child {
+        padding-left: var(--padding) !important;
+      }
+      &:not(:first-child) {
+        padding-left: calc(var(--padding) / 2) !important;
+      }
+      padding-right: calc(var(--padding) / 2) !important;
+    }
   }
-  &:not(:first-child) {
-    padding-left: calc(var(--padding) / 2) !important;
-  }
-  padding-right: calc(var(--padding) / 2) !important;
 }

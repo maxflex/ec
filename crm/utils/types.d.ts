@@ -260,6 +260,7 @@ declare global {
     date: string
     seq: number
     sum: number
+    sum_change: number
     payments_count: number
     programs_count: number
     direction_counts: DirectionCounts
