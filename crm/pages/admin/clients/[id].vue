@@ -18,6 +18,7 @@ const tabs = {
   tests: 'тесты',
   logs: 'логи',
   clientComplaints: 'жалобы',
+  clientReviews: 'отзывы',
 } as const
 
 const selectedTab = ref<keyof typeof tabs>('requests')
@@ -139,6 +140,7 @@ nextTick(loadData)
     <LogTab v-else-if="selectedTab === 'logs'" :client-id="client.id" />
     <ClientMarkSheetTab v-else-if="selectedTab === 'markSheet'" :client="client" />
     <ClientComplaintTab v-else-if="selectedTab === 'clientComplaints'" :client-id="client.id" />
+    <ClientReviewTab v-else-if="selectedTab === 'clientReviews'" :client-id="client.id" />
     <Schedule v-else :client-id="client.id" program-filter />
     <ClientDialog ref="clientDialog" @updated="onClientUpdated" />
   </template>

@@ -1,24 +1,26 @@
-export const apiUrl = 'client-complaints'
+export const apiUrl = 'client-reviews'
 
-export interface ClientComplaintResource {
+export interface ClientReviewResource {
   id: number
   client_id: number
   teacher_id?: number
   program?: Program
+  rating?: number
   text: string
   user?: PersonResource
 }
 
-export interface ClientComplaintListResource {
+export interface ClientReviewListResource {
   id: number
   client: PersonResource
   teacher: PersonResource
   program: Program
   text: string
+  rating: number
   created_at: string
 }
 
-export const modelDefaults: ClientComplaintResource = {
+export const modelDefaults: ClientReviewResource = {
   id: newId(),
   client_id: -1,
   text: '',

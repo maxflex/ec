@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\ClientGroupController;
 use App\Http\Controllers\Admin\ClientLessonController;
 use App\Http\Controllers\Admin\ClientPaymentController;
+use App\Http\Controllers\Admin\ClientReviewController;
 use App\Http\Controllers\Admin\ClientsBrowseController;
 use App\Http\Controllers\Admin\ClientTestController;
 use App\Http\Controllers\Admin\CommentController;
@@ -177,6 +178,7 @@ Route::apiResources([
     'tests' => TestController::class,
     'client-tests' => ClientTestController::class,
     'client-complaints' => ClientComplaintController::class,
+    'client-reviews' => ClientReviewController::class,
     'teacher-services' => TeacherServiceController::class,
     'teacher-payments' => TeacherPaymentController::class,
     'teachers' => TeacherController::class,

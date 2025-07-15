@@ -32,6 +32,7 @@ const menu: Menu = [
       { title: 'Договоры', to: '/contracts' },
       { title: 'Пройденные тесты', to: '/client-tests' },
       { title: 'Жалобы', to: '/client-complaints' },
+      { title: 'Отзывы', to: '/client-reviews' },
       { title: 'Контроль ЛК', to: '/clients/browse' },
     ],
   },
