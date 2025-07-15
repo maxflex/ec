@@ -168,10 +168,10 @@ nextTick(loadData)
         />
         <div v-if="selectedContract.balances" class="table contract-tab-balances table--padding">
           <div>
-            <div style="width: 630px" class="font-weight-bold">
+            <div style="width: 590px" class="font-weight-bold">
               итого
             </div>
-            <div style="width: 220px">
+            <div style="width: 200px">
               <div>
                 доплата по договору
               </div>

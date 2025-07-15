@@ -50,7 +50,7 @@ watch(menu, (newVal) => {
           'program-selector-menu--active': menu,
         }"
       >
-        добавить программы
+        добавить
         <v-icon icon="$expand" :size="16" />
       </a>
     </template>

@@ -200,7 +200,6 @@ const lessonsPlannedSum = computed(() => {
 })
 
 const lessonsConductedSum = computed(() => item.value.programs.reduce((carry, p) => carry + p.lessons_conducted, 0))
-const lessonsToBeConductedSum = computed(() => item.value.programs.reduce((carry, p) => carry + p.lessons_to_be_conducted, 0))
 
 const lessonsSum = computed(() => {
   let sum = 0
@@ -468,6 +467,9 @@ defineExpose({ edit, newContract, newVersion })
                   программа
                 </th>
                 <th width="118">
+                  группа
+                </th>
+                <th width="117">
                   прогр.
                 </th>
                 <th width="117">
@@ -489,13 +491,12 @@ defineExpose({ edit, newContract, newVersion })
                     <span>
                       {{ ProgramLabel[p.program] }}
                     </span>
-                    <template v-if="p.group_id">
-                      <v-icon :icon="mdiArrowRightThin" :size="22" />
-                      <span>
-                        ГР-{{ p.group_id }}
-                      </span>
-                    </template>
                   </div>
+                </td>
+                <td>
+                  <span v-if="p.group_id" class="pl-4">
+                    ГР-{{ p.group_id }}
+                  </span>
                 </td>
                 <td>
                   <v-text-field
@@ -529,9 +530,9 @@ defineExpose({ edit, newContract, newVersion })
                     <span v-if="lessonsConducted[p.id][price.id].lessons_conducted > 0">
                       {{ lessonsConducted[p.id][price.id].lessons_conducted }}
                     </span>
-                    <span v-if="lessonsConducted[p.id][price.id].lessons_to_be_conducted" class="text-gray pl-1">
+                    <!-- <span v-if="lessonsConducted[p.id][price.id].lessons_to_be_conducted" class="text-gray pl-1">
                       + {{ lessonsConducted[p.id][price.id].lessons_to_be_conducted }}
-                    </span>
+                    </span> -->
                     <!--                    <template v-if="lessonsConducted[p.id][price.id].lessons_total > 0"> -->
                     <!--                      <v-icon :icon="mdiArrowRightThin" color="gray" :size="18" /> -->
                     <!--                      {{ lessonsConducted[p.id][price.id].lessons_total }} -->
@@ -583,6 +584,7 @@ defineExpose({ edit, newContract, newVersion })
                     @saved="onProgramsSaved"
                   />
                 </td>
+                <td></td>
                 <td class="cursor-default">
                   {{ lessonsPlannedSum || '' }}
                 </td>
@@ -591,9 +593,6 @@ defineExpose({ edit, newContract, newVersion })
                 </td>
                 <td class="cursor-default text-gray">
                   {{ lessonsConductedSum || '' }}
-                  <span v-if="lessonsToBeConductedSum" class="mr-1">
-                    + {{ lessonsToBeConductedSum }}
-                  </span>
                 </td>
                 <td class="cursor-default">
                   {{ lessonsMultipliedByPriceSum || '' }}
@@ -700,7 +699,8 @@ defineExpose({ edit, newContract, newVersion })
           }
         }
         &:not(:last-child) {
-          td:first-child {
+          td:first-child,
+          td:nth-child(2) {
             padding-top: 13px;
           }
         }
@@ -708,14 +708,15 @@ defineExpose({ edit, newContract, newVersion })
           vertical-align: top;
           &:nth-child(3),
           &:nth-child(4),
-          &:nth-child(5) {
+          &:nth-child(5),
+          &:nth-child(6) {
             & > div {
               &:not(:last-child) {
                 border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
               }
             }
           }
-          &:nth-child(4) {
+          &:nth-child(5) {
             & > div {
               cursor: default;
               display: flex;

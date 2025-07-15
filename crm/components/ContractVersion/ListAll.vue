@@ -40,28 +40,30 @@ const emit = defineEmits<{
           <v-icon v-if="item.contract.source" :icon="mdiTextBoxCheckOutline" :size="18" color="primary" />
         </div>
       </div>
-      <div style="width: 170px">
+      <div style="width: 130px">
         {{ formatDate(item.date) }}
       </div>
-      <div style="width: 170px">
+      <div style="width: 150px">
         <div v-for="(value, d) in item.direction_counts" :key="d">
           {{ DirectionLabel[d] }} / {{ value }}
         </div>
       </div>
-      <div style="width: 170px">
+      <div style="width: 140px">
         <span v-if="!item.payments_count" class="text-gray">
           платежей нет
         </span>
         <span v-else> платежей: {{ item.payments_count }} </span>
       </div>
-      <div>
+      <div style="width: 120px">
         <UiIfSet :value="item.sum">
           <template #empty>
             без суммы
           </template>
           {{ formatPrice(item.sum) }} руб.
-          <ContractVersionSumChange :item="item" />
         </UiIfSet>
+      </div>
+      <div>
+        <ContractVersionSumChange :item="item" />
       </div>
     </div>
   </div>
