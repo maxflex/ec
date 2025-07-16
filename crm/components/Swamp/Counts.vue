@@ -30,9 +30,7 @@ function formatLabel(label: string) {
           <UiPerson :item="item.client" />
         </td>
         <td v-for="(_, status) in SwampStatusLabel" :key="status" width="140" :class="`swamp-status swamp-status--${status}`">
-          <div class="pl-2">
-            {{ item.counts[status] || '' }}
-          </div>
+          {{ item.counts[status] || '' }}
         </td>
       </tr>
     </tbody>
