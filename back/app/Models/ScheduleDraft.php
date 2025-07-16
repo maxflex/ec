@@ -143,7 +143,7 @@ class ScheduleDraft extends Model implements HasTeeth
             ->groupBy('date');
 
         $contractVersionPrograms = ContractVersionProgram::query()
-            ->with('contractVersion.contract')
+            ->with('contractVersion')
             ->whereIn('id', $realProgramIds)
             ->get()
             ->keyBy('id');
@@ -168,7 +168,7 @@ class ScheduleDraft extends Model implements HasTeeth
             return (object) [
                 'id' => $p->id,
                 'program' => $p->program,
-                'contract' => $cvp ? $cvp->contractVersion->contract : null,
+                'contract_id' => $cvp ? $cvp->contractVersion->contract_id : null,
                 'lessons_conducted' => $lessonsConducted,
                 'total_lessons' => $totalLessons,
                 'status' => ContractVersionProgram::getStatus(
@@ -268,7 +268,7 @@ class ScheduleDraft extends Model implements HasTeeth
             $item = $p;
             $swamp = $swamps[$p->id];
             $item->swamp = $swamp;
-            $item->contract = $swamp->contract;
+            $item->contract_id = $swamp->contract_id;
             $item->groups = $groupsByProgram->has($p->program) ? $groupsByProgram[$p->program] : [];
             $result[] = $item;
         }

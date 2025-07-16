@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import type { ScheduleDraftGroup, ScheduleDraftProgram, ScheduleDraftResource } from '.'
-import type { SwampListResource } from '../Swamp'
 import type { ClientResource } from '~/components/Client'
 import { mdiArrowRightThin, mdiChevronRight } from '@mdi/js'
 import { apiUrl } from '.'
 
-const { client, year } = defineProps<{
-  swamps: SwampListResource[]
+const { client, contractId } = defineProps<{
   client: ClientResource
-  year: Year
+  contractId?: number
 }>()
 
 defineEmits<{ back: [] }>()
@@ -24,9 +22,6 @@ const currentDraftId = ref<number>()
 // сохранённые проекты расписания (доступные для загрузки)
 const savedDrafts = ref<ScheduleDraftResource[]>([])
 
-// TODO: переделать в диалог
-const panelElement = document.documentElement.querySelector('.panel')! as HTMLElement
-
 const newPrograms = ref<Program[]>([])
 
 async function getInitial() {
@@ -35,7 +30,7 @@ async function getInitial() {
     `${apiUrl}/get-initial`,
     {
       params: {
-        year,
+        contract_id: contractId,
         client_id: client.id,
       },
     },
@@ -49,7 +44,6 @@ async function getInitial() {
 async function loadSavedDrafts() {
   const { data } = await useHttp<ApiResponse<ScheduleDraftResource>>(apiUrl, {
     params: {
-      year,
       client_id: client.id,
     },
   })
@@ -183,14 +177,6 @@ function removeNewProgram(p: ScheduleDraftProgram) {
 
 watch(items, getTeeth)
 
-onMounted(() => {
-  panelElement.style.display = 'none'
-})
-
-onUnmounted(() => {
-  panelElement.style.display = 'block'
-})
-
 nextTick(getInitial)
 </script>
 
@@ -215,7 +201,7 @@ nextTick(getInitial)
         </div>
       </div> -->
       <div class="schedule-project__header">
-        <v-btn icon="$back" :size="44" variant="plain" @click="$emit('back')" />
+        <v-btn icon="$back" :size="44" variant="plain" color="black" :to="{ name: 'clients-id', params: { id: client.id } }" />
         {{ formatName(client) }}
       </div>
       <TeethBar v-if="teeth" :items="teeth" style="width: fit-content" />
@@ -271,8 +257,8 @@ nextTick(getInitial)
         <div class="schedule-project__contract">
           <div class="schedule-project__contract-header">
             <span>
-              <template v-if="item.contract">
-                Договор №{{ item.contract.id }}
+              <template v-if="item.contract_id">
+                Договор №{{ item.contract_id }}
               </template>
               <span v-else class="text-gray">
                 Проект договора
@@ -282,7 +268,7 @@ nextTick(getInitial)
               {{ ProgramLabel[item.program] }}
             </span>
             <template v-if="item.swamp">
-              <span v-if="item.contract">
+              <span v-if="item.contract_id">
                 {{ item.swamp.lessons_conducted }}
                 <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
                 {{ item.swamp.total_lessons }}
@@ -294,7 +280,7 @@ nextTick(getInitial)
               </span>
             </template>
             <v-btn
-              v-if="!item.contract"
+              v-if="!item.contract_id"
               :size="30"
               icon="$plus"
               density="compact"

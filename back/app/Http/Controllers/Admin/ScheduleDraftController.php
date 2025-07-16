@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ScheduleDraftResource;
 use App\Models\Client;
+use App\Models\Contract;
 use App\Models\ScheduleDraft;
 use Exception;
 use Illuminate\Http\Request;
@@ -30,12 +31,18 @@ class ScheduleDraftController extends Controller
     public function getInitial(Request $request)
     {
         $request->validate([
-            'client_id' => ['required', 'exists:clients,id'],
-            'year' => ['required', 'numeric'],
+            'client_id' => ['required_without:contract_id', 'exists:clients,id'],
+            'contract_id' => ['required_without:client_id', 'exists:contracts,id'],
         ]);
 
-        $client = Client::find($request->client_id);
-        $year = intval($request->year);
+        if ($request->has('contract_id')) {
+            $contract = Contract::find($request->contract_id);
+            $client = $contract->client;
+            $year = $contract->year;
+        } else {
+            $client = Client::find($request->client_id);
+            $year = current_academic_year();
+        }
 
         $scheduleDraft = ScheduleDraft::fromActualContracts($client, $year);
         $scheduleDraft->user_id = auth()->id();

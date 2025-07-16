@@ -37,7 +37,7 @@ export interface ScheduleDraftProgram {
   id: number // ID contract_version_programs
   program: Program
   group_id?: number
-  contract?: ContractResource
+  contract_id?: number
   swamp?: ScheduleDraftSwamp
   groups: ScheduleDraftGroup[]
 }
