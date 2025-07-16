@@ -14,7 +14,7 @@ use Illuminate\Support\Collection;
 class ScheduleDraft extends Model implements HasTeeth
 {
     protected $fillable = [
-        'data', 'client_id', 'user_id', 'year',
+        'data', 'client_id', 'contract_id', 'user_id',
     ];
 
     protected $casts = [
@@ -34,12 +34,18 @@ class ScheduleDraft extends Model implements HasTeeth
     /**
      * Получить пустой черновик по клиенту
      * Исходное состояние, когда первый раз открываем
+     *
+     * $contract – к какому договору добавляем проект
+     * Если не указан, то новая цепь договора, иначе добавление новой версии к $contract
      */
-    public static function fromActualContracts(Client $client, int $year): ScheduleDraft
+    public static function fromActualContracts(Client $client, ?Contract $contract = null): ScheduleDraft
     {
-        $contracts = $client->contracts()
-            ->where('year', $year)
-            ->get();
+        $scheduleDraft = new ScheduleDraft([
+            'client_id' => $client->id,
+            'contract_id' => $contract?->id,
+        ]);
+
+        $contracts = $client->contracts()->where('year', $scheduleDraft->year)->get();
 
         $data = collect();
         foreach ($contracts as $contract) {
@@ -52,11 +58,9 @@ class ScheduleDraft extends Model implements HasTeeth
             }
         }
 
-        return new ScheduleDraft([
-            'client_id' => $client->id,
-            'data' => $data,
-            'year' => $year,
-        ]);
+        $scheduleDraft->data = $data;
+
+        return $scheduleDraft;
     }
 
     public function addToGroup(int $programId, int $groupId): bool
@@ -129,8 +133,6 @@ class ScheduleDraft extends Model implements HasTeeth
 
     public function getData()
     {
-        $year = $this->year;
-
         $realProgramIds = $this->programs->where('id', '>', 0)->pluck('id');
 
         // Все планируемые занятия ученика, сгруппированные по дате
@@ -149,7 +151,7 @@ class ScheduleDraft extends Model implements HasTeeth
             ->keyBy('id');
 
         $groups = Group::query()
-            ->where('year', $year)
+            ->where('year', $this->year)
             ->withCount('clientGroups')
             ->whereIn('program', $this->programs->pluck('program')->unique())
             ->with('lessons')
@@ -252,7 +254,6 @@ class ScheduleDraft extends Model implements HasTeeth
             $group->overlap = $overlap;
         }
 
-        $result = [];
         $groupsByProgram = $groups
             ->map(fn ($g) => extract_fields($g, [
                 'program', 'client_groups_count', 'zoom', 'lessons_planned',
@@ -264,16 +265,27 @@ class ScheduleDraft extends Model implements HasTeeth
             ]))
             ->groupBy('program');
 
+        $result = collect();
+
         foreach ($this->programs as $p) {
-            $item = $p;
             $swamp = $swamps[$p->id];
-            $item->swamp = $swamp;
-            $item->contract_id = $swamp->contract_id;
-            $item->groups = $groupsByProgram->has($p->program) ? $groupsByProgram[$p->program] : [];
-            $result[] = $item;
+            $result->push((object) [
+                ...(array) $p,
+                'swamp' => $swamp,
+                'contract_id' => $swamp?->contract_id,
+                'groups' => $groupsByProgram->has($p->program) ? $groupsByProgram[$p->program] : [],
+            ]);
         }
 
-        return $result;
+        // group result by contract_id
+        return $result->groupBy('contract_id')
+            ->map(fn ($programs, $contractId) => [
+                'contract_id' => $contractId,
+                'is_readonly' => $contractId !== $this->contract_id,
+                'programs' => $programs,
+            ])
+            ->sortBy('is_readonly')
+            ->values();
     }
 
     private function getLessonsQuery()
@@ -335,5 +347,19 @@ class ScheduleDraft extends Model implements HasTeeth
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public function contract(): BelongsTo
+    {
+        return $this->belongsTo(Contract::class);
+    }
+
+    /**
+     * Если есть договор (добавляем проект к конкретному договору) – то год из договора
+     * Иначе текущий академический год
+     */
+    public function getYearAttribute(): int
+    {
+        return $this->contract?->year ?? current_academic_year();
     }
 }

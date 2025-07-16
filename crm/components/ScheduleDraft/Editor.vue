@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ScheduleDraftGroup, ScheduleDraftProgram, ScheduleDraftResource } from '.'
+import type { SavedScheduleDraft, ScheduleDraftGroup, ScheduleDraftProgram, ScheduleDraftResource } from '.'
 import type { ClientResource } from '~/components/Client'
 import { mdiArrowRightThin, mdiChevronRight } from '@mdi/js'
 import { apiUrl } from '.'
@@ -14,19 +14,19 @@ defineEmits<{ back: [] }>()
 const loading = ref(false)
 const btnLoading = ref(false)
 const teeth = ref<Teeth>()
-const items = ref<ScheduleDraftProgram[]>()
+const items = ref<ScheduleDraftResource[]>()
 
 // ID текущего загруженного / сохранённого проекта. Нужно для удаления
 const currentDraftId = ref<number>()
 
 // сохранённые проекты расписания (доступные для загрузки)
-const savedDrafts = ref<ScheduleDraftResource[]>([])
+const savedDrafts = ref<SavedScheduleDraft[]>([])
 
 const newPrograms = ref<Program[]>([])
 
 async function getInitial() {
   loading.value = true
-  const { data } = await useHttp<ScheduleDraftProgram[]>(
+  const { data } = await useHttp<ScheduleDraftResource[]>(
     `${apiUrl}/get-initial`,
     {
       params: {
@@ -42,7 +42,7 @@ async function getInitial() {
 }
 
 async function loadSavedDrafts() {
-  const { data } = await useHttp<ApiResponse<ScheduleDraftResource>>(apiUrl, {
+  const { data } = await useHttp<ApiResponse<SavedScheduleDraft>>(apiUrl, {
     params: {
       client_id: client.id,
     },
@@ -50,10 +50,10 @@ async function loadSavedDrafts() {
   savedDrafts.value = data.value!.data
 }
 
-async function loadSavedDraft(savedDraft: ScheduleDraftResource) {
+async function loadSavedDraft(savedDraft: SavedScheduleDraft) {
   loading.value = true
   btnLoading.value = true
-  const { data } = await useHttp<ScheduleDraftProgram[]>(
+  const { data } = await useHttp<ScheduleDraftResource[]>(
     `${apiUrl}/${savedDraft.id}`,
   )
   items.value = data.value!
@@ -86,7 +86,7 @@ async function deleteCurrentDraft() {
 
 async function save() {
   // btnLoading.value = true
-  const { data } = await useHttp<ScheduleDraftResource>(
+  const { data } = await useHttp<SavedScheduleDraft>(
     `${apiUrl}/save`,
     { method: 'POST' },
   )
@@ -182,7 +182,7 @@ nextTick(getInitial)
 
 <template>
   <UiIndexPage
-    class="schedule-project"
+    class="schedule-draft"
     :data="{ loading: loading && !items, noData: false }"
     sticky
   >
@@ -200,7 +200,7 @@ nextTick(getInitial)
           </div>
         </div>
       </div> -->
-      <div class="schedule-project__header">
+      <div class="schedule-draft__header">
         <v-btn icon="$back" :size="44" variant="plain" color="black" :to="{ name: 'clients-id', params: { id: client.id } }" />
         {{ formatName(client) }}
       </div>
@@ -253,29 +253,38 @@ nextTick(getInitial)
       </div>
     </template>
     <template v-if="items">
-      <div v-for="item in items" :key="item.id" class="schedule-project__data" :class="{ 'element-loading': loading }">
-        <div class="schedule-project__contract">
-          <div class="schedule-project__contract-header">
+      <div
+        v-for="item in items"
+        :key="item.contract_id || -1"
+        class="schedule-draft__item"
+        :class="{
+          'element-loading': loading,
+          'schedule-draft__item--readonly': item.is_readonly,
+        }"
+      >
+        <h2 class="schedule-draft__contract">
+          <template v-if="item.contract_id">
+            Договор №{{ item.contract_id }}
+          </template>
+          <template v-else>
+            Проект договора
+          </template>
+        </h2>
+
+        <div v-for="p in item.programs" :key="p.id" class="schedule-draft__programs">
+          <div class="schedule-draft__program-info">
             <span>
-              <template v-if="item.contract_id">
-                Договор №{{ item.contract_id }}
-              </template>
-              <span v-else class="text-gray">
-                Проект договора
-              </span>
+              {{ ProgramLabel[p.program] }}
             </span>
-            <span>
-              {{ ProgramLabel[item.program] }}
-            </span>
-            <template v-if="item.swamp">
+            <template v-if="p.swamp">
               <span v-if="item.contract_id">
-                {{ item.swamp.lessons_conducted }}
+                {{ p.swamp.lessons_conducted }}
                 <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
-                {{ item.swamp.total_lessons }}
+                {{ p.swamp.total_lessons }}
               </span>
-              <span :class="`swamp-status swamp-status--${item.swamp.status}`" style="background-color: transparent;">
+              <span :class="`swamp-status swamp-status--${p.swamp.status}`" style="background-color: transparent;">
                 <span>
-                  {{ SwampStatusLabel[item.swamp.status] }}
+                  {{ SwampStatusLabel[p.swamp.status] }}
                 </span>
               </span>
             </template>
@@ -284,27 +293,27 @@ nextTick(getInitial)
               :size="30"
               icon="$plus"
               density="compact"
-              class="schedule-project__remove"
+              class="schedule-draft__remove"
               variant="plain"
               color="error"
-              @click="removeNewProgram(item)"
+              @click="removeNewProgram(p)"
             />
           </div>
-        </div>
-        <ScheduleDraftList
-          v-if="item.groups.length"
-          :items="item.groups"
-          @add-to-group="g => addToGroup(item, g)"
-          @remove-from-group="removeFromGroup"
-        />
-        <div v-else class="schedule-project__no-groups">
-          <UiNoData>
-            не найдено групп
-          </UiNoData>
+          <ScheduleDraftList
+            v-if="p.groups.length"
+            :items="p.groups"
+            @add-to-group="g => addToGroup(p, g)"
+            @remove-from-group="removeFromGroup"
+          />
+          <div v-else class="schedule-draft__no-groups">
+            <UiNoData>
+              не найдено групп
+            </UiNoData>
+          </div>
         </div>
       </div>
-      <div class="schedule-project__data" :class="{ 'element-loading': loading }">
-        <div class="schedule-project__contract">
+      <div :class="{ 'element-loading': loading }">
+        <div class="schedule-draft__contract">
           <ProgramSelectorMenu
             :pre-selected="newPrograms"
             include-pre-selected
@@ -317,7 +326,7 @@ nextTick(getInitial)
 </template>
 
 <style lang="scss">
-.schedule-project {
+.schedule-draft {
   &__header {
     font-weight: bold;
     display: flex;
@@ -332,48 +341,30 @@ nextTick(getInitial)
     padding-left: 7px !important;
   }
 
-  &__contract {
-    // padding: var(--padding);
+  &__program-info {
     padding: var(--padding);
-    // background: rgba(var(--v-theme-bg), 0.1);
-    background-color: rgb(var(--v-theme-bg));
     display: flex;
     align-items: center;
     gap: 20px;
-    position: relative;
-    justify-content: space-between;
-    border-top: 1px solid rgb(var(--v-theme-border));
+    cursor: default;
+    background-color: rgb(var(--v-theme-bg));
     border-bottom: 1px solid rgb(var(--v-theme-border));
-    &-header {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      cursor: default;
 
-      &:hover {
-        .schedule-project__remove {
-          opacity: 0.8;
-        }
-      }
-
-      & > span:first-child {
-        font-weight: bold;
+    &:hover {
+      .schedule-draft__remove {
+        opacity: 0.8;
       }
     }
-    .program-selector {
-      max-width: 256px !important;
-      .v-input__append {
-        display: none;
-      }
+
+    & > span:first-child {
+      font-weight: bold;
     }
   }
 
-  &__data {
-    &:first-child {
-      .schedule-project__contract {
-        border-top: none !important;
-      }
-    }
+  &__contract {
+    background-color: rgb(var(--v-theme-bg));
+    padding: var(--padding);
+    padding-bottom: 0;
   }
 
   &__no-groups {
@@ -388,6 +379,25 @@ nextTick(getInitial)
     left: -10px;
     &:hover {
       opacity: 1 !important;
+    }
+  }
+
+  &__item {
+    &--readonly {
+      opacity: 0.5;
+
+      .schedule-draft__contract {
+        padding-top: 60px;
+        color: rgb(var(--v-theme-gray));
+      }
+      .schedule-draft__programs {
+        pointer-events: none;
+      }
+      .schedule-draft__program-info {
+        & > span:first-child {
+          color: rgb(var(--v-theme-gray));
+        }
+      }
     }
   }
 }

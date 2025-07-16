@@ -132,5 +132,9 @@ const emit = defineEmits<{
   .v-table__wrapper {
     overflow: hidden !important;
   }
+
+  tr:last-child td {
+    border-bottom: 1px solid rgb(var(--v-theme-border));
+  }
 }
 </style>

@@ -38,13 +38,12 @@ class ScheduleDraftController extends Controller
         if ($request->has('contract_id')) {
             $contract = Contract::find($request->contract_id);
             $client = $contract->client;
-            $year = $contract->year;
         } else {
+            $contract = null;
             $client = Client::find($request->client_id);
-            $year = current_academic_year();
         }
 
-        $scheduleDraft = ScheduleDraft::fromActualContracts($client, $year);
+        $scheduleDraft = ScheduleDraft::fromActualContracts($client, $contract);
         $scheduleDraft->user_id = auth()->id();
         $scheduleDraft->toRam();
 

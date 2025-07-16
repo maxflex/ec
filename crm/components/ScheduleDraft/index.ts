@@ -3,7 +3,7 @@ export const apiUrl = 'schedule-drafts'
 /**
  * Сохраненные проекты расписания
  */
-export interface ScheduleDraftResource {
+export interface SavedScheduleDraft {
   id: number
   user: PersonResource
   created_at: string
@@ -40,4 +40,10 @@ export interface ScheduleDraftProgram {
   contract_id?: number
   swamp?: ScheduleDraftSwamp
   groups: ScheduleDraftGroup[]
+}
+
+export interface ScheduleDraftResource {
+  contract_id: number | null
+  is_readonly: boolean
+  programs: ScheduleDraftProgram[]
 }
