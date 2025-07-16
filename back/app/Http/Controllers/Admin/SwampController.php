@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 class SwampController extends Controller
 {
     protected $filters = [
-        'equals' => ['year', 'status', 'client_id'],
+        'equals' => ['year', 'client_id'],
         'findInSet' => ['program'],
     ];
 
