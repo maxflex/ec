@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\ClientLessonStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ControlGradesResource;
 use App\Http\Resources\ControlLkResource;
 use App\Models\Client;
 use Illuminate\Http\Request;
@@ -17,6 +18,7 @@ class ControlController extends Controller
 
     public function __construct(Request $request)
     {
+        // доступные ко входу в ЛК
         $this->query = Client::canLogin()->whereHas(
             'contracts',
             fn ($q) => $q->where('year', $request->year)
@@ -51,7 +53,7 @@ class ControlController extends Controller
                 ...ClientLessonStatus::getLateStatuses()->pluck('value'),
                 ClientLessonStatus::absent->value,
             ])
-            ->orderByRaw('last_name, first_name, middle_name')
+            ->orderByRaw('last_name, first_name')
             ->groupBy('clients.id');
 
         return paginate($this->query->get());
@@ -73,5 +75,37 @@ class ControlController extends Controller
             $this->query,
             ControlLkResource::class
         );
+    }
+
+    /**
+     * Контроль оценок
+     */
+    public function grades(Request $request)
+    {
+        $year = $request->year;
+
+        $this->query
+            ->with('grades', fn ($q) => $q->where('year', $year))
+            ->with('reports', fn ($q) => $q
+                ->whereNotNull('grade')
+                ->where('year', $year)
+            )
+            ->with('contracts',
+                fn ($q) => $q
+                    ->where('year', $year)
+                    ->with('versions', fn ($v) => $v
+                        ->where('is_active', true)
+                        ->with('programs.clientLessons', fn ($q) => $q->whereNotNull('scores'))
+                    )
+            )
+            ->selectRaw('
+                clients.id, clients.last_name, clients.first_name, clients.middle_name,
+                clients.mark_sheet
+            ')
+            ->orderByRaw('last_name, first_name');
+
+        $data = ControlGradesResource::collection($this->query->get());
+
+        return paginate($data);
     }
 }

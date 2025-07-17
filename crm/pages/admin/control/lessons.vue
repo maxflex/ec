@@ -53,6 +53,12 @@ function showPercent(item: Item, field: Field): string {
     <template #filters>
       <UiYearSelector v-model="filters.year" density="comfortable" />
     </template>
+    <template #buttons>
+      <UiQuestionTooltip>
+        На данной странице отображаются клиенты, допущенные ко входу в личный кабинет.
+        Доступ закрывается 30 июня {{ filters.year + 1 }} для договоров {{ YearLabel[filters.year] }} или в случае расторжения
+      </UiQuestionTooltip>
+    </template>
     <v-table
       fixed-header
       height="calc(100vh - 81px)"
