@@ -10,7 +10,6 @@ use App\Http\Controllers\Admin\ClientGroupController;
 use App\Http\Controllers\Admin\ClientLessonController;
 use App\Http\Controllers\Admin\ClientPaymentController;
 use App\Http\Controllers\Admin\ClientReviewController;
-use App\Http\Controllers\Admin\ClientsBrowseController;
 use App\Http\Controllers\Admin\ClientTestController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\ContractBalanceController;
@@ -18,6 +17,7 @@ use App\Http\Controllers\Admin\ContractController;
 use App\Http\Controllers\Admin\ContractPaymentController;
 use App\Http\Controllers\Admin\ContractVersionController;
 use App\Http\Controllers\Admin\ContractVersionProgramController;
+use App\Http\Controllers\Admin\ControlController;
 use App\Http\Controllers\Admin\ErrorController;
 use App\Http\Controllers\Admin\EventParticipantController;
 use App\Http\Controllers\Admin\ExamController;
@@ -73,7 +73,11 @@ Route::prefix('upload')->controller(UploadController::class)->group(function () 
 
 Route::get('teacher-payments/get-suggestions/{teacher}', [TeacherPaymentController::class, 'getSuggestions']);
 
-Route::get('clients-browse', ClientsBrowseController::class);
+Route::prefix('control')->controller(ControlController::class)->group(function () {
+    Route::get('lk', 'lk');
+    Route::get('lessons', 'lessons');
+    Route::get('grades', 'grades');
+});
 
 Route::apiResource('topics', TopicController::class)->only('index');
 Route::post('lessons/bulk', [LessonController::class, 'bulk']);

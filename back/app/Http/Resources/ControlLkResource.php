@@ -13,7 +13,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @mixin Client
  */
-class ClientsBrowseResource extends JsonResource
+class ControlLkResource extends JsonResource
 {
     public function toArray(Request $request): array
     {

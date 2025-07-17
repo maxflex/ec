@@ -33,7 +33,9 @@ const menu: Menu = [
       { title: 'Пройденные тесты', to: '/client-tests' },
       { title: 'Жалобы', to: '/client-complaints' },
       { title: 'Отзывы', to: '/client-reviews' },
-      { title: 'Контроль ЛК', to: '/clients/browse' },
+      { title: 'Контроль ЛК', to: '/control/lk' },
+      { title: 'Контроль занятий', to: '/control/lessons' },
+      { title: 'Контроль оценок', to: '/control/grades' },
     ],
   },
   {

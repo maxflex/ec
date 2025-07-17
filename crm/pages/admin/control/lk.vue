@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ClientsBrowseResource } from '~/components/Client'
+import type { ControlLkResource } from '~/components/Control'
 
 const year = currentAcademicYear()
 const nextYear = year + 1 as Year
@@ -8,8 +8,8 @@ const filters = ref<YearFilters>({
   year: currentAcademicYear(),
 })
 
-const { indexPageData, items } = useIndex<ClientsBrowseResource>(
-  `clients-browse`,
+const { indexPageData, items } = useIndex<ControlLkResource>(
+  `control/lk`,
   filters,
 )
 </script>
@@ -31,6 +31,6 @@ const { indexPageData, items } = useIndex<ClientsBrowseResource>(
         Доступ закрывается 30 июня {{ filters.year + 1 }} для договоров {{ YearLabel[filters.year] }} или в случае расторжения
       </UiQuestionTooltip>
     </template>
-    <ClientBrowseList :items="items" />
+    <ControlLkList :items="items" />
   </UiIndexPage>
 </template>

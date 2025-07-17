@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ClientsBrowseResource;
+use App\Http\Resources\ControlLkResource;
 use App\Models\Client;
 use Illuminate\Http\Request;
 
@@ -23,7 +23,7 @@ class ClientsBrowseController extends Controller
 
         $this->filter($request, $query);
 
-        return $this->handleIndexRequest($request, $query, ClientsBrowseResource::class);
+        return $this->handleIndexRequest($request, $query, ControlLkResource::class);
     }
 
     protected function filterYear($query, $year)

@@ -796,7 +796,7 @@ declare global {
 
   type RecipientIds = Record<Recepient, number[]>
 
-  type ClientDirections = Record<Year, Direction[]>
+  type ClientDirections = Partial<Record<Year, Direction[]>>
 
   interface RecepientPerson extends PersonResource {
     directions?: ClientDirections

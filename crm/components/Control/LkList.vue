@@ -1,55 +1,55 @@
 <script setup lang="ts">
-import type { ClientsBrowseResource } from '.'
+import type { ControlLkResource } from '.'
 import { ClientDialog } from '#components'
 
 const { items } = defineProps<{
-  items: ClientsBrowseResource[]
+  items: ControlLkResource[]
 }>()
 
 const clientDialog = ref<InstanceType<typeof ClientDialog>>()
 </script>
 
 <template>
-  <div class="clients-browse table table--padding flex-start">
-    <div v-for="item in items" :key="item.id" class="clients-browse__item">
-      <div class="clients-browse__item-client">
-        <div class="clients-browse__name">
+  <div class="control-lk table table--padding flex-start">
+    <div v-for="item in items" :key="item.id" class="control-lk__item">
+      <div class="control-lk__item-client">
+        <div class="control-lk__name">
           <UiPerson :item="item" />
         </div>
-        <div class="clients-browse__phones">
+        <div class="control-lk__phones">
           <PhoneList :items="item.phones" />
         </div>
-        <div class="clients-browse__last-seen-at">
+        <div class="control-lk__last-seen-at">
           <UiLastSeenAt :item="item" />
         </div>
-        <div class="clients-browse__actions">
+        <div class="control-lk__actions">
           {{ item.logs_count }} /
           <span class="text-secondary">
             {{ item.tg_logs_count }}
           </span>
         </div>
-        <div class="clients-browse__directions">
+        <div class="control-lk__directions">
           <ClientDirections :item="item.directions" />
         </div>
       </div>
-      <div class="clients-browse__item-parent">
-        <div class="clients-browse__name">
+      <div class="control-lk__item-parent">
+        <div class="control-lk__name">
           <UiPerson :item="item.parent" />
         </div>
 
-        <div class="clients-browse__phones">
+        <div class="control-lk__phones">
           <PhoneList :items="item.parent.phones" />
         </div>
-        <div class="clients-browse__last-seen-at">
+        <div class="control-lk__last-seen-at">
           <UiLastSeenAt :item="item.parent" />
         </div>
-        <div class="clients-browse__actions">
+        <div class="control-lk__actions">
           {{ item.parent.logs_count }} /
           <span class="text-secondary">
             {{ item.parent.tg_logs_count }}
           </span>
         </div>
-        <!-- <div class="clients-browse__reports-read">
+        <!-- <div class="control-lk__reports-read">
           {{ item.parent.reports_published_count }} /
           {{ item.parent.reports_read_count }}
         </div> -->
@@ -59,7 +59,7 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
           {{ item.parent.reports_published_count }}
         </div>
       </div>
-      <div class="clients-browse__comment">
+      <div class="control-lk__comment">
         <CommentBtn
           :size="42"
           :class="{ 'no-items': item.comments_count === 0 }"
@@ -82,7 +82,7 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
 </template>
 
 <style lang="scss">
-.clients-browse {
+.control-lk {
   &__name {
     width: 200px;
   }
