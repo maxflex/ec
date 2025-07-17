@@ -43,7 +43,10 @@ watch(menu, (newVal) => {
     :width="350"
   >
     <template #activator="{ props }">
-      <a
+      <span class="program-selector-menu" :class="{ 'program-selector-menu--active': menu }">
+        <slot name="activator" :props="props" />
+      </span>
+      <!-- <a
         v-bind="props"
         class="program-selector-menu"
         :class="{
@@ -52,7 +55,7 @@ watch(menu, (newVal) => {
       >
         добавить
         <v-icon icon="$expand" :size="16" />
-      </a>
+      </a> -->
     </template>
     <v-list class="pb-0">
       <v-list-item
@@ -79,9 +82,6 @@ watch(menu, (newVal) => {
 
 <style lang="scss">
 .program-selector-menu {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
   cursor: pointer;
   .v-icon {
     transition: transform ease-in-out 0.2s;

@@ -44,6 +44,6 @@ export interface ScheduleDraftProgram {
 
 export interface ScheduleDraftResource {
   contract_id: number | null
-  is_readonly: boolean
+  is_active: boolean
   programs: ScheduleDraftProgram[]
 }

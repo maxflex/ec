@@ -170,7 +170,7 @@ class ScheduleDraft extends Model implements HasTeeth
             return (object) [
                 'id' => $p->id,
                 'program' => $p->program,
-                'contract_id' => $cvp ? $cvp->contractVersion->contract_id : null,
+                'contract_id' => $cvp ? $cvp->contractVersion->contract_id : $p->contract_id,
                 'lessons_conducted' => $lessonsConducted,
                 'total_lessons' => $totalLessons,
                 'status' => ContractVersionProgram::getStatus(
@@ -281,10 +281,10 @@ class ScheduleDraft extends Model implements HasTeeth
         return $result->groupBy('contract_id')
             ->map(fn ($programs, $contractId) => [
                 'contract_id' => $contractId,
-                'is_readonly' => $contractId !== $this->contract_id,
-                'programs' => $programs,
+                'is_active' => $contractId === $this->contract_id,
+                'programs' => $programs->sortBy('id')->values(),
             ])
-            ->sortBy('is_readonly')
+            ->sortByDesc('is_active')
             ->values();
     }
 
@@ -301,34 +301,24 @@ class ScheduleDraft extends Model implements HasTeeth
     }
 
     /**
-     * Добавить (или удалить) новые программы в проект договора
-     *
-     * - удалить старые с id < 0, если их нет в $newPrograms;
-     * - добавить новые с id < 0, если их нет в $newPrograms;
-     * - оставить всё остальное как есть.
+     * Добавить новые программы в проект договора
+     * Добавление всегда в текущий contract_id
      */
     public function newPrograms(array $newPrograms)
     {
         $newPrograms = collect($newPrograms);
-
         $id = min($this->data->min('id'), 0);
+        $data = $this->data;
 
-        // удаление программ
-        $data = $this->data
-            // логика: оставляем только реальные (ID > 0) или те, что есть в актуальном $newPrograms
-            ->filter(fn ($e) => $e['id'] > 0 || $newPrograms->contains($e['program']))
-            ->values();
-
-        // Добавляем недостающие новые программы (id < 0)
+        // Добавляем новые программы
         foreach ($newPrograms as $program) {
-            if (! $data->contains(fn ($e) => $e['id'] < 0 && $e['program'] === $program)) {
-                $id--;
-                $data->push([
-                    'id' => $id,
-                    'program' => $program,
-                    'group_id' => null,
-                ]);
-            }
+            $id--;
+            $data->push([
+                'id' => $id, // id < 0
+                'contract_id' => $this->contract_id,
+                'program' => $program,
+                'group_id' => null,
+            ]);
         }
 
         $this->data = $data;

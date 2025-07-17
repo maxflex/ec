@@ -582,7 +582,14 @@ defineExpose({ edit, newContract, newVersion })
                   <ProgramSelectorMenu
                     :pre-selected="preSelected"
                     @saved="onProgramsSaved"
-                  />
+                  >
+                    <template #activator="{ props }">
+                      <a class="d-flex align-center ga-1" v-bind="props">
+                        добавить
+                        <v-icon icon="$expand" :size="16" />
+                      </a>
+                    </template>
+                  </ProgramSelectorMenu>
                 </td>
                 <td></td>
                 <td class="cursor-default">

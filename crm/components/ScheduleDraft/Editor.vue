@@ -57,12 +57,6 @@ async function loadSavedDraft(savedDraft: SavedScheduleDraft) {
     `${apiUrl}/${savedDraft.id}`,
   )
   items.value = data.value!
-
-  // если в загруженном проекте есть newPrograms
-  if (items.value.some(e => e.id <= 0)) {
-    newPrograms.value = items.value.filter(e => e.id <= 0).map(e => e.program)
-  }
-
   loading.value = false
   btnLoading.value = false
   currentDraftId.value = savedDraft.id
@@ -167,7 +161,6 @@ async function onNewProgramsUpdated(newVal: Program[]) {
   )
   items.value = data.value!
   loading.value = false
-  smoothScroll('main', 'bottom', 'instant')
 }
 
 function removeNewProgram(p: ScheduleDraftProgram) {
@@ -259,12 +252,24 @@ nextTick(getInitial)
         class="schedule-draft__item"
         :class="{
           'element-loading': loading,
-          'schedule-draft__item--readonly': item.is_readonly,
+          'schedule-draft__item--readonly': !item.is_active,
         }"
       >
         <h2 class="schedule-draft__contract">
           <template v-if="item.contract_id">
             Договор №{{ item.contract_id }}
+            <ProgramSelectorMenu
+              v-if="item.is_active"
+              :pre-selected="item.programs.map(e => e.program)"
+              @saved="onNewProgramsUpdated"
+            >
+              <template #activator="{ props }">
+                <v-btn v-bind="props" variant="text">
+                  добавить программу
+                  <v-icon icon="$expand" class="ml-1" />
+                </v-btn>
+              </template>
+            </ProgramSelectorMenu>
           </template>
           <template v-else>
             Проект договора
@@ -312,15 +317,6 @@ nextTick(getInitial)
           </div>
         </div>
       </div>
-      <div :class="{ 'element-loading': loading }">
-        <div class="schedule-draft__contract">
-          <ProgramSelectorMenu
-            :pre-selected="newPrograms"
-            include-pre-selected
-            @saved="onNewProgramsUpdated"
-          />
-        </div>
-      </div>
     </template>
   </UiIndexPage>
 </template>
@@ -365,6 +361,9 @@ nextTick(getInitial)
     background-color: rgb(var(--v-theme-bg));
     padding: var(--padding);
     padding-bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
   &__no-groups {
