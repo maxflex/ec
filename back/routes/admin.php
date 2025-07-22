@@ -106,9 +106,11 @@ Route::apiResource('swamps', SwampController::class)->only('index');
 Route::prefix('schedule-drafts')->controller(ScheduleDraftController::class)->group(function () {
     Route::post('/add-to-group', 'addToGroup');
     Route::post('/remove-from-group', 'removeFromGroup');
-    Route::post('/new-programs', 'newPrograms');
+    Route::post('/add-programs', 'addPrograms');
+    Route::post('/remove-program', 'removeProgram');
     Route::post('/save', 'save');
     Route::post('/apply', 'apply');
+    Route::get('/load/{scheduleDraft}', 'load');
     Route::get('/get-initial', 'getInitial');
     Route::get('/get-teeth', 'getTeeth');
 });

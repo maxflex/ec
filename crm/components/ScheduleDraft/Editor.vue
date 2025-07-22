@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { SavedScheduleDraft, ScheduleDraftGroup, ScheduleDraftProgram, ScheduleDraftResource } from '.'
+import type { ScheduleDraftApplySummaryDialog } from '#components'
+import type { SavedScheduleDraft, ScheduleDraft, ScheduleDraftGroup, ScheduleDraftProgram } from '.'
 import type { ClientResource } from '~/components/Client'
 import { mdiArrowRightThin, mdiChevronRight } from '@mdi/js'
 import { apiUrl } from '.'
@@ -11,10 +12,11 @@ const { client, contractId } = defineProps<{
 
 defineEmits<{ back: [] }>()
 
+const applyDialog = ref<InstanceType<typeof ScheduleDraftApplySummaryDialog>>()
 const loading = ref(false)
 const btnLoading = ref(false)
 const teeth = ref<Teeth>()
-const items = ref<ScheduleDraftResource[]>()
+const items = ref<ScheduleDraft>()
 
 // ID текущего загруженного / сохранённого проекта. Нужно для удаления
 const currentDraftId = ref<number>()
@@ -22,11 +24,9 @@ const currentDraftId = ref<number>()
 // сохранённые проекты расписания (доступные для загрузки)
 const savedDrafts = ref<SavedScheduleDraft[]>([])
 
-const newPrograms = ref<Program[]>([])
-
 async function getInitial() {
   loading.value = true
-  const { data } = await useHttp<ScheduleDraftResource[]>(
+  const { data } = await useHttp<ScheduleDraft>(
     `${apiUrl}/get-initial`,
     {
       params: {
@@ -53,7 +53,7 @@ async function loadSavedDrafts() {
 async function loadSavedDraft(savedDraft: SavedScheduleDraft) {
   loading.value = true
   btnLoading.value = true
-  const { data } = await useHttp<ScheduleDraftResource[]>(
+  const { data } = await useHttp<ScheduleDraft>(
     `${apiUrl}/${savedDraft.id}`,
   )
   items.value = data.value!
@@ -91,19 +91,17 @@ async function save() {
 }
 
 async function apply() {
-  if (!confirm('Применить текущий проект?')) {
-    return
-  }
-  btnLoading.value = true
-  const { error } = await useHttp(`${apiUrl}/apply`, { method: 'POST' })
-  if (error.value) {
-    useGlobalMessage(`<b>Ошибка применения проекта.</b> ${error.value.data.message}`, 'error')
-    btnLoading.value = false
-    return
-  }
-  await getInitial()
-  btnLoading.value = false
-  useGlobalMessage('Проект успешно применён', 'success')
+  applyDialog.value?.open(items.value)
+  // btnLoading.value = true
+  // const { error } = await useHttp(`${apiUrl}/apply`, { method: 'POST' })
+  // if (error.value) {
+  //   useGlobalMessage(`<b>Ошибка применения проекта.</b> ${error.value.data.message}`, 'error')
+  //   btnLoading.value = false
+  //   return
+  // }
+  // await getInitial()
+  // btnLoading.value = false
+  // useGlobalMessage('Проект успешно применён', 'success')
 }
 
 async function getTeeth() {
@@ -147,15 +145,14 @@ async function removeFromGroup(g: ScheduleDraftGroup) {
   loading.value = false
 }
 
-async function onNewProgramsUpdated(newVal: Program[]) {
+async function addPrograms(newPrograms: Program[]) {
   loading.value = true
-  newPrograms.value = newVal
-  const { data } = await useHttp<ScheduleDraftProgram[]>(
-    `${apiUrl}/new-programs`,
+  const { data } = await useHttp<ScheduleDraft>(
+    `${apiUrl}/add-programs`,
     {
       method: 'post',
       body: {
-        new_programs: newPrograms.value,
+        new_programs: newPrograms,
       },
     },
   )
@@ -163,9 +160,19 @@ async function onNewProgramsUpdated(newVal: Program[]) {
   loading.value = false
 }
 
-function removeNewProgram(p: ScheduleDraftProgram) {
-  newPrograms.value = newPrograms.value.filter(e => e !== p.program)
-  onNewProgramsUpdated(newPrograms.value)
+async function removeProgram(p: ScheduleDraftProgram) {
+  loading.value = true
+  const { data } = await useHttp<ScheduleDraft>(
+    `${apiUrl}/remove-program`,
+    {
+      method: 'post',
+      body: {
+        id: p.id,
+      },
+    },
+  )
+  items.value = data.value!
+  loading.value = false
 }
 
 watch(items, getTeeth)
@@ -261,7 +268,7 @@ nextTick(getInitial)
             <ProgramSelectorMenu
               v-if="item.is_active"
               :pre-selected="item.programs.map(e => e.program)"
-              @saved="onNewProgramsUpdated"
+              @saved="addPrograms"
             >
               <template #activator="{ props }">
                 <v-btn v-bind="props" variant="text">
@@ -281,32 +288,33 @@ nextTick(getInitial)
             <span>
               {{ ProgramLabel[p.program] }}
             </span>
-            <template v-if="p.swamp">
-              <span v-if="item.contract_id">
-                {{ p.swamp.lessons_conducted }}
-                <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
-                {{ p.swamp.total_lessons }}
+            <ScheduleDraftIcon v-if="p.id < 0">
+              добавлено в черновике
+            </ScheduleDraftIcon>
+            <span v-else>
+              {{ p.swamp.lessons_conducted }}
+              <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
+              {{ p.swamp.total_lessons }}
+            </span>
+            <span :class="`swamp-status swamp-status--${p.swamp.status}`" style="background-color: transparent;">
+              <span>
+                {{ SwampStatusLabel[p.swamp.status] }}
               </span>
-              <span :class="`swamp-status swamp-status--${p.swamp.status}`" style="background-color: transparent;">
-                <span>
-                  {{ SwampStatusLabel[p.swamp.status] }}
-                </span>
-              </span>
-            </template>
+            </span>
             <v-btn
-              v-if="!item.contract_id"
+              v-if="p.id < 0"
               :size="30"
               icon="$plus"
               density="compact"
               class="schedule-draft__remove"
               variant="plain"
-              color="error"
-              @click="removeNewProgram(p)"
+              @click="removeProgram(p)"
             />
           </div>
           <ScheduleDraftList
             v-if="p.groups.length"
             :items="p.groups"
+            :contract-id="item.contract_id"
             @add-to-group="g => addToGroup(p, g)"
             @remove-from-group="removeFromGroup"
           />
@@ -319,6 +327,7 @@ nextTick(getInitial)
       </div>
     </template>
   </UiIndexPage>
+  <ScheduleDraftApplySummaryDialog ref="applyDialog" />
 </template>
 
 <style lang="scss">
@@ -369,6 +378,7 @@ nextTick(getInitial)
   &__no-groups {
     height: 200px;
     position: relative;
+    border-bottom: 1px solid rgb(var(--v-theme-border));
   }
 
   &__remove {
@@ -376,8 +386,10 @@ nextTick(getInitial)
     transition: opacity ease-in-out 0.2s;
     opacity: 0;
     left: -10px;
+    color: rgb(var(--v-theme-gray));
     &:hover {
       opacity: 1 !important;
+      color: rgb(var(--v-theme-error));
     }
   }
 
@@ -389,8 +401,8 @@ nextTick(getInitial)
         padding-top: 60px;
         color: rgb(var(--v-theme-gray));
       }
-      .schedule-draft__programs {
-        pointer-events: none;
+      .table-actionss {
+        display: none !important;
       }
       .schedule-draft__program-info {
         & > span:first-child {

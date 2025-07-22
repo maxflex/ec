@@ -2,14 +2,24 @@
 import type { ScheduleDraftGroup } from '.'
 import { mdiArrowRightThin } from '@mdi/js'
 
-const { items } = defineProps<{
+const { items, contractId } = defineProps<{
   items: ScheduleDraftGroup[]
+  contractId: number | null
 }>()
 
 const emit = defineEmits<{
   addToGroup: [e: ScheduleDraftGroup]
   removeFromGroup: [e: ScheduleDraftGroup]
 }>()
+
+function getElementId(groupId: number, cId: number | null | undefined) {
+  return `schedule-draft-list-${groupId}${cId ? `-${cId}` : ''}`
+}
+
+function scrollToOtherContract(item: ScheduleDraftGroup) {
+  const selector = `#${getElementId(item.id, item.swamp?.contract_id)}`
+  highlight(selector, 'item-updated', 'smooth')
+}
 </script>
 
 <template>
@@ -17,7 +27,7 @@ const emit = defineEmits<{
     <tbody>
       <tr
         v-for="(item, i) in items"
-        :id="`group-${item.id}`"
+        :id="getElementId(item.id, contractId)"
         :key="item.id"
         :class="{
           'group-list__separate': i + 1 < items.length && item.program !== items[i + 1].program,
@@ -58,29 +68,35 @@ const emit = defineEmits<{
             <TeethAsText :items="item.teeth" />
           </UiIfSet>
         </td>
+
         <template v-if="item.swamp">
-          <td :class="`swamp-status swamp-status--${item.swamp.status}`">
-            <div class="pl-3">
-              <!-- в "проект по договору" не показываем -->
-              <template v-if="item.swamp.id > 0">
-                {{ item.swamp.lessons_conducted }}
-                <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
-                {{ item.swamp.total_lessons }}
-              </template>
-              <div>
-                {{ SwampStatusLabel[item.swamp.status] }}
-              </div>
-              <div v-if="item.overlap?.count">
-                {{ item.overlap!.count }} пересечений
-                ({{ item.overlap!.programs.map(e => ProgramShortLabel[e]).join(', ') }})
-              </div>
-              <div v-if="item.uncunducted_count" class="text-error">
-                {{ item.uncunducted_count }} непроведенных занятий
-              </div>
-              <div v-if="item.draft_status" class="text-gray">
-                добавлен в черновике, но нет в реальности
-              </div>
+          <td v-if="item.swamp.contract_id !== contractId" class="text-gray">
+            <UiIconLink @click="scrollToOtherContract(item)">
+              добавлен по договору №{{ item.swamp.contract_id }}
+            </UiIconLink>
+          </td>
+          <td v-else :class="`swamp-status swamp-status--${item.swamp.status}`">
+            <ScheduleDraftIcon v-if="item.draft_status">
+              добавлен в черновике
+            </ScheduleDraftIcon>
+
+            <!-- в "проект по договору" не показываем -->
+            <template v-if="item.swamp.id > 0">
+              {{ item.swamp.lessons_conducted }}
+              <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
+              {{ item.swamp.total_lessons }}
+            </template>
+            <div>
+              {{ SwampStatusLabel[item.swamp.status] }}
             </div>
+            <div v-if="item.overlap?.count">
+              {{ item.overlap!.count }} пересечений
+              ({{ item.overlap!.programs.map(e => ProgramShortLabel[e]).join(', ') }})
+            </div>
+            <div v-if="item.uncunducted_count" class="text-error">
+              {{ item.uncunducted_count }} непроведенных занятий
+            </div>
+
             <div class="table-actionss">
               <v-btn color="error" density="comfortable" @click="emit('removeFromGroup', item)">
                 <span class="text-white">
@@ -92,15 +108,14 @@ const emit = defineEmits<{
         </template>
         <template v-else>
           <td colspan="100">
-            <div v-if="item.draft_status" class="text-gray">
-              добавлен в реальности, но нет в черновике
-            </div>
-            <div class="pl-3">
-              <template v-if="item.overlap?.count">
-                {{ item.overlap!.count }} пересечений
-                ({{ item.overlap!.programs.map(e => ProgramShortLabel[e]).join(', ') }})
-              </template>
-            </div>
+            <ScheduleDraftIcon v-if="item.draft_status">
+              убран в черновике
+              <!-- , реально в группе -->
+            </ScheduleDraftIcon>
+            <template v-if="item.overlap?.count">
+              {{ item.overlap!.count }} пересечений
+              ({{ item.overlap!.programs.map(e => ProgramShortLabel[e]).join(', ') }})
+            </template>
             <div class="table-actionss">
               <v-btn color="secondary" density="comfortable" @click="emit('addToGroup', item)">
                 добавить в группу

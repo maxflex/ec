@@ -1,5 +1,7 @@
 export const apiUrl = 'schedule-drafts'
 
+export type DraftStatus = 'added' | 'removed'
+
 /**
  * Сохраненные проекты расписания
  */
@@ -18,6 +20,7 @@ interface ScheduleDraftSwamp {
   total_lessons: number
   lessons_conducted: number
   client_group_id: number
+  contract_id: number | null
 }
 
 export interface ScheduleDraftGroup extends GroupListResource {
@@ -30,7 +33,7 @@ export interface ScheduleDraftGroup extends GroupListResource {
   }
   swamp?: ScheduleDraftSwamp
   uncunducted_count: number
-  draft_status?: number
+  draft_status: DraftStatus | null
 }
 
 export interface ScheduleDraftProgram {
@@ -42,8 +45,10 @@ export interface ScheduleDraftProgram {
   groups: ScheduleDraftGroup[]
 }
 
-export interface ScheduleDraftResource {
+export interface ScheduleDraftContract {
   contract_id: number | null
   is_active: boolean
   programs: ScheduleDraftProgram[]
 }
+
+export type ScheduleDraft = ScheduleDraftContract[]

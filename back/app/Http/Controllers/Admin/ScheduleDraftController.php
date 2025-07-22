@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ScheduleDraftResource;
+use App\Http\Resources\SavedScheduleDraftResource;
 use App\Models\Client;
 use App\Models\Contract;
 use App\Models\ScheduleDraft;
@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 class ScheduleDraftController extends Controller
 {
     protected $filters = [
-        'equals' => ['client_id', 'year'],
+        'equals' => ['client_id', 'contract_id'],
     ];
 
     public function index(Request $request)
@@ -22,7 +22,7 @@ class ScheduleDraftController extends Controller
 
         $this->filter($request, $query);
 
-        return $this->handleIndexRequest($request, $query, ScheduleDraftResource::class);
+        return $this->handleIndexRequest($request, $query, SavedScheduleDraftResource::class);
     }
 
     /**
@@ -85,14 +85,27 @@ class ScheduleDraftController extends Controller
         return $scheduleDraft->getData();
     }
 
-    public function newPrograms(Request $request)
+    public function removeProgram(Request $request)
+    {
+        $request->validate([
+            'id' => ['required', 'numeric', 'max:-1'],
+        ]);
+
+        $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
+        $scheduleDraft->removeProgram(intval($request->id));
+        $scheduleDraft->toRam();
+
+        return $scheduleDraft->getData();
+    }
+
+    public function addPrograms(Request $request)
     {
         $request->validate([
             'new_programs' => ['sometimes', 'array'],
         ]);
 
         $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
-        $scheduleDraft->newPrograms($request->new_programs);
+        $scheduleDraft->addPrograms($request->new_programs);
         $scheduleDraft->toRam();
 
         return $scheduleDraft->getData();
@@ -120,7 +133,7 @@ class ScheduleDraftController extends Controller
         $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
         $scheduleDraft->save();
 
-        return new ScheduleDraftResource($scheduleDraft);
+        return new SavedScheduleDraftResource($scheduleDraft);
     }
 
     /**
@@ -132,6 +145,14 @@ class ScheduleDraftController extends Controller
         $scheduleDraft->toRam();
 
         return $scheduleDraft->getData();
+    }
+
+    /**
+     * Загрузить сохранённый проект (внутри договора)
+     */
+    public function load(ScheduleDraft $scheduleDraft)
+    {
+        return $scheduleDraft->fillContract();
     }
 
     /**

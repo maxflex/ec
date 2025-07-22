@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#build/components'
-import { mdiArrowRightThin, mdiTextBoxCheckOutline, mdiTextBoxOutline } from '@mdi/js'
+import type { SavedScheduleDraft } from '../ScheduleDraft'
+import { mdiProgressUpload, mdiTextBoxCheckOutline, mdiTextBoxOutline } from '@mdi/js'
 import { addMonths, format, getYear } from 'date-fns'
 import { cloneDeep } from 'lodash-es'
 
@@ -21,6 +22,11 @@ const modelDefaults: ContractVersionResource = {
     source: null,
   },
 }
+const route = useRoute()
+const clientId: number = Number(route.params.id) // допускаем, что client_id хранится в адресной строке
+const savedDrafts = ref<SavedScheduleDraft[]>([]) // сохранённые проекты расписания (доступные для загрузки)
+const selectedSavedDraft = ref<SavedScheduleDraft>() // хранит ID загруженного проекта
+
 const { user } = useAuthStore()
 const item = ref<ContractVersionResource>(modelDefaults)
 const contractId = ref<number>()
@@ -58,15 +64,16 @@ function newContract() {
 async function newVersion(c: ContractResource) {
   const activeVersion = c.versions.find(e => e.is_active)!
   await edit(activeVersion, 'new-version')
+  await loadScheduleDrafts()
 }
 
 async function edit(cv: ContractVersionListResource, m: ContractEditMode = 'edit') {
+  loading.value = true
   mode.value = m
   contractId.value = cv.contract.id
   isEditSource.value = false
   seq.value = cv.seq + (m === 'edit' ? 0 : 1)
   dialog.value = true
-  loading.value = true
   const { data } = await useHttp<ContractVersionResource>(
     `contract-versions/${cv.id}`,
   )
@@ -96,6 +103,29 @@ async function edit(cv: ContractVersionListResource, m: ContractEditMode = 'edit
     }
   }
   loading.value = false
+}
+
+async function loadScheduleDrafts() {
+  const { data } = await useHttp<ApiResponse<SavedScheduleDraft>>(
+    `schedule-drafts`,
+    {
+      params: {
+        contract_id: item.value.contract.id,
+        client_id: clientId,
+      },
+    },
+  )
+  savedDrafts.value = data.value!.data
+}
+
+async function loadSavedDraft(savedDraft: SavedScheduleDraft) {
+  loading.value = true
+  isEditSource.value = false
+  selectedSavedDraft.value = savedDraft
+  const { data } = await useHttp<ContractVersionResource>(`schedule-drafts/load/${savedDraft.id}`)
+  item.value = data.value!
+  loading.value = false
+  // console.log(data.value)
 }
 
 function onProgramsSaved(programs: Program[]) {
@@ -151,13 +181,16 @@ async function save() {
   let responseData: ContractResource | ContractVersionListResource | null
   switch (mode.value) {
     case 'new-contract': {
-      const { data } = await useHttp<ContractResource>(`contracts`, {
-        method: 'post',
-        body: {
-          ...item.value,
-          client_id: Number(useRoute().params.id), // допускаем, что client_id хранится в адресной строке
+      const { data } = await useHttp<ContractResource>(
+        `contracts`,
+        {
+          method: 'post',
+          body: {
+            ...item.value,
+            client_id: clientId,
+          },
         },
-      })
+      )
       responseData = data.value
       break
     }
@@ -365,6 +398,10 @@ defineExpose({ edit, newContract, newVersion })
         <span v-else>
           Новая версия договора
           <span>№{{ contractId }}–{{ seq }}</span>
+          <div v-if="selectedSavedDraft" class="dialog-subheader">
+            Проект №{{ selectedSavedDraft.id }} от
+            {{ formatDateTime(selectedSavedDraft.created_at) }}
+          </div>
         </span>
         <div>
           <CrudDeleteBtn
@@ -374,6 +411,27 @@ defineExpose({ edit, newContract, newVersion })
             confirm-text="Вы уверены, что хотите удалить договор?"
             @deleted="dialog = false"
           />
+
+          <v-menu v-if="mode !== 'edit'">
+            <template #activator="{ props }">
+              <v-btn v-bind="props" :icon="mdiProgressUpload" :size="48" variant="text" />
+            </template>
+            <v-list>
+              <v-list-item v-for="savedDraft in savedDrafts" :key="savedDraft.id" @click="loadSavedDraft(savedDraft)">
+                <v-list-item-title>
+                  <div>
+                    Проект от {{ formatDateTime(savedDraft.created_at) }}
+                  </div>
+                  <div class="text-caption text-gray">
+                    <span class="pr-2">
+                      ID {{ savedDraft.id }}
+                    </span>
+                    {{ formatName(savedDraft.user) }}
+                  </div>
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
           <v-btn
             :icon="item && item.contract.source ? mdiTextBoxCheckOutline : mdiTextBoxOutline"
             :size="48"
@@ -381,9 +439,7 @@ defineExpose({ edit, newContract, newVersion })
             :color="isEditSource ? 'primary' : undefined"
             @click="isEditSource = !isEditSource"
           />
-          <v-menu
-            v-if="mode === 'edit'"
-          >
+          <v-menu v-if="mode === 'edit'">
             <template #activator="{ props }">
               <v-btn
                 v-bind="props"
@@ -411,8 +467,7 @@ defineExpose({ edit, newContract, newVersion })
           />
         </div>
       </div>
-      <UiLoader v-if="loading" />
-      <div v-else-if="isEditSource" class="dialog-body">
+      <div v-if="isEditSource" class="dialog-body">
         <div>
           <v-textarea
             v-model="item.contract.source"
@@ -423,6 +478,9 @@ defineExpose({ edit, newContract, newVersion })
         </div>
       </div>
       <div v-else class="dialog-body">
+        <v-fade-transition>
+          <UiLoader v-if="loading" fixed :offset="64" />
+        </v-fade-transition>
         <div class="double-input">
           <v-select
             v-model="item.contract.year"
@@ -608,6 +666,10 @@ defineExpose({ edit, newContract, newVersion })
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <div v-if="selectedSavedDraft">
+          <v-checkbox v-model="item.is_remote" label="Применить изменения в группах" />
         </div>
 
         <div class="dialog-section">

@@ -151,13 +151,6 @@ nextTick(loadData)
               показать баланс
             </v-list-item>
           </template>
-          <v-divider />
-          <v-list-item :to="{ name: 'schedule-drafts-editor', query: { client_id: clientId } }">
-            новый договор (проект)
-          </v-list-item>
-          <v-list-item v-if="selectedContract" :to="{ name: 'schedule-drafts-editor', query: { contract_id: selectedContract.id } }">
-            добавить версию (проект)
-          </v-list-item>
         </v-list>
       </v-menu>
     </template>

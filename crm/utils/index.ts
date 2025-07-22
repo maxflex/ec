@@ -179,29 +179,29 @@ export function loadFilters<T>(defaultFilters: T, tabName: string | null = null)
 }
 
 export function highlight(
-  entity: string,
-  id: number,
+  selector: string,
   className: 'item-updated' | 'item-deleted',
   scroll: ScrollBehavior | boolean = 'smooth',
 ) {
   nextTick(() => {
-    const el = document?.querySelector(`#${entity}-${id}`)
-    scroll && el?.scrollIntoView({ block: 'center', behavior: 'instant' })
+    const el = document?.querySelector(selector)
+    scroll && el?.scrollIntoView({ block: 'center', behavior: scroll as ScrollBehavior })
     el?.classList.remove(className)
     setTimeout(() => el?.classList.add(className), 0)
   })
 }
 
 export function itemUpdated(entity: string, id: number, scroll: ScrollBehavior | boolean = 'smooth') {
-  highlight(entity, id, 'item-updated', scroll)
+  highlight(`#${entity}-${id}`, 'item-updated', scroll)
 }
 
-export async function itemDeleted(entity: string, id: number) {
-  highlight(entity, id, 'item-deleted')
-  await new Promise((resolve) => {
-    setTimeout(resolve, 2000)
-  })
-}
+// не используется
+// export async function itemDeleted(entity: string, id: number, scroll: ScrollBehavior | boolean = 'smooth') {
+//   highlight(`${entity}-${id}`, 'item-deleted', scroll)
+//   await new Promise((resolve) => {
+//     setTimeout(resolve, 2000)
+//   })
+// }
 
 export function plural(
   number: number,

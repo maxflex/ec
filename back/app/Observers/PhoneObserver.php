@@ -6,6 +6,9 @@ use App\Models\Phone;
 use App\Models\TelegramMessage;
 use App\Utils\Phone as UtilsPhone;
 
+/**
+ * TODO: изменение/добавление номера телефона должна приводить к scout-reimport
+ */
 class PhoneObserver
 {
     public function saving(Phone $phone): void

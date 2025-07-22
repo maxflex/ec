@@ -36,7 +36,8 @@ export function useHttp<T = any>(
 
   if (env === 'local') {
     options.credentials = 'include'
-    headers.Cookie = 'XDEBUG_SESSION=PHPSTORM'
+    // headers.Cookies = 'XDEBUG_SESSION=PHPSTORM'
+    useCookie('XDEBUG_SESSION').value = 'PHPSTORM'
   }
 
   return useFetch(path, {

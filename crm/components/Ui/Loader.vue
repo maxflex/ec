@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const { offset } = defineProps<{
+const { offset, fixed } = defineProps<{
+  fixed?: boolean
   offset?: number
 }>()
 
@@ -12,7 +13,7 @@ const style = offset
 </script>
 
 <template>
-  <div class="loader" :style="style">
+  <div class="loader" :class="{ 'loader--fixed': fixed }" :style="style">
     <span> загружаю... </span>
   </div>
 </template>
@@ -27,6 +28,11 @@ const style = offset
   justify-content: center;
   position: absolute;
   z-index: 1;
+  &--fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
   span {
     font-size: 30px;
     position: relative;
