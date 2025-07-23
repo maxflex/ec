@@ -30,12 +30,13 @@ const menu: Menu = [
     title: 'Клиенты',
     items: [
       { title: 'Договоры', to: '/contracts' },
-      { title: 'Пройденные тесты', to: '/client-tests' },
+      { title: 'Проекты договоров', to: '/schedule-drafts' },
       { title: 'Жалобы', to: '/client-complaints' },
       { title: 'Отзывы', to: '/client-reviews' },
       { title: 'Контроль ЛК', to: '/control/lk' },
       { title: 'Контроль занятий', to: '/control/lessons' },
       { title: 'Контроль оценок', to: '/control/grades' },
+      { title: 'Пройденные тесты', to: '/client-tests' },
     ],
   },
   {

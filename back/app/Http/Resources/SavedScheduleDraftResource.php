@@ -12,8 +12,9 @@ class SavedScheduleDraftResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'created_at',
+            'created_at', 'contract_id', 'year', 'programs',
         ], [
+            'client' => new PersonResource($this->client),
             'user' => new PersonResource($this->user),
         ]);
     }

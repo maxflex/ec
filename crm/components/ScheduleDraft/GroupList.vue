@@ -10,20 +10,16 @@ const { items } = defineProps<{
 const emit = defineEmits<{
   addToGroup: [e: ScheduleDraftGroup]
   removeFromGroup: [e: ScheduleDraftGroup]
+  jumpToContract: [e: ScheduleDraftGroup]
 }>()
 
 function getElementId(groupId: number, cId: number | null | undefined) {
-  return `schedule-draft-list-${groupId}${cId ? `-${cId}` : ''}`
-}
-
-function scrollToOtherContract(item: ScheduleDraftGroup) {
-  const selector = `#${getElementId(item.id, item.swamp?.contract_id)}`
-  highlight(selector, 'item-updated', 'smooth')
+  return `schedule-draft-group-${groupId}${cId ? `-${cId}` : ''}`
 }
 </script>
 
 <template>
-  <v-table class="table-padding schedule-draft-list">
+  <v-table class="table-padding schedule-draft-group">
     <tbody>
       <tr
         v-for="item in items"
@@ -68,7 +64,7 @@ function scrollToOtherContract(item: ScheduleDraftGroup) {
 
         <template v-if="item.swamp">
           <td v-if="item.swamp.contract_id !== contractId" class="text-gray">
-            <UiIconLink @click="scrollToOtherContract(item)">
+            <UiIconLink @click="emit('jump-to-contract', item)">
               добавлен по договору №{{ item.swamp.contract_id }}
             </UiIconLink>
           </td>
@@ -126,7 +122,7 @@ function scrollToOtherContract(item: ScheduleDraftGroup) {
 </template>
 
 <style lang="scss">
-.schedule-draft-list {
+.schedule-draft-group {
   td {
     box-sizing: content-box;
     position: relative;

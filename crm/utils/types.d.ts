@@ -216,7 +216,7 @@ declare global {
     contract_version_id: number
     lessons_conducted: number
     lessons_to_be_conducted: number
-    lessons_total: number
+    lessons_suggest: number
     client_lesson_prices: number[]
     group_id: ?number
   }
@@ -240,6 +240,8 @@ declare global {
     sum?: number
     date: string
     programs: ContractVersionProgramResource[]
+    // оригинальные программы (используется когда подгружаем проект договора)
+    programs_original: ContractVersionProgramResource[]
     payments: ContractVersionPaymentResource[]
     contract: {
       id: number

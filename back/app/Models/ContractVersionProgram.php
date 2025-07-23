@@ -120,12 +120,15 @@ class ContractVersionProgram extends Model
     }
 
     /**
-     * TODO: есть lessons_total и total_lessons :)
+     * Серая цифра в колонке "занятий" в диалоге договора.
+     * Подсказывает ожидаемое значение в поле "занятий"
+     *
+     * сколько занятия проведено по программе + сколько ещё планируется, если ученик в группе по этой программе
+     * сколько планируется = параметр lessons_planned минус кол-во провёденных платных занятий
      */
-    public function getLessonsTotalAttribute(): int
+    public function getLessonsSuggest(?Group $group): int
     {
         $total = $this->lessons_conducted;
-        $group = $this->group;
 
         if (! $group) {
             return $total;
@@ -172,6 +175,9 @@ class ContractVersionProgram extends Model
         return $this->prices->sum(fn (ContractVersionProgramPrice $p) => $p->lessons * $p->price);
     }
 
+    /**
+     * Сумма поля "lessons" из contract_version_program_prices по текущей программе
+     */
     public function getTotalLessonsAttribute(): int
     {
         return once(

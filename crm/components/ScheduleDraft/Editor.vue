@@ -1,29 +1,28 @@
 <script setup lang="ts">
-import type { ScheduleDraftApplySummaryDialog } from '#components'
-import type { SavedScheduleDraft, ScheduleDraft, ScheduleDraftGroup, ScheduleDraftProgram } from '.'
-import type { ClientResource } from '~/components/Client'
+import type { SavedScheduleDraftResource, ScheduleDraft, ScheduleDraftGroup, ScheduleDraftProgram } from '.'
 import { mdiArrowRightThin, mdiChevronRight } from '@mdi/js'
 import { apiUrl } from '.'
 
-const { client, year } = defineProps<{
-  client: ClientResource
+const { client, year, savedDraft } = defineProps<{
+  /**
+   * Если загружаем конкретный ID проекта
+   */
+  savedDraft?: SavedScheduleDraftResource
+  client: PersonResource
   year: Year
 }>()
 
 defineEmits<{ back: [] }>()
 
-const applyDialog = ref<InstanceType<typeof ScheduleDraftApplySummaryDialog>>()
+const router = useRouter()
 const loading = ref(false)
 const btnLoading = ref(false)
 const teeth = ref<Teeth>()
 const scheduleDraft = ref<ScheduleDraft>()
 const selectedContractId = ref<number>() // ID выбранной вкладки договора
 
-// ID текущего загруженного / сохранённого проекта. Нужно для удаления
-const currentDraftId = ref<number>()
-
 // сохранённые проекты расписания (доступные для загрузки)
-const savedDrafts = ref<SavedScheduleDraft[]>([])
+const savedDrafts = ref<SavedScheduleDraftResource[]>([])
 
 async function fromActualContracts() {
   loading.value = true
@@ -32,19 +31,21 @@ async function fromActualContracts() {
     {
       params: {
         year,
+        id: savedDraft?.id,
         client_id: client.id,
       },
     },
   )
   scheduleDraft.value = data.value!
-  selectedContractId.value = Number.parseInt(Object.keys(scheduleDraft.value)[0])
+  // выбираем нужную вкладку
+  selectedContractId.value = savedDraft ? (savedDraft.contract_id || -1) : Number.parseInt(Object.keys(scheduleDraft.value)[0])
   loading.value = false
   smoothScroll('main', 'top', 'instant')
   loadSavedDrafts()
 }
 
 async function loadSavedDrafts() {
-  const { data } = await useHttp<ApiResponse<SavedScheduleDraft>>(apiUrl, {
+  const { data } = await useHttp<ApiResponse<SavedScheduleDraftResource>>(apiUrl, {
     params: {
       client_id: client.id,
     },
@@ -52,58 +53,54 @@ async function loadSavedDrafts() {
   savedDrafts.value = data.value!.data
 }
 
-async function loadSavedDraft(savedDraft: SavedScheduleDraft) {
-  loading.value = true
+async function deleteSavedDraft() {
   btnLoading.value = true
-  const { data } = await useHttp<ScheduleDraft>(
-    `${apiUrl}/${savedDraft.id}`,
-  )
-  scheduleDraft.value = data.value!
-  loading.value = false
-  btnLoading.value = false
-  currentDraftId.value = savedDraft.id
-  smoothScroll('main', 'top', 'instant')
-}
-
-async function deleteCurrentDraft() {
-  btnLoading.value = true
+  const { id } = savedDraft!
   await useHttp<ScheduleDraftProgram[]>(
-    `${apiUrl}/${currentDraftId.value}`,
+    `${apiUrl}/${id}`,
     { method: 'DELETE' },
   )
-  savedDrafts.value.splice(
-    savedDrafts.value.findIndex(e => e.id === currentDraftId.value),
-    1,
-  )
-  btnLoading.value = false
-  useGlobalMessage(`<b>ID ${currentDraftId.value}</b> – проект удалён`, 'success')
-  currentDraftId.value = undefined
+  useGlobalMessage(`<b>ID ${id}</b> – проект удалён`, 'success')
+  router.back()
 }
 
 async function save() {
-  // btnLoading.value = true
-  const { data } = await useHttp<SavedScheduleDraft>(
+  btnLoading.value = true
+  const { data } = await useHttp<SavedScheduleDraftResource>(
     `${apiUrl}/save`,
-    { method: 'POST' },
+    {
+      method: 'POST',
+      body: {
+        contract_id: selectedContractId.value,
+      },
+    },
   )
-  currentDraftId.value = data.value!.id
-  // btnLoading.value = false
+  router.push({ name: 'schedule-drafts-id', params: { id: data.value!.id } })
   useGlobalMessage('Проект сохранён', 'success')
-  loadSavedDrafts()
 }
 
-async function apply() {
-  applyDialog.value?.open(scheduleDraft.value)
-  // btnLoading.value = true
-  // const { error } = await useHttp(`${apiUrl}/apply`, { method: 'POST' })
-  // if (error.value) {
-  //   useGlobalMessage(`<b>Ошибка применения проекта.</b> ${error.value.data.message}`, 'error')
-  //   btnLoading.value = false
-  //   return
-  // }
-  // await fromActualContracts()
-  // btnLoading.value = false
-  // useGlobalMessage('Проект успешно применён', 'success')
+async function applyMoveGroups() {
+  loading.value = true
+  const { data, error } = await useHttp<ScheduleDraft>(
+    `${apiUrl}/apply-move-groups`,
+    {
+      method: 'POST',
+      body: {
+        contract_id: selectedContractId.value,
+      },
+    },
+  )
+
+  if (error.value) {
+    useGlobalMessage(error.value.data?.message, 'error')
+    loading.value = false
+
+    return
+  }
+
+  scheduleDraft.value = data.value!
+  loading.value = false
+  useGlobalMessage('Изменения в группах применены', 'success')
 }
 
 async function getTeeth() {
@@ -125,6 +122,8 @@ async function addToGroup(p: ScheduleDraftProgram, g: ScheduleDraftGroup) {
   )
   if (error.value) {
     useGlobalMessage(`<b>${ProgramShortLabel[p.program]}</b> – по этой программе ученик находится в другой группе`, 'error')
+    loading.value = false
+
     return
   }
 
@@ -154,12 +153,14 @@ async function addPrograms(newPrograms: Program[]) {
     {
       method: 'post',
       body: {
+        contract_id: selectedContractId.value,
         new_programs: newPrograms,
       },
     },
   )
   scheduleDraft.value = data.value!
   loading.value = false
+  smoothScroll('main', 'bottom', 'instant')
 }
 
 async function removeProgram(p: ScheduleDraftProgram) {
@@ -175,6 +176,30 @@ async function removeProgram(p: ScheduleDraftProgram) {
   )
   scheduleDraft.value = data.value!
   loading.value = false
+}
+
+function jumpToContract(item: ScheduleDraftGroup) {
+  selectedContractId.value = item.swamp!.contract_id as number
+  nextTick(() => {
+    const selector = `#schedule-draft-group-${item.id}${selectedContractId.value ? `-${selectedContractId.value}` : ''}`
+    highlight(selector, 'item-updated', 'instant')
+  })
+}
+
+function getChangesCnt(contractId: number) {
+  let cnt = 0
+  for (const p of scheduleDraft.value![contractId]) {
+    for (const g of p.groups) {
+      if (g.draft_status && (!g.swamp || g.swamp?.contract_id === contractId)) {
+        cnt++
+      }
+    }
+    if (p.id < 0) {
+      cnt++
+    }
+  }
+
+  return cnt
 }
 
 watch(scheduleDraft, getTeeth)
@@ -218,7 +243,7 @@ nextTick(fromActualContracts)
             </v-btn>
           </template>
           <v-list>
-            <v-list-item @click="apply()">
+            <v-list-item @click="applyMoveGroups()">
               применить проект
             </v-list-item>
             <v-list-item @click="save()">
@@ -231,23 +256,26 @@ nextTick(fromActualContracts)
               </template>
               <v-menu activator="parent" submenu>
                 <v-list>
-                  <v-list-item v-for="savedDraft in savedDrafts" :key="savedDraft.id" @click="loadSavedDraft(savedDraft)">
+                  <v-list-item
+                    v-for="d in savedDrafts"
+                    :key="d.id"
+                    :to="{ name: 'schedule-drafts-id', params: { id: d.id } }"
+                  >
                     <v-list-item-title>
                       <div>
-                        Проект от {{ formatDateTime(savedDraft.created_at) }}
+                        <span class="pr-1">ID {{ d.id }}</span>
+                        {{ d.contract_id ? `Договор №${d.contract_id}` : 'Новый договор' }}
                       </div>
                       <div class="text-caption text-gray">
-                        <span class="pr-2">
-                          ID {{ savedDraft.id }}
-                        </span>
-                        {{ formatName(savedDraft.user) }}
+                        {{ formatName(d.user) }}
+                        {{ formatDateTime(d.created_at) }}
                       </div>
                     </v-list-item-title>
                   </v-list-item>
                 </v-list>
               </v-menu>
             </v-list-item>
-            <v-list-item v-if="currentDraftId" class="text-error" @click="deleteCurrentDraft()">
+            <v-list-item v-if="savedDraft" class="text-error" @click="deleteSavedDraft()">
               удалить проект
             </v-list-item>
           </v-list>
@@ -262,17 +290,25 @@ nextTick(fromActualContracts)
           :key="contractId"
           class="tabs-item"
           :class="{ 'tabs-item--active': selectedContractId === Number.parseInt(contractId) }"
-          @click="selectedContractId = Number.parseInt(contractId as string)"
+          @click="selectedContractId = Number.parseInt(contractId)"
         >
-          <template v-if="contractId > 0">
+          <span v-if="contractId > 0">
             договор №{{ contractId }}
-          </template>
-          <template v-else>
+          </span>
+          <span v-else>
             новый договор
-          </template>
+          </span>
+          <span v-if="getChangesCnt(Number.parseInt(contractId))" class="schedule-draft__changes-cnt">
+            {{ getChangesCnt(Number.parseInt(contractId)) }}
+          </span>
         </div>
       </div>
-      <div v-for="p in scheduleDraft[selectedContractId]" :key="p.id" class="schedule-draft__programs">
+      <div
+        v-for="p in scheduleDraft[selectedContractId]"
+        :key="p.id"
+        class="schedule-draft__programs"
+        :class="{ 'element-loading': loading }"
+      >
         <div class="schedule-draft__program-info">
           <span>
             {{ ProgramLabel[p.program] }}
@@ -306,6 +342,7 @@ nextTick(fromActualContracts)
           :contract-id="selectedContractId"
           @add-to-group="g => addToGroup(p, g)"
           @remove-from-group="removeFromGroup"
+          @jump-to-contract="jumpToContract"
         />
         <div v-else class="schedule-draft__no-groups">
           <UiNoData>
@@ -313,7 +350,7 @@ nextTick(fromActualContracts)
           </UiNoData>
         </div>
       </div>
-      <div class="container">
+      <div class="container" :class="{ 'element-loading': loading }">
         <ProgramSelectorMenu
           :pre-selected="scheduleDraft[selectedContractId].map(e => e.program)"
           @saved="addPrograms"
@@ -328,7 +365,6 @@ nextTick(fromActualContracts)
       </div>
     </template>
   </UiIndexPage>
-  <ScheduleDraftApplySummaryDialog ref="applyDialog" />
 </template>
 
 <style lang="scss">
@@ -394,11 +430,20 @@ nextTick(fromActualContracts)
     }
   }
 
+  &__changes-cnt {
+    color: rgb(var(--v-theme-gray));
+  }
+
   .tabs {
     position: sticky;
     top: 64px;
     z-index: 1;
     background: white;
+    .tabs-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
   }
 }
 </style>

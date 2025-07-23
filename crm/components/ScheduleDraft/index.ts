@@ -5,9 +5,13 @@ export type DraftStatus = 'added' | 'removed'
 /**
  * Сохраненные проекты расписания
  */
-export interface SavedScheduleDraft {
+export interface SavedScheduleDraftResource {
   id: number
+  contract_id: number | null
   user: PersonResource
+  client: PersonResource
+  programs: any[]
+  year: Year
   created_at: string
 }
 
@@ -45,4 +49,4 @@ export interface ScheduleDraftProgram {
   groups: ScheduleDraftGroup[]
 }
 
-export type ScheduleDraft = Record<number,ScheduleDraftProgram[]>
+export type ScheduleDraft = Record<number, ScheduleDraftProgram[]>

@@ -95,7 +95,7 @@ class Error extends Model
     private static function isLessonsValid(ContractVersion $v): bool
     {
         foreach ($v->programs as $p) {
-            $total = (int) $p->lessons_total;
+            $total = (int) $p->getLessonsSuggest($p->group);
             $sum = $p->prices->sum(fn ($pr) => (int) $pr->lessons);
 
             if ($total > 0 && $total !== $sum) {

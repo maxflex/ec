@@ -130,6 +130,9 @@ class Group extends Model implements HasTeeth
         return (object) $result;
     }
 
+    /**
+     * @return array{conducted: number, conducted_free: number, planned: number, planned_free: number}
+     */
     public function getLessonCountsAttribute(): array
     {
         $nonCancelledLessons = $this->lessons->where('status', '<>', LessonStatus::cancelled);

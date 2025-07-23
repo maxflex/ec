@@ -7,6 +7,7 @@ use App\Enums\LessonStatus;
 use App\Http\Resources\ContractVersionResource;
 use App\Http\Resources\PersonResource;
 use App\Utils\Teeth;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
@@ -14,7 +15,7 @@ use Illuminate\Support\Collection;
 class ScheduleDraft extends Model implements HasTeeth
 {
     protected $fillable = [
-        'programs', 'client_id', 'contract_id', 'user_id',
+        'programs', 'client_id', 'user_id', 'year',
     ];
 
     protected $casts = [
@@ -48,6 +49,7 @@ class ScheduleDraft extends Model implements HasTeeth
         }
 
         return new ScheduleDraft([
+            'year' => $year,
             'client_id' => $client->id,
             'programs' => $programs,
         ]);
@@ -107,50 +109,69 @@ class ScheduleDraft extends Model implements HasTeeth
     }
 
     /**
-     * Применить: новая версия договора
+     * Применить перемещения в группе
      */
-    // private function applyNewContractVersion()
-    // {
-    //     $programIds = $this->contract->active_version->programs->pluck('id')->flip();
-    //
-    //     $contractVersion = $this->contract->versions()->create([
-    //         ...$this->contract->active_version->toArray(),
-    //         'user_id' => auth()->id(),
-    //     ]);
-    //
-    //     foreach ($this->data as $p) {
-    //         if ($p['id'] < 0 || $programIds->has($p['id'])) {
-    //             // удаляем из группы
-    //         }
-    //         // $contractVersionProgram = $contractVersion->programs()->create($p);
-    //         // $contractVersionProgram->prices()->createMany($p['prices']);
-    //     }
-    //
-    //     // сначала удаляем все группы клиента
-    //     // возможно в будущем нужно будет удалять не по ID, а всё по году
-    //     $clientGroups = ClientGroup::whereIn('contract_version_program_id', $this->programs->pluck('id'))->get();
-    //     $clientGroups->each->delete();
-    //
-    //     $programs = $this->programs
-    //         // применяем только те, где установлен group_id
-    //         ->whereNotNull('group_id')
-    //         // "проект договора" пока исключаем
-    //         ->where('id', '>', 0)
-    //         ->values();
-    //
-    //     foreach ($programs as $p) {
-    //         ClientGroup::create([
-    //             'contract_version_program_id' => $p->id,
-    //             'group_id' => $p->group_id,
-    //         ]);
-    //     }
-    // }
-    /**
-     * Применить текущий проект
-     */
-    public function apply()
+    public function applyMoveGroups(int $contractId)
     {
-        $this->contract_id ? $this->applyNewContractVersion() : $this->applyNewContract();
+        // программы выбранного $contractId
+        $programs = $this->programs->filter(fn ($p) => $p['contract_id'] === $contractId);
+
+        // если есть добавления в группу по новым программам – ошибка
+        if ($programs->where('id', '<', 0)->whereNotNull('group_id')->count()) {
+            throw new Exception('Нельзя добавить в группу по несуществующей программе');
+        }
+
+        // only real programs
+        $programs = $programs->where('id', '>', 0);
+
+        $clientGroups = ClientGroup::query()
+            ->whereIn('contract_version_program_id', $programs->pluck('id'))
+            ->get();
+
+        foreach ($programs as $p) {
+            $programId = $p['id'];
+            $groupId = $p['group_id'];
+            $clientGroup = $clientGroups->where('contract_version_program_id', $programId)->first();
+
+            if ($clientGroup) {
+                if (! $groupId) {
+                    // Было, но удалили
+                    $clientGroup->delete();
+                } elseif ($clientGroup->group_id !== $groupId) {
+                    // Было, но изменили
+                    $clientGroup->group_id = $groupId;
+                    $clientGroup->save();
+                }
+            } elseif ($groupId) {
+                // Не было, но добавили
+                ClientGroup::create([
+                    'contract_version_program_id' => $programId,
+                    'group_id' => $groupId,
+                ]);
+            }
+        }
+    }
+
+    public function saveNew(int $contractId): ScheduleDraft
+    {
+        // чтобы всегда сохранялся новый проект
+        $scheduleDraft = $this->replicate();
+
+        $scheduleDraft->contract_id = $contractId < 0 ? null : $contractId;
+        $scheduleDraft->programs = $scheduleDraft->programs
+            // сохраняем программы только текущего contract_id
+            ->filter(fn ($p) => $p['contract_id'] === $contractId)
+            // убираем contract_id из сохранённых данных
+            ->map(function ($p) {
+                unset($p['contract_id']);
+
+                return $p;
+            })
+            ->values();
+
+        $scheduleDraft->save();
+
+        return $scheduleDraft;
     }
 
     public function getData()
@@ -357,7 +378,7 @@ class ScheduleDraft extends Model implements HasTeeth
      * Добавить новые программы в проект договора
      * Добавление всегда в текущий contract_id
      */
-    public function addPrograms(array $newPrograms)
+    public function addPrograms(array $newPrograms, int $contractId)
     {
         $newPrograms = collect($newPrograms);
         $id = min($this->programs->min('id'), 0);
@@ -368,7 +389,7 @@ class ScheduleDraft extends Model implements HasTeeth
             $id--;
             $programs->push([
                 'id' => $id, // id < 0
-                'contract_id' => $this->contract_id,
+                'contract_id' => $contractId,
                 'program' => $program,
                 'group_id' => null,
             ]);
@@ -410,10 +431,10 @@ class ScheduleDraft extends Model implements HasTeeth
      * Если есть договор (добавляем проект к конкретному договору) – то год из договора
      * Иначе текущий академический год
      */
-    public function getYearAttribute(): int
-    {
-        return $this->contract?->year ?? current_academic_year();
-    }
+    // public function getYearAttribute(): int
+    // {
+    //     return $this->contract?->year ?? current_academic_year();
+    // }
 
     /**
      * Получить данные для заполнения договора
@@ -433,7 +454,8 @@ class ScheduleDraft extends Model implements HasTeeth
             // группа, в которую ученика поместили в проекте (или он там и был)
             $groupFromDraft = $p['group_id'] ? Group::find($p['group_id']) : null;
             $lessonsConducted = $programFromContract?->lessons_conducted ?: 0;
-            $lessonsTotal = $programFromContract?->lessons_total ?: 0;
+            $lessonsSuggest = $programFromContract ? $programFromContract->getLessonsSuggest($groupFromDraft) : 0;
+
             $program = [
                 'id' => $id,
                 'program' => $p['program'],
@@ -441,11 +463,11 @@ class ScheduleDraft extends Model implements HasTeeth
                 'lessons_planned' => $programFromContract?->lessons_planned ?: 0,
                 'lessons_conducted' => $lessonsConducted,
                 'lessons_to_be_conducted' => $programFromContract?->lessons_to_be_conducted ?: 0,
-                'lessons_total' => $lessonsTotal,
+                'lessons_suggest' => $lessonsSuggest,
                 'client_lesson_prices' => $programFromContract?->client_lesson_prices ?: [],
                 'status' => ContractVersionProgram::getStatus(
                     $lessonsConducted,
-                    $lessonsTotal,
+                    $programFromContract?->total_lessons ?: 0,
                     $groupFromDraft !== null
                 ),
             ];
@@ -460,7 +482,8 @@ class ScheduleDraft extends Model implements HasTeeth
                         && $groupFromDraft->id !== $programFromContract->clientGroup?->group_id;
 
                     $lessons = $updateLessons
-                        ? ($groupFromDraft->lessons_planned - $lessonsConducted)
+                        // сколько планируется в группе минус сколько проведено по программе
+                        ? ($groupFromDraft->lesson_counts['planned'] - $lessonsConducted)
                         : $price->lessons;
 
                     $prices->push([
@@ -492,5 +515,34 @@ class ScheduleDraft extends Model implements HasTeeth
         $item->programs = $programs;
 
         return $item;
+    }
+
+    /**
+     * Загрузить проект на странице /schedule-drafts/editor
+     * Распаковка data, приведение к формату
+     */
+    public function unpackPrograms()
+    {
+        $programs = collect();
+
+        // сначала добавляем contract_id в существующие программы
+        foreach ($this->programs as $p) {
+            $programs->push([
+                ...$p,
+                'contract_id' => $this->contract_id ?? -1,
+            ]);
+        }
+
+        // добавляем другие договоры
+        $otherContracts = $this->client->contracts()
+            ->where('year', $this->year)
+            ->where('id', '<>', $this->contract_id)
+            ->get();
+
+        foreach ($otherContracts as $contract) {
+            $programs = $programs->merge(self::getProgramsForContract($contract));
+        }
+
+        $this->programs = $programs->values();
     }
 }

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#build/components'
-import type { SavedScheduleDraft } from '../ScheduleDraft'
+import type { SavedScheduleDraftResource } from '../ScheduleDraft'
 import { mdiProgressUpload, mdiTextBoxCheckOutline, mdiTextBoxOutline } from '@mdi/js'
-import { addMonths, format, getYear } from 'date-fns'
+import { addMonths, format } from 'date-fns'
 import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{
@@ -17,15 +17,16 @@ const modelDefaults: ContractVersionResource = {
   payments: [],
   contract: {
     id: newId(),
-    year: getYear(new Date()) as Year,
+    year: currentAcademicYear(),
     company: null,
     source: null,
   },
 }
 const route = useRoute()
 const clientId: number = Number(route.params.id) // допускаем, что client_id хранится в адресной строке
-const savedDrafts = ref<SavedScheduleDraft[]>([]) // сохранённые проекты расписания (доступные для загрузки)
-const selectedSavedDraft = ref<SavedScheduleDraft>() // хранит ID загруженного проекта
+const savedDrafts = ref<SavedScheduleDraftResource[]>([]) // сохранённые проекты расписания (доступные для загрузки)
+const selectedSavedDraft = ref<SavedScheduleDraftResource>() // хранит ID загруженного проекта
+const applyGroupChanges = ref(false) // применить изменения в группах (для подгруженного проекта договора)
 
 const { user } = useAuthStore()
 const item = ref<ContractVersionResource>(modelDefaults)
@@ -59,12 +60,13 @@ function newContract() {
   seq.value = undefined
   item.value = cloneDeep(modelDefaults)
   dialog.value = true
+  loadSavedDrafts()
 }
 
 async function newVersion(c: ContractResource) {
   const activeVersion = c.versions.find(e => e.is_active)!
   await edit(activeVersion, 'new-version')
-  await loadScheduleDrafts()
+  await loadSavedDrafts()
 }
 
 async function edit(cv: ContractVersionListResource, m: ContractEditMode = 'edit') {
@@ -72,6 +74,7 @@ async function edit(cv: ContractVersionListResource, m: ContractEditMode = 'edit
   mode.value = m
   contractId.value = cv.contract.id
   isEditSource.value = false
+  selectedSavedDraft.value = undefined
   seq.value = cv.seq + (m === 'edit' ? 0 : 1)
   dialog.value = true
   const { data } = await useHttp<ContractVersionResource>(
@@ -105,12 +108,13 @@ async function edit(cv: ContractVersionListResource, m: ContractEditMode = 'edit
   loading.value = false
 }
 
-async function loadScheduleDrafts() {
-  const { data } = await useHttp<ApiResponse<SavedScheduleDraft>>(
+async function loadSavedDrafts() {
+  const { id: contractId } = item.value.contract
+  const { data } = await useHttp<ApiResponse<SavedScheduleDraftResource>>(
     `schedule-drafts`,
     {
       params: {
-        contract_id: item.value.contract.id,
+        contract_id: contractId,
         client_id: clientId,
       },
     },
@@ -118,7 +122,7 @@ async function loadScheduleDrafts() {
   savedDrafts.value = data.value!.data
 }
 
-async function loadSavedDraft(savedDraft: SavedScheduleDraft) {
+async function loadSavedDraft(savedDraft: SavedScheduleDraftResource) {
   loading.value = true
   isEditSource.value = false
   selectedSavedDraft.value = savedDraft
@@ -143,7 +147,7 @@ function onProgramsSaved(programs: Program[]) {
       ],
       lessons_conducted: 0,
       lessons_to_be_conducted: 0,
-      lessons_total: 0,
+      lessons_suggest: 0,
       lessons_planned: '',
       group_id: null,
       client_lesson_prices: [],
@@ -336,12 +340,13 @@ function isPriceLessonsError(price: ContractVersionProgramPrice, program: Contra
   }
   const lessonsSum = program.prices.reduce((carry, x) => asInt(x.lessons) + carry, 0)
   return price.id === program.prices[program.prices.length - 1].id
-    && lessonsSum !== program.lessons_total
+    && lessonsSum !== program.lessons_suggest
 }
 
 function getCorrectedPriceLessons(program: ContractVersionProgramResource) {
-  const lessonsSum = program.prices.slice(0, program.prices.length - 1).reduce((carry, x) => asInt(x.lessons) + carry, 0)
-  return program.lessons_total - lessonsSum
+  const lastCvpp = program.prices.slice(0, program.prices.length - 1)
+  const lessonsFromPricesSum = lastCvpp.reduce((carry, x) => asInt(x.lessons) + carry, 0)
+  return program.lessons_suggest - lessonsFromPricesSum
 }
 
 function isPriceError(price: ContractVersionProgramPrice, program: ContractVersionProgramResource) {
@@ -399,8 +404,13 @@ defineExpose({ edit, newContract, newVersion })
           Новая версия договора
           <span>№{{ contractId }}–{{ seq }}</span>
           <div v-if="selectedSavedDraft" class="dialog-subheader">
-            Проект №{{ selectedSavedDraft.id }} от
-            {{ formatDateTime(selectedSavedDraft.created_at) }}
+            <RouterLink
+              target="_blank"
+              :to="{ name: 'schedule-drafts-id', params: { id: selectedSavedDraft.id } }"
+            >
+              Проект №{{ selectedSavedDraft.id }}
+            </RouterLink>
+            от {{ formatDateTime(selectedSavedDraft.created_at) }}
           </div>
         </span>
         <div>
@@ -414,19 +424,18 @@ defineExpose({ edit, newContract, newVersion })
 
           <v-menu v-if="mode !== 'edit'">
             <template #activator="{ props }">
-              <v-btn v-bind="props" :icon="mdiProgressUpload" :size="48" variant="text" />
+              <v-btn v-bind="props" :icon="mdiProgressUpload" :size="48" variant="text" :disabled="savedDrafts.length === 0" />
             </template>
             <v-list>
-              <v-list-item v-for="savedDraft in savedDrafts" :key="savedDraft.id" @click="loadSavedDraft(savedDraft)">
+              <v-list-item v-for="d in savedDrafts" :key="d.id" @click="loadSavedDraft(d)">
                 <v-list-item-title>
                   <div>
-                    Проект от {{ formatDateTime(savedDraft.created_at) }}
+                    <span class="pr-1">ID {{ d.id }}</span>
+                    {{ d.contract_id ? `Договор №${d.contract_id}` : 'Новый договор' }}
                   </div>
                   <div class="text-caption text-gray">
-                    <span class="pr-2">
-                      ID {{ savedDraft.id }}
-                    </span>
-                    {{ formatName(savedDraft.user) }}
+                    {{ formatName(d.user) }}
+                    {{ formatDateTime(d.created_at) }}
                   </div>
                 </v-list-item-title>
               </v-list-item>
@@ -552,7 +561,18 @@ defineExpose({ edit, newContract, newVersion })
                   </div>
                 </td>
                 <td>
-                  <span v-if="p.group_id" class="pl-4">
+                  <!-- если подгрузили проект, то показываем оригинальную программу unless отмечено applyGroupChanges -->
+                  <template v-if="selectedSavedDraft">
+                    <template v-if="applyGroupChanges">
+                      <span v-if="p.group_id" class="pl-4">
+                        ГР-{{ p.group_id }}
+                      </span>
+                    </template>
+                    <span v-else-if="item.programs_original.some(e => e.program === p.program && e.group_id)" class="pl-4">
+                      ГР-{{ item.programs_original.find(e => e.program === p.program)?.group_id }}
+                    </span>
+                  </template>
+                  <span v-else-if="p.group_id" class="pl-4">
                     ГР-{{ p.group_id }}
                   </span>
                 </td>
@@ -591,9 +611,9 @@ defineExpose({ edit, newContract, newVersion })
                     <!-- <span v-if="lessonsConducted[p.id][price.id].lessons_to_be_conducted" class="text-gray pl-1">
                       + {{ lessonsConducted[p.id][price.id].lessons_to_be_conducted }}
                     </span> -->
-                    <!--                    <template v-if="lessonsConducted[p.id][price.id].lessons_total > 0"> -->
+                    <!--                    <template v-if="lessonsConducted[p.id][price.id].lessons_suggest > 0"> -->
                     <!--                      <v-icon :icon="mdiArrowRightThin" color="gray" :size="18" /> -->
-                    <!--                      {{ lessonsConducted[p.id][price.id].lessons_total }} -->
+                    <!--                      {{ lessonsConducted[p.id][price.id].lessons_suggest }} -->
                     <!--                    </template> -->
                   </div>
                 </td>
@@ -669,7 +689,7 @@ defineExpose({ edit, newContract, newVersion })
         </div>
 
         <div v-if="selectedSavedDraft">
-          <v-checkbox v-model="item.is_remote" label="Применить изменения в группах" />
+          <v-checkbox v-model="applyGroupChanges" label="Применить изменения в группах" />
         </div>
 
         <div class="dialog-section">
