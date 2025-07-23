@@ -38,12 +38,18 @@ class ScheduleDraft extends Model implements HasTeeth
      * $contract – к какому договору добавляем проект
      * Если не указан, то новая цепь договора, иначе добавление новой версии к $contract
      */
-    public static function fromActualContracts(Client $client, ?Contract $contract = null): ScheduleDraft
+    public static function fromActualContracts(Client $client, int $year): ScheduleDraft
     {
+        $contracts = $client->contracts()->where('year', $year)->get();
+
+        $programs = collect();
+        foreach ($contracts as $contract) {
+            $programs = $programs->merge(self::getProgramsForContract($contract));
+        }
+
         return new ScheduleDraft([
             'client_id' => $client->id,
-            'contract_id' => $contract?->id,
-            'programs' => $contract ? self::getProgramsForContract($contract) : collect(),
+            'programs' => $programs,
         ]);
     }
 
@@ -52,11 +58,13 @@ class ScheduleDraft extends Model implements HasTeeth
      */
     private static function getProgramsForContract(Contract $contract)
     {
-        return $contract->active_version->programs->map(fn (ContractVersionProgram $cvp) => [
-            'id' => $cvp->id,
-            'program' => $cvp->program->value,
-            'group_id' => $cvp->clientGroup?->group_id,
-        ]);
+        return $contract->active_version->programs->map(
+            fn (ContractVersionProgram $cvp) => (object) [
+                'id' => $cvp->id,
+                'contract_id' => $contract->id,
+                'program' => $cvp->program->value,
+                'group_id' => $cvp->clientGroup?->group_id,
+            ]);
     }
 
     public function addToGroup(int $programId, int $groupId): bool
@@ -147,7 +155,7 @@ class ScheduleDraft extends Model implements HasTeeth
 
     public function getData()
     {
-        $realProgramIds = $this->allPrograms()->where('id', '>', 0)->pluck('id');
+        $realProgramIds = $this->programs->where('id', '>', 0)->pluck('id');
 
         // Все планируемые занятия ученика, сгруппированные по дате
         // Нужно для подсчёта пересечений
@@ -168,7 +176,7 @@ class ScheduleDraft extends Model implements HasTeeth
         $groups = Group::query()
             ->where('year', $this->year)
             ->withCount('clientGroups')
-            ->whereIn('program', $this->allPrograms()->pluck('program')->unique())
+            ->whereIn('program', $this->programs->pluck('program')->unique())
             ->with('lessons')
             ->get();
 
@@ -176,16 +184,16 @@ class ScheduleDraft extends Model implements HasTeeth
             ->whereIn('contract_version_program_id', $realProgramIds)
             ->pluck('group_id', 'contract_version_program_id');
 
-        $swampsByProgramId = $this->allPrograms()->map(function ($p) use ($cvpById) {
-            $cvp = $p->id > 0 ? $cvpById[$p->id] : null;
+        $swampsByProgramId = $this->programs->map(function ($p) use ($cvpById) {
+            $cvp = $p['id'] > 0 ? $cvpById[$p['id']] : null;
             $lessonsConducted = $cvp ? $cvp->lessons_conducted : 0;
             $totalLessons = $cvp ? $cvp->total_lessons : 33; // 33 – прогноз по занятиям, чтобы статус был "к исполнению"
-            $hasGroup = $p->group_id !== null;
+            $hasGroup = $p['group_id'] !== null;
 
             return (object) [
-                'id' => $p->id,
-                'program' => $p->program,
-                'contract_id' => $cvp ? $cvp->contractVersion->contract_id : $p->contract_id,
+                'id' => $p['id'],
+                'program' => $p['program'],
+                'contract_id' => $cvp ? $cvp->contractVersion->contract_id : $p['contract_id'],
                 'lessons_conducted' => $lessonsConducted,
                 'total_lessons' => $totalLessons,
                 'status' => ContractVersionProgram::getStatus(
@@ -199,17 +207,17 @@ class ScheduleDraft extends Model implements HasTeeth
         // добавляем информацию о пересечениях и процессе по договору в каждую группу
         foreach ($groups as $group) {
             $isProgramUsed = false;
-            $p = $this->allPrograms()->where('group_id', $group->id)->first();
+            $p = $this->programs->where('group_id', $group->id)->first();
 
             $group->draft_status = null;
 
             // есть процесс по договору
             if ($p) {
                 $isProgramUsed = true;
-                $group->swamp = $swampsByProgramId[$p->id];
+                $group->swamp = $swampsByProgramId[$p['id']];
 
                 // процесс по договору есть в черновике, но нет в реальности
-                if (@$clientGroups[$p->id] !== $group->id) {
+                if (@$clientGroups[$p['id']] !== $group->id) {
                     $group->draft_status = 'added';
                 }
             } else {
@@ -281,27 +289,36 @@ class ScheduleDraft extends Model implements HasTeeth
             ]))
             ->groupBy('program');
 
+        // добавляем вкладку "новый договор"
+        $hasNewContract = false;
+
+        // группировка по contractId
         $result = collect();
 
-        foreach ($this->allPrograms() as $p) {
-            $swamp = $swampsByProgramId[$p->id];
-            $result->push((object) [
-                ...(array) $p,
+        foreach ($this->programs as $p) {
+            $contractId = $p['contract_id'];
+            unset($p['contract_id']); // чтобы значение не дублировалось в $result
+
+            if ($contractId === -1) {
+                $hasNewContract = true;
+            }
+            $swamp = $swampsByProgramId[$p['id']];
+            if (! $result->has($contractId)) {
+                $result[$contractId] = collect();
+            }
+            $result[$contractId]->push((object) [
+                ...$p, // unset contract_id here – I dont want it in the result
                 'swamp' => $swamp,
-                'contract_id' => $swamp?->contract_id,
-                'groups' => $groupsByProgram->has($p->program) ? $groupsByProgram[$p->program] : [],
+                'groups' => $groupsByProgram->has($p['program']) ? $groupsByProgram[$p['program']] : [],
             ]);
         }
 
-        // group result by contract_id
-        return $result->groupBy('contract_id')
-            ->map(fn ($programs, $contractId) => [
-                'contract_id' => $contractId,
-                'is_active' => $contractId === $this->contract_id,
-                'programs' => $programs->sortBy('id')->values(),
-            ])
-            ->sortByDesc('is_active')
-            ->values();
+        // добавляем вкладку "новый договор"
+        if (! $hasNewContract) {
+            $result[-1] = collect();
+        }
+
+        return $result;
     }
 
     /**
@@ -310,23 +327,23 @@ class ScheduleDraft extends Model implements HasTeeth
      * TODO: всё таки-изменить структуру так, чтобы было contract_id => [..programs]
      * потому что при добавлении новой цепи программ не будет
      */
-    private function allPrograms(): Collection
-    {
-        return once(fn () => $this->programs
-            ->merge($this->client->contracts
-                ->where('year', $this->year)
-                ->when($this->contract_id, fn ($q) => $q->where('id', '<>', $this->contract_id))
-                ->flatMap(fn (Contract $contract) => self::getProgramsForContract($contract))
-            )
-            ->map(fn ($p) => (object) [
-                ...$p,
-                'contract_id' => $this->contract_id,
-            ]));
-    }
+    // private function allPrograms(): Collection
+    // {
+    //     return once(fn () => $this->programs
+    //         ->merge($this->client->contracts
+    //             ->where('year', $this->year)
+    //             ->when($this->contract_id, fn ($q) => $q->where('id', '<>', $this->contract_id))
+    //             ->flatMap(fn (Contract $contract) => self::getProgramsForContract($contract))
+    //         )
+    //         ->map(fn ($p) => (object) [
+    //             ...$p,
+    //             'contract_id' => $this->contract_id,
+    //         ]));
+    // }
 
     private function getLessonsQuery()
     {
-        $groupIds = $this->allPrograms()->whereNotNull('group_id')->pluck('group_id')->unique();
+        $groupIds = $this->programs->whereNotNull('group_id')->pluck('group_id')->unique();
 
         return Lesson::query()->whereIn('group_id', $groupIds);
     }

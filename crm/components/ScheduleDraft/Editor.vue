@@ -5,9 +5,9 @@ import type { ClientResource } from '~/components/Client'
 import { mdiArrowRightThin, mdiChevronRight } from '@mdi/js'
 import { apiUrl } from '.'
 
-const { client, contractId } = defineProps<{
+const { client, year } = defineProps<{
   client: ClientResource
-  contractId?: number
+  year: Year
 }>()
 
 defineEmits<{ back: [] }>()
@@ -16,7 +16,8 @@ const applyDialog = ref<InstanceType<typeof ScheduleDraftApplySummaryDialog>>()
 const loading = ref(false)
 const btnLoading = ref(false)
 const teeth = ref<Teeth>()
-const items = ref<ScheduleDraft>()
+const scheduleDraft = ref<ScheduleDraft>()
+const selectedContractId = ref<number>() // ID выбранной вкладки договора
 
 // ID текущего загруженного / сохранённого проекта. Нужно для удаления
 const currentDraftId = ref<number>()
@@ -24,18 +25,19 @@ const currentDraftId = ref<number>()
 // сохранённые проекты расписания (доступные для загрузки)
 const savedDrafts = ref<SavedScheduleDraft[]>([])
 
-async function getInitial() {
+async function fromActualContracts() {
   loading.value = true
   const { data } = await useHttp<ScheduleDraft>(
-    `${apiUrl}/get-initial`,
+    `${apiUrl}/from-actual-contracts`,
     {
       params: {
-        contract_id: contractId,
+        year,
         client_id: client.id,
       },
     },
   )
-  items.value = data.value!
+  scheduleDraft.value = data.value!
+  selectedContractId.value = Number.parseInt(Object.keys(scheduleDraft.value)[0])
   loading.value = false
   smoothScroll('main', 'top', 'instant')
   loadSavedDrafts()
@@ -56,7 +58,7 @@ async function loadSavedDraft(savedDraft: SavedScheduleDraft) {
   const { data } = await useHttp<ScheduleDraft>(
     `${apiUrl}/${savedDraft.id}`,
   )
-  items.value = data.value!
+  scheduleDraft.value = data.value!
   loading.value = false
   btnLoading.value = false
   currentDraftId.value = savedDraft.id
@@ -91,7 +93,7 @@ async function save() {
 }
 
 async function apply() {
-  applyDialog.value?.open(items.value)
+  applyDialog.value?.open(scheduleDraft.value)
   // btnLoading.value = true
   // const { error } = await useHttp(`${apiUrl}/apply`, { method: 'POST' })
   // if (error.value) {
@@ -99,7 +101,7 @@ async function apply() {
   //   btnLoading.value = false
   //   return
   // }
-  // await getInitial()
+  // await fromActualContracts()
   // btnLoading.value = false
   // useGlobalMessage('Проект успешно применён', 'success')
 }
@@ -111,7 +113,7 @@ async function getTeeth() {
 
 async function addToGroup(p: ScheduleDraftProgram, g: ScheduleDraftGroup) {
   loading.value = true
-  const { data, error } = await useHttp<ScheduleDraftProgram[]>(
+  const { data, error } = await useHttp<ScheduleDraft>(
     `${apiUrl}/add-to-group`,
     {
       method: 'post',
@@ -123,16 +125,16 @@ async function addToGroup(p: ScheduleDraftProgram, g: ScheduleDraftGroup) {
   )
   if (error.value) {
     useGlobalMessage(`<b>${ProgramShortLabel[p.program]}</b> – по этой программе ученик находится в другой группе`, 'error')
+    return
   }
-  else {
-    items.value = data.value!
-  }
+
+  scheduleDraft.value = data.value!
   loading.value = false
 }
 
 async function removeFromGroup(g: ScheduleDraftGroup) {
   loading.value = true
-  const { data } = await useHttp<ScheduleDraftProgram[]>(
+  const { data } = await useHttp<ScheduleDraft>(
     `${apiUrl}/remove-from-group`,
     {
       method: 'post',
@@ -141,7 +143,7 @@ async function removeFromGroup(g: ScheduleDraftGroup) {
       },
     },
   )
-  items.value = data.value!
+  scheduleDraft.value = data.value!
   loading.value = false
 }
 
@@ -156,7 +158,7 @@ async function addPrograms(newPrograms: Program[]) {
       },
     },
   )
-  items.value = data.value!
+  scheduleDraft.value = data.value!
   loading.value = false
 }
 
@@ -171,19 +173,20 @@ async function removeProgram(p: ScheduleDraftProgram) {
       },
     },
   )
-  items.value = data.value!
+  scheduleDraft.value = data.value!
   loading.value = false
 }
 
-watch(items, getTeeth)
+watch(scheduleDraft, getTeeth)
+watch(selectedContractId, () => smoothScroll('main', 'top', 'instant'))
 
-nextTick(getInitial)
+nextTick(fromActualContracts)
 </script>
 
 <template>
   <UiIndexPage
     class="schedule-draft"
-    :data="{ loading: loading && !items, noData: false }"
+    :data="{ loading: loading && !scheduleDraft, noData: false }"
     sticky
   >
     <template #filters>
@@ -252,78 +255,76 @@ nextTick(getInitial)
         <!-- <v-btn icon="$close" :size="44" color="primary" @click="$emit('back')" /> -->
       </div>
     </template>
-    <template v-if="items">
-      <div
-        v-for="item in items"
-        :key="item.contract_id || -1"
-        class="schedule-draft__item"
-        :class="{
-          'element-loading': loading,
-          'schedule-draft__item--readonly': !item.is_active,
-        }"
-      >
-        <h2 class="schedule-draft__contract">
-          <template v-if="item.contract_id">
-            Договор №{{ item.contract_id }}
-            <ProgramSelectorMenu
-              v-if="item.is_active"
-              :pre-selected="item.programs.map(e => e.program)"
-              @saved="addPrograms"
-            >
-              <template #activator="{ props }">
-                <v-btn v-bind="props" variant="text">
-                  добавить программу
-                  <v-icon icon="$expand" class="ml-1" />
-                </v-btn>
-              </template>
-            </ProgramSelectorMenu>
+    <template v-if="scheduleDraft && selectedContractId">
+      <div class="tabs">
+        <div
+          v-for="(_, contractId) in scheduleDraft"
+          :key="contractId"
+          class="tabs-item"
+          :class="{ 'tabs-item--active': selectedContractId === Number.parseInt(contractId) }"
+          @click="selectedContractId = Number.parseInt(contractId as string)"
+        >
+          <template v-if="contractId > 0">
+            договор №{{ contractId }}
           </template>
           <template v-else>
-            Проект договора
+            новый договор
           </template>
-        </h2>
-
-        <div v-for="p in item.programs" :key="p.id" class="schedule-draft__programs">
-          <div class="schedule-draft__program-info">
-            <span>
-              {{ ProgramLabel[p.program] }}
-            </span>
-            <ScheduleDraftIcon v-if="p.id < 0">
-              добавлено в черновике
-            </ScheduleDraftIcon>
-            <span v-else>
-              {{ p.swamp.lessons_conducted }}
-              <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
-              {{ p.swamp.total_lessons }}
-            </span>
-            <span :class="`swamp-status swamp-status--${p.swamp.status}`" style="background-color: transparent;">
-              <span>
-                {{ SwampStatusLabel[p.swamp.status] }}
-              </span>
-            </span>
-            <v-btn
-              v-if="p.id < 0"
-              :size="30"
-              icon="$plus"
-              density="compact"
-              class="schedule-draft__remove"
-              variant="plain"
-              @click="removeProgram(p)"
-            />
-          </div>
-          <ScheduleDraftList
-            v-if="p.groups.length"
-            :items="p.groups"
-            :contract-id="item.contract_id"
-            @add-to-group="g => addToGroup(p, g)"
-            @remove-from-group="removeFromGroup"
-          />
-          <div v-else class="schedule-draft__no-groups">
-            <UiNoData>
-              не найдено групп
-            </UiNoData>
-          </div>
         </div>
+      </div>
+      <div v-for="p in scheduleDraft[selectedContractId]" :key="p.id" class="schedule-draft__programs">
+        <div class="schedule-draft__program-info">
+          <span>
+            {{ ProgramLabel[p.program] }}
+          </span>
+          <ScheduleDraftIcon v-if="p.id < 0">
+            добавлено в черновике
+          </ScheduleDraftIcon>
+          <span v-else>
+            {{ p.swamp.lessons_conducted }}
+            <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
+            {{ p.swamp.total_lessons }}
+          </span>
+          <span :class="`swamp-status swamp-status--${p.swamp.status}`" style="background-color: transparent;">
+            <span>
+              {{ SwampStatusLabel[p.swamp.status] }}
+            </span>
+          </span>
+          <v-btn
+            v-if="p.id < 0"
+            :size="30"
+            icon="$plus"
+            density="compact"
+            class="schedule-draft__remove"
+            variant="plain"
+            @click="removeProgram(p)"
+          />
+        </div>
+        <ScheduleDraftGroupList
+          v-if="p.groups.length"
+          :items="p.groups"
+          :contract-id="selectedContractId"
+          @add-to-group="g => addToGroup(p, g)"
+          @remove-from-group="removeFromGroup"
+        />
+        <div v-else class="schedule-draft__no-groups">
+          <UiNoData>
+            не найдено групп
+          </UiNoData>
+        </div>
+      </div>
+      <div class="container">
+        <ProgramSelectorMenu
+          :pre-selected="scheduleDraft[selectedContractId].map(e => e.program)"
+          @saved="addPrograms"
+        >
+          <template #activator="{ props }">
+            <v-btn v-bind="props" color="primary">
+              добавить программы
+              <v-icon icon="$expand" class="ml-1" />
+            </v-btn>
+          </template>
+        </ProgramSelectorMenu>
       </div>
     </template>
   </UiIndexPage>
@@ -393,23 +394,11 @@ nextTick(getInitial)
     }
   }
 
-  &__item {
-    &--readonly {
-      opacity: 0.5;
-
-      .schedule-draft__contract {
-        padding-top: 60px;
-        color: rgb(var(--v-theme-gray));
-      }
-      .table-actionss {
-        display: none !important;
-      }
-      .schedule-draft__program-info {
-        & > span:first-child {
-          color: rgb(var(--v-theme-gray));
-        }
-      }
-    }
+  .tabs {
+    position: sticky;
+    top: 64px;
+    z-index: 1;
+    background: white;
   }
 }
 </style>

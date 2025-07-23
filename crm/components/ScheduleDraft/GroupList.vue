@@ -2,7 +2,7 @@
 import type { ScheduleDraftGroup } from '.'
 import { mdiArrowRightThin } from '@mdi/js'
 
-const { items, contractId } = defineProps<{
+const { items } = defineProps<{
   items: ScheduleDraftGroup[]
   contractId: number | null
 }>()
@@ -26,12 +26,9 @@ function scrollToOtherContract(item: ScheduleDraftGroup) {
   <v-table class="table-padding schedule-draft-list">
     <tbody>
       <tr
-        v-for="(item, i) in items"
+        v-for="item in items"
         :id="getElementId(item.id, contractId)"
         :key="item.id"
-        :class="{
-          'group-list__separate': i + 1 < items.length && item.program !== items[i + 1].program,
-        }"
       >
         <td width="100">
           <NuxtLink :to="{ name: 'groups-id', params: { id: item.id } }">

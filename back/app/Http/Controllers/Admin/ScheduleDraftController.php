@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SavedScheduleDraftResource;
 use App\Models\Client;
-use App\Models\Contract;
 use App\Models\ScheduleDraft;
 use Exception;
 use Illuminate\Http\Request;
@@ -28,22 +27,16 @@ class ScheduleDraftController extends Controller
     /**
      * Вкладка управление группами у клиента
      */
-    public function getInitial(Request $request)
+    public function fromActualContracts(Request $request)
     {
         $request->validate([
-            'client_id' => ['required_without:contract_id', 'exists:clients,id'],
-            'contract_id' => ['required_without:client_id', 'exists:contracts,id'],
+            'client_id' => ['required', 'exists:clients,id'],
+            'year' => ['required', 'numeric'],
         ]);
 
-        if ($request->has('contract_id')) {
-            $contract = Contract::find($request->contract_id);
-            $client = $contract->client;
-        } else {
-            $contract = null;
-            $client = Client::find($request->client_id);
-        }
+        $client = Client::find($request->client_id);
 
-        $scheduleDraft = ScheduleDraft::fromActualContracts($client, $contract);
+        $scheduleDraft = ScheduleDraft::fromActualContracts($client, intval($request->year));
         $scheduleDraft->user_id = auth()->id();
         $scheduleDraft->toRam();
 

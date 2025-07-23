@@ -111,7 +111,7 @@ Route::prefix('schedule-drafts')->controller(ScheduleDraftController::class)->gr
     Route::post('/save', 'save');
     Route::post('/apply', 'apply');
     Route::get('/load/{scheduleDraft}', 'load');
-    Route::get('/get-initial', 'getInitial');
+    Route::get('/from-actual-contracts', 'fromActualContracts');
     Route::get('/get-teeth', 'getTeeth');
 });
 Route::apiResource('schedule-drafts', ScheduleDraftController::class)->only(['index', 'show', 'destroy']);

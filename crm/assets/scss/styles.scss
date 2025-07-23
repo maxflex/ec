@@ -124,6 +124,7 @@ a.table-item {
     padding: 12px 20px;
     cursor: pointer;
     transition: all cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+    user-select: none;
     &:hover {
       background: #f6f6f6;
     }

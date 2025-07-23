@@ -45,10 +45,4 @@ export interface ScheduleDraftProgram {
   groups: ScheduleDraftGroup[]
 }
 
-export interface ScheduleDraftContract {
-  contract_id: number | null
-  is_active: boolean
-  programs: ScheduleDraftProgram[]
-}
-
-export type ScheduleDraft = ScheduleDraftContract[]
+export type ScheduleDraft = Record<number,ScheduleDraftProgram[]>
