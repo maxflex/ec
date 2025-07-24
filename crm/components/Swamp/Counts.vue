@@ -20,7 +20,7 @@ function formatLabel(label: string) {
       <tr>
         <th>
         </th>
-        <th v-for="(label, status) in SwampStatusLabel" :key="status" width="140" :class="`swamp-status swamp-status--${status}`" v-html="formatLabel(label)">
+        <th v-for="(label, status) in SwampStatusLabel" :key="status" width="140" v-html="formatLabel(label)">
         </th>
       </tr>
     </thead>
@@ -29,7 +29,7 @@ function formatLabel(label: string) {
         <td>
           <UiPerson :item="item.client" />
         </td>
-        <td v-for="(_, status) in SwampStatusLabel" :key="status" width="140" :class="`swamp-status swamp-status--${status}`">
+        <td v-for="(_, status) in SwampStatusLabel" :key="status" width="140">
           {{ item.counts[status] || '' }}
         </td>
       </tr>
@@ -37,7 +37,7 @@ function formatLabel(label: string) {
     <tfoot>
       <tr>
         <td></td>
-        <td v-for="(_, status) in SwampStatusLabel" :key="status" width="140" :class="`swamp-status swamp-status--${status}`">
+        <td v-for="(_, status) in SwampStatusLabel" :key="status" width="140">
           {{ sum(status) || '' }}
         </td>
       </tr>
@@ -47,11 +47,17 @@ function formatLabel(label: string) {
 
 <style lang="scss">
 .swamp-counts {
+  td,
+  th {
+    border-right: 1px solid rgb(var(--v-theme-border));
+  }
+
   thead {
     position: sticky;
     top: 0;
     z-index: 2;
-    th:first-child {
+    th {
+      vertical-align: top !important;
       background: white;
     }
   }
@@ -65,6 +71,7 @@ function formatLabel(label: string) {
       bottom: 0;
     }
     td {
+      background: white;
       font-weight: bold;
       border-top: 1px solid rgb(var(--v-theme-border)) !important;
     }

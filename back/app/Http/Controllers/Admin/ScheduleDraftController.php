@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SavedScheduleDraftResource;
 use App\Models\Client;
+use App\Models\Contract;
 use App\Models\ScheduleDraft;
 use Exception;
 use Illuminate\Http\Request;
@@ -38,7 +39,6 @@ class ScheduleDraftController extends Controller
 
         if ($request->has('id')) {
             $scheduleDraft = ScheduleDraft::find($request->input('id'));
-            $scheduleDraft->unpackPrograms();
         } else {
             $client = Client::find($request->client_id);
             $scheduleDraft = ScheduleDraft::fromActualContracts($client, intval($request->year));
@@ -117,13 +117,11 @@ class ScheduleDraftController extends Controller
         return ScheduleDraft::fromRam(auth()->id())->getTeeth();
     }
 
-    public function applyMoveGroups(Request $request)
+    public function applyMoveGroups()
     {
-        $request->validate(['contract_id' => ['required', 'numeric']]);
-        $contractId = intval($request->contract_id);
         $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
         try {
-            $scheduleDraft->applyMoveGroups($contractId);
+            $scheduleDraft->applyMoveGroups();
         } catch (Exception $e) {
             abort(422, $e->getMessage());
         }
@@ -131,15 +129,10 @@ class ScheduleDraftController extends Controller
         return $scheduleDraft->getData();
     }
 
-    public function save(Request $request)
+    public function save()
     {
-        $request->validate(['contract_id' => ['required', 'numeric']]);
-        $contractId = intval($request->contract_id);
         $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
-
-        return new SavedScheduleDraftResource(
-            $scheduleDraft->saveNew($contractId)
-        );
+        $scheduleDraft->save();
     }
 
     /**
@@ -153,9 +146,15 @@ class ScheduleDraftController extends Controller
     /**
      * Загрузить сохранённый проект (внутри договора)
      */
-    public function load(ScheduleDraft $scheduleDraft)
+    public function load(ScheduleDraft $scheduleDraft, Request $request)
     {
-        return $scheduleDraft->fillContract();
+        $request->validate([
+            'contract_id' => ['sometimes', 'exists:contracts,id'],
+        ]);
+
+        $contract = $request->has('contract_id') ? Contract::find($request->contract_id) : null;
+
+        return $scheduleDraft->fillContract($contract);
     }
 
     /**
@@ -168,10 +167,12 @@ class ScheduleDraftController extends Controller
 
     protected function filterContract($query, $id)
     {
+        $id = intval($id);
+
         if ($id < 0) {
-            $query->whereNull('contract_id');
-        } else {
-            $query->where('contract_id', $id);
+            $id = -1;
         }
+
+        $query->whereRaw("JSON_CONTAINS(`programs`->>'$[*].contract_id', '$id')");
     }
 }

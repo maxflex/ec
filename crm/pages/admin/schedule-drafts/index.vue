@@ -10,6 +10,14 @@ const { items, indexPageData } = useIndex<SavedScheduleDraftResource>(
   apiUrl,
   filters,
 )
+
+async function deleteSavedDraft(savedDraft: SavedScheduleDraftResource) {
+  const { id } = savedDraft!
+  const index = items.value.findIndex(e => e.id === id)
+  items.value.splice(index, 1)
+  await useHttp(`${apiUrl}/${id}`, { method: 'DELETE' })
+  useGlobalMessage(`<b>ID ${id}</b> – проект удалён`, 'success')
+}
 </script>
 
 <template>
@@ -17,6 +25,6 @@ const { items, indexPageData } = useIndex<SavedScheduleDraftResource>(
     <template #filters>
       <UiYearSelector v-model="filters.year" density="comfortable" />
     </template>
-    <ScheduleDraftList :items="items" />
+    <ScheduleDraftList :items="items" @delete="deleteSavedDraft" />
   </UiIndexPage>
 </template>

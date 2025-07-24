@@ -2,7 +2,7 @@
 import type { ScheduleDraftGroup } from '.'
 import { mdiArrowRightThin } from '@mdi/js'
 
-const { items } = defineProps<{
+const { items, contractId } = defineProps<{
   items: ScheduleDraftGroup[]
   contractId: number | null
 }>()
@@ -16,6 +16,23 @@ const emit = defineEmits<{
 function getElementId(groupId: number, cId: number | null | undefined) {
   return `schedule-draft-group-${groupId}${cId ? `-${cId}` : ''}`
 }
+
+function isChanged(g: ScheduleDraftGroup): boolean {
+  if (g.swamp) {
+    if (g.current_contract_id && g.current_contract_id !== g.original_contract_id) {
+      return true
+    }
+    if (g.original_contract_id && g.original_contract_id !== g.current_contract_id && g.original_contract_id !== contractId) {
+      return true
+    }
+  }
+  else {
+    if (g.original_contract_id && g.original_contract_id === contractId) {
+      return true
+    }
+  }
+  return false
+}
 </script>
 
 <template>
@@ -25,6 +42,7 @@ function getElementId(groupId: number, cId: number | null | undefined) {
         v-for="item in items"
         :id="getElementId(item.id, contractId)"
         :key="item.id"
+        :class="{ changed: isChanged(item) }"
       >
         <td width="100">
           <NuxtLink :to="{ name: 'groups-id', params: { id: item.id } }">
@@ -62,28 +80,28 @@ function getElementId(groupId: number, cId: number | null | undefined) {
           </UiIfSet>
         </td>
         <td v-if="item.swamp && item.current_contract_id !== contractId" class="text-gray">
-          <template v-if="item.original_contract_id !== item.current_contract_id">
-            <ScheduleDraftIcon v-if="item.original_contract_id === contractId">
+          <div v-if="item.overlap?.count" class="text-error">
+            {{ item.overlap!.count }} пересечений
+            ({{ item.overlap!.programs.map(e => ProgramShortLabel[e]).join(', ') }})
+          </div>
+          <div v-if="item.uncunducted_count" class="text-error">
+            {{ item.uncunducted_count }} непроведенных занятий
+          </div>
+          <span v-if="item.original_contract_id !== item.current_contract_id" class="text-error">
+            <span v-if="item.original_contract_id === contractId">
               убран в черновике
-            </ScheduleDraftIcon>
-            <ScheduleDraftIcon>
+            </span>
+            <span>
               добавлен в черновике по договору №{{ item.current_contract_id }}
-            </ScheduleDraftIcon>
-          </template>
-          <template v-else>
+            </span>
+          </span>
+          <span v-else class="text-error">
             добавлен по договору №{{ item.current_contract_id }}
-          </template>
+          </span>
         </td>
         <!-- есть процесс по договору -->
-        <td v-else-if="item.swamp" :class="`swamp-status swamp-status--${item.swamp.status}`">
+        <td v-else-if="item.swamp">
           <!-- но в оригинале не было -->
-          <ScheduleDraftIcon v-if="item.current_contract_id && item.current_contract_id !== item.original_contract_id">
-            добавлен в черновике
-          </ScheduleDraftIcon>
-          <ScheduleDraftIcon v-if="item.original_contract_id && item.original_contract_id !== item.current_contract_id && item.original_contract_id !== contractId">
-            убран в черновике
-            по договору №{{ item.original_contract_id }}
-          </ScheduleDraftIcon>
           <!-- в "проект по договору" не показываем -->
           <template v-if="item.swamp.id > 0">
             {{ item.swamp.lessons_conducted }}
@@ -93,38 +111,23 @@ function getElementId(groupId: number, cId: number | null | undefined) {
           <div>
             {{ SwampStatusLabel[item.swamp.status] }}
           </div>
-          <div v-if="item.overlap?.count">
+          <ScheduleDraftProblems :item="item" :contract-id="contractId" />
+          <div class="table-actionss">
+            <v-btn color="error" density="comfortable" icon="$minus" :size="48" @click="emit('removeFromGroup', item)" />
+          </div>
+        </td>
+        <!-- нет процесса по договору -->
+        <td v-else>
+          <ScheduleDraftProblems :item="item" :contract-id="contractId" />
+          <!-- <div v-if="item.overlap?.count" class="text-error">
             {{ item.overlap!.count }} пересечений
             ({{ item.overlap!.programs.map(e => ProgramShortLabel[e]).join(', ') }})
           </div>
           <div v-if="item.uncunducted_count" class="text-error">
             {{ item.uncunducted_count }} непроведенных занятий
-          </div>
+          </div> -->
           <div class="table-actionss">
-            <v-btn color="error" density="comfortable" @click="emit('removeFromGroup', item)">
-              <span class="text-white">
-                убрать из группы
-              </span>
-            </v-btn>
-          </div>
-        </td>
-        <!-- нет процесса по договору -->
-        <td v-else>
-          <!-- но в оригинале был -->
-          <ScheduleDraftIcon v-if="item.original_contract_id">
-            убран в черновике
-            <template v-if="item.original_contract_id !== contractId">
-              по договору №{{ item.original_contract_id }}
-            </template>
-          </ScheduleDraftIcon>
-          <template v-if="item.overlap?.count">
-            {{ item.overlap!.count }} пересечений
-            ({{ item.overlap!.programs.map(e => ProgramShortLabel[e]).join(', ') }})
-          </template>
-          <div class="table-actionss">
-            <v-btn color="secondary" density="comfortable" @click="emit('addToGroup', item)">
-              добавить в группу
-            </v-btn>
+            <v-btn color="primary" density="comfortable" icon="$plus" :size="48" @click="emit('addToGroup', item)" />
           </div>
         </td>
       </tr>
@@ -137,15 +140,20 @@ function getElementId(groupId: number, cId: number | null | undefined) {
   td {
     box-sizing: content-box;
     position: relative;
+    transition: none !important;
+    &:last-child {
+      .schedule-draft-problems:not(:first-child) {
+        margin-top: 20px !important;
+      }
+    }
   }
 
   .table-actionss {
-    top: 5px !important;
-    width: 200px !important;
-    .v-btn {
-      width: 160px;
-      font-size: 14px !important;
-    }
+    width: 70px !important;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 !important;
   }
 
   .v-table__wrapper {

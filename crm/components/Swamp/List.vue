@@ -69,7 +69,7 @@ const { items } = defineProps<{
           </td>
           <td colspan="3" />
         </template>
-        <td :class="`swamp-status swamp-status--${item.status}`" colspan="2">
+        <td colspan="2">
           <div class="pl-3">
             <div>
               {{ item.lessons_conducted }}

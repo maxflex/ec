@@ -37,8 +37,8 @@ async function fromActualContracts() {
     },
   )
   scheduleDraft.value = data.value!
-  // выбираем нужную вкладку
-  selectedContractId.value = savedDraft ? (savedDraft.contract_id || -1) : Number.parseInt(Object.keys(scheduleDraft.value)[0])
+  // выбираем первую вкладку
+  selectedContractId.value = Number.parseInt(Object.keys(scheduleDraft.value)[0])
   loading.value = false
   smoothScroll('main', 'top', 'instant')
   loadSavedDrafts()
@@ -53,42 +53,21 @@ async function loadSavedDrafts() {
   savedDrafts.value = data.value!.data
 }
 
-async function deleteSavedDraft() {
-  btnLoading.value = true
-  const { id } = savedDraft!
-  await useHttp<ScheduleDraftProgram[]>(
-    `${apiUrl}/${id}`,
-    { method: 'DELETE' },
-  )
-  useGlobalMessage(`<b>ID ${id}</b> – проект удалён`, 'success')
-  router.back()
-}
-
 async function save() {
   btnLoading.value = true
-  const { data } = await useHttp<SavedScheduleDraftResource>(
+  await useHttp<SavedScheduleDraftResource>(
     `${apiUrl}/save`,
-    {
-      method: 'POST',
-      body: {
-        contract_id: selectedContractId.value,
-      },
-    },
+    { method: 'POST' },
   )
-  router.push({ name: 'schedule-drafts-id', params: { id: data.value!.id } })
   useGlobalMessage('Проект сохранён', 'success')
+  btnLoading.value = false
 }
 
 async function applyMoveGroups() {
   loading.value = true
   const { data, error } = await useHttp<ScheduleDraft>(
     `${apiUrl}/apply-move-groups`,
-    {
-      method: 'POST',
-      body: {
-        contract_id: selectedContractId.value,
-      },
-    },
+    { method: 'POST' },
   )
 
   if (error.value) {
@@ -213,6 +192,11 @@ function getChangesCnt(contractId: number) {
   return cnt
 }
 
+async function goToPage(d: SavedScheduleDraftResource) {
+  await router.push({ name: 'schedule-drafts-editor', query: { id: d.id } })
+  location.reload()
+}
+
 watch(scheduleDraft, getTeeth)
 watch(selectedContractId, () => smoothScroll('main', 'top', 'instant'))
 
@@ -270,12 +254,12 @@ nextTick(fromActualContracts)
                   <v-list-item
                     v-for="d in savedDrafts"
                     :key="d.id"
-                    :to="{ name: 'schedule-drafts-id', params: { id: d.id } }"
+                    :active="savedDraft?.id === d.id"
+                    @click="goToPage(d)"
                   >
                     <v-list-item-title>
                       <div>
-                        <span class="pr-1">ID {{ d.id }}</span>
-                        {{ d.contract_id ? `Договор №${d.contract_id}` : 'Новый договор' }}
+                        Проект №{{ d.id }}
                       </div>
                       <div class="text-caption text-gray">
                         {{ formatName(d.user) }}
@@ -285,9 +269,6 @@ nextTick(fromActualContracts)
                   </v-list-item>
                 </v-list>
               </v-menu>
-            </v-list-item>
-            <v-list-item v-if="savedDraft" class="text-error" @click="deleteSavedDraft()">
-              удалить проект
             </v-list-item>
           </v-list>
         </v-menu>
@@ -311,7 +292,7 @@ nextTick(fromActualContracts)
           </span>
           <v-badge
             v-if="getChangesCnt(Number.parseInt(contractId))"
-            color="grey-darken-3"
+            color="orange-lighten-3"
             inline
             :content="getChangesCnt(Number.parseInt(contractId))"
           ></v-badge>
@@ -327,15 +308,15 @@ nextTick(fromActualContracts)
           <span>
             {{ ProgramLabel[p.program] }}
           </span>
-          <ScheduleDraftIcon v-if="p.id < 0">
+          <v-chip label density="comfortable" v-if="p.id < 0" color="orange">
             добавлено в черновике
-          </ScheduleDraftIcon>
+          </v-chip>
           <span v-else>
             {{ p.swamp.lessons_conducted }}
             <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
             {{ p.swamp.total_lessons }}
           </span>
-          <span :class="`swamp-status swamp-status--${p.swamp.status}`" style="background-color: transparent;">
+          <span style="background-color: transparent;">
             <span>
               {{ SwampStatusLabel[p.swamp.status] }}
             </span>

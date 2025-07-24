@@ -2,6 +2,9 @@
 import type { SavedScheduleDraftResource } from '.'
 
 const { items } = defineProps<{ items: SavedScheduleDraftResource[] }>()
+const emit = defineEmits<{
+  delete: [e: SavedScheduleDraftResource]
+}>()
 const router = useRouter()
 </script>
 
@@ -11,18 +14,10 @@ const router = useRouter()
       <tr
         v-for="item in items" :key="item.id"
         class="cursor-pointer"
-        @click="router.push({ name: 'schedule-drafts-id', params: { id: item.id } })"
+        @click="router.push({ name: 'schedule-drafts-editor', query: { id: item.id } })"
       >
-        <td width="30">
-          {{ item.id }}
-        </td>
-        <td width="250">
-          <template v-if="item.contract_id">
-            Проект к договору №{{ item.contract_id }}
-          </template>
-          <template v-else>
-            Новый договор
-          </template>
+        <td width="200">
+          Проект №{{ item.id }}
         </td>
         <td width="200">
           <UiPerson :item="item.client" />
@@ -36,6 +31,11 @@ const router = useRouter()
         <td width="300" class="text-gray">
           {{ formatName(item.user) }}
           {{ formatDateTime(item.created_at) }}
+          <div class="table-actionss" style="width: 200px" @click.stop="emit('delete', item)">
+            <v-btn color="error" density="comfortable">
+              удалить проект
+            </v-btn>
+          </div>
         </td>
       </tr>
     </tbody>

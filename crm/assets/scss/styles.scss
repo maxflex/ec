@@ -684,3 +684,11 @@ tr.hoverable {
 .is-comment-editing {
   background: rgba(var(--v-theme-primary), 0.3);
 }
+
+.changed {
+  $color: #fcf0d4;
+  background: $color;
+  td {
+    background: $color;
+  }
+}

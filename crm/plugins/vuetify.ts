@@ -63,6 +63,7 @@ export const colors = {
   border: '#e0e0e0', // серый бордеры
   placeholder: '#a7a7a7',
   label: '#666666', // label инпутов
+  changed: '#fcf0d4',
 }
 
 const myTheme: ThemeDefinition = {

@@ -5,7 +5,6 @@ export const apiUrl = 'schedule-drafts'
  */
 export interface SavedScheduleDraftResource {
   id: number
-  contract_id: number | null
   user: PersonResource
   client: PersonResource
   programs: any[]

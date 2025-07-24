@@ -122,11 +122,23 @@ async function loadSavedDrafts() {
   savedDrafts.value = data.value!.data
 }
 
+/**
+ * TODO: возвращать и перезаписывать только programs?
+ */
 async function loadSavedDraft(savedDraft: SavedScheduleDraftResource) {
   loading.value = true
   isEditSource.value = false
   selectedSavedDraft.value = savedDraft
-  const { data } = await useHttp<ContractVersionResource>(`schedule-drafts/load/${savedDraft.id}`)
+  const { data } = await useHttp<ContractVersionResource>(
+    `schedule-drafts/load/${savedDraft.id}`,
+    {
+      method: 'POST',
+      body: {
+        client_id: clientId,
+        contract_id: contractId,
+      },
+    },
+  )
   item.value = data.value!
   loading.value = false
   // console.log(data.value)
@@ -383,6 +395,49 @@ function removePrice(p: ContractVersionProgramResource) {
   item.value.programs[index].prices.splice(pricesLength - 1, 1)
 }
 
+function isChanged(p: ContractVersionProgramResource, field: keyof ContractVersionProgramResource): boolean {
+  if (!selectedSavedDraft.value) {
+    return false
+  }
+
+  const originalProgram = item.value.programs_original.find(e => e.program === p.program)
+
+  if (field === 'group_id') {
+    if (!applyMoveGroups.value) {
+      return false
+    }
+
+    return originalProgram?.group_id !== p.group_id
+  }
+
+  if (field === 'program') {
+    if (!originalProgram) {
+      // программа добавлена
+      return true
+    }
+    return false
+  }
+
+  if (field === 'lessons_planned') {
+    if (!originalProgram) {
+      return true
+    }
+    const value = Number.parseInt(p.lessons_planned as unknown as string)
+    return originalProgram.lessons_planned !== value
+  }
+
+  // prices.lessons
+  if (field === 'prices') {
+    if (!originalProgram) {
+      return true
+    }
+    const value = Number.parseInt(p.prices[p.prices.length - 1].lessons as unknown as string)
+    return originalProgram.prices[originalProgram.prices.length - 1].lessons !== value
+  }
+
+  return false
+}
+
 defineExpose({ edit, newContract, newVersion })
 </script>
 
@@ -410,7 +465,7 @@ defineExpose({ edit, newContract, newVersion })
           <div v-if="selectedSavedDraft" class="dialog-subheader">
             <RouterLink
               target="_blank"
-              :to="{ name: 'schedule-drafts-id', params: { id: selectedSavedDraft.id } }"
+              :to="{ name: 'schedule-drafts-editor', query: { id: selectedSavedDraft.id } }"
             >
               Проект №{{ selectedSavedDraft.id }}
             </RouterLink>
@@ -434,8 +489,7 @@ defineExpose({ edit, newContract, newVersion })
               <v-list-item v-for="d in savedDrafts" :key="d.id" @click="loadSavedDraft(d)">
                 <v-list-item-title>
                   <div>
-                    <span class="pr-1">ID {{ d.id }}</span>
-                    {{ d.contract_id ? `Договор №${d.contract_id}` : 'Новый договор' }}
+                    Проект №{{ d.id }}
                   </div>
                   <div class="text-caption text-gray">
                     {{ formatName(d.user) }}
@@ -557,14 +611,14 @@ defineExpose({ edit, newContract, newVersion })
             </thead>
             <tbody>
               <tr v-for="p in item.programs" :key="p.id">
-                <td>
+                <td :class="{ changed: isChanged(p, 'program') }">
                   <div class="d-flex align-center ga-1">
                     <span>
                       {{ ProgramLabel[p.program] }}
                     </span>
                   </div>
                 </td>
-                <td>
+                <td :class="{ changed: isChanged(p, 'group_id') }">
                   <!-- если подгрузили проект, то показываем оригинальную программу unless отмечено applyMoveGroups -->
                   <template v-if="selectedSavedDraft">
                     <template v-if="applyMoveGroups">
@@ -580,7 +634,7 @@ defineExpose({ edit, newContract, newVersion })
                     ГР-{{ p.group_id }}
                   </span>
                 </td>
-                <td>
+                <td :class="{ changed: isChanged(p, 'lessons_planned') }">
                   <v-text-field
                     ref="programsInput"
                     v-model="p.lessons_planned"
@@ -597,7 +651,10 @@ defineExpose({ edit, newContract, newVersion })
                       type="number"
                       hide-spin-buttons
                       density="compact"
-                      :class="{ 'text-error': isPriceLessonsError(price, p) }"
+                      :class="{
+                        'changed': price.id === p.prices[p.prices.length - 1].id && isChanged(p, 'prices'),
+                        'text-error': isPriceLessonsError(price, p),
+                      }"
                     >
                       <template v-if="isPriceLessonsError(price, p)" #append>
                         <div class="pr-4 text-gray">
