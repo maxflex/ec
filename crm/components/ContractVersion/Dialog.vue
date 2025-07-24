@@ -26,7 +26,7 @@ const route = useRoute()
 const clientId: number = Number(route.params.id) // допускаем, что client_id хранится в адресной строке
 const savedDrafts = ref<SavedScheduleDraftResource[]>([]) // сохранённые проекты расписания (доступные для загрузки)
 const selectedSavedDraft = ref<SavedScheduleDraftResource>() // хранит ID загруженного проекта
-const applyGroupChanges = ref(false) // применить изменения в группах (для подгруженного проекта договора)
+const applyMoveGroups = ref(false) // применить изменения в группах (для подгруженного проекта договора)
 
 const { user } = useAuthStore()
 const item = ref<ContractVersionResource>(modelDefaults)
@@ -204,7 +204,11 @@ async function save() {
         'contract-versions',
         {
           method: 'post',
-          body: item.value,
+          body: {
+            ...item.value,
+            // применить перемещения в группе
+            apply_move_groups: applyMoveGroups.value ? selectedSavedDraft.value?.id : undefined,
+          },
         },
       )
       responseData = data.value
@@ -561,9 +565,9 @@ defineExpose({ edit, newContract, newVersion })
                   </div>
                 </td>
                 <td>
-                  <!-- если подгрузили проект, то показываем оригинальную программу unless отмечено applyGroupChanges -->
+                  <!-- если подгрузили проект, то показываем оригинальную программу unless отмечено applyMoveGroups -->
                   <template v-if="selectedSavedDraft">
-                    <template v-if="applyGroupChanges">
+                    <template v-if="applyMoveGroups">
                       <span v-if="p.group_id" class="pl-4">
                         ГР-{{ p.group_id }}
                       </span>
@@ -689,7 +693,7 @@ defineExpose({ edit, newContract, newVersion })
         </div>
 
         <div v-if="selectedSavedDraft">
-          <v-checkbox v-model="applyGroupChanges" label="Применить изменения в группах" />
+          <v-checkbox v-model="applyMoveGroups" label="Применить изменения в группах" />
         </div>
 
         <div class="dialog-section">

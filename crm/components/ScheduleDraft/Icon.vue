@@ -3,8 +3,8 @@ import { mdiFileDocumentEditOutline } from '@mdi/js'
 </script>
 
 <template>
-  <div class="d-flex align-center text-gray">
-    <v-icon :icon="mdiFileDocumentEditOutline" :size="20" style="left: -4px; position: relative;" />
+  <div class="d-flex align-start text-gray">
+    <v-icon :icon="mdiFileDocumentEditOutline" :size="20" style="left: -4px; top: 2px; position: relative;" />
     <slot />
   </div>
 </template>

@@ -1,7 +1,5 @@
 export const apiUrl = 'schedule-drafts'
 
-export type DraftStatus = 'added' | 'removed'
-
 /**
  * Сохраненные проекты расписания
  */
@@ -37,7 +35,15 @@ export interface ScheduleDraftGroup extends GroupListResource {
   }
   swamp?: ScheduleDraftSwamp
   uncunducted_count: number
-  draft_status: DraftStatus | null
+  /**
+   * По какой программе был добавлен в группу изначально
+   */
+  original_contract_id: number | null
+
+  /**
+   * По какой программе добавлен в группу сейчас
+   */
+  current_contract_id: number | null
 }
 
 export interface ScheduleDraftProgram {

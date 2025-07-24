@@ -8,6 +8,7 @@ use App\Http\Resources\ContractVersionListResource;
 use App\Http\Resources\ContractVersionResource;
 use App\Models\Contract;
 use App\Models\ContractVersion;
+use App\Models\ScheduleDraft;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -47,8 +48,11 @@ class ContractVersionController extends Controller
     {
         $request->validate([
             'contract.id' => ['required', 'exists:contracts,id'],
+            'apply_move_groups' => ['sometimes', 'exists:schedule_drafts,id'],
         ]);
+
         $contract = Contract::find($request->contract['id']);
+
         $contractVersion = $contract->versions()->create([
             ...$request->all(),
             'user_id' => auth()->id(),
@@ -70,6 +74,12 @@ class ContractVersionController extends Controller
         }
 
         sync_relation($contractVersion, 'payments', $request->all());
+
+        // применяем перемещения в группах согласно проекту, если нужно
+        if ($request->has('apply_move_groups')) {
+            $scheduleDraft = ScheduleDraft::find($request->apply_move_groups);
+            $scheduleDraft->applyMoveGroups($contract->id);
+        }
 
         return new ContractVersionListResource($contractVersion);
     }

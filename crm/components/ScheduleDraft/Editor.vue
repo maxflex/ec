@@ -188,14 +188,25 @@ function jumpToContract(item: ScheduleDraftGroup) {
 
 function getChangesCnt(contractId: number) {
   let cnt = 0
-  for (const p of scheduleDraft.value![contractId]) {
-    for (const g of p.groups) {
-      if (g.draft_status && (!g.swamp || g.swamp?.contract_id === contractId)) {
+
+  for (const program of scheduleDraft.value![contractId]) {
+    // Новая программа — это изменение
+    if (program.id < 0) {
+      cnt++
+    }
+
+    for (const group of program.groups) {
+      const { original_contract_id: from, current_contract_id: to } = group
+      const moved = from !== to
+
+      if (!moved) {
+        continue
+      }
+
+      // изменения в текущей вкладке
+      if (to === contractId || from === contractId) {
         cnt++
       }
-    }
-    if (p.id < 0) {
-      cnt++
     }
   }
 
@@ -298,9 +309,12 @@ nextTick(fromActualContracts)
           <span v-else>
             новый договор
           </span>
-          <span v-if="getChangesCnt(Number.parseInt(contractId))" class="schedule-draft__changes-cnt">
-            {{ getChangesCnt(Number.parseInt(contractId)) }}
-          </span>
+          <v-badge
+            v-if="getChangesCnt(Number.parseInt(contractId))"
+            color="grey-darken-3"
+            inline
+            :content="getChangesCnt(Number.parseInt(contractId))"
+          ></v-badge>
         </div>
       </div>
       <div
@@ -442,7 +456,7 @@ nextTick(fromActualContracts)
     .tabs-item {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 8px;
     }
   }
 }

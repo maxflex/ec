@@ -152,6 +152,27 @@ class ScheduleDraft extends Model implements HasTeeth
         }
     }
 
+    /**
+     *  Применить перемещения в группе (при сохранении проекта)
+     */
+    public function applyMoveGroupsReal(ContractVersion $cv)
+    {
+        // сначала всё сносим
+        foreach ($cv->programs as $program) {
+            $program->clientGroup?->delete();
+        }
+
+        // и добавляем согласно черновику
+        // программы выбранного $contractId
+        $programs = $this->programs
+            ->filter(fn ($p) => $p['group_id'] && $p['contract_id'] === $cv->contract_id);
+
+        foreach ($programs as $p) {
+            $programFromContract = $cv->programs->where('program', $p['program'])->first();
+            // todo: continue
+        }
+    }
+
     public function saveNew(int $contractId): ScheduleDraft
     {
         // чтобы всегда сохранялся новый проект
@@ -203,7 +224,9 @@ class ScheduleDraft extends Model implements HasTeeth
 
         $clientGroups = ClientGroup::query()
             ->whereIn('contract_version_program_id', $realProgramIds)
-            ->pluck('group_id', 'contract_version_program_id');
+            ->with('contractVersionProgram.contractVersion')
+            ->get()
+            ->keyBy('group_id');
 
         $swampsByProgramId = $this->programs->map(function ($p) use ($cvpById) {
             $cvp = $p['id'] > 0 ? $cvpById[$p['id']] : null;
@@ -230,21 +253,19 @@ class ScheduleDraft extends Model implements HasTeeth
             $isProgramUsed = false;
             $p = $this->programs->where('group_id', $group->id)->first();
 
-            $group->draft_status = null;
+            $group->original_contract_id = $clientGroups->has($group->id)
+                ? $clientGroups[$group->id]->contractVersionProgram->contractVersion->contract_id
+                : null;
+
+            $group->current_contract_id = null;
 
             // есть процесс по договору
             if ($p) {
                 $isProgramUsed = true;
-                $group->swamp = $swampsByProgramId[$p['id']];
-
-                // процесс по договору есть в черновике, но нет в реальности
-                if (@$clientGroups[$p['id']] !== $group->id) {
-                    $group->draft_status = 'added';
-                }
-            } else {
-                // процесса по договору нет в черновике, но есть в реальности
-                if ($clientGroups->contains($group->id)) {
-                    $group->draft_status = 'removed';
+                $swamp = $swampsByProgramId[$p['id']];
+                if ($swamp) {
+                    $group->swamp = $swamp;
+                    $group->current_contract_id = $swamp->contract_id;
                 }
             }
 
@@ -303,7 +324,8 @@ class ScheduleDraft extends Model implements HasTeeth
             ->map(fn ($g) => extract_fields($g, [
                 'program', 'client_groups_count', 'zoom', 'lessons_planned',
                 'teacher_counts', 'lesson_counts', 'first_lesson_date', 'swamp',
-                'overlap', 'uncunducted_count', 'draft_status',
+                'overlap', 'uncunducted_count', 'original_contract_id',
+                'current_contract_id',
             ], [
                 'teeth' => $g->getTeeth(),
                 'teachers' => PersonResource::collection($g->teachers),
