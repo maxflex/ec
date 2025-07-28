@@ -7,9 +7,9 @@ export interface SavedScheduleDraftResource {
   id: number
   user: PersonResource
   client: PersonResource
-  programs: any[]
   year: Year
   created_at: string
+  changes: Record<number, number>
 }
 
 /**
@@ -55,3 +55,22 @@ export interface ScheduleDraftProgram {
 }
 
 export type ScheduleDraft = Record<number, ScheduleDraftProgram[]>
+
+export function isGroupChangedInContract(group: ScheduleDraftGroup, contractId: number): boolean {
+  const from = group.original_contract_id
+  const to = group.current_contract_id
+
+  const wasInThisContract = from === contractId
+  const isInThisContractNow = to === contractId
+  const moved = from !== to
+
+  // Ушло из этого договора
+  if (wasInThisContract && !isInThisContractNow && moved)
+    return true
+
+  // Пришло в этот договор (в том числе из другого)
+  if (isInThisContractNow && !wasInThisContract && moved)
+    return true
+
+  return false
+}

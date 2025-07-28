@@ -147,12 +147,19 @@ a.table-item {
   }
 
   .v-btn__content {
-    flex-direction: column;
-    & > div:nth-child(2) {
-      text-align: center;
-      font-size: 13px !important;
-      letter-spacing: normal !important;
-      text-transform: lowercase !important;
+    .v-badge__wrapper {
+      margin: 0 !important;
+    }
+
+    & > div:first-child {
+      display: flex;
+      flex-direction: column;
+      & > div:nth-child(2) {
+        text-align: center;
+        font-size: 13px !important;
+        letter-spacing: normal !important;
+        text-transform: lowercase !important;
+      }
     }
   }
 }
@@ -690,5 +697,14 @@ tr.hoverable {
   background: $color;
   td {
     background: $color;
+  }
+}
+
+button {
+  .v-badge--inline .v-badge__badge {
+    text-indent: unset !important;
+  }
+  &:has(.v-badge--inline) {
+    padding-right: 10px !important;
   }
 }

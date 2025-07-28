@@ -9,7 +9,7 @@ const router = useRouter()
 </script>
 
 <template>
-  <v-table hover>
+  <v-table class="table-padding" hover>
     <tbody>
       <tr
         v-for="item in items" :key="item.id"
@@ -22,17 +22,31 @@ const router = useRouter()
         <td width="200">
           <UiPerson :item="item.client" />
         </td>
-        <td width="200">
-          {{ plural(item.programs.length, ['программа', 'программы', 'программ']) }}
-        </td>
-        <td>
+        <td width="170">
           {{ YearLabel[item.year] }}
         </td>
+
+        <td>
+          <div v-for="(cnt, contractId) in item.changes" :key="contractId" class="d-flex align-center ga-1 vfn-1">
+            <span v-if="contractId < 0">
+              новый договор
+            </span>
+            <span v-else>
+              договор №{{ contractId }}
+            </span>
+            <v-badge
+              color="orange-lighten-3"
+              inline
+              :content="cnt"
+            ></v-badge>
+          </div>
+        </td>
+
         <td width="300" class="text-gray">
           {{ formatName(item.user) }}
           {{ formatDateTime(item.created_at) }}
           <div class="table-actionss" style="width: 200px" @click.stop="emit('delete', item)">
-            <v-btn color="error" density="comfortable">
+            <v-btn color="error" density="comfortable" style="top: 6px">
               удалить проект
             </v-btn>
           </div>

@@ -110,10 +110,13 @@ Route::prefix('schedule-drafts')->controller(ScheduleDraftController::class)->gr
     Route::post('/remove-program', 'removeProgram');
     Route::post('/save', 'save');
     Route::post('/apply-move-groups', 'applyMoveGroups');
+    Route::post('/load-changes', 'loadChanges');
     Route::post('/load/{scheduleDraft}', 'load');
     Route::get('/from-actual-contracts', 'fromActualContracts');
     Route::get('/get-teeth', 'getTeeth');
+    Route::post('/create-contract', 'createContract');
 });
+
 Route::apiResource('schedule-drafts', ScheduleDraftController::class)->only(['index', 'show', 'destroy']);
 
 Route::prefix('event-participants')->controller(EventParticipantController::class)->group(function () {

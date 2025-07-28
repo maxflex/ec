@@ -14,11 +14,16 @@ class ScheduleDraftController extends Controller
 {
     protected $filters = [
         'equals' => ['client_id', 'year'],
-        'contract' => ['contract_id'],
     ];
 
     public function index(Request $request)
     {
+        if ($request->has('contract_id')) {
+            $contract = Contract::find($request->contract_id);
+
+            return paginate(ScheduleDraft::selectorForContract($contract));
+        }
+
         $query = ScheduleDraft::latest();
 
         $this->filter($request, $query);
@@ -133,6 +138,8 @@ class ScheduleDraftController extends Controller
     {
         $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
         $scheduleDraft->save();
+
+        return new SavedScheduleDraftResource($scheduleDraft);
     }
 
     /**
@@ -155,6 +162,85 @@ class ScheduleDraftController extends Controller
         $contract = $request->has('contract_id') ? Contract::find($request->contract_id) : null;
 
         return $scheduleDraft->fillContract($contract);
+    }
+
+    /**
+     * Создать версию договора на основе проекта
+     */
+    public function createContract(Request $request)
+    {
+        $request->validate([
+            'contract_id' => ['required', 'numeric'],
+            'schedule_draft_id' => ['sometimes', 'exists:schedule_drafts,id'],
+        ]);
+
+        $scheduleDraft = $request->has('schedule_draft_id')
+            ? ScheduleDraft::find($request->schedule_draft_id)
+            : ScheduleDraft::fromRam(auth()->id());
+
+        if ($request->has('contract_id')) {
+            $contract = Contract::find($request->contract_id);
+        }
+
+        return [
+            'scheduleDraft' => new SavedScheduleDraftResource($scheduleDraft),
+            'contractVersion' => $scheduleDraft->fillContract($contract),
+        ];
+    }
+
+    /**
+     * Загрузить изменения по договорам
+     * (для вкладок у клиента)
+     */
+    public function loadChanges(Request $request)
+    {
+        $request->validate([
+            'client_id' => ['required', 'exists:clients,id'],
+        ]);
+
+        $client = Client::find($request->client_id);
+
+        $result = [];
+
+        foreach ($client->contracts as $contract) {
+            $scheduleDrafts = $client->scheduleDrafts
+                ->where('created_at', '>', $contract->active_version->created_at)
+                ->sortByDesc('created_at')
+                ->values();
+
+            foreach ($scheduleDrafts as $scheduleDraft) {
+                $changes = (array) $scheduleDraft->changes;
+                if (isset($changes[$contract->id])) {
+                    if (! isset($result[$contract->id])) {
+                        $result[$contract->id] = [
+                            'schedule_draft_id' => $scheduleDraft->id,
+                            'changes_count' => $changes[$contract->id],
+                            'items' => [],
+                        ];
+                    }
+
+                    $result[$contract->id]['items'][] = new SavedScheduleDraftResource($scheduleDraft);
+                }
+            }
+        }
+
+        // новые договоры
+        foreach ($client->scheduleDrafts as $scheduleDraft) {
+            $changes = (array) $scheduleDraft->changes;
+            if (isset($changes[-1])) {
+                if (! isset($result[-1])) {
+                    $result[-1] = [
+                        'schedule_draft_id' => $scheduleDraft->id,
+                        'changes_count' => $changes[-1],
+                        'items' => [],
+                    ];
+                }
+
+                $result[-1]['items'][] = new SavedScheduleDraftResource($scheduleDraft);
+            }
+        }
+
+        return $result;
     }
 
     /**

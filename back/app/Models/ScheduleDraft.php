@@ -6,10 +6,12 @@ use App\Contracts\HasTeeth;
 use App\Enums\LessonStatus;
 use App\Http\Resources\ContractVersionResource;
 use App\Http\Resources\PersonResource;
+use App\Http\Resources\SavedScheduleDraftResource;
 use App\Utils\Teeth;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Collection;
 
 class ScheduleDraft extends Model implements HasTeeth
 {
@@ -40,32 +42,66 @@ class ScheduleDraft extends Model implements HasTeeth
      */
     public static function fromActualContracts(Client $client, int $year): ScheduleDraft
     {
-        $contracts = $client->contracts()->where('year', $year)->get();
+        $scheduleDraft = new ScheduleDraft([
+            'year' => $year,
+            'client_id' => $client->id,
+        ]);
+
+        $scheduleDraft->programs = $scheduleDraft->getProgramsFromContracts();
+
+        return $scheduleDraft;
+    }
+
+    private function getProgramsFromContracts(): Collection
+    {
+        $contracts = $this->client->contracts()->where('year', $this->year)->get();
 
         $programs = collect();
         foreach ($contracts as $contract) {
-            $programs = $programs->merge(self::getProgramsForContract($contract));
+            $programs = $programs->merge(self::getPrograms($contract));
         }
 
-        return new ScheduleDraft([
-            'year' => $year,
-            'client_id' => $client->id,
-            'programs' => $programs,
-        ]);
+        return $programs;
     }
 
     /**
      * Получить programs для договора
      */
-    private static function getProgramsForContract(Contract $contract)
+    private static function getPrograms(Contract $contract)
     {
         return $contract->active_version->programs->map(
-            fn (ContractVersionProgram $cvp) => (object) [
+            fn (ContractVersionProgram $cvp) => [
                 'id' => $cvp->id,
                 'contract_id' => $contract->id,
                 'program' => $cvp->program->value,
                 'group_id' => $cvp->clientGroup?->group_id,
             ]);
+    }
+
+    /**
+     * Для селектора в диалоге создания версии
+     * Доступные для загрузки проекты
+     */
+    public static function selectorForContract(Contract $contract)
+    {
+        $scheduleDrafts = $contract->client->scheduleDrafts()
+            ->where('created_at', '>', $contract->active_version->created_at->format('Y-m-d H:i:s'))
+            ->where('year', $contract->year)
+            ->get()
+            ->sortByDesc('created_at')
+            ->values();
+
+        $scheduleDrafts = json_redecode(SavedScheduleDraftResource::collection($scheduleDrafts));
+
+        $result = [];
+        foreach ($scheduleDrafts as $scheduleDraft) {
+            $changes = $scheduleDraft['changes'];
+            if (isset($changes[$contract->id])) {
+                $result[] = $scheduleDraft;
+            }
+        }
+
+        return $result;
     }
 
     public function addToGroup(int $programId, int $groupId): bool
@@ -151,9 +187,28 @@ class ScheduleDraft extends Model implements HasTeeth
     }
 
     /**
+     * Программы из черновика + все остальные.
+     * Добавляем contract_id в каждую программу для последующих группировок
+     * TODO: всё таки-изменить структуру так, чтобы было contract_id => [..programs]
+     * потому что при добавлении новой цепи программ не будет
+     */
+    // private function allPrograms(): Collection
+    // {
+    //     return once(fn () => $this->programs
+    //         ->merge($this->client->contracts
+    //             ->where('year', $this->year)
+    //             ->when($this->contract_id, fn ($q) => $q->where('id', '<>', $this->contract_id))
+    //             ->flatMap(fn (Contract $contract) => self::getPrograms($contract))
+    //         )
+    //         ->map(fn ($p) => (object) [
+    //             ...$p,
+    //             'contract_id' => $this->contract_id,
+    //         ]));
+    // }
+    /**
      *  Применить перемещения в группе (при сохранении договора)
      */
-    public function applyMoveGroupContract(ContractVersion $cv)
+    public function applyMoveGroupsContract(ContractVersion $cv)
     {
         // сначала всё сносим
         foreach ($cv->programs as $program) {
@@ -345,26 +400,6 @@ class ScheduleDraft extends Model implements HasTeeth
         return $result;
     }
 
-    /**
-     * Программы из черновика + все остальные.
-     * Добавляем contract_id в каждую программу для последующих группировок
-     * TODO: всё таки-изменить структуру так, чтобы было contract_id => [..programs]
-     * потому что при добавлении новой цепи программ не будет
-     */
-    // private function allPrograms(): Collection
-    // {
-    //     return once(fn () => $this->programs
-    //         ->merge($this->client->contracts
-    //             ->where('year', $this->year)
-    //             ->when($this->contract_id, fn ($q) => $q->where('id', '<>', $this->contract_id))
-    //             ->flatMap(fn (Contract $contract) => self::getProgramsForContract($contract))
-    //         )
-    //         ->map(fn ($p) => (object) [
-    //             ...$p,
-    //             'contract_id' => $this->contract_id,
-    //         ]));
-    // }
-
     private function getLessonsQuery()
     {
         $groupIds = $this->programs->whereNotNull('group_id')->pluck('group_id')->unique();
@@ -376,6 +411,11 @@ class ScheduleDraft extends Model implements HasTeeth
     {
         return Teeth::get($this->getLessonsQuery());
     }
+
+    // public function getProgramsAttribute(): Collection
+    // {
+    //     return once(fn () => collect($this->data)->map(fn ($p) => (object) $p));
+    // }
 
     /**
      * Добавить новые программы в проект договора
@@ -410,11 +450,6 @@ class ScheduleDraft extends Model implements HasTeeth
         $this->programs = $this->programs->filter(fn ($p) => $p['id'] !== $id);
     }
 
-    // public function getProgramsAttribute(): Collection
-    // {
-    //     return once(fn () => collect($this->data)->map(fn ($p) => (object) $p));
-    // }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -433,6 +468,7 @@ class ScheduleDraft extends Model implements HasTeeth
     public function fillContract(?Contract $contract)
     {
         if ($contract === null) {
+            //    new contract
         } else {
             $activeVersion = $contract->active_version;
             $item = json_redecode(new ContractVersionResource($activeVersion), false);
@@ -506,9 +542,82 @@ class ScheduleDraft extends Model implements HasTeeth
             $id--;
             $pricesId--;
         }
+
+        // set ID=-1 for payments
+        $payments = [];
+        foreach ($item->payments as $payment) {
+            $payments[] = [
+                ...(array) $payment,
+                'id' => $id,
+            ];
+            $id--;
+        }
+
         $item->programs_original = $item->programs;
         $item->programs = $programs;
+        $item->payments = $payments;
 
         return $item;
+    }
+
+    /**
+     * Изменения в проекте
+     *
+     * contract_id => changes_count
+     */
+    public function getChangesAttribute(): object
+    {
+        $programs = $this->programs->groupBy('contract_id');
+        $originalPrograms = $this->getProgramsFromContracts()->groupBy('contract_id');
+
+        $result = [];
+
+        foreach ($programs as $contractId => $data) {
+            $result[$contractId] = 0;
+            foreach ($data as $p) {
+                $originalProgram = $originalPrograms->has($contractId)
+                    ? $originalPrograms[$contractId]->firstWhere('id', $p['id'])
+                    : null;
+
+                // новая программа
+                if (! $originalProgram) {
+                    $result[$contractId]++;
+                }
+
+                // original:    program_id = 1 | group_id = 5
+
+                // step 1:      program_id = 1 | group_id = null    // убрали и группы
+                // step 2:      program_id = 1 | group_id = 6       // добавили в новую группу
+
+                // изменения в группах
+                if (@$originalProgram['group_id'] !== $p['group_id']) {
+                    if ($this->id === 5) {
+                        logger('', [
+                            @$originalProgram['group_id'],
+                            $p['group_id'],
+                        ]);
+                    }
+
+                    // отдельно считаем удаление
+                    if (@$originalProgram['group_id']) {
+                        $result[$contractId]++;
+                    }
+
+                    // отдельно считаем добавление
+                    if ($p['group_id']) {
+                        $result[$contractId]++;
+                    }
+                }
+            }
+        }
+
+        // очищаем нулевые
+        foreach ($result as $contractId => $count) {
+            if ($count === 0) {
+                unset($result[$contractId]);
+            }
+        }
+
+        return (object) $result;
     }
 }

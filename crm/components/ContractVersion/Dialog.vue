@@ -23,10 +23,14 @@ const modelDefaults: ContractVersionResource = {
   },
 }
 const route = useRoute()
+const router = useRouter()
 const clientId: number = Number(route.params.id) // допускаем, что client_id хранится в адресной строке
 const savedDrafts = ref<SavedScheduleDraftResource[]>([]) // сохранённые проекты расписания (доступные для загрузки)
 const selectedSavedDraft = ref<SavedScheduleDraftResource>() // хранит ID загруженного проекта
 const applyMoveGroups = ref(false) // применить изменения в группах (для подгруженного проекта договора)
+
+// создание договора на основе кнопки "создать версию на основе проекта"
+const isCreatingFromDraft = ref(false)
 
 const { user } = useAuthStore()
 const item = ref<ContractVersionResource>(modelDefaults)
@@ -61,6 +65,16 @@ function newContract() {
   item.value = cloneDeep(modelDefaults)
   dialog.value = true
   loadSavedDrafts()
+}
+
+function createFromDraft(contractFromDraft: ContractVersionResource, savedDraft: SavedScheduleDraftResource) {
+  mode.value = 'new-version'
+  contractId.value = contractFromDraft.contract.id
+  seq.value = contractFromDraft.seq + 1
+  item.value = contractFromDraft
+  selectedSavedDraft.value = savedDraft
+  isCreatingFromDraft.value = true
+  dialog.value = true
 }
 
 async function newVersion(c: ContractResource) {
@@ -122,9 +136,6 @@ async function loadSavedDrafts() {
   savedDrafts.value = data.value!.data
 }
 
-/**
- * TODO: возвращать и перезаписывать только programs?
- */
 async function loadSavedDraft(savedDraft: SavedScheduleDraftResource) {
   loading.value = true
   isEditSource.value = false
@@ -219,11 +230,12 @@ async function save() {
           body: {
             ...item.value,
             // применить перемещения в группе
-            apply_move_groups: applyMoveGroups.value ? selectedSavedDraft.value?.id : undefined,
+            apply_move_groups: applyMoveGroups.value,
           },
         },
       )
       responseData = data.value
+
       break
     }
 
@@ -239,6 +251,22 @@ async function save() {
       break
     }
   }
+
+  // если находимся не на странице клиента, то редиректим туда
+  if (route.name !== 'clients-id') {
+    router.push({
+      name: 'clients-id',
+      params: {
+        id: responseData.contract.client.id,
+      },
+      query: {
+        contract_id: responseData.contract.id,
+      },
+    })
+
+    return
+  }
+
   emit('updated', mode.value, responseData!)
   dialog.value = false
   setTimeout(() => (saving.value = false), 300)
@@ -438,7 +466,7 @@ function isChanged(p: ContractVersionProgramResource, field: keyof ContractVersi
   return false
 }
 
-defineExpose({ edit, newContract, newVersion })
+defineExpose({ edit, newContract, newVersion, createFromDraft })
 </script>
 
 <template>
@@ -462,10 +490,17 @@ defineExpose({ edit, newContract, newVersion })
         <span v-else>
           Новая версия договора
           <span>№{{ contractId }}–{{ seq }}</span>
-          <div v-if="selectedSavedDraft" class="dialog-subheader">
+
+          <div v-if="isCreatingFromDraft" class="dialog-subheader">
+            на основе текущего проекта
+          </div>
+          <div v-else-if="selectedSavedDraft" class="dialog-subheader">
             <RouterLink
               target="_blank"
-              :to="{ name: 'schedule-drafts-editor', query: { id: selectedSavedDraft.id } }"
+              :to="{
+                name: 'schedule-drafts-editor',
+                query: { id: selectedSavedDraft.id },
+              }"
             >
               Проект №{{ selectedSavedDraft.id }}
             </RouterLink>
@@ -480,8 +515,7 @@ defineExpose({ edit, newContract, newVersion })
             confirm-text="Вы уверены, что хотите удалить договор?"
             @deleted="dialog = false"
           />
-
-          <v-menu v-if="mode !== 'edit'">
+          <v-menu v-if="mode !== 'edit' && !isCreatingFromDraft">
             <template #activator="{ props }">
               <v-btn v-bind="props" :icon="mdiProgressUpload" :size="48" variant="text" :disabled="savedDrafts.length === 0" />
             </template>

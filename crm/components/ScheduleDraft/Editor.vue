@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { SavedScheduleDraftResource, ScheduleDraft, ScheduleDraftGroup, ScheduleDraftProgram } from '.'
+import { ContractVersionDialog } from '#components'
 import { mdiArrowRightThin, mdiChevronRight } from '@mdi/js'
-import { apiUrl } from '.'
+import { apiUrl, isGroupChangedInContract } from '.'
 
 const { client, year, savedDraft } = defineProps<{
   /**
@@ -14,12 +15,15 @@ const { client, year, savedDraft } = defineProps<{
 
 defineEmits<{ back: [] }>()
 
+const route = useRoute()
 const router = useRouter()
 const loading = ref(false)
 const btnLoading = ref(false)
+const btnCreateLoading = ref(false)
 const teeth = ref<Teeth>()
 const scheduleDraft = ref<ScheduleDraft>()
 const selectedContractId = ref<number>() // ID выбранной вкладки договора
+const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
 
 // сохранённые проекты расписания (доступные для загрузки)
 const savedDrafts = ref<SavedScheduleDraftResource[]>([])
@@ -42,6 +46,10 @@ async function fromActualContracts() {
   loading.value = false
   smoothScroll('main', 'top', 'instant')
   loadSavedDrafts()
+
+  if (route.query.contract_id) {
+    selectedContractId.value = Number.parseInt(route.query.contract_id)
+  }
 }
 
 async function loadSavedDrafts() {
@@ -55,11 +63,13 @@ async function loadSavedDrafts() {
 
 async function save() {
   btnLoading.value = true
-  await useHttp<SavedScheduleDraftResource>(
+  const { data } = await useHttp<SavedScheduleDraftResource>(
     `${apiUrl}/save`,
     { method: 'POST' },
   )
-  useGlobalMessage('Проект сохранён', 'success')
+  const id = data.value!.id
+  const link = router.resolve({ name: 'schedule-drafts-editor', query: { id } }).href
+  useGlobalMessage(`<a href="${link}">Проект №${id}</a> сохранён`, 'success')
   btnLoading.value = false
 }
 
@@ -169,27 +179,36 @@ function getChangesCnt(contractId: number) {
   let cnt = 0
 
   for (const program of scheduleDraft.value![contractId]) {
-    // Новая программа — это изменение
     if (program.id < 0) {
       cnt++
     }
 
     for (const group of program.groups) {
-      const { original_contract_id: from, current_contract_id: to } = group
-      const moved = from !== to
-
-      if (!moved) {
-        continue
-      }
-
-      // изменения в текущей вкладке
-      if (to === contractId || from === contractId) {
+      if (isGroupChangedInContract(group, contractId)) {
         cnt++
       }
     }
   }
 
   return cnt
+}
+
+async function createContract() {
+  btnCreateLoading.value = true
+  const { data } = await useHttp<{
+    contractVersion: ContractVersionResource
+    scheduleDraft: SavedScheduleDraftResource
+  }>(
+    `${apiUrl}/create-contract`,
+    {
+      method: 'POST',
+      body: {
+        contract_id: selectedContractId.value,
+      },
+    },
+  )
+  contractVersionDialog.value?.createFromDraft(data.value!.contractVersion, data.value!.scheduleDraft)
+  btnCreateLoading.value = false
 }
 
 async function goToPage(d: SavedScheduleDraftResource) {
@@ -239,7 +258,7 @@ nextTick(fromActualContracts)
           </template>
           <v-list>
             <v-list-item @click="applyMoveGroups()">
-              применить проект
+              отконфигурировать группы
             </v-list-item>
             <v-list-item @click="save()">
               сохранить проект
@@ -308,7 +327,7 @@ nextTick(fromActualContracts)
           <span>
             {{ ProgramLabel[p.program] }}
           </span>
-          <v-chip label density="comfortable" v-if="p.id < 0" color="orange">
+          <v-chip v-if="p.id < 0" label density="comfortable" color="orange">
             добавлено в черновике
           </v-chip>
           <span v-else>
@@ -345,7 +364,7 @@ nextTick(fromActualContracts)
           </UiNoData>
         </div>
       </div>
-      <div class="container" :class="{ 'element-loading': loading }">
+      <div class="container d-flex ga-4" :class="{ 'element-loading': loading }">
         <ProgramSelectorMenu
           :pre-selected="scheduleDraft[selectedContractId].map(e => e.program)"
           @saved="addPrograms"
@@ -357,9 +376,13 @@ nextTick(fromActualContracts)
             </v-btn>
           </template>
         </ProgramSelectorMenu>
+        <v-btn color="primary" @click="createContract()">
+          создать {{ selectedContractId < 0 ? 'новый договор' : 'версию' }} на основе проекта
+        </v-btn>
       </div>
     </template>
   </UiIndexPage>
+  <ContractVersionDialog ref="contractVersionDialog" />
 </template>
 
 <style lang="scss">

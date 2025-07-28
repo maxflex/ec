@@ -48,7 +48,7 @@ class ContractVersionController extends Controller
     {
         $request->validate([
             'contract.id' => ['required', 'exists:contracts,id'],
-            'apply_move_groups' => ['sometimes', 'exists:schedule_drafts,id'],
+            'apply_move_groups' => ['sometimes', 'boolean'],
         ]);
 
         $contract = Contract::find($request->contract['id']);
@@ -76,9 +76,10 @@ class ContractVersionController extends Controller
         sync_relation($contractVersion, 'payments', $request->all());
 
         // применяем перемещения в группах согласно проекту, если нужно
-        if ($request->has('apply_move_groups')) {
-            $scheduleDraft = ScheduleDraft::find($request->apply_move_groups);
-            $scheduleDraft->applyMoveGroups($contract->id);
+        if ($request->apply_move_groups) {
+            // TODO: apply move groups
+            // $scheduleDraft = ScheduleDraft::find($request->apply_move_groups);
+            // $scheduleDraft->applyMoveGroupsContract($contractVersion);
         }
 
         return new ContractVersionListResource($contractVersion);

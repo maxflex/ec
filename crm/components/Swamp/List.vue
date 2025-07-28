@@ -80,6 +80,8 @@ const { items } = defineProps<{
               {{ SwampStatusLabel[item.status] }}
             </div>
           </div>
+          <div class="table-actionss">
+          </div>
         </td>
       </tr>
     </tbody>
