@@ -18,7 +18,7 @@ class ContractVersionListResource extends JsonResource
     {
         return extract_fields($this, [
             'date', 'sum', 'seq', 'is_active', 'direction_counts',
-            'sum_change',
+            'sum_change', 'created_at',
         ], [
             'programs_count' => $this->programs_count ?? $this->programs()->count(),
             'payments_count' => $this->payments_count ?? $this->payments()->count(),

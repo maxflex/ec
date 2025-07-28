@@ -18,12 +18,6 @@ class ScheduleDraftController extends Controller
 
     public function index(Request $request)
     {
-        if ($request->has('contract_id')) {
-            $contract = Contract::find($request->contract_id);
-
-            return paginate(ScheduleDraft::selectorForContract($contract));
-        }
-
         $query = ScheduleDraft::latest();
 
         $this->filter($request, $query);
@@ -44,6 +38,7 @@ class ScheduleDraftController extends Controller
 
         if ($request->has('id')) {
             $scheduleDraft = ScheduleDraft::find($request->input('id'));
+            $scheduleDraft->unpack();
         } else {
             $client = Client::find($request->client_id);
             $scheduleDraft = ScheduleDraft::fromActualContracts($client, intval($request->year));
@@ -134,12 +129,18 @@ class ScheduleDraftController extends Controller
         return $scheduleDraft->getData();
     }
 
-    public function save()
+    public function save(Request $request)
     {
-        $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
-        $scheduleDraft->save();
+        $request->validate([
+            'contract_id' => ['required', 'numeric'],
+        ]);
 
-        return new SavedScheduleDraftResource($scheduleDraft);
+        $contractId = intval($request->contract_id);
+        $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
+
+        return new SavedScheduleDraftResource(
+            $scheduleDraft->saveDraft($contractId)
+        );
     }
 
     /**

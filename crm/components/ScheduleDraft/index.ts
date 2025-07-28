@@ -9,7 +9,8 @@ export interface SavedScheduleDraftResource {
   client: PersonResource
   year: Year
   created_at: string
-  changes: Record<number, number>
+  changes: number
+  contract_id: number | null
 }
 
 /**

@@ -47,8 +47,8 @@ async function fromActualContracts() {
   smoothScroll('main', 'top', 'instant')
   loadSavedDrafts()
 
-  if (route.query.contract_id) {
-    selectedContractId.value = Number.parseInt(route.query.contract_id)
+  if (savedDraft) {
+    selectedContractId.value = savedDraft.contract_id || -1
   }
 }
 
@@ -65,7 +65,12 @@ async function save() {
   btnLoading.value = true
   const { data } = await useHttp<SavedScheduleDraftResource>(
     `${apiUrl}/save`,
-    { method: 'POST' },
+    {
+      method: 'POST',
+      body: {
+        contract_id: selectedContractId.value,
+      },
+    },
   )
   const id = data.value!.id
   const link = router.resolve({ name: 'schedule-drafts-editor', query: { id } }).href
@@ -248,52 +253,7 @@ nextTick(fromActualContracts)
       </div>
       <TeethBar v-if="teeth" :items="teeth" style="width: fit-content" />
     </template>
-    <template #buttons>
-      <div class="d-flex align-center ga-4">
-        <v-menu>
-          <template #activator="{ props }">
-            <v-btn color="primary" v-bind="props" :loading="btnLoading">
-              действия
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item @click="applyMoveGroups()">
-              отконфигурировать группы
-            </v-list-item>
-            <v-list-item @click="save()">
-              сохранить проект
-            </v-list-item>
-            <v-list-item link :disabled="savedDrafts.length === 0">
-              загрузить проект
-              <template v-if="savedDrafts.length" #append>
-                <v-icon size="small" :icon="mdiChevronRight" />
-              </template>
-              <v-menu activator="parent" submenu>
-                <v-list>
-                  <v-list-item
-                    v-for="d in savedDrafts"
-                    :key="d.id"
-                    :active="savedDraft?.id === d.id"
-                    @click="goToPage(d)"
-                  >
-                    <v-list-item-title>
-                      <div>
-                        Проект №{{ d.id }}
-                      </div>
-                      <div class="text-caption text-gray">
-                        {{ formatName(d.user) }}
-                        {{ formatDateTime(d.created_at) }}
-                      </div>
-                    </v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-        <!-- <v-btn icon="$close" :size="44" color="primary" @click="$emit('back')" /> -->
-      </div>
-    </template>
+
     <template v-if="scheduleDraft && selectedContractId">
       <div class="tabs">
         <div
@@ -376,9 +336,50 @@ nextTick(fromActualContracts)
             </v-btn>
           </template>
         </ProgramSelectorMenu>
-        <v-btn color="primary" @click="createContract()">
-          создать {{ selectedContractId < 0 ? 'новый договор' : 'версию' }} на основе проекта
-        </v-btn>
+        <v-menu>
+          <template #activator="{ props }">
+            <v-btn v-bind="props" :loading="btnLoading" :width="272" variant="outlined">
+              действия
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item @click="createContract()">
+              создать версию на основе проекта
+            </v-list-item>
+            <v-list-item @click="applyMoveGroups()">
+              отконфигурировать группы
+            </v-list-item>
+            <v-list-item @click="save()">
+              сохранить проект
+            </v-list-item>
+            <v-list-item link :disabled="savedDrafts.length === 0">
+              загрузить проект
+              <template v-if="savedDrafts.length" #append>
+                <v-icon size="small" :icon="mdiChevronRight" />
+              </template>
+              <v-menu activator="parent" submenu>
+                <v-list>
+                  <v-list-item
+                    v-for="d in savedDrafts"
+                    :key="d.id"
+                    :active="savedDraft?.id === d.id"
+                    @click="goToPage(d)"
+                  >
+                    <v-list-item-title>
+                      <div>
+                        Проект №{{ d.id }}
+                      </div>
+                      <div class="text-caption text-gray">
+                        {{ formatName(d.user) }}
+                        {{ formatDateTime(d.created_at) }}
+                      </div>
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </div>
     </template>
   </UiIndexPage>

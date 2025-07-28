@@ -3,18 +3,12 @@ import type { ContractPaymentDialog, ContractVersionDialog } from '#build/compon
 import type { SavedScheduleDraftResource } from '../ScheduleDraft'
 import type { ContractPaymentResource } from '~/components/ContractPayment'
 
-type Changes = Record<number, {
-  schedule_draft_id: number
-  changes_count: number
-}>
-
 const { clientId } = defineProps <{ clientId: number }>()
 const items = ref<ContractResource[]>([])
 const contractPaymentDialog = ref<InstanceType<typeof ContractPaymentDialog>>()
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
 const selected = ref(0)
-const changes = ref<Changes>({})
-const savedDrafts = ref<SavedScheduleDraftResource[]>([])
+const scheduleDrafts = ref<SavedScheduleDraftResource[]>([])
 const loading = ref(true)
 const showBalance = ref(false)
 
@@ -99,20 +93,19 @@ async function loadData() {
     items.value = data.value.data
   }
   loading.value = false
-  await loadChanges()
+  await loadScheduleDrafts()
 }
 
-async function loadChanges() {
-  const { data } = await useHttp<Changes>(
-    `schedule-drafts/load-changes`,
+async function loadScheduleDrafts() {
+  const { data } = await useHttp<ApiResponse<SavedScheduleDraftResource>>(
+    `schedule-drafts`,
     {
-      method: 'POST',
-      body: {
+      params: {
         client_id: clientId,
       },
     },
   )
-  changes.value = data.value!
+  scheduleDrafts.value = data.value!.data
 }
 
 async function createContract(d: SavedScheduleDraftResource) {
@@ -139,20 +132,26 @@ function selectTab(i: number) {
 
 const noData = computed(() => !loading.value && items.value.length === 0)
 
-watch(selectedContract, async (newVal) => {
-  if (!newVal) {
-    return
+const scheduleDraftsByContract = computed(() => {
+  const result = {}
+  for (const item of items.value) {
+    const activeVersion = item.versions.find(e => e.is_active)!
+    result[item.id] = scheduleDrafts.value.filter(e => e.contract_id === item.id && e.created_at > activeVersion.created_at)
   }
+  result[-1] = scheduleDrafts.value.filter(e => !e.contract_id)
+  return result
+})
 
-  const { data } = await useHttp<ApiResponse<SavedScheduleDraftResource>>(
-    `schedule-drafts`,
-    {
-      params: {
-        contract_id: newVal.id,
-      },
-    },
-  )
-  savedDrafts.value = data.value!.data
+// changes by contractId
+const changes = computed<Record<number, number>>(() => {
+  const result = {}
+  for (const item of items.value) {
+    const drafts = (item.id in scheduleDraftsByContract.value) ? scheduleDraftsByContract.value[item.id] : []
+    result[item.id] = drafts.length ? drafts[drafts.length - 1].changes : 0
+  }
+  const drafts = (-1 in scheduleDraftsByContract.value) ? scheduleDraftsByContract.value[-1] : []
+  result[-1] = drafts.length ? drafts[drafts.length - 1].changes : 0
+  return result
 })
 
 nextTick(loadData)
@@ -180,7 +179,7 @@ nextTick(loadData)
           v-if="-1 in changes"
           color="orange-lighten-3 ml-2 pa-0"
           inline
-          :content="changes[-1].changes_count"
+          :content="changes[-1]"
         ></v-badge>
       </v-btn>
       <v-btn
@@ -201,10 +200,10 @@ nextTick(loadData)
           </div>
         </div>
         <v-badge
-          v-if="contract.id in changes"
+          v-if="changes[contract.id]"
           color="orange-lighten-3 ml-2 pa-0"
           inline
-          :content="changes[contract.id].changes_count"
+          :content="changes[contract.id]"
         ></v-badge>
       </v-btn>
     </template>
@@ -226,7 +225,7 @@ nextTick(loadData)
             добавить версию
           </v-list-item>
           <v-list-item
-            v-for="d in savedDrafts"
+            v-for="d in scheduleDraftsByContract[selectedContract.id]"
             :key="d.id"
             @click="createContract(d)"
           >
@@ -234,7 +233,7 @@ nextTick(loadData)
             <v-badge
               color="orange-lighten-3 ml-2 pa-0"
               inline
-              :content="d.changes[selectedContract.id]"
+              :content="d.changes"
             ></v-badge>
           </v-list-item>
           <v-list-item @click="() => contractPaymentDialog?.create(selectedContract!)">
@@ -244,14 +243,13 @@ nextTick(loadData)
             показать баланс
           </v-list-item>
           <v-list-item
-            v-for="d in savedDrafts"
+            v-for="d in scheduleDraftsByContract[selectedContract.id]"
             :key="d.id"
             target="_blank"
             :to="{
               name: 'schedule-drafts-editor',
               query: {
-                id: changes[selectedContract.id].schedule_draft_id,
-                contract_id: selectedContract.id,
+                id: d.id,
               },
             }"
           >
@@ -259,7 +257,7 @@ nextTick(loadData)
             <v-badge
               color="orange-lighten-3 ml-2 pa-0"
               inline
-              :content="d.changes[selectedContract.id]"
+              :content="d.changes"
             ></v-badge>
           </v-list-item>
           <!-- <v-list-item
@@ -285,16 +283,15 @@ nextTick(loadData)
           <v-list-item @click="contractVersionDialog?.newContract()">
             новый договор
           </v-list-item>
-          <template v-if="changes && (-1 in changes)">
-            <v-list-item v-for="d in changes[-1].items" @click="contractVersionDialog?.newContract()">
-              новый договор по проекту №{{ d.id }}
-              <v-badge
-                color="orange-lighten-3 ml-2 pa-0"
-                inline
-                :content="d.changes[-1]"
-              ></v-badge>
-            </v-list-item>
-          </template>
+          <v-list-item v-for="d in scheduleDraftsByContract[-1]" :key="d.id" @click="contractVersionDialog?.newContract()">
+            новый договор по проекту №{{ d.id }}
+            <v-badge
+              v-if="changes[-1]"
+              color="orange-lighten-3 ml-2 pa-0"
+              inline
+              :content="changes[-1]"
+            ></v-badge>
+          </v-list-item>
         </v-list>
       </v-menu>
     </template>

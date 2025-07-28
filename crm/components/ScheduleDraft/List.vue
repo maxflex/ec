@@ -22,24 +22,25 @@ const router = useRouter()
         <td width="200">
           <UiPerson :item="item.client" />
         </td>
+
         <td width="170">
           {{ YearLabel[item.year] }}
         </td>
 
-        <td>
-          <div v-for="(cnt, contractId) in item.changes" :key="contractId" class="d-flex align-center ga-1 vfn-1">
-            <span v-if="contractId < 0">
-              новый договор
-            </span>
-            <span v-else>
-              договор №{{ contractId }}
-            </span>
-            <v-badge
-              color="orange-lighten-3"
-              inline
-              :content="cnt"
-            ></v-badge>
-          </div>
+        <td width="200">
+          <span v-if="item.contract_id">
+            договор №{{ item.contract_id }}
+          </span>
+          <span v-else>
+            новый договор
+          </span>
+          <v-badge
+            v-if="item.changes > 0"
+            color="orange-lighten-3"
+            class="ml-1"
+            inline
+            :content="item.changes"
+          ></v-badge>
         </td>
 
         <td width="300" class="text-gray">

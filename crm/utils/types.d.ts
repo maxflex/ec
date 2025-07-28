@@ -267,6 +267,7 @@ declare global {
     programs_count: number
     direction_counts: DirectionCounts
     is_active: boolean
+    created_at: string
     contract: {
       id: number
       year: Year
