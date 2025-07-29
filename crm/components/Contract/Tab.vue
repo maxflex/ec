@@ -128,7 +128,7 @@ async function createContract(d: SavedScheduleDraftResource) {
       },
     },
   )
-  contractVersionDialog.value?.createFromDraft(data.value!.contractVersion, d)
+  contractVersionDialog.value?.fromDraft(data.value!.contractVersion, d)
 }
 
 function selectTab(i: number) {

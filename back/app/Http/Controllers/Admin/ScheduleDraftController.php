@@ -170,23 +170,25 @@ class ScheduleDraftController extends Controller
      */
     public function createContract(Request $request)
     {
+        // если ID не передан – создаём из RAM, тогда нам нужно знать
+        // к какому договору из RAM будем создавать
         $request->validate([
-            'contract_id' => ['required', 'numeric'],
-            'schedule_draft_id' => ['sometimes', 'exists:schedule_drafts,id'],
+            'id' => ['sometimes', 'exists:schedule_drafts,id'],
+            'contract_id' => ['sometimes', 'exists:contracts,id'],
         ]);
 
-        $scheduleDraft = $request->has('schedule_draft_id')
-            ? ScheduleDraft::find($request->schedule_draft_id)
-            : ScheduleDraft::fromRam(auth()->id());
-
-        if ($request->has('contract_id')) {
-            $contract = Contract::find($request->contract_id);
+        if ($request->has('id')) {
+            $scheduleDraft = ScheduleDraft::find($request->id);
+        } else {
+            $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
+            $scheduleDraft->contract_id = intval($request->contract_id);
         }
 
-        return [
-            'scheduleDraft' => new SavedScheduleDraftResource($scheduleDraft),
-            'contractVersion' => $scheduleDraft->fillContract($contract),
-        ];
+        return $scheduleDraft->fillContract();
+        // return [
+        //     'scheduleDraft' => new SavedScheduleDraftResource($scheduleDraft),
+        //     'contractVersion' => $scheduleDraft->fillContract($contract),
+        // ];
     }
 
     /**

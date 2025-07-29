@@ -487,20 +487,22 @@ class ScheduleDraft extends Model implements HasTeeth
      *
      * @see ContractVersionResource
      */
-    public function fillContract(?Contract $contract)
+    public function fillContract()
     {
-        if ($contract === null) {
-            //    new contract
-        } else {
-            $activeVersion = $contract->active_version;
+        if ($this->contract_id) {
+            $activeVersion = $this->contract->active_version;
             $item = json_redecode(new ContractVersionResource($activeVersion), false);
+        } else {
+            return $this->newContract();
+            // new contract
+            // $activeVersion = new ContractVersion;
         }
 
         $programs = collect();
         $id = -1;
         $pricesId = -1;
         foreach ($this->programs as $p) {
-            if ($p['contract_id'] !== $contract->id) {
+            if ($p['contract_id'] !== $this->contract_id) {
                 continue;
             }
             $programFromContract = $activeVersion->programs->where('program', $p['program'])->first();
@@ -580,6 +582,13 @@ class ScheduleDraft extends Model implements HasTeeth
         $item->payments = $payments;
 
         return $item;
+    }
+
+    private function newContract()
+    {
+        $programs = collect();
+
+        return $programs;
     }
 
     /**

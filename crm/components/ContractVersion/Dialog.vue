@@ -467,7 +467,7 @@ function isChanged(p: ContractVersionProgramResource, field: keyof ContractVersi
   return false
 }
 
-defineExpose({ edit, newContract, newVersion, createFromDraft })
+defineExpose({ edit, newContract, newVersion, fromDraft })
 </script>
 
 <template>

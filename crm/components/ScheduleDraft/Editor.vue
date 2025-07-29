@@ -212,7 +212,7 @@ async function createContract() {
       },
     },
   )
-  contractVersionDialog.value?.createFromDraft(data.value!.contractVersion, data.value!.scheduleDraft)
+  contractVersionDialog.value?.fromDraft(data.value!.contractVersion, data.value!.scheduleDraft)
   btnCreateLoading.value = false
 }
 
