@@ -3,11 +3,16 @@ import type { ContractPaymentDialog, ContractVersionDialog } from '#build/compon
 import type { SavedScheduleDraftResource } from '../ScheduleDraft'
 import type { ContractPaymentResource } from '~/components/ContractPayment'
 
+type DraftsByContract = Record<number, {
+  drafts: SavedScheduleDraftResource[]
+  changes: number
+}>
+
 const { clientId } = defineProps <{ clientId: number }>()
 const items = ref<ContractResource[]>([])
 const contractPaymentDialog = ref<InstanceType<typeof ContractPaymentDialog>>()
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
-const selected = ref(0)
+const selected = ref(-1) // -1 это "новый договор"
 const scheduleDrafts = ref<SavedScheduleDraftResource[]>([])
 const loading = ref(true)
 const showBalance = ref(false)
@@ -21,8 +26,8 @@ async function onContractVersionUpdated(mode: ContractEditMode, c: ContractVersi
   switch (mode) {
     case 'new-contract':
       const newContract = c as ContractResource
-      items.value.unshift(newContract)
-      selected.value = 0
+      items.value.push(newContract)
+      selected.value = items.value.length - 1
       updatedId = newContract.versions[0].id
       break
 
@@ -89,11 +94,12 @@ async function loadData() {
       },
     },
   )
-  if (data.value) {
-    items.value = data.value.data
+  items.value = data.value!.data
+  if (items.value.length > 0) {
+    selected.value = items.value.length - 1
   }
-  loading.value = false
   await loadScheduleDrafts()
+  loading.value = false
 }
 
 async function loadScheduleDrafts() {
@@ -132,25 +138,27 @@ function selectTab(i: number) {
 
 const noData = computed(() => !loading.value && items.value.length === 0)
 
-const scheduleDraftsByContract = computed(() => {
-  const result = {}
-  for (const item of items.value) {
-    const activeVersion = item.versions.find(e => e.is_active)!
-    result[item.id] = scheduleDrafts.value.filter(e => e.contract_id === item.id && e.created_at > activeVersion.created_at)
-  }
-  result[-1] = scheduleDrafts.value.filter(e => !e.contract_id)
-  return result
-})
+const draftsByContract = computed<DraftsByContract>(() => {
+  const result: DraftsByContract = {}
 
-// changes by contractId
-const changes = computed<Record<number, number>>(() => {
-  const result = {}
-  for (const item of items.value) {
-    const drafts = (item.id in scheduleDraftsByContract.value) ? scheduleDraftsByContract.value[item.id] : []
-    result[item.id] = drafts.length ? drafts[drafts.length - 1].changes : 0
+  for (const contract of items.value) {
+    const activeVersion = contract.versions.find(v => v.is_active)
+    const drafts = scheduleDrafts.value.filter(
+      d => d.contract_id === contract.id && (!activeVersion || d.created_at > activeVersion.created_at),
+    )
+    result[contract.id] = {
+      drafts,
+      changes: drafts.at(-1)?.changes ?? 0,
+    }
   }
-  const drafts = (-1 in scheduleDraftsByContract.value) ? scheduleDraftsByContract.value[-1] : []
-  result[-1] = drafts.length ? drafts[drafts.length - 1].changes : 0
+
+  // drafts без договора
+  const drafts = scheduleDrafts.value.filter(d => !d.contract_id)
+  result[-1] = {
+    drafts,
+    changes: drafts.at(-1)?.changes ?? 0,
+  }
+
   return result
 })
 
@@ -159,29 +167,7 @@ nextTick(loadData)
 
 <template>
   <UiIndexPage :data="{ loading, noData }" class="contract-tab separate-content">
-    <template #filters>
-      <v-btn
-        class="tab-btn"
-        variant="plain"
-        :ripple="false"
-        :class="{ 'tab-btn--active': selected === -1 }"
-        @click="selectTab(-1)"
-      >
-        <div>
-          <div>
-            новый
-          </div>
-          <div>
-            договор
-          </div>
-        </div>
-        <v-badge
-          v-if="-1 in changes"
-          color="orange-lighten-3 ml-2 pa-0"
-          inline
-          :content="changes[-1]"
-        ></v-badge>
-      </v-btn>
+    <template v-if="!loading" #filters>
       <v-btn
         v-for="(contract, i) in items"
         :key="contract.id"
@@ -200,10 +186,34 @@ nextTick(loadData)
           </div>
         </div>
         <v-badge
-          v-if="changes[contract.id]"
+          v-if="draftsByContract[contract.id]?.changes"
           color="orange-lighten-3 ml-2 pa-0"
           inline
-          :content="changes[contract.id]"
+          :content="draftsByContract[contract.id].changes"
+        ></v-badge>
+      </v-btn>
+
+      <!-- новый договор -->
+      <v-btn
+        class="tab-btn"
+        variant="plain"
+        :ripple="false"
+        :class="{ 'tab-btn--active': selected === -1 }"
+        @click="selectTab(-1)"
+      >
+        <div>
+          <div>
+            новый
+          </div>
+          <div>
+            договор
+          </div>
+        </div>
+        <v-badge
+          v-if="draftsByContract[-1]?.changes"
+          color="orange-lighten-3 ml-2 pa-0"
+          inline
+          :content="draftsByContract[-1].changes"
         ></v-badge>
       </v-btn>
     </template>
@@ -225,11 +235,11 @@ nextTick(loadData)
             добавить версию
           </v-list-item>
           <v-list-item
-            v-for="d in scheduleDraftsByContract[selectedContract.id]"
+            v-for="d in draftsByContract[selectedContract.id].drafts"
             :key="d.id"
             @click="createContract(d)"
           >
-            добавить версию по проекту №{{ d.id }}
+            добавить версию на основе проекта №{{ d.id }}
             <v-badge
               color="orange-lighten-3 ml-2 pa-0"
               inline
@@ -243,7 +253,7 @@ nextTick(loadData)
             показать баланс
           </v-list-item>
           <v-list-item
-            v-for="d in scheduleDraftsByContract[selectedContract.id]"
+            v-for="d in draftsByContract[selectedContract.id].drafts"
             :key="d.id"
             target="_blank"
             :to="{
@@ -283,13 +293,31 @@ nextTick(loadData)
           <v-list-item @click="contractVersionDialog?.newContract()">
             новый договор
           </v-list-item>
-          <v-list-item v-for="d in scheduleDraftsByContract[-1]" :key="d.id" @click="contractVersionDialog?.newContract()">
-            новый договор по проекту №{{ d.id }}
+          <v-list-item v-for="d in draftsByContract[-1].drafts" :key="d.id" @click="contractVersionDialog?.newContract()">
+            новый договор на основе проекта №{{ d.id }}
             <v-badge
-              v-if="changes[-1]"
+              v-if="draftsByContract[-1]?.changes"
               color="orange-lighten-3 ml-2 pa-0"
               inline
-              :content="changes[-1]"
+              :content="draftsByContract[-1].changes"
+            ></v-badge>
+          </v-list-item>
+          <v-list-item
+            v-for="d in draftsByContract[-1].drafts"
+            :key="d.id"
+            target="_blank"
+            :to="{
+              name: 'schedule-drafts-editor',
+              query: {
+                id: d.id,
+              },
+            }"
+          >
+            посмотреть проект №{{ d.id }}
+            <v-badge
+              color="orange-lighten-3 ml-2 pa-0"
+              inline
+              :content="d.changes"
             ></v-badge>
           </v-list-item>
         </v-list>
@@ -348,10 +376,6 @@ nextTick(loadData)
 
 <style lang="scss">
 .contract-tab {
-  .filters__inputs {
-    flex-direction: row-reverse;
-  }
-
   .index-page__content {
     background: white !important;
   }

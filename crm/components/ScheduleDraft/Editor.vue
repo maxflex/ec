@@ -344,7 +344,7 @@ nextTick(fromActualContracts)
           </template>
           <v-list>
             <v-list-item @click="createContract()">
-              создать версию на основе проекта
+              создать {{ selectedContractId < 0 ? 'новый договор' : 'версию' }} на основе проекта
             </v-list-item>
             <v-list-item @click="applyMoveGroups()">
               отконфигурировать группы

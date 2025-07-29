@@ -67,11 +67,14 @@ function newContract() {
   loadSavedDrafts()
 }
 
-function createFromDraft(contractFromDraft: ContractVersionResource, savedDraft: SavedScheduleDraftResource) {
+/**
+ * @param savedDraft загрузить из ранее сохраненного драфта
+ */
+function fromDraft(savedDraft: SavedScheduleDraftResource) {
   mode.value = 'new-version'
-  contractId.value = contractFromDraft.contract.id
-  seq.value = contractFromDraft.seq + 1
-  item.value = contractFromDraft
+  // contractId.value = contractFromDraft.contract.id
+  // seq.value = contractFromDraft.seq + 1
+  // item.value = contractFromDraft
   selectedSavedDraft.value = savedDraft
   isCreatingFromDraft.value = true
   dialog.value = true
@@ -152,7 +155,6 @@ async function loadSavedDraft(savedDraft: SavedScheduleDraftResource) {
   )
   item.value = data.value!
   loading.value = false
-  // console.log(data.value)
 }
 
 function onProgramsSaved(programs: Program[]) {
@@ -405,7 +407,6 @@ function isPriceError(price: ContractVersionProgramPrice, program: ContractVersi
       return false
     }
     if (p.id === price.id) {
-      console.log(currentPrices, asInt(price.price))
       const isCorrectPrice = currentPrices.length === 1 && currentPrices[0] === asInt(price.price)
       return !isCorrectPrice
     }
