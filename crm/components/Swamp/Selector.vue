@@ -8,7 +8,7 @@ const emit = defineEmits(['back', 'selected'])
 const filters = ref<SwampFilters>({
   year: group.year,
   program: group.program,
-  status: 'toFulfil',
+  no_group: 1,
 })
 
 const { items, indexPageData } = useIndex<SwampListResource>(
@@ -33,6 +33,6 @@ const { items, indexPageData } = useIndex<SwampListResource>(
         назад
       </v-btn>
     </template>
-    <SwampList :items="items" :group="group" @selected="emit('selected')" />
+    <SwampList :items="items" :group="group" show-client @selected="emit('selected')" />
   </UiIndexPage>
 </template>

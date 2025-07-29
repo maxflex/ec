@@ -16,18 +16,19 @@ const router = useRouter()
         class="cursor-pointer"
         @click="router.push({ name: 'schedule-drafts-editor', query: { id: item.id } })"
       >
-        <td width="200">
+        <td width="180">
           Проект №{{ item.id }}
         </td>
+
         <td width="200">
           <UiPerson :item="item.client" />
         </td>
 
-        <td width="170">
+        <td width="150">
           {{ YearLabel[item.year] }}
         </td>
 
-        <td width="200">
+        <td :class="{ 'text-gray': item.is_archived }">
           <span v-if="item.contract_id">
             договор №{{ item.contract_id }}
           </span>

@@ -13,7 +13,7 @@ class SavedScheduleDraftResource extends JsonResource
     {
         return extract_fields($this, [
             'created_at', 'contract_id', 'year', 'changes',
-            'contract_id',
+            'contract_id', 'is_archived',
         ], [
             'client' => new PersonResource($this->client),
             'user' => new PersonResource($this->user),

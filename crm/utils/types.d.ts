@@ -1,5 +1,3 @@
-import type { ContractPaymentResource } from '~/components/ContractPayment'
-
 declare global {
   type LogDevice = keyof typeof LogDeviceLabel
 
@@ -206,99 +204,6 @@ declare global {
     card_number: ?string
     created_at?: string
     user?: PersonResource
-  }
-
-  interface ContractVersionProgramResource {
-    id: number
-    program: Program
-    lessons_planned: number | string
-    prices: ContractVersionProgramPrice[]
-    contract_version_id: number
-    lessons_conducted: number
-    lessons_to_be_conducted: number
-    lessons_suggest: number
-    client_lesson_prices: number[]
-    group_id: ?number
-  }
-
-  interface ContractVersionPaymentResource {
-    id: number
-    sum: number
-    date: string
-    contract_version_id: number
-  }
-
-  interface ContractVersionProgramPrice {
-    id: number
-    lessons: number | string
-    price: number | string
-  }
-
-  interface ContractVersionResource {
-    id: number
-    seq: number
-    sum?: number
-    date: string
-    programs: ContractVersionProgramResource[]
-    // оригинальные программы (используется когда подгружаем проект договора)
-    programs_original: ContractVersionProgramResource[]
-    payments: ContractVersionPaymentResource[]
-    contract: {
-      id: number
-      year: Year
-      company: Company
-      client?: PersonResource
-      source: ?string
-    }
-    free_lessons_count?: number
-    created_at?: string
-    user?: PersonResource
-  }
-
-  type DirectionCounts = Partial<Record<Direction, number>>
-
-  interface ContractVersionListResource {
-    id: number
-    date: string
-    seq: number
-    sum: number
-    sum_change: number
-    payments_count: number
-    programs_count: number
-    direction_counts: DirectionCounts
-    is_active: boolean
-    created_at: string
-    contract: {
-      id: number
-      year: Year
-      client: PersonResource
-      company: Company
-      source: ?string
-    }
-  }
-
-  interface ContractResource {
-    id: number
-    client?: PersonResource
-    client_id: number
-    year: Year
-    company: Company
-    balances?: {
-      to_pay: number
-      remainder: number
-    }
-    versions: ContractVersionListResource[]
-    payments: ContractPaymentResource[]
-  }
-
-  interface ContractEditPriceResource {
-    id: number
-    program: Program
-    contract: {
-      id: number
-      company: Company
-      year: Year
-    }
   }
 
   interface Zoom {

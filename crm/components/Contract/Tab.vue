@@ -237,7 +237,7 @@ nextTick(loadData)
           <v-list-item
             v-for="d in draftsByContract[selectedContract.id].drafts"
             :key="d.id"
-            @click="createContract(d)"
+            @click="contractVersionDialog?.fromDraft({ savedDraft: d })"
           >
             добавить версию на основе проекта №{{ d.id }}
             <v-badge
@@ -293,7 +293,11 @@ nextTick(loadData)
           <v-list-item @click="contractVersionDialog?.newContract()">
             новый договор
           </v-list-item>
-          <v-list-item v-for="d in draftsByContract[-1].drafts" :key="d.id" @click="contractVersionDialog?.newContract()">
+          <v-list-item
+            v-for="d in draftsByContract[-1].drafts"
+            :key="d.id"
+            @click="contractVersionDialog?.fromDraft({ savedDraft: d })"
+          >
             новый договор на основе проекта №{{ d.id }}
             <v-badge
               v-if="draftsByContract[-1]?.changes"

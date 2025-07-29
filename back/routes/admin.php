@@ -114,7 +114,7 @@ Route::prefix('schedule-drafts')->controller(ScheduleDraftController::class)->gr
     Route::post('/load/{scheduleDraft}', 'load');
     Route::get('/from-actual-contracts', 'fromActualContracts');
     Route::get('/get-teeth', 'getTeeth');
-    Route::post('/create-contract', 'createContract');
+    Route::post('/fill-contract', 'fillContract');
 });
 
 Route::apiResource('schedule-drafts', ScheduleDraftController::class)->only(['index', 'show', 'destroy']);

@@ -2,8 +2,9 @@
 import type { SwampListResource } from '.'
 import { mdiArrowRightThin } from '@mdi/js'
 
-const { items } = defineProps<{
+const { items, showClient } = defineProps<{
   items: SwampListResource[]
+  showClient?: boolean
 }>()
 </script>
 
@@ -11,7 +12,7 @@ const { items } = defineProps<{
   <v-table class="swamp-list table-padding">
     <thead>
       <tr>
-        <th width="80"></th>
+        <th width="100"></th>
         <th width="180"></th>
         <th width="150"></th>
         <th width="100"></th>
@@ -24,7 +25,7 @@ const { items } = defineProps<{
     <tbody>
       <tr v-for="item in items" :key="item.id">
         <template v-if="item.group">
-          <td width="80">
+          <td width="100">
             <NuxtLink :to="{ name: 'groups-id', params: { id: item.group!.id } }">
               ГР-{{ item.group!.id }}
             </NuxtLink>
@@ -61,8 +62,11 @@ const { items } = defineProps<{
           </td>
         </template>
         <template v-else>
-          <td colspan="2" class="text-gray">
+          <td class="text-gray">
             Без группы
+          </td>
+          <td>
+            <UiPerson v-if="showClient" :item="item.client" />
           </td>
           <td>
             {{ ProgramShortLabel[item.program] }}

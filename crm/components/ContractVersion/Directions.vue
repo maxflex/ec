@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ContractVersionListResource } from '.';
+
 const { item } = defineProps<{
   item: ContractVersionListResource
 }>()

@@ -15,6 +15,7 @@ class SwampController extends Controller
     protected $filters = [
         'equals' => ['year', 'client_id'],
         'findInSet' => ['program'],
+        'noGroup' => ['no_group'],
     ];
 
     public function index(Request $request)
@@ -57,5 +58,14 @@ class SwampController extends Controller
         }
 
         return paginate($result);
+    }
+
+    protected function filterNoGroup($query)
+    {
+        $query->whereIn('status', [
+            SwampStatus::toFulfil,
+            SwampStatus::exceedNoGroup,
+            SwampStatus::finishedNoGroup,
+        ]);
     }
 }

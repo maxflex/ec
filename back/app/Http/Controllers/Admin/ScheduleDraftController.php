@@ -168,7 +168,7 @@ class ScheduleDraftController extends Controller
     /**
      * Создать версию договора на основе проекта
      */
-    public function createContract(Request $request)
+    public function fillContract(Request $request)
     {
         // если ID не передан – создаём из RAM, тогда нам нужно знать
         // к какому договору из RAM будем создавать

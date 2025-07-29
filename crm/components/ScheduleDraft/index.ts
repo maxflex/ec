@@ -9,6 +9,7 @@ export interface SavedScheduleDraftResource {
   client: PersonResource
   year: Year
   created_at: string
+  is_archived: boolean
   changes: number
   contract_id: number | null
 }

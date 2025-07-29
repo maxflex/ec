@@ -1,36 +1,23 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#build/components'
+import type { ContractResource, ContractVersionListResource, ContractVersionPaymentResource, ContractVersionProgramPrice, ContractVersionProgramResource, ContractVersionResource } from '.'
 import type { SavedScheduleDraftResource } from '../ScheduleDraft'
-import { mdiProgressUpload, mdiTextBoxCheckOutline, mdiTextBoxOutline } from '@mdi/js'
+import { mdiFlipVertical, mdiProgressUpload, mdiTextBoxCheckOutline, mdiTextBoxOutline } from '@mdi/js'
 import { addMonths, format } from 'date-fns'
 import { cloneDeep } from 'lodash-es'
+import { modelDefaults } from '.'
 
 const emit = defineEmits<{
   updated: [m: ContractEditMode, c: ContractResource | ContractVersionListResource]
   deleted: [i: ContractVersionResource]
 }>()
-const modelDefaults: ContractVersionResource = {
-  id: newId(),
-  seq: 1,
-  date: today(),
-  programs: [],
-  payments: [],
-  contract: {
-    id: newId(),
-    year: currentAcademicYear(),
-    company: null,
-    source: null,
-  },
-}
+
 const route = useRoute()
 const router = useRouter()
 const clientId: number = Number(route.params.id) // допускаем, что client_id хранится в адресной строке
 const savedDrafts = ref<SavedScheduleDraftResource[]>([]) // сохранённые проекты расписания (доступные для загрузки)
-const selectedSavedDraft = ref<SavedScheduleDraftResource>() // хранит ID загруженного проекта
+const selectedDraft = ref<SavedScheduleDraftResource>() // хранит ID загруженного проекта
 const applyMoveGroups = ref(false) // применить изменения в группах (для подгруженного проекта договора)
-
-// создание договора на основе кнопки "создать версию на основе проекта"
-const isCreatingFromDraft = ref(false)
 
 const { user } = useAuthStore()
 const item = ref<ContractVersionResource>(modelDefaults)
@@ -69,15 +56,44 @@ function newContract() {
 
 /**
  * @param savedDraft загрузить из ранее сохраненного драфта
+ * @param contractId если подгружаем draft из RAM, то обязательно указать по какому договору
  */
-function fromDraft(savedDraft: SavedScheduleDraftResource) {
-  mode.value = 'new-version'
-  // contractId.value = contractFromDraft.contract.id
-  // seq.value = contractFromDraft.seq + 1
-  // item.value = contractFromDraft
-  selectedSavedDraft.value = savedDraft
-  isCreatingFromDraft.value = true
+async function fromDraft({ savedDraft, contractId: cId }: {
+  savedDraft?: SavedScheduleDraftResource
+  contractId?: number
+}) {
+  loading.value = true
+  const contractIdFromDraft = cId !== undefined ? cId : savedDraft!.contract_id!
+  selectedDraft.value = savedDraft
+  mode.value = contractIdFromDraft === null ? 'new-contract' : 'new-version'
+  if (mode.value === 'new-contract') {
+    contractId.value = undefined
+    seq.value = undefined
+  }
+  else {
+    contractId.value = contractIdFromDraft
+  }
+
   dialog.value = true
+
+  const { data } = await useHttp<ContractVersionResource>(
+    `schedule-drafts/fill-contract`,
+    {
+      method: 'POST',
+      body: {
+        id: savedDraft?.id,
+        contract_id: cId,
+      },
+    },
+  )
+
+  item.value = data.value!
+
+  if (mode.value === 'new-version') {
+    seq.value = item.value.seq + 1
+  }
+
+  loading.value = false
 }
 
 async function newVersion(c: ContractResource) {
@@ -91,7 +107,7 @@ async function edit(cv: ContractVersionListResource, m: ContractEditMode = 'edit
   mode.value = m
   contractId.value = cv.contract.id
   isEditSource.value = false
-  selectedSavedDraft.value = undefined
+  selectedDraft.value = undefined
   seq.value = cv.seq + (m === 'edit' ? 0 : 1)
   dialog.value = true
   const { data } = await useHttp<ContractVersionResource>(
@@ -142,7 +158,7 @@ async function loadSavedDrafts() {
 async function loadSavedDraft(savedDraft: SavedScheduleDraftResource) {
   loading.value = true
   isEditSource.value = false
-  selectedSavedDraft.value = savedDraft
+  selectedDraft.value = savedDraft
   const { data } = await useHttp<ContractVersionResource>(
     `schedule-drafts/load/${savedDraft.id}`,
     {
@@ -389,6 +405,25 @@ function isPriceLessonsError(price: ContractVersionProgramPrice, program: Contra
     && lessonsSum !== program.lessons_suggest
 }
 
+function splitPrices() {
+  for (const p of item.value.programs) {
+    if (p.lessons_conducted > 0) {
+      p.prices = [
+        {
+          id: newId(),
+          lessons: p.lessons_conducted,
+          price: p.prices[0].price,
+        },
+        {
+          id: newId(),
+          lessons: p.lessons_planned - p.lessons_conducted,
+          price: '',
+        },
+      ]
+    }
+  }
+}
+
 function getCorrectedPriceLessons(program: ContractVersionProgramResource) {
   const lastCvpp = program.prices.slice(0, program.prices.length - 1)
   const lessonsFromPricesSum = lastCvpp.reduce((carry, x) => asInt(x.lessons) + carry, 0)
@@ -425,7 +460,7 @@ function removePrice(p: ContractVersionProgramResource) {
 }
 
 function isChanged(p: ContractVersionProgramResource, field: keyof ContractVersionProgramResource): boolean {
-  if (!selectedSavedDraft.value) {
+  if (!selectedDraft.value) {
     return false
   }
 
@@ -491,21 +526,22 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
         <span v-else>
           Новая версия договора
           <span>№{{ contractId }}–{{ seq }}</span>
-
-          <div v-if="isCreatingFromDraft" class="dialog-subheader">
-            на основе текущего проекта
-          </div>
-          <div v-else-if="selectedSavedDraft" class="dialog-subheader">
-            <RouterLink
-              target="_blank"
-              :to="{
-                name: 'schedule-drafts-editor',
-                query: { id: selectedSavedDraft.id },
-              }"
-            >
-              Проект №{{ selectedSavedDraft.id }}
-            </RouterLink>
-            от {{ formatDateTime(selectedSavedDraft.created_at) }}
+          <div v-if="selectedDraft" class="dialog-subheader">
+            <template v-if="selectedDraft.id">
+              <RouterLink
+                target="_blank"
+                :to="{
+                  name: 'schedule-drafts-editor',
+                  query: { id: selectedDraft.id },
+                }"
+              >
+                Проект №{{ selectedDraft.id }}
+              </RouterLink>
+              от {{ formatDateTime(selectedDraft.created_at) }}
+            </template>
+            <template v-else>
+              На основе текущего проекта
+            </template>
           </div>
         </span>
         <div>
@@ -516,7 +552,7 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
             confirm-text="Вы уверены, что хотите удалить договор?"
             @deleted="dialog = false"
           />
-          <v-menu v-if="mode !== 'edit' && !isCreatingFromDraft">
+          <v-menu v-if="mode !== 'edit'">
             <template #activator="{ props }">
               <v-btn v-bind="props" :icon="mdiProgressUpload" :size="48" variant="text" :disabled="savedDrafts.length === 0" />
             </template>
@@ -541,6 +577,7 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
             :color="isEditSource ? 'primary' : undefined"
             @click="isEditSource = !isEditSource"
           />
+          <v-btn v-if="mode !== 'new-contract'" :icon="mdiFlipVertical" variant="text" :size="48" @click="splitPrices()" />
           <v-menu v-if="mode === 'edit'">
             <template #activator="{ props }">
               <v-btn
@@ -655,7 +692,7 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
                 </td>
                 <td :class="{ changed: isChanged(p, 'group_id') }">
                   <!-- если подгрузили проект, то показываем оригинальную программу unless отмечено applyMoveGroups -->
-                  <template v-if="selectedSavedDraft">
+                  <template v-if="selectedDraft">
                     <template v-if="applyMoveGroups">
                       <span v-if="p.group_id" class="pl-4">
                         ГР-{{ p.group_id }}
@@ -784,7 +821,7 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
           </table>
         </div>
 
-        <div v-if="selectedSavedDraft">
+        <div v-if="selectedDraft">
           <v-checkbox v-model="applyMoveGroups" label="Применить изменения в группах" />
         </div>
 

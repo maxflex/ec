@@ -3,6 +3,7 @@ import type { SavedScheduleDraftResource, ScheduleDraft, ScheduleDraftGroup, Sch
 import { ContractVersionDialog } from '#components'
 import { mdiArrowRightThin, mdiChevronRight } from '@mdi/js'
 import { apiUrl, isGroupChangedInContract } from '.'
+import type { ContractVersionResource } from '../ContractVersion';
 
 const { client, year, savedDraft } = defineProps<{
   /**
@@ -344,7 +345,7 @@ nextTick(fromActualContracts)
           </template>
           <v-list>
             <v-list-item @click="createContract()">
-              создать {{ selectedContractId < 0 ? 'новый договор' : 'версию' }} на основе проекта
+              создать договор на основе проекта
             </v-list-item>
             <v-list-item @click="applyMoveGroups()">
               отконфигурировать группы

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiAccountArrowRightOutline } from '@mdi/js'
+import { mdiAccountArrowRightOutline, mdiSwapHorizontal } from '@mdi/js'
 
 const { group } = defineProps<{ group: GroupResource }>()
 
@@ -86,7 +86,24 @@ nextTick(loadData)
         <div>
           <TeethBar :items="item.teeth" :current="group.teeth!" />
         </div>
-        <div v-if="isEditable" class="text-left table-actions">
+        <div v-if="isEditable" class="table-actionss">
+          <v-btn
+            target="_blank"
+            :icon="mdiSwapHorizontal"
+            :size="48"
+            color="gray"
+            variant="text"
+            :to="{
+              name: 'schedule-drafts-editor',
+              query: {
+                client_id: item.client.id,
+                year: group.year,
+              },
+            }"
+          />
+        </div>
+        <!-- <div v-if="isEditable" class="text-left table-actions">
+
           <v-menu>
             <template #activator="{ props }">
               <v-btn
@@ -112,7 +129,7 @@ nextTick(loadData)
               </v-list-item>
             </v-list>
           </v-menu>
-        </div>
+        </div> -->
       </div>
       <div v-if="isEditable" style="border-bottom: none; background: white">
         <UiIconLink @click="tab = 'SwampSelector'">

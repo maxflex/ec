@@ -6,7 +6,6 @@ use App\Contracts\HasTeeth;
 use App\Enums\LessonStatus;
 use App\Http\Resources\ContractVersionResource;
 use App\Http\Resources\PersonResource;
-use App\Http\Resources\SavedScheduleDraftResource;
 use App\Utils\Teeth;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -484,19 +483,21 @@ class ScheduleDraft extends Model implements HasTeeth
 
     /**
      * Получить данные для заполнения договора
-     *
-     * @see ContractVersionResource
      */
     public function fillContract()
     {
-        if ($this->contract_id) {
-            $activeVersion = $this->contract->active_version;
-            $item = json_redecode(new ContractVersionResource($activeVersion), false);
-        } else {
-            return $this->newContract();
-            // new contract
-            // $activeVersion = new ContractVersion;
-        }
+        return $this->contract_id
+           ? $this->newContractVersion()
+           : $this->newContract();
+    }
+
+    /**
+     * @see ContractVersionResource
+     */
+    private function newContractVersion()
+    {
+        $activeVersion = $this->contract->active_version;
+        $item = json_redecode(new ContractVersionResource($activeVersion), false);
 
         $programs = collect();
         $id = -1;
@@ -584,11 +585,81 @@ class ScheduleDraft extends Model implements HasTeeth
         return $item;
     }
 
+    /**
+     * @see modelDefaults: ContractVersionResource
+     */
     private function newContract()
     {
-        $programs = collect();
+        $item = (object) [
+            'id' => -1,
+            'seq' => 1,
+            'date' => now()->format('Y-m-d'),
+            'programs' => collect(),
+            'programs_original' => collect(),
+            'payments' => collect(),
+            'contract' => [
+                'year' => $this->year,
+                'client_id' => $this->client_id,
+                'source' => null,
+                'company' => null,
+            ],
+        ];
 
-        return $programs;
+        $programs = $this->getProgramsOnlyForSelectedContract(-1);
+
+        $id = -1;
+        $pricesId = -1;
+        foreach ($programs as $p) {
+            $groupFromDraft = $p['group_id'] ? Group::find($p['group_id']) : null;
+
+            $item->programs->push([
+                'id' => $id,
+                'program' => $p['program'],
+                'group_id' => $p['group_id'],
+                'lessons_planned' => 0,
+                'lessons_conducted' => 0,
+                'lessons_to_be_conducted' => 0,
+                'lessons_suggest' => 0,
+                'client_lesson_prices' => [],
+                'status' => ContractVersionProgram::getStatus(
+                    0,
+                    0,
+                    $groupFromDraft !== null
+                ),
+                'prices' => [(object) [
+                    'id' => $pricesId,
+                    'price' => null,
+                    'lessons' => $groupFromDraft?->lessons_planned,
+                ]],
+            ]);
+
+            $id--;
+            $pricesId--;
+        }
+
+        return $item;
+    }
+
+    public function getProgramsOnlyForSelectedContract(int $contractId)
+    {
+        return $this->programs->filter(
+            fn ($p) => $p['contract_id'] === $contractId
+        )->values();
+    }
+
+    /**
+     * Проект по договору более не актуален (после него уже была создана версия)
+     */
+    public function getIsArchivedAttribute(): bool
+    {
+        $createdAt = $this->contract_id
+            ? $this->contract->active_version->created_at
+            : $this->client->contracts()->where('year', $this->year)
+                ->get()
+                ->map(fn (Contract $c) => $c->versions[0]->created_at)
+                ->max();
+
+        return $createdAt > $this->created_at;
     }
 
     /**
@@ -596,6 +667,10 @@ class ScheduleDraft extends Model implements HasTeeth
      */
     public function getChangesAttribute(): int
     {
+        if ($this->is_archived) {
+            return 0;
+        }
+
         $programs = $this->programs;
         $originalPrograms = $this->contract_id ? self::getPrograms($this->contract) : collect();
 
@@ -650,9 +725,7 @@ class ScheduleDraft extends Model implements HasTeeth
 
         $scheduleDraft->contract_id = $contractId < 0 ? null : $contractId;
 
-        $scheduleDraft->programs = $scheduleDraft->programs->filter(
-            fn ($p) => $p['contract_id'] === $contractId
-        )->values();
+        $scheduleDraft->programs = $scheduleDraft->getProgramsOnlyForSelectedContract($contractId);
 
         $scheduleDraft->save();
 
