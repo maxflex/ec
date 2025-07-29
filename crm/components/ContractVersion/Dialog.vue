@@ -142,12 +142,10 @@ async function edit(cv: ContractVersionListResource, m: ContractEditMode = 'edit
 }
 
 async function loadSavedDrafts() {
-  const { id: contractId } = item.value.contract
   const { data } = await useHttp<ApiResponse<SavedScheduleDraftResource>>(
     `schedule-drafts`,
     {
       params: {
-        contract_id: contractId,
         client_id: clientId,
       },
     },
@@ -160,12 +158,11 @@ async function loadSavedDraft(savedDraft: SavedScheduleDraftResource) {
   isEditSource.value = false
   selectedDraft.value = savedDraft
   const { data } = await useHttp<ContractVersionResource>(
-    `schedule-drafts/load/${savedDraft.id}`,
+    `schedule-drafts/fill-contract`,
     {
       method: 'POST',
       body: {
-        client_id: clientId,
-        contract_id: contractId,
+        id: savedDraft.id,
       },
     },
   )

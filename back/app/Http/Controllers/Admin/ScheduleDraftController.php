@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SavedScheduleDraftResource;
 use App\Models\Client;
-use App\Models\Contract;
 use App\Models\ScheduleDraft;
 use Exception;
 use Illuminate\Http\Request;
@@ -152,20 +151,6 @@ class ScheduleDraftController extends Controller
     }
 
     /**
-     * Загрузить сохранённый проект (внутри договора)
-     */
-    public function load(ScheduleDraft $scheduleDraft, Request $request)
-    {
-        $request->validate([
-            'contract_id' => ['sometimes', 'exists:contracts,id'],
-        ]);
-
-        $contract = $request->has('contract_id') ? Contract::find($request->contract_id) : null;
-
-        return $scheduleDraft->fillContract($contract);
-    }
-
-    /**
      * Создать версию договора на основе проекта
      */
     public function fillContract(Request $request)
@@ -186,65 +171,6 @@ class ScheduleDraftController extends Controller
         }
 
         return $scheduleDraft->fillContract();
-        // return [
-        //     'scheduleDraft' => new SavedScheduleDraftResource($scheduleDraft),
-        //     'contractVersion' => $scheduleDraft->fillContract($contract),
-        // ];
-    }
-
-    /**
-     * Загрузить изменения по договорам
-     * (для вкладок у клиента)
-     */
-    public function loadChanges(Request $request)
-    {
-        $request->validate([
-            'client_id' => ['required', 'exists:clients,id'],
-        ]);
-
-        $client = Client::find($request->client_id);
-
-        $result = [];
-
-        foreach ($client->contracts as $contract) {
-            $scheduleDrafts = $client->scheduleDrafts
-                ->where('created_at', '>', $contract->active_version->created_at)
-                ->sortByDesc('created_at')
-                ->values();
-
-            foreach ($scheduleDrafts as $scheduleDraft) {
-                $changes = (array) $scheduleDraft->changes;
-                if (isset($changes[$contract->id])) {
-                    if (! isset($result[$contract->id])) {
-                        $result[$contract->id] = [
-                            'schedule_draft_id' => $scheduleDraft->id,
-                            'changes_count' => $changes[$contract->id],
-                            'items' => [],
-                        ];
-                    }
-
-                    $result[$contract->id]['items'][] = new SavedScheduleDraftResource($scheduleDraft);
-                }
-            }
-        }
-
-        // новые договоры
-        foreach ($client->scheduleDrafts as $scheduleDraft) {
-            $changes = (array) $scheduleDraft->changes;
-            if (isset($changes[-1])) {
-                if (! isset($result[-1])) {
-                    $result[-1] = [
-                        'schedule_draft_id' => $scheduleDraft->id,
-                        'changes_count' => $changes[-1],
-                        'items' => [],
-                    ];
-                }
-
-                $result[-1]['items'][] = new SavedScheduleDraftResource($scheduleDraft);
-            }
-        }
-
-        return $result;
     }
 
     /**
@@ -253,16 +179,5 @@ class ScheduleDraftController extends Controller
     public function destroy(ScheduleDraft $scheduleDraft)
     {
         $scheduleDraft->delete();
-    }
-
-    protected function filterContract($query, $id)
-    {
-        $id = intval($id);
-
-        if ($id < 0) {
-            $id = -1;
-        }
-
-        $query->whereRaw("JSON_CONTAINS(`programs`->>'$[*].contract_id', '$id')");
     }
 }
