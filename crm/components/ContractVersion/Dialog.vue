@@ -63,9 +63,9 @@ async function fromDraft({ savedDraft, contractId: cId }: {
   contractId?: number
 }) {
   loading.value = true
-  const contractIdFromDraft = cId !== undefined ? cId : savedDraft!.contract_id!
-  selectedDraft.value = savedDraft
-  mode.value = contractIdFromDraft === null ? 'new-contract' : 'new-version'
+  const contractIdFromDraft = cId !== undefined ? (cId < 0 ? undefined : cId) : (savedDraft!.contract_id || undefined)
+  selectedDraft.value = savedDraft || { id: -1 }
+  mode.value = contractIdFromDraft ? 'new-version' : 'new-contract'
   if (mode.value === 'new-contract') {
     contractId.value = undefined
     seq.value = undefined
@@ -512,22 +512,26 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
   >
     <div class="dialog-wrapper contract-version-dialog">
       <div class="dialog-header">
-        <span v-if="mode === 'new-contract'"> Новый договор </span>
-        <div v-else-if="mode === 'edit'">
-          Редактирование договора
-          <span>№{{ contractId }}–{{ seq }}</span>
-          <div class="dialog-subheader">
-            <template v-if="item.user && item.created_at">
-              {{ formatName(item.user) }}
-              {{ formatDateTime(item.created_at) }}
-            </template>
-          </div>
-        </div>
-        <span v-else>
-          Новая версия договора
-          <span>№{{ contractId }}–{{ seq }}</span>
+        <div>
+          <template v-if="mode === 'new-contract'">
+            Новый договор
+          </template>
+          <template v-else-if="mode === 'edit'">
+            Редактирование договора
+            <span>№{{ contractId }}–{{ seq }}</span>
+            <div class="dialog-subheader">
+              <template v-if="item.user && item.created_at">
+                {{ formatName(item.user) }}
+                {{ formatDateTime(item.created_at) }}
+              </template>
+            </div>
+          </template>
+          <template v-else>
+            Новая версия договора
+            <span>№{{ contractId }}–{{ seq }}</span>
+          </template>
           <div v-if="selectedDraft" class="dialog-subheader">
-            <template v-if="selectedDraft.id">
+            <template v-if="selectedDraft.id > 0">
               <RouterLink
                 target="_blank"
                 :to="{
@@ -543,7 +547,8 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
               На основе текущего проекта
             </template>
           </div>
-        </span>
+        </div>
+
         <div>
           <CrudDeleteBtn
             v-if="mode === 'edit'"

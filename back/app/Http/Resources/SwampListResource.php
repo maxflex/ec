@@ -23,6 +23,7 @@ class SwampListResource extends JsonResource
             'contract_id', 'year', 'status', 'program',
             'total_lessons', 'lessons_conducted',
         ], [
+            'client_group_id' => $this->clientGroup?->id,
             'group' => new GroupListResource($this->clientGroup?->group),
             'client' => new PersonResource(Client::find($this->client_id)),
         ]);

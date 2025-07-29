@@ -2,14 +2,50 @@
 import type { SwampListResource } from '.'
 import { mdiArrowRightThin } from '@mdi/js'
 
-const { items, showClient } = defineProps<{
+const { items, group } = defineProps<{
   items: SwampListResource[]
-  showClient?: boolean
+  group?: GroupResource
 }>()
+
+const emit = defineEmits(['updated'])
+
+const selectable: boolean = group !== undefined
+const loading = ref(false)
+
+function select(item: SwampListResource) {
+  if (!selectable || item.group !== null) {
+    return
+  }
+
+  useHttp(`client-groups`, {
+    method: 'POST',
+    body: {
+      contract_version_program_id: item.id,
+      group_id: group!.id,
+    },
+  })
+
+  emit('updated')
+}
+
+async function removeFromGroup(item: SwampListResource) {
+  if (!item.client_group_id) {
+    return
+  }
+
+  loading.value = true
+  await useHttp(`client-groups/${item.client_group_id}`, {
+    method: 'delete',
+  })
+
+  emit('updated')
+  loading.value = false
+  useGlobalMessage(`Ученик удалён из группы №${item.group!.id}`, 'success')
+}
 </script>
 
 <template>
-  <v-table class="swamp-list table-padding">
+  <v-table class="swamp-list table-padding" :hover="selectable" :class="{ 'element-loading': loading }">
     <thead>
       <tr>
         <th width="100"></th>
@@ -23,7 +59,7 @@ const { items, showClient } = defineProps<{
       </tr>
     </thead>
     <tbody>
-      <tr v-for="item in items" :key="item.id">
+      <tr v-for="item in items" :key="item.id" :class="{ 'cursor-pointer': selectable }" @click="select(item)">
         <template v-if="item.group">
           <td width="100">
             <NuxtLink :to="{ name: 'groups-id', params: { id: item.group!.id } }">
@@ -66,14 +102,14 @@ const { items, showClient } = defineProps<{
             Без группы
           </td>
           <td>
-            <UiPerson v-if="showClient" :item="item.client" />
+            <UiPerson v-if="selectable" :item="item.client" />
           </td>
           <td>
             {{ ProgramShortLabel[item.program] }}
           </td>
           <td colspan="3" />
         </template>
-        <td colspan="2">
+        <td colspan="2" style="position: relative;">
           <div class="pl-3">
             <div>
               {{ item.lessons_conducted }}
@@ -84,7 +120,13 @@ const { items, showClient } = defineProps<{
               {{ SwampStatusLabel[item.status] }}
             </div>
           </div>
-          <div class="table-actionss">
+          <div v-if="item.client_group_id" class="table-actionss">
+            <v-btn
+              color="error"
+              icon="$minus"
+              :size="48"
+              @click="removeFromGroup(item)"
+            />
           </div>
         </td>
       </tr>
@@ -105,6 +147,13 @@ const { items, showClient } = defineProps<{
   th,
   td {
     box-sizing: content-box;
+  }
+
+  .table-actionss {
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
   }
 }
 </style>

@@ -1,5 +1,6 @@
 <!-- В общем списке в меню "Договоры" -->
 <script setup lang="ts">
+import type { ContractVersionListResource } from '.'
 import { mdiTextBoxCheckOutline } from '@mdi/js'
 
 const { items } = defineProps<{

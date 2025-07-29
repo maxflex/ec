@@ -174,14 +174,15 @@ class ScheduleDraftController extends Controller
         // к какому договору из RAM будем создавать
         $request->validate([
             'id' => ['sometimes', 'exists:schedule_drafts,id'],
-            'contract_id' => ['sometimes', 'exists:contracts,id'],
+            'contract_id' => ['sometimes', 'numeric'],
         ]);
 
         if ($request->has('id')) {
             $scheduleDraft = ScheduleDraft::find($request->id);
         } else {
+            $contractId = intval($request->contract_id);
             $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
-            $scheduleDraft->contract_id = intval($request->contract_id);
+            $scheduleDraft->contract_id = $contractId < 0 ? null : $contractId;
         }
 
         return $scheduleDraft->fillContract();

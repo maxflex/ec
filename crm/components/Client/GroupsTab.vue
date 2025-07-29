@@ -6,7 +6,7 @@ const { client } = defineProps <{ client: ClientResource }>()
 
 const filters = useAvailableYearsFilter()
 
-const { items, indexPageData, availableYears } = useIndex<SwampListResource>(
+const { items, indexPageData, availableYears, reloadData } = useIndex<SwampListResource>(
   `swamps`,
   filters,
   {
@@ -32,6 +32,6 @@ const { items, indexPageData, availableYears } = useIndex<SwampListResource>(
         управление группами
       </v-btn>
     </template>
-    <SwampList :items="items" />
+    <SwampList :items="items" @updated="reloadData" />
   </UiIndexPage>
 </template>

@@ -7,6 +7,7 @@ export interface SwampListResource {
   year: Year
   contract_id: number
   status: SwampStatus
+  client_group_id: number | null
   group: GroupListResource | null
 }
 

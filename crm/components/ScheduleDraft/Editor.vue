@@ -3,7 +3,6 @@ import type { SavedScheduleDraftResource, ScheduleDraft, ScheduleDraftGroup, Sch
 import { ContractVersionDialog } from '#components'
 import { mdiArrowRightThin, mdiChevronRight } from '@mdi/js'
 import { apiUrl, isGroupChangedInContract } from '.'
-import type { ContractVersionResource } from '../ContractVersion';
 
 const { client, year, savedDraft } = defineProps<{
   /**
@@ -16,11 +15,9 @@ const { client, year, savedDraft } = defineProps<{
 
 defineEmits<{ back: [] }>()
 
-const route = useRoute()
 const router = useRouter()
 const loading = ref(false)
 const btnLoading = ref(false)
-const btnCreateLoading = ref(false)
 const teeth = ref<Teeth>()
 const scheduleDraft = ref<ScheduleDraft>()
 const selectedContractId = ref<number>() // ID выбранной вкладки договора
@@ -199,24 +196,6 @@ function getChangesCnt(contractId: number) {
   return cnt
 }
 
-async function createContract() {
-  btnCreateLoading.value = true
-  const { data } = await useHttp<{
-    contractVersion: ContractVersionResource
-    scheduleDraft: SavedScheduleDraftResource
-  }>(
-    `${apiUrl}/create-contract`,
-    {
-      method: 'POST',
-      body: {
-        contract_id: selectedContractId.value,
-      },
-    },
-  )
-  contractVersionDialog.value?.fromDraft(data.value!.contractVersion, data.value!.scheduleDraft)
-  btnCreateLoading.value = false
-}
-
 async function goToPage(d: SavedScheduleDraftResource) {
   await router.push({ name: 'schedule-drafts-editor', query: { id: d.id } })
   location.reload()
@@ -344,7 +323,7 @@ nextTick(fromActualContracts)
             </v-btn>
           </template>
           <v-list>
-            <v-list-item @click="createContract()">
+            <v-list-item @click="contractVersionDialog?.fromDraft({ contractId: selectedContractId })">
               создать договор на основе проекта
             </v-list-item>
             <v-list-item @click="applyMoveGroups()">

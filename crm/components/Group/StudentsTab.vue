@@ -1,50 +1,15 @@
 <script setup lang="ts">
-import { mdiAccountArrowRightOutline, mdiSwapHorizontal } from '@mdi/js'
+import { mdiSwapHorizontal } from '@mdi/js'
 
 const { group } = defineProps<{ group: GroupResource }>()
 
-const tab = ref<'SwampSelector' | 'GroupSelector' | 'StudentsTab'>('StudentsTab')
 const loading = ref(true)
 const items = ref<ClientGroupResource[]>([])
 const isEditable = useAuthStore().user?.entity_type === EntityTypeValue.user
-
-// contract_version_program_id ученика, которого переносим в другую группу
-const moveCvpId = ref<number>()
-
-// удалить из группы
-async function removeFromGroup(gc: ClientGroupResource) {
-  const index = items.value.findIndex(i => i.id === gc.id)
-  if (index === -1) {
-    return
-  }
-  items.value.splice(index, 1)
-  await useHttp(`client-groups/${gc.id}`, {
-    method: 'delete',
-  })
-}
-
-async function groupSelectorTab(cvpId: number) {
-  moveCvpId.value = cvpId
-  tab.value = 'GroupSelector'
-}
-
-// переместить в другую группу
-function moveToAnotherGroup(g: GroupListResource) {
-  tab.value = 'StudentsTab'
-  removeFromGroup(
-    items.value.find(i => i.contract_version_program_id === moveCvpId.value)!,
-  )
-  useHttp(`client-groups`, {
-    method: 'post',
-    params: {
-      group_id: g.id,
-      contract_version_program_id: moveCvpId.value,
-    },
-  })
-}
+const isSwampSelector = ref(false)
 
 async function loadData() {
-  tab.value = 'StudentsTab'
+  isSwampSelector.value = false
   loading.value = true
   const { data } = await useHttp<ApiResponse<ClientGroupResource>>(
     `client-groups`,
@@ -65,16 +30,9 @@ nextTick(loadData)
 
 <template>
   <SwampSelector
-    v-if="tab === 'SwampSelector'"
+    v-if="isSwampSelector"
     :group="group"
-    @back="tab = 'StudentsTab'"
-    @selected="loadData()"
-  />
-  <GroupSelector
-    v-else-if="tab === 'GroupSelector'"
-    :group="group"
-    @back="tab = 'StudentsTab'"
-    @selected="moveToAnotherGroup"
+    @updated="loadData()"
   />
   <UiIndexPage v-else :data="{ loading, noData: false }">
     <div class="table table--hover table--actions-on-hover">
@@ -102,37 +60,9 @@ nextTick(loadData)
             }"
           />
         </div>
-        <!-- <div v-if="isEditable" class="text-left table-actions">
-
-          <v-menu>
-            <template #activator="{ props }">
-              <v-btn
-                v-bind="props"
-                icon="$more"
-                variant="plain"
-                :size="48"
-                :ripple="false"
-              />
-            </template>
-            <v-list>
-              <v-list-item @click="groupSelectorTab(item.contract_version_program_id)">
-                <template #prepend>
-                  <v-icon :icon="mdiAccountArrowRightOutline" />
-                </template>
-                переместить в другую группу
-              </v-list-item>
-              <v-list-item class="text-error" @click="removeFromGroup(item)">
-                <template #prepend>
-                  <v-icon icon="$delete" />
-                </template>
-                удалить из текущей группы
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </div> -->
       </div>
       <div v-if="isEditable" style="border-bottom: none; background: white">
-        <UiIconLink @click="tab = 'SwampSelector'">
+        <UiIconLink @click="isSwampSelector = true">
           добавить ученика в текущую группу
         </UiIconLink>
       </div>
