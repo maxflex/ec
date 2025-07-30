@@ -33,6 +33,7 @@ nextTick(loadData)
     v-if="isSwampSelector"
     :group="group"
     @updated="loadData()"
+    @back="isSwampSelector = false"
   />
   <UiIndexPage v-else :data="{ loading, noData: false }">
     <div class="table table--hover table--actions-on-hover">

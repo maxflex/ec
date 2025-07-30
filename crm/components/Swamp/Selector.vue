@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import type { SwampListResource } from '.'
 import type { SwampFilters } from './Filters.vue'
 
 const { group } = defineProps<{ group: GroupResource }>()
 
-const emit = defineEmits(['back', 'selected'])
+const emit = defineEmits(['back', 'updated'])
 
 const filters = ref<SwampFilters>({
   year: group.year,
   program: group.program,
-  no_group: 1,
 })
 
 const { items, indexPageData } = useIndex<SwampListResource>(
@@ -33,6 +33,6 @@ const { items, indexPageData } = useIndex<SwampListResource>(
         назад
       </v-btn>
     </template>
-    <SwampList :items="items" :group="group" show-client @selected="emit('selected')" />
+    <SwampListSelector :items="items" :group="group" show-client @updated="emit('updated')" />
   </UiIndexPage>
 </template>

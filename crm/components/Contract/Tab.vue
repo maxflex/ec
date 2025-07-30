@@ -148,7 +148,7 @@ const draftsByContract = computed<DraftsByContract>(() => {
     )
     result[contract.id] = {
       drafts,
-      changes: drafts.at(-1)?.changes ?? 0,
+      changes: drafts[0]?.changes ?? 0,
     }
   }
 
@@ -156,7 +156,7 @@ const draftsByContract = computed<DraftsByContract>(() => {
   const drafts = scheduleDrafts.value.filter(d => !d.contract_id)
   result[-1] = {
     drafts,
-    changes: drafts.at(-1)?.changes ?? 0,
+    changes: drafts[0]?.changes ?? 0,
   }
 
   return result
@@ -256,6 +256,7 @@ nextTick(loadData)
             v-for="d in draftsByContract[selectedContract.id].drafts"
             :key="d.id"
             target="_blank"
+            :disabled="d.is_archived"
             :to="{
               name: 'schedule-drafts-editor',
               query: {
@@ -265,6 +266,7 @@ nextTick(loadData)
           >
             посмотреть проект №{{ d.id }}
             <v-badge
+              v-if="d.changes"
               color="orange-lighten-3 ml-2 pa-0"
               inline
               :content="d.changes"
@@ -296,6 +298,7 @@ nextTick(loadData)
           <v-list-item
             v-for="d in draftsByContract[-1].drafts"
             :key="d.id"
+            :disabled="d.is_archived"
             @click="contractVersionDialog?.fromDraft({ savedDraft: d })"
           >
             новый договор на основе проекта №{{ d.id }}
@@ -310,6 +313,7 @@ nextTick(loadData)
             v-for="d in draftsByContract[-1].drafts"
             :key="d.id"
             target="_blank"
+            :disabled="d.is_archived"
             :to="{
               name: 'schedule-drafts-editor',
               query: {
@@ -319,6 +323,7 @@ nextTick(loadData)
           >
             посмотреть проект №{{ d.id }}
             <v-badge
+              v-if="d.changes"
               color="orange-lighten-3 ml-2 pa-0"
               inline
               :content="d.changes"

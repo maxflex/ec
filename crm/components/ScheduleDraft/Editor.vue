@@ -59,28 +59,34 @@ async function loadSavedDrafts() {
   savedDrafts.value = data.value!.data
 }
 
-async function save() {
+async function save(contractId: number) {
   btnLoading.value = true
   const { data } = await useHttp<SavedScheduleDraftResource>(
     `${apiUrl}/save`,
     {
       method: 'POST',
       body: {
-        contract_id: selectedContractId.value,
+        contract_id: contractId,
       },
     },
   )
   const id = data.value!.id
   const link = router.resolve({ name: 'schedule-drafts-editor', query: { id } }).href
   useGlobalMessage(`<a href="${link}">Проект №${id}</a> сохранён`, 'success')
+  loadSavedDrafts()
   btnLoading.value = false
 }
 
-async function applyMoveGroups() {
+async function applyMoveGroups(contractId: number) {
   loading.value = true
   const { data, error } = await useHttp<ScheduleDraft>(
     `${apiUrl}/apply-move-groups`,
-    { method: 'POST' },
+    {
+      method: 'POST',
+      body: {
+        contract_id: contractId,
+      },
+    },
   )
 
   if (error.value) {
@@ -138,14 +144,15 @@ async function removeFromGroup(g: ScheduleDraftGroup) {
   loading.value = false
 }
 
-async function addPrograms(newPrograms: Program[]) {
+async function addPrograms(newPrograms: Program[], contractId: number) {
+  selectedContractId.value = Number.parseInt(contractId)
   loading.value = true
   const { data } = await useHttp<ScheduleDraft>(
     `${apiUrl}/add-programs`,
     {
       method: 'post',
       body: {
-        contract_id: selectedContractId.value,
+        contract_id: contractId,
         new_programs: newPrograms,
       },
     },
@@ -195,6 +202,15 @@ function getChangesCnt(contractId: number) {
 
   return cnt
 }
+
+const savedDraftsByContract = computed<Record<number, SavedScheduleDraftResource[]>>(() => {
+  const result: Record<number, SavedScheduleDraftResource[]> = {}
+  for (const contractId in scheduleDraft.value) {
+    const cId = Number.parseInt(contractId)
+    result[cId] = savedDrafts.value.filter(e => e.contract_id === (cId === -1 ? null : cId))
+  }
+  return result
+})
 
 async function goToPage(d: SavedScheduleDraftResource) {
   await router.push({ name: 'schedule-drafts-editor', query: { id: d.id } })
@@ -250,11 +266,58 @@ nextTick(fromActualContracts)
             новый договор
           </span>
           <v-badge
-            v-if="getChangesCnt(Number.parseInt(contractId))"
+            v-if="getChangesCnt(contractId)"
             color="orange-lighten-3"
             inline
-            :content="getChangesCnt(Number.parseInt(contractId))"
+            :content="getChangesCnt(contractId)"
           ></v-badge>
+          <v-menu :key="selectedContractId">
+            <template #activator="{ props }">
+              <v-icon icon="$next" v-bind="props" />
+            </template>
+            <v-list>
+              <v-list-item link>
+                добавить программы
+                <template #append>
+                  <v-icon :icon="mdiChevronRight" />
+                </template>
+                <ProgramSelectorNested
+                  :pre-selected="scheduleDraft[contractId].map(e => e.program)"
+                  @saved="newPrograms => addPrograms(newPrograms, contractId)"
+                />
+              </v-list-item>
+              <v-list-item :disabled="!getChangesCnt(contractId)" @click="contractVersionDialog?.fromDraft({ contractId })">
+                создать договор на основе проекта
+              </v-list-item>
+              <v-list-item :disabled="!getChangesCnt(contractId)" @click="applyMoveGroups(contractId)">
+                отконфигурировать группы
+              </v-list-item>
+              <v-list-item :disabled="!getChangesCnt(contractId)" @click="save(contractId)">
+                сохранить проект
+              </v-list-item>
+              <v-list-item
+                v-for="d in savedDraftsByContract[contractId]"
+                :key="d.id"
+                :disabled="d.is_archived"
+                @click="goToPage(d)"
+              >
+                <div>
+                  <div>
+                    загрузить проект №{{ d.id }}
+                    <v-badge
+                      v-if="d.changes > 0"
+                      color="orange-lighten-3"
+                      inline
+                      :content="d.changes"
+                    ></v-badge>
+                  </div>
+                  <div class="text-caption text-gray">
+                    Создал {{ formatName(d.user) }} {{ formatDateTime(d.created_at) }}
+                  </div>
+                </div>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </div>
       </div>
       <div
@@ -303,63 +366,6 @@ nextTick(fromActualContracts)
             не найдено групп
           </UiNoData>
         </div>
-      </div>
-      <div class="container d-flex ga-4" :class="{ 'element-loading': loading }">
-        <ProgramSelectorMenu
-          :pre-selected="scheduleDraft[selectedContractId].map(e => e.program)"
-          @saved="addPrograms"
-        >
-          <template #activator="{ props }">
-            <v-btn v-bind="props" color="primary">
-              добавить программы
-              <v-icon icon="$expand" class="ml-1" />
-            </v-btn>
-          </template>
-        </ProgramSelectorMenu>
-        <v-menu>
-          <template #activator="{ props }">
-            <v-btn v-bind="props" :loading="btnLoading" :width="272" variant="outlined">
-              действия
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item @click="contractVersionDialog?.fromDraft({ contractId: selectedContractId })">
-              создать договор на основе проекта
-            </v-list-item>
-            <v-list-item @click="applyMoveGroups()">
-              отконфигурировать группы
-            </v-list-item>
-            <v-list-item @click="save()">
-              сохранить проект
-            </v-list-item>
-            <v-list-item link :disabled="savedDrafts.length === 0">
-              загрузить проект
-              <template v-if="savedDrafts.length" #append>
-                <v-icon size="small" :icon="mdiChevronRight" />
-              </template>
-              <v-menu activator="parent" submenu>
-                <v-list>
-                  <v-list-item
-                    v-for="d in savedDrafts"
-                    :key="d.id"
-                    :active="savedDraft?.id === d.id"
-                    @click="goToPage(d)"
-                  >
-                    <v-list-item-title>
-                      <div>
-                        Проект №{{ d.id }}
-                      </div>
-                      <div class="text-caption text-gray">
-                        {{ formatName(d.user) }}
-                        {{ formatDateTime(d.created_at) }}
-                      </div>
-                    </v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-            </v-list-item>
-          </v-list>
-        </v-menu>
       </div>
     </template>
   </UiIndexPage>
@@ -442,6 +448,22 @@ nextTick(fromActualContracts)
       display: flex;
       align-items: center;
       gap: 8px;
+
+      .v-icon {
+        $size: 20px;
+        height: $size;
+        width: $size;
+        font-size: 14px;
+        transform: rotate(90deg);
+        transition: transform ease-in-out 0.2s;
+        &[aria-expanded='true'] {
+          transform: rotate(-90deg);
+        }
+      }
+    }
+
+    .v-badge__wrapper {
+      margin: 0 !important;
     }
   }
 }

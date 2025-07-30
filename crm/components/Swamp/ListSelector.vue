@@ -46,69 +46,11 @@ async function removeFromGroup(item: SwampListResource) {
 
 <template>
   <v-table class="swamp-list table-padding" :hover="selectable" :class="{ 'element-loading': loading }">
-    <thead>
-      <tr>
-        <th width="100"></th>
-        <th width="180"></th>
-        <th width="150"></th>
-        <th width="100"></th>
-        <th width="60"></th>
-        <th width="140"></th>
-        <th width="100"></th>
-        <th></th>
-      </tr>
-    </thead>
     <tbody>
       <tr v-for="item in items" :key="item.id" :class="{ 'cursor-pointer': selectable }" @click="select(item)">
-        <template v-if="item.group">
-          <td width="100">
-            <NuxtLink :to="{ name: 'groups-id', params: { id: item.group!.id } }">
-              ГР-{{ item.group!.id }}
-            </NuxtLink>
-          </td>
-          <td width="180">
-            <GroupTeachers :item="item.group" />
-          </td>
-          <td>
-            {{ ProgramShortLabel[item.program] }}
-          </td>
-          <td>
-            <UiIfSet :value="item.group.lesson_counts.conducted || item.group.lesson_counts.planned">
-              <template #empty>
-                занятий нет
-              </template>
-              <GroupLessonCounts :item="item.group" />
-            </UiIfSet>
-          </td>
-          <td>
-            <UiIfSet :value="!!item.group.client_groups_count">
-              <template #empty>
-                0 уч.
-              </template>
-              {{ item.group.client_groups_count }} уч.
-            </UiIfSet>
-          </td>
-          <td>
-            <UiIfSet :value="Object.keys(item.group.teeth).length > 0">
-              <template #empty>
-                расписание отсутствует
-              </template>
-              <TeethAsText :items="item.group.teeth" />
-            </UiIfSet>
-          </td>
-        </template>
-        <template v-else>
-          <td class="text-gray">
-            Без группы
-          </td>
-          <td>
-            <UiPerson v-if="selectable" :item="item.client" />
-          </td>
-          <td>
-            {{ ProgramShortLabel[item.program] }}
-          </td>
-          <td colspan="3" />
-        </template>
+        <td>
+          <UiPerson v-if="selectable" :item="item.client" />
+        </td>
         <td colspan="2" style="position: relative;">
           <div class="pl-3">
             <div>

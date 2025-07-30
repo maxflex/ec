@@ -34,10 +34,13 @@ class ContractController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'client_id' => ['required', 'exists:clients,id'],
+            // 'client_id' => ['required', 'exists:clients,id'],
             'sum' => ['required', 'numeric'],
         ]);
-        $client = Client::find($request->client_id);
+
+        $clientId = $request->has('client_id') ? $request->client_id : $request->contract['client_id'];
+
+        $client = Client::find($clientId);
         $contract = $client->contracts()->create($request->contract);
         $contractVersion = $contract->versions()->create([
             ...$request->all(),

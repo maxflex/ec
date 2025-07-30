@@ -317,7 +317,7 @@ class ScheduleDraft extends Model implements HasTeeth
 
             foreach ($group->lessons as $groupLesson) {
                 // если урок уже начался, но препод его не провёл – считаем кол-во таких
-                if (now()->format('Y-m-d H:i:s') >= $groupLesson->date_time && $groupLesson->status !== LessonStatus::conducted) {
+                if (now()->format('Y-m-d H:i:s') >= $groupLesson->date_time && $groupLesson->status === LessonStatus::planned) {
                     @$group->uncunducted_count++;
                 }
 
