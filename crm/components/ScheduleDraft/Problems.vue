@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { ScheduleDraftGroup } from '.'
+import type { ScheduleDraftGroup, ScheduleDraftStudent } from '.'
 
 const { item, contractId } = defineProps<{
-  item: ScheduleDraftGroup
+  item: ScheduleDraftGroup | ScheduleDraftStudent
   contractId: number
 }>()
 

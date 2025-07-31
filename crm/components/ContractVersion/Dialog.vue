@@ -2,7 +2,7 @@
 import type { PrintDialog } from '#build/components'
 import type { ContractResource, ContractVersionListResource, ContractVersionPaymentResource, ContractVersionProgramPrice, ContractVersionProgramResource, ContractVersionResource } from '.'
 import type { SavedScheduleDraftResource } from '../ScheduleDraft'
-import { mdiFlipVertical, mdiProgressUpload, mdiTextBoxCheckOutline, mdiTextBoxOutline } from '@mdi/js'
+import { mdiFlipVertical, mdiTextBoxCheckOutline, mdiTextBoxOutline } from '@mdi/js'
 import { addMonths, format } from 'date-fns'
 import { cloneDeep } from 'lodash-es'
 import { modelDefaults } from '.'
@@ -14,15 +14,12 @@ const emit = defineEmits<{
 
 const route = useRoute()
 const router = useRouter()
-const clientId: number = Number(route.params.id) // допускаем, что client_id хранится в адресной строке
-const savedDrafts = ref<SavedScheduleDraftResource[]>([]) // сохранённые проекты расписания (доступные для загрузки)
 const selectedDraft = ref<SavedScheduleDraftResource>() // хранит ID загруженного проекта
 const applyMoveGroups = ref(false) // применить изменения в группах (для подгруженного проекта договора)
 
 const { user } = useAuthStore()
 const item = ref<ContractVersionResource>(modelDefaults)
 const contractId = ref<number>()
-const isEditSource = ref(false)
 // только для отображения в заголовке
 const seq = ref<number>()
 const { dialog, width } = useDialog('medium')
@@ -45,13 +42,13 @@ const printOptions: PrintOption[] = [
   { id: 7, label: 'акт оказанных услуг' },
 ]
 
-function newContract() {
+function newContract(clientId: number) {
   mode.value = 'new-contract'
   contractId.value = undefined
   seq.value = undefined
   item.value = cloneDeep(modelDefaults)
+  item.value.contract.client_id = clientId
   dialog.value = true
-  loadSavedDrafts()
 }
 
 /**
@@ -64,6 +61,7 @@ async function fromDraft({ savedDraft, contractId: cId }: {
 }) {
   loading.value = true
   const contractIdFromDraft = cId !== undefined ? (cId < 0 ? undefined : cId) : (savedDraft!.contract_id || undefined)
+  // @ts-expect-error
   selectedDraft.value = savedDraft || { id: -1 }
   mode.value = contractIdFromDraft ? 'new-version' : 'new-contract'
   if (mode.value === 'new-contract') {
@@ -99,14 +97,12 @@ async function fromDraft({ savedDraft, contractId: cId }: {
 async function newVersion(c: ContractResource) {
   const activeVersion = c.versions.find(e => e.is_active)!
   await edit(activeVersion, 'new-version')
-  await loadSavedDrafts()
 }
 
 async function edit(cv: ContractVersionListResource, m: ContractEditMode = 'edit') {
   loading.value = true
   mode.value = m
   contractId.value = cv.contract.id
-  isEditSource.value = false
   selectedDraft.value = undefined
   seq.value = cv.seq + (m === 'edit' ? 0 : 1)
   dialog.value = true
@@ -138,35 +134,6 @@ async function edit(cv: ContractVersionListResource, m: ContractEditMode = 'edit
       }
     }
   }
-  loading.value = false
-}
-
-async function loadSavedDrafts() {
-  const { data } = await useHttp<ApiResponse<SavedScheduleDraftResource>>(
-    `schedule-drafts`,
-    {
-      params: {
-        client_id: clientId,
-      },
-    },
-  )
-  savedDrafts.value = data.value!.data
-}
-
-async function loadSavedDraft(savedDraft: SavedScheduleDraftResource) {
-  loading.value = true
-  isEditSource.value = false
-  selectedDraft.value = savedDraft
-  const { data } = await useHttp<ContractVersionResource>(
-    `schedule-drafts/fill-contract`,
-    {
-      method: 'POST',
-      body: {
-        id: savedDraft.id,
-      },
-    },
-  )
-  item.value = data.value!
   loading.value = false
 }
 
@@ -221,6 +188,8 @@ function deleteProgram(p: ContractVersionProgramResource) {
 async function save() {
   saving.value = true
   let responseData: ContractResource | ContractVersionListResource | null
+  let newContractId: number
+
   switch (mode.value) {
     case 'new-contract': {
       const { data } = await useHttp<ContractResource>(
@@ -229,11 +198,14 @@ async function save() {
           method: 'post',
           body: {
             ...item.value,
-            client_id: clientId,
+            // применить перемещения в группе
+            apply_move_groups: applyMoveGroups.value,
           },
         },
       )
       responseData = data.value
+      newContractId = data.value!.id
+      useGlobalMessage(`Создан новый договор №${newContractId}`, 'success')
       break
     }
 
@@ -250,7 +222,8 @@ async function save() {
         },
       )
       responseData = data.value
-
+      newContractId = data.value!.contract.id
+      useGlobalMessage(`Создана версия ${data.value!.seq} к договору №${newContractId}`, 'success')
       break
     }
 
@@ -263,6 +236,8 @@ async function save() {
         },
       )
       responseData = data.value
+      newContractId = data.value!.contract.id
+
       break
     }
   }
@@ -272,10 +247,10 @@ async function save() {
     router.push({
       name: 'clients-id',
       params: {
-        id: responseData.contract.client.id,
+        id: item.value.contract.client_id,
       },
       query: {
-        contract_id: responseData.contract.id,
+        contract_id: newContractId,
       },
     })
 
@@ -554,31 +529,7 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
             confirm-text="Вы уверены, что хотите удалить договор?"
             @deleted="dialog = false"
           />
-          <v-menu v-if="mode !== 'edit'">
-            <template #activator="{ props }">
-              <v-btn v-bind="props" :icon="mdiProgressUpload" :size="48" variant="text" :disabled="savedDrafts.length === 0" />
-            </template>
-            <v-list>
-              <v-list-item v-for="d in savedDrafts" :key="d.id" @click="loadSavedDraft(d)">
-                <v-list-item-title>
-                  <div>
-                    Проект №{{ d.id }}
-                  </div>
-                  <div class="text-caption text-gray">
-                    {{ formatName(d.user) }}
-                    {{ formatDateTime(d.created_at) }}
-                  </div>
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-          <v-btn
-            :icon="item && item.contract.source ? mdiTextBoxCheckOutline : mdiTextBoxOutline"
-            :size="48"
-            :variant="isEditSource ? 'flat' : 'text'"
-            :color="isEditSource ? 'primary' : undefined"
-            @click="isEditSource = !isEditSource"
-          />
+
           <v-btn v-if="mode !== 'new-contract'" :icon="mdiFlipVertical" variant="text" :size="48" @click="splitPrices()" />
           <v-menu v-if="mode === 'edit'">
             <template #activator="{ props }">
@@ -608,17 +559,7 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
           />
         </div>
       </div>
-      <div v-if="isEditSource" class="dialog-body">
-        <div>
-          <v-textarea
-            v-model="item.contract.source"
-            label="Источник"
-            no-resize
-            rows="5"
-          />
-        </div>
-      </div>
-      <div v-else class="dialog-body">
+      <div class="dialog-body">
         <v-fade-transition>
           <UiLoader v-if="loading" fixed :offset="64" />
         </v-fade-transition>
@@ -635,8 +576,7 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
             :disabled="mode !== 'new-contract'"
             :items="selectItems(CompanyLabel)"
           />
-        </div>
-        <div class="double-input">
+
           <div class="contract-version-dialog__sum">
             <v-text-field
               v-model="item.sum"
@@ -646,7 +586,7 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
             />
             <a v-if="lessonsMultipliedByPriceSum" class="date-input__today cursor-default">
               <span class="text-black">
-                рекомендуемая сумма:
+                рекоменд.:
               </span>
               <span class="cursor-pointer" @click="item.sum = lessonsMultipliedByPriceSum">
                 {{ formatPrice(lessonsMultipliedByPriceSum) }}

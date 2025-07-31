@@ -39,6 +39,7 @@ export interface ContractVersionResource {
     id: number
     year: Year
     company: Company
+    client_id: number
     client?: PersonResource
     source: string | null
   }
@@ -75,6 +76,7 @@ export interface ContractResource {
   client_id: number
   year: Year
   company: Company
+  source: string | null
   balances?: {
     to_pay: number
     remainder: number
@@ -101,6 +103,7 @@ export const modelDefaults: ContractVersionResource = {
   payments: [],
   contract: {
     id: newId(),
+    client_id: -1,
     year: currentAcademicYear(),
     company: null,
     source: null,

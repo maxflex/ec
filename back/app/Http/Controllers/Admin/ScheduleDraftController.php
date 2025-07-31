@@ -151,6 +151,19 @@ class ScheduleDraftController extends Controller
     }
 
     /**
+     * Загрузить проект (из Editor)
+     */
+    public function load(ScheduleDraft $scheduleDraft)
+    {
+        $fromRam = ScheduleDraft::fromRam(auth()->id());
+
+        $fromRam->insertPrograms($scheduleDraft);
+        $fromRam->toRam();
+
+        return $fromRam->getData();
+    }
+
+    /**
      * Создать версию договора на основе проекта
      */
     public function fillContract(Request $request)

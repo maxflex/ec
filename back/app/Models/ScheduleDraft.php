@@ -758,4 +758,27 @@ class ScheduleDraft extends Model implements HasTeeth
 
         $this->programs = $this->programs->merge($otherPrograms);
     }
+
+    /**
+     * Загрузить программы из ScheduleDraft в проект из Ram
+     * (меню загрузить проект из Editor)
+     */
+    public function insertPrograms(ScheduleDraft $scheduleDraft)
+    {
+        $contractId = $scheduleDraft->contract_id ?? -1;
+
+        $programs = collect();
+
+        foreach ($this->programs as $p) {
+            if ($p['contract_id'] !== $contractId) {
+                $programs->push($p);
+            }
+        }
+
+        foreach ($scheduleDraft->programs as $p) {
+            $programs->push($p);
+        }
+
+        $this->programs = $programs;
+    }
 }

@@ -704,7 +704,8 @@ button {
   .v-badge--inline .v-badge__badge {
     text-indent: unset !important;
   }
-  &:has(.v-badge--inline) {
+  &:has(.v-badge--inline),
+  &:has(.v-icon--clickable) {
     padding-right: 10px !important;
   }
 }

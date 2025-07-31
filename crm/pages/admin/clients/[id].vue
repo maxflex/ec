@@ -31,6 +31,9 @@ const printSpravkaDialog = ref<InstanceType<typeof PrintSpravkaDialog>>()
 async function loadData() {
   const { data } = await useHttp<ClientResource>(`clients/${route.params.id}`)
   client.value = data.value!
+  if (route.query.contract_id) {
+    selectedTab.value = 'contracts'
+  }
 }
 
 function onClientUpdated(c: ClientResource) {

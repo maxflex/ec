@@ -22,6 +22,7 @@ const teeth = ref<Teeth>()
 const scheduleDraft = ref<ScheduleDraft>()
 const selectedContractId = ref<number>() // ID выбранной вкладки договора
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
+const key = ref(0)
 
 // сохранённые проекты расписания (доступные для загрузки)
 const savedDrafts = ref<SavedScheduleDraftResource[]>([])
@@ -146,6 +147,7 @@ async function removeFromGroup(g: ScheduleDraftGroup) {
 
 async function addPrograms(newPrograms: Program[], contractId: number) {
   selectedContractId.value = Number.parseInt(contractId)
+  key.value++
   loading.value = true
   const { data } = await useHttp<ScheduleDraft>(
     `${apiUrl}/add-programs`,
@@ -185,16 +187,17 @@ function jumpToContract(item: ScheduleDraftGroup) {
   })
 }
 
-function getChangesCnt(contractId: number) {
+function getChangesCnt(contractId: number | string) {
+  const cId = Number.parseInt(contractId as string)
   let cnt = 0
 
-  for (const program of scheduleDraft.value![contractId]) {
+  for (const program of scheduleDraft.value![cId]) {
     if (program.id < 0) {
       cnt++
     }
 
     for (const group of program.groups) {
-      if (isGroupChangedInContract(group, contractId)) {
+      if (isGroupChangedInContract(group, cId)) {
         cnt++
       }
     }
@@ -212,9 +215,17 @@ const savedDraftsByContract = computed<Record<number, SavedScheduleDraftResource
   return result
 })
 
-async function goToPage(d: SavedScheduleDraftResource) {
-  await router.push({ name: 'schedule-drafts-editor', query: { id: d.id } })
-  location.reload()
+async function loadDraft(d: SavedScheduleDraftResource) {
+  selectedContractId.value = d.contract_id || -1
+  loading.value = true
+  const { data } = await useHttp<ScheduleDraft>(
+    `${apiUrl}/load/${d.id}`,
+    {
+      method: 'POST',
+    },
+  )
+  scheduleDraft.value = data.value!
+  loading.value = false
 }
 
 watch(scheduleDraft, getTeeth)
@@ -256,7 +267,9 @@ nextTick(fromActualContracts)
           v-for="(_, contractId) in scheduleDraft"
           :key="contractId"
           class="tabs-item"
-          :class="{ 'tabs-item--active': selectedContractId === Number.parseInt(contractId) }"
+          :class="{
+            'tabs-item--active': selectedContractId === Number.parseInt(contractId),
+          }"
           @click="selectedContractId = Number.parseInt(contractId)"
         >
           <span v-if="contractId > 0">
@@ -271,7 +284,7 @@ nextTick(fromActualContracts)
             inline
             :content="getChangesCnt(contractId)"
           ></v-badge>
-          <v-menu :key="selectedContractId">
+          <v-menu :key="key">
             <template #activator="{ props }">
               <v-icon icon="$next" v-bind="props" />
             </template>
@@ -299,21 +312,19 @@ nextTick(fromActualContracts)
                 v-for="d in savedDraftsByContract[contractId]"
                 :key="d.id"
                 :disabled="d.is_archived"
-                @click="goToPage(d)"
+                @click="loadDraft(d)"
               >
                 <div>
-                  <div>
-                    загрузить проект №{{ d.id }}
-                    <v-badge
-                      v-if="d.changes > 0"
-                      color="orange-lighten-3"
-                      inline
-                      :content="d.changes"
-                    ></v-badge>
-                  </div>
-                  <div class="text-caption text-gray">
-                    Создал {{ formatName(d.user) }} {{ formatDateTime(d.created_at) }}
-                  </div>
+                  загрузить проект №{{ d.id }}
+                  <v-badge
+                    v-if="d.changes > 0"
+                    color="orange-lighten-3"
+                    inline
+                    :content="d.changes"
+                  ></v-badge>
+                </div>
+                <div class="text-caption text-gray">
+                  Создал {{ formatName(d.user) }} {{ formatDateTime(d.created_at) }}
                 </div>
               </v-list-item>
             </v-list>

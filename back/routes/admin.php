@@ -110,6 +110,7 @@ Route::prefix('schedule-drafts')->controller(ScheduleDraftController::class)->gr
     Route::post('/remove-program', 'removeProgram');
     Route::post('/save', 'save');
     Route::post('/apply-move-groups', 'applyMoveGroups');
+    Route::post('/load/{scheduleDraft}', 'load');
     Route::get('/from-actual-contracts', 'fromActualContracts');
     Route::get('/get-teeth', 'getTeeth');
     Route::post('/fill-contract', 'fillContract');

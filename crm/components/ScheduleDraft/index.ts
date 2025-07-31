@@ -26,14 +26,16 @@ interface ScheduleDraftSwamp {
   contract_id: number | null
 }
 
+interface Overlap {
+  count: number
+  programs: Program[]
+}
+
 export interface ScheduleDraftGroup extends GroupListResource {
   /**
    * Пересечения в расписании
    */
-  overlap?: {
-    count: number
-    programs: Program[]
-  }
+  overlap?: Overlap
   swamp?: ScheduleDraftSwamp
   uncunducted_count: number
   /**
@@ -44,6 +46,16 @@ export interface ScheduleDraftGroup extends GroupListResource {
   /**
    * По какой программе добавлен в группу сейчас
    */
+  current_contract_id: number | null
+}
+
+export interface ScheduleDraftStudent {
+  id: number
+  client: PersonResource
+  uncunducted_count: number
+  overlap: Overlap
+  group_id: number | null
+  swamp: ScheduleDraftSwamp
   current_contract_id: number | null
 }
 
@@ -67,12 +79,14 @@ export function isGroupChangedInContract(group: ScheduleDraftGroup, contractId: 
   const moved = from !== to
 
   // Ушло из этого договора
-  if (wasInThisContract && !isInThisContractNow && moved)
+  if (wasInThisContract && !isInThisContractNow && moved) {
     return true
+  }
 
   // Пришло в этот договор (в том числе из другого)
-  if (isInThisContractNow && !wasInThisContract && moved)
+  if (isInThisContractNow && !wasInThisContract && moved) {
     return true
+  }
 
   return false
 }

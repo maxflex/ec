@@ -34,13 +34,11 @@ class ContractController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            // 'client_id' => ['required', 'exists:clients,id'],
             'sum' => ['required', 'numeric'],
+            'contract.client_id' => ['required', 'exists:clients,id'],
         ]);
 
-        $clientId = $request->has('client_id') ? $request->client_id : $request->contract['client_id'];
-
-        $client = Client::find($clientId);
+        $client = Client::find($request->contract['client_id']);
         $contract = $client->contracts()->create($request->contract);
         $contractVersion = $contract->versions()->create([
             ...$request->all(),
@@ -53,6 +51,14 @@ class ContractController extends Controller
         sync_relation($contractVersion, 'payments', $request->all());
 
         return new ContractResource($contract->fresh());
+    }
+
+    /**
+     * Используется для обновления источника
+     */
+    public function update(Contract $contract, Request $request)
+    {
+        $contract->update($request->all());
     }
 
     public function filterContractVersionProgramId($query, $id)

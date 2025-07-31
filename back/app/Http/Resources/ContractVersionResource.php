@@ -22,7 +22,7 @@ class ContractVersionResource extends JsonResource
             'payments' => $this->payments,
             'user' => new PersonResource($this->user),
             'contract' => extract_fields($this->contract, [
-                'year', 'company', 'source',
+                'year', 'company', 'source', 'client_id',
             ]),
         ]);
     }
