@@ -161,6 +161,7 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
           <QrcodeVue
             :value="qrValue"
             :size="300"
+            level="Q"
             :image-settings="{
               width: 80,
               height: 80,
