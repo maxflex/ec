@@ -23,6 +23,7 @@ const users = useUsers()
     :item-title="formatName"
     item-value="id"
     :loading="users === undefined"
+    label="Пользователь"
   >
     <template #item="{ props, item }">
       <v-list-item v-bind="props" :class="{ 'text-gray': !item.raw.is_active }">

@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Enums\LogType;
 use App\Http\Resources\LogResource;
 use App\Models\Log;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class LogController extends Controller
 {
     protected $filters = [
         'equals' => ['type', 'table', 'entity_id', 'entity_type', 'device'],
+        'userId' => ['user_id'],
         'rowId' => ['row_id'],
         'q' => ['q'],
     ];
@@ -45,6 +47,17 @@ class LogController extends Controller
                 'url' => $request->url,
             ],
         ]);
+    }
+
+    public function filterUserId($query, $userId)
+    {
+        return $query->where(fn ($q) => $q
+            ->whereRaw('(entity_id = ? and entity_type = ?)', [
+                $userId,
+                User::class,
+            ])
+            ->orWhere('emulation_user_id', $userId)
+        );
     }
 
     protected function filterQ($query, $q)
