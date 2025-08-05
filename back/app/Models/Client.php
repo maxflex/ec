@@ -305,4 +305,12 @@ class Client extends Person implements HasTeeth
     {
         return intval($this->contracts()->max('year') ?? 1000);
     }
+
+    public function getLastSeenAtAttribute(): ?string
+    {
+        return Log::query()
+            ->whereNull('client_parent_id')
+            ->whereNull('emulation_user_id')
+            ->max('created_at');
+    }
 }

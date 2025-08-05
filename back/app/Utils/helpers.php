@@ -237,6 +237,12 @@ function date_range(string $start, string $end): Generator
     }
 }
 
+// private function sanitizeForTsv(string $text): string
+// {
+//     return preg_replace('/[\t\r\n]+/', ' ', trim($text));
+// }
+//
+
 function save_csv(array|Collection $csv): string
 {
     $str = '';
