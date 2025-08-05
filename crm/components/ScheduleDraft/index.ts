@@ -54,7 +54,9 @@ export interface ScheduleDraftStudent {
   client: PersonResource
   uncunducted_count: number
   overlap: Overlap
+  contract_id: number
   group_id: number | null
+  has_problems: boolean
   swamp: ScheduleDraftSwamp
   current_contract_id: number | null
 }

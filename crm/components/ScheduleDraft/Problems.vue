@@ -8,7 +8,7 @@ const { item, contractId } = defineProps<{
 
 const hasOverlap = !!item.overlap?.count
 const hasUnconducted = item.uncunducted_count > 0
-const hasProcessInAnotherContract = item.swamp && item.current_contract_id !== contractId
+const hasProcessInAnotherContract = item.swamp && item.current_contract_id && item.current_contract_id !== contractId
 
 const hasProblems = hasOverlap || hasUnconducted || hasProcessInAnotherContract
 </script>

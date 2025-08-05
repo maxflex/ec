@@ -106,10 +106,13 @@ nextTick(loadData)
           <div class="calendar__month-days">
             <div v-for="x in firstDayOfWeek(year, month)" :key="`x${x}`" class="no-pointer-events" />
             <div
-              v-for="day in daysInMonth(year, month)" :key="day" :class="{
+              v-for="day in daysInMonth(year, month)"
+              :key="day"
+              :class="{
                 'calendar--today': isToday(year, month, day),
                 'calendar--selected': isSelected(year, month, day),
-              }" @click="onClick(year, month, day)"
+              }"
+              @click="onClick(year, month, day)"
             >
               {{ day }}
             </div>

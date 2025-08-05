@@ -47,11 +47,9 @@ class SwampController extends Controller
 
         if ($request->has('students_tab')) {
             return $this->studentsTab($query, $request);
-        } else {
-            $resource = SwampListResource::class;
         }
 
-        return $this->handleIndexRequest($request, $query, $resource);
+        return $this->handleIndexRequest($request, $query, SwampListResource::class);
     }
 
     private function counts($query)
@@ -91,7 +89,9 @@ class SwampController extends Controller
             }
         }
 
-        foreach ($query->get() as $item) {
+        $data = $query->get();
+
+        foreach ($data as $item) {
             $client = $item->contractVersion->contract->client;
             $cvpIds = $client->getContractVersionProgramIds($group->year);
 
@@ -144,22 +144,45 @@ class SwampController extends Controller
                 }
             }
 
+            // если ученик не добавлен в группу по текущей программе, нужно проверить
+            // учится ли он по этой программе в другой цепи договора
+            // (чтобы нельзя было добавлять на фронте по одной и той же программе)
+            $currentContractId = $item->clientGroup
+                ? $item->contractVersion->contract_id
+                : $data
+                    ->where('program', $item->program)
+                    ->where('client_id', $client->id)
+                    ->where('id', '<>', $item->id)
+                    ->whereNotNull('contract_id')
+                    ->first()?->contract_id;
+
             $result->push([
                 'id' => $item->id,
                 'client' => new PersonResource($client),
                 'uncunducted_count' => $uncunductedCount,
+
                 // 'teeth' => $client->getTeeth($group->year),
                 'overlap' => $overlap,
-                'current_contract_id' => $item->contractVersion->contract_id,
+
+                // просто contract_id текущей программы
+                'contract_id' => $item->contractVersion->contract_id,
+
+                // добавлен ли ученик в группу по текущей программе
                 'group_id' => $item->clientGroup?->group_id,
+
+                'current_contract_id' => $currentContractId,
+
+                'has_problems' => $currentContractId !== null,
+
                 'swamp' => extract_fields($item, [
                     'total_lessons', 'lessons_conducted', 'status',
                 ]),
             ]);
         }
 
-        return paginate($result);
+        // сначала идут те, кого можно добавить в группу
+        $result = $result->sortBy('has_problems')->values();
 
-        // return paginate($result->sortBy(fn ($i)));
+        return paginate($result);
     }
 }

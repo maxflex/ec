@@ -59,20 +59,18 @@ const { items, indexPageData } = useIndex<ScheduleDraftStudent>(
         назад
       </v-btn>
     </template>
-    <v-table
-      class="swamp-students table-padding"
-      hover
-      :class="{ 'element-loading': loading }"
-    >
+    <v-table class="swamp-selector table-padding" :class="{ 'element-loading': loading }">
       <tbody>
         <tr
           v-for="item in items"
           :key="item.id"
-          :class="item.group_id === null ? 'cursor-pointer' : 'opacity-5 no-pointer-events'"
-          @click="select(item)"
+          :class="{ 'swamp-selector--has-problems': item.has_problems }"
         >
           <td>
             <UiPerson :item="item.client" />
+          </td>
+          <td>
+            договор №{{ item.contract_id }}
           </td>
           <td>
             <ScheduleDraftProblems :item="item" />
@@ -88,9 +86,34 @@ const { items, indexPageData } = useIndex<ScheduleDraftStudent>(
                 {{ SwampStatusLabel[item.swamp.status] }}
               </div>
             </div>
+
+            <div v-if="!item.has_problems" class="table-actionss">
+              <v-btn
+                color="primary" density="comfortable" icon="$plus" :size="48"
+                @click="select(item)"
+              />
+            </div>
           </td>
         </tr>
       </tbody>
     </v-table>
   </UiIndexPage>
 </template>
+
+<style lang="scss">
+.swamp-selector {
+  &--has-problems {
+    td {
+      opacity: 0.5;
+    }
+  }
+
+  .table-actionss {
+    width: 70px !important;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 !important;
+  }
+}
+</style>
