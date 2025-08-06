@@ -665,9 +665,7 @@ declare global {
     is_past: boolean
   }
 
-  type Teeth = {
-    [key in Weekday]: Tooth[]
-  }
+  type Teeth = Partial<Record<Weekday, Tooth[]>>
 
   interface ClientGroupResource {
     id: number

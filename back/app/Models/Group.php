@@ -83,7 +83,7 @@ class Group extends Model implements HasSchedule
 
     public function updateSchedule()
     {
-        $schedule = $this->getSchedule();
+        $schedule = (array) $this->getSchedule();
         $this->schedule = count($schedule) > 0 ? $schedule : null;
 
         return $this->save();

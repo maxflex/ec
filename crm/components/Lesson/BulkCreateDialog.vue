@@ -68,6 +68,7 @@ async function save() {
   if (!isBulkAdd.value) {
     return
   }
+  saving.value = true
   const { data } = await useHttp<LessonListResource[]>(
     `lessons/bulk`,
     {

@@ -3,16 +3,30 @@ const { items, oneLine } = defineProps<{
   items: Teeth
   oneLine?: boolean
 }>()
+
+function allWeekdayIsPast(weekday: Weekday): boolean {
+  return items[weekday].some(e => !e.is_past) === false
+}
 </script>
 
 <template>
   <div class="teeth-as-text" :class="{ 'teeth-as-text--one-line': oneLine }">
-    <div v-for="(teeth, weekday) in items" :key="weekday">
+    <div
+      v-for="(teeth, weekday) in items"
+      :key="weekday"
+      :class="{
+        'teeth-as-text--is-past': allWeekdayIsPast(weekday),
+      }"
+    >
       <span>
         {{ WeekdayLabel[weekday] }}
       </span>
       <div class="teeth-as-text__times">
-        <span v-for="(t, index) in teeth.sort((a, b) => a.left - b.left)" :key="index" :class="{ 'teeth-as-text__past': t.is_past }">
+        <span
+          v-for="(t, index) in teeth.sort((a, b) => a.left - b.left)"
+          :key="index"
+          :class="{ 'teeth-as-text--is-past': t.is_past }"
+        >
           {{ formatTime(t.time) }} – {{ formatTime(t.time_end) }}
         </span>
       </div>
@@ -56,13 +70,14 @@ const { items, oneLine } = defineProps<{
         margin-right: 4px;
         &:not(:last-child):after {
           content: ', ';
+          // color: black;
         }
       }
     }
   }
 
-  &__is-past {
-    opacity: 0.5;
+  &--is-past {
+    color: rgb(var(--v-theme-gray));
   }
 }
 </style>

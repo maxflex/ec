@@ -13,11 +13,14 @@ const filters = ref<SwampFilters>({
 })
 
 const loading = ref(false)
+const saving = ref(false)
 
 async function select(item: ScheduleDraftStudent) {
   if (item.group_id !== null) {
     return
   }
+
+  saving.value = true
 
   await useHttp(
     `client-groups`,
@@ -31,6 +34,8 @@ async function select(item: ScheduleDraftStudent) {
   )
 
   emit('updated')
+
+  saving.value = false
 }
 
 const { items, indexPageData } = useIndex<ScheduleDraftStudent>(
@@ -92,7 +97,11 @@ const { items, indexPageData } = useIndex<ScheduleDraftStudent>(
 
             <div v-if="!item.has_problems" class="table-actionss">
               <v-btn
-                color="primary" density="comfortable" icon="$plus" :size="48"
+                :loading="saving"
+                color="primary"
+                density="comfortable"
+                icon="$plus"
+                :size="48"
                 @click="select(item)"
               />
             </div>

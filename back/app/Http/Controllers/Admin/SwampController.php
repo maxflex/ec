@@ -112,6 +112,8 @@ class SwampController extends Controller
                 ->with('group')
                 ->where('status', LessonStatus::planned)
                 ->where('is_unplanned', 0)
+                // не учитываем пересечения с самим с собой
+                ->where('group_id', '<>', $group->id)
                 ->get()
                 ->groupBy('date');
 

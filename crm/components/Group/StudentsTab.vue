@@ -43,7 +43,7 @@ nextTick(loadData)
           <UiPerson :item="item.client" />
         </div>
         <div>
-          <TeethBar :items="item.teeth" :current="group.teeth!" />
+          <TeethBar :items="item.teeth" :current="group.teeth" />
         </div>
         <div v-if="isEditable" class="table-actionss">
           <v-btn
