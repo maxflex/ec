@@ -192,7 +192,7 @@ async function save() {
 
   switch (mode.value) {
     case 'new-contract': {
-      const { data } = await useHttp<ContractResource>(
+      const { data, error } = await useHttp<ContractResource>(
         `contracts`,
         {
           method: 'post',
@@ -203,6 +203,14 @@ async function save() {
           },
         },
       )
+
+      if (error.value) {
+        useGlobalMessage(error.value.data?.message, 'error')
+        saving.value = false
+
+        return
+      }
+
       responseData = data.value
       newContractId = data.value!.id
       useGlobalMessage(`Создан новый договор №${newContractId}`, 'success')
@@ -210,7 +218,7 @@ async function save() {
     }
 
     case 'new-version': {
-      const { data } = await useHttp<ContractVersionListResource>(
+      const { data, error } = await useHttp<ContractVersionListResource>(
         'contract-versions',
         {
           method: 'post',
@@ -221,6 +229,13 @@ async function save() {
           },
         },
       )
+
+      if (error.value) {
+        useGlobalMessage(error.value.data?.message, 'error')
+        saving.value = false
+
+        return
+      }
       responseData = data.value
       newContractId = data.value!.contract.id
       useGlobalMessage(`Создана версия ${data.value!.seq} к договору №${newContractId}`, 'success')
@@ -228,13 +243,21 @@ async function save() {
     }
 
     case 'edit': {
-      const { data } = await useHttp<ContractVersionListResource>(
+      const { data, error } = await useHttp<ContractVersionListResource>(
         `contract-versions/${item.value.id}`,
         {
           method: 'put',
           body: item.value,
         },
       )
+
+      if (error.value) {
+        useGlobalMessage(error.value.data?.message, 'error')
+        saving.value = false
+
+        return
+      }
+
       responseData = data.value
       newContractId = data.value!.contract.id
 
@@ -367,7 +390,65 @@ const lessonsConducted = computed<LessonsConducted>(() => {
   return result
 })
 
-function isPriceLessonsError(price: ContractVersionProgramPrice, program: ContractVersionProgramResource) {
+function splitPrices() {
+  for (const p of item.value.programs) {
+    const clientLessonPrices = p.client_lesson_prices
+    const prices = []
+    let used = 0
+
+    if (clientLessonPrices.length > 0) {
+      let currentPrice = clientLessonPrices[0]
+      let count = 1
+
+      for (let i = 1; i < clientLessonPrices.length; i++) {
+        const price = clientLessonPrices[i]
+        if (price === currentPrice) {
+          count++
+        }
+        else {
+          prices.push({
+            id: newId(),
+            lessons: count,
+            price: currentPrice,
+          })
+          currentPrice = price
+          used += count
+          count = 1
+        }
+      }
+
+      // Последний блок
+      prices.push({
+        id: newId(),
+        lessons: count,
+        price: currentPrice,
+      })
+      used += count
+    }
+
+    // Плейсхолдер для ввода новой цены
+    // Если осталось что добавлять
+    const lessons = p.lessons_suggest - used
+    if (lessons > 0) {
+      prices.push({
+        id: newId(),
+        lessons,
+        price: '',
+      })
+    }
+
+    p.prices = prices
+  }
+}
+
+function getCorrectedLessons(program: ContractVersionProgramResource) {
+  // все cvpp, кроме последней
+  const allButLast = program.prices.slice(0, program.prices.length - 1)
+  const lessonsFromPricesSum = allButLast.reduce((carry, x) => asInt(x.lessons) + carry, 0)
+  return program.lessons_suggest - lessonsFromPricesSum
+}
+
+function isLessonsError(price: ContractVersionProgramPrice, program: ContractVersionProgramResource) {
   // нет группы и проведено 0 занятий
   if ((!program.group_id && !program.lessons_conducted) || program.prices.some(p => p.lessons === '')) {
     return false
@@ -375,31 +456,6 @@ function isPriceLessonsError(price: ContractVersionProgramPrice, program: Contra
   const lessonsSum = program.prices.reduce((carry, x) => asInt(x.lessons) + carry, 0)
   return price.id === program.prices[program.prices.length - 1].id
     && lessonsSum !== program.lessons_suggest
-}
-
-function splitPrices() {
-  for (const p of item.value.programs) {
-    if (p.lessons_conducted > 0) {
-      p.prices = [
-        {
-          id: newId(),
-          lessons: p.lessons_conducted,
-          price: p.prices[0].price,
-        },
-        {
-          id: newId(),
-          lessons: p.lessons_planned - p.lessons_conducted,
-          price: '',
-        },
-      ]
-    }
-  }
-}
-
-function getCorrectedPriceLessons(program: ContractVersionProgramResource) {
-  const lastCvpp = program.prices.slice(0, program.prices.length - 1)
-  const lessonsFromPricesSum = lastCvpp.reduce((carry, x) => asInt(x.lessons) + carry, 0)
-  return program.lessons_suggest - lessonsFromPricesSum
 }
 
 function isPriceError(price: ContractVersionProgramPrice, program: ContractVersionProgramResource) {
@@ -667,12 +723,12 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
                       density="compact"
                       :class="{
                         'changed': price.id === p.prices[p.prices.length - 1].id && isChanged(p, 'prices'),
-                        'text-error': isPriceLessonsError(price, p),
+                        'text-error': isLessonsError(price, p),
                       }"
                     >
-                      <template v-if="isPriceLessonsError(price, p)" #append>
+                      <template v-if="isLessonsError(price, p)" #append>
                         <div class="pr-4 text-gray">
-                          {{ getCorrectedPriceLessons(p) }}
+                          {{ getCorrectedLessons(p) }}
                         </div>
                       </template>
                     </v-text-field>

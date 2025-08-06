@@ -120,7 +120,10 @@ class ContractVersionProgram extends Model
     }
 
     /**
-     * Серая цифра в колонке "занятий" в диалоге договора.
+     * Занятий прошло фактически + сколько ещё планируется, если в группе
+     * ("сколько ещё планируется" берётся из параметра lessons_planned группы)
+     *
+     * Используется в алгоритмах как серая цифра в колонке "занятий" в диалоге договора.
      * Подсказывает ожидаемое значение в поле "занятий"
      *
      * сколько занятия проведено по программе + сколько ещё планируется, если ученик в группе по этой программе
@@ -128,18 +131,18 @@ class ContractVersionProgram extends Model
      */
     public function getLessonsSuggest(?Group $group): int
     {
-        $total = $this->lessons_conducted;
+        $lessonsConducted = $this->lessons_conducted;
 
         if (! $group) {
-            return $total;
+            return $lessonsConducted;
         }
 
-        $groupLessons = $group->lessons_planned - $group->lessons()
+        $lessonsPlanned = $group->lessons_planned - $group->lessons()
             ->where('status', LessonStatus::conducted)
             ->where('is_free', false)
             ->count();
 
-        return $total + $groupLessons;
+        return $lessonsConducted + $lessonsPlanned;
     }
 
     public function getNextPrice(?int $lessonsPassed = null): int
