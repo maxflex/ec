@@ -2,10 +2,10 @@
 
 namespace App\Contracts;
 
-interface HasTeeth
+interface HasSchedule
 {
     /**
      * @param  int|null  $year  У учеников и преподов обязательно указывать год для получения регулярного расписания
      */
-    public function getTeeth(?int $year = null): object;
+    public function getSchedule(?int $year = null): object;
 }

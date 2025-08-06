@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Contracts\HasTeeth;
+use App\Contracts\HasSchedule;
 use App\Enums\Direction;
 use App\Enums\HeadAboutUs;
 use App\Enums\LessonStatus;
@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
 
-class Client extends Person implements HasTeeth
+class Client extends Person implements HasSchedule
 {
     use HasComments, IsSearchable;
 
@@ -31,6 +31,7 @@ class Client extends Person implements HasTeeth
 
     protected $casts = [
         'passport' => 'array',
+        'schedule' => 'array',
         'is_remote' => 'bool',
         'mark_sheet' => 'array',
         'heard_about_us' => HeadAboutUs::class,
@@ -90,7 +91,7 @@ class Client extends Person implements HasTeeth
      * Отмененные занятия в группе, в которой ученик сейчас присутствует.
      * Планируемые занятия в группе, в которой ученик сейчас присутствует
      */
-    public function getSchedule(int $year): Collection
+    public function getJournal(int $year): Collection
     {
         $schedule = collect();
 
@@ -178,7 +179,36 @@ class Client extends Person implements HasTeeth
         return $schedule;
     }
 
-    public function getTeeth(?int $year = null): object
+    public function getSavedSchedule(?int $year = null): object
+    {
+        if (is_null($year)) {
+            throw new Exception('Year is required');
+        }
+
+        $schedule = $this->schedule ?? [];
+
+        if (isset($schedule[$year])) {
+            return (object) $schedule[$year];
+        }
+
+        return (object) [];
+    }
+
+    public function updateSchedule(int $year)
+    {
+        $schedule = $this->schedule ?? [];
+        $teeth = $this->getSchedule($year);
+        if (count((array) $teeth)) {
+            $schedule[$year] = $teeth;
+        } elseif (isset($schedule[$year])) {
+            unset($schedule[$year]);
+        }
+        $this->schedule = count($schedule) > 0 ? $schedule : null;
+
+        return $this->save();
+    }
+
+    public function getSchedule(?int $year = null): object
     {
         if (is_null($year)) {
             throw new Exception('Year is required');

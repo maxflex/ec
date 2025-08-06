@@ -66,13 +66,16 @@ const { items, indexPageData } = useIndex<ScheduleDraftStudent>(
           :key="item.id"
           :class="{ 'swamp-selector--has-problems': item.has_problems }"
         >
-          <td>
+          <td width="230">
             <UiPerson :item="item.client" />
           </td>
-          <td>
+          <td width="480">
+            <TeethBar :items="item.teeth" :current="group.teeth!" />
+          </td>
+          <td width="160">
             договор №{{ item.contract_id }}
           </td>
-          <td>
+          <td widht="200">
             <ScheduleDraftProblems :item="item" />
           </td>
           <td style="position: relative;">

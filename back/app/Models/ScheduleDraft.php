@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Contracts\HasTeeth;
+use App\Contracts\HasSchedule;
 use App\Enums\LessonStatus;
 use App\Http\Resources\ContractVersionResource;
 use App\Http\Resources\PersonResource;
@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 
-class ScheduleDraft extends Model implements HasTeeth
+class ScheduleDraft extends Model implements HasSchedule
 {
     protected $fillable = [
         'programs', 'client_id', 'user_id',
@@ -363,7 +363,7 @@ class ScheduleDraft extends Model implements HasTeeth
                 'overlap', 'uncunducted_count', 'original_contract_id',
                 'current_contract_id',
             ], [
-                'teeth' => $g->getTeeth(),
+                'teeth' => $g->getSavedSchedule(),
                 'teachers' => PersonResource::collection($g->teachers),
             ]))
             ->groupBy('program');
@@ -407,7 +407,7 @@ class ScheduleDraft extends Model implements HasTeeth
         return Lesson::query()->whereIn('group_id', $groupIds);
     }
 
-    public function getTeeth(?int $year = null): object
+    public function getSchedule(?int $year = null): object
     {
         return Teeth::get($this->getLessonsQuery());
     }

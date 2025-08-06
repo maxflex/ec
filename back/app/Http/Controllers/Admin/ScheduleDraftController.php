@@ -113,7 +113,7 @@ class ScheduleDraftController extends Controller
 
     public function getTeeth()
     {
-        return ScheduleDraft::fromRam(auth()->id())->getTeeth();
+        return ScheduleDraft::fromRam(auth()->id())->getSchedule();
     }
 
     public function applyMoveGroups()

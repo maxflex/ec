@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Contracts\HasTeeth;
+use App\Contracts\HasSchedule;
 use App\Enums\LessonStatus;
 use App\Enums\Program;
 use App\Utils\Teeth;
@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Group extends Model implements HasTeeth
+class Group extends Model implements HasSchedule
 {
     protected $fillable = [
         'program', 'year', 'zoom', 'lessons_planned',
@@ -18,6 +18,7 @@ class Group extends Model implements HasTeeth
 
     protected $casts = [
         'zoom' => 'array',
+        'schedule' => 'array',
         'program' => Program::class,
     ];
 
@@ -80,10 +81,18 @@ class Group extends Model implements HasTeeth
             ->get();
     }
 
+    public function updateSchedule()
+    {
+        $schedule = $this->getSchedule();
+        $this->schedule = count($schedule) > 0 ? $schedule : null;
+
+        return $this->save();
+    }
+
     /**
      * Получить "зубы" группы
      */
-    public function getTeeth(?int $year = null): object
+    public function getSchedule(?int $year = null): object
     {
         return Teeth::get($this->lessons()->getQuery());
     }
@@ -91,6 +100,11 @@ class Group extends Model implements HasTeeth
     public function lessons(): HasMany
     {
         return $this->hasMany(Lesson::class);
+    }
+
+    public function getSavedSchedule(): object
+    {
+        return $this->schedule === null ? (object) [] : (object) $this->schedule;
     }
 
     public function getTeacherAttribute(): ?Teacher

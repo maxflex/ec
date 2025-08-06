@@ -55,6 +55,7 @@ export interface ScheduleDraftStudent {
   uncunducted_count: number
   overlap: Overlap
   contract_id: number
+  teeth: Teeth
   group_id: number | null
   has_problems: boolean
   swamp: ScheduleDraftSwamp

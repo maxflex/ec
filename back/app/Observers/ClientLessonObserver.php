@@ -37,4 +37,12 @@ class ClientLessonObserver
     {
         $clientLesson->contractVersionProgram->updateStatus();
     }
+
+    private function updateComputed(ClientLesson $clientLesson): void
+    {
+        $clientLesson->contractVersionProgram->updateStatus();
+        $clientLesson->contractVersionProgram->contractVersion->contract->client->updateSchedule(
+            $clientLesson->contractVersionProgram->contractVersion->contract->year
+        );
+    }
 }

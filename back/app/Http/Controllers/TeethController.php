@@ -26,6 +26,6 @@ class TeethController extends Controller
 
         $year = $request->has('year') ? intval($request->year) : null;
 
-        return $entity->getTeeth($year);
+        return $entity->getSavedSchedule($year);
     }
 }

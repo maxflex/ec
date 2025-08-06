@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Contracts\HasTeeth;
+use App\Contracts\HasSchedule;
 use App\Enums\TeacherPaymentMethod;
 use App\Enums\TeacherStatus;
 use App\Traits\IsSearchable;
@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Teacher extends Person implements HasTeeth
+class Teacher extends Person implements HasSchedule
 {
     use IsSearchable;
 
@@ -29,6 +29,7 @@ class Teacher extends Person implements HasTeeth
         'is_published' => 'bool',
         'passport' => 'array',
         'stats' => 'array',
+        'schedule' => 'array',
     ];
 
     public function clientComplaints(): HasMany
@@ -64,7 +65,21 @@ class Teacher extends Person implements HasTeeth
         $query->where('status', TeacherStatus::active);
     }
 
-    public function getTeeth(?int $year = null): object
+    public function updateSchedule(int $year)
+    {
+        $schedule = $this->schedule ?? [];
+        $teeth = $this->getSchedule($year);
+        if (count((array) $teeth)) {
+            $schedule[$year] = $teeth;
+        } elseif (isset($schedule[$year])) {
+            unset($schedule[$year]);
+        }
+        $this->schedule = count($schedule) > 0 ? $schedule : null;
+
+        return $this->save();
+    }
+
+    public function getSchedule(?int $year = null): object
     {
         if (is_null($year)) {
             throw new Exception('Year is required');
@@ -75,6 +90,21 @@ class Teacher extends Person implements HasTeeth
             ->whereHas('group', fn ($q) => $q->where('year', $year));
 
         return Teeth::get($query);
+    }
+
+    public function getSavedSchedule(?int $year = null): object
+    {
+        if (is_null($year)) {
+            throw new Exception('Year is required');
+        }
+
+        $schedule = $this->schedule ?? [];
+
+        if (isset($schedule[$year])) {
+            return (object) $schedule[$year];
+        }
+
+        return (object) [];
     }
 
     public function makeAllSearchableUsing(Builder $query): Builder

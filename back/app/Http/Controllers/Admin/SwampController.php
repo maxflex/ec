@@ -161,7 +161,8 @@ class SwampController extends Controller
                 'client' => new PersonResource($client),
                 'uncunducted_count' => $uncunductedCount,
 
-                // 'teeth' => $client->getTeeth($group->year),
+                'teeth' => $client->getSavedSchedule($group->year),
+
                 'overlap' => $overlap,
 
                 // просто contract_id текущей программы

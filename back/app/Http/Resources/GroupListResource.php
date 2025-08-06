@@ -18,7 +18,7 @@ class GroupListResource extends JsonResource
     {
         $extra = [
             'teachers' => PersonResource::collection($this->teachers),
-            'teeth' => $this->getTeeth(),
+            'teeth' => $this->getSavedSchedule(),
         ];
 
         // управление группами клиента, нужно отобразить состояние исполнения договора

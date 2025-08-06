@@ -7,6 +7,8 @@ use App\Enums\Cabinet;
 use App\Enums\ClientLessonStatus;
 use App\Enums\LessonStatus;
 use App\Http\Resources\LessonListResource;
+use App\Observers\LessonObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,6 +16,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
+#[ObservedBy(LessonObserver::class)]
 class Lesson extends Model
 {
     protected $fillable = [

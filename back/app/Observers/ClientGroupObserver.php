@@ -8,11 +8,19 @@ class ClientGroupObserver
 {
     public function created(ClientGroup $clientGroup): void
     {
+        $this->updateComputed($clientGroup);
+    }
+
+    private function updateComputed(ClientGroup $clientGroup): void
+    {
         $clientGroup->contractVersionProgram->updateStatus();
+        $clientGroup->contractVersionProgram->contractVersion->contract->client->updateSchedule(
+            $clientGroup->group->year
+        );
     }
 
     public function deleted(ClientGroup $clientGroup): void
     {
-        $clientGroup->contractVersionProgram->updateStatus();
+        $this->updateComputed($clientGroup);
     }
 }
