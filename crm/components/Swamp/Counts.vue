@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import type { SwampCountsResource } from '.'
+import { SwampStatusLabelExtended } from '.'
 
 const { items } = defineProps<{
   items: SwampCountsResource[]
 }>()
 
-function sum(status: SwampStatus) {
+function sum(status: keyof typeof SwampStatusLabelExtended) {
   return items.reduce((carry, x) => carry + x.counts[status], 0)
-}
-
-function formatLabel(label: string) {
-  return label.split(' + ').join('<br/>')
 }
 </script>
 
@@ -20,7 +17,7 @@ function formatLabel(label: string) {
       <tr>
         <th>
         </th>
-        <th v-for="(label, status) in SwampStatusLabel" :key="status" width="140" v-html="formatLabel(label)">
+        <th v-for="(label, status) in SwampStatusLabelExtended" :key="status" width="140" v-html="label">
         </th>
       </tr>
     </thead>
@@ -29,7 +26,7 @@ function formatLabel(label: string) {
         <td>
           <UiPerson :item="item.client" />
         </td>
-        <td v-for="(_, status) in SwampStatusLabel" :key="status" width="140">
+        <td v-for="(_, status) in SwampStatusLabelExtended" :key="status" width="140">
           {{ item.counts[status] || '' }}
         </td>
       </tr>
@@ -37,7 +34,7 @@ function formatLabel(label: string) {
     <tfoot>
       <tr>
         <td></td>
-        <td v-for="(_, status) in SwampStatusLabel" :key="status" width="140">
+        <td v-for="(_, status) in SwampStatusLabelExtended" :key="status" width="140">
           {{ sum(status) || '' }}
         </td>
       </tr>

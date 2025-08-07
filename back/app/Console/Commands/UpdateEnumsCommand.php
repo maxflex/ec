@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Console\Commands\Once;
+namespace App\Console\Commands;
 
-use App\Enums\Cabinet;
-use App\Enums\RequestStatus;
+use App\Enums\CvpStatus;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -11,15 +10,16 @@ use Illuminate\Support\Facades\Schema;
 
 class UpdateEnumsCommand extends Command
 {
-    protected $signature = 'once:update-enums';
+    protected $signature = 'app:update-enums';
 
     protected $description = 'Update enum values for table';
 
     public function handle(): void
     {
-        $table = 'lessons';
-        $field = 'cabinet';
-        $enums = Cabinet::cases();
+        $table = 'contract_version_programs';
+        $field = 'status';
+        $after = 'program'; // после какого поля стоит
+        $enums = CvpStatus::cases();
 
         Schema::table($table, function (Blueprint $table) {
             $table->string('new_enum');
@@ -43,11 +43,12 @@ class UpdateEnumsCommand extends Command
         //     ]);
         // конец обновление значений
 
-        Schema::table($table, function (Blueprint $table) use ($field, $enums) {
+        Schema::table($table, function (Blueprint $table) use ($field, $enums, $after) {
             $table->dropColumn($field);
             $table->enum($field, array_column($enums, 'value'))
+                // ->nullable()
                 ->default($enums[0]->value)
-                ->after('status')
+                ->after($after)
                 ->index();
         });
 

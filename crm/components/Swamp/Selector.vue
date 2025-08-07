@@ -2,6 +2,7 @@
 import type { ScheduleDraftStudent } from '../ScheduleDraft'
 import type { SwampFilters } from './Filters.vue'
 import { mdiArrowRightThin } from '@mdi/js'
+import { getSwampStatus } from '.'
 
 const { group } = defineProps<{ group: GroupResource }>()
 
@@ -91,7 +92,7 @@ const { items, indexPageData } = useIndex<ScheduleDraftStudent>(
                 {{ item.swamp.total_lessons }}
               </div>
               <div>
-                {{ SwampStatusLabel[item.swamp.status] }}
+                {{ getSwampStatus(item.swamp.status, item.group_id) }}
               </div>
             </div>
 

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\CvpStatus;
 use App\Enums\LessonStatus;
-use App\Enums\SwampStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PersonResource;
 use App\Http\Resources\SwampListResource;
@@ -58,8 +58,19 @@ class SwampController extends Controller
         $result = collect();
         foreach ($data as $clientId => $d) {
             $counts = [];
-            foreach (SwampStatus::cases() as $status) {
-                $counts[$status->value] = $d->where('status', $status->value)->count();
+            foreach (CvpStatus::cases() as $status) {
+                $inGroup = 0;
+                $noGroup = 0;
+                foreach ($d->where('status', $status->value)->values() as $e) {
+                    if ($e->clientGroup) {
+                        $inGroup++;
+                    } else {
+                        $noGroup++;
+                    }
+                }
+
+                $counts[$status->value.'_in_group'] = $inGroup;
+                $counts[$status->value.'_no_group'] = $noGroup;
             }
             $result->push([
                 'client' => new PersonResource(Client::find($clientId)),

@@ -13,7 +13,6 @@ class ClientGroupObserver
 
     private function updateComputed(ClientGroup $clientGroup): void
     {
-        $clientGroup->contractVersionProgram->updateStatus();
         $clientGroup->contractVersionProgram->contractVersion->contract->client->updateSchedule(
             $clientGroup->group->year
         );

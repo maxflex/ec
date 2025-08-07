@@ -25,17 +25,7 @@ class ClientLessonObserver
             );
         }
 
-        $clientLesson->contractVersionProgram->updateStatus();
-    }
-
-    public function updated(ClientLesson $clientLesson): void
-    {
-        $clientLesson->contractVersionProgram->updateStatus();
-    }
-
-    public function deleted(ClientLesson $clientLesson): void
-    {
-        $clientLesson->contractVersionProgram->updateStatus();
+        $this->updateComputed($clientLesson);
     }
 
     private function updateComputed(ClientLesson $clientLesson): void
@@ -44,5 +34,10 @@ class ClientLessonObserver
         $clientLesson->contractVersionProgram->contractVersion->contract->client->updateSchedule(
             $clientLesson->contractVersionProgram->contractVersion->contract->year
         );
+    }
+
+    public function deleted(ClientLesson $clientLesson): void
+    {
+        $this->updateComputed($clientLesson);
     }
 }

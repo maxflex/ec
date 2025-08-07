@@ -19,7 +19,7 @@ export interface SavedScheduleDraftResource {
  */
 interface ScheduleDraftSwamp {
   id: number // cvp_id
-  status: SwampStatus
+  status: CvpStatus
   total_lessons: number
   lessons_conducted: number
   client_group_id: number

@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\SwampStatus;
+use App\Enums\CvpStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::table('contract_version_programs', function (Blueprint $table) {
             $table->enum('status', array_column(
-                SwampStatus::cases(),
+                CvpStatus::cases(),
                 'value'
             ))->index()->nullable()->default(null);
         });

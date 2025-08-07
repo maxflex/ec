@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Contracts\HasSchedule;
+use App\Enums\CvpStatus;
 use App\Enums\Direction;
 use App\Enums\HeadAboutUs;
 use App\Enums\LessonStatus;
-use App\Enums\SwampStatus;
 use App\Traits\HasComments;
 use App\Traits\IsSearchable;
 use App\Utils\Teeth;
@@ -271,7 +271,7 @@ class Client extends Person implements HasSchedule
             ->whereHas('versions', fn ($q) => $q
                 ->where('is_active', true)
                 ->whereHas('programs', fn ($q) => $q
-                    ->whereIn('status', SwampStatus::getActiveStatuses())
+                    ->whereIn('status', CvpStatus::getActiveStatuses())
                 )
             )
         );

@@ -6,11 +6,11 @@ use App\Models\ContractVersionProgram;
 use DB;
 use Illuminate\Console\Command;
 
-class SetContractVersionProgramStatusCommand extends Command
+class UpdateCvpStatusesCommand extends Command
 {
-    protected $signature = 'app:set-contract-version-program-status';
+    protected $signature = 'app:update-cvp-statuses';
 
-    protected $description = 'Reset statuses in ContractVersionProgram';
+    protected $description = 'Переустановить все статусы contract_version_programs';
 
     public function handle(): void
     {

@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\CvpStatus;
 use App\Enums\LessonStatus;
 use App\Enums\Program;
-use App\Enums\SwampStatus;
 use App\Observers\ContractVersionProgramObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
@@ -25,7 +25,7 @@ class ContractVersionProgram extends Model
 
     protected $casts = [
         'program' => Program::class,
-        'status' => SwampStatus::class,
+        'status' => CvpStatus::class,
     ];
 
     /**
@@ -33,7 +33,7 @@ class ContractVersionProgram extends Model
      */
     public function getIsActiveAttribute(): bool
     {
-        return in_array($this->status, SwampStatus::getActiveStatuses(), true);
+        return in_array($this->status, CvpStatus::getActiveStatuses(), true);
     }
 
     public function contractVersion(): BelongsTo
@@ -193,22 +193,17 @@ class ContractVersionProgram extends Model
         $this->status = self::getStatus(
             $this->lessons_conducted,
             $this->total_lessons,
-            $this->clientGroup()->exists()
         );
 
         return $this->save();
     }
 
-    public static function getStatus(int $lessonsConducted, int $totalLessons, bool $hasGroup): SwampStatus
+    public static function getStatus(int $lessonsConducted, int $totalLessons): CvpStatus
     {
         return match (true) {
-            $hasGroup && $lessonsConducted < $totalLessons => SwampStatus::inProcess,
-            $hasGroup && $lessonsConducted > $totalLessons => SwampStatus::exceedInGroup,
-            $hasGroup && $lessonsConducted === $totalLessons => SwampStatus::finishedInGroup,
-            // ниже будет только !$hasGroup
-            $lessonsConducted < $totalLessons => SwampStatus::toFulfil,
-            $lessonsConducted > $totalLessons => SwampStatus::exceedNoGroup,
-            $lessonsConducted === $totalLessons => SwampStatus::finishedNoGroup,
+            $lessonsConducted < $totalLessons => CvpStatus::active,
+            $lessonsConducted > $totalLessons => CvpStatus::exceeded,
+            $lessonsConducted === $totalLessons => CvpStatus::finished,
         };
     }
 

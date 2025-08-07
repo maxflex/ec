@@ -2,14 +2,14 @@
 
 namespace App\Observers;
 
-use App\Enums\SwampStatus;
+use App\Enums\CvpStatus;
 use App\Models\ContractVersionProgram;
 
 class ContractVersionProgramObserver
 {
     public function creating(ContractVersionProgram $cvp): void
     {
-        $cvp->status = SwampStatus::toFulfil;
+        $cvp->status = CvpStatus::active;
     }
 
     public function deleting(ContractVersionProgram $cvp): void

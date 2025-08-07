@@ -538,13 +538,10 @@ export const ClientTestStatusLabel = {
   timeout: 'время истекло',
 } as const
 
-export const SwampStatusLabel = {
-  exceedInGroup: 'перевыполнено + в группе',
-  exceedNoGroup: 'перевыполнено + не в группе',
-  toFulfil: 'к исполнению',
-  finishedInGroup: 'исполнено + в группе',
-  finishedNoGroup: 'исполнено + не в группе',
-  inProcess: 'исполняется',
+export const CvpStatusLabel = {
+  active: 'к исполнению',
+  finished: 'исполнено',
+  exceeded: 'перевыполнено',
 } as const
 
 export const EventParticipantConfirmationLabel = {

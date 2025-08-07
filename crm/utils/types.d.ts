@@ -1,7 +1,7 @@
 declare global {
   type LogDevice = keyof typeof LogDeviceLabel
 
-  type SwampStatus = keyof typeof SwampStatusLabel
+  type CvpStatus = keyof typeof CvpStatusLabel
 
   type Recepient = keyof typeof RecepientLabel
 
