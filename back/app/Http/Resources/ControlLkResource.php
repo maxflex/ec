@@ -19,18 +19,30 @@ class ControlLkResource extends JsonResource
     {
         $reportsReadCount = $this->reports
             ->where('delivery', ReportDelivery::read)
-            ->where('year', current_academic_year())
             ->count();
 
         $reportsPublishedCount = $this->reports
             ->where('status', ReportStatus::published)
-            ->where('year', current_academic_year())
             ->count();
 
-        $logsCount = $this->logs->whereNull('client_parent_id')->count();
-        $tgLogsCount = $this->logs->whereNull('client_parent_id')->where('device', LogDevice::telegram)->count();
-        $parentLogsCount = $this->logs->where('client_parent_id', $this->parent->id)->count();
-        $parentTgLogsCount = $this->logs->where('client_parent_id', $this->parent->id)->where('device', LogDevice::telegram)->count();
+        $logsCount = 0;
+        $tgLogsCount = 0;
+        $parentLogsCount = 0;
+        $parentTgLogsCount = 0;
+
+        foreach ($this->logs as $log) {
+            if ($log->client_parent_id) {
+                $parentLogsCount++;
+                if ($log->device == LogDevice::telegram) {
+                    $parentTgLogsCount++;
+                }
+            } else {
+                $logsCount++;
+                if ($log->device == LogDevice::telegram) {
+                    $tgLogsCount++;
+                }
+            }
+        }
 
         return extract_fields($this, [
             'first_name', 'last_name', 'middle_name',

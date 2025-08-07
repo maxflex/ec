@@ -33,7 +33,7 @@ class ClientParent extends Person
 
     public function getLastSeenAtAttribute(): ?string
     {
-        return Log::query()
+        return $this->client->logs
             ->where('client_parent_id', $this->id)
             ->whereNull('emulation_user_id')
             ->max('created_at');

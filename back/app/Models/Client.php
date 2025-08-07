@@ -338,7 +338,7 @@ class Client extends Person implements HasSchedule
 
     public function getLastSeenAtAttribute(): ?string
     {
-        return Log::query()
+        return $this->logs
             ->whereNull('client_parent_id')
             ->whereNull('emulation_user_id')
             ->max('created_at');
