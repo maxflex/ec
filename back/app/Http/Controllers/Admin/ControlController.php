@@ -42,6 +42,9 @@ class ControlController extends Controller
             )
             ->leftJoin('contract_version_programs as cvp', 'cvp.contract_version_id', '=', 'cv.id')
             ->leftJoin('client_lessons as cl', 'cl.contract_version_program_id', '=', 'cvp.id')
+            ->withCount([
+                'comments' => fn ($q) => $q->where('extra', 'control-lessons'),
+            ])
             ->selectRaw('
                 clients.id, clients.last_name, clients.first_name, clients.middle_name,
                 CAST(SUM(IF(cl.status IN (?, ?), 1, 0)) AS UNSIGNED) as online_count,
@@ -67,7 +70,9 @@ class ControlController extends Controller
         $this->query
             ->with(['phones', 'parent.phones', 'reports']) // 'contracts.versions.programs'
             ->with('logs', fn ($q) => $q->whereRaw('created_at >= NOW() - INTERVAL 3 MONTH'))
-            ->withCount('comments')
+            ->withCount([
+                'comments' => fn ($q) => $q->where('extra', 'control-lk'),
+            ])
             ->orderByRaw('last_name, first_name');
 
         return $this->handleIndexRequest(

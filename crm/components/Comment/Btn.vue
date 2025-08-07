@@ -6,6 +6,8 @@ const {
   entityId,
   entityType,
   count,
+  color,
+  extra: extraProp,
   variant = 'plain',
   size = 48,
 } = defineProps<{
@@ -13,12 +15,19 @@ const {
   entityId: number
   entityType: EntityType
   size?: number
+  color?: string
+  /**
+   * Сохраняет/подгружает комменты ТОЛЬКО для текущей страницы
+   * Берется текущая страница из useRoute и сохраняется в extra
+   */
+  extra?: boolean
   variant?: 'flat' | 'text' | 'elevated' | 'tonal' | 'outlined' | 'plain'
 }>()
 
 const commentDialog = ref<InstanceType<typeof CommentDialog>>()
-
 const localCount = ref<number>(0)
+const route = useRoute()
+const extra = extraProp ? (route.name as string) : undefined
 
 onMounted(() => loadData())
 
@@ -31,6 +40,7 @@ async function loadData() {
     `comments`,
     {
       params: {
+        extra,
         count: 1,
         entity_id: entityId,
         entity_type: entityType,
@@ -51,6 +61,7 @@ async function loadData() {
       :icon="mdiComment"
       :size="size"
       :variant="variant"
+      :color="color"
     />
     <v-badge
       v-if="localCount > 0"
@@ -62,6 +73,7 @@ async function loadData() {
     ref="commentDialog"
     :entity-id="entityId"
     :entity-type="entityType"
+    :extra="extra"
     @created="localCount++"
   />
 </template>

@@ -66,6 +66,7 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
           :count="item.comments_count"
           :entity-id="item.id"
           :entity-type="EntityTypeValue.client"
+          extra
         />
         <div class="vfn-1">
           <v-btn

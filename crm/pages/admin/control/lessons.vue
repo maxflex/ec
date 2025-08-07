@@ -8,7 +8,9 @@ interface Fields {
 
 type Field = keyof Fields
 
-type Item = PersonResource & Fields
+type Item = PersonResource & Fields & {
+  comments_count: number
+}
 
 const filters = ref<YearFilters>(loadFilters({
   year: currentAcademicYear(),
@@ -70,6 +72,7 @@ function showPercent(item: Item, field: Field): string {
           <th v-for="h in tableFields" :key="h.field">
             <span v-html="h.title" />
           </th>
+          <th />
         </tr>
       </thead>
       <tbody>
@@ -84,6 +87,19 @@ function showPercent(item: Item, field: Field): string {
             <span v-else>
               {{ formatPrice(item[field] as number) }}
             </span>
+          </td>
+          <td>
+            <div style="width: 44px">
+              <CommentBtn
+                color="gray"
+                :size="42"
+                :class="{ 'no-items': item.comments_count === 0 }"
+                :count="item.comments_count"
+                :entity-id="item.id"
+                :entity-type="EntityTypeValue.client"
+                extra
+              />
+            </div>
           </td>
         </tr>
       </tbody>
@@ -107,15 +123,6 @@ function showPercent(item: Item, field: Field): string {
       span {
         display: inline-block;
         padding-left: 10px !important;
-      }
-    }
-  }
-  tbody {
-    tr {
-      td {
-        &:last-child {
-          font-weight: 500;
-        }
       }
     }
   }

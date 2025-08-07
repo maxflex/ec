@@ -10,12 +10,17 @@ use Illuminate\Http\Request;
 class CommentController extends Controller
 {
     protected $filters = [
-        'equals' => ['entity_id', 'entity_type'],
+        'equals' => ['entity_id', 'entity_type', 'extra'],
     ];
 
     public function index(Request $request)
     {
         $query = Comment::with('user');
+
+        if (! $request->has('extra')) {
+            $query->whereNull('extra');
+        }
+
         $this->filter($request, $query);
 
         return $this->handleIndexRequest($request, $query, CommentResource::class);

@@ -2,9 +2,10 @@
 import { mdiSendVariant } from '@mdi/js'
 import { format } from 'date-fns'
 
-const { entityId, entityType } = defineProps<{
+const { entityId, entityType, extra } = defineProps<{
   entityId: number
   entityType: EntityType
+  extra?: string
 }>()
 const emit = defineEmits<{ (e: 'created'): void }>()
 const { dialog, width, transition } = useDialog('default')
@@ -45,6 +46,7 @@ async function send() {
     {
       method: 'post',
       body: {
+        extra,
         text: text.value,
         entity_id: entityId,
         entity_type: entityType,
@@ -66,6 +68,7 @@ async function loadData() {
     `comments`,
     {
       params: {
+        extra,
         entity_id: entityId,
         entity_type: entityType,
       },
