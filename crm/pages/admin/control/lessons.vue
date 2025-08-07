@@ -113,7 +113,8 @@ function showPercent(item: Item, field: Field): string {
   th {
     &:nth-child(3),
     &:nth-child(5),
-    &:nth-child(7) {
+    &:nth-child(7),
+    &:nth-child(8) {
       border-right: 1px solid rgb(var(--v-theme-border));
     }
 
@@ -124,6 +125,10 @@ function showPercent(item: Item, field: Field): string {
         display: inline-block;
         padding-left: 10px !important;
       }
+    }
+
+    &:nth-child(8) {
+      font-weight: 500;
     }
   }
 }
