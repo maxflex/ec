@@ -175,6 +175,7 @@ a.table-item {
     border-bottom: 1px solid #e0e0e0;
     // background: #fafafa;
     display: flex;
+    align-items: flex-start;
     gap: 40px;
     padding: 16px 10px 16px 20px;
     & > div:not(.client__actions) {

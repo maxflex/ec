@@ -49,8 +49,6 @@ declare global {
 
   type TeacherStatus = keyof typeof TeacherStatusLabel
 
-  type Cabinet = keyof typeof CabinetLabel
-
   type RequestStatus = keyof typeof RequestStatusLabel
 
   type Program = keyof typeof ProgramLabel
@@ -225,6 +223,7 @@ declare global {
     lesson_counts: GroupLessonCounts
     client_groups_count: number
     first_lesson_date?: string
+    capacity: number
     program: Program
     teachers: PersonResource[]
     teeth: Teeth
@@ -240,6 +239,7 @@ declare global {
     created_at?: string
     user?: PersonResource
     zoom: Zoom
+    capacity: number
     lessons_planned: number
     first_lesson_date?: string
     client_groups_count: number
@@ -268,7 +268,7 @@ declare global {
       program: Program
     }
     price?: number
-    cabinet?: Cabinet
+    cabinet?: string
     // TODO: date и time разве могут быть null?
     date?: string
     time?: string
@@ -294,7 +294,7 @@ declare global {
     date: string
     time: string
     time_end: string
-    cabinet: ?Cabinet
+    cabinet: ?string
     is_unplanned: boolean
     is_first: boolean
     topic: ?string

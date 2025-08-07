@@ -40,6 +40,9 @@ function clear() {
     <template v-if="'item' in $slots" #item="{ props, item }">
       <slot name="item" :props="props" :item="item" />
     </template>
+    <template v-if="'selection' in $slots" #selection="{ item }">
+      <slot name="selection" :item="item" />
+    </template>
     <template #no-data />
   </v-select>
 </template>

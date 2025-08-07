@@ -401,55 +401,6 @@ export const YearLabel = {
   2015: '15–16 уч. г.',
 } as const
 
-/* eslint-disable */
-export const CabinetLabel = {
-  cab428: "К-428",
-  cab430: "К-430",
-  cab432: "К-432",
-  cab433: "К-433",
-  cab434: "К-434",
-  cab439: "К-439",
-  cab407: "К-407",
-  cab409: "К-409",
-  cab412: "К-412",
-  cab413: "К-413",
-  cab414: "К-414",
-  cab417: "К-417",
-  cab418: "К-418",
-  cab420: "К-420",
-  cab422: "К-422",
-  cab423: "К-423",
-  cab424: "К-424",
-  cab310: "К-310",
-  cab312: "К-312",
-  cab314: "К-314",
-  cab316: "К-316",
-} as const;
-
-export const CabinetAllLabel = {
-  ...CabinetLabel,
-  tur10: "ТУР-10",
-  tur35: "ТУР-35",
-  tur205: "ТУР-205",
-  tur214: "ТУР-214",
-  tur221: "ТУР-221",
-  tur301: "ТУР-301",
-  tur302: "ТУР-302",
-  tur303: "ТУР-303",
-  tur304: "ТУР-304",
-  tur305: "ТУР-305",
-  tur310: "ТУР-310",
-  tur311: "ТУР-311",
-  tur314: "ТУР-314",
-  tur319: "ТУР-319",
-  tur320: "ТУР-320",
-  tur321: "ТУР-321",
-  tur322: "ТУР-322",
-  tur507: "ТУР-507",
-  tur809: "ТУР-809"
-} as const;
-/* eslint-enable */
-
 export const TeacherStatusLabel = {
   inactive: 'неактивен',
   active: 'ведет занятия сейчас',

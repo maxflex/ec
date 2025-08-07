@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ScheduleDraftGroup } from '.'
-import { mdiArrowRightThin } from '@mdi/js'
 import { isGroupChangedInContract } from '.'
 
 const { items, contractId } = defineProps<{
@@ -47,12 +46,16 @@ function getElementId(groupId: number, cId: number | null | undefined) {
             <GroupLessonCounts :item="item" />
           </UiIfSet>
         </td>
-        <td width="70">
+        <td width="80">
           <UiIfSet :value="!!item.client_groups_count">
             <template #empty>
               0 уч.
             </template>
-            {{ item.client_groups_count }} уч.
+            {{ item.client_groups_count }}
+            <template v-if="item.capacity">
+              ({{ item.capacity }})
+            </template>
+            уч.
           </UiIfSet>
         </td>
         <td width="140">
@@ -72,17 +75,11 @@ function getElementId(groupId: number, cId: number | null | undefined) {
           <!-- Группа находится в ЭТОМ договоре (есть действия, есть процесс по по договору) -->
           <template v-else>
             <!-- есть процесс по договору -->
-            <template v-if="item.swamp">
-              <!-- (id > 0) в "новых программах" не показываем -->
-              <div v-if="item.swamp.id > 0">
-                {{ item.swamp.lessons_conducted }}
-                <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
-                {{ item.swamp.total_lessons }}
-              </div>
-              <div>
-                {{ SwampStatusLabel[item.swamp.status] }}
-              </div>
-            </template>
+            <div>
+              <v-chip v-if="item.swamp" label color="success" density="comfortable" class="cursor-default">
+                выбрано
+              </v-chip>
+            </div>
 
             <ScheduleDraftProblems :item="item" :contract-id="contractId" />
 
@@ -106,7 +103,7 @@ function getElementId(groupId: number, cId: number | null | undefined) {
     transition: none !important;
     &:last-child {
       .schedule-draft-problems:not(:first-child) {
-        margin-top: 20px !important;
+        margin-top: 10px !important;
       }
     }
   }

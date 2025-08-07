@@ -4,7 +4,7 @@ import { quarterEditablePrograms } from '.'
 const emit = defineEmits<{ (e: 'updated'): void }>()
 
 interface BulkItem {
-  cabinet?: Cabinet
+  cabinet?: string
   quarter?: Quarter
   time?: string
   teacher_id?: number

@@ -25,10 +25,10 @@ const { items, blurOthers } = defineProps<{
             ГР-{{ item.id }}
           </NuxtLink>
         </td>
-        <td width="180">
+        <td width="170">
           <GroupTeachers :item="item" />
         </td>
-        <td width="150">
+        <td width="140">
           {{ ProgramShortLabel[item.program] }}
         </td>
         <td width="140">
@@ -39,12 +39,16 @@ const { items, blurOthers } = defineProps<{
             <GroupLessonCounts :item="item" />
           </UiIfSet>
         </td>
-        <td width="60">
+        <td width="80">
           <UiIfSet :value="!!item.client_groups_count">
             <template #empty>
               0 уч.
             </template>
-            {{ item.client_groups_count }} уч.
+            {{ item.client_groups_count }}
+            <template v-if="item.capacity">
+              ({{ item.capacity }})
+            </template>
+            уч.
           </UiIfSet>
         </td>
         <td width="140">

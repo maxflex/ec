@@ -21,8 +21,9 @@ class CabinetController extends Controller
         ]);
 
         $result = [];
+
         foreach (Cabinet::cases() as $cabinet) {
-            if (str($cabinet->value)->startsWith('tur')) {
+            if ($cabinet->isArchived()) {
                 continue;
             }
             $query = Lesson::query()
@@ -112,7 +113,7 @@ class CabinetController extends Controller
         $result = collect();
 
         foreach (Cabinet::cases() as $cabinet) {
-            if (str($cabinet->value)->startsWith('tur')) {
+            if ($cabinet->isArchived()) {
                 continue;
             }
             $isBusy = false;

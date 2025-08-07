@@ -7,7 +7,7 @@ const { item } = defineProps<{
 <template>
   <div class="panel-info">
     <div>
-      <h2 style="font-size: 28px">
+      <h2 style="font-size: 28px" class="pt-1">
         Группа {{ item.id }}
       </h2>
     </div>
@@ -35,6 +35,8 @@ const { item } = defineProps<{
         </UiIfSet>
       </div>
     </div>
+
+    <slot></slot>
 
     <div>
       <div>

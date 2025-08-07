@@ -55,11 +55,3 @@ nextTick(loadData)
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.page-groups-id {
-  .panel-info {
-    align-items: center;
-  }
-}
-</style>

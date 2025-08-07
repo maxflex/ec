@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { Cabinets } from '.'
+
 interface BusyCabinet {
-  cabinet: Cabinet
+  cabinet: string
   is_busy: boolean
 }
 
@@ -12,18 +14,19 @@ const { date, dateEnd, time, groupId, weekday } = defineProps<{
   weekday?: Weekday
 }>()
 
-const modelDefaults: BusyCabinet[] = Object.keys(CabinetLabel).map(id => ({
-  cabinet: id as Cabinet,
-  is_busy: false,
-}))
+const modelDefaults: BusyCabinet[] = Object.keys(Cabinets)
+  .filter(c => Cabinets[c].capacity > 0)
+  .map(c => ({
+    cabinet: c,
+    is_busy: false,
+  }))
 
 const items = ref<BusyCabinet[]>(modelDefaults)
 
-const model = defineModel<Cabinet | null >()
+const model = defineModel<string | null>()
 
 // при установке даты и времени, загружаем свободные кабинеты
 async function loadFreeCabinets() {
-  console.log('watch triggered', date, time)
   if (date && time && time.length === 5) {
     const { data } = await useHttp<BusyCabinet[]>(
       `cabinets/free`,
@@ -42,6 +45,8 @@ async function loadFreeCabinets() {
   else {
     items.value = modelDefaults
   }
+
+  console.log('loadFreeCabinets', items.value)
 }
 
 watch(() => date, loadFreeCabinets)
@@ -55,13 +60,23 @@ watch(() => dateEnd, loadFreeCabinets)
     v-bind="$attrs"
     :items="items"
     item-value="cabinet"
-    :item-title="({ cabinet }) => CabinetLabel[cabinet]"
   >
+    <template #selection="{ item }">
+      {{ Cabinets[item.value].label }}
+    </template>
     <template #item="{ props, item }">
-      <v-list-item v-bind="props" :class="{ 'text-gray': item.raw.is_busy }">
+      <v-list-item
+        v-bind="props"
+        :class="{ 'text-gray': item.raw.is_busy }"
+      >
         <template #prepend />
         <template #title>
-          {{ item.title }}
+          <span style="width: 50px; display: inline-block;">
+            {{ Cabinets[item.value].label }}
+          </span>
+          <span class="text-gray">
+            max: {{ Cabinets[item.value].capacity }}
+          </span>
         </template>
       </v-list-item>
     </template>

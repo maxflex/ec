@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { Cabinets } from '~/components/Cabinet'
+
 interface CabinetTeeth {
-  cabinet: Cabinet
+  cabinet: string
   teeth: Teeth
   free_until: string | null
   busy_by: {
@@ -27,7 +29,11 @@ const { items, indexPageData } = useIndex<CabinetTeeth>(
     <div class="cabinets">
       <div v-for="item in items" :key="item.cabinet">
         <div class="cabinets__title">
-          {{ CabinetAllLabel[item.cabinet] }}
+          {{ Cabinets[item.cabinet].label }}
+        </div>
+        <div>
+          max:
+          {{ Cabinets[item.cabinet].capacity }}
         </div>
         <div>
           <UiCircle v-if="item.busy_by" color="error">

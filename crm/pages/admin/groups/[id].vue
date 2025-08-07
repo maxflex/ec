@@ -42,6 +42,19 @@ nextTick(loadData)
   <template v-if="group">
     <div class="panel">
       <GroupPanel :item="group">
+        <div>
+          <div>
+            вместимость
+          </div>
+          <div>
+            <UiIfSet :value="group.capacity">
+              <template #empty>
+                не установлено
+              </template>
+              {{ group.capacity }}
+            </UiIfSet>
+          </div>
+        </div>
         <template #actions>
           <v-menu>
             <template #activator="{ props }">
@@ -101,11 +114,3 @@ nextTick(loadData)
   />
   <LazyPrintDialog ref="printDialog" />
 </template>
-
-<style lang="scss">
-.page-groups-id {
-  .panel-info {
-    align-items: center;
-  }
-}
-</style>

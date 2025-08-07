@@ -19,6 +19,7 @@ class GroupResource extends JsonResource
         return extract_fields($this, [
             '*',
         ], [
+            'capacity' => $this->capacity,
             'teacher_counts' => $this->teacher_counts,
             'lesson_counts' => $this->lesson_counts,
             'first_lesson_date' => $this->first_lesson_date,

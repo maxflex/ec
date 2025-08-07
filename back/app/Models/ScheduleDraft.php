@@ -363,6 +363,7 @@ class ScheduleDraft extends Model implements HasSchedule
                 'overlap', 'uncunducted_count', 'original_contract_id',
                 'current_contract_id',
             ], [
+                'capacity' => $g->capacity,
                 'teeth' => $g->getSavedSchedule(),
                 'teachers' => PersonResource::collection($g->teachers),
             ]))
@@ -411,11 +412,6 @@ class ScheduleDraft extends Model implements HasSchedule
     {
         return Teeth::get($this->getLessonsQuery());
     }
-
-    // public function getProgramsAttribute(): Collection
-    // {
-    //     return once(fn () => collect($this->data)->map(fn ($p) => (object) $p));
-    // }
 
     /**
      * Добавить новые программы в проект договора
@@ -731,11 +727,6 @@ class ScheduleDraft extends Model implements HasSchedule
 
         return $scheduleDraft;
     }
-
-    // public function getYearAttribute()
-    // {
-    //     return $this->year ?? ($this->contract_id ? $this->contract->year : current_academic_year());
-    // }
 
     /**
      * Программы из сохранённого проекта + остальные

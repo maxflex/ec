@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Once;
 
+use App\Enums\Cabinet;
 use App\Enums\RequestStatus;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
@@ -16,9 +17,9 @@ class UpdateEnumsCommand extends Command
 
     public function handle(): void
     {
-        $table = 'requests';
-        $field = 'status';
-        $enums = RequestStatus::cases();
+        $table = 'lessons';
+        $field = 'cabinet';
+        $enums = Cabinet::cases();
 
         Schema::table($table, function (Blueprint $table) {
             $table->string('new_enum');
@@ -29,23 +30,24 @@ class UpdateEnumsCommand extends Command
         ]);
 
         // обновление значений
-        DB::table($table)
-            ->where($field, 'awaiting')
-            ->update([
-                'new_enum' => RequestStatus::waiting->value,
-            ]);
-
-        DB::table($table)
-            ->where($field, 'trash')
-            ->update([
-                'new_enum' => RequestStatus::refused->value,
-            ]);
+        // DB::table($table)
+        //     ->where($field, 'awaiting')
+        //     ->update([
+        //         'new_enum' => RequestStatus::waiting->value,
+        //     ]);
+        //
+        // DB::table($table)
+        //     ->where($field, 'trash')
+        //     ->update([
+        //         'new_enum' => RequestStatus::refused->value,
+        //     ]);
         // конец обновление значений
 
         Schema::table($table, function (Blueprint $table) use ($field, $enums) {
             $table->dropColumn($field);
             $table->enum($field, array_column($enums, 'value'))
-                ->default(RequestStatus::new)
+                ->default($enums[0]->value)
+                ->after('status')
                 ->index();
         });
 

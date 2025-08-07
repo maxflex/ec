@@ -105,7 +105,7 @@ const allItems = computed(() => {
     }
 
     &--current {
-      background: rgb(var(--v-theme-success));
+      background: rgb(var(--v-theme-deepOrange));
     }
 
     &--is-past {

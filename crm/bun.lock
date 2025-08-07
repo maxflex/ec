@@ -43,7 +43,7 @@
         "vite-plugin-vuetify": "^2.1.1",
         "vue": "^3.5.13",
         "vue-router": "^4.5.0",
-        "vuetify": "^3.8.1",
+        "vuetify": "^3.9.4",
       },
     },
   },
@@ -2146,7 +2146,7 @@
 
     "vue3-slide-up-down": ["vue3-slide-up-down@2.1.0", "", { "peerDependencies": { "vue": "^3.0.0" } }, "sha512-sSCO3Z8yIDIgUjmNii6VK+xIvTPgKHdEHsohG1POQDVRQF8AqNyXSVfnUge4QmGX3BrZKsR6JZ38Aohxx8KHZA=="],
 
-    "vuetify": ["vuetify@3.8.2", "", { "peerDependencies": { "typescript": ">=4.7", "vite-plugin-vuetify": ">=2.1.0", "vue": "^3.5.0", "webpack-plugin-vuetify": ">=3.1.0" }, "optionalPeers": ["typescript", "vite-plugin-vuetify", "webpack-plugin-vuetify"] }, "sha512-UJNFP4egmKJTQ3V3MKOq+7vIUKO7/Fko5G6yUsOW2Rm0VNBvAjgO6VY6EnK3DTqEKN6ugVXDEPw37NQSTGLZvw=="],
+    "vuetify": ["vuetify@3.9.4", "", { "peerDependencies": { "typescript": ">=4.7", "vite-plugin-vuetify": ">=2.1.0", "vue": "^3.5.0", "webpack-plugin-vuetify": ">=3.1.0" }, "optionalPeers": ["typescript", "vite-plugin-vuetify", "webpack-plugin-vuetify"] }, "sha512-OUdXVoThHUydJHyFsUHGxKxZ333hXKquRNn2ycqouO08ehi3005QE9tLPkwcBii4sAYZg7mADMRp7JbcNiNrTQ=="],
 
     "web-streams-polyfill": ["web-streams-polyfill@3.3.3", "", {}, "sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw=="],
 

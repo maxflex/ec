@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\HasSchedule;
+use App\Enums\Cabinet;
 use App\Enums\LessonStatus;
 use App\Enums\Program;
 use App\Utils\Teeth;
@@ -100,6 +101,20 @@ class Group extends Model implements HasSchedule
     public function lessons(): HasMany
     {
         return $this->hasMany(Lesson::class);
+    }
+
+    /**
+     * Минимальная вместимость планируемого занятия
+     */
+    public function getCapacityAttribute(): int
+    {
+        $cabinets = $this->lessons->where('status', LessonStatus::planned)->pluck('cabinet')->unique();
+
+        if ($cabinets->isEmpty()) {
+            return 0;
+        }
+
+        return $cabinets->min(fn (Cabinet $c) => $c->capacity());
     }
 
     public function getSavedSchedule(): object

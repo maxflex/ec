@@ -4,7 +4,7 @@ import { quarterEditablePrograms } from '.'
 
 interface BulkItem {
   weekdays: { [key in Weekday]: string }
-  cabinets: { [key in Weekday]: Cabinet | null }
+  cabinets: { [key in Weekday]: string | null }
   start_date: string
   end_date: string
 }

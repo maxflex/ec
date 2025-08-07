@@ -4,6 +4,7 @@ import {
   mdiBookOpenVariant,
   mdiPaperclip,
 } from '@mdi/js'
+import { Cabinets } from '~/components/Cabinet'
 
 const { item, checkboxes } = defineProps<{
   item: LessonListResource
@@ -57,7 +58,7 @@ const isConductDisabled = item.status !== 'conducted'
     </div>
     <div style="width: 70px">
       <template v-if="item.cabinet">
-        {{ CabinetAllLabel[item.cabinet] }}
+        {{ Cabinets[item.cabinet].label }}
       </template>
     </div>
     <div v-if="item.teacher" style="width: 180px">

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Cabinets } from '~/components/Cabinet'
+
 const { item } = defineProps<{
   item: LessonListResource
 }>()
@@ -11,7 +13,7 @@ const { item } = defineProps<{
     </div>
     <div style="width: 60px">
       <template v-if="item.cabinet">
-        {{ CabinetAllLabel[item.cabinet] }}
+        {{ Cabinets[item.cabinet].label }}
       </template>
     </div>
     <div v-if="item.teacher" style="width: 150px">
