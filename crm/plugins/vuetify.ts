@@ -102,6 +102,12 @@ export default defineNuxtPlugin((nuxtApp) => {
         hideDetails: true,
         // color: colors.deepOrange,
       },
+      VSwitch: {
+        density: 'compact',
+        hideDetails: true,
+        inset: true,
+        color: colors.success,
+      },
     },
     theme: {
       defaultTheme: 'myTheme',

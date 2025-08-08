@@ -105,7 +105,7 @@ nextTick(loadData)
     <Schedule v-if="selectedTab === 'schedule'" :group="group" />
     <GroupVisitsTab v-else-if="selectedTab === 'visits'" :id="group.id" />
     <GroupActTab v-else-if="selectedTab === 'acts'" :id="group.id" />
-    <GroupStudentsTab v-else :group="group" />
+    <GroupStudentsTab v-else :group="group" @updated="loadData" />
   </template>
   <GroupDialog
     ref="groupDialog"

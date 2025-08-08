@@ -2,7 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\CvpStatus;
+use App\Enums\Cabinet;
+use App\Enums\RequestStatus;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -16,10 +17,9 @@ class UpdateEnumsCommand extends Command
 
     public function handle(): void
     {
-        $table = 'contract_version_programs';
-        $field = 'status';
-        $after = 'program'; // после какого поля стоит
-        $enums = CvpStatus::cases();
+        $table = 'lessons';
+        $field = 'cabinet';
+        $enums = Cabinet::cases();
 
         Schema::table($table, function (Blueprint $table) {
             $table->string('new_enum');
@@ -43,12 +43,11 @@ class UpdateEnumsCommand extends Command
         //     ]);
         // конец обновление значений
 
-        Schema::table($table, function (Blueprint $table) use ($field, $enums, $after) {
+        Schema::table($table, function (Blueprint $table) use ($field, $enums) {
             $table->dropColumn($field);
             $table->enum($field, array_column($enums, 'value'))
-                // ->nullable()
                 ->default($enums[0]->value)
-                ->after($after)
+                ->after('status')
                 ->index();
         });
 

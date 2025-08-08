@@ -2,7 +2,6 @@
 import type { ScheduleDraftStudent } from '../ScheduleDraft'
 import type { SwampFilters } from './Filters.vue'
 import { mdiArrowRightThin } from '@mdi/js'
-import { getSwampStatus } from '.'
 
 const { group } = defineProps<{ group: GroupResource }>()
 
@@ -16,8 +15,20 @@ const filters = ref<SwampFilters>({
 const loading = ref(false)
 const saving = ref(false)
 
-async function select(item: ScheduleDraftStudent) {
-  if (item.group_id !== null) {
+const selected = ref<Record<number, boolean>>({})
+const selectedCount = computed<number>(() => Object.keys(selected.value).length)
+
+function toggle(item: ScheduleDraftStudent) {
+  if (item.id in selected.value) {
+    delete selected.value[item.id]
+  }
+  else {
+    selected.value[item.id] = true
+  }
+}
+
+async function apply() {
+  if (selectedCount.value === 0) {
     return
   }
 
@@ -28,7 +39,7 @@ async function select(item: ScheduleDraftStudent) {
     {
       method: 'POST',
       body: {
-        contract_version_program_id: item.id,
+        ids: Object.keys(selected.value),
         group_id: group!.id,
       },
     },
@@ -37,6 +48,16 @@ async function select(item: ScheduleDraftStudent) {
   emit('updated')
 
   saving.value = false
+}
+
+function isSelected(item: ScheduleDraftStudent) {
+  if (item.id in selected.value) {
+    return true
+  }
+  if (item.group_id === group.id) {
+    return true
+  }
+  return false
 }
 
 const { items, indexPageData } = useIndex<ScheduleDraftStudent>(
@@ -58,19 +79,27 @@ const { items, indexPageData } = useIndex<ScheduleDraftStudent>(
       <SwampFilters v-model="filters" disabled />
     </template>
     <template #buttons>
-      <v-btn color="primary" @click="emit('back')">
-        <template #prepend>
-          <v-icon icon="$back" />
-        </template>
-        назад
-      </v-btn>
+      <div class="d-flex ga-4">
+        <v-btn variant="text" @click="emit('back')">
+          отмена
+        </v-btn>
+        <v-btn color="primary" :loading="saving" :width="170" @click="apply()">
+          применить
+          <span v-if="selectedCount > 0" class="pl-2 opacity-5">
+            {{ selectedCount }}
+          </span>
+        </v-btn>
+      </div>
     </template>
     <v-table class="swamp-selector table-padding" :class="{ 'element-loading': loading }">
       <tbody>
         <tr
           v-for="item in items"
           :key="item.id"
-          :class="{ 'swamp-selector--has-problems': item.has_problems }"
+          :class="{
+            'swamp-selector--has-problems': item.has_problems,
+            'changed': item.id in selected,
+          }"
         >
           <td width="230">
             <UiPerson :item="item.client" />
@@ -81,9 +110,7 @@ const { items, indexPageData } = useIndex<ScheduleDraftStudent>(
           <td width="160">
             договор №{{ item.contract_id }}
           </td>
-          <td widht="200">
-            <ScheduleDraftProblems :item="item" />
-          </td>
+
           <td style="position: relative;">
             <div class="pl-3">
               <div>
@@ -92,20 +119,24 @@ const { items, indexPageData } = useIndex<ScheduleDraftStudent>(
                 {{ item.swamp.total_lessons }}
               </div>
               <div>
-                {{ getSwampStatus(item.swamp.status, item.group_id) }}
+                {{ CvpStatusLabel[item.swamp.status] }}
               </div>
             </div>
-
-            <div v-if="!item.has_problems" class="table-actionss">
-              <v-btn
-                :loading="saving"
-                color="primary"
-                density="comfortable"
-                icon="$plus"
-                :size="48"
-                @click="select(item)"
-              />
-            </div>
+          </td>
+          <td widht="200" style="vertical-align: middle;">
+            <ScheduleDraftProblems :item="item" />
+          </td>
+          <td>
+            <v-switch
+              :class="{ 'no-pointer-events': item.has_problems }"
+              :model-value="isSelected(item)"
+              :true-value="true"
+              color="success"
+              hide-details
+              inset
+              density="compact"
+              @click="toggle(item)"
+            ></v-switch>
           </td>
         </tr>
       </tbody>

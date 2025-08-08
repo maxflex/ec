@@ -95,9 +95,8 @@ defineExpose({ open })
           />
         </div>
         <div>
-          <UiClearableSelect
+          <CabinetSelector
             v-model="lesson.cabinet"
-            :items="selectItems(CabinetLabel)"
             label="Кабинет"
           />
         </div>

@@ -420,7 +420,7 @@ class ScheduleDraft extends Model implements HasSchedule
     public function addPrograms(array $newPrograms, int $contractId)
     {
         $newPrograms = collect($newPrograms);
-        $id = min($this->programs->min('id'), 0);
+        $id = min($this->programs->min('id'), 0) ?? 0;
         $programs = $this->programs;
 
         // Добавляем новые программы

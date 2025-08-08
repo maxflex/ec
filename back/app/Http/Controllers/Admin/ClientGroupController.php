@@ -22,13 +22,22 @@ class ClientGroupController extends Controller
     }
 
     /**
-     * Добавить ученика в группу
+     * Добавить ученика в группу (теперь массовое)
      */
     public function store(Request $request)
     {
-        $clientGroup = ClientGroup::create($request->all());
+        $request->validate([
+            'group_id' => ['required', 'exists:groups,id'],
+            'ids' => ['required', 'array'],
+            'ids.*' => ['integer', 'exists:contract_version_programs,id'],
+        ]);
 
-        return new ClientGroupResource($clientGroup);
+        foreach ($request->ids as $id) {
+            ClientGroup::create([
+                'group_id' => $request->group_id,
+                'contract_version_program_id' => $id,
+            ]);
+        }
     }
 
     /**

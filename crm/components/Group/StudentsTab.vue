@@ -2,7 +2,7 @@
 import { mdiSwapHorizontal } from '@mdi/js'
 
 const { group } = defineProps<{ group: GroupResource }>()
-
+const emit = defineEmits(['updated'])
 const loading = ref(true)
 const items = ref<ClientGroupResource[]>([])
 const isEditable = useAuthStore().user?.entity_type === EntityTypeValue.user
@@ -32,7 +32,7 @@ nextTick(loadData)
   <SwampSelector
     v-if="isSwampSelector"
     :group="group"
-    @updated="loadData()"
+    @updated="loadData(); emit('updated')"
     @back="isSwampSelector = false"
   />
   <UiIndexPage v-else :data="{ loading, noData: false }">

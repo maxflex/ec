@@ -17,7 +17,7 @@ const hasProblems = hasOverlap || hasUnconducted || hasProcessInAnotherContract
   <v-tooltip v-if="hasProblems" location="bottom">
     <template #activator="{ props }">
       <v-chip label color="error" density="comfortable" v-bind="props" class="cursor-default schedule-draft-problems">
-        есть проблемы
+        проблемы
       </v-chip>
     </template>
     <div v-if="hasProcessInAnotherContract">

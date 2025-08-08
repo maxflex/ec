@@ -52,11 +52,11 @@ function getElementId(groupId: number, cId: number | null | undefined) {
               0 уч.
             </template>
             {{ item.client_groups_count }}
-            <template v-if="item.capacity">
-              ({{ item.capacity }})
-            </template>
             уч.
           </UiIfSet>
+          <div v-if="item.capacity" class="text-gray">
+            {{ item.capacity }} max.
+          </div>
         </td>
         <td width="140">
           <UiIfSet :value="Object.keys(item.teeth).length > 0">
@@ -66,7 +66,7 @@ function getElementId(groupId: number, cId: number | null | undefined) {
             <TeethAsText :items="item.teeth" />
           </UiIfSet>
         </td>
-        <td>
+        <td width="100" style="vertical-align: middle;">
           <!-- Группа сейчас находится в ДРУГОМ договоре (нет действий, нет процесса) -->
           <template v-if="item.swamp && item.current_contract_id !== contractId">
             <ScheduleDraftProblems :item="item" :contract-id="contractId" />
@@ -75,19 +75,31 @@ function getElementId(groupId: number, cId: number | null | undefined) {
           <!-- Группа находится в ЭТОМ договоре (есть действия, есть процесс по по договору) -->
           <template v-else>
             <!-- есть процесс по договору -->
-            <div>
-              <v-chip v-if="item.swamp" label color="success" density="comfortable" class="cursor-default">
-                выбрано
-              </v-chip>
-            </div>
-
             <ScheduleDraftProblems :item="item" :contract-id="contractId" />
+          </template>
+        </td>
+        <td width="200">
+          <template v-if="item.swamp && item.current_contract_id !== contractId">
+            <v-switch :model-value="false"></v-switch>
+          </template>
 
-            <!-- действия -->
-            <div class="table-actionss">
-              <v-btn v-if="item.swamp" color="error" density="comfortable" icon="$minus" :size="48" @click="emit('removeFromGroup', item)" />
-              <v-btn v-else color="primary" density="comfortable" icon="$plus" :size="48" @click="emit('addToGroup', item)" />
-            </div>
+          <template v-else>
+            <v-switch
+              v-if="item.swamp"
+              :model-value="true"
+              inset
+              @click="emit('removeFromGroup', item)"
+            ></v-switch>
+
+            <v-switch
+              v-else
+              :model-value="false"
+              @click="emit('addToGroup', item)"
+            ></v-switch>
+
+            <!-- <v-chip v-if="item.swamp" label color="success" density="comfortable" class="cursor-default">
+              выбрано
+            </v-chip> -->
           </template>
         </td>
       </tr>

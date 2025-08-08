@@ -3,7 +3,6 @@ import type { SavedScheduleDraftResource, ScheduleDraft, ScheduleDraftGroup, Sch
 import { ContractVersionDialog } from '#components'
 import { mdiArrowRightThin, mdiChevronRight } from '@mdi/js'
 import { apiUrl, isGroupChangedInContract } from '.'
-import { getSwampStatus } from '../Swamp'
 
 const { client, year, savedDraft } = defineProps<{
   /**
@@ -351,7 +350,7 @@ nextTick(fromActualContracts)
             {{ p.swamp!.total_lessons }}
           </span>
           <span style="background-color: transparent;">
-            {{ getSwampStatus(p.swamp!.status, p.group_id) }}
+            {{ CvpStatusLabel[p.swamp!.status] }}
           </span>
           <v-btn
             v-if="p.id < 0"

@@ -63,6 +63,9 @@ watch(() => dateEnd, loadFreeCabinets)
   >
     <template #selection="{ item }">
       {{ Cabinets[item.value].label }}
+      <span v-if="Cabinets[item.value].capacity" class="text-gray pl-2">
+        max: {{ Cabinets[item.value].capacity }}
+      </span>
     </template>
     <template #item="{ props, item }">
       <v-list-item

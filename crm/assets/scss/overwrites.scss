@@ -81,3 +81,24 @@ main {
     }
   }
 }
+
+.v-switch {
+  scale: 0.8;
+
+  .v-switch__track {
+    padding: 0 !important;
+  }
+
+  .v-selection-control {
+    &:not(.v-selection-control--dirty) {
+      .v-switch__track {
+        opacity: 0.2 !important;
+      }
+    }
+    &--dirty {
+      .v-switch__track {
+        opacity: 1 !important;
+      }
+    }
+  }
+}

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { SwampListResource } from '.'
 import { mdiArrowRightThin } from '@mdi/js'
-import { getSwampStatus } from '.'
 
 const { items, group } = defineProps<{
   items: SwampListResource[]
@@ -118,7 +117,7 @@ async function removeFromGroup(item: SwampListResource) {
               {{ item.total_lessons }}
             </div>
             <div>
-              {{ getSwampStatus(item.status, item.group?.id) }}
+              {{ CvpStatusLabel[item.status] }}
             </div>
           </div>
           <div v-if="item.client_group_id" class="table-actionss">

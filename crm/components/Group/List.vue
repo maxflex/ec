@@ -45,11 +45,11 @@ const { items, blurOthers } = defineProps<{
               0 уч.
             </template>
             {{ item.client_groups_count }}
-            <template v-if="item.capacity">
-              ({{ item.capacity }})
-            </template>
             уч.
           </UiIfSet>
+          <div v-if="item.capacity" class="text-gray">
+            {{ item.capacity }} max.
+          </div>
         </td>
         <td width="140">
           <UiIfSet :value="Object.keys(item.teeth).length > 0">
