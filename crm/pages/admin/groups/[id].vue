@@ -44,14 +44,16 @@ nextTick(loadData)
       <GroupPanel :item="group">
         <div>
           <div>
-            вместимость
+            кабинеты
           </div>
           <div>
-            <UiIfSet :value="group.capacity">
+            <UiIfSet :value="group.cabinets.length">
               <template #empty>
                 не установлено
               </template>
-              {{ group.capacity }}
+              <div v-for="c in group.cabinets" :key="c">
+                <CabinetAsText :cabinet="c" />
+              </div>
             </UiIfSet>
           </div>
         </div>

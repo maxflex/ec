@@ -56,9 +56,6 @@ const isAlreadyInOtherGroup = computed(() => items.some(e => e.swamp && e.curren
             {{ item.client_groups_count }}
             уч.
           </UiIfSet>
-          <div v-if="item.capacity" class="text-gray">
-            {{ item.capacity }} max.
-          </div>
         </td>
         <td width="160">
           <UiIfSet :value="Object.keys(item.teeth).length > 0">
@@ -67,6 +64,11 @@ const isAlreadyInOtherGroup = computed(() => items.some(e => e.swamp && e.curren
             </template>
             <TeethAsText :items="item.teeth" />
           </UiIfSet>
+        </td>
+        <td>
+          <div v-for="c in item.cabinets" :key="c">
+            <CabinetAsText :cabinet="c" />
+          </div>
         </td>
         <td width="30">
           <ScheduleDraftProblems :item="item" :contract-id="contractId" />

@@ -68,7 +68,7 @@ const { items, indexPageData } = useIndex<AddToGroupItem>(
     saveFilters: false,
     staticFilters: {
       group_id: group.id,
-      students_tab: true,
+      add_to_group: true,
     },
   },
 )
@@ -115,7 +115,7 @@ const { items, indexPageData } = useIndex<AddToGroupItem>(
             <ContractVersionProgramStatus :item="item" />
           </td>
           <td widht="200">
-            <SwampAddToGroupProblems :item="item" :group-id="group.id" />
+            <SwampAddToGroupProblems v-if="item.has_problems" :item="item" :group-id="group.id" />
           </td>
           <td>
             <v-switch

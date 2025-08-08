@@ -361,7 +361,7 @@ class ScheduleDraft extends Model implements HasSchedule
                 'overlap', 'uncunducted_count', 'original_contract_id',
                 'current_contract_id',
             ], [
-                'capacity' => $g->capacity,
+                'cabinets' => $g->cabinets,
                 'teeth' => $g->getSavedSchedule(),
                 'teachers' => PersonResource::collection($g->teachers),
             ]))

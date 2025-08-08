@@ -23,7 +23,7 @@ const hasProblems = hasOverlap || hasUnconducted || hasProcessInAnotherContract
       </v-chip> -->
     </template>
     <div v-if="hasProcessInAnotherContract">
-      уже добавлен в эту группу по другому договору – №{{ item.current_contract_id }}
+      добавлен в эту группу по другому договору – №{{ item.current_contract_id }}
     </div>
     <div v-if="hasOverlap">
       {{ item.overlap!.count }} пересечений

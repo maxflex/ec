@@ -64,10 +64,8 @@ const isConductDisabled = item.status !== 'conducted'
     <div style="width: 110px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
-    <div style="width: 50px">
-      <template v-if="item.cabinet">
-        {{ Cabinets[item.cabinet].label }}
-      </template>
+    <div style="width: 70px">
+      <CabinetAsText v-if="item.cabinet" :cabinet="item.cabinet" />
     </div>
     <div v-if="item.teacher" style="width: 150px">
       <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }" @click.stop>

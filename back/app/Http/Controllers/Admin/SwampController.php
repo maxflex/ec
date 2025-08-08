@@ -45,8 +45,8 @@ class SwampController extends Controller
             return $this->counts($query);
         }
 
-        if ($request->has('students_tab')) {
-            return $this->studentsTab($query, $request);
+        if ($request->has('add_to_group')) {
+            return $this->addToGroup($query, $request);
         }
 
         return $this->handleIndexRequest($request, $query, SwampListResource::class);
@@ -81,7 +81,7 @@ class SwampController extends Controller
         return paginate($result);
     }
 
-    private function studentsTab($query, Request $request)
+    private function addToGroup($query, Request $request)
     {
         $request->validate([
             'group_id' => ['required', 'exists:groups,id'],

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Cabinets } from '../Cabinet'
+
 const { items, blurOthers } = defineProps<{
   items: GroupListResource[]
   /**
@@ -47,9 +49,6 @@ const { items, blurOthers } = defineProps<{
             {{ item.client_groups_count }}
             уч.
           </UiIfSet>
-          <div v-if="item.capacity" class="text-gray">
-            {{ item.capacity }} max.
-          </div>
         </td>
         <td width="140">
           <UiIfSet :value="Object.keys(item.teeth).length > 0">
@@ -61,9 +60,9 @@ const { items, blurOthers } = defineProps<{
         </td>
         <slot :group="item">
         </slot>
-        <td v-if="!('default' in $slots)">
-          <div v-if="item.zoom.id" class="group-list__zoom">
-            {{ item.zoom.id }} / {{ item.zoom.password }}
+        <td>
+          <div v-for="c in item.cabinets" :key="c">
+            <CabinetAsText :cabinet="c" />
           </div>
         </td>
       </tr>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { SwampListResource } from '.'
-import { mdiArrowRightThin } from '@mdi/js'
 
 const { items } = defineProps<{
   items: SwampListResource[]
@@ -61,6 +60,11 @@ const loading = ref(false)
               <TeethAsText :items="item.group.teeth" />
             </UiIfSet>
           </td>
+          <td>
+            <div v-for="c in item.group.cabinets" :key="c">
+              <CabinetAsText :cabinet="c" />
+            </div>
+          </td>
         </template>
         <template v-else>
           <td class="text-gray">
@@ -71,10 +75,10 @@ const loading = ref(false)
           <td>
             {{ ProgramShortLabel[item.program] }}
           </td>
-          <td colspan="3" />
+          <td colspan="4" />
         </template>
         <td colspan="2">
-          <ContractVersionProgramStatus :item="item" class="pl-12" />
+          <ContractVersionProgramStatus :item="item" />
         </td>
       </tr>
     </tbody>

@@ -10,6 +10,7 @@ use App\Utils\Teeth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 class Group extends Model implements HasSchedule
 {
@@ -104,17 +105,27 @@ class Group extends Model implements HasSchedule
     }
 
     /**
-     * Минимальная вместимость планируемого занятия
+     * Минимальная вместимость среди всех кабинетов
      */
     public function getCapacityAttribute(): int
     {
-        $cabinets = $this->lessons->where('status', LessonStatus::planned)->pluck('cabinet')->unique();
+        $cabinets = $this->cabinets;
 
         if ($cabinets->isEmpty()) {
             return 0;
         }
 
         return $cabinets->min(fn (Cabinet $c) => $c->capacity());
+    }
+
+    /**
+     * Кабинеты из планируемых занятий
+     *
+     * @return Collection<int, Cabinet>
+     */
+    public function getCabinetsAttribute(): Collection
+    {
+        return $this->lessons->pluck('cabinet')->unique();
     }
 
     public function getSavedSchedule(): object

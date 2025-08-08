@@ -223,11 +223,11 @@ declare global {
     lesson_counts: GroupLessonCounts
     client_groups_count: number
     first_lesson_date?: string
-    capacity: number
     program: Program
     teachers: PersonResource[]
     teeth: Teeth
     zoom: Zoom
+    cabinets: string[]
   }
 
   interface GroupResource {
@@ -239,7 +239,7 @@ declare global {
     created_at?: string
     user?: PersonResource
     zoom: Zoom
-    capacity: number
+    cabinets: string[]
     lessons_planned: number
     first_lesson_date?: string
     client_groups_count: number

@@ -17,11 +17,11 @@ const menu: Menu = [
     title: 'Дневник',
     to: '/journal',
   },
-  {
-    icon: mdiCalendar,
-    title: 'Расписание',
-    to: '/schedule',
-  },
+  // {
+  //   icon: mdiCalendar,
+  //   title: 'Расписание',
+  //   to: '/schedule',
+  // },
   {
     icon: mdiNumeric5BoxMultiple,
     title: 'Оценки',
