@@ -26,7 +26,7 @@ function sum(status: keyof typeof SwampStatusLabelExtended) {
         <td>
           <UiPerson :item="item.client" />
         </td>
-        <td v-for="(_, status) in SwampStatusLabelExtended" :key="status" width="140">
+        <td v-for="(_, status) in SwampStatusLabelExtended" :key="status" :class="`swamp-counts--${status}`" width="140">
           {{ item.counts[status] || '' }}
         </td>
       </tr>
@@ -34,7 +34,7 @@ function sum(status: keyof typeof SwampStatusLabelExtended) {
     <tfoot>
       <tr>
         <td></td>
-        <td v-for="(_, status) in SwampStatusLabelExtended" :key="status" width="140">
+        <td v-for="(_, status) in SwampStatusLabelExtended" :key="status" :class="`swamp-counts--${status}`" width="140">
           {{ sum(status) || '' }}
         </td>
       </tr>
@@ -72,6 +72,27 @@ function sum(status: keyof typeof SwampStatusLabelExtended) {
       font-weight: bold;
       border-top: 1px solid rgb(var(--v-theme-border)) !important;
     }
+  }
+
+  // active_no_group: 'к исполнению',
+  // active_in_group: 'к исполнению <br/>в группе',
+  // finished_no_group: 'исполнено',
+  // finished_in_group: 'исполнено <br />в группе',
+  // exceeded_no_group: 'перевыполнено',
+  // exceeded_in_group: 'перевыполнено <br />в группе',
+  &--active_no_group,
+  &--active_in_group {
+    color: rgb(var(--v-theme-deepOrange));
+  }
+
+  &--finished_no_group,
+  &--finished_in_group {
+    color: rgb(var(--v-theme-success));
+  }
+
+  &--exceeded_no_group,
+  &--exceeded_in_group {
+    color: rgb(var(--v-theme-error));
   }
 }
 </style>

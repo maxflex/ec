@@ -29,7 +29,7 @@ nextTick(loadData)
 </script>
 
 <template>
-  <SwampSelector
+  <SwampAddToGroupList
     v-if="isSwampSelector"
     :group="group"
     @updated="loadData(); emit('updated')"

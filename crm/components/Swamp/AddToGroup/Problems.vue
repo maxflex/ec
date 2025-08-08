@@ -1,29 +1,32 @@
 <script setup lang="ts">
-import type { ScheduleDraftGroup } from '.'
+import type { AddToGroupItem } from '.'
 import { mdiAlertBox } from '@mdi/js'
 
-const { item, contractId } = defineProps<{
-  item: ScheduleDraftGroup
-  contractId: number
+const { item, groupId } = defineProps<{
+  item: AddToGroupItem
+  groupId: number
 }>()
 
 const hasOverlap = !!item.overlap?.count
 const hasUnconducted = item.uncunducted_count > 0
-const hasProcessInAnotherContract = item.swamp && item.current_contract_id && item.current_contract_id !== contractId
+const isAlreadyAdded = !!item.group_id
 
-const hasProblems = hasOverlap || hasUnconducted || hasProcessInAnotherContract
+const hasProblems = hasOverlap || hasUnconducted || isAlreadyAdded
 </script>
 
 <template>
   <v-tooltip v-if="hasProblems" location="bottom">
     <template #activator="{ props }">
       <v-icon :icon="mdiAlertBox" v-bind="props" color="error" :size="26" />
-      <!-- <v-chip label color="error" density="comfortable" v-bind="props" class="cursor-default schedule-draft-problems">
-        проблемы
-      </v-chip> -->
     </template>
-    <div v-if="hasProcessInAnotherContract">
-      уже добавлен в эту группу по другому договору – №{{ item.current_contract_id }}
+    <div v-if="isAlreadyAdded">
+      <template v-if="groupId === item.group_id">
+        добавлен в эту группу
+      </template>
+      <template v-else>
+        добавлен в другую группу
+      </template>
+      по договору №{{ item.current_contract_id }}
     </div>
     <div v-if="hasOverlap">
       {{ item.overlap!.count }} пересечений

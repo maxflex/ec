@@ -23,6 +23,7 @@ function clear() {
     :density="density"
     hide-details
     :disabled="disabled"
+    no-auto-scroll
   >
     <template v-if="Array.isArray(model) && model.length > 1" #selection="{ index }">
       <template v-if="index === 0">

@@ -16,6 +16,8 @@ const emit = defineEmits<{
 function getElementId(groupId: number, cId: number | null | undefined) {
   return `schedule-draft-group-${groupId}${cId ? `-${cId}` : ''}`
 }
+
+const isAlreadyInOtherGroup = computed(() => items.some(e => e.swamp && e.current_contract_id === contractId))
 </script>
 
 <template>
@@ -58,7 +60,7 @@ function getElementId(groupId: number, cId: number | null | undefined) {
             {{ item.capacity }} max.
           </div>
         </td>
-        <td width="140">
+        <td width="160">
           <UiIfSet :value="Object.keys(item.teeth).length > 0">
             <template #empty>
               расписание отсутствует
@@ -66,40 +68,28 @@ function getElementId(groupId: number, cId: number | null | undefined) {
             <TeethAsText :items="item.teeth" />
           </UiIfSet>
         </td>
-        <td width="100" style="vertical-align: middle;">
+        <td width="30">
+          <ScheduleDraftProblems :item="item" :contract-id="contractId" />
+        </td>
+        <td>
           <!-- Группа сейчас находится в ДРУГОМ договоре (нет действий, нет процесса) -->
           <template v-if="item.swamp && item.current_contract_id !== contractId">
-            <ScheduleDraftProblems :item="item" :contract-id="contractId" />
+            <v-switch :model-value="false" disabled />
           </template>
 
           <!-- Группа находится в ЭТОМ договоре (есть действия, есть процесс по по договору) -->
           <template v-else>
-            <!-- есть процесс по договору -->
-            <ScheduleDraftProblems :item="item" :contract-id="contractId" />
-          </template>
-        </td>
-        <td width="200">
-          <template v-if="item.swamp && item.current_contract_id !== contractId">
-            <v-switch :model-value="false"></v-switch>
-          </template>
-
-          <template v-else>
             <v-switch
               v-if="item.swamp"
               :model-value="true"
-              inset
               @click="emit('removeFromGroup', item)"
             ></v-switch>
-
             <v-switch
               v-else
               :model-value="false"
+              :disabled="isAlreadyInOtherGroup"
               @click="emit('addToGroup', item)"
             ></v-switch>
-
-            <!-- <v-chip v-if="item.swamp" label color="success" density="comfortable" class="cursor-default">
-              выбрано
-            </v-chip> -->
           </template>
         </td>
       </tr>

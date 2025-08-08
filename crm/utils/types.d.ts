@@ -781,6 +781,12 @@ declare global {
   interface YearFilters {
     year: Year
   }
+
+  interface ScheduleOverlap {
+    count: number
+    programs: Program[]
+  }
+
 }
 
 export {}

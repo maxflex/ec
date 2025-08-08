@@ -268,7 +268,6 @@ class ScheduleDraft extends Model implements HasSchedule
             $cvp = $p['id'] > 0 ? $cvpById[$p['id']] : null;
             $lessonsConducted = $cvp ? $cvp->lessons_conducted : 0;
             $totalLessons = $cvp ? $cvp->total_lessons : 33; // 33 – прогноз по занятиям, чтобы статус был "к исполнению"
-            $hasGroup = $p['group_id'] !== null;
 
             return (object) [
                 'id' => $p['id'],
@@ -279,7 +278,6 @@ class ScheduleDraft extends Model implements HasSchedule
                 'status' => ContractVersionProgram::getStatus(
                     $lessonsConducted,
                     $totalLessons,
-                    $hasGroup,
                 ),
             ];
         })->keyBy('id');

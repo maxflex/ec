@@ -26,16 +26,11 @@ interface ScheduleDraftSwamp {
   contract_id: number | null
 }
 
-interface Overlap {
-  count: number
-  programs: Program[]
-}
-
 export interface ScheduleDraftGroup extends GroupListResource {
   /**
    * Пересечения в расписании
    */
-  overlap?: Overlap
+  overlap?: ScheduleOverlap
   swamp?: ScheduleDraftSwamp
   uncunducted_count: number
   /**
@@ -46,19 +41,6 @@ export interface ScheduleDraftGroup extends GroupListResource {
   /**
    * По какой программе добавлен в группу сейчас
    */
-  current_contract_id: number | null
-}
-
-export interface ScheduleDraftStudent {
-  id: number
-  client: PersonResource
-  uncunducted_count: number
-  overlap: Overlap
-  contract_id: number
-  teeth: Teeth
-  group_id: number | null
-  has_problems: boolean
-  swamp: ScheduleDraftSwamp
   current_contract_id: number | null
 }
 

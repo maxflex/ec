@@ -30,7 +30,6 @@ export interface ClientResource extends PersonWithPhotoResource, HasPhones {
   head_teacher?: PersonResource
   parent: ParentResource
   is_remote: boolean
-  can_login?: boolean
   user?: PersonResource
   created_at?: string
   email?: string

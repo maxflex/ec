@@ -49,22 +49,6 @@ nextTick(loadData)
       <div class="panel-info">
         <div class="client-avatar">
           <UiAvatar :item="client" :size="140" />
-          <!-- <v-tooltip :width="450">
-            <template #activator="{ props }">
-              <div
-                v-bind="props"
-                :class="`client-avatar-status client-avatar-status--${client.can_login ? 'active' : 'inactive'}`"
-              >
-              </div>
-            </template>
-            <template v-if="client.can_login">
-              У ученика и представителя есть доступ в личный кабинет и активный пропуск.
-              Доступ предоставляется до 30 июня при наличии нерасторгнутого договора на {{ currentYear }} или {{ currentYear + 1 }} учебный год
-            </template>
-            <template v-else>
-              Пропуск неактивен
-            </template>
-          </v-tooltip> -->
         </div>
         <div>
           <div>ученик</div>

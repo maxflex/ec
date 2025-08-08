@@ -1,6 +1,7 @@
+<!-- добавить ученика в текущую группу -->
 <script setup lang="ts">
-import type { ScheduleDraftStudent } from '../ScheduleDraft'
-import type { SwampFilters } from './Filters.vue'
+import type { AddToGroupItem } from '.'
+import type { SwampFilters } from '../Filters.vue'
 import { mdiArrowRightThin } from '@mdi/js'
 
 const { group } = defineProps<{ group: GroupResource }>()
@@ -18,7 +19,7 @@ const saving = ref(false)
 const selected = ref<Record<number, boolean>>({})
 const selectedCount = computed<number>(() => Object.keys(selected.value).length)
 
-function toggle(item: ScheduleDraftStudent) {
+function toggle(item: AddToGroupItem) {
   if (item.id in selected.value) {
     delete selected.value[item.id]
   }
@@ -50,7 +51,7 @@ async function apply() {
   saving.value = false
 }
 
-function isSelected(item: ScheduleDraftStudent) {
+function isSelected(item: AddToGroupItem) {
   if (item.id in selected.value) {
     return true
   }
@@ -60,7 +61,7 @@ function isSelected(item: ScheduleDraftStudent) {
   return false
 }
 
-const { items, indexPageData } = useIndex<ScheduleDraftStudent>(
+const { items, indexPageData } = useIndex<AddToGroupItem>(
   `swamps`,
   filters,
   {
@@ -110,21 +111,11 @@ const { items, indexPageData } = useIndex<ScheduleDraftStudent>(
           <td width="160">
             договор №{{ item.contract_id }}
           </td>
-
-          <td style="position: relative;">
-            <div class="pl-3">
-              <div>
-                {{ item.swamp.lessons_conducted }}
-                <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
-                {{ item.swamp.total_lessons }}
-              </div>
-              <div>
-                {{ CvpStatusLabel[item.swamp.status] }}
-              </div>
-            </div>
+          <td>
+            <ContractVersionProgramStatus :item="item" />
           </td>
-          <td widht="200" style="vertical-align: middle;">
-            <ScheduleDraftProblems :item="item" />
+          <td widht="200">
+            <SwampAddToGroupProblems :item="item" :group-id="group.id" />
           </td>
           <td>
             <v-switch
@@ -150,14 +141,6 @@ const { items, indexPageData } = useIndex<ScheduleDraftStudent>(
     td {
       opacity: 0.5;
     }
-  }
-
-  .table-actionss {
-    width: 70px !important;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 0 !important;
   }
 }
 </style>

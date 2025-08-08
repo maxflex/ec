@@ -169,9 +169,11 @@ class SwampController extends Controller
                     ->whereNotNull('contract_id')
                     ->first()?->contract_id;
 
-            $result->push([
-                'id' => $item->id,
+            $result->push(extract_fields($item, [
+                'total_lessons', 'lessons_conducted', 'status',
+            ], [
                 'client' => new PersonResource($client),
+
                 'uncunducted_count' => $uncunductedCount,
 
                 'teeth' => $client->getSavedSchedule($group->year),
@@ -187,11 +189,7 @@ class SwampController extends Controller
                 'current_contract_id' => $currentContractId,
 
                 'has_problems' => $currentContractId !== null,
-
-                'swamp' => extract_fields($item, [
-                    'total_lessons', 'lessons_conducted', 'status',
-                ]),
-            ]);
+            ]));
         }
 
         // сначала идут те, кого можно добавить в группу

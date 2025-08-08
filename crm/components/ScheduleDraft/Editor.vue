@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SavedScheduleDraftResource, ScheduleDraft, ScheduleDraftGroup, ScheduleDraftProgram } from '.'
 import { ContractVersionDialog } from '#components'
-import { mdiArrowRightThin, mdiChevronRight } from '@mdi/js'
+import { mdiChevronRight } from '@mdi/js'
 import { apiUrl, isGroupChangedInContract } from '.'
 
 const { client, year, savedDraft } = defineProps<{
@@ -331,8 +331,10 @@ nextTick(fromActualContracts)
           </v-menu>
         </div>
       </div>
+      <UiNoData v-if="scheduleDraft[selectedContractId].length === 0" />
       <div
         v-for="p in scheduleDraft[selectedContractId]"
+        v-else
         :key="p.id"
         class="schedule-draft__programs"
         :class="{ 'element-loading': loading }"
@@ -344,14 +346,7 @@ nextTick(fromActualContracts)
           <v-chip v-if="p.id < 0" label density="comfortable" color="orange">
             добавлено в черновике
           </v-chip>
-          <span v-else>
-            {{ p.swamp!.lessons_conducted }}
-            <v-icon :icon="mdiArrowRightThin" :size="20" class="vfn-1" />
-            {{ p.swamp!.total_lessons }}
-          </span>
-          <span style="background-color: transparent;">
-            {{ CvpStatusLabel[p.swamp!.status] }}
-          </span>
+          <ContractVersionProgramStatus :item="p.swamp!" />
           <v-btn
             v-if="p.id < 0"
             :size="30"
