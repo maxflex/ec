@@ -18,12 +18,10 @@ const hasProblems = hasOverlap || hasUnconducted || hasProcessInAnotherContract
   <v-tooltip v-if="hasProblems" location="bottom">
     <template #activator="{ props }">
       <v-icon :icon="mdiAlertBox" v-bind="props" color="error" :size="26" />
-      <!-- <v-chip label color="error" density="comfortable" v-bind="props" class="cursor-default schedule-draft-problems">
-        проблемы
-      </v-chip> -->
     </template>
     <div v-if="hasProcessInAnotherContract">
-      добавлен в эту группу по другому договору – №{{ item.current_contract_id }}
+      добавлен в эту группу по другому договору –
+      {{ item.current_contract_id! < 0 ? 'новый договор' : `№${item.current_contract_id}` }}
     </div>
     <div v-if="hasOverlap">
       {{ item.overlap!.count }} пересечений

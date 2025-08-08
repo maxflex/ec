@@ -189,6 +189,7 @@ async function save() {
   saving.value = true
   let responseData: ContractResource | ContractVersionListResource | null
   let newContractId: number
+  const clonedItem = cloneDeep(item.value)
 
   switch (mode.value) {
     case 'new-contract': {
@@ -197,7 +198,7 @@ async function save() {
         {
           method: 'post',
           body: {
-            ...item.value,
+            ...clonedItem,
             // применить перемещения в группе
             apply_move_groups: applyMoveGroups.value,
           },
@@ -223,7 +224,7 @@ async function save() {
         {
           method: 'post',
           body: {
-            ...item.value,
+            ...clonedItem,
             // применить перемещения в группе
             apply_move_groups: applyMoveGroups.value,
           },
@@ -247,7 +248,7 @@ async function save() {
         `contract-versions/${item.value.id}`,
         {
           method: 'put',
-          body: item.value,
+          body: clonedItem,
         },
       )
 
@@ -450,7 +451,10 @@ function getCorrectedLessons(program: ContractVersionProgramResource) {
 
 function isLessonsError(price: ContractVersionProgramPrice, program: ContractVersionProgramResource) {
   // нет группы и проведено 0 занятий
-  if ((!program.group_id && !program.lessons_conducted) || program.prices.some(p => p.lessons === '')) {
+  if ((!program.group_id && !program.lessons_conducted)) {
+    return false
+  }
+  if (program.prices.some(p => !p.lessons)) {
     return false
   }
   const lessonsSum = program.prices.reduce((carry, x) => asInt(x.lessons) + carry, 0)
@@ -499,7 +503,7 @@ function isChanged(p: ContractVersionProgramResource, field: keyof ContractVersi
       return false
     }
 
-    return originalProgram?.group_id !== p.group_id
+    return (originalProgram?.group_id || undefined) !== (p.group_id || undefined)
   }
 
   if (field === 'program') {
@@ -560,6 +564,7 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
           </template>
           <div v-if="selectedDraft" class="dialog-subheader">
             <template v-if="selectedDraft.id > 0">
+              На основе
               <RouterLink
                 target="_blank"
                 :to="{
@@ -567,7 +572,7 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
                   query: { id: selectedDraft.id },
                 }"
               >
-                Проект №{{ selectedDraft.id }}
+                проекта №{{ selectedDraft.id }}
               </RouterLink>
               от {{ formatDateTime(selectedDraft.created_at) }}
             </template>

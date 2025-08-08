@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ContractEditSourceDialog, ContractPaymentDialog, ContractVersionDialog } from '#build/components'
-import type { ContractResource, ContractVersionListResource } from '../ContractVersion'
+import type { ContractResource, ContractVersionListResource, ContractVersionResource } from '../ContractVersion'
 import type { SavedScheduleDraftResource } from '../ScheduleDraft'
 import type { ContractPaymentResource } from '~/components/ContractPayment'
 
@@ -41,6 +41,7 @@ async function onContractVersionUpdated(mode: ContractEditMode, c: ContractVersi
       break
   }
   itemUpdated('contract-version', updatedId!)
+  loadScheduleDrafts()
 }
 
 function onContractVersionDeleted(cv: ContractVersionResource) {
@@ -136,23 +137,19 @@ const noData = computed(() => !loading.value && items.value.length === 0)
 
 const draftsByContract = computed<DraftsByContract>(() => {
   const result: DraftsByContract = {}
+  const activeDrafts = scheduleDrafts.value.filter(e => !e.is_archived)
+  const contractIds = [
+    ...items.value.map(e => e.id),
+    null, // новый договор
+  ]
 
-  for (const contract of items.value) {
-    const activeVersion = contract.versions.find(v => v.is_active)
-    const drafts = scheduleDrafts.value.filter(
-      d => d.contract_id === contract.id && (!activeVersion || d.created_at > activeVersion.created_at),
-    )
-    result[contract.id] = {
+  for (const contractId of contractIds) {
+    const drafts = activeDrafts.filter(d => d.contract_id === contractId)
+
+    result[contractId || -1] = {
       drafts,
       changes: drafts[0]?.changes ?? 0,
     }
-  }
-
-  // drafts без договора
-  const drafts = scheduleDrafts.value.filter(d => !d.contract_id)
-  result[-1] = {
-    drafts,
-    changes: drafts[0]?.changes ?? 0,
   }
 
   return result
@@ -195,6 +192,15 @@ nextTick(loadData)
             <v-list-item @click="selected = i; contractVersionDialog?.newVersion(contract)">
               добавить версию
             </v-list-item>
+            <v-list-item @click="selected = i; contractPaymentDialog?.create(selectedContract!)">
+              добавить платеж
+            </v-list-item>
+            <v-list-item @click="showBalanceGo(i)">
+              показать баланс
+            </v-list-item>
+            <v-list-item @click="contractEditSourceDialog?.open(contract)">
+              редактировать источник
+            </v-list-item>
             <v-list-item
               v-for="d in draftsByContract[contract.id].drafts"
               :key="d.id"
@@ -212,20 +218,10 @@ nextTick(loadData)
                 Создал {{ formatName(d.user) }} {{ formatDateTime(d.created_at) }}
               </div>
             </v-list-item>
-            <v-list-item @click="selected = i; contractPaymentDialog?.create(selectedContract!)">
-              добавить платеж
-            </v-list-item>
-            <v-list-item @click="showBalanceGo(i)">
-              показать баланс
-            </v-list-item>
-            <v-list-item @click="contractEditSourceDialog?.open(contract)">
-              редактировать источник
-            </v-list-item>
             <v-list-item
               v-for="d in draftsByContract[contract.id].drafts"
               :key="d.id"
               target="_blank"
-              :disabled="d.is_archived"
               :to="{
                 name: 'schedule-drafts-editor',
                 query: {
@@ -251,82 +247,80 @@ nextTick(loadData)
       </v-btn>
 
       <!-- новый договор -->
-      <v-btn
-        class="tab-btn"
-        variant="plain"
-        :ripple="false"
-        :class="{ 'tab-btn--active': selected === -1 }"
-        @click="selectTab(-1)"
-      >
-        <div>
-          <div>
-            новый
-          </div>
-          <div>
-            договор
-          </div>
-        </div>
-        <v-badge
-          v-if="draftsByContract[-1]?.changes"
-          color="orange-lighten-3"
-          inline
-          :content="draftsByContract[-1].changes"
-        ></v-badge>
-        <v-menu>
-          <template #activator="{ props }">
-            <v-icon icon="$next" v-bind="props" />
-          </template>
-          <v-list>
-            <v-list-item @click="selected = -1; contractVersionDialog?.newContract(clientId)">
-              создать новый договор
-            </v-list-item>
-            <v-list-item
-              v-for="d in draftsByContract[-1].drafts"
-              :key="d.id"
-              :disabled="d.is_archived"
-              @click="selected = -1; contractVersionDialog?.fromDraft({ savedDraft: d })"
-            >
+
+      <v-menu>
+        <template #activator="{ props }">
+          <v-btn
+            v-bind="props"
+            class="tab-btn"
+            variant="plain"
+            :ripple="false"
+          >
+            <div>
               <div>
-                новый договор на основе проекта №{{ d.id }}
-                <v-badge
-                  v-if="draftsByContract[-1]?.changes"
-                  color="orange-lighten-3"
-                  inline
-                  :content="draftsByContract[-1].changes"
-                ></v-badge>
+                новый
               </div>
-              <div class="text-caption text-gray">
-                Создал {{ formatName(d.user) }} {{ formatDateTime(d.created_at) }}
-              </div>
-            </v-list-item>
-            <v-list-item
-              v-for="d in draftsByContract[-1].drafts"
-              :key="d.id"
-              target="_blank"
-              :disabled="d.is_archived"
-              :to="{
-                name: 'schedule-drafts-editor',
-                query: {
-                  id: d.id,
-                },
-              }"
-            >
               <div>
-                посмотреть проект №{{ d.id }}
-                <v-badge
-                  v-if="d.changes"
-                  color="orange-lighten-3 ml-2 pa-0"
-                  inline
-                  :content="d.changes"
-                ></v-badge>
+                договор
               </div>
-              <div class="text-caption text-gray">
-                Создал {{ formatName(d.user) }} {{ formatDateTime(d.created_at) }}
-              </div>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-btn>
+            </div>
+            <v-badge
+              v-if="draftsByContract[-1]?.changes"
+              color="orange-lighten-3"
+              inline
+              :content="draftsByContract[-1].changes"
+            ></v-badge>
+            <v-icon icon="$next" />
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item @click="selected = -1; contractVersionDialog?.newContract(clientId)">
+            создать новый договор
+          </v-list-item>
+          <v-list-item
+            v-for="d in draftsByContract[-1].drafts"
+            :key="d.id"
+            @click="selected = -1; contractVersionDialog?.fromDraft({ savedDraft: d })"
+          >
+            <div>
+              создать новый договор на основе проекта №{{ d.id }}
+              <v-badge
+                v-if="draftsByContract[-1]?.changes"
+                color="orange-lighten-3"
+                inline
+                :content="draftsByContract[-1].changes"
+              ></v-badge>
+            </div>
+            <div class="text-caption text-gray">
+              Создал {{ formatName(d.user) }} {{ formatDateTime(d.created_at) }}
+            </div>
+          </v-list-item>
+          <v-list-item
+            v-for="d in draftsByContract[-1].drafts"
+            :key="d.id"
+            target="_blank"
+            :to="{
+              name: 'schedule-drafts-editor',
+              query: {
+                id: d.id,
+              },
+            }"
+          >
+            <div>
+              посмотреть проект №{{ d.id }}
+              <v-badge
+                v-if="d.changes"
+                color="orange-lighten-3 ml-2 pa-0"
+                inline
+                :content="d.changes"
+              ></v-badge>
+            </div>
+            <div class="text-caption text-gray">
+              Создал {{ formatName(d.user) }} {{ formatDateTime(d.created_at) }}
+            </div>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </template>
     <template #buttons>
       <v-btn v-if="showBalance" color="primary" :width="132" @click="showBalance = false">
@@ -404,6 +398,12 @@ nextTick(loadData)
         transform: rotate(90deg);
         transition: transform ease-in-out 0.2s;
         &[aria-expanded='true'] {
+          transform: rotate(-90deg);
+        }
+      }
+
+      &[aria-expanded='true'] {
+        .v-icon {
           transform: rotate(-90deg);
         }
       }

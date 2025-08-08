@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\Direction;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ContractRequest;
 use App\Http\Resources\ContractVersionListResource;
 use App\Http\Resources\ContractVersionResource;
 use App\Models\Contract;
@@ -44,11 +45,10 @@ class ContractVersionController extends Controller
      * Новая версия договора
      * (новая цепь договора в ContractController@store)
      */
-    public function store(Request $request)
+    public function store(ContractRequest $request)
     {
         $request->validate([
             'contract.id' => ['required', 'exists:contracts,id'],
-            'apply_move_groups' => ['sometimes', 'boolean'],
         ]);
 
         $contract = Contract::find($request->contract['id']);
@@ -77,9 +77,7 @@ class ContractVersionController extends Controller
 
         // применяем перемещения в группах согласно проекту, если нужно
         if ($request->apply_move_groups) {
-            // TODO: apply move groups
-            // $scheduleDraft = ScheduleDraft::find($request->apply_move_groups);
-            // $scheduleDraft->applyMoveGroupsContract($contractVersion);
+            ScheduleDraft::applyMoveGroupsContract($contractVersion, $request->programs);
         }
 
         return new ContractVersionListResource($contractVersion);

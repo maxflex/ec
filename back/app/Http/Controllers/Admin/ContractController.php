@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ContractRequest;
 use App\Http\Resources\ContractResource;
 use App\Models\Client;
 use App\Models\Contract;
 use App\Models\ContractVersionProgram;
+use App\Models\ScheduleDraft;
 use Illuminate\Http\Request;
 
 class ContractController extends Controller
@@ -31,13 +33,8 @@ class ContractController extends Controller
     /**
      * Новая цепь договора
      */
-    public function store(Request $request)
+    public function store(ContractRequest $request)
     {
-        $request->validate([
-            'sum' => ['required', 'numeric'],
-            'contract.client_id' => ['required', 'exists:clients,id'],
-        ]);
-
         $client = Client::find($request->contract['client_id']);
         $contract = $client->contracts()->create($request->contract);
         $contractVersion = $contract->versions()->create([
@@ -49,6 +46,11 @@ class ContractController extends Controller
             $contractVersionProgram->prices()->createMany($p['prices']);
         }
         sync_relation($contractVersion, 'payments', $request->all());
+
+        // применяем перемещения в группах согласно проекту, если нужно
+        if ($request->apply_move_groups) {
+            ScheduleDraft::applyMoveGroupsContract($contractVersion, $request->programs);
+        }
 
         return new ContractResource($contract->fresh());
     }

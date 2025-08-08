@@ -61,9 +61,7 @@ const { items, blurOthers } = defineProps<{
         <slot :group="item">
         </slot>
         <td>
-          <div v-for="c in item.cabinets" :key="c">
-            <CabinetAsText :cabinet="c" />
-          </div>
+          <CabinetWithCapacity :items="item.cabinets" />
         </td>
       </tr>
     </tbody>

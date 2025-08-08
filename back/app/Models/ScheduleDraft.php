@@ -103,6 +103,47 @@ class ScheduleDraft extends Model implements HasSchedule
     //
     //     return $result;
     // }
+    /**
+     * Применить перемещения в группе (при сохранении договора)
+     *
+     * @param  array  $programs  программы из запроса ($request->programs)
+     */
+    public static function applyMoveGroupsContract(ContractVersion $cv, array $programs)
+    {
+        // добавляем в соответствии с programs
+        $programs = collect($programs);
+
+        // сначала всё сносим
+        foreach ($cv->programs as $program) {
+            $program->clientGroup?->delete();
+        }
+
+        foreach ($cv->programs as $cvp) {
+            $p = $programs->whereNotNull('group_id')->firstWhere('program', $cvp->program->value);
+
+            if ($p) {
+                ClientGroup::create([
+                    'group_id' => $p['group_id'],
+                    'contract_version_program_id' => $cvp->id,
+                ]);
+            }
+        }
+
+        // и добавляем согласно черновику
+        // программы выбранного $contractId
+        // $programs = $this->programs
+        //     ->filter(fn ($p) => $p['group_id'] && $p['contract_id'] === $cv->contract_id);
+        //
+        // foreach ($programs as $p) {
+        //     $programFromContract = $cv->programs->firstWhere('program', $p['program']);
+        //     if ($programFromContract) {
+        //         ClientGroup::create([
+        //             'group_id' => $p['group_id'],
+        //             'contract_version_program_id' => $programFromContract->id,
+        //         ]);
+        //     }
+        // }
+    }
 
     public function addToGroup(int $programId, int $groupId): bool
     {
@@ -144,6 +185,26 @@ class ScheduleDraft extends Model implements HasSchedule
     }
 
     /**
+     * Программы из черновика + все остальные.
+     * Добавляем contract_id в каждую программу для последующих группировок
+     * TODO: всё таки-изменить структуру так, чтобы было contract_id => [..programs]
+     * потому что при добавлении новой цепи программ не будет
+     */
+    // private function allPrograms(): Collection
+    // {
+    //     return once(fn () => $this->programs
+    //         ->merge($this->client->contracts
+    //             ->where('year', $this->year)
+    //             ->when($this->contract_id, fn ($q) => $q->where('id', '<>', $this->contract_id))
+    //             ->flatMap(fn (Contract $contract) => self::getPrograms($contract))
+    //         )
+    //         ->map(fn ($p) => (object) [
+    //             ...$p,
+    //             'contract_id' => $this->contract_id,
+    //         ]));
+    // }
+
+    /**
      * Применить перемещения в группе
      */
     public function applyMoveGroups()
@@ -152,7 +213,7 @@ class ScheduleDraft extends Model implements HasSchedule
 
         // если есть добавления в группу по новым программам – ошибка
         if ($programs->where('id', '<', 0)->whereNotNull('group_id')->count()) {
-            throw new Exception('Нельзя добавить в группу по несуществующей программе');
+            throw new Exception('<b>Невозможно применить перемещения в группах:</b> в проекте есть программы "добавлено в черновике"');
         }
 
         // only real programs
@@ -181,51 +242,6 @@ class ScheduleDraft extends Model implements HasSchedule
                 ClientGroup::create([
                     'contract_version_program_id' => $programId,
                     'group_id' => $groupId,
-                ]);
-            }
-        }
-    }
-
-    /**
-     * Программы из черновика + все остальные.
-     * Добавляем contract_id в каждую программу для последующих группировок
-     * TODO: всё таки-изменить структуру так, чтобы было contract_id => [..programs]
-     * потому что при добавлении новой цепи программ не будет
-     */
-    // private function allPrograms(): Collection
-    // {
-    //     return once(fn () => $this->programs
-    //         ->merge($this->client->contracts
-    //             ->where('year', $this->year)
-    //             ->when($this->contract_id, fn ($q) => $q->where('id', '<>', $this->contract_id))
-    //             ->flatMap(fn (Contract $contract) => self::getPrograms($contract))
-    //         )
-    //         ->map(fn ($p) => (object) [
-    //             ...$p,
-    //             'contract_id' => $this->contract_id,
-    //         ]));
-    // }
-    /**
-     *  Применить перемещения в группе (при сохранении договора)
-     */
-    public function applyMoveGroupsContract(ContractVersion $cv)
-    {
-        // сначала всё сносим
-        foreach ($cv->programs as $program) {
-            $program->clientGroup?->delete();
-        }
-
-        // и добавляем согласно черновику
-        // программы выбранного $contractId
-        $programs = $this->programs
-            ->filter(fn ($p) => $p['group_id'] && $p['contract_id'] === $cv->contract_id);
-
-        foreach ($programs as $p) {
-            $programFromContract = $cv->programs->firstWhere('program', $p['program']);
-            if ($programFromContract) {
-                ClientGroup::create([
-                    'group_id' => $p['group_id'],
-                    'contract_version_program_id' => $programFromContract->id,
                 ]);
             }
         }
@@ -610,7 +626,7 @@ class ScheduleDraft extends Model implements HasSchedule
                 'id' => $id,
                 'program' => $p['program'],
                 'group_id' => $p['group_id'],
-                'lessons_planned' => 0,
+                'lessons_planned' => $groupFromDraft?->lessons_planned,
                 'lessons_conducted' => 0,
                 'lessons_to_be_conducted' => 0,
                 'lessons_suggest' => 0,
@@ -618,7 +634,6 @@ class ScheduleDraft extends Model implements HasSchedule
                 'status' => ContractVersionProgram::getStatus(
                     0,
                     0,
-                    $groupFromDraft !== null
                 ),
                 'prices' => [(object) [
                     'id' => $pricesId,

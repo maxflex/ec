@@ -2,13 +2,14 @@
 import type { SavedScheduleDraftResource } from '~/components/ScheduleDraft'
 import { apiUrl } from '~/components/ScheduleDraft'
 
-const filters = ref<YearFilters>(loadFilters({
-  year: currentAcademicYear(),
-}))
+const filters = useAvailableYearsFilter()
 
-const { items, indexPageData } = useIndex<SavedScheduleDraftResource>(
+const { items, indexPageData, availableYears } = useIndex<SavedScheduleDraftResource>(
   apiUrl,
   filters,
+  {
+    loadAvailableYears: true,
+  },
 )
 
 async function deleteSavedDraft(savedDraft: SavedScheduleDraftResource) {
@@ -23,7 +24,7 @@ async function deleteSavedDraft(savedDraft: SavedScheduleDraftResource) {
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <UiYearSelector v-model="filters.year" density="comfortable" />
+      <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
     </template>
     <ScheduleDraftList :items="items" @delete="deleteSavedDraft" />
   </UiIndexPage>

@@ -99,7 +99,7 @@ async function applyMoveGroups(contractId: number) {
 
   scheduleDraft.value = data.value!
   loading.value = false
-  useGlobalMessage('Изменения в группах применены', 'success')
+  useGlobalMessage('Перемещения в группах применены', 'success')
 }
 
 async function getTeeth() {
@@ -255,7 +255,10 @@ nextTick(fromActualContracts)
         </div>
       </div> -->
       <div class="schedule-draft__header">
-        <v-btn icon="$back" :size="44" variant="plain" color="black" :to="{ name: 'clients-id', params: { id: client.id } }" />
+        <v-btn
+          icon="$back" :size="44" variant="plain" color="black"
+          :to="{ name: 'clients-id', params: { id: client.id }, hash: '#contracts' }"
+        />
         {{ formatName(client) }}
       </div>
       <TeethBar v-if="teeth" :items="teeth" style="width: fit-content" />
@@ -300,10 +303,11 @@ nextTick(fromActualContracts)
                 />
               </v-list-item>
               <v-list-item :disabled="!getChangesCnt(contractId)" @click="contractVersionDialog?.fromDraft({ contractId })">
-                создать договор на основе проекта
+                {{ contractId < 0 ? 'создать новый договор' : 'добавить версию' }}
+                на основе проекта
               </v-list-item>
-              <v-list-item :disabled="!getChangesCnt(contractId)" @click="applyMoveGroups(contractId)">
-                отконфигурировать группы
+              <v-list-item :disabled="contractId < 0 || !getChangesCnt(contractId)" @click="applyMoveGroups(contractId)">
+                применить перемещения в группах
               </v-list-item>
               <v-list-item :disabled="!getChangesCnt(contractId)" @click="save(contractId)">
                 сохранить проект
