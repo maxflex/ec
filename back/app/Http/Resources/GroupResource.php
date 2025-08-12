@@ -27,7 +27,7 @@ class GroupResource extends JsonResource
             'acts_count' => $this->acts()->count(),
             'user' => new PersonResource($this->user),
             'teachers' => PersonResource::collection($this->teachers),
-            'teeth' => $this->getSavedSchedule(),
+            'teeth' => $this->getSavedSchedule($this->year),
         ]);
     }
 }

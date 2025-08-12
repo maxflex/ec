@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Contracts\HasSchedule;
 use App\Enums\LessonStatus;
 use App\Http\Resources\ContractVersionResource;
 use App\Http\Resources\PersonResource;
@@ -12,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 
-class ScheduleDraft extends Model implements HasSchedule
+class ScheduleDraft extends Model
 {
     protected $fillable = [
         'programs', 'client_id', 'user_id',
@@ -378,7 +377,7 @@ class ScheduleDraft extends Model implements HasSchedule
                 'current_contract_id',
             ], [
                 'cabinets' => $g->cabinets,
-                'teeth' => $g->getSavedSchedule(),
+                'teeth' => $g->getSavedSchedule($g->year),
                 'teachers' => PersonResource::collection($g->teachers),
             ]))
             ->groupBy('program');

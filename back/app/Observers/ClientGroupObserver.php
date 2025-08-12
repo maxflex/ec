@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Jobs\UpdateScheduleJob;
 use App\Models\ClientGroup;
 
 class ClientGroupObserver
@@ -13,9 +14,8 @@ class ClientGroupObserver
 
     private function updateComputed(ClientGroup $clientGroup): void
     {
-        $clientGroup->contractVersionProgram->contractVersion->contract->client->updateSchedule(
-            $clientGroup->group->year
-        );
+        $client = $clientGroup->contractVersionProgram->contractVersion->contract->client;
+        UpdateScheduleJob::dispatch($client, $clientGroup->group->year);
     }
 
     public function deleted(ClientGroup $clientGroup): void

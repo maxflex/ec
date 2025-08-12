@@ -8,9 +8,8 @@ use App\Enums\Direction;
 use App\Enums\HeadAboutUs;
 use App\Enums\LessonStatus;
 use App\Traits\HasComments;
+use App\Traits\HasScheduleTrait;
 use App\Traits\IsSearchable;
-use App\Utils\Teeth;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,7 +20,7 @@ use Illuminate\Support\Collection;
 
 class Client extends Person implements HasSchedule
 {
-    use HasComments, IsSearchable;
+    use HasComments, HasScheduleTrait, IsSearchable;
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'branches',
@@ -179,48 +178,15 @@ class Client extends Person implements HasSchedule
         return $schedule;
     }
 
-    public function getSavedSchedule(?int $year = null): object
+    public function getScheduleQuery(int $year)
     {
-        if (is_null($year)) {
-            throw new Exception('Year is required');
-        }
-
-        $schedule = $this->schedule ?? [];
-
-        if (isset($schedule[$year])) {
-            return (object) $schedule[$year];
-        }
-
-        return (object) [];
-    }
-
-    public function updateSchedule(int $year)
-    {
-        $schedule = $this->schedule ?? [];
-        $teeth = $this->getSchedule($year);
-        if (count((array) $teeth)) {
-            $schedule[$year] = $teeth;
-        } elseif (isset($schedule[$year])) {
-            unset($schedule[$year]);
-        }
-        $this->schedule = count($schedule) > 0 ? $schedule : null;
-
-        return $this->save();
-    }
-
-    public function getSchedule(?int $year = null): object
-    {
-        if (is_null($year)) {
-            throw new Exception('Year is required');
-        }
-
         $cvpIds = $this->getContractVersionProgramIds($year);
 
         /**
          * Все занятия из групп, в которых клиент в данный момент находится.
          * Или все занятия, на которых ученик реально присутствовал
          */
-        $query = Lesson::query()->where(
+        return Lesson::query()->where(
             fn ($q) => $q->whereExists(fn ($q) => $q->selectRaw(1)
                 ->from('client_groups as cg')
                 ->whereColumn('cg.group_id', 'lessons.group_id')
@@ -231,8 +197,6 @@ class Client extends Person implements HasSchedule
                 ->whereIn('cl.contract_version_program_id', $cvpIds)
             )
         );
-
-        return Teeth::get($query);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Jobs\UpdateScheduleJob;
 use App\Models\Lesson;
 
 class LessonObserver
@@ -16,13 +17,14 @@ class LessonObserver
      */
     private function updateComputed(Lesson $lesson): void
     {
-        $lesson->group->updateSchedule();
-        $lesson->teacher->updateSchedule($lesson->group->year);
+        $year = $lesson->group->year;
+
+        UpdateScheduleJob::dispatch($lesson->group, $year);
+        UpdateScheduleJob::dispatch($lesson->teacher, $year);
 
         foreach ($lesson->group->clientGroups as $clientGroup) {
-            $clientGroup->contractVersionProgram->contractVersion->contract->client->updateSchedule(
-                $lesson->group->year
-            );
+            $client = $clientGroup->contractVersionProgram->contractVersion->contract->client;
+            UpdateScheduleJob::dispatch($client, $year);
         }
     }
 

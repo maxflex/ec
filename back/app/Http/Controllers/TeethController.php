@@ -24,7 +24,7 @@ class TeethController extends Controller
             $request->has('group_id') => Group::find($request->group_id)
         };
 
-        $year = $request->has('year') ? intval($request->year) : null;
+        $year = $request->has('year') ? intval($request->year) : $entity->year;
 
         return $entity->getSavedSchedule($year);
     }

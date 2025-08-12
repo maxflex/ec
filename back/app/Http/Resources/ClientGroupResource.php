@@ -19,7 +19,6 @@ class ClientGroupResource extends JsonResource
         $client = $this->contractVersionProgram->contractVersion->contract->client;
 
         return extract_fields($this, ['contract_version_program_id'], [
-            // 'teeth' => is_localhost() ? [] : $client->getSchedule($this->group->year),
             'teeth' => $client->getSavedSchedule($this->group->year),
             'client' => new PersonWithPhotoResource($client),
         ]);

@@ -16,9 +16,27 @@ class UpdateScheduleCommand extends Command
 
     public function handle(): void
     {
-        $this->clientSchedule();
-        $this->teacherSchedule();
+        // $this->clientSchedule();
+        // $this->teacherSchedule();
         $this->groupSchedule();
+    }
+
+    private function groupSchedule(): void
+    {
+        $this->info('Groups');
+
+        DB::table('groups')->update(['schedule' => null]);
+        $groups = Group::whereHas('lessons')->get();
+
+        $bar = $this->output->createProgressBar($groups->count());
+
+        foreach ($groups as $group) {
+            $group->updateSchedule($group->year);
+            $bar->advance();
+        }
+        $bar->finish();
+
+        $this->line(PHP_EOL);
     }
 
     private function clientSchedule(): void
@@ -88,25 +106,6 @@ class UpdateScheduleCommand extends Command
             }
             $teacher->schedule = $this->cleanUpSchedule($schedule);
             $teacher->save();
-            $bar->advance();
-        }
-        $bar->finish();
-
-        $this->line(PHP_EOL);
-    }
-
-    private function groupSchedule(): void
-    {
-        $this->info('Groups');
-
-        DB::table('groups')->update(['schedule' => null]);
-        $groups = Group::whereHas('lessons')->get();
-
-        $bar = $this->output->createProgressBar($groups->count());
-
-        foreach ($groups as $group) {
-            $group->schedule = $group->getSchedule();
-            $group->save();
             $bar->advance();
         }
         $bar->finish();

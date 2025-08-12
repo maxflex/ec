@@ -6,7 +6,7 @@ use App\Contracts\HasSchedule;
 use App\Enums\Cabinet;
 use App\Enums\LessonStatus;
 use App\Enums\Program;
-use App\Utils\Teeth;
+use App\Traits\HasScheduleTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,6 +14,8 @@ use Illuminate\Support\Collection;
 
 class Group extends Model implements HasSchedule
 {
+    use HasScheduleTrait;
+
     protected $fillable = [
         'program', 'year', 'zoom', 'lessons_planned',
     ];
@@ -83,27 +85,6 @@ class Group extends Model implements HasSchedule
             ->get();
     }
 
-    public function updateSchedule()
-    {
-        $schedule = (array) $this->getSchedule();
-        $this->schedule = count($schedule) > 0 ? $schedule : null;
-
-        return $this->save();
-    }
-
-    /**
-     * Получить "зубы" группы
-     */
-    public function getSchedule(?int $year = null): object
-    {
-        return Teeth::get($this->lessons()->getQuery());
-    }
-
-    public function lessons(): HasMany
-    {
-        return $this->hasMany(Lesson::class);
-    }
-
     /**
      * Минимальная вместимость среди всех кабинетов
      */
@@ -126,11 +107,6 @@ class Group extends Model implements HasSchedule
     public function getCabinetsAttribute(): Collection
     {
         return $this->lessons->pluck('cabinet')->unique();
-    }
-
-    public function getSavedSchedule(): object
-    {
-        return $this->schedule === null ? (object) [] : (object) $this->schedule;
     }
 
     public function getTeacherAttribute(): ?Teacher
@@ -189,5 +165,18 @@ class Group extends Model implements HasSchedule
     public function getFirstLessonDateAttribute(): ?string
     {
         return $this->lessons->min('date');
+    }
+
+    /**
+     * Получить "зубы" группы
+     */
+    public function getScheduleQuery(int $year): object
+    {
+        return $this->lessons()->getQuery();
+    }
+
+    public function lessons(): HasMany
+    {
+        return $this->hasMany(Lesson::class);
     }
 }
