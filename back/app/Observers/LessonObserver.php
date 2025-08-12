@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Jobs\UpdateScheduleJob;
 use App\Models\Lesson;
+use App\Models\Teacher;
 
 class LessonObserver
 {
@@ -21,6 +22,12 @@ class LessonObserver
 
         UpdateScheduleJob::dispatch($lesson->group, $year);
         UpdateScheduleJob::dispatch($lesson->teacher, $year);
+
+        // Если препод поменялся, обновляем у старого тоже
+        if ($lesson->wasChanged('teacher_id')) {
+            $oldTeacher = Teacher::find($lesson->getOriginal('teacher_id'));
+            UpdateScheduleJob::dispatch($oldTeacher, $year);
+        }
 
         foreach ($lesson->group->clientGroups as $clientGroup) {
             $client = $clientGroup->contractVersionProgram->contractVersion->contract->client;

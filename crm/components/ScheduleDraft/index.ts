@@ -30,7 +30,7 @@ export interface ScheduleDraftGroup extends GroupListResource {
   /**
    * Пересечения в расписании
    */
-  overlap?: ScheduleOverlap
+  overlap: ScheduleOverlap
   swamp?: ScheduleDraftSwamp
   uncunducted_count: number
   /**

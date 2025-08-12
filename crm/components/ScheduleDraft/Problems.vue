@@ -7,11 +7,15 @@ const { item, contractId } = defineProps<{
   contractId: number
 }>()
 
-const hasOverlap = !!item.overlap?.count
-const hasUnconducted = item.uncunducted_count > 0
-const hasProcessInAnotherContract = item.swamp && item.current_contract_id && item.current_contract_id !== contractId
+const hasOverlap = computed<boolean>(() => item.overlap.count > 0)
+const hasUnconducted = computed<boolean>(() => item.uncunducted_count > 0)
+const hasProcessInAnotherContract = computed<boolean>(() =>
+  !!item.swamp && !!item.current_contract_id && item.current_contract_id !== contractId,
+)
 
-const hasProblems = hasOverlap || hasUnconducted || hasProcessInAnotherContract
+const hasProblems = computed<boolean>(() =>
+  hasOverlap.value || hasUnconducted.value || hasProcessInAnotherContract.value,
+)
 </script>
 
 <template>

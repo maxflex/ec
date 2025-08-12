@@ -4,7 +4,6 @@ namespace App\Observers;
 
 use App\Enums\ClientLessonStatus;
 use App\Enums\TelegramTemplate;
-use App\Jobs\UpdateScheduleJob;
 use App\Models\ClientLesson;
 use App\Models\TelegramMessage;
 
@@ -32,10 +31,6 @@ class ClientLessonObserver
     private function updateComputed(ClientLesson $clientLesson): void
     {
         $clientLesson->contractVersionProgram->updateStatus();
-        $client = $clientLesson->contractVersionProgram->contractVersion->contract->client;
-        $year = $clientLesson->contractVersionProgram->contractVersion->contract->year;
-
-        UpdateScheduleJob::dispatch($client, $year);
     }
 
     public function deleted(ClientLesson $clientLesson): void
