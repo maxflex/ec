@@ -5,13 +5,9 @@ import {
   differenceInMonths,
   differenceInWeeks,
   differenceInYears,
-  endOfWeek,
   format,
   getMonth,
   getYear,
-  isAfter,
-  isSameDay,
-  toDate,
 } from 'date-fns'
 
 export const menuCounts = ref<MenuCounts>({ })
@@ -251,40 +247,6 @@ export function formatDateTime(dateTime: string | null): string {
     return ''
   }
   return format(dateTime, 'dd.MM.yy в HH:mm')
-}
-
-export function formatDateMode(date: string, mode: StatsMode, dateTo: string | null) {
-  const month = getMonth(date)
-  const monthLabel = MonthLabelShort[month + 1 as Month]
-  switch (mode) {
-    case 'day':
-      return format(date, `d ${monthLabel} yyyy`)
-
-    case 'week':
-      let end = endOfWeek(date, { weekStartsOn: 1 })
-      if (dateTo) {
-        if (isAfter(end, dateTo)) {
-          end = toDate(dateTo)
-        }
-      }
-      else {
-        const today = new Date()
-        if (isSameDay(end, today) || isAfter(end, today)) {
-          return `${format(date, 'd')} ${monthLabel} – сегодня`
-        }
-      }
-
-      const endMonth = getMonth(end)
-      const endMonthLabel = MonthLabelShort[endMonth + 1 as Month]
-      const year = getYear(end) // обычно конец недели — ориентир года
-
-      return month === endMonth
-        ? `${format(date, 'd')} – ${format(end, 'd')} ${monthLabel} ${year}`
-        : `${format(date, 'd')} ${monthLabel} – ${format(end, 'd')} ${endMonthLabel} ${year}`
-
-    case 'month': return format(date, `${monthLabel} yyyy`)
-    case 'year': return format(date, 'yyyy год')
-  }
 }
 
 export function formatTextDate(date: string, year: boolean = false) {

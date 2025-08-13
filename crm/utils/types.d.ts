@@ -33,8 +33,6 @@ declare global {
 
   type LogType = keyof typeof LogTypeLabel
 
-  type StatsMode = keyof typeof StatsModeLabel
-
   type ClientPaymentMethod = keyof typeof ClientPaymentMethodLabel
 
   type ContractPaymentMethod = keyof typeof ContractPaymentMethodLabel
@@ -384,17 +382,6 @@ declare global {
     is_call_notifications: boolean
     phones: PhoneResource[]
     created_at?: string
-  }
-
-  interface StatsListResource {
-    date: string
-    values: number[]
-  }
-
-  interface StatsApiResponse {
-    data: StatsListResource[]
-    is_last_page: boolean
-    totals: number[]
   }
 
   // утилита извлекает тип из emit-функции

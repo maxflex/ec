@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { StatsParams, StatsPreset } from './Metrics'
+import type { StatsParams, StatsPreset } from '.'
 import { cloneDeep } from 'lodash-es'
 import { VDialogTransition } from 'vuetify/components'
+import { defaultStatsParams } from '~/components/Stats'
 
 const emit = defineEmits<{
   save: [e: StatsPreset]
@@ -12,12 +13,7 @@ const nameInput = ref()
 const preset = ref<StatsPreset>({
   id: newId(),
   name: '',
-  params: {
-    mode: 'day',
-    date_from: null,
-    date_to: null,
-    metrics: [],
-  },
+  params: cloneDeep(defaultStatsParams),
 })
 
 function open(params: StatsParams) {

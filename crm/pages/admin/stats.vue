@@ -1,18 +1,15 @@
 <script lang="ts" setup>
 import type { StatsDialog } from '#build/components'
-import type { StatsMetric, StatsParams } from '~/components/Stats/Metrics'
+import type { StatsApiResponse, StatsListResource, StatsParams } from '~/components/Stats'
+import type { StatsMetric } from '~/components/Stats/Metrics'
 import { mdiDownload, mdiTune } from '@mdi/js'
 import { cloneDeep } from 'lodash-es'
+import { defaultStatsParams, formatDateMode } from '~/components/Stats'
 import { MetricComponents } from '~/components/Stats/Metrics'
 
 const statsDialog = ref<InstanceType<typeof StatsDialog>>()
 
-const params = ref<StatsParams>({
-  metrics: [],
-  mode: 'day',
-  date_from: null,
-  date_to: null,
-})
+const params = ref<StatsParams>(cloneDeep(defaultStatsParams))
 
 // сохраняем параметры ответа сервера, чтобы не зависеть от текущих параметров
 // (например, если снесли метрику или изменили режим на "по годам", чтобы не менялось форматирование)
@@ -25,6 +22,7 @@ const isLastPage = ref(false)
 const items = ref<StatsListResource[]>([])
 const totals = ref<number[]>([])
 const page = ref<number>(0)
+const refreshKey = ref<number>(0)
 
 let scrollContainer: HTMLElement | null = null
 
@@ -61,6 +59,7 @@ async function loadMore() {
     }
     isLastPage.value = data.value.is_last_page
   }
+  refreshKey.value++
   loading.value = false
 }
 
@@ -72,7 +71,7 @@ async function exportDownload() {
       method: 'post',
       body: {
         ...params.value,
-        page: null,
+        export: true,
       },
       responseType: 'blob', // Important: Treat the response as a binary Blob
     },
@@ -141,7 +140,7 @@ nextTick(() => statsDialog.value?.open())
   <v-fade-transition>
     <UiLoader v-if="loading" />
   </v-fade-transition>
-  <div class="table table-stats" :class="`table-stats--${responseParams?.mode}`">
+  <div class="table table-stats" :class="`table-stats--${responseParams?.mode} table-stats--${responseParams?.display}`">
     <div class="table-stats__header">
       <div class="table-stats__header-mode">
         <v-btn :icon="mdiTune" :size="48" variant="text" @click="statsDialog?.open(responseParams !== undefined)" />
@@ -169,7 +168,7 @@ nextTick(() => statsDialog.value?.open())
         </template>
       </template>
     </div>
-    <template v-if="responseParams">
+    <template v-if="responseParams && responseParams.display === 'table'">
       <div v-for="{ date, values } in items" :key="date" class="table-stats__body">
         <div class="table-stats__date">
           {{ formatDateMode(date, responseParams.mode, responseParams.date_to) }}
@@ -203,6 +202,7 @@ nextTick(() => statsDialog.value?.open())
         </template>
       </div>
     </template>
+    <StatsChart v-else-if="responseParams" :key="refreshKey" :items="items" :params="responseParams" />
   </div>
   <StatsDialog ref="statsDialog" @go="onGo" />
 </template>
@@ -212,6 +212,18 @@ nextTick(() => statsDialog.value?.open())
   $padding: 0 20px;
   width: max-content;
   min-width: 100%;
+
+  &:not(.table-stats--table) {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    & > div {
+      &:last-child {
+        flex: 1;
+      }
+    }
+  }
+
   & > div {
     gap: 0 !important;
     padding: 0 !important;

@@ -516,13 +516,6 @@ export const ExamLabel = {
   soch11: 'Сочинение 11 класс',
 }
 
-export const StatsModeLabel = {
-  day: 'по дням',
-  week: 'по неделям',
-  month: 'по месяцам',
-  year: 'по годам',
-} as const
-
 export const LogTypeLabel = {
   create: 'создание',
   update: 'обновление',

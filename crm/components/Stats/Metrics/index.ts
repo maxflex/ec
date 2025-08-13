@@ -1,3 +1,4 @@
+import { colors } from '~/plugins/vuetify'
 import CalculatorMetric from './CalculatorMetric.vue'
 import CallMetric from './CallMetric.vue'
 import ClientLessonMetric from './ClientLessonMetric.vue'
@@ -59,6 +60,13 @@ export const MetricColors = {
 export type MetricColor = keyof typeof MetricColors
 export type MetricComponent = keyof typeof MetricComponents
 
+export const MetricColorHex: Record<MetricColor, string> = {
+  black: colors.secondary,
+  gray: colors.gray,
+  success: colors.success,
+  error: colors.error,
+}
+
 export interface StatsMetric {
   id: number
   metric: MetricComponent
@@ -66,17 +74,4 @@ export interface StatsMetric {
   label: string
   filters: object
   hidden: boolean
-}
-
-export interface StatsParams {
-  metrics: StatsMetric[]
-  mode: StatsMode
-  date_from: string | null
-  date_to: string | null
-}
-
-export interface StatsPreset {
-  id: number
-  name: string
-  params: StatsParams
 }

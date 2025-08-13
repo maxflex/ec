@@ -14,11 +14,20 @@ class StatsController extends Controller
     {
         $request->validate([
             'mode' => ['required'],
+            'display' => ['required'],
             'page' => ['nullable', 'numeric'],
             'metrics' => ['required', 'array'],
             'date_from' => ['nullable', 'date_format:Y-m-d'],
             'date_to' => ['nullable', 'date_format:Y-m-d'],
+            // если указан, то делаем экспорт
+            'export' => ['sometimes', 'boolean'],
         ]);
+
+        $isExport = $request->has('export');
+        $isChart = $request->input('display') !== 'table';
+
+        $page = ($isExport || $isChart) ? null : $request->page;
+
         // если дата не установлена, то сегодняшняя
         $dateToStr = $request->date_to ?? now()->format('Y-m-d');
 
@@ -30,11 +39,10 @@ class StatsController extends Controller
             $dateFromStr,
             $dateToStr,
             $request->metrics,
-            $request->page,
+            $page
         );
 
-        // если page не указан, то экспортируем
-        if ($request->page === null) {
+        if ($isExport) {
             $export = new StatsExport($result['data'], $request->metrics);
 
             return Excel::download($export, 'stats.xlsx');

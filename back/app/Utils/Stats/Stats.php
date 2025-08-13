@@ -27,7 +27,7 @@ class Stats
         $dateFrom = Carbon::createFromFormat('Y-m-d', $dateFromStr);
         $dateTo = Carbon::createFromFormat('Y-m-d', $dateToStr);
 
-        // Если $page не указан, то без пагинации (нужно для экспорта)
+        // Если $page не указан, то без пагинации (нужно для экспорта и для графиков)
         if ($page === null) {
             $windowCurrentDate = $dateFrom->copy();
             $windowTo = $dateTo->copy();
