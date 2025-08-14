@@ -21,7 +21,9 @@ const printDialog = ref<InstanceType<typeof PrintDialog>>()
 
 const printOptions: PrintOption[] = [
   { id: 13, label: 'Договор на преподавателя (ООО)', company: 'ooo' },
+  { id: 17, label: 'Договор на преподавателя 8, 9 кл (ООО)', company: 'ooo' },
   { id: 13, label: 'Договор на преподавателя (ИП)', company: 'ip' },
+  { id: 17, label: 'Договор на преподавателя 8, 9 кл (ИП)', company: 'ip' },
 ]
 
 async function loadData() {

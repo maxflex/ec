@@ -16,8 +16,10 @@ const modelDefaults: GroupActResource = {
 
 const printDialog = ref<InstanceType<typeof PrintDialog>>()
 const printOptions: PrintOption[] = [
-  { id: 12, label: 'Печать ООО', company: 'ooo' },
-  { id: 12, label: 'Печать ИП', company: 'ip' },
+  { id: 12, label: 'Акт оказанных услуг (ООО)', company: 'ooo' },
+  { id: 18, label: 'Акт оказанных услуг 8, 9 кл (ООО)', company: 'ooo' },
+  { id: 12, label: 'Акт оказанных услуг (ИП)', company: 'ip' },
+  { id: 18, label: 'Акт оказанных услуг 8, 9 кл (ИП)', company: 'ip' },
 ]
 
 const { dialog, width } = useDialog('default')
