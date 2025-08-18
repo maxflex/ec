@@ -3,80 +3,70 @@ import { cloneDeep } from 'lodash-es'
 import { quarterEditablePrograms } from '.'
 
 interface BulkItem {
-  weekdays: { [key in Weekday]: string }
-  cabinets: { [key in Weekday]: string | null }
-  start_date: string
-  end_date: string
+  id: number
+  weekday: Weekday | null
+  cabinet: string | null
+  time: string | null
 }
 
+interface Item {
+  start_date: string | null
+  end_date: string | null
+  price?: string
+  quarter?: Quarter
+  year: Year
+  group_id: number
+  teacher_id?: number
+  items: BulkItem[]
+}
 const emit = defineEmits<{
   updated: [l: LessonListResource[]]
 }>()
-
-const modelDefaults = {
-  teacher_id: null,
-  cabinet: null,
-  quarter: null,
-  price: null,
-  group_id: 0,
-}
-const bulkDefaults: BulkItem = {
-  weekdays: {
-    0: '',
-    1: '',
-    2: '',
-    3: '',
-    4: '',
-    5: '',
-    6: '',
-  },
-  cabinets: {
-    0: null,
-    1: null,
-    2: null,
-    3: null,
-    4: null,
-    5: null,
-    6: null,
-  },
-  start_date: '',
-  end_date: '',
-}
-const saving = ref(false)
 const timeMask = { mask: '##:##' }
+const modelDefaults: Item = {
+  start_date: null,
+  end_date: null,
+  price: undefined,
+  quarter: undefined,
+  year: currentAcademicYear(),
+  group_id: 0,
+  teacher_id: undefined,
+  items: [],
+}
+
+const weekdays: Array<{ value: Weekday, title: string }> = [
+  { value: 0, title: 'ПН' },
+  { value: 1, title: 'ВТ' },
+  { value: 2, title: 'СР' },
+  { value: 3, title: 'ЧТ' },
+  { value: 4, title: 'ПТ' },
+  { value: 5, title: 'СБ' },
+  { value: 6, title: 'ВС' },
+]
+
 const { dialog, width } = useDialog('default')
+const item = ref<Item>(modelDefaults)
+const saving = ref(false)
 const loading = ref(false)
-const lesson = ref(cloneDeep(modelDefaults))
-const year = ref<Year>()
 const isQuarterEditable = ref(false)
 
-// групповое добавление
-const bulk = ref(cloneDeep(bulkDefaults))
-
-const isBulkAdd = computed(() => Object.values(bulk.value.weekdays).some(e => !!e))
-
-function create(groupId: number, y: Year, p: Program) {
-  year.value = y
-  lesson.value = cloneDeep(modelDefaults)
-  lesson.value.group_id = groupId
-  bulk.value = cloneDeep(bulkDefaults)
+function create(groupId: number, year: Year, p: Program) {
+  item.value = {
+    ...cloneDeep(modelDefaults),
+    year,
+    group_id: groupId,
+  }
   dialog.value = true
   isQuarterEditable.value = quarterEditablePrograms.includes(p)
 }
 
 async function save() {
-  if (!isBulkAdd.value) {
-    return
-  }
   saving.value = true
   const { data } = await useHttp<LessonListResource[]>(
     `lessons/bulk`,
     {
       method: 'post',
-      body: {
-        bulk: bulk.value,
-        lesson: lesson.value,
-      },
+      body: cloneDeep(item.value),
     },
   )
   if (data.value) {
@@ -84,6 +74,20 @@ async function save() {
   }
   dialog.value = false
   setTimeout(() => saving.value = false, 300)
+}
+
+function addItem() {
+  item.value.items.push({
+    id: newId(),
+    weekday: null,
+    cabinet: null,
+    time: null,
+  })
+}
+
+function removeItem(i: BulkItem) {
+  const index = item.value.items.findIndex(e => e.id === i.id)
+  item.value.items.splice(index, 1)
 }
 
 defineExpose({ create })
@@ -108,82 +112,69 @@ defineExpose({ create })
       <UiLoader v-if="loading" />
       <div
         v-else
-        class="dialog-body pt-0"
+        class="dialog-body"
       >
-        <!-- <div class="table mb-6">
-          <div v-for="(label, index) in WeekdayLabel" :key="index">
-            <div
-              class="text-uppercase font-weight-medium" style="width: 50px"
-              :class="{
-                'opacity-2': !bulk.weekdays[index],
-              }"
-            >
-              {{ label }}
-            </div>
-            <div style="width: 100px">
-              <v-text-field
-                v-model="bulk.weekdays[index]"
-                v-maska="timeMask"
-                density="compact"
-              />
-            </div>
-            <div />
-          </div>
-        </div> -->
-
-        <table class="dialog-table weekdays-dialog-table">
-          <tbody>
-            <tr v-for="(label, i) in WeekdayLabel" :key="i">
-              <td :class="{ 'weekdays-dialog-table--empty': !(bulk.weekdays[i] || bulk.cabinets[i]) }">
-                {{ label.toUpperCase() }}
-              </td>
-              <td width="180">
-                <v-text-field
-                  v-model="bulk.weekdays[i]"
-                  v-maska="timeMask"
-                  placeholder="Время"
-                />
-              </td>
-              <td width="180">
-                <CabinetSelector
-                  v-model="bulk.cabinets[i]"
-                  placeholder="Кабинет"
-                  :date="bulk.start_date"
-                  :date-end="bulk.end_date"
-                  :time="bulk.weekdays[i]"
-                  :weekday="i"
-                  :group-id="lesson.group_id"
-                />
-              </td>
-            </tr>
-            <tr>
-              <td colspan="3" style="height: 0" />
-            </tr>
-          </tbody>
-        </table>
         <div class="double-input">
-          <UiDateInput v-model="bulk.start_date" :year="year" label="Дата от" />
-          <UiDateInput v-model="bulk.end_date" :year="year" label="до" />
+          <UiDateInput v-model="item.start_date" :year="item.year" label="Дата от" />
+          <UiDateInput v-model="item.end_date" :year="item.year" label="до" />
         </div>
         <div class="double-input">
           <v-text-field
-            v-model="lesson.price"
+            v-model="item.price"
             label="Цена"
             type="number"
             hide-spin-buttons
           />
           <UiClearableSelect
             v-if="isQuarterEditable"
-            v-model="lesson.quarter"
+            v-model="item.quarter"
             :items="selectItems(QuarterLabel, ['q1', 'q2', 'q3', 'q4'])"
             label="Четверть"
           />
         </div>
         <div>
           <TeacherSelector
-            v-model="lesson.teacher_id"
+            v-model="item.teacher_id"
             label="Преподаватель"
           />
+        </div>
+        <div v-for="i in item.items" :key="i.id" class="double-input">
+          <div>
+            <UiClearableSelect
+              v-model="i.weekday"
+              expand
+              nullify
+              :items="weekdays"
+              placeholder="День"
+            />
+            <div class="input-actions">
+              <span class="phone-editor__remove" @click="removeItem(i)">
+                удалить
+              </span>
+            </div>
+          </div>
+          <div>
+            <CabinetSelector
+              v-model="i.cabinet"
+              class="cabinett-selector"
+              placeholder="Кабинет"
+              :date="item.start_date"
+              :date-end="item.end_date"
+              :group-id="item.group_id"
+            />
+          </div>
+          <div>
+            <v-text-field
+              v-model="i.time"
+              v-maska="timeMask"
+              placeholder="Время"
+            />
+          </div>
+        </div>
+        <div>
+          <v-btn color="primary" block @click="addItem()">
+            добавить
+          </v-btn>
         </div>
       </div>
     </div>
@@ -191,28 +182,10 @@ defineExpose({ create })
 </template>
 
 <style lang="scss">
-.weekays-inputs {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  row-gap: 20px;
-  column-gap: 20px;
-}
-.weekdays-dialog-table {
-  margin-bottom: 20px;
-  .v-select {
-    max-height: 51px !important;
-    height: 51px !important;
-    input {
-      top: 14px;
-      position: relative;
-      padding: 0 !important;
-      //&::placeholder {
-      //
-      //}
-    }
-  }
-  &--empty {
-    color: #9e9e9e;
+.cabinett-selector {
+  .v-select__selection {
+    white-space: nowrap;
+    overflow: hidden;
   }
 }
 </style>

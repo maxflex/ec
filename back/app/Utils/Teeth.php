@@ -10,9 +10,9 @@ use Illuminate\Support\Collection;
 
 class Teeth
 {
-    const MIN_SECONDS = 33000; // TIME_TO_SEC("09:10")
+    const MIN_SECONDS = 32400; // TIME_TO_SEC("09:00")
 
-    const MAX_SECONDS = 74400; // TIME_TO_SEC("20:40")
+    const MAX_SECONDS = 75600; // TIME_TO_SEC("21:00")
 
     public static function get(Builder $lessonsQuery): object
     {

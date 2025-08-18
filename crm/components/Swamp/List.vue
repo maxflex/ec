@@ -12,9 +12,11 @@ const loading = ref(false)
   <v-table class="swamp-list table-padding" :class="{ 'element-loading': loading }">
     <thead>
       <tr>
+        <!-- ШИРИНЫ -->
         <th width="100"></th>
-        <th width="180"></th>
         <th width="150"></th>
+        <th width="100"></th>
+        <th width="80"></th>
         <th width="100"></th>
         <th width="60"></th>
         <th width="140"></th>
@@ -30,11 +32,14 @@ const loading = ref(false)
               ГР-{{ item.group!.id }}
             </NuxtLink>
           </td>
-          <td width="180">
+          <td width="150">
             <GroupTeachers :item="item.group" />
           </td>
-          <td>
+          <td width="80">
             {{ ProgramShortLabel[item.program] }}
+          </td>
+          <td>
+            <GroupFirstLessonDate :date="item.group.first_lesson_date" />
           </td>
           <td width="150">
             <UiIfSet :value="item.group.lesson_counts.conducted || item.group.lesson_counts.planned">

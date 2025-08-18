@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Cabinets } from '../Cabinet'
-
 const { items, blurOthers } = defineProps<{
   items: GroupListResource[]
   /**
@@ -32,6 +30,9 @@ const { items, blurOthers } = defineProps<{
         </td>
         <td width="140">
           {{ ProgramShortLabel[item.program] }}
+        </td>
+        <td width="80">
+          <GroupFirstLessonDate :date="item.first_lesson_date" />
         </td>
         <td width="140">
           <UiIfSet :value="item.lesson_counts.conducted || item.lesson_counts.planned">

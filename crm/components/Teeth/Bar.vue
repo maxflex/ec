@@ -68,7 +68,7 @@ const allItems = computed(() => {
 
 <style lang="scss">
 .teeth {
-  $width: 50px;
+  $width: 70px;
   $height: 15px;
   $gap: 10px;
   display: flex;

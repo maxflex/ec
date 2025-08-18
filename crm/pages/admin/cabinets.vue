@@ -81,32 +81,25 @@ const { items, indexPageData } = useIndex<CabinetTeeth>(
     }
     & > div {
       &:first-child {
-        width: 150px;
+        width: 120px;
       }
       &:nth-child(2) {
-        width: 180px;
+        width: 150px;
       }
       &:nth-child(3) {
-        width: 200px;
+        width: 180px;
       }
       &:nth-child(4) {
         flex: 1;
       }
       &:last-child {
-        width: 500px;
+        width: 600px;
       }
     }
   }
   &__title {
     //font-weight: bold;
     //font-size: 22px;
-  }
-  .teeth {
-    //scale: 1.3;
-    gap: 16px;
-    //&__day--5 {
-    //  margin-left: 50px;
-    //}
   }
 }
 </style>

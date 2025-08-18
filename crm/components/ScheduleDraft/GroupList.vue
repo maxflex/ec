@@ -29,7 +29,7 @@ const isAlreadyInOtherGroup = computed(() => items.some(e => e.swamp && e.curren
         :key="item.id"
         :class="{ changed: isGroupChangedInContract(item, contractId!) }"
       >
-        <td width="100">
+        <td width="70">
           <NuxtLink :to="{ name: 'groups-id', params: { id: item.id } }">
             ГР-{{ item.id }}
           </NuxtLink>
@@ -37,8 +37,11 @@ const isAlreadyInOtherGroup = computed(() => items.some(e => e.swamp && e.curren
         <td width="190">
           <GroupTeachers :item="item" />
         </td>
-        <td width="150">
+        <td width="130">
           {{ ProgramShortLabel[item.program] }}
+        </td>
+        <td width="50">
+          <GroupFirstLessonDate :date="item.first_lesson_date" />
         </td>
         <td width="140">
           <UiIfSet :value="item.lesson_counts.conducted || item.lesson_counts.planned">
@@ -48,7 +51,7 @@ const isAlreadyInOtherGroup = computed(() => items.some(e => e.swamp && e.curren
             <GroupLessonCounts :item="item" />
           </UiIfSet>
         </td>
-        <td width="80">
+        <td width="50">
           <UiIfSet :value="!!item.client_groups_count">
             <template #empty>
               0 уч.

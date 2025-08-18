@@ -62,10 +62,7 @@ watch(() => dateEnd, loadFreeCabinets)
     item-value="cabinet"
   >
     <template #selection="{ item }">
-      {{ Cabinets[item.value].label }}
-      <span v-if="Cabinets[item.value].capacity" class="text-gray pl-2">
-        max: {{ Cabinets[item.value].capacity }}
-      </span>
+      {{ Cabinets[item.value].label }}<span v-if="Cabinets[item.value].capacity">-{{ Cabinets[item.value].capacity }}</span>
     </template>
     <template #item="{ props, item }">
       <v-list-item
@@ -75,10 +72,7 @@ watch(() => dateEnd, loadFreeCabinets)
         <template #prepend />
         <template #title>
           <span style="width: 50px; display: inline-block;">
-            {{ Cabinets[item.value].label }}
-          </span>
-          <span class="text-gray">
-            max: {{ Cabinets[item.value].capacity }}
+            {{ Cabinets[item.value].label }}<span v-if="Cabinets[item.value].capacity">-{{ Cabinets[item.value].capacity }}</span>
           </span>
         </template>
       </v-list-item>

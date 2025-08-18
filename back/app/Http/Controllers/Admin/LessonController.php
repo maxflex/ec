@@ -54,20 +54,33 @@ class LessonController extends Controller
      */
     public function bulkStore(Request $request)
     {
-        $from = Carbon::parse($request->bulk['start_date']);
-        $to = Carbon::parse($request->bulk['end_date']);
-        $data = $request->lesson;
+        $request->validate([
+            'start_date' => ['required', 'date_format:Y-m-d'],
+            'end_date' => ['required', 'date_format:Y-m-d'],
+            'teacher_id' => ['required', 'exists:teachers,id'],
+            'group_id' => ['required', 'exists:groups,id'],
+            'items' => ['required', 'array'],
+        ]);
+
+        $from = Carbon::parse($request->input('start_date'));
+        $to = Carbon::parse($request->input('end_date'));
         $lessons = [];
 
         while ($from->lessThanOrEqualTo($to)) {
             $dayOfWeek = ($from->dayOfWeek + 6) % 7;
-            $time = $request->bulk['weekdays'][$dayOfWeek];
-            if ($time) {
-                $cabinet = $request->bulk['cabinets'][$dayOfWeek];
-                $data['date'] = $from->format('Y-m-d');
-                $data['time'] = $time;
-                $data['cabinet'] = $cabinet ?: null;
-                $lessons[] = auth()->user()->lessons()->create($data);
+            foreach ($request->input('items') as $item) {
+                if (intval($item['weekday']) !== $dayOfWeek) {
+                    continue;
+                }
+                $lessons[] = auth()->user()->lessons()->create([
+                    'date' => $from->format('Y-m-d'),
+                    'time' => $item['time'],
+                    'cabinet' => $item['cabinet'] ?: null,
+                    'group_id' => $request->input('group_id'),
+                    'teacher_id' => $request->input('teacher_id'),
+                    'price' => $request->input('price') ?: 0,
+                    'quarter' => $request->input('quarter') ?: null,
+                ]);
             }
             $from->addDay();
         }

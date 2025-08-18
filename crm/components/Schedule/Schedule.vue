@@ -271,8 +271,7 @@ nextTick(loadAvailableYears)
     />
     <div v-if="group && group.teeth" style="width: fit-content" class="d-flex ga-2">
       <template v-if="Object.keys(group.teeth).length">
-        <v-icon :icon="mdiCalendarClock" />
-        <TeethAsText :items="group.teeth!" one-line />
+        <TeethBar :items="group.teeth!" />
       </template>
       <span v-else class="text-gray">
         расписание отсутствует
