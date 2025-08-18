@@ -54,7 +54,7 @@ export interface StatsPreset {
 export const defaultStatsParams: StatsParams = {
   metrics: [],
   mode: 'day',
-  display: 'table',
+  display: 'years',
   date_from: null,
   date_to: null,
 }

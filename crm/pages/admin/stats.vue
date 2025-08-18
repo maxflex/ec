@@ -168,41 +168,45 @@ nextTick(() => statsDialog.value?.open())
         </template>
       </template>
     </div>
-    <template v-if="responseParams && responseParams.display === 'table'">
-      <div v-for="{ date, values } in items" :key="date" class="table-stats__body">
-        <div class="table-stats__date">
-          {{ formatDateMode(date, responseParams.mode, responseParams.date_to) }}
-        </div>
-        <template v-for="(value, index) in values">
-          <div
-            v-if="!responseParams.metrics[index].hidden"
-            :key="index"
-            :class="`text-${responseParams.metrics[index].color}`"
-            :style="getWidth(responseParams.metrics[index])"
-          >
-            {{ value ? formatPrice(value) : '' }}
+    <template v-if="responseParams">
+      <template v-if="responseParams.display === 'table'">
+        <div v-for="{ date, values } in items" :key="date" class="table-stats__body">
+          <div class="table-stats__date">
+            {{ formatDateMode(date, responseParams.mode, responseParams.date_to) }}
           </div>
-        </template>
-      </div>
-      <div class="table-stats__footer table-stats__body">
-        <div class="table-stats__date">
-          итого
+          <template v-for="(value, index) in values">
+            <div
+              v-if="!responseParams.metrics[index].hidden"
+              :key="index"
+              :class="`text-${responseParams.metrics[index].color}`"
+              :style="getWidth(responseParams.metrics[index])"
+            >
+              {{ value ? formatPrice(value) : '' }}
+            </div>
+          </template>
         </div>
-        <template v-for="(total, index) in totals">
-          <div
-            v-if="!responseParams.metrics[index].hidden"
-            :key="index"
-            :style="getWidth(responseParams.metrics[index])"
-            :class="`text-${responseParams.metrics[index].color}`"
-          >
-            <span>
-              {{ total ? formatPrice(total) : '' }}
-            </span>
+        <div class="table-stats__footer table-stats__body">
+          <div class="table-stats__date">
+            итого
           </div>
-        </template>
-      </div>
+          <template v-for="(total, index) in totals">
+            <div
+              v-if="!responseParams.metrics[index].hidden"
+              :key="index"
+              :style="getWidth(responseParams.metrics[index])"
+              :class="`text-${responseParams.metrics[index].color}`"
+            >
+              <span>
+                {{ total ? formatPrice(total) : '' }}
+              </span>
+            </div>
+          </template>
+        </div>
+      </template>
+      <StatsChartLine v-if="responseParams.display === 'line'" :key="refreshKey" :items="items" :params="responseParams" />
+      <StatsChartBar v-if="responseParams.display === 'bar'" :key="refreshKey" :items="items" :params="responseParams" />
+      <StatsChartYears v-if="responseParams.display === 'years'" :key="refreshKey" :items="items" :params="responseParams" />
     </template>
-    <StatsChart v-else-if="responseParams" :key="refreshKey" :items="items" :params="responseParams" />
   </div>
   <StatsDialog ref="statsDialog" @go="onGo" />
 </template>
@@ -218,7 +222,7 @@ nextTick(() => statsDialog.value?.open())
     flex-direction: column;
     justify-content: flex-start;
     & > div {
-      &:last-child {
+      &:last-child:not(:first-child) {
         flex: 1;
       }
     }
