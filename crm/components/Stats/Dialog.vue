@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import type { StatsMetricsEditor } from '#build/components'
-import type { MetricComponent, StatsMetric, StatsParams, StatsPreset } from '~/components/Stats/Metrics'
+import type { StatsParams, StatsPreset } from '.'
+import type { MetricComponent, StatsMetric } from '~/components/Stats/Metrics'
 import { mdiEyeOffOutline, mdiPlus } from '@mdi/js'
 import { cloneDeep } from 'lodash-es'
 import { VueDraggableNext } from 'vue-draggable-next'
-import {
-
-  MetricComponents,
-
-} from '~/components/Stats/Metrics'
+import { MetricComponents } from '~/components/Stats/Metrics'
+import { defaultStatsParams, StatsDisplayIcon, StatsDisplayLabel, StatsModeLabel } from '.'
 
 const emit = defineEmits<{
   go: [params: StatsParams]
@@ -17,12 +15,7 @@ const emit = defineEmits<{
 const { dialog, width } = useDialog('large')
 const savePresetDialog = ref()
 
-const params = ref<StatsParams>({
-  metrics: [],
-  mode: 'day',
-  date_from: null,
-  date_to: null,
-})
+const params = ref<StatsParams>(cloneDeep(defaultStatsParams))
 
 const showPresets = ref(false)
 const metricsEditor = ref<InstanceType<typeof StatsMetricsEditor>>()
@@ -53,8 +46,8 @@ function addMetric(metric: MetricComponent) {
     label: MetricComponents[metric].label,
     filters: MetricComponents[metric].filters,
     color: 'black',
+    hidden: false,
   })
-  // itemUpdated('metric', id)
 }
 
 // Загрузить конфигурацию из пресета
@@ -128,12 +121,35 @@ provide<Ref<StatsParams>>('params', params)
         <div class="stats-dialog">
           <div>
             <div class="stats-dialog__inputs">
-              <div>
+              <div class="double-input-glued">
                 <v-select
                   v-model="params.mode"
                   :items="selectItems(StatsModeLabel)"
-                  label="Отображать"
+                  label="Группировка"
                 />
+                <v-select
+                  v-model="params.display"
+                  :items="selectItems(StatsDisplayLabel)"
+                  label="Отображение"
+                >
+                  <template #selection="{ item }">
+                    <div class="stats-dialog__display">
+                      <v-icon :icon="StatsDisplayIcon[item.value as StatsDisplay]" />
+                      {{ StatsDisplayLabel[item.value] }}
+                    </div>
+                  </template>
+                  <template #item="{ item, props }">
+                    <v-list-item v-bind="props">
+                      <template #prepend />
+                      <template #title>
+                        <div class="stats-dialog__display">
+                          <v-icon :icon="StatsDisplayIcon[item.value as StatsDisplay]" />
+                          {{ StatsDisplayLabel[item.value] }}
+                        </div>
+                      </template>
+                    </v-list-item>
+                  </template>
+                </v-select>
               </div>
               <div class="double-input-glued">
                 <UiDateInput
@@ -346,6 +362,20 @@ provide<Ref<StatsParams>>('params', params)
     transform: rotate(45deg);
     &:hover {
       color: rgb(var(--v-theme-error)) !important;
+    }
+  }
+
+  &__display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    .v-icon {
+      // font-size: 20px;
+      // color: rgb(var(--v-theme-gray));
     }
   }
 }
