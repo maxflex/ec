@@ -66,7 +66,9 @@ const loading = ref(false)
             </UiIfSet>
           </td>
           <td>
-            <CabinetWithCapacity :items="item.group.cabinets" />
+            <div v-for="c in item.group.cabinets" :key="c">
+              <CabinetWithCapacity :item="c" />
+            </div>
           </td>
         </template>
         <template v-else>

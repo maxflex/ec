@@ -1,19 +1,10 @@
 <script setup lang="ts">
 import { Cabinets } from '.'
 
-interface BusyCabinet {
-  cabinet: string
-  is_busy: boolean
-}
-
-const modelDefaults: BusyCabinet[] = Object.keys(Cabinets)
-  .filter(c => Cabinets[c].capacity > 0)
-  .map(c => ({
-    cabinet: c,
-    is_busy: false,
-  }))
-
-const items = ref<BusyCabinet[]>(modelDefaults)
+const items = Object.keys(Cabinets).map(c => ({
+  value: c,
+  title: Cabinets[c].label,
+}))
 
 const model = defineModel<string | null>()
 </script>
@@ -23,21 +14,17 @@ const model = defineModel<string | null>()
     v-model="model"
     v-bind="$attrs"
     :items="items"
+    nullify
     item-value="cabinet"
   >
     <template #selection="{ item }">
-      {{ Cabinets[item.value].label }}<span v-if="Cabinets[item.value].capacity">-{{ Cabinets[item.value].capacity }}</span>
+      <CabinetWithCapacity :item="item.value" />
     </template>
     <template #item="{ props, item }">
-      <v-list-item
-        v-bind="props"
-        :class="{ 'text-gray': item.raw.is_busy }"
-      >
+      <v-list-item v-bind="props">
         <template #prepend />
         <template #title>
-          <span style="width: 50px; display: inline-block;">
-            {{ Cabinets[item.value].label }}<span v-if="Cabinets[item.value].capacity">-{{ Cabinets[item.value].capacity }}</span>
-          </span>
+          <CabinetWithCapacity :item="item.value" />
         </template>
       </v-list-item>
     </template>

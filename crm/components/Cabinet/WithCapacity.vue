@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { Cabinets } from '.'
 
-const { items } = defineProps<{ items: string[] }>()
+const { item } = defineProps<{ item: string }>()
+const cabinet = Cabinets[item]
 </script>
 
 <template>
-  <div v-for="c in items" :key="c">
-    {{ Cabinets[c].label }}<span v-if="Cabinets[c].capacity">-{{ Cabinets[c].capacity }}</span>
-  </div>
+  <span>
+    {{ cabinet.label }}<span v-if="cabinet.capacity">-{{ cabinet.capacity }}</span>
+  </span>
 </template>

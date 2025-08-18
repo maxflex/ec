@@ -53,7 +53,9 @@ nextTick(loadData)
               <template #empty>
                 нет
               </template>
-              <CabinetWithCapacity :items="group.cabinets" />
+              <div v-for="c in group.cabinets" :key="c">
+                <CabinetWithCapacity :item="c" />
+              </div>
             </UiIfSet>
           </div>
         </div>

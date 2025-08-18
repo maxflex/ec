@@ -69,7 +69,9 @@ const isAlreadyInOtherGroup = computed(() => items.some(e => e.swamp && e.curren
           </UiIfSet>
         </td>
         <td width="80">
-          <CabinetWithCapacity :items="item.cabinets" />
+          <div v-for="c in item.cabinets" :key="c">
+            <CabinetWithCapacity :item="c" />
+          </div>
         </td>
         <td width="30">
           <ScheduleDraftProblems :item="item" :contract-id="contractId" />

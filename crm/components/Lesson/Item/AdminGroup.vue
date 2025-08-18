@@ -81,7 +81,7 @@ const isConductDisabled = item.status !== 'conducted'
       </div>
     </div>
     <div style="width: 70px">
-      <CabinetWithCapacity v-if="item.cabinet" :items="[item.cabinet]" />
+      <CabinetWithCapacity v-if="item.cabinet" :item="item.cabinet" />
     </div>
     <div class="lesson-item__status">
       <LessonItemStatus :item="item" show-unplanned show-free />
