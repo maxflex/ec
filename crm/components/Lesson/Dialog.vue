@@ -125,9 +125,6 @@ defineExpose({ create, edit })
           <CabinetSelector
             v-model="lesson.cabinet"
             label="Кабинет"
-            :date="lesson.date"
-            :time="lesson.time"
-            :group-id="lesson.group_id!"
             :disabled="isConducted"
           />
         </div>

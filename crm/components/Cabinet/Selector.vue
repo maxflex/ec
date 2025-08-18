@@ -6,14 +6,6 @@ interface BusyCabinet {
   is_busy: boolean
 }
 
-const { date, dateEnd, time, groupId, weekday } = defineProps<{
-  groupId: number
-  date?: string
-  dateEnd?: string
-  time?: string
-  weekday?: Weekday
-}>()
-
 const modelDefaults: BusyCabinet[] = Object.keys(Cabinets)
   .filter(c => Cabinets[c].capacity > 0)
   .map(c => ({
@@ -24,34 +16,6 @@ const modelDefaults: BusyCabinet[] = Object.keys(Cabinets)
 const items = ref<BusyCabinet[]>(modelDefaults)
 
 const model = defineModel<string | null>()
-
-// при установке даты и времени, загружаем свободные кабинеты
-async function loadFreeCabinets() {
-  if (date && time && time.length === 5) {
-    const { data } = await useHttp<BusyCabinet[]>(
-      `cabinets/free`,
-      {
-        params: {
-          date,
-          time,
-          weekday,
-          date_end: dateEnd,
-          group_id: groupId,
-        },
-      },
-    )
-    items.value = data.value!
-  }
-  else {
-    items.value = modelDefaults
-  }
-
-  console.log('loadFreeCabinets', items.value)
-}
-
-watch(() => date, loadFreeCabinets)
-watch(() => time, loadFreeCabinets)
-watch(() => dateEnd, loadFreeCabinets)
 </script>
 
 <template>

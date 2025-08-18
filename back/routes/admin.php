@@ -143,7 +143,6 @@ Route::post('print', PrintController::class);
 
 Route::get('people-selector', PeopleSelectorController::class);
 
-Route::get('cabinets/free', [CabinetController::class, 'free']);
 Route::get('cabinets', [CabinetController::class, 'index']);
 
 Route::post('telegram-lists/load-people', [TelegramListController::class, 'loadPeople']);

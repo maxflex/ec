@@ -158,9 +158,6 @@ defineExpose({ create })
               v-model="i.cabinet"
               class="cabinett-selector"
               placeholder="Кабинет"
-              :date="item.start_date"
-              :date-end="item.end_date"
-              :group-id="item.group_id"
             />
           </div>
           <div>
