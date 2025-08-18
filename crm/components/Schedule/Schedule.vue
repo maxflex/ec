@@ -39,6 +39,9 @@ const params = {
   client_id: clientId,
   group_id: group?.id,
 }
+
+// режим массового редактирования
+const massEditMode = ref(false)
 const loading = ref(true)
 const teeth = ref<Teeth>()
 const lessons = ref<LessonListResource[]>([])
@@ -49,7 +52,7 @@ const lessonBulkCreateDialog = ref<InstanceType<typeof LessonBulkCreateDialog>>(
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 const vacations = ref<Record<string, boolean>>({})
 const checkboxes = ref<{ [key: number]: boolean }>({})
-const lessonIds = computed((): number[] => {
+const selectedIds = computed((): number[] => {
   const result = []
   for (const key in checkboxes.value) {
     if (checkboxes.value[key]) {
@@ -199,21 +202,42 @@ function onBulkUpdated() {
   checkboxes.value = {}
 }
 
-function onMassEditClick(item: LessonListResource) {
-  if (!isMassEditable || item.status === 'cancelled' || !lessonIds.value.length) {
+function onMassEditClick(item: LessonListResource, e: MouseEvent) {
+  if (!isMassEditable || item.status === 'cancelled' || !massEditMode.value) {
     return
   }
-  toggleCheckboxes(item.id)
+  toggleCheckboxes(item, e.metaKey)
 }
 
-function toggleCheckboxes(id: number) {
-  if (checkboxes.value) {
-    if (checkboxes.value[id]) {
-      delete checkboxes.value[id]
+/**
+ *
+ * @param id
+ * @param selectAllTheSame  выбрать все похожие (сгруппированные по времени и дню недели)
+ */
+function toggleCheckboxes(item: LessonListResource, selectAllTheSame: boolean) {
+  const id = item.id
+  const isSelected = id in checkboxes.value
+
+  if (selectAllTheSame) {
+    const day = getDay(item.date)
+    for (const lesson of lessons.value) {
+      if (getDay(lesson.date) === day && lesson.time === item.time) {
+        if (isSelected) {
+          delete checkboxes.value[lesson.id]
+        }
+        else {
+          checkboxes.value[lesson.id] = true
+        }
+      }
     }
-    else {
-      checkboxes.value[id] = true
-    }
+    return
+  }
+
+  if (isSelected) {
+    delete checkboxes.value[id]
+  }
+  else {
+    checkboxes.value[id] = true
   }
 }
 
@@ -221,6 +245,11 @@ function selectAll() {
   for (const lesson of lessons.value) {
     checkboxes.value[lesson.id] = true
   }
+}
+
+function cancelMassEdit() {
+  massEditMode.value = false
+  checkboxes.value = {}
 }
 
 const lessonComponent = (function () {
@@ -279,23 +308,28 @@ nextTick(loadAvailableYears)
     </div>
 
     <template #buttons>
-      <div v-if="lessonIds.length" class="d-flex ga-4">
-        <v-btn variant="text" @click="checkboxes = {}">
+      <div v-if="massEditMode" class="d-flex ga-4">
+        <v-btn variant="text" @click="cancelMassEdit()">
           отмена
         </v-btn>
         <v-btn variant="text" @click="selectAll()">
           выбрать всё
         </v-btn>
-        <v-btn color="primary" :width="216" @click="lessonBulkUpdateDialog?.open(lessonIds, group.program)">
+        <v-btn color="primary" :width="216" @click="lessonBulkUpdateDialog?.open(selectedIds, group.program)">
           редактировать
-          {{ lessonIds.length }}/{{ lessons.length }}
+          {{ selectedIds.length }}/{{ lessons.length }}
         </v-btn>
       </div>
       <v-menu v-else-if="isMassEditable">
         <template #activator="{ props }">
-          <v-btn color="primary" v-bind="props" :width="216">
-            добавить занятия
-          </v-btn>
+          <div class="d-flex ga-4">
+            <v-btn variant="text" @click="massEditMode = true">
+              массовое редактирование
+            </v-btn>
+            <v-btn color="primary" v-bind="props" :width="216">
+              добавить занятия
+            </v-btn>
+          </div>
         </template>
         <v-list>
           <v-list-item @click="lessonDialog?.create(group.id, group!.year, group.program)">
@@ -337,12 +371,12 @@ nextTick(loadAvailableYears)
         :key="`l-${item.id}`"
         :item="item"
         :checkboxes="checkboxes"
+        :mass-edit-mode="massEditMode"
         class="lesson-item lesson-item__lesson"
         @edit="lessonDialog?.edit"
         @conduct="conductDialog?.open"
         @edit-price="clientLessonEditPriceDialog?.edit"
-        @click="onMassEditClick(item)"
-        @select="toggleCheckboxes"
+        @click="e => onMassEditClick(item, e)"
       />
     </div>
   </div>

@@ -6,16 +6,14 @@ const emit = defineEmits<{ (e: 'updated'): void }>()
 interface BulkItem {
   cabinet?: string
   quarter?: Quarter
-  time?: string
   teacher_id?: number
   price?: number
 }
 
 const saving = ref(false)
-const timeMask = { mask: '##:##' }
 const { dialog, width } = useDialog('default')
 const lesson = ref<BulkItem>({})
-// const deleting = ref(false)
+const deleting = ref(false)
 const ids = ref<number[]>([])
 const isQuarterEditable = ref(false)
 
@@ -40,21 +38,21 @@ async function save() {
   setTimeout(() => saving.value = false, 300)
 }
 
-// async function destroy() {
-//   if (!confirm(`Вы уверены, что хотите удалить ${ids.value.length} уроков?`)) {
-//     return
-//   }
-//   deleting.value = true
-//   await useHttp(`lessons/bulk`, {
-//     method: 'delete',
-//     params: {
-//       'ids[]': ids.value,
-//     },
-//   })
-//   emit('updated')
-//   dialog.value = false
-//   setTimeout(() => deleting.value = false, 300)
-// }
+async function destroy() {
+  // if (!confirm(`Вы уверены, что хотите удалить ${ids.value.length} уроков?`)) {
+  //   return
+  // }
+  deleting.value = true
+  await useHttp(`lessons/bulk`, {
+    method: 'delete',
+    params: {
+      'ids[]': ids.value,
+    },
+  })
+  emit('updated')
+  dialog.value = false
+  setTimeout(() => deleting.value = false, 300)
+}
 
 defineExpose({ open })
 </script>
@@ -70,14 +68,14 @@ defineExpose({ open })
           Массовое редактирование
         </span>
         <div>
-          <!--          <v-btn -->
-          <!--            :loading="deleting" -->
-          <!--            :size="48" -->
-          <!--            class="remove-btn" -->
-          <!--            icon="$delete" -->
-          <!--            variant="text" -->
-          <!--            @click="destroy()" -->
-          <!--          /> -->
+          <v-btn
+            :loading="deleting"
+            :size="48"
+            class="remove-btn"
+            icon="$delete"
+            variant="text"
+            @click="destroy()"
+          />
           <v-btn
             :loading="saving"
             :size="48"
@@ -113,14 +111,6 @@ defineExpose({ open })
             label="Цена"
             type="number"
             hide-spin-buttons
-          />
-        </div>
-
-        <div>
-          <v-text-field
-            v-model="lesson.time"
-            v-maska="timeMask"
-            label="Время"
           />
         </div>
       </div>

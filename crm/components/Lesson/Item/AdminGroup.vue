@@ -4,16 +4,15 @@ import {
   mdiBookOpenVariant,
   mdiPaperclip,
 } from '@mdi/js'
-import { Cabinets } from '~/components/Cabinet'
 
-const { item, checkboxes } = defineProps<{
+const { item, checkboxes, massEditMode } = defineProps<{
   item: LessonListResource
   checkboxes: { [key: number]: boolean }
+  massEditMode?: boolean
 }>()
 
 const emit = defineEmits<{
   edit: [id: number]
-  select: [id: number]
   conduct: [id: number, status: LessonStatus]
 }>()
 
@@ -23,7 +22,7 @@ const isConductDisabled = item.status !== 'conducted'
 
 <template>
   <div>
-    <div v-if="Object.keys(checkboxes).length" class="lesson-item__checkbox">
+    <div v-if="massEditMode && item.status === 'planned'" class="lesson-item__checkbox">
       <UiCheckbox :value="checkboxes[item.id]" />
     </div>
     <div v-else class="table-actionss">
@@ -46,9 +45,6 @@ const isConductDisabled = item.status !== 'conducted'
             @click="emit('conduct', item.id, item.status)"
           >
             проводка занятия
-          </v-list-item>
-          <v-list-item @click="emit('select', item.id)">
-            выбрать
           </v-list-item>
         </v-list>
       </v-menu>
@@ -89,6 +85,6 @@ const isConductDisabled = item.status !== 'conducted'
     <div class="lesson-item__status">
       <LessonItemStatus :item="item" show-unplanned show-free />
     </div>
-    <LessonItemSeqQuarter v-if="!Object.keys(checkboxes).length" :item="item" />
+    <LessonItemSeqQuarter v-if="!massEditMode" :item="item" />
   </div>
 </template>
