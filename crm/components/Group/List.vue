@@ -54,7 +54,7 @@ const { items, blurOthers } = defineProps<{
         <td width="140">
           <UiIfSet :value="Object.keys(item.teeth).length > 0">
             <template #empty>
-              расписание отсутствует
+              расписания нет
             </template>
             <TeethAsText :items="item.teeth" />
           </UiIfSet>

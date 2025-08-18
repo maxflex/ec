@@ -11,7 +11,7 @@ const { item, noLink = true } = defineProps<{
 <template>
   <UiIfSet :value="!!item.teachers.length">
     <template #empty>
-      преподавателей нет
+      нет
     </template>
     <div v-for="t in item.teachers" :key="t.id">
       <UiPerson :item="t" :no-link="noLink" />

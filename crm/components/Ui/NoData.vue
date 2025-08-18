@@ -32,7 +32,7 @@ const { icon } = defineProps<{ icon?: string }>()
     align-items: center;
     gap: 0;
     opacity: 0.5;
-    font-size: 30px;
+    font-size: 36px;
     text-align: center;
   }
   .v-icon {

@@ -51,7 +51,7 @@ nextTick(loadData)
           <div>
             <UiIfSet :value="group.cabinets.length">
               <template #empty>
-                не установлено
+                нет
               </template>
               <CabinetWithCapacity :items="group.cabinets" />
             </UiIfSet>

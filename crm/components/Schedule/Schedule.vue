@@ -303,7 +303,7 @@ nextTick(loadAvailableYears)
         <TeethBar :items="group.teeth!" />
       </template>
       <span v-else class="text-gray">
-        расписание отсутствует
+        расписания нет
       </span>
     </div>
 
@@ -345,7 +345,7 @@ nextTick(loadAvailableYears)
       </v-fade-transition>
     </template>
   </UiFilters>
-  <UiNoData v-if="availableYears !== undefined && !selectedYear" />
+  <UiNoData v-if="lessons.length === 0 && !loading" />
   <UiLoader v-else-if="loading" />
   <div v-else class="schedule">
     <div

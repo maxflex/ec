@@ -29,7 +29,7 @@ const { item } = defineProps<{
       <div>
         <UiIfSet :value="item.lesson_counts.conducted || item.lesson_counts.planned">
           <template #empty>
-            уроков нет
+            нет
           </template>
           <GroupLessonCounts :item="item" />
         </UiIfSet>
