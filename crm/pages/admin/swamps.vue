@@ -1,12 +1,55 @@
 <script setup lang="ts">
-import type { SwampCountsResource } from '~/components/Swamp'
 import type { SwampFilters } from '~/components/Swamp/Filters.vue'
-import { SwampStatusLabelExtended } from '~/components/Swamp'
+import { orderBy, sortBy } from 'lodash-es'
+
+type Field = 'active_no_group' |
+  'active_in_group' |
+  'finished_no_group' |
+  'finished_in_group' |
+  'exceeded_no_group' |
+  'exceeded_in_group'
+
+interface SwampCountsResource {
+  client: PersonResource
+  counts: Record<Field, number>
+}
 
 const filters = ref<SwampFilters>(loadFilters({
   year: currentAcademicYear(),
   program: [],
 }))
+
+const sort = ref<{
+  field: Field
+  direction: 'asc' | 'desc'
+}>()
+
+function toggleSort(field: Field) {
+  if (!sort.value || sort.value.field !== field) {
+    sort.value = {
+      field,
+      direction: 'asc',
+    }
+  }
+  else if (sort.value.direction === 'asc') {
+    sort.value.direction = 'desc'
+  }
+  else {
+    sort.value = undefined
+  }
+}
+
+const tableFields: Array<{
+  title: string
+  field: Field
+}> = [
+  { field: 'active_no_group', title: 'к исполнению' },
+  { field: 'active_in_group', title: 'к исполнению <br/>в группе' },
+  { field: 'finished_no_group', title: 'исполнено' },
+  { field: 'finished_in_group', title: 'исполнено <br />в группе' },
+  { field: 'exceeded_no_group', title: 'перевыполнено' },
+  { field: 'exceeded_in_group', title: 'перевыполнено <br />в группе' },
+]
 
 const { items, indexPageData } = useIndex<SwampCountsResource>(
   `swamps`,
@@ -18,9 +61,21 @@ const { items, indexPageData } = useIndex<SwampCountsResource>(
   },
 )
 
-function sum(status: keyof typeof SwampStatusLabelExtended) {
-  return items.value.reduce((carry, x) => carry + x.counts[status], 0)
+function sum(field: Field) {
+  return items.value.reduce((carry, x) => carry + x.counts[field], 0)
 }
+
+const sortedItems = computed(() => {
+  if (!sort.value) {
+    return orderBy(items.value, x => x.client.last_name)
+  }
+
+  const { field, direction } = sort.value
+
+  return orderBy(items.value, x => x.counts[field], direction)
+})
+
+watch(filters.value, () => (sort.value = undefined))
 </script>
 
 <template>
@@ -31,27 +86,36 @@ function sum(status: keyof typeof SwampStatusLabelExtended) {
     <v-table height="calc(100vh - 81px)" class="swamp-counts">
       <thead>
         <tr>
-          <th>
-          </th>
-          <th v-for="(label, status) in SwampStatusLabelExtended" :key="status" width="140" v-html="label">
+          <th />
+          <th
+            v-for="h in tableFields"
+            :key="h.field"
+            class="sortable"
+            :class="{
+              'sortable--desc': sort?.direction === 'desc',
+            }"
+            @click="toggleSort(h.field)"
+          >
+            <span v-html="h.title" />
+            <v-icon v-if="sort?.field === h.field" icon="$collapse" />
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in items" :key="item.client.id">
+        <tr v-for="item in sortedItems" :key="item.client.id">
           <td>
             <UiPerson :item="item.client" />
           </td>
-          <td v-for="(_, status) in SwampStatusLabelExtended" :key="status" :class="`swamp-counts--${status}`" width="140">
-            {{ item.counts[status] || '' }}
+          <td v-for="{ field } in tableFields" :key="field" :class="`swamp-counts--${field}`" width="150">
+            {{ formatPrice(item.counts[field]) }}
           </td>
         </tr>
       </tbody>
       <tfoot>
         <tr>
-          <td></td>
-          <td v-for="(_, status) in SwampStatusLabelExtended" :key="status" :class="`swamp-counts--${status}`" width="140">
-            {{ sum(status) || '' }}
+          <td />
+          <td v-for="{ field } in tableFields" :key="field" :class="`swamp-counts--${field}`" width="150">
+            {{ sum(field) || '' }}
           </td>
         </tr>
       </tfoot>

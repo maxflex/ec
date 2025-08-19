@@ -681,7 +681,6 @@ class ScheduleDraft extends Model
 
         $programs = $this->programs;
         $originalPrograms = $this->contract_id ? self::getPrograms($this->contract) : collect();
-
         $changes = 0;
 
         foreach ($programs as $p) {
@@ -693,20 +692,10 @@ class ScheduleDraft extends Model
             }
 
             // original:    program_id = 1 | group_id = 5
-
             // step 1:      program_id = 1 | group_id = null    // убрали и группы
             // step 2:      program_id = 1 | group_id = 6       // добавили в новую группу
-
             // изменения в группах
             if (@$originalProgram['group_id'] !== $p['group_id']) {
-                // if ($this->id === 5) {
-                //     logger('', [
-                //         @$originalProgram['group_id'],
-                //         $p['group_id'],
-                //     ]);
-                // }
-                //
-
                 // отдельно считаем удаление
                 if (@$originalProgram['group_id']) {
                     $changes++;
@@ -720,6 +709,37 @@ class ScheduleDraft extends Model
         }
 
         return $changes;
+    }
+
+    /**
+     * "Есть проблемы" для списка на /schedule-drafts
+     * Отображается если в позициях с изменениями есть проблемы
+     */
+    public function getHasProblemsInListAttribute(): bool
+    {
+        if ($this->changes === 0) {
+            return false;
+        }
+
+        $programs = $this->programs;
+        $originalPrograms = $this->contract_id ? self::getPrograms($this->contract) : collect();
+
+        foreach ($programs as $p) {
+            $originalProgram = $originalPrograms->firstWhere('id', $p['id']);
+
+            // изменения в группах
+            if (@$originalProgram['group_id'] !== $p['group_id']) {
+                // удаление из группы
+                if (@$originalProgram['group_id']) {
+                    $changes++;
+                }
+
+                // добавление в группу
+                if ($p['group_id']) {
+                    $changes++;
+                }
+            }
+        }
     }
 
     public function contract(): BelongsTo

@@ -20,7 +20,7 @@ const { status } = item
     внеплановое
   </div>
   <div v-if="showFree && item.is_free" class="text-orange">
-    бесплатное для детей
+    бесплатное
   </div>
 </template>
 

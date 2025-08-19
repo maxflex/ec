@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { orderBy } from 'lodash-es'
+
 interface TeacherBalance {
   teacher: PersonResource
   lessons_planned: number
@@ -69,29 +71,7 @@ const sortedItems = computed(() => {
 
   const { field, direction } = sort.value
 
-  return [...items.value].sort((a, b) => {
-    const fieldA = a[field]
-    const fieldB = b[field]
-
-    // Handle cases where field values might be non-truthy
-    if (!fieldA && fieldB) {
-      return 1 // Non-truthy values go last
-    }
-    if (fieldA && !fieldB) {
-      return -1 // Non-truthy values go last
-    }
-    if (!fieldA && !fieldB) {
-      return 0 // Both are non-truthy, consider them equal
-    }
-
-    // Ascending or descending order
-    if (direction === 'asc') {
-      return fieldA > fieldB ? 1 : fieldA < fieldB ? -1 : 0
-    }
-    else {
-      return fieldA < fieldB ? 1 : fieldA > fieldB ? -1 : 0
-    }
-  })
+  return orderBy(items.value, x => x[field], direction)
 })
 
 watch(filters.value, () => (sort.value = undefined))

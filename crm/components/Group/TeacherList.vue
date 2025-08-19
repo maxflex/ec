@@ -20,7 +20,7 @@ function onClick(g: GroupListResource) {
 
 <template>
   <div
-    class="table table--padding group-list"
+    class="table table--padding group-list-teacher group-list"
     :class="{
       'group-list--selectable table--hover': selectable,
     }"
@@ -45,6 +45,9 @@ function onClick(g: GroupListResource) {
       <div style="width: 120px">
         {{ ProgramShortLabel[item.program] }}
       </div>
+      <div style="width: 80px">
+        <GroupFirstLessonDate :date="item.first_lesson_date" />
+      </div>
       <div style="width: 140px">
         <GroupLessonCounts :item="item" sum-free />
       </div>
@@ -54,6 +57,11 @@ function onClick(g: GroupListResource) {
       <div style="flex: 1">
         <TeethAsText :items="item.teeth" />
       </div>
+      <div style="width: 100px">
+        <div v-for="c in item.cabinets" :key="c">
+          <CabinetWithCapacity :item="c" />
+        </div>
+      </div>
       <div class="group-list__zoom">
         <template v-if="item.zoom?.id">
           {{ item.zoom.id }} / {{ item.zoom.password }}
@@ -62,3 +70,11 @@ function onClick(g: GroupListResource) {
     </div>
   </div>
 </template>
+
+<style lang="scss">
+.group-list-teacher {
+  & > div {
+    align-items: flex-start !important;
+  }
+}
+</style>

@@ -243,7 +243,12 @@ function toggleCheckboxes(item: LessonListResource, selectAllTheSame: boolean) {
 
 function selectAll() {
   for (const lesson of lessons.value) {
-    checkboxes.value[lesson.id] = true
+    const { id } = lesson
+    if (lesson.status === 'cancelled') {
+      delete checkboxes.value[id]
+      continue
+    }
+    checkboxes.value[id] = true
   }
 }
 
@@ -315,7 +320,7 @@ nextTick(loadAvailableYears)
         <v-btn variant="text" @click="selectAll()">
           выбрать всё
         </v-btn>
-        <v-btn color="primary" :width="216" @click="lessonBulkUpdateDialog?.open(selectedIds, group.program)">
+        <v-btn color="primary" :width="220" @click="lessonBulkUpdateDialog?.open(selectedIds, group!.program!)">
           редактировать
           {{ selectedIds.length }}/{{ lessons.length }}
         </v-btn>
@@ -326,7 +331,7 @@ nextTick(loadAvailableYears)
             <v-btn variant="text" @click="massEditMode = true">
               массовое редактирование
             </v-btn>
-            <v-btn color="primary" v-bind="props" :width="216">
+            <v-btn color="primary" v-bind="props" :width="220">
               добавить занятия
             </v-btn>
           </div>

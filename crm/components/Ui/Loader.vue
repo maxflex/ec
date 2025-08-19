@@ -34,7 +34,7 @@ const style = offset
     left: 0;
   }
   span {
-    font-size: 30px;
+    font-size: 36px;
     position: relative;
     color: transparent; /* Makes the text invisible initially */
     background: linear-gradient(120deg, rgba(0, 0, 0, 0.1) 25%, rgba(var(--v-theme-gray)) 50%, rgba(0, 0, 0, 0.1) 75%);
