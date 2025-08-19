@@ -15,9 +15,8 @@ const model = defineModel<string | null>()
     v-bind="$attrs"
     :items="items"
     nullify
-    item-value="cabinet"
   >
-    <template #selection="{ item }">
+    <template v-if="model" #selection="{ item }">
       <CabinetWithCapacity :item="item.value" />
     </template>
     <template #item="{ props, item }">
