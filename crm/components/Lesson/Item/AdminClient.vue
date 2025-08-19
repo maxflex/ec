@@ -65,22 +65,21 @@ const isConductDisabled = item.status !== 'conducted'
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
     <div style="width: 70px">
-      <CabinetWithCapacity v-if="item.cabinet" :item="item.cabinet" />
+      <NuxtLink :to="{ name: 'groups-id', params: { id: item.group.id } }" @click.stop>
+        ГР-{{ item.group.id }}
+      </NuxtLink>
     </div>
     <div v-if="item.teacher" style="width: 150px">
       <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }" @click.stop>
         {{ formatNameInitials(item.teacher) }}
       </NuxtLink>
     </div>
-    <div style="width: 70px">
-      <NuxtLink :to="{ name: 'groups-id', params: { id: item.group.id } }" @click.stop>
-        ГР-{{ item.group.id }}
-      </NuxtLink>
-    </div>
     <div style="width: 110px">
       {{ ProgramShortLabel[item.group.program] }}
     </div>
-
+    <div style="width: 70px">
+      <CabinetWithCapacity v-if="item.cabinet" :item="item.cabinet" />
+    </div>
     <div style="width: 130px">
       <span v-if="item.client_lesson">
         {{ item.client_lesson.price }} ₽

@@ -27,15 +27,14 @@ class LessonListResource extends JsonResource
             'teacher' => new PersonResource($this->teacher),
             'client_lesson' => $this->when(
                 $request->has('client_id'),
-                fn() => $this->getClientLesson(intval($request->client_id)),
+                fn () => $this->getClientLesson(intval($request->client_id)),
             ),
             'group' => extract_fields($this->group, [
-                'program', 'zoom'
+                'program', 'zoom',
             ], [
-                'students_count' =>
-                $this->status === LessonStatus::conducted
+                'students_count' => $this->status === LessonStatus::conducted
                     ? $this->clientLessons()->count()
-                    : $this->group->clientGroups()->count()
+                    : $this->group->clientGroups()->count(),
             ]),
         ]);
     }

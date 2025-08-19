@@ -161,7 +161,7 @@ nextTick(() => {
       </div>
 
       <Vue3SlideUpDown :model-value="expanded.date === d && !expanded.loading" :duration="200">
-        <LessonItemAdminTeacher
+        <LessonItemAllLessons
           v-for="lesson in lessons"
           :key="lesson.id"
           class="lesson-item lesson-item__lesson"

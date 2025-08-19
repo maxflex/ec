@@ -53,21 +53,26 @@ const isConductDisabled = isEditDisabled || item.date > today() || item.status =
     <div style="width: 120px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
-    <div style="width: 60px">
-      <template v-if="item.cabinet">
-        {{ Cabinets[item.cabinet].label }}
-      </template>
-    </div>
-    <div v-if="item.teacher" style="width: 150px">
-      {{ formatNameInitials(item.teacher) }}
-    </div>
     <div style="width: 70px">
       <NuxtLink :to="{ name: 'groups-id', params: { id: item.group.id } }" @click.stop>
         ГР-{{ item.group.id }}
       </NuxtLink>
     </div>
+    <div v-if="item.teacher" style="width: 150px">
+      {{ formatNameInitials(item.teacher) }}
+    </div>
     <div style="width: 140px">
       {{ ProgramShortLabel[item.group.program] }}
+    </div>
+    <div style="width: 60px">
+      <template v-if="item.status !== 'cancelled'">
+        {{ item.group.students_count }} уч.
+      </template>
+    </div>
+    <div style="width: 60px">
+      <template v-if="item.cabinet">
+        {{ Cabinets[item.cabinet].label }}
+      </template>
     </div>
     <div style="width: 70px">
       <span v-if="item.quarter">

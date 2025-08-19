@@ -13,8 +13,8 @@ const loading = ref(false)
     <thead>
       <tr>
         <!-- ШИРИНЫ -->
-        <th width="100"></th>
-        <th width="150"></th>
+        <th width="80"></th>
+        <th width="170"></th>
         <th width="100"></th>
         <th width="80"></th>
         <th width="100"></th>
@@ -27,15 +27,15 @@ const loading = ref(false)
     <tbody>
       <tr v-for="item in items" :key="item.id">
         <template v-if="item.group">
-          <td width="100">
+          <td>
             <NuxtLink :to="{ name: 'groups-id', params: { id: item.group!.id } }">
               ГР-{{ item.group!.id }}
             </NuxtLink>
           </td>
-          <td width="150">
+          <td>
             <GroupTeachers :item="item.group" />
           </td>
-          <td width="80">
+          <td>
             {{ ProgramShortLabel[item.program] }}
           </td>
           <td>

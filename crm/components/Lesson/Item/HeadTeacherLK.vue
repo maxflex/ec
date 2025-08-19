@@ -16,23 +16,23 @@ const { item } = defineProps<{
     <div style="width: 110px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
-    <div style="width: 50px">
-      <template v-if="item.cabinet">
-        {{ Cabinets[item.cabinet].label }}
-      </template>
+    <div style="width: 70px">
+      <NuxtLink :to="{ name: 'groups-id', params: { id: item.group.id } }" @click.stop>
+        ГР-{{ item.group.id }}
+      </NuxtLink>
     </div>
     <div v-if="item.teacher" style="width: 140px">
       <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }" @click.stop>
         {{ formatNameInitials(item.teacher) }}
       </NuxtLink>
     </div>
-    <div style="width: 70px">
-      <NuxtLink :to="{ name: 'groups-id', params: { id: item.group.id } }" @click.stop>
-        ГР-{{ item.group.id }}
-      </NuxtLink>
-    </div>
     <div style="width: 110px">
       {{ ProgramShortLabel[item.group.program] }}
+    </div>
+    <div style="width: 50px">
+      <template v-if="item.cabinet">
+        {{ Cabinets[item.cabinet].label }}
+      </template>
     </div>
 
     <div style="width: 100px" class="lesson-item__icons">
