@@ -132,6 +132,13 @@ defineExpose({ create, edit })
             label="Занятий по программе"
           />
         </div>
+        <div>
+          <UiDateInput
+            v-model="group.contract_date"
+            label="Дата подписания договора"
+            manual
+          />
+        </div>
         <div class="double-input">
           <v-text-field
             v-model="group.zoom.id"

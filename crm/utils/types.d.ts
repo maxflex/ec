@@ -236,6 +236,7 @@ declare global {
     teeth?: Teeth
     created_at?: string
     user?: PersonResource
+    contract_date: string | null
     zoom: Zoom
     cabinets: string[]
     lessons_planned: number

@@ -23,6 +23,7 @@ class GroupController extends Controller
         'teacher' => ['teacher_id'],
         'client' => ['client_id'],
         'findInSet' => ['program'],
+        'null' => ['contract_date'],
     ];
 
     public function index(Request $request)

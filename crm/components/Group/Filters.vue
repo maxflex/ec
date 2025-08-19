@@ -3,6 +3,7 @@ export interface GroupFilters {
   year: Year
   program: Program[]
   teacher_id?: number
+  contract_date?: number
 }
 
 const { disabled } = defineProps<{
@@ -24,9 +25,11 @@ const model = defineModel<GroupFilters>({ required: true })
     multiple
     :disabled="disabled"
   />
-  <TeacherSelector
-    v-if="!disabled"
-    v-model="model.teacher_id"
+  <UiClearableSelect
+    v-model="model.contract_date"
+    :items="yesNo()"
+    label="Договор заключен"
     density="comfortable"
+    :disabled="disabled"
   />
 </template>
