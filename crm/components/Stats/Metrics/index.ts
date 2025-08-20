@@ -5,6 +5,7 @@ import ClientLessonMetric from './ClientLessonMetric.vue'
 import ClientPaymentMetric from './ClientPaymentMetric.vue'
 import ContractMetric from './ContractMetric.vue'
 import ContractPaymentMetric from './ContractPaymentMetric.vue'
+import ContractProgramMetric from './ContractProgramMetric.vue'
 import LessonMetric from './LessonMetric.vue'
 import PassMetric from './PassMetric.vue'
 import ReportMetric from './ReportMetric.vue'
@@ -29,8 +30,9 @@ const MetricComponentsUnsorted = {
   RequestMetric,
   ReportMetric,
   ClientPaymentMetric,
-  ContractPaymentMetric,
   ContractMetric,
+  ContractProgramMetric,
+  ContractPaymentMetric,
   TeacherPaymentMetric,
   TeacherServiceMetric,
   PassMetric,

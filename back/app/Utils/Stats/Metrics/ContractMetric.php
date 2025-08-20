@@ -2,6 +2,7 @@
 
 namespace App\Utils\Stats\Metrics;
 
+use App\Enums\Direction;
 use App\Models\ContractVersion;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -10,7 +11,7 @@ class ContractMetric extends BaseMetric
     protected $filters = [
         'contract' => ['year', 'company'],
         'version' => ['version'],
-        'program' => ['program'],
+        'direction' => ['direction'],
     ];
 
     public function getDateField(): string
@@ -46,11 +47,19 @@ class ContractMetric extends BaseMetric
         return $sum;
     }
 
-    protected function filterProgram($query, array $programs)
+    protected function filterDirection($query, array $values)
     {
-        if (count($programs) === 0) {
+        if (count($values) === 0) {
             return;
         }
+
+        $programs = collect();
+        foreach ($values as $directionString) {
+            $programs = $programs->concat(
+                Direction::from($directionString)->toPrograms()
+            );
+        }
+        $programs = $programs->unique();
 
         $query->whereHas('programs', fn ($q) => $q->whereIn('program', $programs));
     }
