@@ -374,7 +374,7 @@ class ScheduleDraft extends Model
                 'program', 'client_groups_count', 'zoom', 'lessons_planned',
                 'teacher_counts', 'lesson_counts', 'first_lesson_date', 'swamp',
                 'overlap', 'uncunducted_count', 'original_contract_id',
-                'current_contract_id',
+                'current_contract_id', 'level',
             ], [
                 'cabinets' => $g->cabinets,
                 'teeth' => $g->getSavedSchedule($g->year),

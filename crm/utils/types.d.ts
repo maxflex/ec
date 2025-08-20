@@ -221,6 +221,7 @@ declare global {
     lesson_counts: GroupLessonCounts
     client_groups_count: number
     first_lesson_date?: string
+    level: number | null
     program: Program
     teachers: PersonResource[]
     teeth: Teeth
