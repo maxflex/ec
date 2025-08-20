@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { Density } from 'vuetify/lib/composables/density.mjs'
 
-const { disabled, density = 'comfortable' } = defineProps<{
+const { disabled, density = 'comfortable', clearable = true } = defineProps<{
   disabled?: boolean
   density?: Density
+  clearable?: boolean
 }>()
 
 const model = defineModel<Program | Program[]>({ required: true })
@@ -35,7 +36,7 @@ function clear() {
         ничего не найдено
       </v-list-item>
     </template>
-    <template v-if="!disabled && Array.isArray(model) && model.length" #append>
+    <template v-if="clearable && !disabled && Array.isArray(model) && model.length" #append>
       <a @click="clear()">очистить</a>
     </template>
   </v-select>

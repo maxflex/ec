@@ -13,13 +13,13 @@ interface Filters {
   year: Year[]
   company?: Company
   version?: VersionFilter
-  direction: Direction[]
+  program: Program[]
 }
 
 const filterDefaults: Filters = {
   aggregate: 'sum',
   year: [],
-  direction: [],
+  program: [],
 }
 
 export default {
@@ -56,6 +56,11 @@ defineExpose({ filters })
     />
   </div>
   <div>
-    <UiMultipleSelect v-model="filters.direction" :items="selectItems(DirectionLabel)" label="Направления" />
+    <ProgramSelector
+      v-model="filters.program"
+      multiple
+      density="default"
+      :clearable="false"
+    />
   </div>
 </template>
