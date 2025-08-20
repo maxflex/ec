@@ -246,9 +246,10 @@ class ScheduleDraft extends Model
         }
     }
 
-    public function getData()
+    public function getData(?Collection $programs = null)
     {
-        $realProgramIds = $this->programs->where('id', '>', 0)->pluck('id');
+        $programs ??= $this->programs;
+        $realProgramIds = $programs->where('id', '>', 0)->pluck('id');
 
         // Все планируемые занятия ученика, сгруппированные по дате
         // Нужно для подсчёта пересечений
@@ -269,9 +270,32 @@ class ScheduleDraft extends Model
         $groups = Group::query()
             ->where('year', $this->year)
             ->withCount('clientGroups')
-            ->whereIn('program', $this->programs->pluck('program')->unique())
+            ->whereIn('program', $programs->pluck('program')->unique())
             ->with('lessons')
             ->get();
+
+        $swampsByProgramId = $programs
+            ->mapWithKeys(function ($p) use ($cvpById) {
+                $cvp = $p['id'] > 0 ? ($cvpById[$p['id']] ?? null) : null;
+                if (! $cvp) {
+                    return [$p['id'] => null];
+                }
+
+                $lessonsConducted = $cvp->lessons_conducted;
+                $totalLessons = $cvp->total_lessons;
+
+                return [$p['id'] => (object) [
+                    'id' => $p['id'],
+                    'program' => $p['program'],
+                    'contract_id' => $cvp->contractVersion->contract_id,
+                    'lessons_conducted' => $lessonsConducted,
+                    'total_lessons' => $totalLessons,
+                    'status' => ContractVersionProgram::getStatus(
+                        $lessonsConducted,
+                        $totalLessons,
+                    ),
+                ]];
+            });
 
         $clientGroups = ClientGroup::query()
             ->whereIn('contract_version_program_id', $realProgramIds)
@@ -279,28 +303,10 @@ class ScheduleDraft extends Model
             ->get()
             ->keyBy('group_id');
 
-        $swampsByProgramId = $this->programs->map(function ($p) use ($cvpById) {
-            $cvp = $p['id'] > 0 ? $cvpById[$p['id']] : null;
-            $lessonsConducted = $cvp ? $cvp->lessons_conducted : 0;
-            $totalLessons = $cvp ? $cvp->total_lessons : 33; // 33 – прогноз по занятиям, чтобы статус был "к исполнению"
-
-            return (object) [
-                'id' => $p['id'],
-                'program' => $p['program'],
-                'contract_id' => $cvp ? $cvp->contractVersion->contract_id : $p['contract_id'],
-                'lessons_conducted' => $lessonsConducted,
-                'total_lessons' => $totalLessons,
-                'status' => ContractVersionProgram::getStatus(
-                    $lessonsConducted,
-                    $totalLessons,
-                ),
-            ];
-        })->keyBy('id');
-
         // добавляем информацию о пересечениях и процессе по договору в каждую группу
         foreach ($groups as $group) {
             $isProgramUsed = false;
-            $p = $this->programs->where('group_id', $group->id)->first();
+            $p = $programs->firstWhere('group_id', $group->id);
 
             $group->original_contract_id = $clientGroups->has($group->id)
                 ? $clientGroups[$group->id]->contractVersionProgram->contractVersion->contract_id
@@ -388,7 +394,7 @@ class ScheduleDraft extends Model
         // группировка по contractId
         $result = collect();
 
-        foreach ($this->programs as $p) {
+        foreach ($programs as $p) {
             $contractId = $p['contract_id'];
             unset($p['contract_id']); // чтобы значение не дублировалось в $result
 
@@ -713,7 +719,7 @@ class ScheduleDraft extends Model
 
     /**
      * "Есть проблемы" для списка на /schedule-drafts
-     * Отображается если в позициях с изменениями есть проблемы
+     * Отображается, если среди изменённых позиций есть проблемы
      */
     public function getHasProblemsInListAttribute(): bool
     {
@@ -721,25 +727,48 @@ class ScheduleDraft extends Model
             return false;
         }
 
-        $programs = $this->programs;
         $originalPrograms = $this->contract_id ? self::getPrograms($this->contract) : collect();
 
-        foreach ($programs as $p) {
-            $originalProgram = $originalPrograms->firstWhere('id', $p['id']);
+        $changed = $this->programs->filter(function ($p) use ($originalPrograms) {
+            $original = $originalPrograms->firstWhere('id', $p['id']);
+            $isNew = ! $original;
+            $groupChanged = @$original['group_id'] !== $p['group_id'];
 
-            // изменения в группах
-            if (@$originalProgram['group_id'] !== $p['group_id']) {
-                // удаление из группы
-                if (@$originalProgram['group_id']) {
-                    $changes++;
+            return ($isNew || $groupChanged) && $p['group_id'];
+        });
+
+        if ($changed->isEmpty()) {
+            return false;
+        }
+
+        $allByProgram = $this->programs->groupBy('program');
+        $data = $this->getData($changed);
+
+        foreach ($data as $contractId => $programs) {
+            foreach ($programs as $program) {
+                $others = $allByProgram[$program->program] ?? collect();
+                if ($others->contains(fn ($p) => $p['group_id'] && $p['contract_id'] !== $contractId)) {
+                    return true;
                 }
 
-                // добавление в группу
-                if ($p['group_id']) {
-                    $changes++;
+                $group = collect($program->groups)->firstWhere('id', $program->group_id);
+                if (! $group) {
+                    continue;
+                }
+                $group = (object) $group;
+
+                if (($group->uncunducted_count ?? 0) > 0) {
+                    return true;
+                }
+
+                $overlap = $group->overlap ?? null;
+                if (($overlap->count ?? 0) > 0) {
+                    return true;
                 }
             }
         }
+
+        return false;
     }
 
     public function contract(): BelongsTo

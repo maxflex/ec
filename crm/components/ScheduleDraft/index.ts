@@ -12,6 +12,7 @@ export interface SavedScheduleDraftResource {
   is_archived: boolean
   changes: number
   contract_id: number | null
+  has_problems_in_list: boolean
 }
 
 /**
