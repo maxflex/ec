@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { SavedScheduleDraftResource } from '.'
+import { mdiAlertBox } from '@mdi/js'
 
 const { items } = defineProps<{ items: SavedScheduleDraftResource[] }>()
 const emit = defineEmits<{
@@ -42,6 +43,12 @@ const router = useRouter()
             inline
             :content="item.changes"
           ></v-badge>
+          <v-icon
+            v-if="item.has_problems_in_list"
+            :icon="mdiAlertBox"
+            color="error"
+            class="ml-1"
+          />
         </td>
 
         <td width="300" class="text-gray">

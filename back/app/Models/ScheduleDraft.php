@@ -724,22 +724,34 @@ class ScheduleDraft extends Model
         $programs = $this->programs;
         $originalPrograms = $this->contract_id ? self::getPrograms($this->contract) : collect();
 
+        // данные о группах с пересечениями/процессом/непроведёнными занятиями
+        $programsWithGroups = $this->getData()
+            ->flatMap(fn ($items) => $items)
+            ->keyBy('id');
+
         foreach ($programs as $p) {
             $originalProgram = $originalPrograms->firstWhere('id', $p['id']);
+            $isNew = ! $originalProgram;
+            $groupChanged = @$originalProgram['group_id'] !== $p['group_id'];
 
-            // изменения в группах
-            if (@$originalProgram['group_id'] !== $p['group_id']) {
-                // удаление из группы
-                if (@$originalProgram['group_id']) {
-                    $changes++;
-                }
+            // проверяем только добавленные или перенесённые в группу программы
+            if (($isNew || $groupChanged) && $p['group_id']) {
+                $programInfo = $programsWithGroups[$p['id']] ?? null;
+                $group = $programInfo ? collect($programInfo->groups)->firstWhere('id', $p['group_id']) : null;
 
-                // добавление в группу
-                if ($p['group_id']) {
-                    $changes++;
+                if ($group) {
+                    $hasOverlap = $group->overlap->count > 0;
+                    $hasUnconducted = ($group->uncunducted_count ?? 0) > 0;
+                    $hasProcessInAnotherContract = $group->swamp && $group->current_contract_id && $group->current_contract_id !== ($p['contract_id'] ?? null);
+
+                    if ($hasOverlap || $hasUnconducted || $hasProcessInAnotherContract) {
+                        return true;
+                    }
                 }
             }
         }
+
+        return false;
     }
 
     public function contract(): BelongsTo
