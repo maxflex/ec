@@ -724,28 +724,92 @@ class ScheduleDraft extends Model
         $programs = $this->programs;
         $originalPrograms = $this->contract_id ? self::getPrograms($this->contract) : collect();
 
-        // данные о группах с пересечениями/процессом/непроведёнными занятиями
-        $programsWithGroups = $this->getData()
-            ->flatMap(fn ($items) => $items)
+        // программы, которые были добавлены или перенесены в другую группу
+        $changed = $programs->filter(function ($p) use ($originalPrograms) {
+            $original = $originalPrograms->firstWhere('id', $p['id']);
+            $isNew = ! $original;
+            $groupChanged = @$original['group_id'] !== $p['group_id'];
+
+            return ($isNew || $groupChanged) && $p['group_id'];
+        });
+
+        if ($changed->isEmpty()) {
+            return false;
+        }
+
+        $groupIds = $changed->pluck('group_id')->unique();
+
+        $clientLessonsByDate = $this->getLessonsQuery()
+            ->with('group')
+            ->where('status', LessonStatus::planned)
+            ->where('is_unplanned', 0)
+            ->get()
+            ->groupBy('date');
+
+        $realProgramIds = $changed->where('id', '>', 0)->pluck('id');
+
+        $cvpById = ContractVersionProgram::query()
+            ->with('contractVersion')
+            ->whereIn('id', $realProgramIds)
+            ->get()
             ->keyBy('id');
 
-        foreach ($programs as $p) {
-            $originalProgram = $originalPrograms->firstWhere('id', $p['id']);
-            $isNew = ! $originalProgram;
-            $groupChanged = @$originalProgram['group_id'] !== $p['group_id'];
+        $swampsByProgramId = $changed->mapWithKeys(function ($p) use ($cvpById) {
+            $cvp = $p['id'] > 0 ? ($cvpById[$p['id']] ?? null) : null;
+            $lessonsConducted = $cvp ? $cvp->lessons_conducted : 0;
+            $totalLessons = $cvp ? $cvp->total_lessons : 33;
 
-            // проверяем только добавленные или перенесённые в группу программы
-            if (($isNew || $groupChanged) && $p['group_id']) {
-                $programInfo = $programsWithGroups[$p['id']] ?? null;
-                $group = $programInfo ? collect($programInfo->groups)->firstWhere('id', $p['group_id']) : null;
-                $group = $group ? (object) $group : null;
+            return [$p['id'] => (object) [
+                'contract_id' => $cvp ? $cvp->contractVersion->contract_id : ($p['contract_id'] ?? null),
+                'lessons_conducted' => $lessonsConducted,
+                'total_lessons' => $totalLessons,
+                'status' => ContractVersionProgram::getStatus(
+                    $lessonsConducted,
+                    $totalLessons,
+                ),
+            ]];
+        });
 
-                if ($group) {
-                    $hasOverlap = ($group->overlap->count ?? 0) > 0;
-                    $hasUnconducted = ($group->uncunducted_count ?? 0) > 0;
-                    $hasProcessInAnotherContract = $group->swamp && $group->current_contract_id && $group->current_contract_id !== ($p['contract_id'] ?? null);
+        $groups = Group::query()
+            ->whereIn('id', $groupIds)
+            ->with(['lessons' => fn ($q) => $q->where('status', LessonStatus::planned)])
+            ->get()
+            ->keyBy('id');
 
-                    if ($hasOverlap || $hasUnconducted || $hasProcessInAnotherContract) {
+        foreach ($changed as $p) {
+            $group = $groups[$p['group_id']] ?? null;
+            if (! $group) {
+                continue;
+            }
+
+            $swamp = $swampsByProgramId[$p['id']] ?? null;
+            $currentContractId = $swamp->contract_id ?? null;
+
+            $hasProcessInAnotherContract = $swamp && $currentContractId && $currentContractId !== ($p['contract_id'] ?? null);
+            if ($hasProcessInAnotherContract) {
+                return true;
+            }
+
+            foreach ($group->lessons as $groupLesson) {
+                if (now()->format('Y-m-d H:i:s') >= $groupLesson->date_time && $groupLesson->status === LessonStatus::planned) {
+                    return true;
+                }
+
+                if ($groupLesson->status !== LessonStatus::planned || $groupLesson->is_unplanned) {
+                    continue;
+                }
+
+                $start = $groupLesson->date_time;
+                $end = $groupLesson->date_time->copy()->addMinutes($group->program->getDuration());
+
+                $clientLessonsAtDate = $clientLessonsByDate[$groupLesson->date] ?? collect();
+                $clientLessonsAtDate = $clientLessonsAtDate->filter(fn ($lesson) => $lesson->group->program !== $group->program);
+
+                foreach ($clientLessonsAtDate as $clientLesson) {
+                    $otherStart = $clientLesson->date_time;
+                    $otherEnd = $otherStart->copy()->addMinutes($clientLesson->group->program->getDuration());
+
+                    if ($start < $otherEnd && $end > $otherStart) {
                         return true;
                     }
                 }
