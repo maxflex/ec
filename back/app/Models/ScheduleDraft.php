@@ -738,9 +738,13 @@ class ScheduleDraft extends Model
 
         $data = $this->getData($changed);
 
-        foreach ($data as $programs) {
+        foreach ($data as $contractId => $programs) {
             foreach ($programs as $program) {
-                if ($program->swamp && $program->swamp->contract_id && $program->swamp->contract_id !== ($program->contract_id ?? null)) {
+                if (
+                    $program->swamp
+                    && $program->swamp->contract_id
+                    && $program->swamp->contract_id !== $contractId
+                ) {
                     return true;
                 }
 
