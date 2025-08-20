@@ -2,7 +2,6 @@
 <script setup lang="ts">
 import type { AddToGroupItem } from '.'
 import type { SwampFilters } from '../Filters.vue'
-import { mdiArrowRightThin } from '@mdi/js'
 
 const { group } = defineProps<{ group: GroupResource }>()
 
@@ -104,21 +103,23 @@ const { items, indexPageData } = useIndex<AddToGroupItem>(
         >
           <td width="230">
             <UiPerson :item="item.client" />
+            <ClientRiskLabel :item="item" />
           </td>
-          <td width="480">
-            <TeethBar :items="item.teeth" :current="group.teeth!" />
+          <td>
+            <TeethBar :items="item.teeth" :current="group.teeth!" style="padding-top: 5px" />
           </td>
           <td width="160">
             договор №{{ item.contract_id }}
           </td>
-          <td>
+          <td width="100">
             <ContractVersionProgramStatus :item="item" />
           </td>
-          <td widht="200">
+          <td width="70">
             <SwampAddToGroupProblems v-if="item.has_problems" :item="item" :group-id="group.id" />
           </td>
-          <td>
+          <td width="80">
             <v-switch
+              style="height: 26px"
               :class="{ 'no-pointer-events': item.has_problems }"
               :model-value="isSelected(item)"
               :true-value="true"

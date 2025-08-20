@@ -133,6 +133,13 @@ defineExpose({ create, edit })
           />
         </div>
         <div>
+          <UiClearableSelect
+            v-model="group.level"
+            :items="[1, 2, 3]"
+            label="Уровень группы"
+          />
+        </div>
+        <div>
           <UiDateInput
             v-model="group.contract_date"
             label="Дата подписания договора"

@@ -21,9 +21,7 @@ const { items, blurOthers } = defineProps<{
         }"
       >
         <td width="80">
-          <NuxtLink :to="{ name: 'groups-id', params: { id: item.id } }">
-            ГР-{{ item.id }}
-          </NuxtLink>
+          <GroupLink :item="item" />
         </td>
         <td width="170">
           <GroupTeachers :item="item" />

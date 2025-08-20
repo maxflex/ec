@@ -51,7 +51,10 @@ nextTick(loadData)
           <UiAvatar :item="client" :size="140" />
         </div>
         <div>
-          <div>ученик</div>
+          <div>
+            ученик
+            <ClientRiskLabel :item="client" />
+          </div>
           <div class="text-truncate">
             {{ formatName(client) }}
             <div v-if="client.phones" class="mt-5">

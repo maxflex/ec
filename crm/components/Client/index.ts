@@ -1,3 +1,5 @@
+import type { ContractVersionResource } from '../ContractVersion'
+
 export interface ParentResource extends HasName, HasPhones {
   id: number
   email?: string
@@ -31,6 +33,7 @@ export interface ClientResource extends PersonWithPhotoResource, HasPhones {
   parent: ParentResource
   is_remote: boolean
   user?: PersonResource
+  is_risk: boolean
   created_at?: string
   email?: string
   heard_about_us?: HeardAboutUs
@@ -53,6 +56,7 @@ export const modelDefaults: ClientResource = {
   phones: [],
   photo_url: null,
   is_remote: false,
+  is_risk: false,
   entity_type: EntityTypeValue.client,
   mark_sheet: null,
   passport: {

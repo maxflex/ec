@@ -15,7 +15,7 @@ class ClientResource extends JsonResource
             'first_name', 'last_name', 'middle_name', 'branches',
             'head_teacher_id', 'photo_url', 'created_at',
             'passport', 'is_remote', 'directions', 'email',
-            'heard_about_us', 'mark_sheet',
+            'heard_about_us', 'mark_sheet', 'is_risk',
         ], [
             'entity_type' => Client::class,
             'head_teacher' => new PersonResource($this->headTeacher),

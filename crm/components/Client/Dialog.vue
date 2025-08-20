@@ -183,6 +183,10 @@ defineExpose({ create, edit })
             v-model="item.is_remote"
             label="Учится удалённо"
           />
+          <v-checkbox
+            v-model="item.is_risk"
+            label="Группа риска"
+          />
         </div>
 
         <div class="dialog-section__title">

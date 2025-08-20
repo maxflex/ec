@@ -28,9 +28,7 @@ const loading = ref(false)
       <tr v-for="item in items" :key="item.id">
         <template v-if="item.group">
           <td>
-            <NuxtLink :to="{ name: 'groups-id', params: { id: item.group!.id } }">
-              ГР-{{ item.group!.id }}
-            </NuxtLink>
+            <GroupLink :item="item.group" />
           </td>
           <td>
             <GroupTeachers :item="item.group" />

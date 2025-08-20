@@ -40,6 +40,7 @@ class GroupListResource extends JsonResource
         return extract_fields($this, [
             'program', 'client_groups_count', 'zoom', 'lessons_planned',
             'teacher_counts', 'lesson_counts', 'first_lesson_date', 'cabinets',
+            'level',
         ], $extra);
     }
 }

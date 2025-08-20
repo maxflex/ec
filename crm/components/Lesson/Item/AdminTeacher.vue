@@ -48,9 +48,7 @@ const isConductDisabled = item.status !== 'conducted'
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
     <div style="width: 90px">
-      <NuxtLink :to="{ name: 'groups-id', params: { id: item.group.id } }" @click.stop>
-        ГР-{{ item.group.id }}
-      </NuxtLink>
+      <GroupLink :item="item.group" />
     </div>
     <div v-if="item.teacher" style="width: 140px">
       <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }" @click.stop>

@@ -30,9 +30,7 @@ const isAlreadyInOtherGroup = computed(() => items.some(e => e.swamp && e.curren
         :class="{ changed: isGroupChangedInContract(item, contractId!) }"
       >
         <td width="70">
-          <NuxtLink :to="{ name: 'groups-id', params: { id: item.id } }">
-            ГР-{{ item.id }}
-          </NuxtLink>
+          <GroupLink :item="item" />
         </td>
         <td width="190">
           <GroupTeachers :item="item" />

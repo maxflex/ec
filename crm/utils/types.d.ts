@@ -230,6 +230,7 @@ declare global {
 
   interface GroupResource {
     id: number
+    level?: number
     program?: Program
     year: Year
     teachers: PersonResource[]

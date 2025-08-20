@@ -23,7 +23,12 @@ const { item } = defineProps<{
         {{ ProgramLabel[item.program] }}
       </div>
     </div>
-
+    <div>
+      <div>уровень</div>
+      <UiIfSet :value="!!item.level">
+        {{ item.level }}
+      </UiIfSet>
+    </div>
     <div>
       <div>уроки</div>
       <div>

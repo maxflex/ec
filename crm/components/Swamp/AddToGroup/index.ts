@@ -1,6 +1,7 @@
 export interface AddToGroupItem {
   id: number // cvp id
   client: PersonResource
+  is_risk: boolean
   uncunducted_count: number
   overlap: ScheduleOverlap
   contract_id: number

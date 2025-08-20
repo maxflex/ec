@@ -25,13 +25,14 @@ class Client extends Person implements HasSchedule
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'branches',
         'head_teacher_id', 'passport', 'is_remote', 'email',
-        'heard_about_us', 'mark_sheet',
+        'heard_about_us', 'mark_sheet', 'is_risk',
     ];
 
     protected $casts = [
         'passport' => 'array',
         'schedule' => 'array',
         'is_remote' => 'bool',
+        'is_risk' => 'bool',
         'mark_sheet' => 'array',
         'heard_about_us' => HeadAboutUs::class,
     ];

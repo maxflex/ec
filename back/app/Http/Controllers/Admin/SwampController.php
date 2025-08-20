@@ -174,6 +174,8 @@ class SwampController extends Controller
             ], [
                 'client' => new PersonResource($client),
 
+                'is_risk' => $client->is_risk,
+
                 'uncunducted_count' => $uncunductedCount,
 
                 'teeth' => $client->getSavedSchedule($group->year),

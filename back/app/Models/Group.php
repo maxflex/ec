@@ -18,7 +18,7 @@ class Group extends Model implements HasSchedule
 
     protected $fillable = [
         'program', 'year', 'zoom', 'lessons_planned',
-        'contract_date',
+        'contract_date', 'level',
     ];
 
     protected $casts = [

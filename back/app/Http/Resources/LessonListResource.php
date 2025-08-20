@@ -30,7 +30,7 @@ class LessonListResource extends JsonResource
                 fn () => $this->getClientLesson(intval($request->client_id)),
             ),
             'group' => extract_fields($this->group, [
-                'program', 'zoom',
+                'program', 'zoom', 'level',
             ], [
                 'students_count' => $this->status === LessonStatus::conducted
                     ? $this->clientLessons()->count()
