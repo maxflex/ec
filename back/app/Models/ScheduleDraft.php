@@ -738,9 +738,10 @@ class ScheduleDraft extends Model
             if (($isNew || $groupChanged) && $p['group_id']) {
                 $programInfo = $programsWithGroups[$p['id']] ?? null;
                 $group = $programInfo ? collect($programInfo->groups)->firstWhere('id', $p['group_id']) : null;
+                $group = $group ? (object) $group : null;
 
                 if ($group) {
-                    $hasOverlap = $group->overlap->count > 0;
+                    $hasOverlap = ($group->overlap->count ?? 0) > 0;
                     $hasUnconducted = ($group->uncunducted_count ?? 0) > 0;
                     $hasProcessInAnotherContract = $group->swamp && $group->current_contract_id && $group->current_contract_id !== ($p['contract_id'] ?? null);
 
