@@ -6,7 +6,7 @@ import { mdiEyeOffOutline, mdiPlus } from '@mdi/js'
 import { cloneDeep } from 'lodash-es'
 import { VueDraggableNext } from 'vue-draggable-next'
 import { MetricComponents } from '~/components/Stats/Metrics'
-import { defaultStatsParams, StatsDisplayIcon, StatsDisplayLabel, StatsModeLabel } from '.'
+import { defaultStatsParams, StatsModeLabel } from '.'
 
 const emit = defineEmits<{
   go: [params: StatsParams]
@@ -121,35 +121,12 @@ provide<Ref<StatsParams>>('params', params)
         <div class="stats-dialog">
           <div>
             <div class="stats-dialog__inputs">
-              <div class="double-input-glued">
+              <div>
                 <v-select
                   v-model="params.mode"
                   :items="selectItems(StatsModeLabel)"
                   label="Группировка"
                 />
-                <v-select
-                  v-model="params.display"
-                  :items="selectItems(StatsDisplayLabel)"
-                  label="Отображение"
-                >
-                  <template #selection="{ item }">
-                    <div class="stats-dialog__display">
-                      <v-icon :icon="StatsDisplayIcon[item.value as StatsDisplay]" />
-                      {{ StatsDisplayLabel[item.value] }}
-                    </div>
-                  </template>
-                  <template #item="{ item, props }">
-                    <v-list-item v-bind="props">
-                      <template #prepend />
-                      <template #title>
-                        <div class="stats-dialog__display">
-                          <v-icon :icon="StatsDisplayIcon[item.value as StatsDisplay]" />
-                          {{ StatsDisplayLabel[item.value] }}
-                        </div>
-                      </template>
-                    </v-list-item>
-                  </template>
-                </v-select>
               </div>
               <div class="double-input-glued">
                 <UiDateInput

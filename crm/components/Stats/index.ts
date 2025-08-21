@@ -11,17 +11,15 @@ export const StatsModeLabel = {
 
 export const StatsDisplayLabel = {
   table: 'таблица',
-  line: 'график',
   bar: 'столбцы',
   years: 'сравнение по годам',
 }
 
 type StatsMode = keyof typeof StatsModeLabel
-type StatsDisplay = keyof typeof StatsDisplayLabel
+export type StatsDisplay = keyof typeof StatsDisplayLabel
 
 export const StatsDisplayIcon: Record<StatsDisplay, string> = {
   table: mdiTable,
-  line: mdiChartLine,
   bar: mdiChartBar,
   years: mdiChartTimeline,
 }
@@ -40,7 +38,6 @@ export interface StatsApiResponse {
 export interface StatsParams {
   metrics: StatsMetric[]
   mode: StatsMode
-  display: StatsDisplay
   date_from: string | null
   date_to: string | null
 }
@@ -54,7 +51,6 @@ export interface StatsPreset {
 export const defaultStatsParams: StatsParams = {
   metrics: [],
   mode: 'day',
-  display: 'table',
   date_from: null,
   date_to: null,
 }

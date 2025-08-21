@@ -3,7 +3,7 @@ import type { ChartData, ChartDataset, ChartOptions } from 'chart.js'
 import type { StatsListResource, StatsParams } from '..'
 import { Chart, registerables } from 'chart.js'
 import { format, parseISO } from 'date-fns'
-import { LineChart } from 'vue-chart-3'
+import { BarChart } from 'vue-chart-3'
 import { formatDateMode } from '..'
 import { MetricColorHex } from '../Metrics'
 
@@ -14,7 +14,7 @@ const { items, params } = defineProps<{
 
 Chart.register(...registerables)
 
-const chartData: ChartData<'line'> = {
+const chartData: ChartData<'bar'> = {
   labels: [],
   datasets: [],
 }
@@ -51,7 +51,7 @@ chartData.labels = labelsMMDD.map(k => format(parseISO(`2024-${k}`), 'dd.MM'))
 // ]
 
 // 4) Формируем датасеты: на каждую метрику и на каждый год
-chartData.datasets = params.metrics.flatMap((metric, mi): ChartDataset<'line'>[] => {
+chartData.datasets = params.metrics.flatMap((metric, mi): ChartDataset<'bar'>[] => {
   const color = MetricColorHex[metric.color] // напр. '#2563EB'
   return years.map((year) => {
     const data = labelsMMDD.map((mmdd) => {
@@ -74,7 +74,7 @@ chartData.datasets = params.metrics.flatMap((metric, mi): ChartDataset<'line'>[]
   })
 })
 
-const chartOptions: ChartOptions<'line'> = {
+const chartOptions: ChartOptions<'bar'> = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -118,5 +118,5 @@ const chartOptions: ChartOptions<'line'> = {
 </script>
 
 <template>
-  <LineChart :chart-data="chartData" :options="chartOptions" />
+  <BarChart :chart-data="chartData" :options="chartOptions" />
 </template>

@@ -31,8 +31,15 @@ class Stats
         if ($page === null) {
             $windowCurrentDate = $dateFrom->copy();
             $windowTo = $dateTo->copy();
+        } elseif ($mode === 'month') {
+            // по месяцам надо подгружать всё для графика
+            $windowCurrentDate = $dateFrom->copy();
+            $windowTo = $dateTo->copy();
         } else {
-            $paginate = $mode === 'day' ? 90 : 30;
+            $paginate = match ($mode) {
+                'day' => 90,
+                default => 30
+            };
             $windowTo = $dateTo->copy()->sub($mode, ($page - 1) * $paginate);
             $windowCurrentDate = $windowTo->copy()->sub($mode, $paginate - 1);
         }

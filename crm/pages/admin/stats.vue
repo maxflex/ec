@@ -1,15 +1,16 @@
 <script lang="ts" setup>
 import type { StatsDialog } from '#build/components'
-import type { StatsApiResponse, StatsListResource, StatsParams } from '~/components/Stats'
+import type { StatsApiResponse, StatsDisplay, StatsListResource, StatsParams } from '~/components/Stats'
 import type { StatsMetric } from '~/components/Stats/Metrics'
-import { mdiDownload, mdiTune } from '@mdi/js'
+import { mdiDownload, mdiTable, mdiTune } from '@mdi/js'
 import { cloneDeep } from 'lodash-es'
-import { defaultStatsParams, formatDateMode } from '~/components/Stats'
+import { defaultStatsParams, formatDateMode, StatsDisplayIcon, StatsDisplayLabel } from '~/components/Stats'
 import { MetricComponents } from '~/components/Stats/Metrics'
 
 const statsDialog = ref<InstanceType<typeof StatsDialog>>()
 
 const params = ref<StatsParams>(cloneDeep(defaultStatsParams))
+const display = ref<StatsDisplay>('table')
 
 // сохраняем параметры ответа сервера, чтобы не зависеть от текущих параметров
 // (например, если снесли метрику или изменили режим на "по годам", чтобы не менялось форматирование)
@@ -98,6 +99,7 @@ async function exportDownload() {
 
 function loadData() {
   page.value = 0
+  display.value = 'table'
   if (scrollContainer) {
     scrollContainer.scrollTop = 0
   }
@@ -124,6 +126,13 @@ function onScroll() {
   }
 }
 
+function toggleChart() {
+  const displayOptions = Object.keys(StatsDisplayLabel)
+  const index = displayOptions.findIndex(e => e === display.value)
+  const nextIndex = index + 1 === displayOptions.length ? 0 : index + 1
+  display.value = displayOptions[nextIndex] as StatsDisplay
+}
+
 onMounted(() => {
   scrollContainer = document.documentElement.querySelector('main')
   scrollContainer?.addEventListener('scroll', onScroll)
@@ -140,17 +149,28 @@ nextTick(() => statsDialog.value?.open())
   <v-fade-transition>
     <UiLoader v-if="loading" />
   </v-fade-transition>
-  <div class="table table-stats" :class="`table-stats--${responseParams?.mode} table-stats--${responseParams?.display}`">
+  <div class="table table-stats" :class="`table-stats--${responseParams?.mode} table-stats--${display}`">
     <div class="table-stats__header">
       <div class="table-stats__header-mode">
-        <v-btn :icon="mdiTune" :size="48" variant="text" @click="statsDialog?.open(responseParams !== undefined)" />
+        <v-btn
+          :icon="mdiTune"
+          :size="38"
+          variant="text" @click="statsDialog?.open(responseParams !== undefined)"
+        />
         <v-btn
           :icon="mdiDownload"
-          :size="48"
+          :size="38"
           :disabled="!(responseParams && responseParams.metrics.length)"
           :loading="exporting"
           variant="text"
           @click="exportDownload()"
+        />
+        <v-btn
+          :icon="StatsDisplayIcon[display]"
+          :disabled="!(responseParams?.mode === 'month')"
+          :size="38"
+          variant="text"
+          @click="toggleChart()"
         />
       </div>
       <template v-if="responseParams">
@@ -169,7 +189,7 @@ nextTick(() => statsDialog.value?.open())
       </template>
     </div>
     <template v-if="responseParams">
-      <template v-if="responseParams.display === 'table'">
+      <template v-if="display === 'table'">
         <div v-for="{ date, values } in items" :key="date" class="table-stats__body">
           <div class="table-stats__date">
             {{ formatDateMode(date, responseParams.mode, responseParams.date_to) }}
@@ -203,9 +223,8 @@ nextTick(() => statsDialog.value?.open())
           </template>
         </div>
       </template>
-      <StatsChartLine v-if="responseParams.display === 'line'" :key="refreshKey" :items="items" :params="responseParams" />
-      <StatsChartBar v-if="responseParams.display === 'bar'" :key="refreshKey" :items="items" :params="responseParams" />
-      <StatsChartYears v-if="responseParams.display === 'years'" :key="refreshKey" :items="items" :params="responseParams" />
+      <StatsChartBar v-if="display === 'bar'" :key="refreshKey" :items="items" :params="responseParams" />
+      <StatsChartYears v-if="display === 'years'" :key="refreshKey" :items="items" :params="responseParams" />
     </template>
   </div>
   <StatsDialog ref="statsDialog" @go="onGo" />
@@ -249,11 +268,13 @@ nextTick(() => statsDialog.value?.open())
     background: rgb(var(--v-theme-bg));
     z-index: 1;
     &-mode {
+      padding: 0 !important;
       height: 57px;
       border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
       padding: $padding;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       position: sticky;
       left: 0;
       background: rgb(var(--v-theme-bg));

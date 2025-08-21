@@ -14,7 +14,6 @@ class StatsController extends Controller
     {
         $request->validate([
             'mode' => ['required'],
-            'display' => ['required'],
             'page' => ['nullable', 'numeric'],
             'metrics' => ['required', 'array'],
             'date_from' => ['nullable', 'date_format:Y-m-d'],
@@ -24,9 +23,8 @@ class StatsController extends Controller
         ]);
 
         $isExport = $request->has('export');
-        $isChart = $request->input('display') !== 'table';
 
-        $page = ($isExport || $isChart) ? null : $request->page;
+        $page = $isExport ? null : $request->page;
 
         // если дата не установлена, то сегодняшняя
         $dateToStr = $request->date_to ?? now()->format('Y-m-d');
