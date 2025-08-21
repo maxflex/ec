@@ -57,8 +57,6 @@ async function save() {
   }
 
   body.params.metrics = updatedMetrics
-  // backend currently requires display field
-  ;(body.params as any).display = 'table'
 
   const { data } = await useHttp<StatsPreset>(
     `stats-presets`,
