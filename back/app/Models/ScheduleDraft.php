@@ -246,178 +246,9 @@ class ScheduleDraft extends Model
         }
     }
 
-    public function getData(?Collection $programs = null)
+    public function getSchedule(?int $year = null): object
     {
-        $programs ??= $this->programs;
-        $realProgramIds = $programs->where('id', '>', 0)->pluck('id');
-
-        // Все планируемые занятия ученика, сгруппированные по дате
-        // Нужно для подсчёта пересечений
-        // (это НЕ client_lessons, а lessons)
-        $clientLessonsByDate = $this->getLessonsQuery()
-            ->with('group')
-            ->where('status', LessonStatus::planned)
-            ->where('is_unplanned', 0)
-            ->get()
-            ->groupBy('date');
-
-        $cvpById = ContractVersionProgram::query()
-            ->with('contractVersion')
-            ->whereIn('id', $realProgramIds)
-            ->get()
-            ->keyBy('id');
-
-        $groups = Group::query()
-            ->where('year', $this->year)
-            ->withCount('clientGroups')
-            ->whereIn('program', $programs->pluck('program')->unique())
-            ->with('lessons')
-            ->get();
-
-        $swampsByProgramId = $programs
-            ->mapWithKeys(function ($p) use ($cvpById) {
-                $cvp = $p['id'] > 0 ? ($cvpById[$p['id']] ?? null) : null;
-                if (! $cvp) {
-                    return [$p['id'] => null];
-                }
-
-                $lessonsConducted = $cvp->lessons_conducted;
-                $totalLessons = $cvp->total_lessons;
-
-                return [$p['id'] => (object) [
-                    'id' => $p['id'],
-                    'program' => $p['program'],
-                    'contract_id' => $cvp->contractVersion->contract_id,
-                    'lessons_conducted' => $lessonsConducted,
-                    'total_lessons' => $totalLessons,
-                    'status' => ContractVersionProgram::getStatus(
-                        $lessonsConducted,
-                        $totalLessons,
-                    ),
-                ]];
-            });
-
-        $clientGroups = ClientGroup::query()
-            ->whereIn('contract_version_program_id', $realProgramIds)
-            ->with('contractVersionProgram.contractVersion')
-            ->get()
-            ->keyBy('group_id');
-
-        // добавляем информацию о пересечениях и процессе по договору в каждую группу
-        foreach ($groups as $group) {
-            $isProgramUsed = false;
-            $p = $programs->firstWhere('group_id', $group->id);
-
-            $group->original_contract_id = $clientGroups->has($group->id)
-                ? $clientGroups[$group->id]->contractVersionProgram->contractVersion->contract_id
-                : null;
-
-            $group->current_contract_id = null;
-
-            // есть процесс по договору
-            if ($p) {
-                $isProgramUsed = true;
-                $swamp = $swampsByProgramId[$p['id']];
-                if ($swamp) {
-                    $group->swamp = $swamp;
-                    $group->current_contract_id = $swamp->contract_id;
-                }
-            }
-
-            // если ученик уже в группе, кол-во пересечений не считаем
-            // if ($group->swamp) {
-            //     return $item;
-            // }
-
-            $overlap = (object) [
-                'count' => 0,
-                'programs' => collect(),
-            ];
-
-            foreach ($group->lessons as $groupLesson) {
-                // если урок уже начался, но препод его не провёл – считаем кол-во таких
-                if (now()->format('Y-m-d H:i:s') >= $groupLesson->date_time && $groupLesson->status === LessonStatus::planned) {
-                    @$group->uncunducted_count++;
-                }
-
-                if ($groupLesson->status !== LessonStatus::planned || $groupLesson->is_unplanned) {
-                    continue;
-                }
-
-                // не учитываем пересечения с самим собой
-                // if ($groupLesson->group_id === $item->id) {
-                //     continue;
-                // }
-                $start = $groupLesson->date_time;
-                $end = $groupLesson->date_time->copy()->addMinutes($group->program->getDuration());
-
-                // Берем занятия клиента только с той же датой
-                $clientLessonsAtDate = $clientLessonsByDate[$groupLesson->date] ?? collect();
-
-                if ($isProgramUsed) {
-                    $clientLessonsAtDate = $clientLessonsAtDate->filter(fn ($l) => $l->group->program !== $group->program);
-                }
-
-                foreach ($clientLessonsAtDate as $clientLesson) {
-                    $program = $clientLesson->group->program;
-                    $otherStart = $clientLesson->date_time;
-                    $otherEnd = $otherStart->copy()->addMinutes($program->getDuration());
-
-                    if ($start < $otherEnd && $end > $otherStart) {
-                        $overlap->count++;
-                        if (! $overlap->programs->contains($program)) {
-                            $overlap->programs->push($program);
-                        }
-                    }
-                }
-            }
-
-            $group->overlap = $overlap;
-        }
-
-        $groupsByProgram = $groups
-            ->map(fn ($g) => extract_fields($g, [
-                'program', 'client_groups_count', 'zoom', 'lessons_planned',
-                'teacher_counts', 'lesson_counts', 'first_lesson_date', 'swamp',
-                'overlap', 'uncunducted_count', 'original_contract_id',
-                'current_contract_id', 'level',
-            ], [
-                'cabinets' => $g->cabinets,
-                'teeth' => $g->getSavedSchedule($g->year),
-                'teachers' => PersonResource::collection($g->teachers),
-            ]))
-            ->groupBy('program');
-
-        // добавляем вкладку "новый договор"
-        $hasNewContract = false;
-
-        // группировка по contractId
-        $result = collect();
-
-        foreach ($programs as $p) {
-            $contractId = $p['contract_id'];
-            unset($p['contract_id']); // чтобы значение не дублировалось в $result
-
-            if ($contractId === -1) {
-                $hasNewContract = true;
-            }
-            $swamp = $swampsByProgramId[$p['id']];
-            if (! $result->has($contractId)) {
-                $result[$contractId] = collect();
-            }
-            $result[$contractId]->push((object) [
-                ...$p, // unset contract_id here – I dont want it in the result
-                'swamp' => $swamp,
-                'groups' => $groupsByProgram->has($p['program']) ? $groupsByProgram[$p['program']] : [],
-            ]);
-        }
-
-        // добавляем вкладку "новый договор"
-        if (! $hasNewContract) {
-            $result[-1] = collect();
-        }
-
-        return $result;
+        return Teeth::get($this->getLessonsQuery());
     }
 
     private function getLessonsQuery()
@@ -425,11 +256,6 @@ class ScheduleDraft extends Model
         $groupIds = $this->programs->whereNotNull('group_id')->pluck('group_id')->unique();
 
         return Lesson::query()->whereIn('group_id', $groupIds);
-    }
-
-    public function getSchedule(?int $year = null): object
-    {
-        return Teeth::get($this->getLessonsQuery());
     }
 
     /**
@@ -720,6 +546,8 @@ class ScheduleDraft extends Model
     /**
      * "Есть проблемы" для списка на /schedule-drafts
      * Отображается, если среди изменённых позиций есть проблемы
+     *
+     * @AI
      */
     public function getHasProblemsInListAttribute(): bool
     {
@@ -769,6 +597,180 @@ class ScheduleDraft extends Model
         }
 
         return false;
+    }
+
+    public function getData(?Collection $programs = null)
+    {
+        $programs ??= $this->programs;
+        $realProgramIds = $programs->where('id', '>', 0)->pluck('id');
+
+        // Все планируемые занятия ученика, сгруппированные по дате
+        // Нужно для подсчёта пересечений
+        // (это НЕ client_lessons, а lessons)
+        $clientLessonsByDate = $this->getLessonsQuery()
+            ->with('group')
+            ->where('status', LessonStatus::planned)
+            ->where('is_unplanned', 0)
+            ->get()
+            ->groupBy('date');
+
+        $cvpById = ContractVersionProgram::query()
+            ->with('contractVersion')
+            ->whereIn('id', $realProgramIds)
+            ->get()
+            ->keyBy('id');
+
+        $groups = Group::query()
+            ->where('year', $this->year)
+            ->withCount('clientGroups')
+            ->whereIn('program', $programs->pluck('program')->unique())
+            ->with('lessons')
+            ->get();
+
+        $swampsByProgramId = $programs
+            ->mapWithKeys(function ($p) use ($cvpById) {
+                $cvp = $p['id'] > 0 ? ($cvpById[$p['id']] ?? null) : null;
+                if (! $cvp) {
+                    return [$p['id'] => null];
+                }
+
+                $lessonsConducted = $cvp->lessons_conducted;
+                $totalLessons = $cvp->total_lessons;
+
+                return [$p['id'] => (object) [
+                    'id' => $p['id'],
+                    'program' => $p['program'],
+                    'contract_id' => $cvp->contractVersion->contract_id,
+                    'lessons_conducted' => $lessonsConducted,
+                    'total_lessons' => $totalLessons,
+                    'status' => ContractVersionProgram::getStatus(
+                        $lessonsConducted,
+                        $totalLessons,
+                    ),
+                ]];
+            });
+
+        $clientGroups = ClientGroup::query()
+            ->whereIn('contract_version_program_id', $realProgramIds)
+            ->with('contractVersionProgram.contractVersion')
+            ->get()
+            ->keyBy('group_id');
+
+        // добавляем информацию о пересечениях и процессе по договору в каждую группу
+        foreach ($groups as $group) {
+            $isProgramUsed = false;
+            $p = $programs->firstWhere('group_id', $group->id);
+
+            $group->original_contract_id = $clientGroups->has($group->id)
+                ? $clientGroups[$group->id]->contractVersionProgram->contractVersion->contract_id
+                : null;
+
+            $group->current_contract_id = null;
+
+            // есть процесс по договору
+            if ($p) {
+                $isProgramUsed = true;
+                $swamp = $swampsByProgramId[$p['id']];
+                if ($swamp) {
+                    $group->swamp = $swamp;
+                    $group->current_contract_id = $swamp->contract_id;
+                }
+            }
+
+            // если ученик уже в группе, кол-во пересечений не считаем
+            // if ($group->swamp) {
+            //     return $item;
+            // }
+
+            $overlap = (object) [
+                'count' => 0,
+                'programs' => collect(),
+            ];
+
+            foreach ($group->lessons as $groupLesson) {
+                // если урок уже начался, но препод его не провёл – считаем кол-во таких
+                if (now()->format('Y-m-d H:i:s') >= $groupLesson->date_time && $groupLesson->status === LessonStatus::planned) {
+                    @$group->uncunducted_count++;
+                }
+
+                if ($groupLesson->status !== LessonStatus::planned || $groupLesson->is_unplanned) {
+                    continue;
+                }
+
+                // не учитываем пересечения с самим собой
+                // if ($groupLesson->group_id === $item->id) {
+                //     continue;
+                // }
+                $start = $groupLesson->date_time;
+                $end = $groupLesson->date_time->copy()->addMinutes($group->program->getDuration());
+
+                // Берем занятия клиента только с той же датой
+                $clientLessonsAtDate = $clientLessonsByDate[$groupLesson->date] ?? collect();
+
+                if ($isProgramUsed) {
+                    $clientLessonsAtDate = $clientLessonsAtDate->filter(fn ($l) => $l->group->program !== $group->program);
+                }
+
+                foreach ($clientLessonsAtDate as $clientLesson) {
+                    $program = $clientLesson->group->program;
+                    $otherStart = $clientLesson->date_time;
+                    $otherEnd = $otherStart->copy()->addMinutes($program->getDuration());
+
+                    if ($start < $otherEnd && $end > $otherStart) {
+                        $overlap->count++;
+                        if (! $overlap->programs->contains($program)) {
+                            $overlap->programs->push($program);
+                        }
+                    }
+                }
+            }
+
+            $group->overlap = $overlap;
+        }
+
+        $groupsByProgram = $groups
+            ->map(fn ($g) => extract_fields($g, [
+                'program', 'client_groups_count', 'zoom', 'lessons_planned',
+                'teacher_counts', 'lesson_counts', 'first_lesson_date', 'swamp',
+                'overlap', 'uncunducted_count', 'original_contract_id',
+                'current_contract_id', 'level',
+            ], [
+                'cabinets' => $g->cabinets,
+                'teeth' => $g->getSavedSchedule($g->year),
+                'teachers' => PersonResource::collection($g->teachers),
+            ]))
+            ->groupBy('program');
+
+        // добавляем вкладку "новый договор"
+        $hasNewContract = false;
+
+        // группировка по contractId
+        $result = collect();
+
+        foreach ($programs as $p) {
+            $contractId = $p['contract_id'];
+            unset($p['contract_id']); // чтобы значение не дублировалось в $result
+
+            if ($contractId === -1) {
+                $hasNewContract = true;
+            }
+            $swamp = $swampsByProgramId[$p['id']];
+            if (! $result->has($contractId)) {
+                $result[$contractId] = collect();
+            }
+            $result[$contractId]->push((object) [
+                ...$p, // unset contract_id here – I dont want it in the result
+                'swamp' => $swamp,
+                'groups' => $groupsByProgram->has($p['program']) ? $groupsByProgram[$p['program']] : [],
+            ]);
+        }
+
+        // добавляем вкладку "новый договор"
+        if (! $hasNewContract) {
+            $result[-1] = collect();
+        }
+
+        return $result;
     }
 
     public function contract(): BelongsTo

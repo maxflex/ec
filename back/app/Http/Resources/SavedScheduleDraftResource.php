@@ -16,7 +16,7 @@ class SavedScheduleDraftResource extends JsonResource
             'contract_id', 'is_archived',
         ], [
             'has_problems_in_list' => $this->when(
-                $request->has('load_has_problems_in_list'),
+                $request->boolean('has_problems_in_list'),
                 fn () => $this->has_problems_in_list
             ),
             'client' => new PersonResource($this->client),
