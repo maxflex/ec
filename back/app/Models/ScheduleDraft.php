@@ -274,29 +274,34 @@ class ScheduleDraft extends Model
             ->with('lessons')
             ->get();
 
+        $swampsByProgramId = $programs
+            ->mapWithKeys(function ($p) use ($cvpById) {
+                $cvp = $p['id'] > 0 ? ($cvpById[$p['id']] ?? null) : null;
+                if (! $cvp) {
+                    return [$p['id'] => null];
+                }
+
+                $lessonsConducted = $cvp->lessons_conducted;
+                $totalLessons = $cvp->total_lessons;
+
+                return [$p['id'] => (object) [
+                    'id' => $p['id'],
+                    'program' => $p['program'],
+                    'contract_id' => $cvp->contractVersion->contract_id,
+                    'lessons_conducted' => $lessonsConducted,
+                    'total_lessons' => $totalLessons,
+                    'status' => ContractVersionProgram::getStatus(
+                        $lessonsConducted,
+                        $totalLessons,
+                    ),
+                ]];
+            });
+
         $clientGroups = ClientGroup::query()
             ->whereIn('contract_version_program_id', $realProgramIds)
             ->with('contractVersionProgram.contractVersion')
             ->get()
             ->keyBy('group_id');
-
-        $swampsByProgramId = $programs->map(function ($p) use ($cvpById) {
-            $cvp = $p['id'] > 0 ? $cvpById[$p['id']] : null;
-            $lessonsConducted = $cvp ? $cvp->lessons_conducted : 0;
-            $totalLessons = $cvp ? $cvp->total_lessons : 33; // 33 – прогноз по занятиям, чтобы статус был "к исполнению"
-
-            return (object) [
-                'id' => $p['id'],
-                'program' => $p['program'],
-                'contract_id' => $cvp ? $cvp->contractVersion->contract_id : $p['contract_id'],
-                'lessons_conducted' => $lessonsConducted,
-                'total_lessons' => $totalLessons,
-                'status' => ContractVersionProgram::getStatus(
-                    $lessonsConducted,
-                    $totalLessons,
-                ),
-            ];
-        })->keyBy('id');
 
         // добавляем информацию о пересечениях и процессе по договору в каждую группу
         foreach ($groups as $group) {
@@ -736,15 +741,13 @@ class ScheduleDraft extends Model
             return false;
         }
 
+        $allByProgram = $this->programs->groupBy('program');
         $data = $this->getData($changed);
 
         foreach ($data as $contractId => $programs) {
             foreach ($programs as $program) {
-                if (
-                    $program->swamp
-                    && $program->swamp->contract_id
-                    && $program->swamp->contract_id !== $contractId
-                ) {
+                $others = $allByProgram[$program->program] ?? collect();
+                if ($others->contains(fn ($p) => $p['group_id'] && $p['contract_id'] !== $contractId)) {
                     return true;
                 }
 
@@ -752,12 +755,14 @@ class ScheduleDraft extends Model
                 if (! $group) {
                     continue;
                 }
+                $group = (object) $group;
 
                 if (($group->uncunducted_count ?? 0) > 0) {
                     return true;
                 }
 
-                if (($group->overlap->count ?? 0) > 0) {
+                $overlap = $group->overlap ?? null;
+                if (($overlap->count ?? 0) > 0) {
                     return true;
                 }
             }
