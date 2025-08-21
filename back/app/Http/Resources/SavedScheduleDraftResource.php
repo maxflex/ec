@@ -13,7 +13,7 @@ class SavedScheduleDraftResource extends JsonResource
     {
         return extract_fields($this, [
             'created_at', 'contract_id', 'year', 'changes',
-            'contract_id', 'is_archived',
+            'contract_id', 'is_archived', 'has_problems_in_list',
         ], [
             'has_problems_in_list' => $this->when(
                 $request->has('load_has_problems_in_list'),
