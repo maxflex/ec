@@ -9,6 +9,9 @@ const { items, indexPageData, availableYears } = useIndex<SavedScheduleDraftReso
   filters,
   {
     loadAvailableYears: true,
+    staticFilters: {
+      load_has_problems_in_list: true,
+    },
   },
 )
 
