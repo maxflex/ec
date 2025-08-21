@@ -123,13 +123,11 @@ provide<Ref<StatsParams>>('params', params)
         <div class="stats-dialog">
           <div>
             <div class="stats-dialog__inputs">
-              <div class="double-input-glued">
-                <v-select
-                  v-model="params.mode"
-                  :items="selectItems(StatsModeLabel)"
-                  label="Группировка"
-                />
-              </div>
+              <v-select
+                v-model="params.mode"
+                :items="selectItems(StatsModeLabel)"
+                label="Группировка"
+              />
               <div class="double-input-glued">
                 <UiDateInput
                   v-model="params.date_to"

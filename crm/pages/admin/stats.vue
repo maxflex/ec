@@ -47,6 +47,7 @@ async function loadMore() {
       method: 'post',
       body: {
         ...params.value,
+        display: 'table',
         page: page.value,
       },
     },
@@ -74,6 +75,7 @@ async function exportDownload() {
       method: 'post',
       body: {
         ...params.value,
+        display: 'table',
         export: true,
       },
       responseType: 'blob', // Important: Treat the response as a binary Blob
