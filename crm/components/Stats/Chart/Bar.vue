@@ -2,6 +2,7 @@
 import type { ChartData, ChartOptions } from 'chart.js'
 import type { StatsListResource, StatsParams } from '..'
 import { Chart, registerables } from 'chart.js'
+import { format } from 'date-fns'
 import { BarChart } from 'vue-chart-3'
 import { getChartOptions } from '.'
 import { MetricColorHex } from '../Metrics'
@@ -20,7 +21,14 @@ const chartData: ChartData<'bar'> = {
   datasets: [],
 }
 
-chartData.labels = items.map(e => formatDate(e.date))
+function fmtDate(dateTime: string | null): string {
+  if (!dateTime) {
+    return ''
+  }
+  return format(dateTime, 'MM.yy')
+}
+
+chartData.labels = items.map(e => fmtDate(e.date))
 
 chartData.datasets = params.metrics.map((metric, i) => ({
   label: metric.label,

@@ -128,19 +128,17 @@ provide<Ref<StatsParams>>('params', params)
                   label="Группировка"
                 />
               </div>
-              <div class="double-input-glued">
-                <UiDateInput
-                  v-model="params.date_to"
-                  label="Начиная с"
-                  today-btn
-                  clearable
-                  placeholder="текущего дня"
-                />
+              <div class="double-input">
                 <UiDateInput
                   v-model="params.date_from"
-                  label="по"
+                  label="Начиная с"
                   clearable
-                  placeholder="год назад"
+                />
+                <UiDateInput
+                  v-model="params.date_to"
+                  label="по"
+                  today-btn
+                  clearable
                 />
               </div>
               <div class="d-flex ga-3">

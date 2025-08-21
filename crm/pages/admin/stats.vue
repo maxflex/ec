@@ -187,6 +187,8 @@ nextTick(() => statsDialog.value?.open())
           </div>
         </template>
       </template>
+      <!-- визуальный фикс, когда нет данных -->
+      <div v-else></div>
     </div>
     <template v-if="responseParams">
       <template v-if="display === 'table'">
@@ -223,8 +225,8 @@ nextTick(() => statsDialog.value?.open())
           </template>
         </div>
       </template>
-      <StatsChartBar v-if="display === 'bar'" :key="refreshKey" :items="items" :params="responseParams" />
-      <StatsChartYears v-if="display === 'years'" :key="refreshKey" :items="items" :params="responseParams" />
+      <StatsChartBar v-if="display === 'bar'" :key="refreshKey" :items="items.reverse()" :params="responseParams" />
+      <StatsChartYears v-if="display === 'years'" :key="refreshKey" :items="items.reverse()" :params="responseParams" />
     </template>
   </div>
   <StatsDialog ref="statsDialog" @go="onGo" />
@@ -243,6 +245,9 @@ nextTick(() => statsDialog.value?.open())
     & > div {
       &:last-child:not(:first-child) {
         flex: 1;
+        canvas {
+          padding: 50px;
+        }
       }
     }
   }

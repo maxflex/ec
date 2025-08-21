@@ -47,7 +47,7 @@ onMounted(() => input.value.focus())
       </v-text-field>
     </template>
     <template #no-data>
-      <UiNoData class="page-search__no-data" :icon="mdiTextBoxSearchOutline">
+      <UiNoData class="page-search__no-data">
         ничего не найдено
       </UiNoData>
     </template>

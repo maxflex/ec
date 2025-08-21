@@ -6,7 +6,7 @@ export function getChartOptions(items: StatsListResource[], params: StatsParams)
   return {
     plugins: {
       legend: {
-        display: false,
+        // display: false,
         labels: {
           usePointStyle: true, // this makes the marker shape match `pointStyle`
           pointStyle: 'circle', // circle instead of square
