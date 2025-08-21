@@ -6,7 +6,7 @@ import { mdiEyeOffOutline, mdiPlus } from '@mdi/js'
 import { cloneDeep } from 'lodash-es'
 import { VueDraggableNext } from 'vue-draggable-next'
 import { MetricComponents } from '~/components/Stats/Metrics'
-import { defaultStatsParams, StatsDisplayIcon, StatsDisplayLabel, StatsModeLabel } from '.'
+import { defaultStatsParams, StatsModeLabel } from '.'
 
 const emit = defineEmits<{
   go: [params: StatsParams]
@@ -52,7 +52,9 @@ function addMetric(metric: MetricComponent) {
 
 // Загрузить конфигурацию из пресета
 function loadFromPreset(preset: StatsPreset) {
-  params.value = cloneDeep(preset.params)
+  const p = cloneDeep(preset.params) as any
+  delete p.display
+  params.value = p
   selected.value = undefined
   // preset.params.metrics.map(m => itemUpdated('metric', m.id))
 }
@@ -127,29 +129,6 @@ provide<Ref<StatsParams>>('params', params)
                   :items="selectItems(StatsModeLabel)"
                   label="Группировка"
                 />
-                <v-select
-                  v-model="params.display"
-                  :items="selectItems(StatsDisplayLabel)"
-                  label="Отображение"
-                >
-                  <template #selection="{ item }">
-                    <div class="stats-dialog__display">
-                      <v-icon :icon="StatsDisplayIcon[item.value as StatsDisplay]" />
-                      {{ StatsDisplayLabel[item.value] }}
-                    </div>
-                  </template>
-                  <template #item="{ item, props }">
-                    <v-list-item v-bind="props">
-                      <template #prepend />
-                      <template #title>
-                        <div class="stats-dialog__display">
-                          <v-icon :icon="StatsDisplayIcon[item.value as StatsDisplay]" />
-                          {{ StatsDisplayLabel[item.value] }}
-                        </div>
-                      </template>
-                    </v-list-item>
-                  </template>
-                </v-select>
               </div>
               <div class="double-input-glued">
                 <UiDateInput
@@ -362,20 +341,6 @@ provide<Ref<StatsParams>>('params', params)
     transform: rotate(45deg);
     &:hover {
       color: rgb(var(--v-theme-error)) !important;
-    }
-  }
-
-  &__display {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-
-    .v-icon {
-      // font-size: 20px;
-      // color: rgb(var(--v-theme-gray));
     }
   }
 }
