@@ -4,13 +4,26 @@ import type { StatsListResource, StatsParams } from '..'
 import { Chart, registerables } from 'chart.js'
 import { format, parseISO } from 'date-fns'
 import { BarChart } from 'vue-chart-3'
+import { colors } from '~/plugins/vuetify'
 import { formatDateMode } from '..'
-import { MetricColorHex } from '../Metrics'
 
 const { items, params } = defineProps<{
   items: StatsListResource[] // [{ date: '2024-01-01', values: number[] }, ...]
   params: StatsParams // { metrics: [{ label, color, ... }], ... }
 }>()
+
+const YEAR_COLORS = [
+  colors.secondary,
+  colors.success,
+  colors.orange,
+  colors.error,
+  colors.accent,
+  '#8b5cf6',
+  '#ec4899',
+  '#14b8a6',
+  '#f97316',
+  '#0ea5e9',
+]
 
 Chart.register(...registerables)
 
@@ -37,9 +50,13 @@ for (const it of items) {
 }
 
 const years = Object.keys(valuesByYear).map(Number).sort()
+const yearColors: Record<number, string> = {}
+years.slice().reverse().forEach((y, i) => {
+  yearColors[y] = YEAR_COLORS[i % YEAR_COLORS.length]
+})
 
 // компактные подписи по оси X (без года)
-chartData.labels = labelsMMDD.map(k => format(parseISO(`2024-${k}`), 'dd.MM'))
+chartData.labels = labelsMMDD.map(k => format(`2024-${k}`, 'dd.MM'))
 
 // 3) Кодируем "год" штриховкой, "метрику" — цветом
 // const dashByYear = [
@@ -52,24 +69,19 @@ chartData.labels = labelsMMDD.map(k => format(parseISO(`2024-${k}`), 'dd.MM'))
 
 // 4) Формируем датасеты: на каждую метрику и на каждый год
 chartData.datasets = params.metrics.flatMap((metric, mi): ChartDataset<'bar'>[] => {
-  const color = MetricColorHex[metric.color] // напр. '#2563EB'
   return years.map((year) => {
+    const color = yearColors[year]
     const data = labelsMMDD.map((mmdd) => {
       const v = valuesByYear[year]?.[mmdd]?.[mi]
       return typeof v === 'number' ? v : Number.NaN
     })
+
     return {
       label: `${metric.label} • ${year}`,
       data,
       borderColor: color,
-      backgroundColor: `${color}33`, // прозрачная подложка
-      borderWidth: 2,
-      tension: 0.5,
-      pointRadius: 0,
-      fill: false, // при множестве серий лучше без заливки
-      spanGaps: true,
-      // borderDash: dashByYear[yi % dashByYear.length],
-      // чтобы легенда могла скрывать/показывать серии по клику
+      backgroundColor: color,
+      // spanGaps: true,
     }
   })
 })
@@ -81,37 +93,62 @@ const chartOptions: ChartOptions<'bar'> = {
     legend: {
       display: true,
       labels: {
+        padding: 20,
         usePointStyle: true, // this makes the marker shape match `pointStyle`
         pointStyle: 'circle', // circle instead of square
       },
     },
     tooltip: {
-      intersect: false,
       mode: 'index',
+      usePointStyle: true,
+      titleMarginBottom: 10,
+      padding: 10,
+      boxPadding: 10,
+      titleFont: {
+        size: 14,
+      },
+      bodyFont: {
+        size: 14,
+      },
+      bodySpacing: 10,
       callbacks: {
         title: (context) => {
           const dateIndex = context[0].dataIndex
           const date = items[dateIndex].date
           return formatDateMode(date, params.mode, params.date_to)
         },
-        label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}`,
+        label: ctx => `${ctx.dataset.label}: ${formatPrice(ctx.parsed.y, true)}`,
       },
     },
   },
   scales: {
     x: {
+      beginAtZero: true,
       grid: {
         display: false,
       },
       ticks: {
         autoSkip: true,
+        font: {
+          size: 14,
+        },
         // maxTicksLimit: 12,
         // maxRotation: 0
       },
     },
     y: {
-      grid: { color: 'rgba(0,0,0,0.06)' },
-      ticks: { precision: 0 },
+      beginAtZero: true,
+      grid: {
+        color: ctx => (Number(ctx.tick.value) === 0 ? 'red' : 'rgba(0,0,0,0.06)'),
+        lineWidth: ctx => (Number(ctx.tick.value) === 0 ? 2 : 1),
+      },
+      ticks: {
+        precision: 0,
+        callback: value => formatPrice(Number(value), true),
+        font: {
+          size: 14,
+        },
+      },
     },
   },
 }

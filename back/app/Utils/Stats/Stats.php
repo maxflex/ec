@@ -44,6 +44,11 @@ class Stats
             $windowCurrentDate = $windowTo->copy()->sub($mode, $paginate - 1);
         }
 
+        if ($mode === 'month') {
+            $windowCurrentDate->startOfMonth();
+            $windowTo->startOfMonth();
+        }
+
         if ($mode === 'week') {
             $windowCurrentDate->startOfWeek();
         }
@@ -53,7 +58,6 @@ class Stats
             logger('dateTo: '.$dateTo->format('Y-m-d'));
             logger('windowCurrentDate: '.$windowCurrentDate->format('Y-m-d'));
             logger('windowTo: '.$windowTo->format('Y-m-d'));
-
         }
 
         $isLastPage = $windowCurrentDate->lte($dateFrom);

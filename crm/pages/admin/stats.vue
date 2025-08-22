@@ -246,7 +246,7 @@ nextTick(() => statsDialog.value?.open())
       &:last-child:not(:first-child) {
         flex: 1;
         canvas {
-          padding: 50px;
+          padding: 50px 50px 50px 20px;
         }
       }
     }
