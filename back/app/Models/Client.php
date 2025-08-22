@@ -187,15 +187,14 @@ class Client extends Person implements HasSchedule
          * Все занятия из групп, в которых клиент в данный момент находится.
          * Или все занятия, на которых ученик реально присутствовал
          */
-        return Lesson::query()->where(
-            fn ($q) => $q->whereExists(fn ($q) => $q->selectRaw(1)
-                ->from('client_groups as cg')
-                ->whereColumn('cg.group_id', 'lessons.group_id')
-                ->whereIn('cg.contract_version_program_id', $cvpIds)
-            )->orWhereExists(fn ($q) => $q->selectRaw(1)
-                ->from('client_lessons as cl')
-                ->whereColumn('cl.lesson_id', 'lessons.id')
-                ->whereIn('cl.contract_version_program_id', $cvpIds)
+        return Lesson::query()->where(fn ($q) => $q
+            ->whereIn('lessons.group_id', fn ($q) => $q->select('group_id')
+                ->from('client_groups')
+                ->whereIn('contract_version_program_id', $cvpIds)
+            )->orWhereIn('lessons.id',
+                fn ($q) => $q->select('lesson_id')
+                    ->from('client_lessons')
+                    ->whereIn('contract_version_program_id', $cvpIds)
             )
         );
     }
