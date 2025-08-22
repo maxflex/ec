@@ -188,10 +188,10 @@ class Client extends Person implements HasSchedule
          * Или все занятия, на которых ученик реально присутствовал
          */
         return Lesson::query()->where(
-            fn ($q) => $q->whereIn('group_id', fn ($q) => $q->select('group_id')
+            fn ($q) => $q->whereIn('lessons.group_id', fn ($q) => $q->select('group_id')
                 ->from('client_groups')
                 ->whereIn('contract_version_program_id', $cvpIds)
-            )->orWhereIn('id', fn ($q) => $q->select('lesson_id')
+            )->orWhereIn('lessons.id', fn ($q) => $q->select('lesson_id')
                 ->from('client_lessons')
                 ->whereIn('contract_version_program_id', $cvpIds)
             )
