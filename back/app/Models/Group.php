@@ -67,6 +67,84 @@ class Group extends Model implements HasSchedule
     }
 
     /**
+     * Кол-во учеников в проектах договора
+     */
+    public function getDraftStudentsCountAttribute(): int
+    {
+        $result = 0;
+
+        // факт
+        $cvpIdsReal = $this->clientGroups->pluck('contract_version_program_id');
+
+        // проект
+        foreach (ScheduleDraft::getAllActive() as $draft) {
+            foreach ($draft->programs as $p) {
+                // реально есть в группе
+                if ($cvpIdsReal->contains($p['id'])) {
+                    // но в черновике убрали
+                    if ($p['group_id'] !== $this->id) {
+                        $result--;
+                    }
+                } else {
+                    // реально нет в группе
+                    if ($p['group_id'] === $this->id) {
+                        // но в проекте добавили
+                        $result++;
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Кол-во учеников в проектах договора
+     */
+    public function getDraftStudentsAttribute(): Collection
+    {
+        $clients = collect();
+
+        // факт
+        $cvpIdsReal = $this->clientGroups->pluck('contract_version_program_id');
+
+        // проект
+        foreach (ScheduleDraft::getAllActive() as $draft) {
+            foreach ($draft->programs as $p) {
+                $cvpId = $p['id'];
+
+                // реально есть в группе
+                if ($cvpIdsReal->contains($cvpId)) {
+                    // но в черновике убрали
+                    if ($p['group_id'] !== $this->id) {
+                        $clients->push((object) [
+                            'id' => uniqid(),
+                            'contract_version_program_id' => $cvpId,
+                            'client' => $draft->client,
+                            'draft_id' => $draft->id,
+                            'is_removed' => true, // удален
+                        ]);
+                    }
+                } else {
+                    // реально нет в группе
+                    if ($p['group_id'] === $this->id) {
+                        // но в проекте добавили
+                        $clients->push((object) [
+                            'id' => uniqid(),
+                            'contract_version_program_id' => $cvpId,
+                            'client' => $draft->client,
+                            'draft_id' => $draft->id,
+                            'is_removed' => false, // добавлен
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return $clients;
+    }
+
+    /**
      * Нажимаем "добавить ученика в текущую группу"
      * Получаем список кандидатов
      */

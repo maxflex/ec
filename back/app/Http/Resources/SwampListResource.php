@@ -19,12 +19,17 @@ class SwampListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $group = $this->clientGroup?->group;
+        if ($group) {
+            $group->loadCount('clientGroups');
+        }
+
         return extract_fields($this, [
             'contract_id', 'year', 'status', 'program',
             'total_lessons', 'lessons_conducted',
         ], [
             'client_group_id' => $this->clientGroup?->id,
-            'group' => new GroupListResource($this->clientGroup?->group),
+            'group' => new GroupListResource($group),
             'client' => new PersonResource(Client::find($this->client_id)),
         ]);
     }

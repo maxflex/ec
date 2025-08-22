@@ -144,6 +144,16 @@ class ScheduleDraft extends Model
         // }
     }
 
+    /**
+     * Получить все активные проекты
+     *
+     * return Collection<int, self>
+     */
+    public static function getAllActive(): Collection
+    {
+        return once(fn () => ScheduleDraft::all()->filter(fn ($e) => ! $e->is_archived));
+    }
+
     public function addToGroup(int $programId, int $groupId): bool
     {
         // программа уже добавлена в другую группу
@@ -176,14 +186,6 @@ class ScheduleDraft extends Model
     }
 
     /**
-     * Сохранить текущий черновик в оперативную память
-     */
-    public function toRam(): bool
-    {
-        return cache()->put(self::getCacheKey($this->user_id), $this, now()->addDay());
-    }
-
-    /**
      * Программы из черновика + все остальные.
      * Добавляем contract_id в каждую программу для последующих группировок
      * TODO: всё таки-изменить структуру так, чтобы было contract_id => [..programs]
@@ -202,6 +204,14 @@ class ScheduleDraft extends Model
     //             'contract_id' => $this->contract_id,
     //         ]));
     // }
+
+    /**
+     * Сохранить текущий черновик в оперативную память
+     */
+    public function toRam(): bool
+    {
+        return cache()->put(self::getCacheKey($this->user_id), $this, now()->addDay());
+    }
 
     /**
      * Применить перемещения в группе
@@ -374,7 +384,7 @@ class ScheduleDraft extends Model
                 'program', 'client_groups_count', 'zoom', 'lessons_planned',
                 'teacher_counts', 'lesson_counts', 'first_lesson_date', 'swamp',
                 'overlap', 'uncunducted_count', 'original_contract_id',
-                'current_contract_id', 'level',
+                'current_contract_id', 'level', 'draft_students_count',
             ], [
                 'cabinets' => $g->cabinets,
                 'teeth' => $g->getSavedSchedule($g->year),
@@ -657,9 +667,20 @@ class ScheduleDraft extends Model
 
     /**
      * Проект по договору более не актуален (после него уже была создана версия)
+     * Или были созданы другие проекты после
      */
     public function getIsArchivedAttribute(): bool
     {
+        // есть драфты, созданные позже текущего
+        $hasDraftsAfter = self::query()
+            ->where('client_id', $this->client_id)
+            ->where('id', '>', $this->id)
+            ->exists();
+
+        if ($hasDraftsAfter) {
+            return true;
+        }
+
         $createdAt = $this->contract_id
             ? $this->contract->active_version->created_at
             : $this->client->contracts()->where('year', $this->year)

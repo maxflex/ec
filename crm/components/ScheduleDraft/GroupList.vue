@@ -29,7 +29,7 @@ const isAlreadyInOtherGroup = computed(() => items.some(e => e.swamp && e.curren
         :key="item.id"
         :class="{ changed: isGroupChangedInContract(item, contractId!) }"
       >
-        <td width="70">
+        <td width="80">
           <GroupLink :item="item" />
         </td>
         <td width="190">
@@ -38,7 +38,7 @@ const isAlreadyInOtherGroup = computed(() => items.some(e => e.swamp && e.curren
         <td width="130">
           {{ ProgramShortLabel[item.program] }}
         </td>
-        <td width="50">
+        <td width="70">
           <GroupFirstLessonDate :date="item.first_lesson_date" />
         </td>
         <td width="140">
@@ -49,14 +49,8 @@ const isAlreadyInOtherGroup = computed(() => items.some(e => e.swamp && e.curren
             <GroupLessonCounts :item="item" />
           </UiIfSet>
         </td>
-        <td width="50">
-          <UiIfSet :value="!!item.client_groups_count">
-            <template #empty>
-              0 уч.
-            </template>
-            {{ item.client_groups_count }}
-            уч.
-          </UiIfSet>
+        <td width="60">
+          <GroupStudentsCount :item="item" />
         </td>
         <td width="160">
           <UiIfSet :value="Object.keys(item.teeth).length > 0">

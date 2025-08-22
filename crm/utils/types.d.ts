@@ -220,6 +220,7 @@ declare global {
     teacher_counts: Record<number, number>
     lesson_counts: GroupLessonCounts
     client_groups_count: number
+    draft_students_count: number
     first_lesson_date?: string
     level: number | null
     program: Program
@@ -662,6 +663,7 @@ declare global {
     contract_version_program_id: number
     teeth: Teeth
     client: PersonWithPhotoResource
+    draft_id: number | null
   }
 
   type SseEvent =

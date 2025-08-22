@@ -41,13 +41,7 @@ const { items, blurOthers } = defineProps<{
           </UiIfSet>
         </td>
         <td width="80">
-          <UiIfSet :value="!!item.client_groups_count">
-            <template #empty>
-              0 уч.
-            </template>
-            {{ item.client_groups_count }}
-            уч.
-          </UiIfSet>
+          <GroupStudentsCount :item="item" />
         </td>
         <td width="140">
           <UiIfSet :value="Object.keys(item.teeth).length > 0">

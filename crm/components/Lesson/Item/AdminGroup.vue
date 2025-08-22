@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { GroupStudentsCount } from '#components'
 import {
   mdiBookOpenOutline,
   mdiBookOpenVariant,
@@ -64,9 +65,7 @@ const isConductDisabled = item.status !== 'conducted'
       {{ ProgramShortLabel[item.group.program] }}
     </div>
     <div style="width: 60px">
-      <template v-if="item.status !== 'cancelled'">
-        {{ item.group.students_count }} уч.
-      </template>
+      <GroupStudentsCount v-if="item.status !== 'cancelled'" :item="item.group" />
     </div>
 
     <div style="width: 100px" class="lesson-item__icons">

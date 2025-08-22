@@ -13,7 +13,7 @@ const loading = ref(false)
     <thead>
       <tr>
         <!-- ШИРИНЫ -->
-        <th width="80"></th>
+        <th width="90"></th>
         <th width="170"></th>
         <th width="100"></th>
         <th width="80"></th>
@@ -48,12 +48,7 @@ const loading = ref(false)
             </UiIfSet>
           </td>
           <td>
-            <UiIfSet :value="!!item.group.client_groups_count">
-              <template #empty>
-                0 уч.
-              </template>
-              {{ item.group.client_groups_count }} уч.
-            </UiIfSet>
+            <GroupStudentsCount v-if="item.group" :item="item.group" />
           </td>
           <td>
             <UiIfSet :value="Object.keys(item.group.teeth).length > 0">
@@ -71,7 +66,7 @@ const loading = ref(false)
         </template>
         <template v-else>
           <td class="text-gray">
-            Без группы
+            Нет группы
           </td>
           <td>
           </td>
