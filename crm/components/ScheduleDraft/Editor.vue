@@ -350,7 +350,7 @@ nextTick(fromActualContracts)
           <v-chip v-if="p.id < 0" label density="comfortable" color="orange">
             добавлено в черновике
           </v-chip>
-          <ContractVersionProgramStatus :item="p.swamp!" />
+          <ContractVersionProgramStatus v-else :item="p.swamp!" />
           <v-btn
             v-if="p.id < 0"
             :size="30"

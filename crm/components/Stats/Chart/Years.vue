@@ -2,7 +2,7 @@
 import type { ChartData, ChartDataset, ChartOptions } from 'chart.js'
 import type { StatsListResource, StatsParams } from '..'
 import { Chart, registerables } from 'chart.js'
-import { format, parseISO } from 'date-fns'
+import { format, getMonth, parseISO } from 'date-fns'
 import { BarChart } from 'vue-chart-3'
 import { colors } from '~/plugins/vuetify'
 import { formatDateMode } from '..'
@@ -56,7 +56,7 @@ years.slice().reverse().forEach((y, i) => {
 })
 
 // компактные подписи по оси X (без года)
-chartData.labels = labelsMMDD.map(k => format(`2024-${k}`, 'dd.MM'))
+chartData.labels = labelsMMDD.map(k => format(parseISO(`2024-${k}`), 'dd.MM'))
 
 // 3) Кодируем "год" штриховкой, "метрику" — цветом
 // const dashByYear = [
@@ -81,7 +81,7 @@ chartData.datasets = params.metrics.flatMap((metric, mi): ChartDataset<'bar'>[] 
       data,
       borderColor: color,
       backgroundColor: color,
-      // spanGaps: true,
+      year, // <— добавили
     }
   })
 })
@@ -112,10 +112,15 @@ const chartOptions: ChartOptions<'bar'> = {
       },
       bodySpacing: 10,
       callbacks: {
-        title: (context) => {
-          const dateIndex = context[0].dataIndex
-          const date = items[dateIndex].date
-          return formatDateMode(date, params.mode, params.date_to)
+        title: (ctx) => {
+          const c = ctx[0]
+          const year = (c.dataset as any).year as number
+          const mmdd = labelsMMDD[c.dataIndex] // 'MM-dd'
+          const iso = `${year}-${mmdd}` // 'YYYY-MM-dd'
+
+          const month = getMonth(iso)
+          const monthLabel = MonthLabelShort[month + 1 as Month]
+          return monthLabel
         },
         label: ctx => `${ctx.dataset.label}: ${formatPrice(ctx.parsed.y, true)}`,
       },
