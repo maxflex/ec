@@ -1,18 +1,12 @@
 <script setup lang="ts">
 import type { GroupDialog, PrintDialog } from '#build/components'
 
-const tabs = {
+const { tabs, selectedTab, tabCounts, tabCountsExtra } = useTabs({
   schedule: 'расписание',
   visits: 'посещаемость',
   students: 'ученики',
   acts: 'акты',
-} as const
-
-type Tab = keyof typeof tabs
-type TabCounts = Partial<Record<Tab, number>>
-
-const selectedTab = ref<Tab>('schedule')
-const tabCounts = ref<TabCounts>({})
+})
 
 const route = useRoute()
 const group = ref<GroupResource>()
@@ -31,6 +25,7 @@ async function loadData() {
   group.value = data.value as GroupResource
   tabCounts.value.students = group.value.client_groups_count
   tabCounts.value.acts = group.value.acts_count
+  tabCountsExtra.value.students = group.value.draft_students_count
 }
 
 function onGroupDeleted() {
@@ -88,23 +83,7 @@ nextTick(loadData)
         </template>
       </GroupPanel>
 
-      <div class="tabs tabs--test">
-        <div
-          v-for="(label, key) in tabs"
-          :key="key"
-          class="tabs-item"
-          :class="{ 'tabs-item--active': selectedTab === key }"
-          @click="selectedTab = key"
-        >
-          {{ label }}
-          <v-badge
-            v-if="tabCounts[key]"
-            color="grey-darken-3"
-            inline
-            :content="tabCounts[key]"
-          />
-        </div>
-      </div>
+      <UiTabs v-model="selectedTab" :items="tabs" :counts="tabCounts" :counts-extra="tabCountsExtra" />
     </div>
     <Schedule v-if="selectedTab === 'schedule'" :group="group" />
     <GroupVisitsTab v-else-if="selectedTab === 'visits'" :id="group.id" />

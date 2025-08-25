@@ -1,15 +1,9 @@
 <script setup lang="ts">
-const tabs = {
+const { tabs, selectedTab, tabCounts } = useTabs({
   schedule: 'расписание',
   visits: 'посещаемость',
   students: 'ученики',
-} as const
-
-type Tab = keyof typeof tabs
-type TabCounts = Partial<Record<Tab, number>>
-
-const selectedTab = ref<keyof typeof tabs>('schedule')
-const tabCounts = ref<TabCounts>({})
+})
 
 const route = useRoute()
 const group = ref<GroupResource>()
@@ -30,23 +24,7 @@ nextTick(loadData)
   >
     <div class="panel">
       <GroupPanel :item="group" />
-      <div class="tabs">
-        <div
-          v-for="(label, key) in tabs"
-          :key="key"
-          class="tabs-item"
-          :class="{ 'tabs-item--active': selectedTab === key }"
-          @click="selectedTab = key"
-        >
-          {{ label }}
-          <v-badge
-            v-if="tabCounts[key]"
-            color="grey-darken-3"
-            inline
-            :content="tabCounts[key]"
-          />
-        </div>
-      </div>
+      <UiTabs v-model="selectedTab" :items="tabs" />
     </div>
     <div>
       <Schedule v-if="selectedTab === 'schedule'" :group="group" />

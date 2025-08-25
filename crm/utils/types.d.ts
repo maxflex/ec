@@ -245,6 +245,7 @@ declare global {
     lessons_planned: number
     first_lesson_date?: string
     client_groups_count: number
+    draft_students_count: number
     acts_count: number
     teacher_counts: Record<number, number>
     lesson_counts: GroupLessonCounts
@@ -664,6 +665,7 @@ declare global {
     teeth: Teeth
     client: PersonWithPhotoResource
     draft_id: number | null
+    is_removed: boolean
   }
 
   type SseEvent =

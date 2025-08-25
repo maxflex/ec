@@ -3,7 +3,7 @@ import type { ClientDialog, PrintSpravkaDialog } from '#build/components'
 import type { ClientResource } from '~/components/Client'
 import { mdiTable } from '@mdi/js'
 
-const tabs = {
+const { tabs, selectedTab } = useTabs({
   requests: 'заявки',
   contracts: 'договоры',
   schedule: 'расписание',
@@ -19,9 +19,8 @@ const tabs = {
   logs: 'логи',
   clientComplaints: 'жалобы',
   clientReviews: 'отзывы',
-} as const
+})
 
-const selectedTab = ref<keyof typeof tabs>('requests')
 const route = useRoute()
 const client = ref<ClientResource>()
 const clientDialog = ref<InstanceType<typeof ClientDialog>>()
@@ -104,17 +103,7 @@ nextTick(loadData)
           />
         </div>
       </div>
-      <div class="tabs">
-        <div
-          v-for="(label, key) in tabs"
-          :key="key"
-          class="tabs-item"
-          :class="{ 'tabs-item--active': selectedTab === key }"
-          @click="selectedTab = key"
-        >
-          {{ label }}
-        </div>
-      </div>
+      <UiTabs v-model="selectedTab" :items="tabs" />
     </div>
 
     <RequestTab v-if="selectedTab === 'requests'" :client-id="client.id" />

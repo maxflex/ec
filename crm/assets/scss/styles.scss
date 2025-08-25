@@ -110,31 +110,6 @@ a.table-item {
   }
 }
 
-.tabs {
-  display: flex;
-  border-bottom: 1px solid #e0e0e0;
-  white-space: nowrap;
-  overflow-x: scroll;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  // box-shadow: 0 0 10px 20px rgba(white, 0.5);
-  &-item {
-    padding: 12px 20px;
-    cursor: pointer;
-    transition: all cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
-    user-select: none;
-    &:hover {
-      background: #f6f6f6;
-    }
-    &--active {
-      background: #e4e4e4 !important;
-      // pointer-events: none;
-    }
-  }
-}
-
 .tab-btn {
   transition: all cubic-bezier(0.4, 0, 0.2, 1) 0.2s !important;
   &:hover {

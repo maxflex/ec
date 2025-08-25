@@ -17,17 +17,16 @@ const emit = defineEmits<{ back: [] }>()
 const { number } = item
 const copied = ref(false)
 
-const tabs = {
+const { tabs, selectedTab } = useTabs({
   calls: 'история звонков',
   telegramMessages: 'история telegram',
   smsMessages: 'история sms',
-} as const
+})
 type Tab = keyof typeof tabs
 
 const callsList = ref<CallListResource[]>([])
 const telegramMessages = ref<TelegramMessageResource[]>([])
 const smsMessages = ref<SmsMessageListResource[]>([])
-const selectedTab = ref<Tab>('calls')
 const loading = ref(true)
 const wrapper = ref<HTMLDivElement | null>(null)
 const text = ref('')
@@ -170,17 +169,8 @@ nextTick(loadCalls)
       </div>
     </div>
     <div ref="wrapper" :key="item.id" class="dialog-body pa-0 ga-0">
-      <div class="tabs">
-        <div
-          v-for="(label, key) in tabs"
-          :key="key"
-          class="tabs-item"
-          :class="{ 'tabs-item--active': selectedTab === key }"
-          @click="selectedTab = key"
-        >
-          {{ label }}
-        </div>
-      </div>
+      <UiTabs v-model="selectedTab" :items="tabs" />
+
       <UiLoader v-if="loading" :offset="50" />
       <template v-else-if="selectedTab === 'calls'">
         <UiNoData v-if="callsList.length === 0" />

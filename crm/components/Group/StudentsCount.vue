@@ -1,9 +1,10 @@
 <script setup lang="ts">
 const { item } = defineProps<{
   item: {
-    client_groups_count: number
-    students_count: number
     draft_students_count: number
+    client_groups_count?: number
+    students_count?: number
+    status?: LessonStatus
   }
 }>()
 
@@ -14,8 +15,8 @@ const studentsCount = 'students_count' in item
 
 <template>
   <span :class="{ 'text-gray': !studentsCount }">
-    {{ studentsCount || '0' }}
-    <template v-if="item.draft_students_count">
+    {{ studentsCount }}
+    <template v-if="item.draft_students_count && item.status !== 'conducted'">
       <span v-if="item.draft_students_count > 0" class="text-gray">
         + {{ item.draft_students_count }}
       </span>

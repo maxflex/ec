@@ -5,7 +5,7 @@ const route = useRoute()
 const teacher = ref<TeacherResource>()
 const teacherDialog = ref<InstanceType<typeof TeacherDialog>>()
 
-const tabs = {
+const { tabs, selectedTab } = useTabs({
   groups: 'группы',
   schedule: 'расписание',
   events: 'события',
@@ -19,11 +19,9 @@ const tabs = {
   stats: 'статистика',
   headTeacherClients: 'классрук',
   headTeacherReports: 'отчёты кр',
-} as const
+})
 
 type Tab = keyof typeof tabs
-
-const selectedTab = ref<Tab>('groups')
 
 // вкладка "отчёты КР" только у is_head_teacher
 const availableTabs = computed<Tab[]>(() => {
@@ -85,17 +83,7 @@ nextTick(loadData)
           />
         </div>
       </div>
-      <div class="tabs">
-        <div
-          v-for="tab in availableTabs"
-          :key="tab"
-          class="tabs-item"
-          :class="{ 'tabs-item--active': selectedTab === tab }"
-          @click="selectedTab = tab"
-        >
-          {{ tabs[tab] }}
-        </div>
-      </div>
+      <UiTabs v-model="selectedTab" :items="tabs" :available="availableTabs" />
     </div>
     <TeacherGroupsTab v-if="selectedTab === 'groups'" :teacher-id="teacher.id" />
     <Schedule v-else-if="selectedTab === 'schedule'" :teacher-id="teacher.id" />

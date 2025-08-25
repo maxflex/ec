@@ -70,7 +70,7 @@ nextTick(loadData)
           />
         </div>
       </div>
-      <div v-if="isEditabl" style="border-bottom: none; background: white">
+      <div v-if="isEditable" style="border-bottom: none; background: white">
         <UiIconLink @click="isSwampSelector = true">
           добавить ученика в текущую группу
         </UiIconLink>

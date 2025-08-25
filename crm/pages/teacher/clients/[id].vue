@@ -11,16 +11,14 @@ if (!user?.is_head_teacher) {
   })
 }
 
-const tabs = {
+const { tabs, selectedTab } = useTabs({
   groups: 'группы',
   schedule: 'расписание',
   examScores: 'баллы',
   grades: 'оценки',
   reports: 'отчёты',
   tests: 'тесты',
-} as const
-
-const selectedTab = ref<keyof typeof tabs>('groups')
+})
 
 const client = ref<ClientResource>()
 
@@ -71,17 +69,7 @@ nextTick(loadData)
           </div>
         </div>
       </div>
-      <div class="tabs">
-        <div
-          v-for="(label, key) in tabs"
-          :key="key"
-          class="tabs-item"
-          :class="{ 'tabs-item--active': selectedTab === key }"
-          @click="selectedTab = key"
-        >
-          {{ label }}
-        </div>
-      </div>
+      <UiTabs v-model="selectedTab" :items="tabs" />
     </div>
     <HeadTeacherClientGroupsTab v-if="selectedTab === 'groups'" :client-id="client.id" />
     <Schedule v-else-if="selectedTab === 'schedule'" :client-id="client.id" head-teacher program-filter />
