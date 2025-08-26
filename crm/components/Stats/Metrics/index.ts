@@ -2,17 +2,17 @@ import { colors } from '~/plugins/vuetify'
 import CalculatorMetric from './CalculatorMetric.vue'
 import CallMetric from './CallMetric.vue'
 import ClientLessonMetric from './ClientLessonMetric.vue'
-import ClientPaymentMetric from './ClientPaymentMetric.vue'
 import ContractMetric from './ContractMetric.vue'
-import ContractPaymentMetric from './ContractPaymentMetric.vue'
+import ContractOtherPaymentMetric from './ContractOtherPaymentMetric.vue'
 import ContractProgramMetric from './ContractProgramMetric.vue'
 import LessonMetric from './LessonMetric.vue'
 import PassMetric from './PassMetric.vue'
+import OtherPaymentMetric from './OtherPaymentMetric.vue'
 import ReportMetric from './ReportMetric.vue'
 import RequestMetric from './RequestMetric.vue'
 import RequestPassesMetric from './RequestPassesMetric.vue'
 import TeacherLessonMetric from './TeacherLessonMetric.vue'
-import TeacherPaymentMetric from './TeacherPaymentMetric.vue'
+import TeacherOtherPaymentMetric from './TeacherOtherPaymentMetric.vue'
 import TeacherServiceMetric from './TeacherServiceMetric.vue'
 import TelegramMessageMetric from './TelegramMessageMetric.vue'
 import VisitsMetric from './VisitsMetric.vue'
@@ -29,11 +29,11 @@ const MetricComponentsUnsorted = {
   CallMetric,
   RequestMetric,
   ReportMetric,
-  ClientPaymentMetric,
+  OtherPaymentMetric,
   ContractMetric,
   ContractProgramMetric,
-  ContractPaymentMetric,
-  TeacherPaymentMetric,
+  ContractOtherPaymentMetric,
+  TeacherOtherPaymentMetric,
   TeacherServiceMetric,
   PassMetric,
   LessonMetric,

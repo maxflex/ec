@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
 
 class Client extends Person implements HasSchedule
@@ -45,11 +44,6 @@ class Client extends Person implements HasSchedule
     public function tests(): HasMany
     {
         return $this->hasMany(ClientTest::class);
-    }
-
-    public function payments(): MorphMany
-    {
-        return $this->morphMany(ClientPayment::class, 'entity');
     }
 
     public function parent(): HasOne

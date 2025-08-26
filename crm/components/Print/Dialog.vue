@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { EditorConfiguration } from 'codemirror'
+import type { PrintOption } from '.'
 import Codemirror from 'codemirror-editor-vue3'
 import 'codemirror/mode/htmlmixed/htmlmixed.js'
 

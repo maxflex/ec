@@ -33,8 +33,6 @@ declare global {
 
   type LogType = keyof typeof LogTypeLabel
 
-  type ClientPaymentMethod = keyof typeof ClientPaymentMethodLabel
-
   type ContractPaymentMethod = keyof typeof ContractPaymentMethodLabel
 
   type Company = keyof typeof CompanyLabel
@@ -182,24 +180,6 @@ declare global {
     text: string
     user: PersonWithPhotoResource
     created_at?: string
-  }
-
-  interface ClientPaymentResource {
-    id: number
-    sum: number
-    date: string
-    year: Year
-    method: ClientPaymentMethod
-    company: Company
-    client?: PersonResource
-    client_id: number
-    is_return: boolean
-    is_confirmed: boolean
-    purpose: ?string
-    pko_number: ?number
-    card_number: ?string
-    created_at?: string
-    user?: PersonResource
   }
 
   interface Zoom {
@@ -678,12 +658,6 @@ declare global {
     | 'ClientTestUpdatedEvent'
     | 'RequestUpdatedEvent'
 
-  interface PrintOption {
-    id: number
-    label: string
-    company?: Company
-  }
-
   type SendTo = keyof typeof SendToLabel
 
   interface TelegramListResult extends PersonResource {
@@ -755,21 +729,6 @@ declare global {
       time: string
       time_end: string
     }
-  }
-
-  interface AllPaymentResource {
-    id: number
-    date: string
-    is_confirmed: boolean
-    is_return: boolean
-    method: ContractPaymentMethod
-    year: Year
-    purpose: ?string
-    company: Company
-    contract_id: ?number
-    pko_number: ?number
-    client: PersonResource
-    sum: number
   }
 
   interface YearFilters {

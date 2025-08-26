@@ -9,7 +9,6 @@ const { tabs, selectedTab } = useTabs({
   schedule: 'расписание',
   events: 'события',
   groups: 'группы',
-  payments: 'платежи',
   examScores: 'баллы',
   markSheet: 'ведомость',
   grades: 'оценки',
@@ -111,7 +110,6 @@ nextTick(loadData)
     <ContractTab v-else-if="selectedTab === 'contracts'" :client-id="client.id" />
     <WebReviewTab v-else-if="selectedTab === 'webReviews'" :client-id="client.id" />
     <ExamScoreTab v-else-if="selectedTab === 'examScores'" :client-id="client.id" />
-    <ClientPaymentTab v-else-if="selectedTab === 'payments'" :client-id="client.id" />
     <GradeTab v-else-if="selectedTab === 'grades'" :client-id="client.id" />
     <ClientGroupsTab v-else-if="selectedTab === 'groups'" :client="client" />
     <ClientTestTab v-else-if="selectedTab === 'tests'" :client-id="client.id" />

@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { PrintDialog } from '#build/components'
 import type { ContractResource, ContractVersionListResource, ContractVersionPaymentResource, ContractVersionProgramPrice, ContractVersionProgramResource, ContractVersionResource } from '.'
 import type { SavedScheduleDraftResource } from '../ScheduleDraft'
-import { mdiFlipVertical, mdiTextBoxCheckOutline, mdiTextBoxOutline } from '@mdi/js'
+import { mdiFlipVertical } from '@mdi/js'
 import { addMonths, format } from 'date-fns'
 import { cloneDeep } from 'lodash-es'
 import { modelDefaults } from '.'
@@ -28,19 +27,6 @@ const programsInput = ref()
 const saving = ref(false)
 const loading = ref(false)
 const mode = ref<ContractEditMode>('edit')
-
-const printDialog = ref<InstanceType<typeof PrintDialog>>()
-const printOptions: PrintOption[] = [
-  { id: 1, label: 'договор' },
-  { id: 2, label: 'допсоглашение' },
-  { id: 3, label: 'договор школа-родитель' },
-  { id: 16, label: 'договор школа-родитель 9кл' },
-  { id: 4, label: 'допсоглашение маткапитал' },
-  { id: 5, label: 'соглашение о расторжении' },
-  { id: 6, label: 'согласие на обработку данных' },
-  { id: 8, label: 'заявление на очное обучение' },
-  { id: 7, label: 'акт оказанных услуг' },
-]
 
 function newContract(clientId: number) {
   mode.value = 'new-contract'
@@ -592,24 +578,10 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
           />
 
           <v-btn v-if="mode !== 'new-contract'" :icon="mdiFlipVertical" variant="text" :size="48" @click="splitPrices()" />
-          <v-menu v-if="mode === 'edit'">
-            <template #activator="{ props }">
-              <v-btn
-                v-bind="props"
-                icon="$print"
-                :size="48"
-                variant="text"
-              />
-            </template>
-            <v-list>
-              <v-list-item
-                v-for="p in printOptions" :key="p.id"
-                @click="printDialog?.open(p, { contract_version_id: item.id })"
-              >
-                {{ p.label }}
-              </v-list-item>
-            </v-list>
-          </v-menu>
+          <PrintBtn
+            v-if="mode === 'edit'"
+            :items="[1, 2, 3, 16, 4, 5, 6, 8, 7]"
+          />
           <v-btn
             icon="$save"
             :size="48"

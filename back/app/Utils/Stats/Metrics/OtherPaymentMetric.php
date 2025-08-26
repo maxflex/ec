@@ -2,16 +2,16 @@
 
 namespace App\Utils\Stats\Metrics;
 
-use App\Models\ClientPayment;
+use App\Models\OtherPayment;
 use Illuminate\Support\Facades\DB;
 
-class ClientPaymentMetric extends BaseMetric
+class OtherPaymentMetric extends BaseMetric
 {
     protected $filters = [
         'equals' => [
-            'company', 'is_confirmed', 'is_return',
+            'is_confirmed', 'is_return',
         ],
-        'findInSet' => ['method', 'year'],
+        'findInSet' => ['method'],
     ];
 
     public function getDateField(): string
@@ -21,7 +21,7 @@ class ClientPaymentMetric extends BaseMetric
 
     public function getBaseQuery()
     {
-        return ClientPayment::query();
+        return OtherPayment::query();
     }
 
     public function aggregate($query): int

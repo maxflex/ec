@@ -1,12 +1,12 @@
 <?php
 
-use App\Enums\ClientPaymentMethod;
 use App\Enums\Company;
 use App\Enums\ContractPaymentMethod;
+use App\Enums\OtherPaymentMethod;
 use App\Models\Client;
 use App\Models\ClientParent;
-use App\Models\ClientPayment;
 use App\Models\ContractPayment;
+use App\Models\OtherPayment;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -110,9 +110,9 @@ function get_max_pko_number(Company $company, string $date)
 {
     $year = intval(explode('-', $date)[0]);
 
-    $clientPaymentsMaxPko = intval(ClientPayment::query()
-        ->where('company', $company)
-        ->where('method', ClientPaymentMethod::cash)
+    // платежи пробный ЕГЭ – все ООО
+    $paymentsMaxPko = $company === Company::ip ? 0 : intval(OtherPayment::query()
+        ->where('method', OtherPaymentMethod::cash)
         ->where('is_return', false)
         ->whereRaw('YEAR(`date`) = ?', [$year])
         ->max('pko_number'));
@@ -124,7 +124,7 @@ function get_max_pko_number(Company $company, string $date)
         ->whereRaw('YEAR(`date`) = ?', [$year])
         ->max('pko_number'));
 
-    return max($contractPaymentsMaxPko, $clientPaymentsMaxPko) + 1;
+    return max($contractPaymentsMaxPko, $paymentsMaxPko) + 1;
 }
 
 /**

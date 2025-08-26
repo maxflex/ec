@@ -1,45 +1,22 @@
 <script setup lang="ts">
-import type { PrintDialog } from '#components'
+import type { AllPaymentResource, OtherPaymentResource } from '.'
 import { cloneDeep } from 'lodash-es'
+import { apiUrl, modelDefaults, OtherPaymentMethodLabel } from '.'
 
 const emit = defineEmits<{
-  updated: [e: ClientPaymentResource]
+  updated: [e: AllPaymentResource]
+  deleted: [id: number]
 }>()
-
-const apiUrl = 'client-payments'
 
 const { width, dialog } = useDialog('default')
 const saving = ref(false)
 const loading = ref(false)
 const itemId = ref<number>()
+const item = ref<OtherPaymentResource>(cloneDeep(modelDefaults))
 
-const printDialog = ref<InstanceType<typeof PrintDialog>>()
-const printOptions: PrintOption[] = [
-  { id: 9, label: 'платежка (наличные)' },
-  { id: 14, label: 'платежка НДС (наличные)' },
-]
-
-const modelDefaults: ClientPaymentResource = {
-  id: newId(),
-  sum: 0,
-  date: today(),
-  year: currentAcademicYear(),
-  method: 'card',
-  company: 'ooo',
-  purpose: null,
-  is_confirmed: false,
-  is_return: false,
-  client_id: newId(),
-  pko_number: null,
-  card_number: null,
-}
-const item = ref<ClientPaymentResource>(modelDefaults)
-
-function create(clientId: number) {
+function create() {
   itemId.value = undefined
   item.value = cloneDeep(modelDefaults)
-  item.value.year = currentAcademicYear()
-  item.value.client_id = clientId
   dialog.value = true
 }
 
@@ -47,10 +24,8 @@ async function edit(id: number) {
   itemId.value = id
   loading.value = true
   dialog.value = true
-  const { data } = await useHttp<ClientPaymentResource>(`${apiUrl}/${id}`)
-  if (data.value) {
-    item.value = data.value
-  }
+  const { data } = await useHttp<OtherPaymentResource>(`${apiUrl}/${id}`)
+  item.value = data.value!
   loading.value = false
 }
 
@@ -58,15 +33,19 @@ async function save() {
   saving.value = true
   const method = itemId.value ? `put` : `post`
   const url = itemId.value ? `${apiUrl}/${itemId.value}` : apiUrl
-  const { data } = await useHttp<ClientPaymentResource>(url, {
+  const { data } = await useHttp<AllPaymentResource>(url, {
     method,
     body: item.value,
   })
-  if (data.value) {
-    emit('updated', data.value)
-  }
+  emit('updated', data.value!)
   dialog.value = false
   setTimeout(() => saving.value = false, 300)
+}
+
+async function destroy() {
+  useGlobalMessage('Платеж удален', 'success')
+  emit('deleted', itemId.value!)
+  dialog.value = false
 }
 
 defineExpose({ create, edit })
@@ -96,26 +75,9 @@ defineExpose({ create, edit })
               :id="itemId"
               :api-url="apiUrl"
               confirm-text="Вы уверены, что хотите удалить платеж?"
-              @deleted="dialog = false"
+              @deleted="destroy()"
             />
-            <v-menu>
-              <template #activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  icon="$print"
-                  :size="48"
-                  variant="text"
-                />
-              </template>
-              <v-list>
-                <v-list-item
-                  v-for="p in printOptions" :key="p.id"
-                  @click="printDialog?.open(p, { client_payment_id: item.id })"
-                >
-                  {{ p.label }}
-                </v-list-item>
-              </v-list>
-            </v-menu>
+            <PrintBtn :items="[9, 14]" />
           </template>
           <v-btn
             icon="$save"
@@ -138,27 +100,17 @@ defineExpose({ create, edit })
         </div>
         <UiDateInput v-model="item.date" today-btn />
         <div>
-          <v-select v-model="item.year" label="Учебный год" :items="selectItems(YearLabel)" />
-        </div>
-        <div>
-          <v-select
-            v-model="item.company"
-            label="Компания"
-            :items="selectItems(CompanyLabel)"
-          />
-        </div>
-        <div>
           <v-select
             v-model="item.method"
             label="Способ оплаты"
-            :items="selectItems(ClientPaymentMethodLabel)"
+            :items="selectItems(OtherPaymentMethodLabel)"
           />
         </div>
         <div v-if="item.method === 'card'">
           <v-text-field
             v-model="item.card_number"
+            v-maska="{ mask: '#####' }"
             placeholder="∗∗∗∗ ∗∗∗∗ ∗∗∗∗ ∗∗∗∗"
-            mask="#### - #### - #### - ####"
             label="Номер карты"
           />
         </div>
@@ -171,6 +123,25 @@ defineExpose({ create, edit })
             hide-spin-buttons
           />
           <v-text-field v-else disabled label="Будет присвоен номер ПКО" />
+        </div>
+
+        <div>
+          <v-text-field
+            v-model="item.last_name"
+            label="Фамилия"
+          />
+        </div>
+        <div>
+          <v-text-field
+            v-model="item.first_name"
+            label="Имя"
+          />
+        </div>
+        <div>
+          <v-text-field
+            v-model="item.middle_name"
+            label="Отчество"
+          />
         </div>
         <div>
           <v-textarea
@@ -193,5 +164,4 @@ defineExpose({ create, edit })
       </div>
     </div>
   </v-dialog>
-  <LazyPrintDialog ref="printDialog" />
 </template>

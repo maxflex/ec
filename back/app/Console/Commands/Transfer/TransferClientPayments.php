@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands\Transfer;
 
-use App\Enums\ClientPaymentMethod;
 use App\Enums\ContractPaymentMethod;
+use App\Enums\PaymentMethod;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -15,6 +15,7 @@ class TransferClientPayments extends Command
     use TransferTrait;
 
     protected $signature = 'app:transfer:client-payments';
+
     protected $description = 'Transfer client-payments';
 
     public function handle()
@@ -51,7 +52,7 @@ class TransferClientPayments extends Command
                     'sum' => $p->sum,
                     'date' => $p->date,
                     'year' => $p->year,
-                    'method' => ClientPaymentMethod::fromOld($p->method)->name,
+                    'method' => PaymentMethod::fromOld($p->method)->name,
                     'client_id' => $p->entity_id,
                     'purpose' => $p->category === 'ege_trial' ? 'Пробник' : 'Профориентация',
                     'is_confirmed' => $p->is_confirmed,

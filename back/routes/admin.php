@@ -8,7 +8,6 @@ use App\Http\Controllers\Admin\ClientComplaintController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\ClientGroupController;
 use App\Http\Controllers\Admin\ClientLessonController;
-use App\Http\Controllers\Admin\ClientPaymentController;
 use App\Http\Controllers\Admin\ClientReviewController;
 use App\Http\Controllers\Admin\ClientTestController;
 use App\Http\Controllers\Admin\CommentController;
@@ -30,6 +29,7 @@ use App\Http\Controllers\Admin\InstructionController;
 use App\Http\Controllers\Admin\LessonController;
 use App\Http\Controllers\Admin\MacroController;
 use App\Http\Controllers\Admin\MenuCountsController;
+use App\Http\Controllers\Admin\OtherPaymentController;
 use App\Http\Controllers\Admin\PassController;
 use App\Http\Controllers\Admin\PeopleSelectorController;
 use App\Http\Controllers\Admin\PreviewController;
@@ -192,7 +192,7 @@ Route::apiResources([
     'users' => UserController::class,
     'comments' => CommentController::class,
     'lessons' => LessonController::class,
-    'client-payments' => ClientPaymentController::class,
+    'other-payments' => OtherPaymentController::class,
     'web-reviews' => WebReviewController::class,
     'reports' => ReportController::class,
     'grades' => GradeController::class,

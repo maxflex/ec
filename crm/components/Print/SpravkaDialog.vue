@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#build/components'
+import type { PrintOption } from '.'
 
 const { dialog, width, transition } = useDialog('default')
 const printDialog = ref<InstanceType<typeof PrintDialog>>()

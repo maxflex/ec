@@ -1,19 +1,19 @@
 <script lang="ts">
+import type { OtherPaymentMethod } from '~/components/OtherPayment'
+import { OtherPaymentMethodLabel } from '~/components/OtherPayment'
+
 interface Filters {
-  year: Year[]
-  method: ClientPaymentMethod[]
-  company?: Company
+  method: OtherPaymentMethod[]
   is_confirmed?: number
   is_return?: number
 }
 
 const filterDefaults: Filters = {
-  year: [],
   method: [],
 }
 
 export default {
-  label: 'Платежи по клиентам',
+  label: 'Прочие платежи',
   width: 130,
   filters: { ...filterDefaults },
 }
@@ -26,20 +26,10 @@ defineExpose({ filters })
 
 <template>
   <div>
-    <UiMultipleSelect v-model="filters.year" :items="selectItems(YearLabel)" label="Учебный год" />
-  </div>
-  <div>
     <UiMultipleSelect
       v-model="filters.method"
       label="Метод оплаты"
-      :items="selectItems(ClientPaymentMethodLabel)"
-    />
-  </div>
-  <div>
-    <UiClearableSelect
-      v-model="filters.company"
-      label="Компания"
-      :items="selectItems(CompanyLabel)"
+      :items="selectItems(OtherPaymentMethodLabel)"
     />
   </div>
   <div>

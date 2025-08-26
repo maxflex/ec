@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\Company;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
-use App\Models\ClientPayment;
 use App\Models\ContractPayment;
 use App\Models\ContractVersion;
 use App\Models\Group;
 use App\Models\GroupAct;
 use App\Models\Macro;
+use App\Models\OtherPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Blade;
@@ -39,8 +39,8 @@ class PrintController extends Controller
             $contractVersion = ContractVersion::find($request->contract_version_id);
             $variables = compact('contractVersion');
             $company = $contractVersion->contract->company;
-        } elseif ($request->has('client_payment_id')) {
-            $payment = ClientPayment::find($request->client_payment_id);
+        } elseif ($request->has('payment_id')) {
+            $payment = OtherPayment::find($request->payment_id);
             $variables = compact('payment');
             $company = $payment->company;
         } elseif ($request->has('contract_payment_id')) {

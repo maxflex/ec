@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { GroupDialog, PrintDialog } from '#build/components'
+import type { GroupDialog } from '#build/components'
 
 const { tabs, selectedTab, tabCounts, tabCountsExtra } = useTabs({
   schedule: 'расписание',
@@ -11,14 +11,6 @@ const { tabs, selectedTab, tabCounts, tabCountsExtra } = useTabs({
 const route = useRoute()
 const group = ref<GroupResource>()
 const groupDialog = ref<InstanceType<typeof GroupDialog>>()
-const printDialog = ref<InstanceType<typeof PrintDialog>>()
-
-const printOptions: PrintOption[] = [
-  { id: 13, label: 'Договор на преподавателя (ООО)', company: 'ooo' },
-  { id: 17, label: 'Договор на преподавателя 8, 9 кл (ООО)', company: 'ooo' },
-  { id: 13, label: 'Договор на преподавателя (ИП)', company: 'ip' },
-  { id: 17, label: 'Договор на преподавателя 8, 9 кл (ИП)', company: 'ip' },
-]
 
 async function loadData() {
   const { data } = await useHttp(`groups/${route.params.id}`)
@@ -55,25 +47,16 @@ nextTick(loadData)
           </div>
         </div>
         <template #actions>
-          <v-menu>
-            <template #activator="{ props }">
-              <v-btn
-                v-bind="props"
-                icon="$print"
-                :size="48"
-                variant="plain"
-              />
-            </template>
-            <v-list>
-              <v-list-item
-                v-for="p in printOptions"
-                :key="p.label"
-                @click="printDialog?.open(p, { group_id: group.id })"
-              >
-                {{ p.label }}
-              </v-list-item>
-            </v-list>
-          </v-menu>
+          <PrintBtn
+            :items="[
+              { 13: 'ooo' },
+              { 17: 'ooo' },
+              { 13: 'ip' },
+              { 17: 'ip' },
+            ]"
+            :extra="{ group_id: group.id }"
+            variant="plain"
+          />
           <v-btn
             icon="$edit"
             :size="48"
@@ -95,5 +78,4 @@ nextTick(loadData)
     @updated="g => (group = g)"
     @deleted="onGroupDeleted"
   />
-  <LazyPrintDialog ref="printDialog" />
 </template>

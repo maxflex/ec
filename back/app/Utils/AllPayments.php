@@ -2,30 +2,37 @@
 
 namespace App\Utils;
 
-use App\Models\ClientPayment;
+use App\Enums\Company;
 use App\Models\ContractPayment;
+use App\Models\OtherPayment;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Платежи клиентов по договорам + остальные client_payments
+ * Платежи клиентов по договорам + остальные payments
  */
 class AllPayments
 {
     public static function query()
     {
-        $clientPayments = ClientPayment::selectRaw('
-            client_id, is_return, method, is_confirmed, `date`,
-            `company`, `year`, `purpose`, NULL as contract_id,
-            `sum`, id, pko_number
-        ');
+        $otherPayments = OtherPayment::selectRaw(sprintf('
+            first_name, last_name, middle_name,
+            is_return, method, is_confirmed, `date`,
+            "%s" as `company`, `purpose`, NULL as contract_id,
+            `sum`, id, pko_number, NULL as client_id
+        ',
+            Company::ooo->value, // прочие платежи всегда ООО
+        ));
 
         $contractPayments = ContractPayment::selectRaw('
-            client_id, is_return, method, is_confirmed, `date`,
-            `company`, `year`, NULL as purpose, contract_id,
-            `sum`, contract_payments.id, pko_number
-        ')->join('contracts as c', 'c.id', '=', 'contract_id');
+            first_name, last_name, middle_name,
+            is_return, method, is_confirmed, `date`,
+            `company`, NULL as `purpose`, contract_id,
+            `sum`, contract_payments.id, pko_number, `client_id`
+        ')
+            ->join('contracts as c', 'c.id', '=', 'contract_id')
+            ->join('clients as cl', 'cl.id', '=', 'c.client_id');
 
-        $cte = $clientPayments->union($contractPayments);
+        $cte = $otherPayments->union($contractPayments);
 
         return DB::table('payments')->withExpression('payments', $cte);
     }

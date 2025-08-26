@@ -2,10 +2,14 @@
 
 namespace App\Http\Resources;
 
+use App\Models\OtherPayment;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ClientPaymentResource extends JsonResource
+/**
+ * @mixin OtherPayment
+ */
+class OtherPaymentResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,7 +19,6 @@ class ClientPaymentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, ['*'], [
-            'client' => new PersonResource($this->client),
             'user' => new PersonResource($this->user),
         ]);
     }

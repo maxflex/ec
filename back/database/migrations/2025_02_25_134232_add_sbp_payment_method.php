@@ -1,6 +1,7 @@
 <?php
 
-use App\Enums\Program;
+use App\Enums\ContractPaymentMethod;
+use App\Enums\OtherPaymentMethod;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -24,12 +25,11 @@ return new class extends Migration
                 ->where('card_number', 'СБП')
                 ->update([
                     'card_number' => null,
-                    'method_new' => 'sbp'
+                    'method_new' => 'sbp',
                 ]);
             // конец обновление значений
 
-
-            $cases = $table === 'client_payments' ? \App\Enums\ClientPaymentMethod::cases() : \App\Enums\ContractPaymentMethod::cases();
+            $cases = $table === 'client_payments' ? OtherPaymentMethod::cases() : ContractPaymentMethod::cases();
 
             Schema::table($table, function (Blueprint $table) use ($cases) {
                 $table->dropColumn('method');

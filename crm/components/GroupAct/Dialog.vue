@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { PrintDialog } from '#components'
 import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{
@@ -13,14 +12,6 @@ const modelDefaults: GroupActResource = {
   date_from: '',
   date_to: '',
 }
-
-const printDialog = ref<InstanceType<typeof PrintDialog>>()
-const printOptions: PrintOption[] = [
-  { id: 12, label: 'Акт оказанных услуг (ООО)', company: 'ooo' },
-  { id: 18, label: 'Акт оказанных услуг 8, 9 кл (ООО)', company: 'ooo' },
-  { id: 12, label: 'Акт оказанных услуг (ИП)', company: 'ip' },
-  { id: 18, label: 'Акт оказанных услуг 8, 9 кл (ИП)', company: 'ip' },
-]
 
 const { dialog, width } = useDialog('default')
 const item = ref<GroupActResource>(modelDefaults)
@@ -84,25 +75,15 @@ defineExpose({ edit, create })
               confirm-text="Вы уверены, что хотите удалить акт?"
               @deleted="dialog = false"
             />
-            <v-menu>
-              <template #activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  icon="$print"
-                  :size="48"
-                  variant="text"
-                />
-              </template>
-              <v-list>
-                <v-list-item
-                  v-for="p in printOptions"
-                  :key="p.label"
-                  @click="printDialog?.open(p, { act_id: item.id })"
-                >
-                  {{ p.label }}
-                </v-list-item>
-              </v-list>
-            </v-menu>
+            <PrintBtn
+              :items="[
+                { 12: 'ooo' },
+                { 18: 'ooo' },
+                { 12: 'ip' },
+                { 18: 'ip' },
+              ]"
+              :extra="{ act_id: item.id }"
+            />
           </template>
           <v-btn
             :loading="saving"
@@ -131,5 +112,4 @@ defineExpose({ edit, create })
       </div>
     </div>
   </v-dialog>
-  <LazyPrintDialog ref="printDialog" />
 </template>

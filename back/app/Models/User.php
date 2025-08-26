@@ -76,9 +76,9 @@ class User extends Person
         return $this->hasMany(Client::class);
     }
 
-    public function clientPayments(): HasMany
+    public function otherPayments(): HasMany
     {
-        return $this->hasMany(ClientPayment::class);
+        return $this->hasMany(OtherPayment::class);
     }
 
     public function contractPayments(): HasMany

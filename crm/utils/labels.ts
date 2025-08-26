@@ -476,12 +476,6 @@ export const ContractPaymentMethodLabel = {
   sbp: 'СБП',
 } as const
 
-export const ClientPaymentMethodLabel = {
-  card: 'карта',
-  cash: 'наличные',
-  sbp: 'СБП',
-} as const
-
 export const CompanyLabel = {
   ooo: 'ООО',
   ip: 'ИП',
