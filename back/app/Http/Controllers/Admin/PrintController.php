@@ -39,10 +39,10 @@ class PrintController extends Controller
             $contractVersion = ContractVersion::find($request->contract_version_id);
             $variables = compact('contractVersion');
             $company = $contractVersion->contract->company;
-        } elseif ($request->has('payment_id')) {
-            $payment = OtherPayment::find($request->payment_id);
+        } elseif ($request->has('other_payment_id')) {
+            $payment = OtherPayment::find($request->other_payment_id);
             $variables = compact('payment');
-            $company = $payment->company;
+            $company = Company::ooo;
         } elseif ($request->has('contract_payment_id')) {
             $payment = ContractPayment::find($request->contract_payment_id);
             $qr = $this->generateQr($payment);

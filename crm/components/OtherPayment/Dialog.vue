@@ -77,7 +77,7 @@ defineExpose({ create, edit })
               confirm-text="Вы уверены, что хотите удалить платеж?"
               @deleted="destroy()"
             />
-            <PrintBtn :items="[9, 14]" />
+            <PrintBtn :items="[9, 14]" :extra="{ other_payment_id: itemId }" />
           </template>
           <v-btn
             icon="$save"

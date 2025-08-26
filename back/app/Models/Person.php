@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\CanLogin;
+use App\Traits\HasName;
 use App\Traits\HasPhones;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -10,7 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 abstract class Person extends Authenticatable implements CanLogin
 {
-    use HasPhones;
+    use HasName, HasPhones;
 
     const DISABLE_LOGS = true;
 
@@ -40,37 +41,5 @@ abstract class Person extends Authenticatable implements CanLogin
     public function telegramMessages(): MorphMany
     {
         return $this->morphMany(TelegramMessage::class, 'entity');
-    }
-
-    /**
-     * @param  'last-first'|'initials'|'full'|'first-middle'  $format
-     */
-    public function formatName(string $format = 'last-first'): string
-    {
-        $name = match ($format) {
-            'full' => [
-                $this->last_name,
-                $this->first_name,
-                $this->middle_name,
-            ],
-
-            'initials' => [
-                $this->last_name,
-                mb_substr($this->first_name, 0, 1).'.',
-                mb_substr($this->middle_name, 0, 1).'.',
-            ],
-
-            'first-middle' => [
-                $this->first_name,
-                $this->middle_name,
-            ],
-
-            default => [
-                $this->last_name,
-                $this->first_name,
-            ],
-        };
-
-        return implode(' ', $name);
     }
 }

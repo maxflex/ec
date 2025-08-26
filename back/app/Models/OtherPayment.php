@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Company;
 use App\Enums\OtherPaymentMethod;
+use App\Traits\HasName;
 use App\Utils\AllPayments;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class OtherPayment extends Model
 {
+    use HasName;
+
     protected $fillable = [
         'sum', 'date', 'method', 'card_number', 'pko_number', 'is_confirmed',
         'is_return', 'first_name', 'last_name', 'middle_name', 'purpose',
