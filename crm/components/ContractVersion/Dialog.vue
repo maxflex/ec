@@ -581,6 +581,7 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
           <PrintBtn
             v-if="mode === 'edit'"
             :items="[1, 2, 3, 16, 4, 5, 6, 8, 7]"
+            :extra="{ contract_version_id: item.id }"
           />
           <v-btn
             icon="$save"
