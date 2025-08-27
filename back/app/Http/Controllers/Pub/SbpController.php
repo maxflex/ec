@@ -33,8 +33,8 @@ class SbpController extends Controller
         );
 
         // для чека
-        $fullName = $contract->client->parent->formatName('full');
-        $phone = is_localhost() ? '79252727210' : $contract->client->parent->getPhoneNumbers()->first();
+        $fullName = $contract->client->representative->formatName('full');
+        $phone = is_localhost() ? '79252727210' : $contract->client->representative->getPhoneNumbers()->first();
 
         $payment = $client->createPayment(
             [

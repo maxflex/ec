@@ -8,8 +8,8 @@ use App\Http\Resources\ClientListResource;
 use App\Http\Resources\ClientResource;
 use App\Http\Resources\PersonResource;
 use App\Models\Client;
-use App\Models\ClientParent;
 use App\Models\Phone;
+use App\Models\Representative;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -38,23 +38,13 @@ class ClientController extends Controller
         return new ClientResource($client);
     }
 
-    /**
-     * Нужно для редиректа на страницу клиента по ID родителя
-     *
-     * GET parents/{clientParent}
-     */
-    public function clientParent(ClientParent $clientParent)
-    {
-        return new PersonResource($clientParent->client);
-    }
-
     public function store(ClientRequest $request)
     {
         $client = auth()->user()->clients()->create($request->all());
-        $parent = $client->parent()->create($request->parent);
+        $representative = $client->representative()->create($request->representative);
 
         sync_relation($client, 'phones', $request->all());
-        sync_relation($parent, 'phones', $request->parent);
+        sync_relation($representative, 'phones', $request->representative);
 
         if ($request->has('request_id')) {
             \App\Models\Request::find($request->request_id)->update([
@@ -65,13 +55,21 @@ class ClientController extends Controller
         return new ClientListResource($client);
     }
 
+    /**
+     * Нужно для редиректа на страницу клиента по ID родителя
+     */
+    public function representative(Representative $representative)
+    {
+        return new PersonResource($representative->client);
+    }
+
     public function update(Client $client, ClientRequest $request)
     {
         $client->update($request->all());
-        $client->parent->update($request->parent);
+        $client->representative->update($request->representative);
 
         sync_relation($client, 'phones', $request->all());
-        sync_relation($client->parent, 'phones', $request->parent);
+        sync_relation($client->representative, 'phones', $request->representative);
 
         return new ClientResource($client);
     }
@@ -79,8 +77,8 @@ class ClientController extends Controller
     public function destroy(Client $client)
     {
         DB::transaction(function () use ($client) {
-            $client->parent->phones->each->delete();
-            $client->parent->delete();
+            $client->representative->phones->each->delete();
+            $client->representative->delete();
             $client->phones->each->delete();
             $client->delete();
         });
@@ -110,7 +108,7 @@ class ClientController extends Controller
             ->pluck('number');
         $query->where(fn ($q) => $q
             ->whereHas('phones', fn ($q) => $q->whereIn('number', $numbers))
-            ->orWhereHas('parent.phones', fn ($q) => $q->whereIn('number', $numbers))
+            ->orWhereHas('representative.phones', fn ($q) => $q->whereIn('number', $numbers))
         );
     }
 

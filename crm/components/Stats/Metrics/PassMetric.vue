@@ -3,7 +3,7 @@ const PassTypeFilterLabel = {
   noRequest: 'разовый без заявки',
   hasRequest: 'разовый по заявке',
   client: 'ученик',
-  clientParent: 'родитель',
+  representative: 'родитель',
   teacher: 'преподаватель',
   user: 'администратор',
 } as const

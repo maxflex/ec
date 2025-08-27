@@ -16,7 +16,7 @@ class TransferOtherPaymentsCommand extends Command
     {
         DB::table('other_payments')->truncate();
         $clientPayments = DB::table('client_payments')->get();
-        $clients = Client::with('parent')
+        $clients = Client::with('representative')
             ->whereIn('id', $clientPayments->pluck('client_id')->unique())
             ->get()
             ->keyBy('id');

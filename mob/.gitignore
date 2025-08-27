@@ -8,9 +8,6 @@ ecosystem.config.js
 .cache
 dist
 
-# Symlink
-utils
-
 # Node dependencies
 node_modules
 

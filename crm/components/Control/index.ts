@@ -5,7 +5,7 @@ export interface ControlLkResource extends PersonResource {
   tg_logs_count: number
   comments_count: number
   directions: ClientDirections
-  parent: PersonResource & {
+  representative: PersonResource & {
     phones: PhoneResource[]
     last_seen_at: string | null
     logs_count: number

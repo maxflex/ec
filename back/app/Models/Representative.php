@@ -6,7 +6,7 @@ use App\Traits\IsSearchable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ClientParent extends Person
+class Representative extends Person
 {
     use IsSearchable;
 

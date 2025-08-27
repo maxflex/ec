@@ -68,7 +68,7 @@ class ControlController extends Controller
     public function lk(Request $request)
     {
         $this->query
-            ->with(['phones', 'parent.phones']) // 'contracts.versions.programs'
+            ->with(['phones', 'representative.phones']) // 'contracts.versions.programs'
             ->with('reports', fn ($q) => $q->where('year', $request->year))
             ->with('logs', fn ($q) => $q->whereRaw('created_at >= NOW() - INTERVAL 3 MONTH'))
             ->withCount([

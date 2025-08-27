@@ -16,14 +16,6 @@ class PhoneObserver
         $phone->number = UtilsPhone::clean($phone->number);
     }
 
-    public function updating(Phone $phone)
-    {
-        if ($phone->isDirty('number') && $phone->telegram_id) {
-            TelegramMessage::sendNumberChanged($phone);
-            $phone->telegram_id = null;
-        }
-    }
-
     public function deleting(Phone $phone)
     {
         if ($phone->telegram_id) {

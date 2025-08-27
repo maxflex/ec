@@ -93,7 +93,7 @@ class Request extends Model
         $query = Phone::whereIn('number', $numbers)
             ->whereIn('entity_type', [
                 Client::class,
-                ClientParent::class,
+                Representative::class,
             ])
             ->with('entity');
 

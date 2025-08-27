@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PassLogResource;
 use App\Http\Resources\SecurityPassResource;
 use App\Models\Client;
-use App\Models\ClientParent;
 use App\Models\Pass;
 use App\Models\PassLog;
+use App\Models\Representative;
 use App\Models\Teacher;
 use App\Models\User;
 use App\Utils\SecurityVerificationService;
@@ -55,7 +55,7 @@ class SecurityController extends Controller
 
         // постоянные
         $result = $result->concat(Client::canLogin()->get());
-        $result = $result->concat(ClientParent::canLogin()->get());
+        $result = $result->concat(Representative::canLogin()->get());
         $result = $result->concat(Teacher::canLogin()->get());
         $result = $result->concat(User::canLogin()->get());
 
@@ -72,11 +72,11 @@ class SecurityController extends Controller
     {
         $request->validate([
             'id' => ['required', 'numeric'],
-            'type' => ['required', 'in:client,parent,teacher,user,pass'],
+            'type' => ['required', 'in:client,representative,teacher,user,pass'],
         ]);
         $entityType = match ($request->type) {
             'client' => Client::class,
-            'parent' => ClientParent::class,
+            'representative' => Representative::class,
             'teacher' => Teacher::class,
             'user' => User::class,
             default => Pass::class,

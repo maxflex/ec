@@ -3,9 +3,9 @@
 namespace App\Utils\Stats\Metrics;
 
 use App\Models\Client;
-use App\Models\ClientParent;
 use App\Models\Pass;
 use App\Models\PassLog;
+use App\Models\Representative;
 use App\Models\Teacher;
 use App\Models\User;
 
@@ -55,8 +55,8 @@ class PassMetric extends BaseMetric
                             $query->where('entity_type', Client::class);
                             break;
 
-                        case 'clientParent':
-                            $query->where('entity_type', ClientParent::class);
+                        case 'representative':
+                            $query->where('entity_type', Representative::class);
                             break;
 
                         case 'teacher':

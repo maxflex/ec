@@ -20,7 +20,7 @@ class ClientResource extends JsonResource
             'entity_type' => Client::class,
             'head_teacher' => new PersonResource($this->headTeacher),
             'user' => new PersonResource($this->user),
-            'parent' => new ParentResource($this->parent),
+            'representative' => new RepresentativeResource($this->representative),
             'phones' => PhoneResource::collection($this->phones),
         ]);
     }

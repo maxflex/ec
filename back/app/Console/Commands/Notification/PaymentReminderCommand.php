@@ -29,13 +29,13 @@ class PaymentReminderCommand extends Command
                 continue;
             }
 
-            $clientParent = $contract->client->parent;
+            $representative = $contract->client->representative;
 
             TelegramMessage::sendTemplate(
                 TelegramTemplate::paymentReminder,
-                $clientParent,
+                $representative,
                 [
-                    'clientParent' => $clientParent,
+                    'representative' => $representative,
                     'payment' => $payment,
                 ]
             );

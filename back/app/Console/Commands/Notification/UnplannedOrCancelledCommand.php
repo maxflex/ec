@@ -27,26 +27,26 @@ class UnplannedOrCancelledCommand extends Command
 
         $result = [
             'clients' => [],
-            'parents' => [],
+            'representatives' => [],
             'teachers' => [],
         ];
 
         foreach ($lessons as $lesson) {
             foreach ($lesson->group->clientGroups as $clientGroup) {
                 $client = $clientGroup->contractVersionProgram->contractVersion->contract->client;
-                $parent = $client->parent;
+                $representative = $client->representative;
                 if (! isset($result['clients'][$client->id])) {
                     $result['clients'][$client->id] = [
                         'receiver' => $client,
                         'lessons' => [],
                     ];
-                    $result['parents'][$parent->id] = [
-                        'receiver' => $parent,
+                    $result['representatives'][$representative->id] = [
+                        'receiver' => $representative,
                         'lessons' => [],
                     ];
                 }
                 $result['clients'][$client->id]['lessons'][] = $lesson;
-                $result['parents'][$parent->id]['lessons'][] = $lesson;
+                $result['representatives'][$representative->id]['lessons'][] = $lesson;
             }
 
             $teacher = $lesson->teacher;

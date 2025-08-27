@@ -51,6 +51,10 @@ class RouteServiceProvider extends ServiceProvider
             fn ($request) => Limit::perMinute(50)->by($request->user()->id)
         );
 
+        RateLimiter::for(RouteGroup::representative,
+            fn ($request) => Limit::perMinute(50)->by($request->user()->id)
+        );
+
         RateLimiter::for(RouteGroup::teacher,
             fn ($request) => Limit::perMinute(50)->by($request->user()->id)
         );

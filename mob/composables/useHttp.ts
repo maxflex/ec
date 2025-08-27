@@ -1,26 +1,27 @@
+import type { UseFetchOptions } from '#app'
 import { useFetch } from '#app'
 
-type useFetchType = typeof useFetch
-
-export const useHttp: useFetchType = (path: string, options = {}) => {
-  const { getCurrentToken, clearCurrentToken, getOriginalToken, isPreviewMode, clientParentId } = useAuthStore()
+export function useHttp<T = any>(
+  path: string,
+  options: UseFetchOptions<T> = {},
+) {
+  const { getCurrentToken, clearCurrentToken, getOriginalToken, isPreviewMode } = useAuthStore()
   const { $isTgMiniApp } = useNuxtApp()
-  let baseURL = useRuntimeConfig().public.baseUrl
+  const { public: { baseUrl, env } } = useRuntimeConfig()
   const token = getCurrentToken().value
+  let url = baseUrl
 
-  if (token) {
-    options.headers = { Authorization: `Bearer ${token}` }
-    if (!path.startsWith('pub/')) {
-      baseURL += `${token.split('|')[0]}/`
-    }
-  }
-
-  const headers: any = {
+  const headers: Record<string, string> = {
     Accept: 'application/json',
+    ...(options.headers as Record<string, string> || {}),
   }
 
   if (token) {
     headers.Authorization = `Bearer ${token}`
+
+    if (!path.startsWith('pub/')) {
+      url += `${token.split('|')[0]}/`
+    }
   }
 
   if ($isTgMiniApp) {
@@ -31,16 +32,22 @@ export const useHttp: useFetchType = (path: string, options = {}) => {
   }
 
   if (isPreviewMode) {
-    headers.Preview = getOriginalToken()
+    const originalToken = getOriginalToken()
+
+    if (originalToken) {
+      headers.Preview = originalToken
+    }
   }
 
-  if (clientParentId) {
-    headers['Client-Parent-Id'] = clientParentId
+  if (env === 'local') {
+    options.credentials = 'include'
+    // headers.Cookies = 'XDEBUG_SESSION=PHPSTORM'
+    useCookie('XDEBUG_SESSION').value = 'PHPSTORM'
   }
 
   return useFetch(path, {
     ...options,
-    baseURL,
+    baseURL: url,
     headers,
     async onResponseError({ response: { status } }) {
       switch (status) {
@@ -59,7 +66,7 @@ export const useHttp: useFetchType = (path: string, options = {}) => {
           break
 
         // case 500:
-        //   showGlobalMessage('Ошибка сервера', 'error')
+        //   useGlobalMessage('Ошибка сервера', 'error')
         //   break
       }
     },

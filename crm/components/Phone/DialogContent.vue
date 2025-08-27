@@ -151,6 +151,7 @@ nextTick(loadCalls)
         </div>
       </div>
       <div>
+        <PhonePreviewModeBtn :item="item" />
         <v-btn
           :size="48"
           :icon="mdiContentCopy"

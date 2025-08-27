@@ -31,7 +31,7 @@ function getYearAgo(year: Year): string {
 <template>
   <RouterLink
     :to="{
-      name: item.entity_type === EntityTypeValue.client ? 'clients-id' : 'parents-id',
+      name: item.entity_type === EntityTypeValue.client ? 'clients-id' : 'representatives-id',
       params: { id: item.id },
     }"
     class="align-start search-client-item"

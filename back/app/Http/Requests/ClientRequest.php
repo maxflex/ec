@@ -10,7 +10,7 @@ class ClientRequest extends FormRequest
     {
         return [
             'passport.birthdate' => ['sometimes', 'date_format:Y-m-d'],
-            'parent.passport.issued_date' => ['sometimes', 'date_format:Y-m-d']
+            'representative.passport.issued_date' => ['sometimes', 'date_format:Y-m-d'],
         ];
     }
 }

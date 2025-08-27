@@ -36,9 +36,9 @@ class TelegramList extends Model
         foreach (['clients', 'teachers'] as $key) {
             switch ($key) {
                 case 'clients':
-                    $clients = Client::with('parent')->whereIn('id', $recipients->clients)->get();
+                    $clients = Client::with('representative')->whereIn('id', $recipients->clients)->get();
                     $result['students'] = PersonWithPhonesResource::collection($clients);
-                    $result['parents'] = PersonWithPhonesResource::collection($clients->map(fn ($c) => $c->parent));
+                    $result['representatives'] = PersonWithPhonesResource::collection($clients->map(fn ($c) => $c->representative));
                     break;
 
                 case 'teachers':
@@ -99,7 +99,7 @@ class TelegramList extends Model
 
     /**
      * 'students' => [],
-     * 'parents' => [],
+     * 'representatives' => [],
      * 'teachers' => [],
      */
     private function getResultDefaults(): array
@@ -126,10 +126,10 @@ class TelegramList extends Model
                     ]),
                 ];
                 // родителям
-                if ($key === 'students' && in_array(SendTo::parents->value, $this->send_to)) {
-                    $result['parents'][] = [
-                        ...(new PersonResource($person->parent))->toArray(new Request),
-                        'messages' => extract_fields_array($person->parent->phones, [
+                if ($key === 'students' && in_array(SendTo::representatives->value, $this->send_to)) {
+                    $result['representatives'][] = [
+                        ...(new PersonResource($person->representative))->toArray(new Request),
+                        'messages' => extract_fields_array($person->representative->phones, [
                             'telegram_id', 'number',
                         ]),
                     ];

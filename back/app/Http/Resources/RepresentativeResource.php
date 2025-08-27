@@ -2,12 +2,12 @@
 
 namespace App\Http\Resources;
 
-use App\Models\ClientParent;
+use App\Models\Representative;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin ClientParent */
-class ParentResource extends JsonResource
+/** @mixin Representative */
+class RepresentativeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

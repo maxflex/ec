@@ -20,9 +20,7 @@ class LogResource extends JsonResource
             'type', 'table', 'created_at', 'ip',
             'row_id', 'data', 'device',
         ], [
-            'entity' => new PersonResource(
-                $this->clientParent ?? $this->entity
-            ),
+            'entity' => new PersonResource($this->entity),
             'emulation_user' => new PersonResource($this->emulationUser),
         ]);
     }

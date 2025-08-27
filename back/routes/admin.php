@@ -32,7 +32,7 @@ use App\Http\Controllers\Admin\MenuCountsController;
 use App\Http\Controllers\Admin\OtherPaymentController;
 use App\Http\Controllers\Admin\PassController;
 use App\Http\Controllers\Admin\PeopleSelectorController;
-use App\Http\Controllers\Admin\PreviewController;
+use App\Http\Controllers\Admin\PreviewModeController;
 use App\Http\Controllers\Admin\PrintController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RequestsController;
@@ -60,7 +60,7 @@ use App\Http\Controllers\UploadController;
 use App\Http\Controllers\VacationController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('preview', PreviewController::class);
+Route::post('preview-mode', PreviewModeController::class);
 Route::post('stats', StatsController::class);
 
 Route::get('balance', BalanceController::class);
@@ -91,7 +91,7 @@ Route::prefix('lessons')->controller(LessonController::class)->group(function ()
     });
 });
 
-Route::get('parents/{clientParent}', [ClientController::class, 'clientParent']);
+Route::get('representatives/{representative}', [ClientController::class, 'representative']);
 
 Route::prefix('groups')->controller(GroupController::class)->group(function () {
     Route::post('bulk-store-candidates/{group}', 'bulkStoreCandidates');

@@ -8,9 +8,9 @@ use App\Enums\ReportDelivery;
 use App\Enums\ReportStatus;
 use App\Enums\TeacherStatus;
 use App\Enums\TelegramTemplate;
-use App\Models\ClientParent;
 use App\Models\Log;
 use App\Models\Report;
+use App\Models\Representative;
 use App\Models\Teacher;
 use App\Models\TelegramMessage;
 use Illuminate\Console\Command;
@@ -39,7 +39,7 @@ class SetReportDeliveryCommand extends Command
 
         $errors = 0;
         foreach ($telegramMessages as $telegramMessage) {
-            $parent = ClientParent::find($telegramMessage->entity_id);
+            $representative = Representative::find($telegramMessage->entity_id);
             preg_match('/<b>Программа:<\/b>\s*(.+)/u', $telegramMessage->text, $matchesProgram);
             preg_match('/<b>Составитель отчета:<\/b>\s*(.+)/u', $telegramMessage->text, $matchesTeacher);
             $programText = trim($matchesProgram[1] ?? '');
@@ -55,13 +55,13 @@ class SetReportDeliveryCommand extends Command
             $reports = Report::query()
                 ->whereRaw('created_at BETWEEN ? AND ?', [$dateLimit, $telegramMessage->created_at])
                 ->where('year', 2024)
-                ->where('client_id', $parent->client->id)
+                ->where('client_id', $representative->client->id)
                 ->where('teacher_id', $teacher->id)
                 ->get();
 
             $text = implode("\t", [
                 $telegramMessage->id,
-                $parent->client->id,
+                $representative->client->id,
                 $teacher->id,
                 $reports->count(),
             ]);
@@ -135,7 +135,7 @@ class SetReportDeliveryCommand extends Command
 
         $errors = 0;
         foreach ($telegramMessages as $telegramMessage) {
-            $parent = ClientParent::find($telegramMessage->entity_id);
+            $representative = Representative::find($telegramMessage->entity_id);
 
             preg_match('/Преподаватель ([А-ЯЁ][а-яё]+) [А-ЯЁ]\. [А-ЯЁ]\./u', $telegramMessage->text, $matchesTeacher);
             $lastName = $matchesTeacher[1] ?? '';
@@ -153,13 +153,13 @@ class SetReportDeliveryCommand extends Command
             $reports = Report::query()
                 ->whereRaw('created_at BETWEEN ? AND ?', [$dateLimit, $telegramMessage->created_at])
                 ->where('year', 2024)
-                ->where('client_id', $parent->client->id)
+                ->where('client_id', $representative->client->id)
                 ->where('teacher_id', $teacher->id)
                 ->get();
 
             $text = implode("\t", [
                 $telegramMessage->id,
-                $parent->client->id,
+                $representative->client->id,
                 $teacher->id,
                 $reports->count(),
             ]);
@@ -228,7 +228,7 @@ class SetReportDeliveryCommand extends Command
 
         $bar = $this->output->createProgressBar($reports->count());
         foreach ($reports as $report) {
-            $telegramId = $report->client->parent->phones()->whereNotNull('telegram_id')->first()->telegram_id;
+            $telegramId = $report->client->representative->phones()->whereNotNull('telegram_id')->first()->telegram_id;
             if (! $telegramId) {
                 continue;
             }

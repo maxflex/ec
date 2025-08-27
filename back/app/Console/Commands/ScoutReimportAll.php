@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\Client;
-use App\Models\ClientParent;
 use App\Models\Contract;
+use App\Models\Representative;
 use App\Models\Request;
 use App\Models\Teacher;
 use Illuminate\Console\Command;
@@ -35,7 +35,7 @@ class ScoutReimportAll extends Command
             Request::class,
             Teacher::class,
             Client::class,
-            ClientParent::class,
+            Representative::class,
             Contract::class,
         ];
 

@@ -2,10 +2,13 @@
 
 namespace App\Utils;
 
-use App\Enums\{CallState, CallType};
-use App\Events\{CallEvent, CallSummaryEvent};
-use App\Http\Resources\{CallAppAonResource, PersonResource};
-use App\Models\{Call, Client, ClientParent, Phone, Request, Teacher, User};
+use App\Enums\CallState;
+use App\Enums\CallType;
+use App\Events\CallEvent;
+use App\Events\CallSummaryEvent;
+use App\Http\Resources\PersonResource;
+use App\Models\Call;
+use App\Models\User;
 
 class Mango
 {
@@ -15,7 +18,7 @@ class Mango
     {
         $data = json_decode($json);
 
-//        logger('MANGO', compact('event', 'data'));
+        //        logger('MANGO', compact('event', 'data'));
 
         /**
          * "call"          => eventCall
@@ -24,7 +27,7 @@ class Mango
          */
         $fn = str()->camel(implode('-', [
             'event',
-            ...explode('/', $event)
+            ...explode('/', $event),
         ]));
 
         if (method_exists(self::class, $fn)) {
@@ -60,7 +63,7 @@ class Mango
                 }
                 break;
 
-            // исходящий
+                // исходящий
             case CallState::connected:
                 if (isset($data->from->extension)) {
                     $number = $data->to->number;
@@ -87,10 +90,10 @@ class Mango
                 cache()->tags('calls')->put($data->entry_id, $params, now()->addHour());
                 break;
 
-            // звонок завершён
-            // 1110 Вызов завершен вызывающим абонентом
-            // 1120 Вызов завершен вызываемым абонентом
-            // 1163 Превышено время ожидания в очереди удержания
+                // звонок завершён
+                // 1110 Вызов завершен вызывающим абонентом
+                // 1120 Вызов завершен вызываемым абонентом
+                // 1163 Превышено время ожидания в очереди удержания
             case CallState::disconnected:
                 if (in_array($data->disconnect_reason, [1110, 1120, 1163])) {
                     $params = cache()->tags('calls')->get($data->entry_id);
@@ -148,8 +151,7 @@ class Mango
     public static function eventRecordAdded($data)
     {
         Call::whereId($data->entry_id)->update([
-            'recording' => $data->recording_id
+            'recording' => $data->recording_id,
         ]);
     }
-
 }

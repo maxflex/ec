@@ -63,9 +63,9 @@ nextTick(loadData)
         <div>
           <div>представитель</div>
           <div class="text-truncate">
-            {{ formatName(client.parent) }}
-            <div v-if="client.parent.phones" class="mt-5">
-              <PhoneList :items="client.parent.phones" show-icons />
+            {{ formatName(client.representative) }}
+            <div v-if="client.representative.phones" class="mt-5">
+              <PhoneList :items="client.representative.phones" show-icons />
             </div>
           </div>
         </div>
@@ -93,7 +93,6 @@ nextTick(loadData)
             variant="plain"
             @click="printSpravkaDialog?.open(client.id)"
           />
-          <PreviewMode :client-id="client.id" />
           <v-btn
             icon="$edit"
             :size="48"

@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Client;
-use App\Models\ClientParent;
+use App\Models\Representative;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -15,10 +15,10 @@ class PassesPermanentResource extends JsonResource
 
         $extra = $entityType !== Client::class ? [] : [
             'directions' => $this->directions,
-            'parent' => extract_fields($this->parent, [
+            'representative' => extract_fields($this->representative, [
                 'first_name', 'last_name', 'middle_name',
             ], [
-                'entity_type' => ClientParent::class,
+                'entity_type' => Representative::class,
             ]),
         ];
 

@@ -36,7 +36,7 @@ function removePhone(p: PhoneResource) {
         v-model="p.number"
         v-maska="phoneMask"
         :label="p.telegram_id ? 'Телефон / Телеграм' : 'Телефон'"
-        :disabled="disabled"
+        :disabled="disabled || p.id > 0"
         :class="{
           'phone-editor--has-telegram': !!p.telegram_id,
         }"

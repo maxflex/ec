@@ -4,9 +4,9 @@ use App\Enums\Company;
 use App\Enums\ContractPaymentMethod;
 use App\Enums\OtherPaymentMethod;
 use App\Models\Client;
-use App\Models\ClientParent;
 use App\Models\ContractPayment;
 use App\Models\OtherPayment;
+use App\Models\Representative;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -206,7 +206,7 @@ function get_entity_type_key(string $entityType): string
     return match ($entityType) {
         Teacher::class => 'teachers',
         Client::class => 'students',
-        ClientParent::class => 'parents',
+        Representative::class => 'parents',
     };
 }
 
