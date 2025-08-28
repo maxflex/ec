@@ -140,7 +140,7 @@ function getId(item: AllPaymentResource) {
 .page-all-payments {
   .filters__inputs {
     & > div {
-      width: 220px !important;
+      width: 230px !important;
     }
   }
 }

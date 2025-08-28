@@ -1,21 +1,13 @@
 <script setup lang="ts">
+import type { GroupListResource, GroupResource } from '.'
 import { cloneDeep } from 'lodash-es'
+import { modelDefaults } from '.'
 
 const emit = defineEmits<{
   created: [g: GroupListResource]
   updated: [g: GroupResource]
   deleted: [g: GroupResource]
 }>()
-
-const modelDefaults: GroupResource = {
-  id: newId(),
-  year: currentAcademicYear(),
-  teachers: [],
-  zoom: {
-    id: null,
-    password: null,
-  },
-}
 
 const { dialog, width } = useDialog('default')
 const loading = ref(false)
@@ -133,9 +125,9 @@ defineExpose({ create, edit })
           />
         </div>
         <div>
-          <UiClearableSelect
+          <v-text-field
             v-model="group.level"
-            :items="[1, 2, 3]"
+            v-maska="{ mask: '*' }"
             label="Уровень группы"
           />
         </div>
