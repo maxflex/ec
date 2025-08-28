@@ -4,6 +4,7 @@ import type { AllPaymentResource } from '~/components/OtherPayment'
 
 interface Filters {
   contract_id?: number
+  company?: Company
   method: ContractPaymentMethod[]
   is_confirmed?: number
 }
@@ -62,8 +63,14 @@ function getId(item: AllPaymentResource) {
         density="comfortable"
       />
       <UiClearableSelect
+        v-model="filters.company"
+        label="Компания"
+        :items="selectItems(CompanyLabel)"
+        density="comfortable"
+      />
+      <UiClearableSelect
         v-model="filters.is_confirmed"
-        label="Подтверждение платежа"
+        label="Подтверждение"
         :items="yesNo()"
         density="comfortable"
       />
@@ -128,3 +135,13 @@ function getId(item: AllPaymentResource) {
   <OtherPaymentDialog ref="otherPaymentDialog" @updated="onUpdated" @deleted="onDeleted" />
   <ContractPaymentDialog ref="contractPaymentDialog" />
 </template>
+
+<style lang="scss">
+.page-all-payments {
+  .filters__inputs {
+    & > div {
+      width: 220px !important;
+    }
+  }
+}
+</style>
