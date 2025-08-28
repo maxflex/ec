@@ -14,10 +14,14 @@ interface SwampCountsResource {
   counts: Record<Field, number>
 }
 
+const route = useRoute()
+
 const filters = ref<SwampFilters>(loadFilters({
   year: currentAcademicYear(),
-  program: [],
+  program: route.query.program ? [route.query.program as Program] : [],
 }))
+
+const groupsCount = ref<number>()
 
 const sort = ref<{
   field: Field
@@ -55,6 +59,7 @@ const { items, indexPageData } = useIndex<SwampCountsResource>(
   `swamps`,
   filters,
   {
+    saveFilters: false,
     staticFilters: {
       counts: 1,
     },
@@ -63,6 +68,16 @@ const { items, indexPageData } = useIndex<SwampCountsResource>(
 
 function sum(field: Field) {
   return items.value.reduce((carry, x) => carry + x.counts[field], 0)
+}
+
+async function loadGroupsCount() {
+  const { data } = await useHttp<number>(`groups`, {
+    params: {
+      ...filters.value,
+      count: 1,
+    },
+  })
+  groupsCount.value = Number.parseInt(data.value!)
 }
 
 const sortedItems = computed(() => {
@@ -76,13 +91,20 @@ const sortedItems = computed(() => {
 })
 
 watch(filters.value, () => (sort.value = undefined))
+watch(filters.value, loadGroupsCount)
+
+nextTick(loadGroupsCount)
 </script>
 
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
       <SwampFilters v-model="filters" />
+      <div v-if="groupsCount !== undefined" class="text-gray">
+        групп: {{ groupsCount }}
+      </div>
     </template>
+
     <v-table height="calc(100vh - 81px)" class="swamp-counts">
       <thead>
         <tr>

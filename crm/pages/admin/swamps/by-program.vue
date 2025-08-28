@@ -7,7 +7,8 @@ type Field = 'active_no_group' |
   'finished_no_group' |
   'finished_in_group' |
   'exceeded_no_group' |
-  'exceeded_in_group'
+  'exceeded_in_group' |
+  'groups'
 
 interface SwampByProgramResource {
   program: Program
@@ -49,6 +50,7 @@ const tableFields: Array<{
   { field: 'finished_in_group', title: 'исполнено <br />в группе' },
   { field: 'exceeded_no_group', title: 'перевыполнено' },
   { field: 'exceeded_in_group', title: 'перевыполнено <br />в группе' },
+  { field: 'groups', title: 'групп' },
 ]
 
 const { items, indexPageData } = useIndex<SwampByProgramResource>(
@@ -113,7 +115,9 @@ watch(filters.value, () => (sort.value = undefined))
       <tbody>
         <tr v-for="item in sortedItems" :key="item.program">
           <td>
-            {{ ProgramLabel[item.program] }}
+            <RouterLink :to="{ name: 'swamps', query: { program: item.program } }">
+              {{ ProgramLabel[item.program] }}
+            </RouterLink>
           </td>
           <td v-for="{ field } in tableFields" :key="field" :class="`swamp-counts--${field}`" width="150">
             {{ formatPrice(item.counts[field]) }}

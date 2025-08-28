@@ -93,7 +93,12 @@ class SwampController extends Controller
         $data = $query->get()->groupBy('program');
         $result = collect();
         foreach ($data as $program => $d) {
-            $counts = [];
+            $counts = [
+                'groups' => Group::query()
+                    ->where('year', request()->input('year'))
+                    ->where('program', $program)
+                    ->count(),
+            ];
             foreach (CvpStatus::cases() as $status) {
                 $inGroup = 0;
                 $noGroup = 0;
