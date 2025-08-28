@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { SwampFilters } from '~/components/Swamp/Filters.vue'
-import { orderBy, sortBy } from 'lodash-es'
+import { orderBy } from 'lodash-es'
 
 type Field = 'active_no_group' |
   'active_in_group' |

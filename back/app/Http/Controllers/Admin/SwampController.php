@@ -45,6 +45,10 @@ class SwampController extends Controller
             return $this->counts($query);
         }
 
+        if ($request->has('by_program')) {
+            return $this->byProgram($query);
+        }
+
         if ($request->has('add_to_group')) {
             return $this->addToGroup($query, $request);
         }
@@ -74,6 +78,38 @@ class SwampController extends Controller
             }
             $result->push([
                 'client' => new PersonResource(Client::find($clientId)),
+                'counts' => $counts,
+            ]);
+        }
+
+        return paginate($result);
+    }
+
+    /**
+     * Болота по программе /swamps/by-program
+     */
+    private function byProgram($query)
+    {
+        $data = $query->get()->groupBy('program');
+        $result = collect();
+        foreach ($data as $program => $d) {
+            $counts = [];
+            foreach (CvpStatus::cases() as $status) {
+                $inGroup = 0;
+                $noGroup = 0;
+                foreach ($d->where('status', $status->value)->values() as $e) {
+                    if ($e->clientGroup) {
+                        $inGroup++;
+                    } else {
+                        $noGroup++;
+                    }
+                }
+
+                $counts[$status->value.'_in_group'] = $inGroup;
+                $counts[$status->value.'_no_group'] = $noGroup;
+            }
+            $result->push([
+                'program' => $program,
                 'counts' => $counts,
             ]);
         }
