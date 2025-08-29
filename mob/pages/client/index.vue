@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const router = useRouter()
-const { rememberUser, isPreviewMode } = useAuthStore()
+const { user, isPreviewMode } = useAuthStore()
 const showGreeting = ref(false)
 
 async function redirect() {
@@ -25,7 +25,7 @@ nextTick(async () => {
   <v-fade-transition>
     <div v-if="showGreeting" class="client-greeting">
       <UiPageTitle>
-        {{ rememberUser!.first_name }}, здравствуйте!
+        {{ user!.first_name }}, здравствуйте!
       </UiPageTitle>
       <p>
         В этом личном кабинете вы сможете видеть:

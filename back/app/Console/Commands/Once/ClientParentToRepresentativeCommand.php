@@ -14,7 +14,7 @@ class ClientParentToRepresentativeCommand extends Command
 
     public function handle(): void
     {
-        foreach (['phones', 'telegram_messages'] as $table) {
+        foreach (['phones', 'telegram_messages', 'pass_logs'] as $table) {
             DB::table($table)
                 ->where('entity_type', 'App\Models\ClientParent')
                 ->update([
