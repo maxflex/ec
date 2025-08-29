@@ -55,7 +55,11 @@ const router = useRouter()
       <span v-else-if="item.associated_clients.length === 0" class="text-gray">
         нет клиента
       </span>
-      <UiPerson v-else-if="item.associated_clients.length === 1" :item="item.associated_clients[0]" class="text-black" />
+      <template v-else-if="item.associated_clients.length <= 2">
+        <div v-for="c in item.associated_clients" :key="c.id" class="text-truncate">
+          <UiPerson :item="c" class="text-black" />
+        </div>
+      </template>
       <template v-else>
         {{ item.associated_clients.length }} клиента
       </template>
