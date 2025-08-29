@@ -18,6 +18,12 @@ class Kernel extends ConsoleKernel
         $schedule->command('notification:unplanned-or-cancelled')->dailyAt('20:00');
         $schedule->command('notification:pass-notification')->dailyAt('20:30');
 
+        // $schedule->command('notification:first-lesson-today')
+        //     ->everyTenMinutes()
+        //     ->between('08:00', '20:00'); // чтобы не гонять по ночам
+        //
+        // $schedule->command('notification:first-lesson-tomorrow')->dailyAt('21:00');
+
         $schedule->command('app:check-errors')->dailyAt('03:00');
         $schedule->command('app:send-telegram-messages')->everyMinute();
         $schedule->command('app:sync-sms')->hourlyAt(30);

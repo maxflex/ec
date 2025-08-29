@@ -14,6 +14,11 @@ enum TelegramTemplate: string
     case paymentReminder = 'paymentReminder';
     case unplannedOrCancelled = 'unplannedOrCancelled';
 
+    // уведомления перед первым занятием
+    case firstLessonDayAfterTomorrow = 'firstLessonDayAfterTomorrow';    // за 2 дня
+    case firstLessonTomorrow = 'firstLessonTomorrow';    // за 1 день
+    case firstLessonToday = 'firstLessonToday';  // за 20 минут
+
     public static function tryFromId($templateId): ?self
     {
         $templateId = (int) $templateId;
