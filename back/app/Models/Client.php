@@ -293,12 +293,4 @@ class Client extends Person implements HasSchedule
     {
         return intval($this->contracts()->max('year') ?? 1000);
     }
-
-    public function getLastSeenAtAttribute(): ?string
-    {
-        return $this->logs
-            ->whereNull('client_parent_id')
-            ->whereNull('emulation_user_id')
-            ->max('created_at');
-    }
 }

@@ -31,7 +31,7 @@ class ControlLkResource extends JsonResource
         $representativeTgLogsCount = 0;
 
         foreach ($this->logs as $log) {
-            if ($log->client_parent_id) {
+            if ($log->entity_type === Representative::class) {
                 $representativeLogsCount++;
                 if ($log->device == LogDevice::telegram) {
                     $representativeTgLogsCount++;

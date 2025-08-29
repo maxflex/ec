@@ -31,14 +31,6 @@ class Representative extends Person
         return $this->client->getSearchWeight() / 2;
     }
 
-    public function getLastSeenAtAttribute(): ?string
-    {
-        return $this->client->logs
-            ->where('client_parent_id', $this->id)
-            ->whereNull('emulation_user_id')
-            ->max('created_at');
-    }
-
     public function makeAllSearchableUsing(Builder $query): Builder
     {
         return $query
