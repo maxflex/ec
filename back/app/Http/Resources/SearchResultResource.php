@@ -3,8 +3,8 @@
 namespace App\Http\Resources;
 
 use App\Models\Client;
-use App\Models\ClientParent;
 use App\Models\Contract;
+use App\Models\Representative;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -36,7 +36,7 @@ class SearchResultResource extends JsonResource
                 ];
                 break;
 
-            case ClientParent::class:
+            case Representative::class:
                 $client = $model->client;
 
             case Client::class:

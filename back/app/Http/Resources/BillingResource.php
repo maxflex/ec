@@ -15,20 +15,21 @@ class BillingResource extends JsonResource
     public function toArray(Request $request): array
     {
         $version = $this->versions[0];
+
         return extract_fields($this, [
-            'year', 'company'
+            'year', 'company',
         ], [
-            'parent' => new PersonResource($this->client->parent),
+            'representative' => new PersonResource($this->client->representative),
             'payments' => extract_fields_array($this->payments, [
-                'date', 'sum', 'is_return'
+                'date', 'sum', 'is_return',
             ]),
             'version' => extract_fields($version, [
-                'date'
+                'date',
             ], [
                 'payments' => extract_fields_array($version->payments, [
-                    'date', 'sum'
-                ])
-            ])
+                    'date', 'sum',
+                ]),
+            ]),
         ]);
     }
 }

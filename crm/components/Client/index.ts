@@ -1,6 +1,6 @@
 import type { ContractVersionResource } from '../ContractVersion'
 
-export interface ParentResource extends HasName, HasPhones {
+export interface RepresentativeResource extends HasName, HasPhones {
   id: number
   email?: string
   passport: {
@@ -30,7 +30,7 @@ export interface ClientResource extends PersonWithPhotoResource, HasPhones {
   directions: ClientDirections
   head_teacher_id: number | null
   head_teacher?: PersonResource
-  parent: ParentResource
+  representative: RepresentativeResource
   is_remote: boolean
   user?: PersonResource
   is_risk: boolean
@@ -64,7 +64,7 @@ export const modelDefaults: ClientResource = {
     number: null,
     birthdate: null,
   },
-  parent: {
+  representative: {
     id: newId(),
     first_name: null,
     last_name: null,

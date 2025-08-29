@@ -1,5 +1,5 @@
 @php use App\Enums\ClientLessonStatus; @endphp
-{{ $clientLesson->contractVersionProgram->contractVersion->contract->client->parent->formatName('first-middle') }}, здравствуйте.
+{{ $clientLesson->contractVersionProgram->contractVersion->contract->client->representative->formatName('first-middle') }}, здравствуйте.
 
 {{ $clientLesson->contractVersionProgram->contractVersion->contract->client->formatName() }} @if ($clientLesson->status === ClientLessonStatus::absent)
     пропустил(а) урок

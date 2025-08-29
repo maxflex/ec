@@ -20,7 +20,7 @@ class ClientLessonObserver
         ])) {
             TelegramMessage::sendTemplate(
                 TelegramTemplate::clientLessonStatus,
-                $clientLesson->contractVersionProgram->contractVersion->contract->client->parent,
+                $clientLesson->contractVersionProgram->contractVersion->contract->client->representative,
                 ['clientLesson' => $clientLesson]
             );
         }

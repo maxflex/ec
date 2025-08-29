@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Once;
 
-use App\Models\ClientParent;
+use App\Models\Representative;
 use App\Models\TelegramMessage;
 use App\Utils\MagicLink;
 use Illuminate\Console\Command;
@@ -16,19 +16,19 @@ class NotifyLkCommand extends Command
 
     public function handle(): void
     {
-        $parents = ClientParent::canLogin()->get();
+        $representatives = Representative::canLogin()->get();
         $sentTo = collect();
         $host = 'https://lk.ege-centr.ru/login?link=';
         // $host = is_localhost() ? 'http://localhost:3000/login?link=' : 'https://lk.ege-centr.ru/login?link=';
 
-        $bar = $this->output->createProgressBar($parents->count());
-        foreach ($parents as $parent) {
-            if ($parent->last_seen_at !== null) {
+        $bar = $this->output->createProgressBar($representatives->count());
+        foreach ($representatives as $representative) {
+            if ($representative->last_seen_at !== null) {
                 $bar->advance();
 
                 continue;
             }
-            foreach ($parent->phones as $phone) {
+            foreach ($representative->phones as $phone) {
                 $link = MagicLink::create($phone);
                 $magicLink = $host.$link;
                 // $replyMarkup = new InlineKeyboardMarkup([[[
@@ -36,11 +36,11 @@ class NotifyLkCommand extends Command
                 //     'url' => $magicLink,
                 // ]]]);
                 TelegramMessage::send($phone, view('once.notify-lk', [
-                    'parent' => $parent,
+                    'representative' => $representative,
                     'magicLink' => $magicLink,
                 ]));
             }
-            $sentTo->push($parent->id);
+            $sentTo->push($representative->id);
             $bar->advance();
         }
         $bar->finish();

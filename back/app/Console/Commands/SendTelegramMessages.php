@@ -59,7 +59,7 @@ class SendTelegramMessages extends Command
                 }
                 if (in_array(SendTo::parents->value, $list->send_to)) {
                     $toSend = $toSend->merge(
-                        $client->parent->phones()->get()
+                        $client->representative->phones()->get()
                     );
                 }
             }

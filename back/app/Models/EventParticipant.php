@@ -42,7 +42,7 @@ class EventParticipant extends Model
         $phone = Phone::find($data->phone_id);
         $query = EventParticipant::where('event_id', $data->event_id);
 
-        if ($phone->entity_type === ClientParent::class) {
+        if ($phone->entity_type === Representative::class) {
             $query->where([
                 ['entity_type', Client::class],
                 ['entity_id', $phone->entity->client->id],

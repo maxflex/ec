@@ -3,8 +3,8 @@
 namespace App\Http\Resources;
 
 use App\Models\Client;
-use App\Models\ClientParent;
 use App\Models\Pass;
+use App\Models\Representative;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -35,7 +35,7 @@ class SecurityPassResource extends JsonResource
             'name' => $this->formatName('full'),
             'type' => match ($class) {
                 Client::class => 'client',
-                ClientParent::class => 'parent',
+                Representative::class => 'representative',
                 Teacher::class => 'teacher',
                 User::class => 'user',
             },

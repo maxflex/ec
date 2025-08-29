@@ -62,15 +62,14 @@ class Log extends Model
             if (auth()->user()) {
                 $log->entity_type = get_class(auth()->user());
                 $log->entity_id = auth()->id();
+                $log->number = auth()->user()->phone->number;
+                $log->telegram_id = auth()->user()->phone->telegram_id;
             }
             if (request()->header('Preview')) {
                 $user = Session::get(request()->header('Preview'));
                 if ($user) {
                     $log->emulation_user_id = $user->id;
                 }
-            }
-            if (request()->header('Client-Parent-Id')) {
-                $log->client_parent_id = request()->header('Client-Parent-Id');
             }
             $log->device = request()->header('Telegram')
                 ? LogDevice::telegram
@@ -83,11 +82,6 @@ class Log extends Model
     public function entity(): MorphTo
     {
         return $this->morphTo();
-    }
-
-    public function clientParent(): BelongsTo
-    {
-        return $this->belongsTo(ClientParent::class);
     }
 
     public function emulationUser(): BelongsTo

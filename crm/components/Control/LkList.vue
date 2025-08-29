@@ -32,31 +32,31 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
           <ClientDirections :item="item.directions" />
         </div>
       </div>
-      <div class="control-lk__item-parent">
+      <div class="control-lk__item-representative">
         <div class="control-lk__name">
-          <UiPerson :item="item.parent" />
+          <UiPerson :item="item.representative" />
         </div>
 
         <div class="control-lk__phones">
-          <PhoneList :items="item.parent.phones" />
+          <PhoneList :items="item.representative.phones" />
         </div>
         <div class="control-lk__last-seen-at">
-          <UiLastSeenAt :item="item.parent" />
+          <UiLastSeenAt :item="item.representative" />
         </div>
         <div class="control-lk__actions">
-          {{ item.parent.logs_count }} /
+          {{ item.representative.logs_count }} /
           <span class="text-secondary">
-            {{ item.parent.tg_logs_count }}
+            {{ item.representative.tg_logs_count }}
           </span>
         </div>
         <!-- <div class="control-lk__reports-read">
-          {{ item.parent.reports_published_count }} /
-          {{ item.parent.reports_read_count }}
+          {{ item.representative.reports_published_count }} /
+          {{ item.representative.reports_read_count }}
         </div> -->
         <div>
           отчеты:
-          {{ item.parent.reports_read_count }} /
-          {{ item.parent.reports_published_count }}
+          {{ item.representative.reports_read_count }} /
+          {{ item.representative.reports_published_count }}
         </div>
       </div>
       <div class="control-lk__comment">

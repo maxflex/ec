@@ -6,7 +6,7 @@ use App\Enums\LogDevice;
 use App\Enums\ReportDelivery;
 use App\Enums\ReportStatus;
 use App\Models\Client;
-use App\Models\ClientParent;
+use App\Models\Representative;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,14 +27,14 @@ class ControlLkResource extends JsonResource
 
         $logsCount = 0;
         $tgLogsCount = 0;
-        $parentLogsCount = 0;
-        $parentTgLogsCount = 0;
+        $representativeLogsCount = 0;
+        $representativeTgLogsCount = 0;
 
         foreach ($this->logs as $log) {
             if ($log->client_parent_id) {
-                $parentLogsCount++;
+                $representativeLogsCount++;
                 if ($log->device == LogDevice::telegram) {
-                    $parentTgLogsCount++;
+                    $representativeTgLogsCount++;
                 }
             } else {
                 $logsCount++;
@@ -52,14 +52,14 @@ class ControlLkResource extends JsonResource
             'tg_logs_count' => $tgLogsCount,
             'phones' => PhoneResource::collection($this->phones),
             'entity_type' => Client::class,
-            'parent' => extract_fields($this->parent, [
+            'representative' => extract_fields($this->representative, [
                 'first_name', 'last_name', 'middle_name',
                 'last_seen_at',
             ], [
-                'entity_type' => ClientParent::class,
-                'logs_count' => $parentLogsCount,
-                'tg_logs_count' => $parentTgLogsCount,
-                'phones' => PhoneResource::collection($this->parent->phones),
+                'entity_type' => Representative::class,
+                'logs_count' => $representativeLogsCount,
+                'tg_logs_count' => $representativeTgLogsCount,
+                'phones' => PhoneResource::collection($this->representative->phones),
                 'reports_read_count' => $reportsReadCount,
                 'reports_published_count' => $reportsPublishedCount,
             ]),

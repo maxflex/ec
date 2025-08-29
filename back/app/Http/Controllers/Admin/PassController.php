@@ -45,7 +45,7 @@ class PassController extends Controller
         $query = $entity::canLogin()->orderByRaw('last_name, first_name');
 
         if ($entity === Client::class) {
-            $query->with(['parent', 'contracts.versions.programs']);
+            $query->with(['representative', 'contracts.versions.programs']);
         }
 
         $data = PassesPermanentResource::collection($query->get());

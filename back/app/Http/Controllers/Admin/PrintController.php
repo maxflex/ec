@@ -89,9 +89,9 @@ class PrintController extends Controller
                 $contract->id,
                 Carbon::parse($contract->date)->format('d.m.Y')
             ),
-            'LastName' => $contract->client->parent->last_name,
-            'FirstName' => $contract->client->parent->first_name,
-            'MiddleName' => $contract->client->parent->middle_name,
+            'LastName' => $contract->client->representative->last_name,
+            'FirstName' => $contract->client->representative->first_name,
+            'MiddleName' => $contract->client->representative->middle_name,
         ]);
 
         $qrValue = collect([

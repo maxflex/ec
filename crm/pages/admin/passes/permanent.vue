@@ -7,7 +7,7 @@ const entityTypeLabel = {
 
 interface PassesPermanentResource extends PersonResource {
   directions?: ClientDirections
-  parent?: PersonResource
+  representative?: PersonResource
 }
 
 interface Filters {
@@ -77,8 +77,8 @@ const itemsFiltered = computed<PassesPermanentResource[]>(() => {
       <div v-for="item in itemsFiltered" :key="item.id">
         <div style="width: 300px">
           <UiPerson :item="item" :no-link="filters.entity === EntityTypeValue.user" />
-          <div v-if="item.parent">
-            <UiPerson :item="item.parent" />
+          <div v-if="item.representative">
+            <UiPerson :item="item.representative" />
           </div>
         </div>
         <div>

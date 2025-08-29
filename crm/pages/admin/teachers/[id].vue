@@ -74,7 +74,7 @@ nextTick(loadData)
           </div>
         </div>
         <div class="panel-actions">
-          <PreviewMode :teacher-id="teacher.id" />
+          <!-- <PreviewMode :teacher-id="teacher.id" /> -->
           <v-btn
             icon="$edit"
             :size="48"

@@ -1,8 +1,8 @@
 <?php
 
 use App\Models\Client;
-use App\Models\ClientParent;
 use App\Models\Contract;
+use App\Models\Representative;
 use App\Models\Request;
 use App\Models\Teacher;
 
@@ -212,7 +212,7 @@ return [
             Teacher::class => $schema,
             Client::class => $schema,
             Request::class => $schema,
-            ClientParent::class => $schema,
+            Representative::class => $schema,
             Contract::class => $schema,
         ],
     ],

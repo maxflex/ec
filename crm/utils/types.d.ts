@@ -416,7 +416,7 @@ declare global {
     id: number
     year: Year
     company: Company
-    parent: PersonResource
+    representative: PersonResource
     payments: Array<{
       id: number
       date: string

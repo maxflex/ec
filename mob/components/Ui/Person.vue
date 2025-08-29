@@ -16,8 +16,8 @@ switch (item.entity_type) {
     format = teacherFormat ?? 'initials'
     break
 
-  case EntityTypeValue.clientParent:
-    to = 'parents-id'
+  case EntityTypeValue.representative:
+    to = 'representatives-id'
     format = 'last-first'
     break
 

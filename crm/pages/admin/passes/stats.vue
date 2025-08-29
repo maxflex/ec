@@ -14,7 +14,7 @@ interface PassStats {
 
 const availableEntityTypes = [
   EntityTypeValue.client,
-  EntityTypeValue.clientParent,
+  EntityTypeValue.representative,
   EntityTypeValue.teacher,
   EntityTypeValue.user,
 ] as EntityType[]

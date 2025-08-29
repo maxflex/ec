@@ -3,8 +3,8 @@
 namespace App\Utils;
 
 use App\Models\Client;
-use App\Models\ClientParent;
 use App\Models\Phone;
+use App\Models\Representative;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -20,19 +20,17 @@ class Session
      */
     public static function logIn(Phone $phone): string
     {
-        // Вход родителя приравниваем ко входу ученика
-        if ($phone->entity_type === ClientParent::class) {
-            $phone = $phone->entity->client->phones()->first();
-        }
-
         $hash = Hash::make($phone->number);
+
         // App\Models\User => admin
-        // App\Models\Client = client
-        // App\Models\Teacher = teacher
+        // App\Models\Client => client
+        // App\Models\Representative => representative
+        // App\Models\Teacher => teacher
         $entityString = match ($phone->entity_type) {
             User::class => 'admin',
             default => strtolower(class_basename($phone->entity_type))
         };
+
         $token = implode('|', [$entityString, $hash]);
         Redis::set(
             self::cacheKey($token),
@@ -54,7 +52,7 @@ class Session
         $hour = 60 * 60;
 
         return match ($phone->entity_type) {
-            Client::class, ClientParent::class => $hour * 24 * 30,
+            Client::class, Representative::class => $hour * 24 * 30,
             Teacher::class, User::class => $hour * 3
         };
     }
@@ -79,6 +77,11 @@ class Session
         }
         Redis::expire(self::cacheKey($token), self::getDuration($phone));
 
-        return $phone->entity;
+        $user = $phone->entity;
+
+        // хак, чтобы можно было получить реальный номер телефона, под которым авторизован пользователь
+        $user->phone = $phone;
+
+        return $user;
     }
 }

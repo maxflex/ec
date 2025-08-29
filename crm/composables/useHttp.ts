@@ -5,33 +5,30 @@ export function useHttp<T = any>(
   path: string,
   options: UseFetchOptions<T> = {},
 ) {
-  const { getCurrentToken, clearCurrentToken, getOriginalToken, isPreviewMode, clientParentId } = useAuthStore()
+  const { getCurrentToken, clearCurrentToken, getOriginalToken, isPreviewMode } = useAuthStore()
   const { public: { baseUrl, env } } = useRuntimeConfig()
   const token = getCurrentToken().value
-
   let url = baseUrl
 
+  const headers: Record<string, string> = {
+    Accept: 'application/json',
+    ...(options.headers as Record<string, string> || {}),
+  }
+
   if (token) {
-    options.headers = { Authorization: `Bearer ${token}` }
+    headers.Authorization = `Bearer ${token}`
+
     if (!path.startsWith('pub/')) {
       url += `${token.split('|')[0]}/`
     }
   }
 
-  const headers: any = {
-    Accept: 'application/json',
-  }
-
-  if (token) {
-    headers.Authorization = `Bearer ${token}`
-  }
-
   if (isPreviewMode) {
-    headers.Preview = getOriginalToken()
-  }
+    const originalToken = getOriginalToken()
 
-  if (clientParentId) {
-    headers['Client-Parent-Id'] = clientParentId
+    if (originalToken) {
+      headers.Preview = originalToken
+    }
   }
 
   if (env === 'local') {

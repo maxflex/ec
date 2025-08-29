@@ -63,7 +63,7 @@ class Call extends Model
                 END DESC
             ', [
                 Client::class,
-                ClientParent::class,
+                Representative::class,
                 Teacher::class,
                 Request::class,
             ])

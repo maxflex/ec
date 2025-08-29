@@ -194,59 +194,59 @@ defineExpose({ create, edit })
         </div>
         <div class="double-input">
           <v-text-field
-            v-model="item.parent.last_name"
+            v-model="item.representative.last_name"
             label="Фамилия"
           />
           <v-text-field
-            v-model="item.parent.first_name"
+            v-model="item.representative.first_name"
             label="Имя"
           />
           <v-text-field
-            v-model="item.parent.middle_name"
+            v-model="item.representative.middle_name"
             label="Отчество"
           />
         </div>
         <div class="double-input">
           <v-text-field
-            v-model="item.parent.passport.series"
+            v-model="item.representative.passport.series"
             label="Серия паспорта"
           />
           <v-text-field
-            v-model="item.parent.passport.number"
+            v-model="item.representative.passport.number"
             label="Номер паспорта"
           />
           <v-text-field
-            v-model="item.parent.passport.code"
+            v-model="item.representative.passport.code"
             label="Код подразделения"
           />
         </div>
         <div class="double-input">
           <UiDateInput
-            v-model="item.parent.passport.issued_date"
+            v-model="item.representative.passport.issued_date"
             label="Дата выдачи паспорта"
             manual
-            :error="errors.has('parent.passport.issued_date')"
+            :error="errors.has('representative.passport.issued_date')"
           />
           <v-text-field
-            v-model="item.parent.email"
+            v-model="item.representative.email"
             label="E-mail"
           />
         </div>
 
         <v-textarea
-          v-model="item.parent.passport.issued_by"
+          v-model="item.representative.passport.issued_by"
           label="Кем выдан"
           no-resize
           rows="3"
         />
         <v-textarea
-          v-model="item.parent.passport.address"
+          v-model="item.representative.passport.address"
           label="Адрес регистрации"
           no-resize
           rows="3"
         />
         <v-textarea
-          v-model="item.parent.passport.fact_address"
+          v-model="item.representative.passport.fact_address"
           label="Фактический адрес"
           no-resize
           rows="3"
@@ -259,7 +259,7 @@ defineExpose({ create, edit })
             :items="selectItems(HeardAboutUsLabel)"
           />
         </div>
-        <PhoneEditor v-model="item.parent.phones" edit-telegram />
+        <PhoneEditor v-model="item.representative.phones" edit-telegram />
       </div>
     </div>
   </v-dialog>

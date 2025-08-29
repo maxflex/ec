@@ -3,19 +3,19 @@ import { cloneDeep } from 'lodash-es'
 
 const modelDefaults: TelegramListResource = {
   id: newId(),
-  send_to: ['students', 'parents', 'teachers'],
+  send_to: ['students', 'representatives', 'teachers'],
   is_confirmable: false,
   text: '',
   status: 'scheduled',
   recipients: {
     students: [],
-    parents: [],
+    representatives: [],
     teachers: [],
   },
   result: {
     students: [],
     teachers: [],
-    parents: [],
+    representatives: [],
   },
 }
 

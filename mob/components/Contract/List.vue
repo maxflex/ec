@@ -4,22 +4,6 @@ import { mdiChevronRight } from '@mdi/js'
 const { items } = defineProps<{
   items: ContractVersionListResource[]
 }>()
-
-const { logIn } = useAuthStore()
-
-async function preview(item: ContractVersionListResource) {
-  const { data } = await useHttp<TokenResponse>(
-    `preview`,
-    {
-      method: 'post',
-      body: {
-        client_id: item.contract.client.id,
-      },
-    },
-  )
-  const { token, user } = data.value!
-  logIn(user, token, true)
-}
 </script>
 
 <template>
@@ -29,7 +13,6 @@ async function preview(item: ContractVersionListResource) {
       :id="`clients-${item.id}`"
       :key="item.id"
       class="pr-2"
-      @click="preview(item)"
     >
       <div style="width: 140px">
         {{ formatName(item.contract.client) }}

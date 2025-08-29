@@ -12,7 +12,7 @@ const filterDefaults: Filters = {
 
 const receivers = selectItems({
   'App\\Models\\Client': 'Ученик',
-  'App\\Models\\ClientParent': 'Представитель',
+  'App\\Models\\Representative': 'Представитель',
   'App\\Models\\Teacher': 'Преподаватель',
 })
 

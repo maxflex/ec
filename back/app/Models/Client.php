@@ -46,9 +46,9 @@ class Client extends Person implements HasSchedule
         return $this->hasMany(ClientTest::class);
     }
 
-    public function parent(): HasOne
+    public function representative(): HasOne
     {
-        return $this->hasOne(ClientParent::class);
+        return $this->hasOne(Representative::class);
     }
 
     public function user(): BelongsTo
@@ -74,7 +74,7 @@ class Client extends Person implements HasSchedule
      */
     public function getRequestsAttribute(): array
     {
-        $allNumbers = $this->getPhoneNumbers()->merge($this->parent->getPhoneNumbers());
+        $allNumbers = $this->getPhoneNumbers()->merge($this->representative->getPhoneNumbers());
 
         return Request::whereHas('phones', fn ($q) => $q->whereIn('number', $allNumbers))->get()->all();
     }

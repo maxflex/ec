@@ -27,7 +27,7 @@ class Phone extends Model
             ->whereIn('entity_type', [
                 User::class,
                 Client::class,
-                ClientParent::class,
+                Representative::class,
                 Teacher::class,
             ])
             ->whereNumber($number)
