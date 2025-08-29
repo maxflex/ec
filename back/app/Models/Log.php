@@ -16,6 +16,7 @@ class Log extends Model
 
     protected $fillable = [
         'table', 'row_id', 'data', 'type', 'entity_type', 'entity_id',
+        'telegram_id', 'number',
     ];
 
     protected $casts = [

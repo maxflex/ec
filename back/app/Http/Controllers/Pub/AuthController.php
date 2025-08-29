@@ -67,6 +67,8 @@ class AuthController extends Controller
         Log::create([
             'entity_type' => $phone->entity_type,
             'entity_id' => $phone->entity_id,
+            'number' => $phone->number,
+            'telegram_id' => $phone->telegram_id,
             'type' => LogType::auth,
             'data' => [
                 ...$meta,
