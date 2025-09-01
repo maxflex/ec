@@ -87,10 +87,14 @@ class ContractVersionController extends Controller
     {
         $contractVersion->update($request->all());
         sync_relation($contractVersion, 'programs', $request->all());
-        foreach ($contractVersion->programs as $index => $program) {
-            sync_relation($program, 'prices', $request->programs[$index]);
-            $program->updateStatus();
+
+        $requestPrograms = collect($request->programs);
+        foreach ($contractVersion->programs as $cvp) {
+            $requestProgram = $requestPrograms->firstWhere('program', $cvp->program);
+            sync_relation($cvp, 'prices', $requestProgram);
+            $cvp->updateStatus();
         }
+
         sync_relation($contractVersion, 'payments', $request->all());
 
         $contractVersion->contract->update([
