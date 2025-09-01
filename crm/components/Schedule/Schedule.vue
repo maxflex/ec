@@ -30,7 +30,7 @@ const { group, teacherId, clientId, programFilter, headTeacher } = defineProps<{
 const selectedProgram = ref<Program>()
 const selectedYear = ref<Year>()
 const hideEmptyDates = ref<number>(1)
-const { user, isTeacher, isClient } = useAuthStore()
+const { user, isTeacher, isStudent } = useAuthStore()
 const isMassEditable = user?.entity_type === EntityTypeValue.user && group
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const params = {
@@ -258,7 +258,7 @@ function cancelMassEdit() {
 }
 
 const lessonComponent = (function () {
-  if (isClient) {
+  if (isStudent) {
     console.log('LessonItemHeadTeacher')
     return LessonItemClientLK
   }

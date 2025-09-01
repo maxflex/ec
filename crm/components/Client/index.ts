@@ -57,7 +57,7 @@ export const modelDefaults: ClientResource = {
   photo_url: null,
   is_remote: false,
   is_risk: false,
-  entity_type: EntityTypeValue.client,
+  entity_type: EntityTypeValue.student,
   mark_sheet: null,
   passport: {
     series: null,

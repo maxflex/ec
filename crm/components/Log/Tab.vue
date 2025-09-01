@@ -11,7 +11,7 @@ const { items, indexPageData } = useIndex<LogResource>(
   {
     tabName,
     staticFilters: {
-      entity_type: EntityTypeValue.client,
+      entity_type: EntityTypeValue.student,
       entity_id: clientId,
     },
   },

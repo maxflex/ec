@@ -13,7 +13,7 @@ interface PassStats {
 }
 
 const availableEntityTypes = [
-  EntityTypeValue.client,
+  EntityTypeValue.student,
   EntityTypeValue.representative,
   EntityTypeValue.teacher,
   EntityTypeValue.user,

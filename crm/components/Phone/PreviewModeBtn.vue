@@ -19,7 +19,7 @@ async function enter() {
 }
 
 const isPreviewModeAvailable = [
-  EntityTypeValue.client,
+  EntityTypeValue.student,
   EntityTypeValue.representative,
   EntityTypeValue.teacher,
 ].includes(item.entity_type)

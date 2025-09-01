@@ -363,7 +363,7 @@ export const MonthLabelShort = {
 
 export const EntityTypeValue = {
   request: 'App\\Models\\Request',
-  client: 'App\\Models\\Client',
+  student: 'App\\Models\\Client',
   representative: 'App\\Models\\Representative',
   contract: 'App\\Models\\Contract',
   teacher: 'App\\Models\\Teacher',
@@ -606,7 +606,7 @@ export const InstructionStatusLabel = {
 }
 
 export const RecepientLabel = {
-  clients: 'Клиенты',
+  students: 'Ученики',
   teachers: 'Преподаватели',
 }
 

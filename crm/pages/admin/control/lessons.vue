@@ -57,7 +57,7 @@ function showPercent(item: Item, field: Field): string {
     </template>
     <template #buttons>
       <UiQuestionTooltip>
-        На данной странице отображаются клиенты, допущенные ко входу в личный кабинет.
+        На данной странице отображаются ученики, допущенные ко входу в личный кабинет.
         Доступ закрывается 30 июня {{ filters.year + 1 }} для договоров {{ YearLabel[filters.year] }} или в случае расторжения
       </UiQuestionTooltip>
     </template>
@@ -96,7 +96,7 @@ function showPercent(item: Item, field: Field): string {
                 :class="{ 'no-items': item.comments_count === 0 }"
                 :count="item.comments_count"
                 :entity-id="item.id"
-                :entity-type="EntityTypeValue.client"
+                :entity-type="EntityTypeValue.student"
                 extra
               />
             </div>
