@@ -8,6 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
   const previewToken = useCookie('preview-token')
   const isAdmin = ref(false)
   const isClient = ref(false)
+  const isRepresentative = ref(false)
   const isTeacher = ref(false)
   const isPreviewMode = !!previewToken.value
 
@@ -81,6 +82,7 @@ export const useAuthStore = defineStore('auth', () => {
       const entityType = data.value.entity_type
       isAdmin.value = entityType === EntityTypeValue.user
       isClient.value = entityType === EntityTypeValue.client
+      isRepresentative.value = entityType === EntityTypeValue.representative
       isTeacher.value = entityType === EntityTypeValue.teacher
       user.value = data.value
     }
@@ -91,6 +93,7 @@ export const useAuthStore = defineStore('auth', () => {
     rememberUser,
     isAdmin,
     isClient,
+    isRepresentative,
     isTeacher,
     isPreviewMode,
     logIn,

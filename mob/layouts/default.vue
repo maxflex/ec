@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const route = useRoute()
-const { user, isClient } = useAuthStore()
+const { user, isClient, isRepresentative } = useAuthStore()
 const { $isTgMiniApp } = useNuxtApp()
 
 const currentPageClass = computed(() => [
@@ -13,7 +13,7 @@ const currentPageClass = computed(() => [
 <template>
   <ClientOnly>
     <v-app>
-      <v-main v-if="isClient || user?.id === 5" :class="currentPageClass">
+      <v-main v-if="isClient || isRepresentative || user?.id === 5" :class="currentPageClass">
         <AppHeader />
         <NuxtPage />
       </v-main>
