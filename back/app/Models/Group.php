@@ -58,12 +58,20 @@ class Group extends Model implements HasSchedule
         );
     }
 
-    public function scopeWhereClient($query, $clientId)
+    public function scopeWhereStudent($query, $studentId)
     {
         $query->whereHas(
             'clientGroups.contractVersionProgram.contractVersion.contract',
-            fn ($q) => $q->where('client_id', $clientId)
+            fn ($q) => $q->where('student_id', $studentId)
         );
+    }
+
+    /**
+     * @deprecated use scopeWhereStudent
+     */
+    public function scopeWhereClient($query, $clientId)
+    {
+        return $this->scopeWhereStudent($query, $clientId);
     }
 
     /**

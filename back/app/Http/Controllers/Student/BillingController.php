@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Client;
+namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BillingResource;
@@ -11,8 +11,8 @@ class BillingController extends Controller
     public function __invoke()
     {
         $contracts = Contract::query()
-            ->where('client_id', auth()->id())
-            ->with('client.representative')
+            ->where('student_id', auth()->id())
+            ->with('student.representative')
             ->with(['payments' => fn ($q) => $q->where('is_confirmed', true)->orderBy('date')])
             ->with(
                 'versions',

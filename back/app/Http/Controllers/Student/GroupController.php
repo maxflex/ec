@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Client;
+namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\GroupListResource;
@@ -15,7 +15,7 @@ class GroupController extends Controller
 
     public function index(Request $request)
     {
-        $query = Group::whereClient(auth()->id())
+        $query = Group::whereStudent(auth()->id())
             ->withCount('lessons', 'clientGroups')
             ->latest('id');
 

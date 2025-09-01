@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Client;
+namespace App\Http\Controllers\Student;
 
 use App\Enums\ReportStatus;
 use App\Http\Controllers\Controller;
@@ -14,7 +14,7 @@ class ReportController extends Controller
     public function index(Request $request)
     {
         $query = Report::query()
-            ->where('client_id', auth()->id())
+            ->where('student_id', auth()->id())
             ->where('status', ReportStatus::published);
 
         return $this->handleIndexRequest($request, $query, ReportListResource::class);
@@ -26,7 +26,7 @@ class ReportController extends Controller
     public function show(Report $report)
     {
         abort_if($report->status !== ReportStatus::published, 404);
-        abort_if($report->client_id !== auth()->id(), 404);
+        abort_if($report->student_id !== auth()->id(), 404);
         $report->read();
 
         return new ReportResource($report);

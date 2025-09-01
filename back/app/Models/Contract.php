@@ -24,9 +24,17 @@ class Contract extends Model
         'company' => Company::class,
     ];
 
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class);
+    }
+
+    /**
+     * @deprecated use student()
+     */
     public function client(): BelongsTo
     {
-        return $this->belongsTo(Client::class);
+        return $this->student();
     }
 
     public function getActiveVersionAttribute(): ContractVersion
@@ -67,22 +75,22 @@ class Contract extends Model
     }
 
     /**
-     * @return array{to_pay: int, remainder: int, contract_payments: int, client_lessons: int}
+     * @return array{to_pay: int, remainder: int, contract_payments: int, student_lessons: int}
      */
     public function getBalancesAttribute(): array
     {
         $contractPayments = $this->payments->reduce(fn ($carry, $p) => $carry + $p->realSum, 0);
-        $clientLessons = intval($this->clientLessonsQuery()->sum('price'));
+        $studentLessons = intval($this->studentLessonsQuery()->sum('price'));
 
         return [
             'contract_payments' => $contractPayments,
-            'client_lessons' => $clientLessons,
+            'student_lessons' => $studentLessons,
             'to_pay' => $this->active_version->sum - $contractPayments,
-            'remainder' => $contractPayments - $clientLessons,
+            'remainder' => $contractPayments - $studentLessons,
         ];
     }
 
-    private function clientLessonsQuery()
+    private function studentLessonsQuery()
     {
         return ClientLesson::whereHas(
             'contractVersionProgram.contractVersion',
@@ -97,7 +105,7 @@ class Contract extends Model
 
     public function getBalance(): Balance
     {
-        $clientLessons = $this->clientLessonsQuery()->get();
+        $clientLessons = $this->studentLessonsQuery()->get();
 
         $balance = new Balance;
 

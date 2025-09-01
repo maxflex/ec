@@ -1,21 +1,21 @@
 <?php
 
-use App\Http\Controllers\Client\BillingController;
-use App\Http\Controllers\Client\ClientTestController;
-use App\Http\Controllers\Client\GradeController;
-use App\Http\Controllers\Client\GroupController;
-use App\Http\Controllers\Client\JournalController;
-use App\Http\Controllers\Client\LessonController;
-use App\Http\Controllers\Client\ReportController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\Pub\SbpController;
+use App\Http\Controllers\Student\BillingController;
+use App\Http\Controllers\Student\GradeController;
+use App\Http\Controllers\Student\GroupController;
+use App\Http\Controllers\Student\JournalController;
+use App\Http\Controllers\Student\LessonController;
+use App\Http\Controllers\Student\ReportController;
+use App\Http\Controllers\Student\StudentTestController;
 use App\Http\Controllers\TeethController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\VacationController;
 use Illuminate\Support\Facades\Route;
 
-Route::controller(ClientTestController::class)->prefix('student-tests')->group(function () {
+Route::controller(StudentTestController::class)->prefix('student-tests')->group(function () {
     Route::get('active', 'active');
     Route::post('start/{clientTest}', 'start');
     Route::post('finish', 'finish');
@@ -28,7 +28,7 @@ Route::apiResource('groups', GroupController::class)->only('index');
 Route::get('grades/journal', [GradeController::class, 'journal']);
 Route::apiResource('grades', GradeController::class)->only('index');
 Route::apiResource('reports', ReportController::class)->only(['index', 'show']);
-Route::apiResource('student-tests', ClientTestController::class)->only('index', 'show');
+Route::apiResource('student-tests', StudentTestController::class)->only('index', 'show');
 Route::get('journal', JournalController::class);
 Route::apiResource('logs', LogController::class)->only('store');
 Route::apiResource('vacations', VacationController::class)->only('index');

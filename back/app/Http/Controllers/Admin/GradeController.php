@@ -13,13 +13,14 @@ use Illuminate\Validation\Rule;
 class GradeController extends Controller
 {
     protected $filters = [
-        'equals' => ['year', 'program', 'client_id'],
+        'equals' => ['year', 'program', 'student_id'],
     ];
 
     public function index(Request $request)
     {
         $query = Grade::fakeQuery();
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, QuartersGradesResource::class);
     }
 
@@ -28,21 +29,23 @@ class GradeController extends Controller
         $request->validate([
             'id' => ['required'],
             'quarter' => [Rule::enum(Quarter::class)],
-            'grade' => ['required', 'numeric', 'gt:0']
+            'grade' => ['required', 'numeric', 'gt:0'],
         ]);
-        [$clientId, $year, $program] = explode('-', $request->id);
+        [$studentId, $year, $program] = explode('-', $request->id);
         $request->merge([
-            'client_id' => $clientId,
+            'student_id' => $studentId,
             'year' => $year,
-            'program' => $program
+            'program' => $program,
         ]);
         $grade = Grade::create($request->all());
+
         return new GradeResource($grade);
     }
 
     public function update(Grade $grade, Request $request)
     {
         $grade->update($request->all());
+
         return new GradeResource($grade);
     }
 
@@ -50,6 +53,7 @@ class GradeController extends Controller
     {
         $grade = Grade::fakeQuery()->whereId($id)->first();
         abort_if($grade === null, 404);
+
         return new QuartersGradesResource($grade);
     }
 
