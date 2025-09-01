@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { adminMenu, clientMenu } from './menu'
 
-const { isClient } = useAuthStore()
+const { isAdmin } = useAuthStore()
 
-const menu = isClient ? clientMenu : adminMenu
+const menu = isAdmin ? adminMenu : clientMenu
 const dialog = ref(false)
 const showMenu = ref(false)
 const isBurgerClosing = ref(false)
