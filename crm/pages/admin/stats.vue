@@ -24,6 +24,7 @@ const items = ref<StatsListResource[]>([])
 const totals = ref<number[]>([])
 const page = ref<number>(0)
 const refreshKey = ref<number>(0)
+const itemsReversed = computed(() => items.value.slice().reverse())
 
 let scrollContainer: HTMLElement | null = null
 
@@ -225,8 +226,8 @@ nextTick(() => statsDialog.value?.open())
           </template>
         </div>
       </template>
-      <StatsChartBar v-if="display === 'bar'" :key="refreshKey" :items="items.reverse()" :params="responseParams" />
-      <StatsChartYears v-if="display === 'years'" :key="refreshKey" :items="items.reverse()" :params="responseParams" />
+      <StatsChartBar v-if="display === 'bar'" :key="refreshKey" :items="itemsReversed" :params="responseParams" />
+      <StatsChartYears v-if="display === 'years'" :key="refreshKey" :items="itemsReversed" :params="responseParams" />
     </template>
   </div>
   <StatsDialog ref="statsDialog" @go="onGo" />
