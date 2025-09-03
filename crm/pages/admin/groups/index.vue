@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { GroupDialog } from '#build/components'
+import type { GroupListResource } from '~/components/Group'
 import type { GroupFilters } from '~/components/Group/Filters.vue'
 
 const filters = ref<GroupFilters>(loadFilters({

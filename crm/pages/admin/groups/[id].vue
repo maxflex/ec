@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { GroupDialog } from '#build/components'
+import type { GroupResource } from '~/components/Group'
 
 const { tabs, selectedTab, tabCounts, tabCountsExtra } = useTabs({
   schedule: 'расписание',

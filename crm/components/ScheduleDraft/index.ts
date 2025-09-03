@@ -1,3 +1,5 @@
+import type { GroupListResource } from '../Group'
+
 export const apiUrl = 'schedule-drafts'
 
 /**

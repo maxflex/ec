@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { GroupListResource } from '.'
+
 const { items, blurOthers } = defineProps<{
   items: GroupListResource[]
   /**
@@ -56,6 +58,12 @@ const { items, blurOthers } = defineProps<{
         <td>
           <div v-for="c in item.cabinets" :key="c">
             <CabinetWithCapacity :item="c" />
+          </div>
+        </td>
+        <td>
+          <div v-if="item.zoom && item.zoom.id">
+            {{ item.zoom.id }} <br />
+            {{ item.zoom.password }}
           </div>
         </td>
       </tr>

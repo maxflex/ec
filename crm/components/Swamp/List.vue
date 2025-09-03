@@ -73,7 +73,7 @@ const loading = ref(false)
           <td>
             {{ ProgramShortLabel[item.program] }}
           </td>
-          <td colspan="4" />
+          <td colspan="5" />
         </template>
         <td colspan="2">
           <ContractVersionProgramStatus :item="item" />

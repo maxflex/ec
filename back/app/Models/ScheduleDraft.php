@@ -309,7 +309,7 @@ class ScheduleDraft extends Model
 
         // добавляем информацию о пересечениях и процессе по договору в каждую группу
         foreach ($groups as $group) {
-            $isProgramUsed = false;
+            // $isProgramUsed = false;
             $p = $this->programs->where('group_id', $group->id)->first();
 
             $group->original_contract_id = $clientGroups->has($group->id)
@@ -320,7 +320,7 @@ class ScheduleDraft extends Model
 
             // есть процесс по договору
             if ($p) {
-                $isProgramUsed = true;
+                // $isProgramUsed = true;
                 $swamp = $swampsByProgramId[$p['id']];
                 if ($swamp) {
                     $group->swamp = $swamp;
@@ -349,18 +349,21 @@ class ScheduleDraft extends Model
                 }
 
                 // не учитываем пересечения с самим собой
-                // if ($groupLesson->group_id === $item->id) {
+                // if ($groupLesson->group_id === $group->id) {
                 //     continue;
                 // }
+
                 $start = $groupLesson->date_time;
                 $end = $groupLesson->date_time->copy()->addMinutes($group->program->getDuration());
 
                 // Берем занятия клиента только с той же датой
                 $clientLessonsAtDate = $clientLessonsByDate[$groupLesson->date] ?? collect();
 
-                if ($isProgramUsed) {
-                    $clientLessonsAtDate = $clientLessonsAtDate->filter(fn ($l) => $l->group->program !== $group->program);
-                }
+                // @DEPRECATED: избавились. Раньше пересечения не считались только с добавленной СТРОКОЙ
+                // Теперь пересечения не считаются по всей program
+                // if ($isProgramUsed) {
+                $clientLessonsAtDate = $clientLessonsAtDate->filter(fn (Lesson $l) => $l->group->program !== $group->program);
+                // }
 
                 foreach ($clientLessonsAtDate as $clientLesson) {
                     $program = $clientLesson->group->program;
@@ -410,7 +413,7 @@ class ScheduleDraft extends Model
                 $result[$contractId] = collect();
             }
             $result[$contractId]->push((object) [
-                ...$p, // unset contract_id here – I dont want it in the result
+                ...$p,
                 'swamp' => $swamp,
                 'groups' => $groupsByProgram->has($p['program']) ? $groupsByProgram[$p['program']] : [],
             ]);

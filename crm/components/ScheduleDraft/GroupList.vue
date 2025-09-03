@@ -17,7 +17,9 @@ function getElementId(groupId: number, cId: number | null | undefined) {
   return `schedule-draft-group-${groupId}${cId ? `-${cId}` : ''}`
 }
 
-const isAlreadyInOtherGroup = computed(() => items.some(e => e.swamp && e.current_contract_id === contractId))
+const isAlreadyInOtherGroup = computed(() =>
+  items.some(e => e.swamp && e.current_contract_id === contractId),
+)
 </script>
 
 <template>
@@ -49,7 +51,7 @@ const isAlreadyInOtherGroup = computed(() => items.some(e => e.swamp && e.curren
             <GroupLessonCounts :item="item" />
           </UiIfSet>
         </td>
-        <td width="60">
+        <td width="80">
           <GroupStudentsCount :item="item" />
         </td>
         <td width="160">

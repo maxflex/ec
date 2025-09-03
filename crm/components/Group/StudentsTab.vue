@@ -1,41 +1,24 @@
 <script setup lang="ts">
+import type { GroupResource } from '.'
 import { mdiSwapHorizontal } from '@mdi/js'
 
 const { group } = defineProps<{ group: GroupResource }>()
-const emit = defineEmits(['updated'])
-const loading = ref(true)
-const items = ref<ClientGroupResource[]>([])
 const isEditable = useAuthStore().user?.entity_type === EntityTypeValue.user
-const isSwampSelector = ref(false)
 
-async function loadData() {
-  isSwampSelector.value = false
-  loading.value = true
-  const { data } = await useHttp<ApiResponse<ClientGroupResource>>(
-    `client-groups`,
-    {
-      params: {
-        group_id: group.id,
-      },
+const { items, indexPageData } = useIndex<ClientGroupResource>(
+  `client-groups`,
+  ref({}),
+  {
+    saveFilters: false,
+    staticFilters: {
+      group_id: group.id,
     },
-  )
-  if (data.value) {
-    items.value = data.value.data
-  }
-  loading.value = false
-}
-
-nextTick(loadData)
+  },
+)
 </script>
 
 <template>
-  <SwampAddToGroupList
-    v-if="isSwampSelector"
-    :group="group"
-    @updated="loadData(); emit('updated')"
-    @back="isSwampSelector = false"
-  />
-  <UiIndexPage v-else :data="{ loading, noData: false }">
+  <UiIndexPage :data="indexPageData">
     <div class="table table--actions-on-hover">
       <div v-for="item in items" :key="item.id" :class="{ changed: item.draft_id }">
         <div style="width: 280px">
@@ -69,11 +52,6 @@ nextTick(loadData)
             }"
           />
         </div>
-      </div>
-      <div v-if="isEditable" style="border-bottom: none; background: white">
-        <UiIconLink @click="isSwampSelector = true">
-          добавить ученика в текущую группу
-        </UiIconLink>
       </div>
     </div>
   </UiIndexPage>

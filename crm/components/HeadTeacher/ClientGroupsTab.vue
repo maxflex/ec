@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { GroupListResource } from '../Group'
+
 const { clientId } = defineProps<{ clientId: number }>()
 
 const filters = useAvailableYearsFilter()

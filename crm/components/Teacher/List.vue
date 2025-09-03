@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { mdiWeb } from '@mdi/js'
+
 const { items } = defineProps<{
   items: TeacherListResource[]
 }>()
@@ -10,32 +12,26 @@ const { items } = defineProps<{
       v-for="teacher in items"
       :key="teacher.id"
     >
-      <div style="width: 50px">
+      <!-- <div style="width: 50px">
         {{ teacher.id }}
-      </div>
-      <div style="width: 350px">
+      </div> -->
+      <div style="width: 200px">
         <NuxtLink :to="{ name: 'teachers-id', params: { id: teacher.id } }">
-          {{ formatFullName(teacher) }}
+          {{ formatName(teacher, 'initials') }}
         </NuxtLink>
       </div>
-      <div style="width: 250px">
+      <div style="width: 200px">
         {{ TeacherStatusLabel[teacher.status] }}
       </div>
-      <div style="width: 200px">
-        <span v-if="teacher.is_published">
-          опубликован
-        </span>
-        <span v-else class="text-gray">
-          не опубликован
-        </span>
+      <div style="width: 120px">
+        {{ teacher.subjects.map(s => SubjectLabelShort[s]).join('+') }}
+      </div>
+      <div style="width: 50px">
+        <v-icon :icon="mdiWeb" :class="teacher.is_published ? 'text-secondary' : 'opacity-2 text-gray'" />
       </div>
       <div>
-        {{ teacher.subjects.map(s => SubjectLabelShort[s]).join('+') }}
+        <TeethBar v-if="teacher.status === 'active'" :items="teacher.teeth" />
       </div>
     </div>
   </div>
 </template>
-
-<style scoped lang="scss">
-
-</style>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { GroupListResource } from '../Group'
+
 const { teacherId } = defineProps<{ teacherId: number }>()
 const filters = useAvailableYearsFilter()
 

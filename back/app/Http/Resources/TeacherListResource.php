@@ -21,6 +21,8 @@ class TeacherListResource extends JsonResource
         return extract_fields($this, [
             'first_name', 'last_name', 'middle_name', 'status',
             'subjects', 'created_at', 'is_published', 'photo_url',
+        ], [
+            'teeth' => $this->getSavedSchedule(current_academic_year()),
         ]);
     }
 }

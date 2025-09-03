@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { GroupListResource } from '~/components/Group'
+
 const filters = useAvailableYearsFilter()
 
 const selectedProgram = ref<Program>()

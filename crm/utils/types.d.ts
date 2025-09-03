@@ -282,6 +282,7 @@ declare global {
   interface TeacherListResource extends PersonWithPhotoResource {
     status: TeacherStatus
     subjects: Subject[]
+    teeth: Teeth
     is_published: boolean
     created_at: string
   }
