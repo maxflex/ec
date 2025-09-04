@@ -64,7 +64,7 @@ const isConductDisabled = item.status !== 'conducted'
     <div style="width: 110px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
-    <div style="width: 70px">
+    <div style="width: 80px">
       <GroupLink :item="item.group" />
     </div>
     <div v-if="item.teacher" style="width: 150px">

@@ -6,5 +6,5 @@ const { user } = useAuthStore()
   <UiPageTitle>
     Расписание
   </UiPageTitle>
-  <Schedule :client-id="user?.id!" />
+  <Schedule :client-id="user?.client_id!" />
 </template>

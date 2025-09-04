@@ -134,6 +134,9 @@ async function loadAvailableYears() {
     if (data.value.length > 0) {
       selectedYear.value = data.value[0]
     }
+    else {
+      loading.value = false
+    }
   }
 }
 
@@ -190,6 +193,7 @@ async function loadVacations() {
 async function loadData() {
   selectedProgram.value = undefined
   if (!selectedYear.value) {
+    loading.value = false
     return
   }
   await loadTeeth()

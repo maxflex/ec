@@ -153,6 +153,7 @@ declare global {
     is_call_notifications?: boolean
     is_head_teacher?: boolean
     has_grades?: boolean
+    client_id?: number // есть только у представителя
   }
 
   interface RememberUser extends PersonWithPhotoResource {
