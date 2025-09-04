@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { EventResource } from '~/components/Event'
 import { cloneDeep } from 'lodash-es'
 
 const modelDefaults: TelegramListResource = {
@@ -50,13 +51,16 @@ async function save() {
   // очищаем selected-people только если это свободная отправка
     localStorage.removeItem('selected-people')
   }
-  const { data } = await useHttp<TelegramListResource>(`telegram-lists`, {
-    method: 'post',
-    body: {
-      ...item.value,
-      recipients: selected.value,
+  const { data } = await useHttp<TelegramListResource>(
+    `telegram-lists`,
+    {
+      method: 'post',
+      body: {
+        ...item.value,
+        recipients: selected.value,
+      },
     },
-  })
+  )
   if (data.value) {
     await router.push({
       name: 'telegram-lists-id',
@@ -125,18 +129,34 @@ nextTick(async () => {
 <template>
   <v-fade-transition>
     <UiLoader v-if="loading" />
-    <div v-else class="show">
+    <div v-else class="show pt-4">
       <div class="show__content mt-0">
         <div>
           <div></div>
           <v-table class="send-to-table">
             <thead>
               <tr>
-                <th v-for="(label, key) in SendToLabel" :key="key">
-                  <div class="cursor-pointer" @click="select(key)">
-                    <UiCheckbox :value="isSelected(key)" />
+                <th>
+                  <div class="d-flex flex-column pb-4">
+                    <div class="cursor-pointer" @click="select('students')">
+                      <UiCheckbox :value="isSelected('students')" />
+                      <span>
+                        {{ SendToLabel.students }}
+                      </span>
+                    </div>
+                    <div class="cursor-pointer" @click="select('representatives')">
+                      <UiCheckbox :value="isSelected('representatives')" />
+                      <span>
+                        {{ SendToLabel.representatives }}
+                      </span>
+                    </div>
+                  </div>
+                </th>
+                <th>
+                  <div class="cursor-pointer" @click="select('teachers')">
+                    <UiCheckbox :value="isSelected('teachers')" />
                     <span>
-                      {{ label }}
+                      {{ SendToLabel.teachers }}
                     </span>
                   </div>
                 </th>
@@ -144,7 +164,62 @@ nextTick(async () => {
             </thead>
             <tbody>
               <tr v-for="i in maxRows" :key="i">
-                <td v-for="(label, key) in SendToLabel" :key="key">
+                <!-- students & representatives -->
+                <td>
+                  <div v-if="i <= item.recipients.students.length" class="control-lk__item">
+                    <div class="control-lk__item-client" :class="{ 'send-to-table__hidden': !isSelected('students') }">
+                      <div class="control-lk__name">
+                        <UiPerson :item="item.recipients.students[i - 1]" />
+                      </div>
+                      <div class="control-lk__phones">
+                        <div
+                          v-for="phone in item.recipients.students[i - 1].phones"
+                          :key="phone.id"
+                          :class="{ 'text-secondary': !!phone.telegram_id }"
+                        >
+                          {{ formatPhone(phone.number) }}
+                        </div>
+                      </div>
+                      <div class="control-lk__directions">
+                        <ClientDirections :item="item.recipients.students[i - 1].directions" />
+                      </div>
+                    </div>
+                    <div class="control-lk__item-representative" :class="{ 'send-to-table__hidden': !isSelected('representatives') }">
+                      <div class="control-lk__name">
+                        <UiPerson :item="item.recipients.representatives[i - 1]" />
+                      </div>
+                      <div class="control-lk__phones">
+                        <div
+                          v-for="phone in item.recipients.representatives[i - 1].phones"
+                          :key="phone.id"
+                          :class="{ 'text-secondary': !!phone.telegram_id }"
+                        >
+                          {{ formatPhone(phone.number) }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <!-- teacher -->
+                <td>
+                  <div v-if="i <= item.recipients.teachers.length" class="control-lk__item">
+                    <div class="control-lk__item-client" :class="{ 'send-to-table__hidden': !isSelected('teachers') }">
+                      <div class="control-lk__name">
+                        <UiPerson :item="item.recipients.teachers[i - 1]" />
+                      </div>
+                      <div class="control-lk__phones">
+                        <div
+                          v-for="phone in item.recipients.teachers[i - 1].phones"
+                          :key="phone.id"
+                          :class="{ 'text-secondary': !!phone.telegram_id }"
+                        >
+                          {{ formatPhone(phone.number) }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <!-- <td v-for="(label, key) in SendToLabel" :key="key">
                   <div
                     v-if="item.recipients[key] && i <= item.recipients[key].length"
                     class="send-to-table__content"
@@ -161,7 +236,7 @@ nextTick(async () => {
                       </div>
                     </div>
                   </div>
-                </td>
+                </td> -->
               </tr>
             </tbody>
           </v-table>

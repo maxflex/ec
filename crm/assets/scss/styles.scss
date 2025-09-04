@@ -573,11 +573,11 @@ tr.hoverable {
     vertical-align: top;
 
     th {
-      vertical-align: middle;
+      vertical-align: top;
 
       div {
         display: inline-flex;
-        align-items: center;
+        align-items: flex-start;
         gap: 8px;
       }
     }
@@ -602,9 +602,23 @@ tr.hoverable {
       text-overflow: ellipsis;
     }
   }
+
   &__phones {
     display: flex;
     flex-direction: column;
+  }
+
+  &__hidden {
+    opacity: 0.2 !important;
+  }
+
+  .control-lk__item {
+    display: flex;
+    gap: 20px;
+  }
+
+  .control-lk__directions {
+    max-width: 250px;
   }
 }
 
@@ -683,5 +697,46 @@ button {
   &:has(.v-badge--inline),
   &:has(.v-icon--clickable) {
     padding-right: 10px !important;
+  }
+}
+
+.control-lk {
+  &__name {
+    width: 200px;
+  }
+  &__last-seen-at {
+    width: 140px;
+  }
+  &__phones {
+    width: 220px;
+  }
+  &__actions {
+    width: 120px;
+  }
+  &__reports-read {
+    width: 60px;
+    flex: 1;
+  }
+  &__header {
+    & > div {
+      color: rgb(var(--v-theme-gray));
+    }
+  }
+  &__comment {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    flex: initial !important;
+    width: 44px;
+    right: 68px;
+    top: 16px;
+    color: rgb(var(--v-theme-gray));
+    gap: 10px;
+  }
+  &__item {
+    flex-direction: column;
+    & > div {
+      display: flex;
+    }
   }
 }

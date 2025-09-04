@@ -104,9 +104,13 @@ class TelegramList extends Model
      */
     private function getResultDefaults(): array
     {
-        return collect(SendTo::cases())->mapWithKeys(fn (SendTo $sendTo) => [
-            $sendTo->value => [],
-        ])->values()->all();
+        $result = [];
+
+        foreach (SendTo::cases() as $sendTo) {
+            $result[$sendTo->value] = [];
+        }
+
+        return $result;
     }
 
     private function getScheduledResult()

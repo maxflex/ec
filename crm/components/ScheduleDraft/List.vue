@@ -51,7 +51,7 @@ const router = useRouter()
           />
         </td>
 
-        <td width="300" class="text-gray">
+        <td width="340" class="text-gray">
           {{ formatName(item.user) }}
           {{ formatDateTime(item.created_at) }}
           <div class="table-actionss" style="width: 200px" @click.stop="emit('delete', item)">

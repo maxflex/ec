@@ -78,12 +78,14 @@ nextTick(async () => {
   ul {
     padding-left: 10px;
   }
+
   li {
     padding-left: 10px;
     &::marker {
       content: '–';
     }
   }
+
   p {
     margin: 20px 0;
   }

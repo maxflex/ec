@@ -15,8 +15,8 @@ function formatYear(y: Year) {
 
 <template>
   <div class="client-directions">
-    <div v-for="year in years" :key="year">
-      {{ formatYear(year) }}: {{ item[year].map(d => DirectionLabel[d]).join(', ') }}
+    <div v-for="year in years" :key="year" class="text-truncate">
+      {{ formatYear(year) }}: {{ item[year]!.map(d => DirectionLabel[d]).join(', ') }}
     </div>
   </div>
 </template>

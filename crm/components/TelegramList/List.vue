@@ -6,6 +6,7 @@ const emit = defineEmits<{
   deleted: [item: TelegramListResource]
 }>()
 const router = useRouter()
+
 function getTotal(tgList: TelegramListResource, onlySent: boolean = false): number {
   let result = 0
 

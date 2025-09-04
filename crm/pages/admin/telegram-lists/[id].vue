@@ -64,11 +64,27 @@ nextTick(loadData)
           <v-table class="send-to-table">
             <thead>
               <tr>
-                <th v-for="(label, key) in SendToLabel" :key="key">
+                <th>
+                  <div class="d-flex flex-column pb-4">
+                    <div>
+                      <UiCheckbox :value="isSelected('students')" disabled />
+                      <span>
+                        {{ SendToLabel.students }}
+                      </span>
+                    </div>
+                    <div>
+                      <UiCheckbox :value="isSelected('representatives')" disabled />
+                      <span>
+                        {{ SendToLabel.representatives }}
+                      </span>
+                    </div>
+                  </div>
+                </th>
+                <th>
                   <div>
-                    <UiCheckbox :value="isSelected(key)" disabled />
+                    <UiCheckbox :value="isSelected('teachers')" disabled />
                     <span>
-                      {{ label }}
+                      {{ SendToLabel.teachers }}
                     </span>
                   </div>
                 </th>
@@ -76,7 +92,69 @@ nextTick(loadData)
             </thead>
             <tbody>
               <tr v-for="i in maxDisplayedRows" :key="i">
-                <td v-for="(label, key) in SendToLabel" :key="key">
+                <td>
+                  <div class="control-lk__item">
+                    <div
+                      v-if="i <= item.result.students.length"
+                      class="control-lk__item-client"
+                      :class="{ 'send-to-table__hidden': !isSelected('students') }"
+                    >
+                      <div class="control-lk__name">
+                        <UiPerson :item="item.result.students[i - 1]" />
+                      </div>
+                      <div class="control-lk__phones">
+                        <div
+                          v-for="message in item.result.students[i - 1].messages"
+                          :key="message.id"
+                          :class="{ 'text-secondary': !!message.telegram_id }"
+                        >
+                          {{ formatPhone(message.number) }}
+                        </div>
+                      </div>
+                      <div class="control-lk__directions">
+                        <ClientDirections :item="item.recipients.students[i - 1].directions" />
+                      </div>
+                    </div>
+                    <div
+                      v-if="i <= item.result.representatives.length"
+                      class="control-lk__item-representative"
+                      :class="{ 'send-to-table__hidden': !isSelected('representatives') }"
+                    >
+                      <div class="control-lk__name">
+                        <UiPerson :item="item.result.representatives[i - 1]" />
+                      </div>
+                      <div class="control-lk__phones">
+                        <div
+                          v-for="message in item.result.representatives[i - 1].messages"
+                          :key="message.id"
+                          :class="{ 'text-secondary': !!message.telegram_id }"
+                        >
+                          {{ formatPhone(message.number) }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <!-- teacher -->
+                <td>
+                  <div v-if="i <= item.result.teachers.length" class="control-lk__item">
+                    <div class="control-lk__item-client" :class="{ 'send-to-table__hidden': !isSelected('teachers') }">
+                      <div class="control-lk__name">
+                        <UiPerson :item="item.result.teachers[i - 1]" />
+                      </div>
+                      <div class="control-lk__phones">
+                        <div
+                          v-for="message in item.result.teachers[i - 1].messages"
+                          :key="message.id"
+                          :class="{ 'text-secondary': !!message.telegram_id }"
+                        >
+                          {{ formatPhone(message.number) }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <!-- <td v-for="(label, key) in SendToLabel" :key="key">
                   <div v-if="item.result[key] && i <= item.result[key].length" class="send-to-table__content">
                     <UiPerson :item="item.result[key][i - 1]" />
                     <div class="send-to-table__phones">
@@ -89,7 +167,7 @@ nextTick(loadData)
                       </div>
                     </div>
                   </div>
-                </td>
+                </td> -->
               </tr>
               <tr v-if="maxDisplayedRows < maxRows" class="cursor-pointer" @click="isExpanded = true">
                 <td colspan="100">

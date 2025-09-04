@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { EventResource } from '~/components/Event'
+
 const currentYear = currentAcademicYear()
 const nextYear = (currentYear + 1) as Year
 const modeLabel = {
@@ -221,11 +223,6 @@ nextTick(async () => {
       </template>
       <div v-if="!!selectedTotal" class="people-selector__controls">
         <div>
-          <v-btn variant="text" @click="clearSelection()">
-            отмена
-          </v-btn>
-        </div>
-        <div>
           <v-btn
             v-if="participantsEventId"
             color="primary"
@@ -251,29 +248,26 @@ nextTick(async () => {
         </div>
       </div>
     </template>
-    <div class="table">
+    <div class="table table--padding flex-start">
       <div class="people-selector__item">
-        <div @click="selectAll()">
-          <UiCheckbox :value="isSelectedAll" />
+        <div>
+          <UiCheckbox :value="isSelectedAll" @click="selectAll()" />
           <span> всего: {{ itemsFiltered.length }} </span>
+          <template v-if="!!selectedTotal">
+            <a class="ml-4 cursor-pointer" @click="clearSelection()">отменить всё</a>
+          </template>
         </div>
         <div></div>
       </div>
-      <v-virtual-scroll :key="mode && clientLiveFilters.q" :items="itemsFiltered" item-key="id">
-        <template #default="{ item }">
-          <div class="people-selector__item" @click="select(item)">
-            <div>
-              <UiCheckbox :value="isSelected(item)" />
-              <UiPerson :item="item" teacher-format="full" />
-            </div>
-            <div>
-              <template v-if="item.directions">
-                {{ item.directions[mode === 'clientsCurrentYear' ? currentYear : nextYear].map(e => DirectionLabel[e]).join(', ') }}
-              </template>
-            </div>
-          </div>
-        </template>
-      </v-virtual-scroll>
+      <div v-for="item in itemsFiltered" :key="item.id" class="people-selector__item" @click="select(item)">
+        <div>
+          <UiCheckbox :value="isSelected(item)" />
+          <UiPerson :item="item" teacher-format="full" />
+        </div>
+        <div>
+          <ClientDirections v-if="item.directions" :item="item.directions" />
+        </div>
+      </div>
     </div>
   </UiIndexPage>
 </template>
@@ -309,14 +303,6 @@ nextTick(async () => {
         display: flex;
         align-items: center;
         gap: 8px;
-      }
-    }
-
-    .client-directions {
-      display: flex;
-      align-items: center;
-      & > div {
-        width: 180px;
       }
     }
   }

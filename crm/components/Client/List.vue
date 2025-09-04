@@ -5,6 +5,7 @@ import type { ClientListResource } from '.'
 const { items } = defineProps<{
   items: ClientListResource[]
 }>()
+
 const clientDialog = ref<InstanceType<typeof ClientDialog>>()
 </script>
 

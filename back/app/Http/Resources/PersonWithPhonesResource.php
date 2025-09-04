@@ -15,9 +15,11 @@ class PersonWithPhonesResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'first_name', 'last_name', 'middle_name'
+            'first_name', 'last_name', 'middle_name',
         ], [
             'phones' => PhoneResource::collection($this->phones),
+            // хак: это нужно только для TelegramList::getPeople
+            'directions' => $this->directions,
         ]);
     }
 }
