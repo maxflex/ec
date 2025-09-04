@@ -2,8 +2,25 @@
 
 namespace App\Traits;
 
+use App\Models\Client;
+use App\Models\Representative;
+use App\Models\Teacher;
+
 trait HasName
 {
+    /**
+     * Форматирование имени по умолчанию
+     */
+    public function formatNameDefault()
+    {
+        return match (get_class($this)) {
+            Client::class => $this->first_name,
+            Representative::class => $this->formatName('first-middle'),
+            Teacher::class => $this->formatName('initials'),
+            default => $this->formatName(),
+        };
+    }
+
     /**
      * @param  'last-first'|'initials'|'full'|'first-middle'  $format
      */

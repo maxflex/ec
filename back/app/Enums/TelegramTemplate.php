@@ -17,7 +17,7 @@ enum TelegramTemplate: string
     // уведомления перед первым занятием
     case firstLessonDayAfterTomorrow = 'firstLessonDayAfterTomorrow';    // за 2 дня
     case firstLessonTomorrow = 'firstLessonTomorrow';    // за 1 день
-    case firstLessonToday = 'firstLessonToday';  // за 20 минут
+    case firstLesson20min = 'firstLesson20min';  // за 20 минут
 
     public static function tryFromId($templateId): ?self
     {

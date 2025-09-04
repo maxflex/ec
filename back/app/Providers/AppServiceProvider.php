@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Observers\LogAllModelsObserver;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\ServiceProvider;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -24,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Carbon::setLocale(config('app.locale'));
         JsonResource::withoutWrapping();
         $this->logAllModels();
     }

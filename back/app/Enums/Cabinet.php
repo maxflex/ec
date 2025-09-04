@@ -77,6 +77,17 @@ enum Cabinet: string
         };
     }
 
+    public function getInstructions(): string
+    {
+        $text = match ($this) {
+            self::cab433, self::cab428, self::cab430, self::cab432, self::cab434 => 'Для этого нужно пройти охрану, далее – на лифте рядом с турникетами подняться на 4 этаж и найти кабинет %s',
+            self::cab407, self::cab408, self::cab409, self::cab412, self::cab413, self::cab414, self::cab416, self::cab417, self::cab418, self::cab420, self::cab422, self::cab423, self::cab424, self::cab427 => 'Для этого нужно пройти охрану, после турникетов повернуть налево, пройти холл. В конце него будут лифты. Поднимитесь на 4 этаж и найдите кабинет %s',
+            self::cab307, self::cab308, self::cab310, self::cab312, self::cab314, self::cab316 => 'Для этого нужно пройти охрану, после турникетов повернуть налево, пройти холл. В конце него будут лифты. Поднимитесь на 3 этаж и найдите кабинет %s',
+        };
+
+        return sprintf($text, $this->getName());
+    }
+
     /**
      * cab422 => 422
      */
