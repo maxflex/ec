@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import type { GroupResource } from '.'
-import { mdiSwapHorizontal } from '@mdi/js'
 
 const { group } = defineProps<{ group: GroupResource }>()
-const isEditable = useAuthStore().user?.entity_type === EntityTypeValue.user
 
 const { items, indexPageData } = useIndex<ClientGroupResource>(
   `client-groups`,
@@ -35,22 +33,6 @@ const { items, indexPageData } = useIndex<ClientGroupResource>(
               проекте №{{ item.draft_id }}
             </RouterLink>
           </template>
-        </div>
-        <div v-if="isEditable && !item.draft_id" class="table-actionss">
-          <v-btn
-            target="_blank"
-            :icon="mdiSwapHorizontal"
-            :size="48"
-            color="gray"
-            variant="text"
-            :to="{
-              name: 'schedule-drafts-editor',
-              query: {
-                client_id: item.client.id,
-                year: group.year,
-              },
-            }"
-          />
         </div>
       </div>
     </div>

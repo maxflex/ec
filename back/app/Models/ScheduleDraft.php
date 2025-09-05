@@ -545,8 +545,7 @@ class ScheduleDraft extends Model
                 'client_lesson_prices' => $programFromContract?->client_lesson_prices ?: [],
                 'status' => ContractVersionProgram::getStatus(
                     $lessonsConducted,
-                    $programFromContract?->total_lessons ?: 0,
-                    $groupFromDraft !== null
+                    $programFromContract?->total_lessons ?: 0
                 ),
             ];
             $prices = collect();

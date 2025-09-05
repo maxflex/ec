@@ -52,14 +52,20 @@ function isTabAvailable(tab: Tab): boolean {
         >
           <template #badge>
             {{ counts[key] }}
-            <span v-if="countsExtra[key]" class="tabs__counts-extra">
-              <template v-if="countsExtra[key] > 0">
-                + {{ countsExtra[key] }}
-              </template>
-              <template v-else>
-                - {{ Math.abs(countsExtra[key]) }}
-              </template>
-            </span>
+          </template>
+        </v-badge>
+        <v-badge
+          v-if="countsExtra[key]"
+          color="orange-lighten-3"
+          inline
+        >
+          <template #badge>
+            <template v-if="countsExtra[key] > 0">
+              +{{ countsExtra[key] }}
+            </template>
+            <template v-else>
+              -{{ Math.abs(countsExtra[key]) }}
+            </template>
           </template>
         </v-badge>
       </div>
@@ -90,11 +96,6 @@ function isTabAvailable(tab: Tab): boolean {
       background: #e4e4e4 !important;
       // pointer-events: none;
     }
-  }
-
-  &__counts-extra {
-    padding-left: 3px;
-    // color: rgb(var(--v-theme-gray));
   }
 }
 </style>

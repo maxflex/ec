@@ -22,4 +22,9 @@ class ClientGroupObserver
     {
         $this->updateComputed($clientGroup);
     }
+
+    public function updated(ClientGroup $clientGroup): void
+    {
+        $this->updateComputed($clientGroup);
+    }
 }
