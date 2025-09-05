@@ -31,7 +31,7 @@ function getYearAgo(year: Year): string {
 <template>
   <RouterLink
     :to="{
-      name: item.entity_type === EntityTypeValue.client ? 'clients-id' : 'representatives-id',
+      name: item.entity_type === EntityTypeValue.student ? 'clients-id' : 'representatives-id',
       params: { id: item.id },
     }"
     class="align-start search-client-item"
@@ -51,7 +51,7 @@ function getYearAgo(year: Year): string {
       </span>
     </div>
     <div style="width: 250px">
-      <span v-if="item.is_active" class="text-success"> активный клиент </span>
+      <span v-if="item.is_active" class="text-success"> активный ученик </span>
       <span v-else-if="client.max_contract_year">
         {{ getYearAgo(client.max_contract_year) }}
       </span>
