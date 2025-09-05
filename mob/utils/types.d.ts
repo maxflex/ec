@@ -188,50 +188,6 @@ declare global {
     password: string
   }
 
-  interface GroupLessonCounts {
-    conducted: number
-    conducted_free: number
-    planned: number
-    planned_free: number
-  }
-
-  interface GroupListResource {
-    id: number
-    lessons_planned: number
-    teacher_counts: Record<number, number>
-    lesson_counts: GroupLessonCounts
-    client_groups_count: number
-    draft_students_count: number
-    first_lesson_date?: string
-    level: number | null
-    program: Program
-    teachers: PersonResource[]
-    teeth: Teeth
-    zoom: Zoom
-    cabinets: string[]
-  }
-
-  interface GroupResource {
-    id: number
-    level?: number
-    program?: Program
-    year: Year
-    teachers: PersonResource[]
-    teeth?: Teeth
-    created_at?: string
-    user?: PersonResource
-    contract_date: string | null
-    zoom: Zoom
-    cabinets: string[]
-    lessons_planned: number
-    first_lesson_date?: string
-    client_groups_count: number
-    draft_students_count: number
-    acts_count: number
-    teacher_counts: Record<number, number>
-    lesson_counts: GroupLessonCounts
-  }
-
   interface UploadedFile {
     url?: string
     name: string
@@ -327,6 +283,7 @@ declare global {
   interface TeacherListResource extends PersonWithPhotoResource {
     status: TeacherStatus
     subjects: Subject[]
+    teeth: Teeth
     is_published: boolean
     created_at: string
   }

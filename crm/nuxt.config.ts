@@ -63,7 +63,7 @@ export default defineNuxtConfig({
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/img/favicon.svg' },
       ],
-      title: 'Личный кабинет V3',
+      title: 'Личный кабинет – ЕГЭ-Центр',
     },
   },
 
