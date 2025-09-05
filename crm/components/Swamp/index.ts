@@ -1,3 +1,5 @@
+import type { GroupListResource } from '../Group'
+
 export interface SwampListResource {
   id: number
   total_lessons: number
@@ -9,4 +11,9 @@ export interface SwampListResource {
   status: CvpStatus
   client_group_id: number | null
   group: GroupListResource | null
+  changes: null | {
+    schedule_draft_id: number
+    type: 'changed' | 'added' | 'removed'
+    group: GroupListResource | null
+  }
 }

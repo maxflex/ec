@@ -1,108 +1,112 @@
 <script setup lang="ts">
 import type { SwampListResource } from '.'
+import { mdiArrowDownThin } from '@mdi/js'
 
 const { items } = defineProps<{
   items: SwampListResource[]
 }>()
-
-const loading = ref(false)
 </script>
 
 <template>
-  <v-table class="swamp-list table-padding" :class="{ 'element-loading': loading }">
-    <thead>
-      <tr>
-        <!-- ШИРИНЫ -->
-        <th width="90"></th>
-        <th width="170"></th>
-        <th width="100"></th>
-        <th width="80"></th>
-        <th width="100"></th>
-        <th width="60"></th>
-        <th width="140"></th>
-        <th width="150"></th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="item in items" :key="item.id">
-        <template v-if="item.group">
-          <td>
-            <GroupLink :item="item.group" />
-          </td>
-          <td>
-            <GroupTeachers :item="item.group" />
-          </td>
-          <td>
-            {{ ProgramShortLabel[item.program] }}
-          </td>
-          <td>
-            <GroupFirstLessonDate :date="item.group.first_lesson_date" />
-          </td>
-          <td width="150">
-            <UiIfSet :value="item.group.lesson_counts.conducted || item.group.lesson_counts.planned">
-              <template #empty>
-                занятий нет
-              </template>
-              <GroupLessonCounts :item="item.group" />
-            </UiIfSet>
-          </td>
-          <td>
-            <GroupStudentsCount v-if="item.group" :item="item.group" />
-          </td>
-          <td>
-            <UiIfSet :value="Object.keys(item.group.teeth).length > 0">
-              <template #empty>
-                расписание отсутствует
-              </template>
-              <TeethAsText :items="item.group.teeth" />
-            </UiIfSet>
-          </td>
-          <td>
-            <div v-for="c in item.group.cabinets" :key="c">
-              <CabinetWithCapacity :item="c" />
-            </div>
-          </td>
-        </template>
-        <template v-else>
-          <td class="text-gray">
-            Нет группы
-          </td>
-          <td>
-          </td>
-          <td>
-            {{ ProgramShortLabel[item.program] }}
-          </td>
-          <td colspan="5" />
-        </template>
-        <td colspan="2">
-          <ContractVersionProgramStatus :item="item" />
-        </td>
-      </tr>
-    </tbody>
-  </v-table>
+  <div class="table table--padding swamp-list">
+    <div v-for="item in items" :key="item.id">
+      <!-- добавлен в группу по программе -->
+      <SwampItemAttached v-if="item.group" :item="item" />
+
+      <!-- не добавлен в группу программе -->
+      <SwampItemUnattached v-else :item="item" />
+
+      <template v-if="item.changes">
+        <div class="swamp-list__schedule-draft">
+          <RouterLink
+            :to="{
+              name: 'schedule-drafts-editor',
+              query: {
+                id: item.changes!.schedule_draft_id,
+              },
+            }"
+          >
+            <template v-if="item.changes!.type === 'added'">
+              добавлен
+            </template>
+            <template v-else-if="item.changes!.type === 'changed'">
+              перемещён
+            </template>
+            <template v-else>
+              удалён
+            </template>
+            в проекте {{ item.changes!.schedule_draft_id }}
+          </RouterLink>
+          <div>
+            <v-icon :icon="mdiArrowDownThin" :size="20" />
+          </div>
+        </div>
+        <SwampItemAttached v-if="item.changes.group" class="changed" :item="item" changes />
+        <SwampItemUnattached v-else :item="item" class="changed" />
+      </template>
+    </div>
+  </div>
 </template>
 
 <style lang="scss">
 .swamp-list {
-  thead {
-    visibility: hidden;
-    th {
-      height: 0 !important;
-      border: 0 !important;
+  & > div {
+    flex-direction: column;
+    align-items: flex-start !important;
+    padding: 0 !important;
+    gap: 0 !important;
+
+    & > div {
+      display: flex;
+      width: 100%;
+      padding-top: 16px;
+      padding-bottom: 16px;
+
+      & > div {
+        width: 100px;
+
+        &:first-child {
+          width: 130px;
+          padding-left: 20px;
+        }
+        // teacher
+        &:nth-child(2) {
+          width: 200px;
+        }
+        // program
+        &:nth-child(3) {
+          width: 130px;
+        }
+        // first lesson date
+        &:nth-child(4) {
+          width: 100px;
+        }
+        // расписание
+        &:nth-child(7) {
+          width: 200px;
+        }
+
+        &:last-child {
+          width: initial;
+          flex: 1;
+          padding-right: 20px;
+        }
+      }
     }
   }
 
-  th,
-  td {
-    box-sizing: content-box;
-  }
+  // &__changes {
+  //   & > div:nth-child(2) {
+  //     $color: #fcf0d4;
+  //     background: $color;
+  //   }
+  // }
 
-  .table-actionss {
-    padding: 0 !important;
-    display: flex;
+  &__schedule-draft {
+    padding: 8px 0 16px !important;
+    justify-content: center;
     align-items: center;
-    justify-content: flex-end;
+    flex-direction: column;
   }
 }
 </style>
