@@ -96,15 +96,17 @@ class FirstLessonCommand extends Command
     {
         $template = TelegramTemplate::firstLessonDayAfterTomorrow;
 
-        $targetDate = is_localhost()
-            ? '2025-09-09'
-            : now()->addDays(2)->format('Y-m-d');
+        // $targetDate = is_localhost()
+        //     ? '2025-09-09'
+        //     : now()->addDays(2)->format('Y-m-d');
+        $targetDate = now()->addDays(2)->format('Y-m-d');
 
         $firstLessons = $this->firstLessons->where('date', $targetDate);
 
         $this->info($template->value.'. First lessons: '.$firstLessons->count());
 
         $cnt = 0;
+        $bar = $this->output->createProgressBar($firstLessons->count());
         foreach ($firstLessons as $firstLesson) {
             $client = Client::find($firstLesson->client_id);
             /** @var Representative $representative */
@@ -133,11 +135,16 @@ class FirstLessonCommand extends Command
                     'lessons' => $lessons,
                 ]);
                 $cnt++;
-                if (is_localhost() && $cnt >= 3) {
+                if (is_localhost() && $cnt >= 10) {
+                    $bar->finish();
+
                     return self::SUCCESS;
                 }
             }
+
+            $bar->advance();
         }
+        $bar->finish();
 
         return self::SUCCESS;
     }
@@ -149,15 +156,17 @@ class FirstLessonCommand extends Command
     {
         $template = TelegramTemplate::firstLessonTomorrow;
 
-        $targetDate = is_localhost()
-            ? '2025-09-09'
-            : now()->addDay()->format('Y-m-d');
+        // $targetDate = is_localhost()
+        //     ? '2025-09-09'
+        //     : now()->addDay()->format('Y-m-d');
+        $targetDate = now()->addDay()->format('Y-m-d');
 
         $firstLessons = $this->firstLessons->where('date', $targetDate);
 
         $this->info($template->value.'. First lessons: '.$firstLessons->count());
 
         $cnt = 0;
+        $bar = $this->output->createProgressBar($firstLessons->count());
         foreach ($firstLessons as $firstLesson) {
             $client = Client::find($firstLesson->client_id);
             /** @var Representative $representative */
@@ -171,10 +180,15 @@ class FirstLessonCommand extends Command
                 ]);
                 $cnt++;
                 if (is_localhost() && $cnt >= 3) {
+                    $bar->finish();
+
                     return self::SUCCESS;
                 }
             }
+
+            $bar->advance();
         }
+        $bar->finish();
 
         return self::SUCCESS;
     }
@@ -186,8 +200,10 @@ class FirstLessonCommand extends Command
     {
         $template = TelegramTemplate::firstLesson20min;
 
-        $targetDate = is_localhost() ? '2025-09-09' : now()->format('Y-m-d');
-        $targetTime = is_localhost() ? '10:20:00' : now()->addMinutes(20)->format('H:i:00');
+        // $targetDate = is_localhost() ? '2025-09-09' : now()->format('Y-m-d');
+        // $targetTime = is_localhost() ? '10:20:00' : now()->addMinutes(20)->format('H:i:00');
+        $targetDate = now()->format('Y-m-d');
+        $targetTime = now()->addMinutes(20)->format('H:i:00');
 
         $firstLessons = $this->firstLessons
             ->where('date', $targetDate)
@@ -196,6 +212,7 @@ class FirstLessonCommand extends Command
         $this->info($template->value.'. First lessons: '.$firstLessons->count());
 
         $cnt = 0;
+        $bar = $this->output->createProgressBar($firstLessons->count());
         foreach ($firstLessons as $firstLesson) {
             $cabinet = Cabinet::from($firstLesson->cabinet);
             $client = Client::find($firstLesson->client_id);
@@ -211,10 +228,14 @@ class FirstLessonCommand extends Command
                 ]);
                 $cnt++;
                 if (is_localhost() && $cnt >= 3) {
+                    $bar->finish();
+
                     return self::SUCCESS;
                 }
             }
+            $bar->advance();
         }
+        $bar->finish();
 
         return self::SUCCESS;
     }

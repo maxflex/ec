@@ -18,12 +18,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('notification:unplanned-or-cancelled')->dailyAt('20:00');
         $schedule->command('notification:pass-notification')->dailyAt('20:30');
 
-        // $schedule->command('notification:first-lesson-today')
-        //     ->everyTenMinutes()
-        //     ->between('08:00', '20:00'); // чтобы не гонять по ночам
-        //
-        // $schedule->command('notification:first-lesson-tomorrow')->dailyAt('21:00');
-
         $schedule->command('app:check-errors')->dailyAt('03:00');
         $schedule->command('app:send-telegram-messages')->everyMinute();
         $schedule->command('app:sync-sms')->hourlyAt(30);
@@ -31,6 +25,11 @@ class Kernel extends ConsoleKernel
         $schedule->command('scout:reimport-all')->dailyAt('01:00');
 
         $schedule->command('app:teacher-stats')->weeklyOn(7, '05:00');
+
+        // first lesson
+        $schedule->command('notification:first-lesson 2d')->dailyAt('20:00');
+        $schedule->command('notification:first-lesson 1d')->dailyAt('20:00');
+        $schedule->command('notification:first-lesson 20min')->everyFiveMinutes()->between('08:30', '20:00');
     }
 
     /**
