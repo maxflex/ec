@@ -47,7 +47,7 @@ const filteredLessons = computed(() =>
 const allDates = computed<string[]>(() => selectedYear.value
   ? eachDayOfInterval({
       start: `${selectedYear.value}-09-01`,
-      end: `${selectedYear.value + 1}-06-31`,
+      end: `${selectedYear.value + 1}-06-30`,
     }).map(d => format(d, 'yyyy-MM-dd'))
   : [],
 )

@@ -35,7 +35,7 @@ const { items } = defineProps<{
             <template v-else>
               удалён
             </template>
-            в проекте {{ item.changes!.schedule_draft_id }}
+            в проекте №{{ item.changes!.schedule_draft_id }}
           </RouterLink>
           <div>
             <v-icon :icon="mdiArrowDownThin" :size="20" />

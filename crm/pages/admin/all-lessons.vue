@@ -27,13 +27,9 @@ const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 
 const dates = computed(() => {
-  // Define the start and end months for the academic year
-  const startMonth = 8 // September (0-indexed)
-  const endMonth = 5 // June (0-indexed)
-
   // Define start and end dates for the academic year
-  const startDate = startOfMonth(new Date(filters.value.year, startMonth, 1)) // September 1st
-  const endDate = endOfMonth(new Date(filters.value.year + 1, endMonth, 31)) // May 31st
+  const startDate = startOfMonth(new Date(filters.value.year, 8, 1)) // 1 сентября (0-indexed)
+  const endDate = endOfMonth(new Date(filters.value.year + 1, 5, 30)) // 30 июня (0-indexed)
 
   // Generate array of all dates between startDate and endDate
   const allDates = eachDayOfInterval({ start: startDate, end: endDate })

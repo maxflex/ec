@@ -69,7 +69,8 @@ nextTick(async () => {
 
 <style lang="scss">
 .client-greeting {
-  padding-bottom: 30px;
+  padding-bottom: 100px;
+
   p {
     padding: var(--offset);
   }

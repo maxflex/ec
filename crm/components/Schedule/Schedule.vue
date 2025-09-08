@@ -6,6 +6,7 @@ import type {
   LessonConductDialog,
   LessonDialog,
 } from '#build/components'
+import type { GroupResource } from '../Group'
 import {
   LessonItemAdminClient,
   LessonItemAdminGroup,
@@ -14,7 +15,6 @@ import {
   LessonItemHeadTeacherLK,
   LessonItemTeacherLK,
 } from '#components'
-import { mdiCalendarClock } from '@mdi/js'
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { groupBy } from 'lodash-es'
 import { formatDateMonth } from '~/utils'
@@ -77,14 +77,9 @@ const dates = computed(() => {
   if (!selectedYear.value) {
     return []
   }
-
-  // Define the start and end months for the academic year
-  const startMonth = 8 // September (0-indexed)
-  const endMonth = 5 // June (0-indexed)
-
   // Define start and end dates for the academic year
-  const startDate = startOfMonth(new Date(selectedYear.value, startMonth, 1)) // September 1st
-  const endDate = endOfMonth(new Date(selectedYear.value + 1, endMonth, 31)) // May 31st
+  const startDate = startOfMonth(new Date(selectedYear.value, 8, 1)) // 1 сентября (0-indexed)
+  const endDate = endOfMonth(new Date(selectedYear.value + 1, 5, 30)) // 30 июня (0-indexed)
 
   // Generate array of all dates between startDate and endDate
   const allDates = eachDayOfInterval({ start: startDate, end: endDate })
