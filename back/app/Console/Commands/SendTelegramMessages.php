@@ -49,16 +49,16 @@ class SendTelegramMessages extends Command
 
         foreach ($lists as $list) {
             $list->update(['status' => TelegramListStatus::sending]);
-            $toSend = collect();
+            $phones = collect();
             $clients = Client::whereIn('id', $list->recipients->clients)->get();
             foreach ($clients as $client) {
                 if (in_array(SendTo::students->value, $list->send_to)) {
-                    $toSend = $toSend->merge(
+                    $phones = $phones->merge(
                         $client->phones()->get()
                     );
                 }
-                if (in_array(SendTo::parents->value, $list->send_to)) {
-                    $toSend = $toSend->merge(
+                if (in_array(SendTo::representatives->value, $list->send_to)) {
+                    $phones = $phones->merge(
                         $client->representative->phones()->get()
                     );
                 }
@@ -66,12 +66,12 @@ class SendTelegramMessages extends Command
             if (in_array(SendTo::teachers->value, $list->send_to)) {
                 $teachers = Teacher::whereIn('id', $list->recipients->teachers)->get();
                 foreach ($teachers as $teacher) {
-                    $toSend = $toSend->merge(
+                    $phones = $phones->merge(
                         $teacher->phones()->get()
                     );
                 }
             }
-            foreach ($toSend as $phone) {
+            foreach ($phones as $phone) {
                 if ($list->event_id && $list->is_confirmable) {
                     $replyMarkup = new InlineKeyboardMarkup([
                         [[
