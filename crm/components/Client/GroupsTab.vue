@@ -26,7 +26,7 @@ const { items, indexPageData, availableYears, reloadData } = useIndex<SwampListR
     <template #buttons>
       <v-btn
         color="primary"
-        :to="{ name: 'schedule-drafts-editor', query: { year: filters.year ?? currentAcademicYear(), client_id: client.id } }"
+        :to="{ name: 'schedule-drafts-editor', query: { client_id: client.id } }"
       >
         управление группами
       </v-btn>

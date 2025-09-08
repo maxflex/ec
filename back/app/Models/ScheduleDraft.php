@@ -35,25 +35,26 @@ class ScheduleDraft extends Model
     /**
      * Получить пустой черновик по клиенту
      * Исходное состояние, когда первый раз открываем
+     * Год – всегда текущий учебный год
      *
      * $contract – к какому договору добавляем проект
      * Если не указан, то новая цепь договора, иначе добавление новой версии к $contract
      */
-    public static function fromActualContracts(Client $client, int $year): ScheduleDraft
+    public static function fromActualContracts(Client $client): ScheduleDraft
     {
         $scheduleDraft = new ScheduleDraft([
             'client_id' => $client->id,
-            'year' => $year,
+            'year' => current_academic_year(),
         ]);
 
-        $scheduleDraft->programs = $scheduleDraft->getActualPrograms($year);
+        $scheduleDraft->programs = $scheduleDraft->getActualPrograms();
 
         return $scheduleDraft;
     }
 
-    private function getActualPrograms(int $year): Collection
+    private function getActualPrograms(): Collection
     {
-        $contracts = $this->client->contracts()->where('year', $year)->get();
+        $contracts = $this->client->contracts()->where('year', $this->year)->get();
 
         $programs = collect();
         foreach ($contracts as $contract) {

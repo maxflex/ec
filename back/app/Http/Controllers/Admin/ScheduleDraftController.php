@@ -32,7 +32,6 @@ class ScheduleDraftController extends Controller
         $request->validate([
             'id' => ['sometimes', 'exists:schedule_drafts,id'],
             'client_id' => ['required', 'exists:clients,id'],
-            'year' => ['required', 'numeric'],
         ]);
 
         if ($request->has('id')) {
@@ -40,7 +39,7 @@ class ScheduleDraftController extends Controller
             $scheduleDraft->unpack();
         } else {
             $client = Client::find($request->client_id);
-            $scheduleDraft = ScheduleDraft::fromActualContracts($client, intval($request->year));
+            $scheduleDraft = ScheduleDraft::fromActualContracts($client);
         }
 
         $scheduleDraft->user_id = auth()->id();

@@ -4,13 +4,12 @@ import { ContractVersionDialog } from '#components'
 import { mdiChevronRight } from '@mdi/js'
 import { apiUrl, isGroupChangedInContract } from '.'
 
-const { client, year, savedDraft } = defineProps<{
+const { client, savedDraft } = defineProps<{
   /**
    * Если загружаем конкретный ID проекта
    */
   savedDraft?: SavedScheduleDraftResource
   client: PersonResource
-  year: Year
 }>()
 
 defineEmits<{ back: [] }>()
@@ -33,7 +32,6 @@ async function fromActualContracts() {
     `${apiUrl}/from-actual-contracts`,
     {
       params: {
-        year,
         id: savedDraft?.id,
         client_id: client.id,
       },
