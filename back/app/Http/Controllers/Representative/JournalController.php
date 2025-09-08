@@ -64,12 +64,6 @@ class JournalController extends Controller
     {
         // до начала занятий
         $oldLessons = Group::whereClient(auth()->user()->client_id)
-            ->whereHas('lessons', fn ($q) => $q
-                ->where('status', LessonStatus::conducted)
-                ->whereDoesntHave(
-                    'clientLessons.contractVersionProgram.contractVersion.contract',
-                    fn ($q) => $q->where('client_id', auth()->user()->client_id))
-            )
             ->distinct()
             ->pluck('year');
 
