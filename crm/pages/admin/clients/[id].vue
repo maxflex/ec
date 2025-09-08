@@ -85,7 +85,7 @@ nextTick(loadData)
         <div class="panel-actions">
           <CommentBtn
             :entity-id="client.id"
-            :entity-type="EntityTypeValue.client"
+            :entity-type="EntityTypeValue.student"
           />
           <v-btn
             icon="$print"

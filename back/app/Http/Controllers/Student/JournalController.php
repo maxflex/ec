@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Client;
+namespace App\Http\Controllers\Student;
 
 use App\Enums\LessonStatus;
 use App\Http\Controllers\Controller;
@@ -18,14 +18,14 @@ class JournalController extends Controller
         }
 
         // до начала занятий
-        $oldLessons = Group::whereClient(auth()->id())
+        $oldLessons = Group::whereStudent(auth()->id())
             ->where('year', $request->year)
             ->get()
             ->map(fn ($group) => $group->lessons()->with(['teacher', 'group'])
                 ->where('status', LessonStatus::conducted)
                 ->whereDoesntHave(
                     'clientLessons.contractVersionProgram.contractVersion.contract',
-                    fn ($q) => $q->where('client_id', auth()->id()))
+                    fn ($q) => $q->where('student_id', auth()->id()))
                 ->get()
             )
             ->flatten()
@@ -48,7 +48,7 @@ class JournalController extends Controller
             ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
             ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
             ->where('g.year', $request->year)
-            ->where('c.client_id', auth()->id())
+            ->where('c.student_id', auth()->id())
             ->selectRaw('client_lessons.*, cvp.program')
             ->with('lesson')
             ->get();
@@ -63,12 +63,12 @@ class JournalController extends Controller
     private function getYears()
     {
         // до начала занятий
-        $oldLessons = Group::whereClient(auth()->id())
+        $oldLessons = Group::whereStudent(auth()->id())
             ->whereHas('lessons', fn ($q) => $q
                 ->where('status', LessonStatus::conducted)
                 ->whereDoesntHave(
                     'clientLessons.contractVersionProgram.contractVersion.contract',
-                    fn ($q) => $q->where('client_id', auth()->id()))
+                    fn ($q) => $q->where('student_id', auth()->id()))
             )
             ->distinct()
             ->pluck('year');
@@ -83,7 +83,7 @@ class JournalController extends Controller
             )
             ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
             ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
-            ->where('c.client_id', auth()->id())
+            ->where('c.student_id', auth()->id())
             ->distinct()
             ->pluck('g.year');
 

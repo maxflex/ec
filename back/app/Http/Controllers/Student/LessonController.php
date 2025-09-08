@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Client;
+namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ClientLessonResource;
@@ -17,7 +17,7 @@ class LessonController extends Controller
 
     public function index(Request $request)
     {
-        if ($request->has('client_id')) {
+        if ($request->has('student_id')) {
             $lessons = auth()->user()->getJournal($request->year);
         } else {
             $query = Lesson::with(['teacher', 'group', 'clientLessons']);
@@ -40,7 +40,7 @@ class LessonController extends Controller
 
         return [
             'lesson' => new LessonResource($lesson),
-            'clientLesson' => $clientLesson ? new ClientLessonResource($clientLesson) : null,
+            'studentLesson' => $clientLesson ? new ClientLessonResource($clientLesson) : null,
         ];
     }
 

@@ -65,7 +65,7 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
           :class="{ 'no-items': item.comments_count === 0 }"
           :count="item.comments_count"
           :entity-id="item.id"
-          :entity-type="EntityTypeValue.client"
+          :entity-type="EntityTypeValue.student"
           extra
         />
         <div class="vfn-1">

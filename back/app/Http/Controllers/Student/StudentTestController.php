@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Client;
+namespace App\Http\Controllers\Student;
 
 use App\Events\ClientTestUpdatedEvent;
 use App\Http\Controllers\Controller;
@@ -8,12 +8,12 @@ use App\Http\Resources\ClientTestResource;
 use App\Models\ClientTest;
 use Illuminate\Http\Request;
 
-class ClientTestController extends Controller
+class StudentTestController extends Controller
 {
     public function index(Request $request)
     {
         $query = ClientTest::query()
-            ->where('client_id', auth()->id())
+            ->where('student_id', auth()->id())
             ->latest();
 
         return $this->handleIndexRequest($request, $query, ClientTestResource::class);
@@ -23,7 +23,7 @@ class ClientTestController extends Controller
     {
         $clientTest = ClientTest::query()
             ->whereId($id)
-            ->where('client_id', auth()->id())
+            ->where('student_id', auth()->id())
             ->firstOrFail();
 
         abort_if($clientTest->is_timed_out, 404);

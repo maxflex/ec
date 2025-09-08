@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const entityTypeLabel = {
-  [EntityTypeValue.client]: 'ученики и представители',
+  [EntityTypeValue.student]: 'ученики и представители',
   [EntityTypeValue.teacher]: 'преподаватели',
   [EntityTypeValue.user]: 'администраторы',
 } as const
@@ -17,7 +17,7 @@ interface Filters {
 const q = ref<string>('')
 
 const filters = ref<Filters>({
-  entity: EntityTypeValue.client,
+  entity: EntityTypeValue.student,
 })
 
 const currentYear = currentAcademicYear()

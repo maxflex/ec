@@ -5,7 +5,7 @@ namespace App\Enums;
 enum RouteGroup
 {
     case admin;
-    case client;
+    case student;
     case representative;
     case teacher;
     case pub;
