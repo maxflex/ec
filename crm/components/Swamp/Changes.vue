@@ -1,16 +1,27 @@
+<script setup lang="ts">
+import type { SwampListResource } from '.'
+
+const { item } = defineProps<{
+  item: SwampListResource
+}>()
+</script>
+
 <template>
   <div v-if="item.changes">
     <template v-if="item.changes.type === 'added'">
       добавлен в
     </template>
     <template v-else-if="item.changes.type === 'changed'">
-      перемещён
+      перемещён в
     </template>
     <template v-else>
       удалён
     </template>
-    <RouterLink v-if="item.changes.group" :to="{ name: 'groups-id', params: { id: item.changes.group.id } }">
-      ГР-{{ item.changes.group.id }}
+    <RouterLink
+      v-if="item.changes.group_id"
+      :to="{ name: 'groups-id', params: { id: item.changes.group_id } }"
+    >
+      ГР-{{ item.changes.group_id }}
     </RouterLink>
     <br />
     в проекте

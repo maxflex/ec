@@ -68,7 +68,7 @@ class SwampListResource extends JsonResource
             'changes' => $changesType === null ? null : [
                 'schedule_draft_id' => $scheduleDraft->id,
                 'type' => $changesType,
-                'group' => new GroupListResource($draftGroup),
+                'group_id' => $draftGroup?->id,
             ],
         ]);
     }

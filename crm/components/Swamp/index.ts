@@ -14,6 +14,6 @@ export interface SwampListResource {
   changes: null | {
     schedule_draft_id: number
     type: 'changed' | 'added' | 'removed'
-    group: GroupListResource | null
+    group_id: number | null
   }
 }
