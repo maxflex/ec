@@ -124,7 +124,7 @@ export const TelegramTemplateLabel = {
   unplannedOrCancelled: 'изменения в расписании',
   firstLessonDayAfterTomorrow: 'первое занятие (за 2 дня)',
   firstLessonTomorrow: 'первое занятие (за 1 день)',
-  firstLessonToday: 'первое занятие (за 20 мин)',
+  firstLesson20min: 'первое занятие (за 20 мин)',
 }
 
 export const ProgramShortLabel = {

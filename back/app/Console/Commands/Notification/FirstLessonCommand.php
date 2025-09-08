@@ -179,7 +179,7 @@ class FirstLessonCommand extends Command
                     'person' => $representative,
                 ]);
                 $cnt++;
-                if (is_localhost() && $cnt >= 3) {
+                if (is_localhost() && $cnt >= 10) {
                     $bar->finish();
 
                     return self::SUCCESS;
@@ -216,14 +216,11 @@ class FirstLessonCommand extends Command
         foreach ($firstLessons as $firstLesson) {
             $cabinet = Cabinet::from($firstLesson->cabinet);
             $client = Client::find($firstLesson->client_id);
-            /** @var Representative $representative */
-            $representative = $client->representative;
-
-            $phones = $representative->phones()->withTelegram()->get();
+            $phones = $client->phones()->withTelegram()->get();
 
             foreach ($phones as $phone) {
                 TelegramMessage::sendTemplate($template, $phone, [
-                    'person' => $representative,
+                    'person' => $client,
                     'cabinet' => $cabinet,
                 ]);
                 $cnt++;
