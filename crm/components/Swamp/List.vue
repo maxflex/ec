@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { SwampListResource } from '.'
-import { mdiArrowDownThin } from '@mdi/js'
 
 const { items } = defineProps<{
   items: SwampListResource[]
@@ -9,41 +8,12 @@ const { items } = defineProps<{
 
 <template>
   <div class="table table--padding swamp-list">
-    <div v-for="item in items" :key="item.id">
+    <div v-for="item in items" :key="item.id" :class="{ changed: item.changes }">
       <!-- добавлен в группу по программе -->
       <SwampItemAttached v-if="item.group" :item="item" />
 
       <!-- не добавлен в группу программе -->
       <SwampItemUnattached v-else :item="item" />
-
-      <template v-if="item.changes">
-        <div class="swamp-list__schedule-draft">
-          <RouterLink
-            :to="{
-              name: 'schedule-drafts-editor',
-              query: {
-                id: item.changes!.schedule_draft_id,
-              },
-            }"
-          >
-            <template v-if="item.changes!.type === 'added'">
-              добавлен
-            </template>
-            <template v-else-if="item.changes!.type === 'changed'">
-              перемещён
-            </template>
-            <template v-else>
-              удалён
-            </template>
-            в проекте №{{ item.changes!.schedule_draft_id }}
-          </RouterLink>
-          <div>
-            <v-icon :icon="mdiArrowDownThin" :size="20" />
-          </div>
-        </div>
-        <SwampItemAttached v-if="item.changes.group" class="changed" :item="item" changes />
-        <SwampItemUnattached v-else :item="item" class="changed" />
-      </template>
     </div>
   </div>
 </template>
@@ -93,20 +63,6 @@ const { items } = defineProps<{
         }
       }
     }
-  }
-
-  // &__changes {
-  //   & > div:nth-child(2) {
-  //     $color: #fcf0d4;
-  //     background: $color;
-  //   }
-  // }
-
-  &__schedule-draft {
-    padding: 8px 0 16px !important;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
   }
 }
 </style>

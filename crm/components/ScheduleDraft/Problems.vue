@@ -17,7 +17,7 @@ const hasProblems = computed<boolean>(() =>
   hasOverlap.value || hasUnconducted.value || hasProcessInAnotherContract.value,
 )
 
-const iconColor = computed(() => (hasOverlap.value || hasProcessInAnotherContract.value) ? 'error' : 'deepOrange')
+const iconColor = computed(() => (hasOverlap.value || hasProcessInAnotherContract.value) ? 'error' : 'orange')
 </script>
 
 <template>
