@@ -20,8 +20,7 @@ const { user } = useAuthStore()
 // препод может редактировать только свои занятия
 const isEditDisabled = item.teacher.id !== user?.id
 
-// проводка разрешена сегодня и раньше
-const isConductDisabled = isEditDisabled || item.date > today() || item.status === 'cancelled'
+const isConductDisabled = isEditDisabled || item.status === 'cancelled'
 </script>
 
 <template>

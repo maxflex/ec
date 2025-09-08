@@ -1,3 +1,4 @@
+import type { FetchError } from 'ofetch'
 import {
   differenceInDays,
   differenceInHours,
@@ -172,6 +173,10 @@ export function saveFilters(filters: object, tabName: string | null = null): voi
 export function loadFilters<T>(defaultFilters: T, tabName: string | null = null): T {
   const filters = localStorage.getItem(getFiltersKey(tabName))
   return filters === null ? defaultFilters : JSON.parse(filters)
+}
+
+export function responseError(error: FetchError<any>) {
+  useGlobalMessage(error.data!.message, 'error')
 }
 
 export function highlight(

@@ -43,8 +43,10 @@ async function conduct() {
     },
   )
   if (error.value) {
-    // errors.value = error.value.data.errors
-    loading.value = false
+    responseError(error.value)
+    saving.value = false
+
+    return
   }
   onSaved()
 }
@@ -62,9 +64,12 @@ async function save() {
     },
   )
   if (error.value) {
-    // errors.value = error.value.data.errors
-    loading.value = false
+    responseError(error.value)
+    saving.value = false
+
+    return
   }
+
   onSaved()
 }
 
@@ -112,7 +117,7 @@ defineExpose({ open })
           <v-btn v-if="isConducted" color="primary" :loading="saving" @click="save()">
             сохранить
           </v-btn>
-          <v-btn v-else color="primary" :loading="saving" :disabled="!item.topic" @click="conduct()">
+          <v-btn v-else color="primary" :loading="saving" :disabled="!item?.topic" @click="conduct()">
             провести занятие
           </v-btn>
         </div>
