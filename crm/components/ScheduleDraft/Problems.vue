@@ -16,12 +16,14 @@ const hasProcessInAnotherContract = computed<boolean>(() =>
 const hasProblems = computed<boolean>(() =>
   hasOverlap.value || hasUnconducted.value || hasProcessInAnotherContract.value,
 )
+
+const iconColor = computed(() => (hasOverlap.value || hasProcessInAnotherContract.value) ? 'error' : 'deepOrange')
 </script>
 
 <template>
   <v-tooltip v-if="hasProblems" location="bottom">
     <template #activator="{ props }">
-      <v-icon :icon="mdiAlertBox" v-bind="props" color="error" :size="26" />
+      <v-icon :icon="mdiAlertBox" v-bind="props" :color="iconColor" :size="26" />
     </template>
     <div v-if="hasProcessInAnotherContract">
       добавлен в эту группу по другому договору –
