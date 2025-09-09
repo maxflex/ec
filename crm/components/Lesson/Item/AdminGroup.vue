@@ -53,9 +53,6 @@ const isConductDisabled = item.status !== 'conducted'
     <div style="width: 120px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
-    <div style="width: 90px">
-      <GroupLink :item="item.group" />
-    </div>
     <div v-if="item.teacher" style="width: 180px">
       <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }" @click.stop>
         {{ formatNameInitials(item.teacher) }}

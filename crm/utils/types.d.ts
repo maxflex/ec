@@ -602,7 +602,12 @@ declare global {
     contract_version_program_id: number
     teeth: Teeth
     client: PersonWithPhotoResource
+    // в каком проекте
     draft_id: number | null
+    // в какую группу перешел
+    group_id: number | null
+    // реальный group_id
+    real_group_id: number | null
     is_removed: boolean
   }
 

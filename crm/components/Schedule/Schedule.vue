@@ -374,6 +374,7 @@ nextTick(loadAvailableYears)
         :id="`lesson-${item.id}`"
         :key="`l-${item.id}`"
         :item="item"
+        :group="group"
         :checkboxes="checkboxes"
         :mass-edit-mode="massEditMode"
         class="lesson-item lesson-item__lesson"

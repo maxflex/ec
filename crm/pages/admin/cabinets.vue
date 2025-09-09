@@ -81,7 +81,7 @@ const { items, indexPageData } = useIndex<CabinetTeeth>(
     }
     & > div {
       &:first-child {
-        width: 120px;
+        width: 100px;
       }
       &:nth-child(2) {
         width: 150px;
@@ -90,10 +90,10 @@ const { items, indexPageData } = useIndex<CabinetTeeth>(
         width: 180px;
       }
       &:nth-child(4) {
-        flex: 1;
+        width: 230px;
       }
-      &:last-child {
-        width: 600px;
+      &:nth-child(5) {
+        width: 180px;
       }
     }
   }

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { GroupResource } from '.'
+
 const { item } = defineProps<{
   item: GroupResource
 }>()
@@ -8,7 +10,7 @@ const { item } = defineProps<{
   <div class="panel-info">
     <div>
       <h2 style="font-size: 28px" class="pt-1">
-        Группа {{ item.id }}
+        ГР-{{ item.id + (item.level ? `-${item.level}` : '') }}
       </h2>
     </div>
 
@@ -23,12 +25,7 @@ const { item } = defineProps<{
         {{ ProgramLabel[item.program] }}
       </div>
     </div>
-    <div>
-      <div>уровень</div>
-      <UiIfSet :value="!!item.level">
-        {{ item.level }}
-      </UiIfSet>
-    </div>
+
     <div>
       <div>уроки</div>
       <div>

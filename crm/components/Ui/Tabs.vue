@@ -5,6 +5,7 @@ type TabCounts = Partial<Record<Tab, number>>
 const {
   items,
   available,
+  showZero,
   counts = {} as TabCounts,
   countsExtra = {} as TabCounts,
 } = defineProps<{
@@ -21,6 +22,8 @@ const {
    * +/- к основным каунтерам
    */
   countsExtra?: TabCounts
+
+  showZero?: boolean
 }>()
 
 const model = defineModel<Tab>()
@@ -44,30 +47,21 @@ function isTabAvailable(tab: Tab): boolean {
         :class="{ 'tabs-item--active': model === key }"
         @click="model = key"
       >
-        {{ label }}
-        <v-badge
-          v-if="counts[key]"
-          color="grey-darken-3"
-          inline
-        >
-          <template #badge>
-            {{ counts[key] }}
-          </template>
-        </v-badge>
-        <v-badge
+        {{ label + (key in counts && (showZero || counts[key]) ? ':' : '') }}
+        <span v-if="key in counts && (showZero || counts[key])">
+          {{ counts[key] }}
+        </span>
+        <span
           v-if="countsExtra[key]"
-          color="orange-lighten-3"
-          inline
+          class="text-deepOrange"
         >
-          <template #badge>
-            <template v-if="countsExtra[key] > 0">
-              +{{ countsExtra[key] }}
-            </template>
-            <template v-else>
-              -{{ Math.abs(countsExtra[key]) }}
-            </template>
+          <template v-if="countsExtra[key] > 0">
+            + {{ countsExtra[key] }}
           </template>
-        </v-badge>
+          <template v-else>
+            - {{ Math.abs(countsExtra[key]) }}
+          </template>
+        </span>
       </div>
     </template>
   </div>

@@ -22,7 +22,7 @@ Route::controller(ClientTestController::class)->prefix('client-tests')->group(fu
 });
 
 Route::apiResource('sbp', SbpController::class)->only('store');
-Route::apiResource('lessons', LessonController::class)->only(['index', 'show']);
+Route::apiResource('lessons', LessonController::class)->only('index');
 Route::get('billing', BillingController::class);
 Route::apiResource('groups', GroupController::class)->only('index');
 Route::get('grades/journal', [GradeController::class, 'journal']);

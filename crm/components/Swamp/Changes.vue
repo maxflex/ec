@@ -12,10 +12,10 @@ const { item } = defineProps<{
       добавлен в
     </template>
     <template v-else-if="item.changes.type === 'changed'">
-      перемещён в
+      уходит в
     </template>
     <template v-else>
-      удалён
+      уходит из группы
     </template>
     <RouterLink
       v-if="item.changes.group_id"

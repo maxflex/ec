@@ -17,10 +17,10 @@ const studentsCount = 'students_count' in item
   <span :class="{ 'text-gray': !studentsCount }">
     {{ studentsCount }}
     <template v-if="item.draft_students_count && item.status !== 'conducted'">
-      <span v-if="item.draft_students_count > 0" class="text-gray">
+      <span v-if="item.draft_students_count > 0" class="text-deepOrange">
         + {{ item.draft_students_count }}
       </span>
-      <span v-else class="text-gray">
+      <span v-else class="text-deepOrange">
         - {{ Math.abs(item.draft_students_count) }}
       </span>
     </template>

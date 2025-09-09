@@ -22,7 +22,7 @@ class LessonController extends Controller
     {
         if ($request->has('client_id')) {
             $client = Client::find($request->client_id);
-            $lessons = $client->getJournal($request->year);
+            $lessons = $client->getLessons($request->year);
         } else {
             $query = Lesson::with(['teacher', 'group']);
             $this->filter($request, $query);

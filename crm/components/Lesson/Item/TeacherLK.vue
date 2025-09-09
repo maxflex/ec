@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { GroupResource } from '~/components/Group'
 import {
   mdiBookOpenOutline,
   mdiBookOpenVariant,
@@ -6,8 +7,9 @@ import {
 } from '@mdi/js'
 import { Cabinets } from '~/components/Cabinet'
 
-const { item } = defineProps<{
+const { item, group } = defineProps<{
   item: LessonListResource
+  group?: GroupResource
 }>()
 
 const emit = defineEmits<{
@@ -52,7 +54,7 @@ const isConductDisabled = isEditDisabled || item.status === 'cancelled'
     <div style="width: 120px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
-    <div style="width: 70px">
+    <div v-if="!group" style="width: 70px">
       <NuxtLink :to="{ name: 'groups-id', params: { id: item.group.id } }" @click.stop>
         ГР-{{ item.group.id }}
       </NuxtLink>

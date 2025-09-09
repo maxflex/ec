@@ -67,7 +67,7 @@ nextTick(loadData)
         </template>
       </GroupPanel>
 
-      <UiTabs v-model="selectedTab" :items="tabs" :counts="tabCounts" :counts-extra="tabCountsExtra" />
+      <UiTabs v-model="selectedTab" :items="tabs" :counts="tabCounts" :counts-extra="tabCountsExtra" show-zero />
     </div>
     <Schedule v-if="selectedTab === 'schedule'" :group="group" />
     <GroupVisitsTab v-else-if="selectedTab === 'visits'" :id="group.id" />

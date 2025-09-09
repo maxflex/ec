@@ -99,7 +99,7 @@ class Group extends Model implements HasSchedule
     }
 
     /**
-     * Кол-во учеников в проектах договора
+     * Проектные ученики
      */
     public function getDraftStudentsAttribute(): Collection
     {
@@ -121,6 +121,7 @@ class Group extends Model implements HasSchedule
                             'id' => uniqid(),
                             'contract_version_program_id' => $cvpId,
                             'client' => $draft->client,
+                            'group_id' => $p['group_id'],
                             'draft_id' => $draft->id,
                             'is_removed' => true, // удален
                         ]);
@@ -133,6 +134,9 @@ class Group extends Model implements HasSchedule
                             'id' => uniqid(),
                             'contract_version_program_id' => $cvpId,
                             'client' => $draft->client,
+                            'group_id' => $p['group_id'],
+                            // реальный непроектный group_id
+                            'real_group_id' => ClientGroup::where('contract_version_program_id', $cvpId)->first()?->group_id,
                             'draft_id' => $draft->id,
                             'is_removed' => false, // добавлен
                         ]);

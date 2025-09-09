@@ -43,12 +43,14 @@ class ClientGroupController extends Controller
 
         // нужно подмешать "проектных" учеников
         $draftStudents = $group->draft_students;
+        $isFirstAdded = true;
         foreach ($draftStudents as $student) {
             // ученик добавлен реально + удалён в проекте
             if ($student->is_removed) {
                 $result = $result->map(function ($item) use ($student) {
                     if ($item['contract_version_program_id'] === $student->contract_version_program_id) {
                         $item['draft_id'] = $student->draft_id;
+                        $item['group_id'] = $student->group_id;
                         $item['is_removed'] = true;
                     }
 
@@ -56,11 +58,14 @@ class ClientGroupController extends Controller
                 });
             } else {
                 $result->push(extract_fields($student, [
-                    'contract_version_program_id', 'draft_id', 'is_removed',
+                    'contract_version_program_id', 'draft_id', 'group_id', 'is_removed',
+                    'real_group_id',
                 ], [
+                    'is_first_added' => $isFirstAdded,
                     'teeth' => $student->client->getSavedSchedule($group->year),
                     'client' => new PersonWithPhotoResource($student->client),
                 ]));
+                $isFirstAdded = false;
             }
 
         }

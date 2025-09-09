@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { GroupResource } from '~/components/Group'
+
 const { tabs, selectedTab, tabCounts } = useTabs({
   schedule: 'расписание',
   visits: 'посещаемость',
@@ -18,10 +20,7 @@ nextTick(loadData)
 </script>
 
 <template>
-  <div
-    v-if="group"
-    class="group"
-  >
+  <div v-if="group" class="group">
     <div class="panel">
       <GroupPanel :item="group" />
       <UiTabs v-model="selectedTab" :items="tabs" />
