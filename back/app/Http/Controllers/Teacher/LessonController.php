@@ -33,7 +33,7 @@ class LessonController extends \App\Http\Controllers\Admin\LessonController
         abort_unless(
             $lesson->date_time->diffInMinutes(now()) >= 20,
             422,
-            'Провести занятие можно не раньше, чем через <b>20 минут</b> после его начала'
+            'Провести занятие можно минимум через <b>20 минут</b> после его начала'
         );
 
         $lesson->conduct($request->students);
