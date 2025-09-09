@@ -22,6 +22,7 @@ class InstructionController extends Controller
     {
         if ($request->has('teacher_id')) {
             $query = Instruction::query()
+                ->with('signs', fn ($q) => $q->where('teacher_id', $request->teacher_id))
                 ->lastVersions()
                 ->latest();
             $resource = InstructionTeacherListResource::class;

@@ -2,9 +2,11 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Instruction;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/** @mixin Instruction */
 class InstructionTeacherListResource extends JsonResource
 {
     /**
@@ -14,14 +16,10 @@ class InstructionTeacherListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $signedAt = $this->signs()
-            ->where('teacher_id', $request->teacher_id)
-            ->value('signed_at');
-
         return extract_fields($this, [
             'title', 'created_at', 'is_last_version',
         ], [
-            'signed_at' => $signedAt,
+            'signed_at' => $this->signs->first()?->signed_at,
         ]);
     }
 }

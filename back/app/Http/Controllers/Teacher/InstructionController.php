@@ -13,6 +13,7 @@ class InstructionController extends Controller
     public function index(Request $request)
     {
         $query = Instruction::query()
+            ->with('signs', fn ($q) => $q->where('teacher_id', auth()->id()))
             ->lastVersions()
             ->latest();
         $this->filter($request, $query);
