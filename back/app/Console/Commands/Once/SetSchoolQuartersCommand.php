@@ -18,7 +18,7 @@ class SetSchoolQuartersCommand extends Command
     public function handle(): void
     {
         $school8 = collect(Program::cases())->filter(fn (Program $p) => $p->getDirection() === Direction::school8);
-        $school9 = collect(Program::cases())->filter(fn (Program $p) => $p->getDirection() === Direction::school8);
+        $school9 = collect(Program::cases())->filter(fn (Program $p) => $p->getDirection() === Direction::school9);
 
         $allPrograms = $school8->merge($school9)->all();
 
