@@ -48,7 +48,7 @@ class SetSchoolQuartersCommand extends Command
             }
 
             DB::table('lessons')->whereId($lesson->id)->update([
-                'quarter' => $quarter,
+                'quarter' => $quarter->value,
             ]);
 
             $bar->advance();
