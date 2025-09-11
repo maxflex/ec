@@ -17,17 +17,27 @@ class SetSchoolQuartersCommand extends Command
 
     public function handle(): void
     {
-        $school8 = collect(Program::cases())->filter(fn (Program $p) => $p->getDirection() === Direction::school8);
-        $school9 = collect(Program::cases())->filter(fn (Program $p) => $p->getDirection() === Direction::school9);
-
-        $allPrograms = $school8->merge($school9)->all();
+        $programs = collect();
+        foreach (Program::cases() as $program) {
+            if (in_array($program->getDirection(), [
+                Direction::school8,
+                Direction::school9,
+            ])) {
+                if (! str($program->value)->contains('Oge')) {
+                    $programs->push($program->value);
+                }
+            }
+        }
 
         $lessons = Lesson::query()
+            ->selectRaw('lessons.id, lessons.date')
             ->with('group')
-            ->join('groups as g', 'g.id', '=', 'lessons.group_id')
-            ->where('g.year', current_academic_year())
-            ->whereIn('g.program', $allPrograms)
-            ->orderBy('date')
+            ->join('groups as g', fn ($join) => $join
+                ->on('g.id', '=', 'lessons.group_id')
+                ->where('g.year', 2025)
+                ->whereIn('g.program', $programs)
+            )
+            ->orderBy('lessons.date')
             ->get();
 
         $bar = $this->output->createProgressBar($lessons->count());
@@ -37,11 +47,11 @@ class SetSchoolQuartersCommand extends Command
 
             $quarter = null;
 
-            if ($date >= '2025-09-08' && $date <= '2025-10-31') {
+            if ($date <= '2025-10-31') {
                 $quarter = Quarter::q1;
-            } elseif ($date >= '2025-11-01' && $date <= '2025-12-31') {
+            } elseif ($date <= '2025-12-31') {
                 $quarter = Quarter::q2;
-            } elseif ($date >= '2026-01-01' && $date <= '2026-03-13') {
+            } elseif ($date <= '2026-03-13') {
                 $quarter = Quarter::q3;
             } else {
                 $quarter = Quarter::q4;
