@@ -29,6 +29,8 @@ class SetSchoolQuartersCommand extends Command
             }
         }
 
+        dd($programs->map(fn ($e) => "'".$e."'")->join(','));
+
         $lessons = Lesson::query()
             ->selectRaw('lessons.id, lessons.date')
             ->with('group')

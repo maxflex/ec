@@ -43,7 +43,7 @@ export const Cabinets: Record<string, {
   },
   cab414: {
     label: 'К-414',
-    capacity: 12,
+    capacity: 13,
   },
   cab417: {
     label: 'К-417',
@@ -55,7 +55,7 @@ export const Cabinets: Record<string, {
   },
   cab420: {
     label: 'К-420',
-    capacity: 12,
+    capacity: 13,
   },
   cab422: {
     label: 'К-422',
@@ -83,7 +83,7 @@ export const Cabinets: Record<string, {
   },
   cab316: {
     label: 'К-316',
-    capacity: 12,
+    capacity: 13,
   },
   // new
   cab307: {
@@ -100,7 +100,7 @@ export const Cabinets: Record<string, {
   },
   cab427: {
     label: 'К-427',
-    capacity: 8,
+    capacity: 9,
   },
   cab408: {
     label: 'К-408',

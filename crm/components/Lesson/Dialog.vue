@@ -121,13 +121,7 @@ defineExpose({ create, edit })
             :disabled="isConducted"
           />
         </div>
-        <div v-if="isAdmin">
-          <CabinetSelector
-            v-model="lesson.cabinet"
-            label="Кабинет"
-            :disabled="isConducted"
-          />
-        </div>
+
         <div v-if="isAdmin && isQuarterEditable">
           <UiClearableSelect
             v-model="lesson.quarter"
@@ -145,7 +139,7 @@ defineExpose({ create, edit })
             :disabled="isConducted"
           />
         </div>
-        <div v-if="isAdmin">
+        <div v-if="isAdmin" class="double-input">
           <v-text-field
             v-model="lesson.price"
             label="Цена"
@@ -153,6 +147,13 @@ defineExpose({ create, edit })
             hide-spin-buttons
             :disabled="isConducted"
           />
+          <div>
+            <CabinetSelector
+              v-model="lesson.cabinet"
+              label="Кабинет"
+              :disabled="isConducted"
+            />
+          </div>
         </div>
 
         <div v-if="isAdmin" class="double-input">

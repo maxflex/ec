@@ -68,10 +68,11 @@ enum Cabinet: string
     public function capacity(): int
     {
         return match ($this) {
-            self::cab307, self::cab310, self::cab427, self::cab409, self::cab412 => 8,
+            self::cab307, self::cab310, self::cab409, self::cab412 => 8,
+            self::cab427 => 9,
             self::cab407, self::cab408, self::cab308, self::cab312, self::cab424, self::cab417, self::cab423 => 10,
-            self::cab414, self::cab413, self::cab420, self::cab418, self::cab416, self::cab316 => 12,
-            self::cab422, self::cab314, self::cab434, self::cab433, self::cab432, self::cab430, self::cab428 => 13,
+            self::cab413, self::cab418, self::cab416, => 12,
+            self::cab422, self::cab314, self::cab434, self::cab433, self::cab432, self::cab430, self::cab428, self::cab316, self::cab414, self::cab420, => 13,
 
             default => 0
         };
