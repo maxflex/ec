@@ -277,6 +277,8 @@ enum Program: string
             ]));
     }
 
+    public function getSchool() {}
+
     // /**
     //  * @return array<int, Program>
     //  */

@@ -176,6 +176,15 @@ defineExpose({ create, edit })
           />
         </div>
 
+        <div>
+          <v-textarea
+            v-model="item.bio"
+            label="Bio"
+            placeholder="Целевые вузы, хобби, увлечения, особенности"
+            no-resize
+            rows="3"
+          />
+        </div>
         <PhoneEditor v-model="item.phones" edit-telegram />
 
         <div>

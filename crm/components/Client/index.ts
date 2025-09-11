@@ -26,6 +26,7 @@ export interface ClientWithContractsResource extends PersonResource {
 export type MarkSheet = Partial<Record<Subject, number>>
 
 export interface ClientResource extends PersonWithPhotoResource, HasPhones {
+  bio: string | null
   branches: Branch[]
   directions: ClientDirections
   head_teacher_id: number | null

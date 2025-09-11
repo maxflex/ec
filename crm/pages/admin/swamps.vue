@@ -149,7 +149,6 @@ watch(filters.value, () => (sort.value = undefined))
                 class="swamp-counts__expand" @click="expand(item)"
               >
                 {{ ProgramLabel[item.program] }}
-                <v-icon icon="$collapse" />
               </a>
               <!-- </RouterLink> -->
             </td>
@@ -162,7 +161,7 @@ watch(filters.value, () => (sort.value = undefined))
               <td>
                 <UiPerson :item="e.client" />
               </td>
-              <td v-for="{ field } in tableFields" :key="field" :class="`swamp-counts--${field}`" width="150">
+              <td v-for="{ field } in tableFields" :key="field" :class="`swamp-counts--${field}`">
                 <template v-if="field === 'groups'">
                   <div v-for="groupId in e.groups" :key="groupId">
                     <RouterLink :to="{ name: 'groups-id', params: { id: groupId } }">
@@ -257,15 +256,28 @@ watch(filters.value, () => (sort.value = undefined))
     }
   }
 
-  &--expanded,
-  &__expansion {
-    .v-icon {
-      rotate: 0deg !important;
-    }
-
+  &--expanded {
     td {
       background: rgba(var(--v-theme-secondary), 0.1);
     }
+  }
+
+  &__expansion {
+    td {
+      background: rgba(var(--v-theme-secondary), 0.05);
+    }
+  }
+
+  &--active_no_group,
+  &--active_in_group,
+  &--finished_no_group,
+  &--finished_in_group,
+  &--exceeded_no_group,
+  &--exceeded_in_group {
+    width: 140px;
+  }
+  &--groups {
+    width: 100px;
   }
 }
 </style>
