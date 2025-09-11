@@ -4,7 +4,6 @@ import {
   mdiBookOpenVariant,
   mdiPaperclip,
 } from '@mdi/js'
-import { Cabinets } from '~/components/Cabinet'
 
 const { item } = defineProps<{
   item: LessonListResource

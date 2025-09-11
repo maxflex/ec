@@ -45,7 +45,6 @@ const menu: Menu = [
     items: [
       { title: 'Все группы', to: '/groups' },
       { title: 'Болота', to: '/swamps' },
-      { title: 'Болота по программе', to: '/swamps/by-program' },
     ],
   },
   {

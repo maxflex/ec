@@ -39,8 +39,8 @@ class SwampController extends Controller
 
         $this->filter($request, $query);
 
-        if ($request->has('counts')) {
-            return $this->counts($query);
+        if ($request->has('program')) {
+            return $this->byProgramExpand($query);
         }
 
         if ($request->has('by_program')) {
@@ -50,18 +50,20 @@ class SwampController extends Controller
         return $this->handleIndexRequest($request, $query, SwampListResource::class);
     }
 
-    private function counts($query)
+    private function byProgramExpand($query)
     {
         $data = $query->get()->groupBy('client_id');
         $result = collect();
         foreach ($data as $clientId => $d) {
             $counts = [];
+            $groups = [];
             foreach (CvpStatus::cases() as $status) {
                 $inGroup = 0;
                 $noGroup = 0;
                 foreach ($d->where('status', $status->value)->values() as $e) {
                     if ($e->clientGroup) {
                         $inGroup++;
+                        $groups[] = $e->clientGroup->group_id;
                     } else {
                         $noGroup++;
                     }
@@ -72,6 +74,7 @@ class SwampController extends Controller
             }
             $result->push([
                 'client' => new PersonResource(Client::find($clientId)),
+                'groups' => $groups,
                 'counts' => $counts,
             ]);
         }

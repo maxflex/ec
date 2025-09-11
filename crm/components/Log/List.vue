@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { UserDialog } from '#build/components'
-import { mdiArrowTopRightThin, mdiCellphone, mdiSendCircle } from '@mdi/js'
+import { mdiArrowTopRightThin, mdiCellphone, mdiLaptop, mdiSendCircle } from '@mdi/js'
 
 const { items } = defineProps<{
   items: LogResource[]
@@ -16,8 +16,7 @@ const userDialog = ref<InstanceType<typeof UserDialog>>()
       </div>
       <div style="width: 20px">
         <v-icon
-          v-if="log.device !== 'desktop'"
-          :icon="log.device === 'mobile' ? mdiCellphone : mdiSendCircle"
+          :icon="log.device === 'mobile' ? mdiCellphone : (log.device === 'telegram' ? mdiSendCircle : mdiLaptop)"
           :size="20"
           color="gray"
         />
@@ -49,7 +48,7 @@ const userDialog = ref<InstanceType<typeof UserDialog>>()
           {{ formatName(log.emulation_user) }}
         </v-tooltip>
       </div>
-      <div v-if="log.type === 'view'">
+      <div v-if="log.type === 'view'" class="text-truncate">
         <RouterLink :to="log.data.url!">
           {{ log.data.url! }}
         </RouterLink>
