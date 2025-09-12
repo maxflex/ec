@@ -32,16 +32,17 @@ class LessonListResource extends JsonResource
                 $request->has('client_id'),
                 fn () => $this->getClientLesson(intval($request->client_id)),
             ),
+            'draft_students_count' => $this->when(
+                $isAdmin,
+                fn () => $this->group->draft_students_count
+            ),
+            // если занятие проведено: берем фактическое из client_lessons
+            // иначе берем из client_groups
+            'students_count' => $this->status === LessonStatus::conducted
+                ? $this->clientLessons()->count()
+                : $this->group->clientGroups()->count(),
             'group' => extract_fields($this->group, [
                 'program', 'zoom', 'level', 'draft_students_count',
-            ], [
-                'draft_students_count' => $this->when(
-                    $isAdmin,
-                    fn () => $this->group->draft_students_count
-                ),
-                'students_count' => $this->status === LessonStatus::conducted
-                    ? $this->clientLessons()->count()
-                    : $this->group->clientGroups()->count(),
             ]),
         ]);
     }

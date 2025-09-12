@@ -201,6 +201,7 @@ defineExpose({ create, edit })
             label="Внеплановое"
           />
           <v-checkbox
+            v-if="isAdmin"
             v-model="lesson.is_free"
             :disabled="isTeacher"
             label="Бесплатное для детей"

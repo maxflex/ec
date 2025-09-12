@@ -59,7 +59,7 @@ const isConductDisabled = item.status !== 'conducted'
       {{ ProgramShortLabel[item.group.program] }}
     </div>
     <div style="width: 60px">
-      <GroupStudentsCount v-if="item.status !== 'cancelled'" :item="item.group" />
+      <GroupStudentsCount v-if="item.status !== 'cancelled'" :item="item" />
     </div>
 
     <div style="width: 100px" class="lesson-item__icons">

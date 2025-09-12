@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { item } = defineProps<{
   item: {
-    draft_students_count: number
+    draft_students_count?: number
     client_groups_count?: number
     students_count?: number
     status?: LessonStatus

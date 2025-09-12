@@ -244,6 +244,8 @@ declare global {
     homework: ?string
     quarter: Quarter | null
     has_files: boolean
+    students_count: number
+    draft_students_count?: number
     client_lesson?: {
       id: number
       status: ClientLessonStatus
@@ -255,7 +257,6 @@ declare global {
     group: {
       id: number
       program: Program
-      students_count: number
       zoom: Zoom
     }
   }

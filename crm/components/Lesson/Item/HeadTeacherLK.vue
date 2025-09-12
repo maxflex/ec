@@ -22,9 +22,7 @@ const { item } = defineProps<{
       </NuxtLink>
     </div>
     <div v-if="item.teacher" style="width: 140px">
-      <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }" @click.stop>
-        {{ formatNameInitials(item.teacher) }}
-      </NuxtLink>
+      {{ formatNameInitials(item.teacher) }}
     </div>
     <div style="width: 110px">
       {{ ProgramShortLabel[item.group.program] }}
