@@ -26,7 +26,7 @@ class CallAppAonResource extends JsonResource
         };
 
         return extract_fields($this, [
-            'number', 'comment', 'telegram_id', 'is_telegram_disabled',
+            'entity_type', 'number', 'comment', 'telegram_id', 'is_telegram_disabled',
         ], $extra);
     }
 }

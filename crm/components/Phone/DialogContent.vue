@@ -143,12 +143,12 @@ nextTick(loadCalls)
 <template>
   <div class="dialog-wrapper phone-dialog" :class="{ 'phone-dialog--has-back-btn': backBtn }">
     <div class="dialog-header">
-      <div class="d-flex ga-2 align-center">
-        <v-btn v-if="backBtn" icon="$back" :size="48" variant="plain" @click="emit('back')" />
-        <PhoneNumber style="white-space: nowrap;" :item="item" />
-        <div v-if="item.comment" class="dialog-subheader px-3">
-          {{ filterTruncate(item.comment, 55) }}
-        </div>
+      <v-btn v-if="backBtn" icon="$back" :size="48" variant="plain" @click="emit('back')" />
+      <PhoneNumber :item="item" />
+      <div class="dialog-subheader">
+        <template v-if="item.comment">
+          {{ item.comment }}
+        </template>
       </div>
       <div>
         <PhonePreviewModeBtn :item="item" />
@@ -221,6 +221,15 @@ nextTick(loadCalls)
 .phone-dialog {
   .dialog-header {
     background: white !important;
+    gap: 8px;
+
+    .dialog-subheader {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: inline-block;
+    }
   }
   .tabs {
     position: sticky;

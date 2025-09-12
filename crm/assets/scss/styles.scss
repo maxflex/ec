@@ -62,6 +62,19 @@ a.table-item {
   gap: 30px;
 }
 
+.input-with-counter {
+  position: relative;
+
+  &__counter {
+    position: absolute;
+    right: 10px;
+    top: 126px;
+    z-index: 1;
+    font-size: 12px;
+    color: rgb(var(--v-theme-gray));
+  }
+}
+
 .no-pointer-events {
   pointer-events: none;
 }

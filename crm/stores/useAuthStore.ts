@@ -80,7 +80,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (data.value) {
       const entityType = data.value.entity_type
       isAdmin.value = entityType === EntityTypeValue.user
-      isClient.value = entityType === EntityTypeValue.client
+      isClient.value = (entityType === EntityTypeValue.client) || (entityType === EntityTypeValue.representative)
       isTeacher.value = entityType === EntityTypeValue.teacher
       user.value = data.value
     }

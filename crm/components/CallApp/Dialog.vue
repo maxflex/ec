@@ -70,7 +70,7 @@ $addSseListener('CallSummaryEvent', (call: CallListResource) => {
       <div class="dialog-body pa-0 ga-0">
         <div>
           <CallAppActiveCallsList :items="activeCalls" />
-          <CallAppCallsList v-if="items.length" :items="items" @history="e => (historyItem = e)" />
+          <CallAppCallsList v-if="items.length" :items="items" @history="e => (historyItem = (e.aon || e))" />
           <UiNoData v-else-if="!loading && activeCalls.length === 0" />
         </div>
       </div>

@@ -19,6 +19,7 @@ const modelDefaults: LessonResource = {
   files: [],
 }
 
+const topicInput = ref()
 const saving = ref(false)
 const timeMask = { mask: '##:##' }
 const { dialog, width } = useDialog('default')
@@ -29,8 +30,10 @@ const year = ref<Year>()
 // если занятие проведено, нельзя менять статус на "отмена"
 const isConducted = ref(false)
 const isQuarterEditable = ref(false)
+const isTopicError = ref(false)
 
 function create(groupId: number, y: Year, p: Program) {
+  isTopicError.value = false
   itemId.value = undefined
   year.value = y
   lesson.value = cloneDeep(modelDefaults)
@@ -44,6 +47,7 @@ async function edit(lessonId: number) {
   itemId.value = lessonId
   loading.value = true
   dialog.value = true
+  isTopicError.value = false
   const { data } = await useHttp<LessonResource>(`lessons/${lessonId}`)
   if (data.value) {
     lesson.value = data.value
@@ -55,6 +59,13 @@ async function edit(lessonId: number) {
 }
 
 async function save() {
+  const { topic } = lesson.value
+  if (!topic || topic.length < 50) {
+    topicInput.value.focus()
+    isTopicError.value = true
+    return
+  }
+  isTopicError.value = false
   saving.value = true
   const method = itemId.value ? 'put' : 'post'
   const url = itemId.value ? `lessons/${itemId.value}` : 'lessons'
@@ -171,13 +182,21 @@ defineExpose({ create, edit })
             />
           </div>
         </div>
-        <div>
+        <div class="input-with-counter">
           <v-textarea
+            ref="topicInput"
             v-model="lesson.topic"
+            :error-messages="isTopicError ? 'Тема урока должна содержать не менее 50 символов' : ''"
+            :hide-details="!isTopicError"
             :disabled="isTeacher && lesson.is_topic_verified"
-            label="Тема"
+            label="Тема урока"
             no-resize
           />
+          <v-fade-transition>
+            <div v-if="lesson.topic" class="input-with-counter__counter">
+              {{ lesson.topic.length }}
+            </div>
+          </v-fade-transition>
         </div>
         <div>
           <v-textarea
