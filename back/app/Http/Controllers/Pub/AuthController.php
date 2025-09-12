@@ -103,9 +103,10 @@ class AuthController extends Controller
         // должен быть в итоге единственный кандидат к логину
         abort_unless($candidates->count() === 1, 422);
 
-        return $this->logIn($candidates->first(), [
-            'via_telegram' => true,
-        ]);
+        return $this->logIn(
+            $candidates->first(),
+            ['via_telegram' => true]
+        );
     }
 
     /**

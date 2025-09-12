@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Enums\LogType;
 use App\Http\Resources\LogResource;
+use App\Models\Client;
 use App\Models\Log;
+use App\Models\Representative;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -13,6 +15,7 @@ class LogController extends Controller
     protected $filters = [
         'equals' => ['type', 'table', 'entity_id', 'entity_type', 'device'],
         'userId' => ['user_id'],
+        'clientId' => ['client_id'],
         'rowId' => ['row_id'],
         'q' => ['q'],
     ];
@@ -58,6 +61,19 @@ class LogController extends Controller
             ])
             ->orWhere('emulation_user_id', $userId)
         );
+    }
+
+    // Тут должны быть клиенты и представители
+    protected function filterClientId($query, $clientId)
+    {
+        $query->whereRaw('(
+        (entity_id = ? and entity_type = ?) OR (entity_id = ? and entity_type = ?)
+       )', [
+            $clientId,
+            Client::class,
+            Representative::where('client_id', $clientId)->first()->id,
+            Representative::class,
+        ]);
     }
 
     protected function filterQ($query, $q)

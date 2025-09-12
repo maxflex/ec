@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 export interface Filters {
   status?: RequestStatus
+  responsible_user_id?: number
   direction: Direction[]
 }
 
@@ -47,6 +48,12 @@ const model = defineModel<Filters>({ required: true })
     v-model="model.direction"
     label="Направление"
     :items="selectItems(DirectionLabel)"
+    density="comfortable"
+  />
+
+  <UserSelector
+    v-model="model.responsible_user_id"
+    label="Ответственный"
     density="comfortable"
   />
 </template>

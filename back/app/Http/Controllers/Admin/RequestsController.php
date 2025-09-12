@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Events\RequestUpdatedEvent;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\RequestListResource;
 use App\Http\Resources\RequestResource;
 use App\Models\Client;
@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 class RequestsController extends Controller
 {
     protected $filters = [
-        'equals' => ['status', 'id'],
+        'equals' => ['status', 'id', 'responsible_user_id'],
         'findInSet' => ['direction'],
         'client' => ['client_id'],
     ];

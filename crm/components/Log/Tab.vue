@@ -1,18 +1,19 @@
 <script setup lang="ts">
 const { clientId } = defineProps<{
-  clientId?: number
+  clientId: number
 }>()
 
 const tabName = 'LogsTab'
 
+const filters = ref<{ entity_type?: EntityType }>({})
+
 const { items, indexPageData } = useIndex<LogResource>(
   `logs`,
-  ref({}),
+  filters,
   {
     tabName,
     staticFilters: {
-      entity_type: EntityTypeValue.client,
-      entity_id: clientId,
+      client_id: clientId,
     },
   },
 )
@@ -20,6 +21,14 @@ const { items, indexPageData } = useIndex<LogResource>(
 
 <template>
   <UiIndexPage :data="indexPageData">
+    <template #filters>
+      <UiClearableSelect
+        v-model="filters.entity_type"
+        label="Пользователь"
+        :items="selectItems(EntityTypeLabel, ['App\\Models\\Client', 'App\\Models\\Representative'])"
+        density="comfortable"
+      />
+    </template>
     <LogList :items="items" />
   </UiIndexPage>
 </template>

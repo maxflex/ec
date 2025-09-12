@@ -70,8 +70,12 @@ class ControlController extends Controller
         $this->query
             ->with(['phones', 'representative.phones']) // 'contracts.versions.programs'
             ->with('reports', fn ($q) => $q->where('year', $request->year))
-            ->with('logs', fn ($q) => $q->whereRaw('created_at >= NOW() - INTERVAL 3 MONTH'))
-            ->with('representative.logs', fn ($q) => $q->whereRaw('created_at >= NOW() - INTERVAL 3 MONTH'))
+            ->with('logs', fn ($q) => $q
+                ->whereRaw('created_at >= NOW() - INTERVAL 3 MONTH')->whereNull('emulation_user_id')
+            )
+            ->with('representative.logs', fn ($q) => $q
+                ->whereRaw('created_at >= NOW() - INTERVAL 3 MONTH')->whereNull('emulation_user_id')
+            )
             ->withCount([
                 'comments' => fn ($q) => $q->where('extra', 'control-lk'),
             ])
