@@ -56,6 +56,11 @@ class User extends Person
         return $this->hasMany(Request::class);
     }
 
+    public function responsibleRequests(): HasMany
+    {
+        return $this->hasMany(Request::class, 'responsible_user_id');
+    }
+
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);

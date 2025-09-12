@@ -12,6 +12,7 @@ class UserController extends Controller
     protected $filters = [
         'equals' => ['is_active'],
         'search' => ['q'],
+        'hasResponsibleRequests' => ['has_responsible_requests'],
     ];
 
     public function index(Request $request)
@@ -65,5 +66,10 @@ class UserController extends Controller
                     ->orWhere('last_name', 'like', "%{$word}%");
             }
         });
+    }
+
+    protected function filterHasResponsibleRequests($query)
+    {
+        $query->whereHas('responsibleRequests');
     }
 }

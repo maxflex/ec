@@ -51,7 +51,7 @@ const model = defineModel<Filters>({ required: true })
     density="comfortable"
   />
 
-  <UserSelector
+  <UserResponsibleSelector
     v-model="model.responsible_user_id"
     label="Ответственный"
     density="comfortable"
