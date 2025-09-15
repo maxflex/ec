@@ -19,7 +19,7 @@ async function edit(lesson: TopicListResource) {
 }
 
 async function save() {
-  if (topicLength.value < 50) {
+  if (topicLength.value < 50 && item.value?.is_topic_verified) {
     topicInput.value.focus()
     isTopicError.value = true
     return
