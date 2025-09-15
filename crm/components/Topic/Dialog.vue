@@ -8,18 +8,31 @@ const emit = defineEmits<{
 const saving = ref(false)
 const { dialog, width } = useDialog('default')
 const item = ref<TopicListResource>()
+const isTopicError = ref(false)
+const topicInput = ref()
 
 async function edit(lesson: TopicListResource) {
+  isTopicError.value = false
   item.value = cloneDeep(lesson)
   dialog.value = true
 }
 
 async function save() {
+  const { topic } = item.value!
+  if (!topic || topic.length < 50) {
+    topicInput.value.focus()
+    isTopicError.value = true
+    return
+  }
+  isTopicError.value = false
   saving.value = true
-  const { data } = await useHttp(`lessons/${item.value?.id}`, {
-    method: 'put',
-    body: item.value,
-  })
+  const { data } = await useHttp(
+    `lessons/${item.value?.id}`,
+    {
+      method: 'put',
+      body: item.value,
+    },
+  )
   if (data.value) {
     emit('updated', item.value!)
     itemUpdated('topic', item.value!.id)
@@ -47,15 +60,23 @@ defineExpose({ edit })
         </div>
       </div>
       <div v-if="item" class="dialog-body">
-        <div>
+        <div class="input-with-counter">
           <v-textarea
+            ref="topicInput"
             v-model="item.topic"
             :disabled="item.is_topic_verified"
+            :error-messages="isTopicError ? 'Тема урока должна содержать не менее 50 символов' : ''"
+            :hide-details="!isTopicError"
             label="Тема"
             no-resize
             auto-grow
             rows="5"
           />
+          <v-fade-transition>
+            <div v-if="item.topic" class="input-with-counter__counter">
+              {{ item.topic.length }}
+            </div>
+          </v-fade-transition>
         </div>
         <div>
           <v-checkbox
