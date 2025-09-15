@@ -10,6 +10,7 @@ const { dialog, width } = useDialog('default')
 const item = ref<TopicListResource>()
 const isTopicError = ref(false)
 const topicInput = ref()
+const topicLength = computed(() => item.value?.topic?.replace(/\s+/g, '').length || 0)
 
 async function edit(lesson: TopicListResource) {
   isTopicError.value = false
@@ -18,8 +19,7 @@ async function edit(lesson: TopicListResource) {
 }
 
 async function save() {
-  const { topic } = item.value!
-  if (!topic || topic.length < 50) {
+  if (topicLength.value < 50) {
     topicInput.value.focus()
     isTopicError.value = true
     return
@@ -73,8 +73,8 @@ defineExpose({ edit })
             rows="5"
           />
           <v-fade-transition>
-            <div v-if="item.topic" class="input-with-counter__counter">
-              {{ item.topic.length }}
+            <div v-if="topicLength" class="input-with-counter__counter">
+              {{ topicLength }}
             </div>
           </v-fade-transition>
         </div>

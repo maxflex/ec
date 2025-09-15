@@ -31,6 +31,7 @@ const year = ref<Year>()
 const isConducted = ref(false)
 const isQuarterEditable = ref(false)
 const isTopicError = ref(false)
+const topicLength = computed(() => lesson.value.topic?.replace(/\s+/g, '').length || 0)
 
 function create(groupId: number, y: Year, p: Program) {
   isTopicError.value = false
@@ -59,8 +60,7 @@ async function edit(lessonId: number) {
 }
 
 async function save() {
-  const { topic } = lesson.value
-  if (!topic || topic.length < 50) {
+  if (topicLength.value < 50) {
     topicInput.value.focus()
     isTopicError.value = true
     return
@@ -193,8 +193,8 @@ defineExpose({ create, edit })
             no-resize
           />
           <v-fade-transition>
-            <div v-if="lesson.topic" class="input-with-counter__counter">
-              {{ lesson.topic.length }}
+            <div v-if="topicLength" class="input-with-counter__counter">
+              {{ topicLength }}
             </div>
           </v-fade-transition>
         </div>
