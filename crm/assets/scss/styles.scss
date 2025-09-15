@@ -170,6 +170,12 @@ a.table-item {
     padding: 16px 10px 16px 20px;
   }
 
+  // &:has(.panel-schedule) {
+  //   .panel-info {
+  //     border-bottom: none !important;
+  //   }
+  // }
+
   &-info-two-rows {
     padding: 16px 10px 16px 20px;
     border-bottom: 1px solid #e0e0e0;
@@ -184,20 +190,26 @@ a.table-item {
       gap: $gap;
     }
 
-    .panel-schedule {
-      padding-top: 30px;
-      display: flex;
-      // gap: $gap;
-
-      gap: 10px;
-      flex-direction: column;
-    }
-
     & > div:last-child {
       flex: 1;
       display: flex;
       flex-direction: column;
     }
+  }
+
+  .panel-schedule {
+    // padding-left: 20px;
+    // padding-right: 20px;
+    // padding-bottom: 20px;
+    // padding: 12px 20px;
+    padding: 0 20px;
+    height: 48px;
+
+    display: flex;
+    gap: $gap;
+    border-bottom: 1px solid #e0e0e0;
+    // gap: 10px;
+    // flex-direction: column;
   }
 
   .panel-blocks,

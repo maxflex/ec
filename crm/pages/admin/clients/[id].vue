@@ -43,68 +43,64 @@ nextTick(loadData)
 <template>
   <template v-if="client">
     <div class="panel">
-      <div class="panel-info-two-rows">
-        <UiAvatar :item="client" :size="140" />
+      <div class="panel-info">
+        <UiAvatar :item="client" :size="120" />
         <div>
-          <div class="panel-blocks">
-            <div>
-              <div>
-                ученик
-                <ClientRiskLabel :item="client" />
-              </div>
-              <div class="text-truncate">
-                {{ formatName(client) }}
-                <div v-if="client.phones" class="mt-5">
-                  <PhoneList :items="client.phones" show-icons />
-                </div>
-              </div>
-            </div>
-            <div>
-              <div>представитель</div>
-              <div class="text-truncate">
-                {{ formatName(client.representative) }}
-                <div v-if="client.representative.phones" class="mt-5">
-                  <PhoneList :items="client.representative.phones" show-icons />
-                </div>
-              </div>
-            </div>
-            <div>
-              <div>направления</div>
-              <div>
-                <ClientDirections :item="client.directions" />
-              </div>
-            </div>
-            <div>
-              <div>куратор</div>
-              <UiPerson v-if="client.head_teacher" :item="client.head_teacher" />
-              <div v-else>
-                не установлено
-              </div>
-            </div>
-            <div class="panel-actions">
-              <CommentBtn
-                :entity-id="client.id"
-                :entity-type="EntityTypeValue.client"
-              />
-              <v-btn
-                icon="$print"
-                :size="48"
-                variant="plain"
-                @click="printSpravkaDialog?.open(client.id)"
-              />
-              <v-btn
-                icon="$edit"
-                :size="48"
-                variant="plain"
-                @click="clientDialog?.edit(client.id)"
-              />
-            </div>
+          <div>
+            ученик
+            <ClientRiskLabel :item="client" />
           </div>
-          <div class="panel-schedule">
-            <TeethBar :items="client.schedule || {}" />
-            <LessonCurrentLesson v-if="client.current_lesson" :item="client.current_lesson" />
+          <div class="text-truncate">
+            {{ formatName(client) }}
+            <div v-if="client.phones" class="mt-5">
+              <PhoneList :items="client.phones" show-icons />
+            </div>
           </div>
         </div>
+        <div>
+          <div>представитель</div>
+          <div class="text-truncate">
+            {{ formatName(client.representative) }}
+            <div v-if="client.representative.phones" class="mt-5">
+              <PhoneList :items="client.representative.phones" show-icons />
+            </div>
+          </div>
+        </div>
+        <div>
+          <div>направления</div>
+          <div>
+            <ClientDirections :item="client.directions" />
+          </div>
+        </div>
+        <div>
+          <div>куратор</div>
+          <UiPerson v-if="client.head_teacher" :item="client.head_teacher" />
+          <div v-else>
+            не установлено
+          </div>
+        </div>
+        <div class="panel-actions">
+          <CommentBtn
+            :entity-id="client.id"
+            :entity-type="EntityTypeValue.client"
+          />
+          <v-btn
+            icon="$print"
+            :size="48"
+            variant="plain"
+            @click="printSpravkaDialog?.open(client.id)"
+          />
+          <v-btn
+            icon="$edit"
+            :size="48"
+            variant="plain"
+            @click="clientDialog?.edit(client.id)"
+          />
+        </div>
+      </div>
+      <div v-if="client.schedule" class="panel-schedule">
+        <TeethBar :items="client.schedule" />
+        <LessonCurrentLesson v-if="client.current_lesson" :item="client.current_lesson" />
       </div>
       <UiTabs v-model="selectedTab" :items="tabs" />
     </div>

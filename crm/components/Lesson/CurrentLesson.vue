@@ -15,10 +15,12 @@ const hideTeacher = teacherId && teacherId === item.teacher.id
 
 <template>
   <div class="lesson-current-lesson">
-    <span class="live-badge__dot" aria-hidden="true"></span>
-    <span v-if="isCurrentLessonStarted">
-      Идёт урок
-    </span>
+    <template v-if="isCurrentLessonStarted">
+      <span class="live-badge__dot"></span>
+      <span>
+        Идёт урок
+      </span>
+    </template>
     <span v-else>
       Следующий урок
     </span>
@@ -40,7 +42,7 @@ const hideTeacher = teacherId && teacherId === item.teacher.id
   white-space: nowrap;
   color: rgb(var(--v-theme-gray));
   display: inline-flex;
-  gap: 14px;
+  gap: 20px;
   align-items: center;
   // font-size: 14px;
 
@@ -55,7 +57,6 @@ const hideTeacher = teacherId && teacherId === item.teacher.id
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  color: rgb(var(--v-theme-error)); /* тот же токен, что и в Vuetify */
   /* необязательно, но можно слегка подсветить фон:
   background: color-mix(in oklab, rgb(var(--v-theme-error)) 8%, transparent);
   padding: 2px 8px; border-radius: 999px;
@@ -94,13 +95,6 @@ const hideTeacher = teacherId && teacherId === item.teacher.id
   to {
     opacity: 0;
     transform: scale(1.2);
-  }
-}
-
-/* уважение к настройкам доступности */
-@media (prefers-reduced-motion: reduce) {
-  .live-badge__dot::after {
-    animation: none;
   }
 }
 </style>

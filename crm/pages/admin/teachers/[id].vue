@@ -49,51 +49,44 @@ nextTick(loadData)
 <template>
   <template v-if="teacher">
     <div class="panel">
-      <div class="panel-info-two-rows">
-        <!-- avatar -->
-        <UiAvatar :item="teacher" :size="140" />
-
-        <!-- two rows -->
+      <div class="panel-info">
         <div>
-          <!-- first row -->
-          <div class="panel-blocks">
-            <div>
-              <div>преподаватель</div>
-              <div>
-                {{ formatFullName(teacher) }}
-                <div v-if="teacher.phones" class="mt-5">
-                  <PhoneList :items="teacher.phones" />
-                </div>
-              </div>
+          <UiAvatar :item="teacher" />
+        </div>
+        <div>
+          <div>преподаватель</div>
+          <div>
+            {{ formatFullName(teacher) }}
+            <div v-if="teacher.phones" class="mt-5">
+              <PhoneList :items="teacher.phones" />
             </div>
-            <div>
-              <div>предметы</div>
-              <div>
-                {{ teacher.subjects.map(s => SubjectLabel[s]).join(', ') }}
-              </div>
-            </div>
-            <div>
-              <div>статус</div>
-              <div>
-                {{ TeacherStatusLabel[teacher.status] }}
-              </div>
-            </div>
-            <div class="panel-actions">
-              <!-- <PreviewMode :teacher-id="teacher.id" /> -->
-              <v-btn
-                icon="$edit"
-                :size="48"
-                variant="plain"
-                @click="teacherDialog?.edit(teacher!.id)"
-              />
-            </div>
-          </div>
-          <!-- second row -->
-          <div class="panel-schedule">
-            <TeethBar :items="teacher.schedule || {}" />
-            <LessonCurrentLesson v-if="teacher.current_lesson" :item="teacher.current_lesson" :teacher-id="teacher.id" />
           </div>
         </div>
+        <div>
+          <div>предметы</div>
+          <div>
+            {{ teacher.subjects.map(s => SubjectLabel[s]).join(', ') }}
+          </div>
+        </div>
+        <div>
+          <div>статус</div>
+          <div>
+            {{ TeacherStatusLabel[teacher.status] }}
+          </div>
+        </div>
+        <div class="panel-actions">
+          <!-- <PreviewMode :teacher-id="teacher.id" /> -->
+          <v-btn
+            icon="$edit"
+            :size="48"
+            variant="plain"
+            @click="teacherDialog?.edit(teacher!.id)"
+          />
+        </div>
+      </div>
+      <div v-if="teacher.schedule" class="panel-schedule">
+        <TeethBar :items="teacher.schedule" />
+        <LessonCurrentLesson v-if="teacher.current_lesson" :item="teacher.current_lesson" :teacher-id="teacher.id" />
       </div>
       <UiTabs v-model="selectedTab" :items="tabs" :available="availableTabs" />
     </div>
