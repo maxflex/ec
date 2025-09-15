@@ -31,9 +31,7 @@ const hideTeacher = item && teacherId && teacherId === item.teacher.id
     <span>
       {{ ProgramShortLabel[item.group.program] }}
     </span>
-    <span>
-      {{ Cabinets[item.cabinet].label }}
-    </span>
+    <CabinetWithCapacity :item="item.cabinet" />
   </div>
   <div v-else class="lesson-current-lesson opacity-5">
     <template v-if="teacherId">
