@@ -100,7 +100,7 @@ nextTick(loadData)
       </div>
       <div v-if="client.schedule" class="panel-schedule">
         <TeethBar :items="client.schedule" />
-        <LessonCurrentLesson v-if="client.current_lesson" :item="client.current_lesson" />
+        <LessonCurrentLesson :item="client.current_lesson" />
       </div>
       <UiTabs v-model="selectedTab" :items="tabs" />
     </div>

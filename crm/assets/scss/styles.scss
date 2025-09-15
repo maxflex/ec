@@ -208,6 +208,7 @@ a.table-item {
     display: flex;
     gap: $gap;
     border-bottom: 1px solid #e0e0e0;
+    align-items: center;
     // gap: 10px;
     // flex-direction: column;
   }

@@ -4,17 +4,17 @@ import { format } from 'date-fns'
 import { Cabinets } from '../Cabinet'
 
 const { item, teacherId } = defineProps<{
-  item: CurrentLessonResource
+  item: CurrentLessonResource | null
   teacherId?: number
 }>()
 
-const isCurrentLessonStarted = item.time <= format(new Date(), 'HH:mm:00')
+const isCurrentLessonStarted = item && item.time <= format(new Date(), 'HH:mm:00')
 
-const hideTeacher = teacherId && teacherId === item.teacher.id
+const hideTeacher = item && teacherId && teacherId === item.teacher.id
 </script>
 
 <template>
-  <div class="lesson-current-lesson">
+  <div v-if="item" class="lesson-current-lesson">
     <template v-if="isCurrentLessonStarted">
       <span class="live-badge__dot"></span>
       <span>
@@ -34,6 +34,14 @@ const hideTeacher = teacherId && teacherId === item.teacher.id
     <span>
       {{ Cabinets[item.cabinet].label }}
     </span>
+  </div>
+  <div v-else class="lesson-current-lesson opacity-5">
+    <template v-if="teacherId">
+      сегодня занятий нет
+    </template>
+    <template v-else>
+      сегодня занятий нет
+    </template>
   </div>
 </template>
 
