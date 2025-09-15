@@ -17,8 +17,10 @@ class TeacherResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'photo_url', 'is_head_teacher', '*'
+            'photo_url', 'is_head_teacher', '*',
         ], [
+            'current_lesson' => new CurrentLessonResource($this->current_lesson),
+            'schedule' => $this->schedule[current_academic_year()] ?? null,
             'entity_type' => Teacher::class,
             'phones' => PhoneResource::collection($this->phones),
             'user' => new PersonResource($this->user),

@@ -31,6 +31,7 @@ const selectedProgram = ref<Program>()
 const selectedYear = ref<Year>()
 const hideEmptyDates = ref<number>(1)
 const { user, isTeacher, isClient } = useAuthStore()
+const showSchedule = ref(true)
 const isMassEditable = user?.entity_type === EntityTypeValue.user && group
 const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const params = {
@@ -153,7 +154,7 @@ async function loadLessons() {
 }
 
 async function loadTeeth() {
-  if (group) {
+  if (group || !showSchedule.value) {
     return
   }
   const { data } = await useHttp<Teeth>(
@@ -267,6 +268,7 @@ const lessonComponent = (function () {
   }
   else if (clientId) {
     console.log('LessonItemAdminClient')
+    showSchedule.value = false
     return LessonItemAdminClient
   }
   else if (isTeacher) {
@@ -275,6 +277,7 @@ const lessonComponent = (function () {
   }
   else if (teacherId) {
     console.log('LessonItemAdminTeacher')
+    showSchedule.value = false
     return LessonItemAdminTeacher
   }
   console.log('LessonItemAdminGroup')
@@ -344,7 +347,7 @@ nextTick(loadAvailableYears)
           </v-list-item>
         </v-list>
       </v-menu>
-      <v-fade-transition v-else>
+      <v-fade-transition v-else-if="showSchedule">
         <TeethBar v-if="teeth" :items="teeth" />
       </v-fade-transition>
     </template>

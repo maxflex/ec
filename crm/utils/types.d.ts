@@ -281,35 +281,6 @@ declare global {
     students: ClientLessonResource[]
   }
 
-  interface TeacherListResource extends PersonWithPhotoResource {
-    status: TeacherStatus
-    subjects: Subject[]
-    teeth: Teeth
-    is_published: boolean
-    created_at: string
-  }
-
-  interface TeacherResource extends PersonWithPhotoResource {
-    phones: PhoneResource[]
-    status: TeacherStatus
-    subjects: Subject[]
-    is_published: boolean
-    is_head_teacher: boolean
-    is_split_balance: boolean
-    desc?: string
-    photo_desc?: string
-    passport: {
-      series: ?string
-      number: ?string
-      address: ?string
-      code: ?string
-      issued_by: ?string
-    }
-    so?: number
-    created_at?: string
-    user?: PersonResource
-  }
-
   interface BalanceItem {
     comment: string
     sum: number

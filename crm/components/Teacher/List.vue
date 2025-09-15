@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { TeacherListResource } from '.'
 import { mdiWeb } from '@mdi/js'
 
 const { items } = defineProps<{

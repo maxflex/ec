@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\HasSchedule;
+use App\Enums\LessonStatus;
 use App\Enums\TeacherPaymentMethod;
 use App\Enums\TeacherStatus;
 use App\Traits\HasScheduleTrait;
@@ -210,5 +211,27 @@ class Teacher extends Person implements HasSchedule
     public function reports(): HasMany
     {
         return $this->hasMany(Report::class);
+    }
+
+    public function getCurrentLessonAttribute(): ?Lesson
+    {
+        $currentTime = now()->format('H:i:s');
+
+        $todayLessons = Lesson::query()
+            ->where('status', '<>', LessonStatus::cancelled)
+            ->where('date', now()->format('Y-m-d'))
+            ->where('teacher_id', $this->id)
+            ->orderBy('time')
+            ->get();
+
+        foreach ($todayLessons as $lesson) {
+            if ($lesson->time_end < $currentTime) {
+                continue;
+            }
+
+            return $lesson;
+        }
+
+        return null;
     }
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ChartData } from 'chart.js'
 import type { TeacherStatsKey, TeacherStatsResponse } from '.'
+import type { TeacherResource } from '..'
 import { Chart, registerables } from 'chart.js'
 import { BarChart } from 'vue-chart-3'
 import { colors } from '~/plugins/vuetify'

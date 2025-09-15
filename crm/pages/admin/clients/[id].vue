@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { ClientDialog, PrintSpravkaDialog } from '#build/components'
 import type { ClientResource } from '~/components/Client'
-import { mdiTable } from '@mdi/js'
 
 const { tabs, selectedTab } = useTabs({
   requests: 'заявки',
@@ -44,61 +43,67 @@ nextTick(loadData)
 <template>
   <template v-if="client">
     <div class="panel">
-      <div class="panel-info">
-        <div class="client-avatar">
-          <UiAvatar :item="client" :size="140" />
-        </div>
+      <div class="panel-info-two-rows">
+        <UiAvatar :item="client" :size="140" />
         <div>
-          <div>
-            ученик
-            <ClientRiskLabel :item="client" />
-          </div>
-          <div class="text-truncate">
-            {{ formatName(client) }}
-            <div v-if="client.phones" class="mt-5">
-              <PhoneList :items="client.phones" show-icons />
+          <div class="panel-blocks">
+            <div>
+              <div>
+                ученик
+                <ClientRiskLabel :item="client" />
+              </div>
+              <div class="text-truncate">
+                {{ formatName(client) }}
+                <div v-if="client.phones" class="mt-5">
+                  <PhoneList :items="client.phones" show-icons />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div>представитель</div>
+              <div class="text-truncate">
+                {{ formatName(client.representative) }}
+                <div v-if="client.representative.phones" class="mt-5">
+                  <PhoneList :items="client.representative.phones" show-icons />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div>направления</div>
+              <div>
+                <ClientDirections :item="client.directions" />
+              </div>
+            </div>
+            <div>
+              <div>куратор</div>
+              <UiPerson v-if="client.head_teacher" :item="client.head_teacher" />
+              <div v-else>
+                не установлено
+              </div>
+            </div>
+            <div class="panel-actions">
+              <CommentBtn
+                :entity-id="client.id"
+                :entity-type="EntityTypeValue.client"
+              />
+              <v-btn
+                icon="$print"
+                :size="48"
+                variant="plain"
+                @click="printSpravkaDialog?.open(client.id)"
+              />
+              <v-btn
+                icon="$edit"
+                :size="48"
+                variant="plain"
+                @click="clientDialog?.edit(client.id)"
+              />
             </div>
           </div>
-        </div>
-        <div>
-          <div>представитель</div>
-          <div class="text-truncate">
-            {{ formatName(client.representative) }}
-            <div v-if="client.representative.phones" class="mt-5">
-              <PhoneList :items="client.representative.phones" show-icons />
-            </div>
+          <div class="panel-schedule">
+            <TeethBar :items="client.schedule || {}" />
+            <LessonCurrentLesson v-if="client.current_lesson" :item="client.current_lesson" />
           </div>
-        </div>
-        <div>
-          <div>направления</div>
-          <div>
-            <ClientDirections :item="client.directions" />
-          </div>
-        </div>
-        <div>
-          <div>куратор</div>
-          <UiPerson v-if="client.head_teacher" :item="client.head_teacher" />
-          <div v-else>
-            не установлено
-          </div>
-        </div>
-        <div class="panel-actions">
-          <CommentBtn
-            :entity-id="client.id"
-            :entity-type="EntityTypeValue.client"
-          />
-          <v-btn
-            icon="$print"
-            :size="48"
-            variant="plain"
-            @click="printSpravkaDialog?.open(client.id)"
-          />
-          <v-btn
-            icon="$edit"
-            :size="48"
-            variant="plain"
-            @click="clientDialog?.edit(client.id)"
-          />
         </div>
       </div>
       <UiTabs v-model="selectedTab" :items="tabs" />
@@ -128,29 +133,6 @@ nextTick(loadData)
   .last-seen-at {
     font-size: 14px;
     margin-left: 2px;
-  }
-}
-
-.client-avatar {
-  position: relative;
-  &-status {
-    $size: 18px;
-    height: $size;
-    width: $size;
-    position: absolute;
-    top: 10px;
-    right: 12px;
-    border-radius: 50%;
-    border: 3px solid white;
-    cursor: default;
-
-    &--active {
-      background-color: rgb(var(--v-theme-success));
-    }
-
-    &--inactive {
-      background-color: rgb(var(--v-theme-gray));
-    }
   }
 }
 </style>

@@ -1,4 +1,5 @@
 import type { ContractVersionResource } from '../ContractVersion'
+import type { CurrentLessonResource } from '../Lesson'
 
 export interface RepresentativeResource extends HasName, HasPhones {
   id: number
@@ -39,6 +40,8 @@ export interface ClientResource extends PersonWithPhotoResource, HasPhones {
   email?: string
   heard_about_us?: HeardAboutUs
   mark_sheet: MarkSheet | null
+  schedule: Teeth | null
+  current_lesson: null | CurrentLessonResource
   passport: {
     series: string | null
     number: string | null

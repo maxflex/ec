@@ -23,3 +23,15 @@ export const quarterEditablePrograms: Program[] = [
   'litSchool9',
   'geoSchool9',
 ]
+
+export interface CurrentLessonResource {
+  id: number
+  time: string
+  time_end: string
+  cabinet: string
+  teacher: PersonResource
+  group: {
+    id: number
+    program: Program
+  }
+}

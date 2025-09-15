@@ -295,4 +295,36 @@ class Client extends Person implements HasSchedule
     {
         return intval($this->contracts()->max('year') ?? 1000);
     }
+
+    /**
+     * Если ученик прямо сейчас на занятии – показывает урок
+     * Если нет, показывает следующее занятие сегодня
+     */
+    public function getCurrentLessonAttribute(): ?Lesson
+    {
+        $cvpIds = $this->getContractVersionProgramIds(current_academic_year());
+        $currentTime = now()->format('H:i:s');
+
+        $todayLessons = Lesson::query()
+            ->where('status', '<>', LessonStatus::cancelled)
+            ->where('date', now()->format('Y-m-d'))
+            ->whereHas(
+                'group',
+                fn ($q) => $q
+                    ->where('year', current_academic_year())
+                    ->whereHas('clientGroups', fn ($q) => $q->whereIn('contract_version_program_id', $cvpIds))
+            )
+            ->orderBy('time')
+            ->get();
+
+        foreach ($todayLessons as $lesson) {
+            if ($lesson->time_end < $currentTime) {
+                continue;
+            }
+
+            return $lesson;
+        }
+
+        return null;
+    }
 }

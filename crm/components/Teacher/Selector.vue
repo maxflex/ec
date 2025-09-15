@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { TeacherListResource } from '.'
+
 const { label = 'Преподаватель', headTeachers, items } = defineProps<{
   label?: string
   // отображать кураторов (тех, у кого есть "русский" в предметах)

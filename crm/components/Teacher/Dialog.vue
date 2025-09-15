@@ -1,30 +1,11 @@
 <script setup lang="ts">
+import type { TeacherResource } from '.'
 import { cloneDeep } from 'lodash-es'
+import { modelDefaults } from '.'
 
 const emit = defineEmits<{
   (e: 'created' | 'updated', c: TeacherResource): void
 }>()
-
-const modelDefaults: TeacherResource = {
-  id: newId(),
-  first_name: null,
-  last_name: null,
-  middle_name: null,
-  photo_url: null,
-  phones: [],
-  subjects: [],
-  is_published: false,
-  is_head_teacher: false,
-  status: 'active',
-  entity_type: EntityTypeValue.teacher,
-  passport: {
-    series: null,
-    number: null,
-    code: null,
-    address: null,
-    issued_by: null,
-  },
-}
 
 const { dialog, width } = useDialog('medium')
 const router = useRouter()
