@@ -60,7 +60,7 @@ async function edit(lessonId: number) {
 }
 
 async function save() {
-  if (topicLength.value < 50 && lesson.value.is_topic_verified) {
+  if (topicLength.value < 50 && isTeacher) {
     topicInput.value.focus()
     isTopicError.value = true
     return
