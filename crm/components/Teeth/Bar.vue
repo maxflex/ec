@@ -9,26 +9,34 @@ function isSameTooth(a: Tooth, b: Tooth): boolean {
 }
 
 function isCurrentTooth(weekday: Weekday, tooth: Tooth): boolean {
-  return current?.[weekday]?.some(t => isSameTooth(t, tooth)) ?? false
+  if (!current) {
+    return false
+  }
+
+  return getForWeekday(current, weekday).some(t => isSameTooth(t, tooth))
+}
+
+function getForWeekday(teeth: Teeth, weekday: Weekday): Teeth {
+  return teeth.filter(e => e.weekday === weekday)
 }
 
 // items + current (if exists)
-const allItems = computed(() => {
-  const result: Teeth = {}
+// groupped by weekday
+const itemsByWeekday = computed(() => {
+  const result: Partial<Record<Weekday, Teeth>> = {}
 
-  for (const weekday of Object.keys(WeekdayLabel) as unknown as Weekday[]) {
-    const itemTeeth: Tooth[] = items[weekday] ?? []
-    const currentTeeth: Tooth[] = current?.[weekday] ?? []
+  for (const weekday of [0, 1, 2, 3, 4, 5, 6, 7] as Weekday[]) {
+    result[weekday] = getForWeekday(items, weekday)
 
-    const merged: Tooth[] = [...itemTeeth]
-
-    for (const ct of currentTeeth) {
-      if (!merged.some(t => isSameTooth(t, ct))) {
-        merged.push(ct)
-      }
+    if (!current) {
+      continue
     }
 
-    result[weekday] = merged
+    for (const c of getForWeekday(current, weekday)) {
+      if (!result[weekday].some(t => isSameTooth(t, c))) {
+        result[weekday].push(c)
+      }
+    }
   }
 
   return result
@@ -36,6 +44,7 @@ const allItems = computed(() => {
 </script>
 
 <template>
+  <!-- <pre style="background: white; z-index: 1;">{{ allItems }}</pre> -->
   <div class="teeth">
     <div
       v-for="(label, weekday) in WeekdayLabel"
@@ -43,7 +52,7 @@ const allItems = computed(() => {
       :class="`teeth__day teeth__day--${weekday}`"
     >
       <div
-        v-for="(tooth, index) in allItems[weekday]"
+        v-for="(tooth, index) in itemsByWeekday[weekday]"
         :key="index"
         class="teeth__tooth"
         :class="{

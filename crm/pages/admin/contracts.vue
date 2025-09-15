@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ClientDialog, ContractVersionDialog } from '#build/components'
 import type { ClientListResource } from '~/components/Client'
+import type { ContractVersionListResource } from '~/components/ContractVersion'
 import type { ContractVersionFilters } from '~/components/ContractVersion/Filters.vue'
 
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
@@ -51,3 +52,13 @@ function onClientCreated(c: ClientListResource) {
     <ClientDialog ref="clientDialog" @created="onClientCreated" />
   </UiIndexPage>
 </template>
+
+<style lang="scss">
+.page-contracts {
+  .filters__inputs {
+    & > div {
+      max-width: 220px !important;
+    }
+  }
+}
+</style>

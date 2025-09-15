@@ -276,7 +276,7 @@ export const RequestStatusLabel = {
   refused: 'отказ',
 } as const
 
-export const WeekdayLabel = {
+export const WeekdayLabel: Record<Weekday, string> = {
   0: 'пн',
   1: 'вт',
   2: 'ср',
@@ -284,7 +284,7 @@ export const WeekdayLabel = {
   4: 'пт',
   5: 'сб',
   6: 'вс',
-} as const
+}
 
 export const LessonStatusLabel = {
   planned: 'планируется',

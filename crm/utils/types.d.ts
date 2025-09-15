@@ -23,7 +23,7 @@ declare global {
 
   type TelegramTemplate = keyof typeof TelegramTemplateLabel
 
-  type Weekday = keyof typeof WeekdayLabel
+  type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6
 
   type Exam = keyof typeof ExamLabel
 
@@ -563,11 +563,12 @@ declare global {
     left: number
     width: number
     time: string
+    weekday: Weekday
     time_end: string
     is_past: boolean
   }
 
-  type Teeth = Partial<Record<Weekday, Tooth[]>>
+  type Teeth = Tooth[]
 
   interface ClientGroupResource {
     id: number

@@ -4,15 +4,32 @@ const { items, oneLine } = defineProps<{
   oneLine?: boolean
 }>()
 
-function allWeekdayIsPast(weekday: Weekday): boolean {
-  return items[weekday].some(e => !e.is_past) === false
+function getForWeekday(teeth: Teeth, weekday: Weekday): Teeth {
+  return teeth.filter(e => e.weekday === weekday)
 }
+
+function allWeekdayIsPast(weekday: Weekday): boolean {
+  return getForWeekday(items, weekday).some(e => !e.is_past) === false
+}
+
+const itemsByWeekday = computed(() => {
+  const result: Partial<Record<Weekday, Teeth>> = {}
+
+  for (const weekday of [0, 1, 2, 3, 4, 5, 6, 7] as Weekday[]) {
+    const teeth = getForWeekday(items, weekday)
+    if (teeth.length) {
+      result[weekday] = teeth
+    }
+  }
+
+  return result
+})
 </script>
 
 <template>
   <div class="teeth-as-text" :class="{ 'teeth-as-text--one-line': oneLine }">
     <div
-      v-for="(teeth, weekday) in items"
+      v-for="(teeth, weekday) in itemsByWeekday"
       :key="weekday"
       :class="{
         'teeth-as-text--is-past': allWeekdayIsPast(weekday),

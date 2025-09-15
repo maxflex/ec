@@ -66,12 +66,9 @@ class Teeth
         $resultY = $resultY->reject(fn ($l) => self::conflicts($l, $resultX));
 
         // Объединяем X + Y
-        $final = $resultX
+        return $resultX
             ->map(fn ($l) => self::formatTooth($l, false))
             ->concat($resultY->map(fn ($l) => self::formatTooth($l, true)));
-
-        // Группируем по дню недели
-        return (object) $final->groupBy('weekday')->toArray();
     }
 
     private static function timeToSeconds(string $time): int
