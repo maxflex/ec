@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { SavedScheduleDraftResource } from '~/components/ScheduleDraft'
-import { apiUrl } from '~/components/ScheduleDraft'
+import type { SavedProjectResource } from '~/components/Project'
+import { apiUrl } from '~/components/Project'
 
 const filters = useAvailableYearsFilter()
 
-const { items, indexPageData, availableYears } = useIndex<SavedScheduleDraftResource>(
+const { items, indexPageData, availableYears } = useIndex<SavedProjectResource>(
   apiUrl,
   filters,
   {
@@ -15,8 +15,8 @@ const { items, indexPageData, availableYears } = useIndex<SavedScheduleDraftReso
   },
 )
 
-async function deleteSavedDraft(savedDraft: SavedScheduleDraftResource) {
-  const { id } = savedDraft!
+async function deleteSavedProject(savedProject: SavedProjectResource) {
+  const { id } = savedProject!
   const index = items.value.findIndex(e => e.id === id)
   items.value.splice(index, 1)
   await useHttp(`${apiUrl}/${id}`, { method: 'DELETE' })
@@ -29,6 +29,11 @@ async function deleteSavedDraft(savedDraft: SavedScheduleDraftResource) {
     <template #filters>
       <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
     </template>
-    <ScheduleDraftList :items="items" @delete="deleteSavedDraft" />
+    <template #buttons>
+      <v-btn color="primary" :to="{ name: 'projects-editor' }">
+        добавить проект
+      </v-btn>
+    </template>
+    <ProjectList :items="items" @delete="deleteSavedProject" />
   </UiIndexPage>
 </template>

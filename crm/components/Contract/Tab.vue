@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { ContractEditSourceDialog, ContractPaymentDialog, ContractVersionDialog } from '#build/components'
 import type { ContractResource, ContractVersionListResource, ContractVersionResource } from '../ContractVersion'
-import type { SavedScheduleDraftResource } from '../ScheduleDraft'
+import type { SavedProjectResource } from '../Project'
 import type { ContractPaymentResource } from '~/components/ContractPayment'
 
-type DraftsByContract = Record<number, {
-  drafts: SavedScheduleDraftResource[]
+type ProjectsByContract = Record<number, {
+  projects: SavedProjectResource[]
   changes: number
 }>
 
@@ -15,7 +15,7 @@ const contractPaymentDialog = ref<InstanceType<typeof ContractPaymentDialog>>()
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
 const contractEditSourceDialog = ref<InstanceType<typeof ContractEditSourceDialog>>()
 const selected = ref(-1) // -1 это "новый договор"
-const scheduleDrafts = ref<SavedScheduleDraftResource[]>([])
+const projects = ref<SavedProjectResource[]>([])
 const loading = ref(true)
 const showBalance = ref(false)
 const route = useRoute()
@@ -41,7 +41,7 @@ async function onContractVersionUpdated(mode: ContractEditMode, c: ContractVersi
       break
   }
   itemUpdated('contract-version', updatedId!)
-  loadScheduleDrafts()
+  loadProjects()
 }
 
 function onContractVersionDeleted(cv: ContractVersionResource) {
@@ -107,20 +107,20 @@ async function loadData() {
       selected.value = items.value.length - 1
     }
   }
-  await loadScheduleDrafts()
+  await loadProjects()
   loading.value = false
 }
 
-async function loadScheduleDrafts() {
-  const { data } = await useHttp<ApiResponse<SavedScheduleDraftResource>>(
-    `schedule-drafts`,
+async function loadProjects() {
+  const { data } = await useHttp<ApiResponse<SavedProjectResource>>(
+    `projects`,
     {
       params: {
         client_id: clientId,
       },
     },
   )
-  scheduleDrafts.value = data.value!.data
+  projects.value = data.value!.data
 }
 
 function selectTab(i: number) {
@@ -135,20 +135,20 @@ function showBalanceGo(i: number) {
 
 const noData = computed(() => !loading.value && items.value.length === 0)
 
-const draftsByContract = computed<DraftsByContract>(() => {
-  const result: DraftsByContract = {}
-  const activeDrafts = scheduleDrafts.value.filter(e => !e.is_archived)
+const projectsByContract = computed<ProjectsByContract>(() => {
+  const result: ProjectsByContract = {}
+  const activeProjects = projects.value.filter(e => !e.is_archived)
   const contractIds = [
     ...items.value.map(e => e.id),
     null, // новый договор
   ]
 
   for (const contractId of contractIds) {
-    const drafts = activeDrafts.filter(d => d.contract_id === contractId)
+    const contractProjects = activeProjects.filter(d => d.contract_id === contractId)
 
     result[contractId || -1] = {
-      drafts,
-      changes: drafts[0]?.changes ?? 0,
+      projects: contractProjects,
+      changes: contractProjects[0]?.changes ?? 0,
     }
   }
 
@@ -179,10 +179,10 @@ nextTick(loadData)
           </div>
         </div>
         <v-badge
-          v-if="draftsByContract[contract.id]?.changes"
+          v-if="projectsByContract[contract.id]?.changes"
           color="orange-lighten-3"
           inline
-          :content="draftsByContract[contract.id].changes"
+          :content="projectsByContract[contract.id].changes"
         ></v-badge>
         <v-menu>
           <template #activator="{ props }">
@@ -202,9 +202,9 @@ nextTick(loadData)
               редактировать источник
             </v-list-item>
             <v-list-item
-              v-for="d in draftsByContract[contract.id].drafts"
+              v-for="d in projectsByContract[contract.id].projects"
               :key="d.id"
-              @click="selected = i; contractVersionDialog?.fromDraft({ savedDraft: d })"
+              @click="selected = i; contractVersionDialog?.fromProject({ savedProject: d })"
             >
               <div>
                 добавить версию на основе проекта №{{ d.id }}
@@ -219,11 +219,11 @@ nextTick(loadData)
               </div>
             </v-list-item>
             <v-list-item
-              v-for="d in draftsByContract[contract.id].drafts"
+              v-for="d in projectsByContract[contract.id].projects"
               :key="d.id"
               target="_blank"
               :to="{
-                name: 'schedule-drafts-editor',
+                name: 'projects-editor',
                 query: {
                   id: d.id,
                 },
@@ -265,10 +265,10 @@ nextTick(loadData)
               </div>
             </div>
             <v-badge
-              v-if="draftsByContract[-1]?.changes"
+              v-if="projectsByContract[-1]?.changes"
               color="orange-lighten-3"
               inline
-              :content="draftsByContract[-1].changes"
+              :content="projectsByContract[-1].changes"
             ></v-badge>
             <v-icon icon="$next" />
           </v-btn>
@@ -278,17 +278,17 @@ nextTick(loadData)
             создать новый договор
           </v-list-item>
           <v-list-item
-            v-for="d in draftsByContract[-1].drafts"
+            v-for="d in projectsByContract[-1].projects"
             :key="d.id"
-            @click="selected = -1; contractVersionDialog?.fromDraft({ savedDraft: d })"
+            @click="selected = -1; contractVersionDialog?.fromProject({ savedProject: d })"
           >
             <div>
               создать новый договор на основе проекта №{{ d.id }}
               <v-badge
-                v-if="draftsByContract[-1]?.changes"
+                v-if="projectsByContract[-1]?.changes"
                 color="orange-lighten-3"
                 inline
-                :content="draftsByContract[-1].changes"
+                :content="projectsByContract[-1].changes"
               ></v-badge>
             </div>
             <div class="text-caption text-gray">
@@ -296,11 +296,11 @@ nextTick(loadData)
             </div>
           </v-list-item>
           <v-list-item
-            v-for="d in draftsByContract[-1].drafts"
+            v-for="d in projectsByContract[-1].projects"
             :key="d.id"
             target="_blank"
             :to="{
-              name: 'schedule-drafts-editor',
+              name: 'projects-editor',
               query: {
                 id: d.id,
               },

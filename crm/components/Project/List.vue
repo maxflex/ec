@@ -1,35 +1,36 @@
 <script setup lang="ts">
-import type { SavedScheduleDraftResource } from '.'
+import type { SavedProjectResource } from '.'
 import { mdiAlertBox } from '@mdi/js'
 
-const { items } = defineProps<{ items: SavedScheduleDraftResource[] }>()
+const { items } = defineProps<{ items: SavedProjectResource[] }>()
 const emit = defineEmits<{
-  delete: [e: SavedScheduleDraftResource]
+  delete: [e: SavedProjectResource]
 }>()
 const router = useRouter()
 </script>
 
 <template>
-  <v-table class="table-padding" hover>
+  <v-table class="table-padding saved-project-list" hover>
     <tbody>
       <tr
         v-for="item in items" :key="item.id"
         class="cursor-pointer"
-        @click="router.push({ name: 'schedule-drafts-editor', query: { id: item.id } })"
+        @click="router.push({ name: 'projects-editor', query: { id: item.id } })"
       >
-        <td width="180">
-          Проект №{{ item.id }}
+        <td width="70">
+          {{ item.id }}
         </td>
 
         <td width="200">
-          <UiPerson :item="item.client" />
+          <UiPerson v-if="item.client" :item="item.client" />
+          <span v-else class="text-gray">без клиента</span>
         </td>
 
         <td width="150">
           {{ YearLabel[item.year] }}
         </td>
 
-        <td :class="{ 'text-gray': item.is_archived }">
+        <td width="200" :class="{ 'text-gray': item.is_archived }">
           <span v-if="item.contract_id">
             договор №{{ item.contract_id }}
           </span>
@@ -51,6 +52,10 @@ const router = useRouter()
           />
         </td>
 
+        <td class="text-truncate">
+          {{ item.comment }}
+        </td>
+
         <td width="340" class="text-gray">
           {{ formatName(item.user) }}
           {{ formatDateTime(item.created_at) }}
@@ -64,3 +69,11 @@ const router = useRouter()
     </tbody>
   </v-table>
 </template>
+
+<style lang="scss">
+.saved-project-list {
+  table {
+    table-layout: fixed;
+  }
+}
+</style>

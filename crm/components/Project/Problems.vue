@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { ScheduleDraftGroup } from '.'
+import type { ProjectGroup } from '.'
 import { mdiAlertBox } from '@mdi/js'
 
 const { item, contractId } = defineProps<{
-  item: ScheduleDraftGroup
+  item: ProjectGroup
   contractId: number
 }>()
 

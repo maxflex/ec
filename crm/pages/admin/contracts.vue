@@ -39,9 +39,6 @@ function onClientCreated(c: ClientListResource) {
     <template #buttons>
       <v-btn color="primary" @click="clientDialog?.create()">
         добавить клиента
-        <template #append>
-          <v-icon icon="$next" />
-        </template>
       </v-btn>
     </template>
     <ContractVersionListAll

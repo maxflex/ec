@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import type { ScheduleDraftGroup } from '.'
+import type { ProjectGroup } from '.'
 import { isGroupChangedInContract } from '.'
 
 const { items, contractId } = defineProps<{
-  items: ScheduleDraftGroup[]
+  items: ProjectGroup[]
   contractId: number
 }>()
 
 const emit = defineEmits<{
-  addToGroup: [e: ScheduleDraftGroup]
-  removeFromGroup: [e: ScheduleDraftGroup]
-  jumpToContract: [e: ScheduleDraftGroup]
+  addToGroup: [e: ProjectGroup]
+  removeFromGroup: [e: ProjectGroup]
+  jumpToContract: [e: ProjectGroup]
 }>()
 
 function getElementId(groupId: number, cId: number | null | undefined) {
-  return `schedule-draft-group-${groupId}${cId ? `-${cId}` : ''}`
+  return `project-group-${groupId}${cId ? `-${cId}` : ''}`
 }
 
 const isAlreadyInOtherGroup = computed(() =>
@@ -23,7 +23,7 @@ const isAlreadyInOtherGroup = computed(() =>
 </script>
 
 <template>
-  <v-table class="table-padding schedule-draft-group">
+  <v-table class="table-padding project-group">
     <tbody>
       <tr
         v-for="item in items"
@@ -68,7 +68,7 @@ const isAlreadyInOtherGroup = computed(() =>
           </div>
         </td>
         <td width="30">
-          <ScheduleDraftProblems :item="item" :contract-id="contractId" />
+          <ProjectProblems :item="item" :contract-id="contractId" />
         </td>
         <td>
           <!-- Группа сейчас находится в ДРУГОМ договоре (нет действий, нет процесса) -->
@@ -97,13 +97,13 @@ const isAlreadyInOtherGroup = computed(() =>
 </template>
 
 <style lang="scss">
-.schedule-draft-group {
+.project-group {
   td {
     box-sizing: content-box;
     position: relative;
     transition: none !important;
     &:last-child {
-      .schedule-draft-problems:not(:first-child) {
+      .project-problems:not(:first-child) {
         margin-top: 10px !important;
       }
     }
