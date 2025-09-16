@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { SavedScheduleDraftResource } from '.'
+import type { SavedProjectResource } from '.'
 import { mdiAlertBox } from '@mdi/js'
 
-const { items } = defineProps<{ items: SavedScheduleDraftResource[] }>()
+const { items } = defineProps<{ items: SavedProjectResource[] }>()
 const emit = defineEmits<{
-  delete: [e: SavedScheduleDraftResource]
+  delete: [e: SavedProjectResource]
 }>()
 const router = useRouter()
 </script>
@@ -15,7 +15,7 @@ const router = useRouter()
       <tr
         v-for="item in items" :key="item.id"
         class="cursor-pointer"
-        @click="router.push({ name: 'schedule-drafts-editor', query: { id: item.id } })"
+        @click="router.push({ name: 'projects-editor', query: { id: item.id } })"
       >
         <td width="180">
           Проект №{{ item.id }}

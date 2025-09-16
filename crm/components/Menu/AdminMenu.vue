@@ -30,7 +30,7 @@ const menu: Menu = [
     title: 'Клиенты',
     items: [
       { title: 'Договоры', to: '/contracts' },
-      { title: 'Проекты договоров', to: '/schedule-drafts' },
+      { title: 'Проекты договоров', to: '/projects' },
       { title: 'Жалобы', to: '/client-complaints' },
       { title: 'Отзывы', to: '/client-reviews' },
       { title: 'Контроль ЛК', to: '/control/lk' },

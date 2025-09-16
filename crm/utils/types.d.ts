@@ -245,7 +245,7 @@ declare global {
     quarter: Quarter | null
     has_files: boolean
     students_count: number
-    draft_students_count?: number
+    project_students_count?: number
     client_lesson?: {
       id: number
       status: ClientLessonStatus
@@ -576,7 +576,7 @@ declare global {
     teeth: Teeth
     client: PersonWithPhotoResource
     // в каком проекте
-    draft_id: number | null
+    project_id: number | null
     // в какую группу перешел
     group_id: number | null
     // реальный group_id

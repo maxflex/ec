@@ -9,7 +9,7 @@ use App\Http\Resources\ContractVersionListResource;
 use App\Http\Resources\ContractVersionResource;
 use App\Models\Contract;
 use App\Models\ContractVersion;
-use App\Models\ScheduleDraft;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -77,7 +77,7 @@ class ContractVersionController extends Controller
 
         // применяем перемещения в группах согласно проекту, если нужно
         if ($request->apply_move_groups) {
-            ScheduleDraft::applyMoveGroupsContract($contractVersion, $request->programs);
+            Project::applyMoveGroupsContract($contractVersion, $request->programs);
         }
 
         return new ContractVersionListResource($contractVersion);

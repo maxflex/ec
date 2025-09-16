@@ -22,7 +22,7 @@ const { items, indexPageData } = useIndex<ClientGroupResource>(
         v-for="(item, idx) in items"
         :key="item.id"
         :class="{
-          'changed': item.draft_id,
+          'changed': item.project_id,
           'students-tab--is-first-added': items[idx + 1]?.is_first_added,
         }"
       >
@@ -34,7 +34,7 @@ const { items, indexPageData } = useIndex<ClientGroupResource>(
           <TeethBar :items="item.teeth" :current="group.teeth" />
         </div>
         <div style="width: 240px" class="pl-6">
-          <template v-if="item.draft_id">
+          <template v-if="item.project_id">
             <template v-if="item.is_removed">
               <template v-if="item.group_id">
                 уходит в
@@ -62,8 +62,8 @@ const { items, indexPageData } = useIndex<ClientGroupResource>(
               ГР-{{ item.group_id }}
             </RouterLink>
             в проекте
-            <RouterLink :to="{ name: 'schedule-drafts-editor', query: { id: item.draft_id } }">
-              {{ item.draft_id }}
+            <RouterLink :to="{ name: 'projects-editor', query: { id: item.project_id } }">
+              {{ item.project_id }}
             </RouterLink>
           </template>
         </div>
