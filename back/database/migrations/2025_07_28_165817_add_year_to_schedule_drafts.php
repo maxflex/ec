@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('projects', function (Blueprint $table) {
+        Schema::table('schedule_drafts', function (Blueprint $table) {
             $table->unsignedSmallInteger('year')->after('contract_id');
         });
     }

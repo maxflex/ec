@@ -9,7 +9,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('projects', function (Blueprint $table) {
+        Schema::table('schedule_drafts', function (Blueprint $table) {
             $table->foreignIdFor(Contract::class)->nullable()->after('client_id')->constrained();
             $table->dropColumn('year');
         });

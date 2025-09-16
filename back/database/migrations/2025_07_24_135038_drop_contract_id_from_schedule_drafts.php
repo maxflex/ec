@@ -8,8 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('projects', function (Blueprint $table) {
-            $table->renameColumn('data', 'programs');
+        Schema::table('schedule_drafts', function (Blueprint $table) {
+            $table->dropForeign('schedule_drafts_contract_id_foreign');
+            $table->dropColumn('contract_id');
         });
     }
 };
