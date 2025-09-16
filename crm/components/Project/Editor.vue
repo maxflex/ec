@@ -1,84 +1,69 @@
 <script setup lang="ts">
-import type { SavedScheduleDraftResource, ScheduleDraft, ScheduleDraftGroup, ScheduleDraftProgram } from '.'
-import { ContractVersionDialog } from '#components'
+import type { Project, ProjectGroup, ProjectProgram, SavedProjectResource } from '.'
+import { ContractVersionDialog, ProjectSaveDialog } from '#components'
 import { mdiChevronRight } from '@mdi/js'
 import { apiUrl, isGroupChangedInContract } from '.'
 
-const { client, savedDraft } = defineProps<{
+const { client, savedProject } = defineProps<{
   /**
    * Если загружаем конкретный ID проекта
    */
-  savedDraft?: SavedScheduleDraftResource
-  client: PersonResource
+  savedProject?: SavedProjectResource
+  client?: PersonResource
 }>()
 
 defineEmits<{ back: [] }>()
 
-const router = useRouter()
 const loading = ref(false)
-const btnLoading = ref(false)
 const teeth = ref<Teeth>()
-const scheduleDraft = ref<ScheduleDraft>()
+const project = ref<Project>()
 const selectedContractId = ref<number>() // ID выбранной вкладки договора
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
+const saveDialog = ref<InstanceType<typeof ProjectSaveDialog>>()
 const key = ref(0)
 
 // сохранённые проекты расписания (доступные для загрузки)
-const savedDrafts = ref<SavedScheduleDraftResource[]>([])
+const savedProjects = ref<SavedProjectResource[]>([])
 
 async function fromActualContracts() {
   loading.value = true
-  const { data } = await useHttp<ScheduleDraft>(
+  const { data } = await useHttp<Project>(
     `${apiUrl}/from-actual-contracts`,
     {
       params: {
-        id: savedDraft?.id,
-        client_id: client.id,
+        id: savedProject?.id,
+        client_id: client?.id,
       },
     },
   )
-  scheduleDraft.value = data.value!
+  project.value = data.value!
   // выбираем первую вкладку
-  selectedContractId.value = Number.parseInt(Object.keys(scheduleDraft.value)[0])
+  selectedContractId.value = Number.parseInt(Object.keys(project.value)[0])
   loading.value = false
   smoothScroll('main', 'top', 'instant')
-  loadSavedDrafts()
+  loadSavedProjects()
 
-  if (savedDraft) {
-    selectedContractId.value = savedDraft.contract_id || -1
+  if (savedProject) {
+    selectedContractId.value = savedProject.contract_id || -1
   }
 }
 
-async function loadSavedDrafts() {
-  const { data } = await useHttp<ApiResponse<SavedScheduleDraftResource>>(apiUrl, {
+async function loadSavedProjects() {
+  if (!client) {
+    return
+  }
+
+  const { data } = await useHttp<ApiResponse<SavedProjectResource>>(apiUrl, {
     params: {
       client_id: client.id,
     },
   })
-  savedDrafts.value = data.value!.data
-}
-
-async function save(contractId: number) {
-  btnLoading.value = true
-  const { data } = await useHttp<SavedScheduleDraftResource>(
-    `${apiUrl}/save`,
-    {
-      method: 'POST',
-      body: {
-        contract_id: contractId,
-      },
-    },
-  )
-  const id = data.value!.id
-  const link = router.resolve({ name: 'schedule-drafts-editor', query: { id } }).href
-  useGlobalMessage(`<a href="${link}">Проект №${id}</a> сохранён`, 'success')
-  loadSavedDrafts()
-  btnLoading.value = false
+  savedProjects.value = data.value!.data
 }
 
 async function applyMoveGroups(contractId: number) {
   loading.value = true
-  const { data, error } = await useHttp<ScheduleDraft>(
+  const { data, error } = await useHttp<Project>(
     `${apiUrl}/apply-move-groups`,
     {
       method: 'POST',
@@ -95,7 +80,7 @@ async function applyMoveGroups(contractId: number) {
     return
   }
 
-  scheduleDraft.value = data.value!
+  project.value = data.value!
   loading.value = false
   useGlobalMessage('Перемещения в группах применены', 'success')
 }
@@ -105,9 +90,9 @@ async function getTeeth() {
   teeth.value = data.value!
 }
 
-async function addToGroup(p: ScheduleDraftProgram, g: ScheduleDraftGroup) {
+async function addToGroup(p: ProjectProgram, g: ProjectGroup) {
   loading.value = true
-  const { data, error } = await useHttp<ScheduleDraft>(
+  const { data, error } = await useHttp<Project>(
     `${apiUrl}/add-to-group`,
     {
       method: 'post',
@@ -124,13 +109,13 @@ async function addToGroup(p: ScheduleDraftProgram, g: ScheduleDraftGroup) {
     return
   }
 
-  scheduleDraft.value = data.value!
+  project.value = data.value!
   loading.value = false
 }
 
-async function removeFromGroup(g: ScheduleDraftGroup) {
+async function removeFromGroup(g: ProjectGroup) {
   loading.value = true
-  const { data } = await useHttp<ScheduleDraft>(
+  const { data } = await useHttp<Project>(
     `${apiUrl}/remove-from-group`,
     {
       method: 'post',
@@ -139,7 +124,7 @@ async function removeFromGroup(g: ScheduleDraftGroup) {
       },
     },
   )
-  scheduleDraft.value = data.value!
+  project.value = data.value!
   loading.value = false
 }
 
@@ -147,7 +132,7 @@ async function addPrograms(newPrograms: Program[], contractId: number) {
   selectedContractId.value = Number.parseInt(contractId)
   key.value++
   loading.value = true
-  const { data } = await useHttp<ScheduleDraft>(
+  const { data } = await useHttp<Project>(
     `${apiUrl}/add-programs`,
     {
       method: 'post',
@@ -157,14 +142,14 @@ async function addPrograms(newPrograms: Program[], contractId: number) {
       },
     },
   )
-  scheduleDraft.value = data.value!
+  project.value = data.value!
   loading.value = false
   smoothScroll('main', 'bottom', 'instant')
 }
 
-async function removeProgram(p: ScheduleDraftProgram) {
+async function removeProgram(p: ProjectProgram) {
   loading.value = true
-  const { data } = await useHttp<ScheduleDraft>(
+  const { data } = await useHttp<Project>(
     `${apiUrl}/remove-program`,
     {
       method: 'post',
@@ -173,14 +158,14 @@ async function removeProgram(p: ScheduleDraftProgram) {
       },
     },
   )
-  scheduleDraft.value = data.value!
+  project.value = data.value!
   loading.value = false
 }
 
-function jumpToContract(item: ScheduleDraftGroup) {
+function jumpToContract(item: ProjectGroup) {
   selectedContractId.value = item.swamp!.contract_id as number
   nextTick(() => {
-    const selector = `#schedule-draft-group-${item.id}${selectedContractId.value ? `-${selectedContractId.value}` : ''}`
+    const selector = `#project-group-${item.id}${selectedContractId.value ? `-${selectedContractId.value}` : ''}`
     highlight(selector, 'item-updated', 'instant')
   })
 }
@@ -189,7 +174,7 @@ function getChangesCnt(contractId: number | string) {
   const cId = Number.parseInt(contractId as string)
   let cnt = 0
 
-  for (const program of scheduleDraft.value![cId]) {
+  for (const program of project.value![cId]) {
     if (program.id < 0) {
       cnt++
     }
@@ -204,29 +189,29 @@ function getChangesCnt(contractId: number | string) {
   return cnt
 }
 
-const savedDraftsByContract = computed<Record<number, SavedScheduleDraftResource[]>>(() => {
-  const result: Record<number, SavedScheduleDraftResource[]> = {}
-  for (const contractId in scheduleDraft.value) {
+const savedProjectsByContract = computed<Record<number, SavedProjectResource[]>>(() => {
+  const result: Record<number, SavedProjectResource[]> = {}
+  for (const contractId in project.value) {
     const cId = Number.parseInt(contractId)
-    result[cId] = savedDrafts.value.filter(e => e.contract_id === (cId === -1 ? null : cId))
+    result[cId] = savedProjects.value.filter(e => e.contract_id === (cId === -1 ? null : cId))
   }
   return result
 })
 
-async function loadDraft(d: SavedScheduleDraftResource) {
+async function loadProject(d: SavedProjectResource) {
   selectedContractId.value = d.contract_id || -1
   loading.value = true
-  const { data } = await useHttp<ScheduleDraft>(
+  const { data } = await useHttp<Project>(
     `${apiUrl}/load/${d.id}`,
     {
       method: 'POST',
     },
   )
-  scheduleDraft.value = data.value!
+  project.value = data.value!
   loading.value = false
 }
 
-watch(scheduleDraft, getTeeth)
+watch(project, getTeeth)
 watch(selectedContractId, () => smoothScroll('main', 'top', 'instant'))
 
 nextTick(fromActualContracts)
@@ -234,8 +219,8 @@ nextTick(fromActualContracts)
 
 <template>
   <UiIndexPage
-    class="schedule-draft"
-    :data="{ loading: loading && !scheduleDraft, noData: false }"
+    class="project"
+    :data="{ loading: loading && !project, noData: false }"
     sticky
   >
     <template #filters>
@@ -252,20 +237,29 @@ nextTick(fromActualContracts)
           </div>
         </div>
       </div> -->
-      <div class="schedule-draft__header">
-        <v-btn
-          icon="$back" :size="44" variant="plain" color="black"
-          :to="{ name: 'clients-id', params: { id: client.id }, hash: '#contracts' }"
-        />
-        {{ formatName(client) }}
+      <div class="project__header">
+        <template v-if="client">
+          <v-btn
+            icon="$back" :size="44" variant="plain" color="black"
+            :to="{ name: 'clients-id', params: { id: client.id }, hash: '#contracts' }"
+          />
+          {{ formatName(client) }}
+        </template>
+        <template v-else>
+          <v-btn
+            icon="$back" :size="44" variant="plain" color="black"
+            :to="{ name: 'projects' }"
+          />
+          Новый проект
+        </template>
       </div>
       <TeethBar v-if="teeth" :items="teeth" style="width: fit-content" />
     </template>
 
-    <template v-if="scheduleDraft && selectedContractId">
+    <template v-if="project && selectedContractId">
       <div class="tabs">
         <div
-          v-for="(_, contractId) in scheduleDraft"
+          v-for="(_, contractId) in project"
           :key="contractId"
           class="tabs-item"
           :class="{
@@ -296,25 +290,28 @@ nextTick(fromActualContracts)
                   <v-icon :icon="mdiChevronRight" />
                 </template>
                 <ProgramSelectorNested
-                  :pre-selected="scheduleDraft[contractId].map(e => e.program)"
+                  :pre-selected="project[contractId].map(e => e.program)"
                   @saved="newPrograms => addPrograms(newPrograms, contractId)"
                 />
               </v-list-item>
-              <v-list-item :disabled="!getChangesCnt(contractId)" @click="contractVersionDialog?.fromDraft({ contractId })">
+              <v-list-item
+                :disabled="!getChangesCnt(contractId) || !client"
+                @click="contractVersionDialog?.fromProject({ contractId })"
+              >
                 {{ contractId < 0 ? 'создать новый договор' : 'добавить версию' }}
                 на основе проекта
               </v-list-item>
               <v-list-item :disabled="contractId < 0 || !getChangesCnt(contractId)" @click="applyMoveGroups(contractId)">
                 применить перемещения в группах
               </v-list-item>
-              <v-list-item :disabled="!getChangesCnt(contractId)" @click="save(contractId)">
+              <v-list-item :disabled="!getChangesCnt(contractId)" @click="saveDialog?.open(contractId)">
                 сохранить проект
               </v-list-item>
               <v-list-item
-                v-for="d in savedDraftsByContract[contractId]"
+                v-for="d in savedProjectsByContract[contractId]"
                 :key="d.id"
                 :disabled="d.is_archived"
-                @click="loadDraft(d)"
+                @click="loadProject(d)"
               >
                 <div>
                   загрузить проект №{{ d.id }}
@@ -333,20 +330,20 @@ nextTick(fromActualContracts)
           </v-menu>
         </div>
       </div>
-      <UiNoData v-if="scheduleDraft[selectedContractId].length === 0" />
+      <UiNoData v-if="project[selectedContractId].length === 0" />
       <div
-        v-for="p in scheduleDraft[selectedContractId]"
+        v-for="p in project[selectedContractId]"
         v-else
         :key="p.id"
-        class="schedule-draft__programs"
+        class="project__programs"
         :class="{ 'element-loading': loading }"
       >
-        <div class="schedule-draft__program-info">
+        <div class="project__program-info">
           <span>
             {{ ProgramLabel[p.program] }}
           </span>
           <v-chip v-if="p.id < 0" label density="comfortable" color="orange">
-            добавлено в черновике
+            добавлено в проекте
           </v-chip>
           <ContractVersionProgramStatus v-else :item="p.swamp!" />
           <v-btn
@@ -354,12 +351,12 @@ nextTick(fromActualContracts)
             :size="30"
             icon="$plus"
             density="compact"
-            class="schedule-draft__remove"
+            class="project__remove"
             variant="plain"
             @click="removeProgram(p)"
           />
         </div>
-        <ScheduleDraftGroupList
+        <ProjectGroupList
           v-if="p.groups.length"
           :items="p.groups"
           :contract-id="selectedContractId"
@@ -367,7 +364,7 @@ nextTick(fromActualContracts)
           @remove-from-group="removeFromGroup"
           @jump-to-contract="jumpToContract"
         />
-        <div v-else class="schedule-draft__no-groups">
+        <div v-else class="project__no-groups">
           <UiNoData>
             не найдено групп
           </UiNoData>
@@ -376,10 +373,11 @@ nextTick(fromActualContracts)
     </template>
   </UiIndexPage>
   <ContractVersionDialog ref="contractVersionDialog" />
+  <ProjectSaveDialog ref="saveDialog" @saved="loadSavedProjects" />
 </template>
 
 <style lang="scss">
-.schedule-draft {
+.project {
   &__header {
     font-weight: bold;
     display: flex;
@@ -404,7 +402,7 @@ nextTick(fromActualContracts)
     border-bottom: 1px solid rgb(var(--v-theme-border));
 
     &:hover {
-      .schedule-draft__remove {
+      .project__remove {
         opacity: 0.8;
       }
     }

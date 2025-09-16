@@ -69,7 +69,7 @@ class Group extends Model implements HasSchedule
     /**
      * Кол-во учеников в проектах договора
      */
-    public function getDraftStudentsCountAttribute(): int
+    public function getProjectStudentsCountAttribute(): int
     {
         $result = 0;
 
@@ -77,11 +77,11 @@ class Group extends Model implements HasSchedule
         $cvpIdsReal = $this->clientGroups->pluck('contract_version_program_id');
 
         // проект
-        foreach (ScheduleDraft::getAllActive() as $draft) {
-            foreach ($draft->programs as $p) {
+        foreach (Project::getAllActive() as $project) {
+            foreach ($project->programs as $p) {
                 // реально есть в группе
                 if ($cvpIdsReal->contains($p['id'])) {
-                    // но в черновике убрали
+                    // но в проекте убрали
                     if ($p['group_id'] !== $this->id) {
                         $result--;
                     }
@@ -101,7 +101,7 @@ class Group extends Model implements HasSchedule
     /**
      * Проектные ученики
      */
-    public function getDraftStudentsAttribute(): Collection
+    public function getProjectStudentsAttribute(): Collection
     {
         $clients = collect();
 
@@ -109,20 +109,20 @@ class Group extends Model implements HasSchedule
         $cvpIdsReal = $this->clientGroups->pluck('contract_version_program_id');
 
         // проект
-        foreach (ScheduleDraft::getAllActive() as $draft) {
-            foreach ($draft->programs as $p) {
+        foreach (Project::getAllActive() as $project) {
+            foreach ($project->programs as $p) {
                 $cvpId = $p['id'];
 
                 // реально есть в группе
                 if ($cvpIdsReal->contains($cvpId)) {
-                    // но в черновике убрали
+                    // но в проекте убрали
                     if ($p['group_id'] !== $this->id) {
                         $clients->push((object) [
                             'id' => uniqid(),
                             'contract_version_program_id' => $cvpId,
-                            'client' => $draft->client,
+                            'client' => $project->client,
                             'group_id' => $p['group_id'],
-                            'draft_id' => $draft->id,
+                            'project_id' => $project->id,
                             'is_removed' => true, // удален
                         ]);
                     }
@@ -133,11 +133,11 @@ class Group extends Model implements HasSchedule
                         $clients->push((object) [
                             'id' => uniqid(),
                             'contract_version_program_id' => $cvpId,
-                            'client' => $draft->client,
+                            'client' => $project->client,
                             'group_id' => $p['group_id'],
                             // реальный непроектный group_id
                             'real_group_id' => ClientGroup::where('contract_version_program_id', $cvpId)->first()?->group_id,
-                            'draft_id' => $draft->id,
+                            'project_id' => $project->id,
                             'is_removed' => false, // добавлен
                         ]);
                     }

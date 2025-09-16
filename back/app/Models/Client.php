@@ -261,9 +261,9 @@ class Client extends Person implements HasSchedule
         return $this->hasMany(Grade::class);
     }
 
-    public function scheduleDrafts(): HasMany
+    public function projects(): HasMany
     {
-        return $this->hasMany(ScheduleDraft::class);
+        return $this->hasMany(Project::class);
     }
 
     /**

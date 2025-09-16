@@ -24,7 +24,7 @@ class GroupResource extends JsonResource
             'lesson_counts' => $this->lesson_counts,
             'first_lesson_date' => $this->first_lesson_date,
             'client_groups_count' => $this->clientGroups()->count(),
-            'draft_students_count' => $this->draft_students_count,
+            'project_students_count' => $this->project_students_count,
             'acts_count' => $this->acts()->count(),
             'user' => new PersonResource($this->user),
             'teachers' => PersonResource::collection($this->teachers),

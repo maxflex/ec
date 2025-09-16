@@ -1,26 +1,27 @@
 import type { GroupListResource } from '../Group'
 
-export const apiUrl = 'schedule-drafts'
+export const apiUrl = 'projects'
 
 /**
  * Сохраненные проекты расписания
  */
-export interface SavedScheduleDraftResource {
+export interface SavedProjectResource {
   id: number
   user: PersonResource
-  client: PersonResource
+  client: PersonResource | null
   year: Year
   created_at: string
   is_archived: boolean
   changes: number
   contract_id: number | null
+  comment: string | null
   has_problems_in_list: boolean
 }
 
 /**
  * Процесс по договору
  */
-interface ScheduleDraftSwamp {
+interface ProjectSwamp {
   id: number // cvp_id
   status: CvpStatus
   total_lessons: number
@@ -29,12 +30,12 @@ interface ScheduleDraftSwamp {
   contract_id: number | null
 }
 
-export interface ScheduleDraftGroup extends GroupListResource {
+export interface ProjectGroup extends GroupListResource {
   /**
    * Пересечения в расписании
    */
   overlap: ScheduleOverlap
-  swamp?: ScheduleDraftSwamp
+  swamp?: ProjectSwamp
   uncunducted_count: number
   /**
    * По какой программе был добавлен в группу изначально
@@ -47,18 +48,18 @@ export interface ScheduleDraftGroup extends GroupListResource {
   current_contract_id: number | null
 }
 
-export interface ScheduleDraftProgram {
+export interface ProjectProgram {
   id: number // ID contract_version_programs
   program: Program
   group_id?: number
   contract_id?: number
-  swamp?: ScheduleDraftSwamp
-  groups: ScheduleDraftGroup[]
+  swamp?: ProjectSwamp
+  groups: ProjectGroup[]
 }
 
-export type ScheduleDraft = Record<number, ScheduleDraftProgram[]>
+export type Project = Record<number, ProjectProgram[]>
 
-export function isGroupChangedInContract(group: ScheduleDraftGroup, contractId: number): boolean {
+export function isGroupChangedInContract(group: ProjectGroup, contractId: number): boolean {
   const from = group.original_contract_id
   const to = group.current_contract_id
 
