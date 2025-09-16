@@ -435,7 +435,7 @@ class ScheduleDraft extends Model
         return Lesson::query()->whereIn('group_id', $groupIds);
     }
 
-    public function getSchedule(?int $year = null): object
+    public function getSchedule(?int $year = null): array
     {
         return Teeth::get($this->getLessonsQuery());
     }

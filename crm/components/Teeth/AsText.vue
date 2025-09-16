@@ -4,21 +4,28 @@ const { items, oneLine } = defineProps<{
   oneLine?: boolean
 }>()
 
+type Result = Array<{
+  weekday: Weekday
+  teeth: Teeth
+  all_past: boolean
+}>
+
 function getForWeekday(teeth: Teeth, weekday: Weekday): Teeth {
   return teeth.filter(e => e.weekday === weekday)
 }
 
-function allWeekdayIsPast(weekday: Weekday): boolean {
-  return getForWeekday(items, weekday).some(e => !e.is_past) === false
-}
-
-const itemsByWeekday = computed(() => {
-  const result: Partial<Record<Weekday, Teeth>> = {}
+const itemsByWeekday = computed<Result>(() => {
+  // const result: Partial<Record<Weekday, Teeth>> = {}
+  const result: Result = []
 
   for (const weekday of [0, 1, 2, 3, 4, 5, 6, 7] as Weekday[]) {
     const teeth = getForWeekday(items, weekday)
     if (teeth.length) {
-      result[weekday] = teeth
+      result.push({
+        weekday,
+        teeth,
+        all_past: teeth.some(e => !e.is_past) === false
+      })
     }
   }
 
@@ -29,18 +36,18 @@ const itemsByWeekday = computed(() => {
 <template>
   <div class="teeth-as-text" :class="{ 'teeth-as-text--one-line': oneLine }">
     <div
-      v-for="(teeth, weekday) in itemsByWeekday"
-      :key="weekday"
+      v-for="item in itemsByWeekday"
+      :key="item.weekday"
       :class="{
-        'teeth-as-text--is-past': allWeekdayIsPast(weekday),
+        'teeth-as-text--is-past': item.all_past
       }"
     >
       <span>
-        {{ WeekdayLabel[weekday] }}
+        {{ WeekdayLabel[item.weekday] }}
       </span>
       <div class="teeth-as-text__times">
         <span
-          v-for="(t, index) in teeth.sort((a, b) => a.left - b.left)"
+          v-for="(t, index) in item.teeth.sort((a, b) => a.left - b.left)"
           :key="index"
           :class="{ 'teeth-as-text--is-past': t.is_past }"
         >

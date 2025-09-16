@@ -14,7 +14,7 @@ class Teeth
 
     const MAX_SECONDS = 75600; // TIME_TO_SEC("21:00")
 
-    public static function get(Builder $lessonsQuery): object
+    public static function get(Builder $lessonsQuery): array
     {
         $lessons = $lessonsQuery
             ->join('groups as g', 'g.id', '=', 'lessons.group_id')
@@ -68,7 +68,9 @@ class Teeth
         // Объединяем X + Y
         return $resultX
             ->map(fn ($l) => self::formatTooth($l, false))
-            ->concat($resultY->map(fn ($l) => self::formatTooth($l, true)));
+            ->concat($resultY->map(fn ($l) => self::formatTooth($l, true)))
+            ->values()
+            ->all();
     }
 
     private static function timeToSeconds(string $time): int

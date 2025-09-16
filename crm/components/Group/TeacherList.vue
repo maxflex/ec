@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { GroupListResource } from '.';
+
 const { items, selectable } = defineProps<{
   items: GroupListResource[]
   selectable?: boolean

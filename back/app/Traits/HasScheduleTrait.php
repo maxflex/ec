@@ -10,7 +10,7 @@ trait HasScheduleTrait
     {
         $schedule = $this->schedule ?? [];
         $teeth = $this->getSchedule($year);
-        if (count((array) $teeth)) {
+        if (count($teeth)) {
             $schedule[$year] = $teeth;
         } elseif (isset($schedule[$year])) {
             unset($schedule[$year]);
@@ -20,19 +20,19 @@ trait HasScheduleTrait
         return $this->save();
     }
 
-    public function getSchedule(int $year): object
+    public function getSchedule(int $year): array
     {
         return Teeth::get($this->getScheduleQuery($year));
     }
 
-    public function getSavedSchedule(int $year): object
+    public function getSavedSchedule(int $year): array
     {
         $schedule = $this->schedule ?? [];
 
         if (isset($schedule[$year])) {
-            return (object) $schedule[$year];
+            return $schedule[$year];
         }
 
-        return (object) [];
+        return [];
     }
 }

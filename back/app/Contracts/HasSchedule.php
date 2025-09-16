@@ -4,9 +4,9 @@ namespace App\Contracts;
 
 interface HasSchedule
 {
-    public function getSchedule(int $year): object;
+    public function getSchedule(int $year): array;
 
-    public function getSavedSchedule(int $year): object;
+    public function getSavedSchedule(int $year): array;
 
     public function updateSchedule(int $year);
 
