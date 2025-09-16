@@ -1,3 +1,5 @@
+import type { TeacherListResource } from '~/components/Teacher'
+
 const teachers = useState<TeacherListResource[]>()
 
 export default function () {
@@ -10,7 +12,7 @@ export default function () {
     })
   }
   if (teachers.value === undefined) {
-    loadData()
+    nextTick(loadData)
   }
   return teachers
 }

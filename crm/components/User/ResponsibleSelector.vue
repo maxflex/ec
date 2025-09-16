@@ -1,11 +1,16 @@
 <script setup lang="ts">
 const model = defineModel<number | undefined>()
-const users = ref<UserResource[]>()
+// will be loaded once
+const users = useState<UserResource[]>('responsibleUsers')
 
 async function loadData() {
+  if (users.value !== undefined) {
+    return
+  }
+
   const { data } = await useHttp<ApiResponse<UserResource>>(`users`, {
     params: {
-      has_responsible_requests: true,
+      has_responsible_requests: 1,
     },
   })
   users.value = data.value!.data

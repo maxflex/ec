@@ -8,7 +8,7 @@ export default function () {
     }
   }
   if (users.value === undefined) {
-    loadData()
+    nextTick(loadData)
   }
   return users
 }

@@ -5,6 +5,9 @@ const emit = defineEmits<{
   save: [cl: ClientLessonResource]
 }>()
 
+const commentInputs = ref()
+const commentErrors = ref<Record<number, boolean>>({})
+
 const { dialog, width } = useDialog('default')
 const item = ref<ClientLessonResource>()
 function open(cl: ClientLessonResource) {
@@ -20,6 +23,15 @@ function open(cl: ClientLessonResource) {
 function save() {
   if (!item.value) {
     return
+  }
+  commentErrors.value = {}
+  for (const [i, s] of item.value.scores.entries()) {
+    // есть оценка, но нет комментария
+    if (s.score && !s.comment) {
+      commentInputs.value[i].focus()
+      commentErrors.value[i] = true
+      return
+    }
   }
   dialog.value = false
   emit('save', {
@@ -56,7 +68,13 @@ defineExpose({ open })
             label="Оценка"
             :items="selectItems(LessonScoreLabel)"
           />
-          <v-text-field v-model="s.comment" label="Комментарий к оценке" />
+          <v-text-field
+            ref="commentInputs"
+            v-model="s.comment"
+            label="Комментарий к оценке"
+            :hide-details="!(i in commentErrors)"
+            :error-messages="(i in commentErrors) ? 'введите комментарий к оценке' : undefined"
+          />
         </div>
       </div>
     </div>
