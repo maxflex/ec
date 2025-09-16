@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\ClientLessonStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ControlGradesResource;
+use App\Http\Resources\ControlLessonsResource;
 use App\Http\Resources\ControlLkResource;
 use App\Models\Client;
 use Illuminate\Http\Request;
@@ -45,8 +46,9 @@ class ControlController extends Controller
             ->withCount([
                 'comments' => fn ($q) => $q->where('extra', 'control-lessons'),
             ])
+            ->with('contracts')
             ->selectRaw('
-                clients.id, clients.last_name, clients.first_name, clients.middle_name,
+                clients.id,
                 CAST(SUM(IF(cl.status IN (?, ?), 1, 0)) AS UNSIGNED) as online_count,
                 CAST(SUM(IF(cl.status IN (?, ?), 1, 0)) AS UNSIGNED) as late_count,
                 CAST(SUM(IF(cl.status = ?, 1, 0)) AS UNSIGNED) as absent_count,
@@ -59,7 +61,9 @@ class ControlController extends Controller
             ->orderByRaw('last_name, first_name')
             ->groupBy('clients.id');
 
-        return paginate($this->query->get());
+        $data = ControlLessonsResource::collection($this->query->get());
+
+        return paginate($data);
     }
 
     /**

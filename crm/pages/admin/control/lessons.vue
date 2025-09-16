@@ -9,8 +9,12 @@ interface Fields {
 type Field = keyof Fields
 
 type Item = PersonResource & Fields & {
+  directions: ClientDirections
   comments_count: number
 }
+
+const year = currentAcademicYear()
+const nextYear = year + 1 as Year
 
 const filters = ref<YearFilters>(loadFilters({
   year: currentAcademicYear(),
@@ -53,7 +57,13 @@ function showPercent(item: Item, field: Field): string {
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <UiYearSelector v-model="filters.year" density="comfortable" />
+      <v-btn
+        v-for="y in [year, nextYear]" :key="y"
+        :color="filters.year === y ? 'primary' : 'bg'"
+        @click="filters.year = y"
+      >
+        {{ y }}–{{ y + 1 }}
+      </v-btn>
     </template>
     <template #buttons>
       <UiQuestionTooltip>
@@ -64,10 +74,11 @@ function showPercent(item: Item, field: Field): string {
     <v-table
       fixed-header
       height="calc(100vh - 81px)"
-      class="control-lessons"
+      class="control-lessons table-padding"
     >
       <thead>
         <tr>
+          <th />
           <th />
           <th v-for="h in tableFields" :key="h.field">
             <span v-html="h.title" />
@@ -77,10 +88,13 @@ function showPercent(item: Item, field: Field): string {
       </thead>
       <tbody>
         <tr v-for="item in items" :key="item.id">
-          <td>
+          <td width="400">
             <UiPerson :item="item" />
           </td>
-          <td v-for="{ field, percent } in tableFields" :key="`${field}${percent}`" width="130">
+          <td>
+            <ClientDirections :item="item.directions" />
+          </td>
+          <td v-for="{ field, percent } in tableFields" :key="`${field}${percent}`" width="110">
             <span v-if="percent" class="text-gray">
               {{ showPercent(item, field) }}
             </span>
@@ -88,8 +102,8 @@ function showPercent(item: Item, field: Field): string {
               {{ formatPrice(item[field] as number) }}
             </span>
           </td>
-          <td>
-            <div style="width: 44px">
+          <td class="control-lessons__comment">
+            <div>
               <CommentBtn
                 color="gray"
                 :size="42"
@@ -111,24 +125,43 @@ function showPercent(item: Item, field: Field): string {
 .control-lessons {
   td,
   th {
-    &:nth-child(3),
-    &:nth-child(5),
-    &:nth-child(7),
-    &:nth-child(8) {
+    &:nth-child(2),
+    &:nth-child(4),
+    &:nth-child(6),
+    &:nth-child(8),
+    &:nth-child(9) {
       border-right: 1px solid rgb(var(--v-theme-border));
     }
 
-    &:nth-child(4),
-    &:nth-child(6),
-    &:nth-child(8) {
+    &:nth-child(3),
+    &:nth-child(5),
+    &:nth-child(7),
+    &:nth-child(9) {
       span {
         display: inline-block;
         padding-left: 10px !important;
       }
     }
 
-    &:nth-child(8) {
+    &:nth-child(9) {
       font-weight: 500;
+    }
+  }
+
+  th {
+    vertical-align: middle;
+    line-height: 20px;
+  }
+
+  &__comment {
+    width: 130px;
+    position: relative;
+
+    & > div {
+      width: 44px;
+      position: absolute;
+      left: 8px;
+      top: 8px;
     }
   }
 }
