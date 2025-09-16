@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ContractVersionListResource } from '.'
 import { mdiChevronRight } from '@mdi/js'
 
 const { items } = defineProps<{

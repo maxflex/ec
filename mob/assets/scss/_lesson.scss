@@ -60,12 +60,4 @@
   &__lesson {
     position: relative;
   }
-
-  &__extra {
-    font-weight: bold;
-
-    &--vacation {
-      color: rgb(var(--v-theme-red));
-    }
-  }
 }

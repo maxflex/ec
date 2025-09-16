@@ -3,5 +3,5 @@ const { user } = useAuthStore()
 </script>
 
 <template>
-  <Schedule :client-id="user?.id!" />
+  <Schedule :client-id="user?.id!" show-holidays />
 </template>

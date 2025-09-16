@@ -23,7 +23,7 @@ declare global {
 
   type TelegramTemplate = keyof typeof TelegramTemplateLabel
 
-  type Weekday = keyof typeof WeekdayLabel
+  type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6
 
   type Exam = keyof typeof ExamLabel
 
@@ -244,6 +244,8 @@ declare global {
     homework: ?string
     quarter: Quarter | null
     has_files: boolean
+    students_count: number
+    draft_students_count?: number
     client_lesson?: {
       id: number
       status: ClientLessonStatus
@@ -255,7 +257,6 @@ declare global {
     group: {
       id: number
       program: Program
-      students_count: number
       zoom: Zoom
     }
   }
@@ -278,35 +279,6 @@ declare global {
     conducted_at: ?string
     // внимание: client_lesson или client_group, но структура одинаковая
     students: ClientLessonResource[]
-  }
-
-  interface TeacherListResource extends PersonWithPhotoResource {
-    status: TeacherStatus
-    subjects: Subject[]
-    teeth: Teeth
-    is_published: boolean
-    created_at: string
-  }
-
-  interface TeacherResource extends PersonWithPhotoResource {
-    phones: PhoneResource[]
-    status: TeacherStatus
-    subjects: Subject[]
-    is_published: boolean
-    is_head_teacher: boolean
-    is_split_balance: boolean
-    desc?: string
-    photo_desc?: string
-    passport: {
-      series: ?string
-      number: ?string
-      address: ?string
-      code: ?string
-      issued_by: ?string
-    }
-    so?: number
-    created_at?: string
-    user?: PersonResource
   }
 
   interface BalanceItem {
@@ -597,12 +569,18 @@ declare global {
   }
 
   type Teeth = Tooth[]
+
   interface ClientGroupResource {
     id: number
     contract_version_program_id: number
     teeth: Teeth
     client: PersonWithPhotoResource
+    // в каком проекте
     draft_id: number | null
+    // в какую группу перешел
+    group_id: number | null
+    // реальный group_id
+    real_group_id: number | null
     is_removed: boolean
   }
 

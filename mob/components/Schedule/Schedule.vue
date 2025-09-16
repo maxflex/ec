@@ -3,6 +3,8 @@ import { differenceInDays, eachDayOfInterval, format, getDay } from 'date-fns'
 import { groupBy } from 'lodash-es'
 import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 import { formatDateMonth } from '~/utils'
+import { holidays } from '.'
+import { school89 } from '../Program'
 
 const { groupId, teacherId, clientId, year, programFilter } = defineProps<{
   groupId?: number
@@ -30,7 +32,11 @@ const params = {
 }
 const loading = ref(true)
 const lessons = ref<LessonListResource[]>([])
-const vacations = ref<Record<string, boolean>>({})
+
+// показывать каникула когда: есть флаг + есть занятия 8-9 класса
+const showHolidays = computed<boolean>(() =>
+  lessons.value.some(e => school89.includes(e.group.program)),
+)
 
 if (year) {
   selectedYear.value = year
@@ -62,6 +68,9 @@ const dates = computed(() => {
         result.push(d)
       }
     }
+    else if (showHolidays.value && d in holidays) {
+      result.push(d)
+    }
   }
   return result
 })
@@ -70,7 +79,7 @@ function hasContentAtDate(d: string): boolean {
   return filteredLessons.value.some(e => e.date === d)
 }
 
-const itemsByDate = computed(
+const lessonsByDate = computed(
   (): Record<string, Array<LessonListResource>> =>
     groupBy([...filteredLessons.value], 'date'),
 )
@@ -135,28 +144,12 @@ async function loadLessons() {
   loading.value = false
 }
 
-async function loadVacations() {
-  vacations.value = {}
-  const { data } = await useHttp<ApiResponse<VacationResource>>(
-    `vacations`,
-    {
-      params: { year: selectedYear.value },
-    },
-  )
-  if (data.value) {
-    for (const { date } of data.value.data) {
-      vacations.value[date] = true
-    }
-  }
-}
-
 async function loadData() {
   selectedProgram.value = undefined
   if (!selectedYear.value) {
     return
   }
   await loadLessons()
-  await loadVacations()
 }
 
 function expand(d: string) {
@@ -195,33 +188,37 @@ nextTick(loadAvailableYears)
         показать более ранние даты
       </v-chip>
     </div>
-    <div
-      v-for="d in dates" :key="d" class="schedule__row" :class="{
-        'schedule__row--expanded': expanded[d],
-        'schedule__row--today': d === todayDate,
-      }"
-    >
-      <div class="schedule__row-data" @click="expand(d)">
-        <div>
-          {{ formatDateMonth(d) }}
-          <span class="text-gray ml-1">
-            {{ dayLabels[getDay(d)] }}
-          </span>
-        </div>
-        <div>
-          {{ plural(itemsByDate[d].length, ['занятие', 'занятия', 'занятий']) }}
-        </div>
-        <div>
-          <v-icon icon="$expand" color="gray" />
-        </div>
+    <template v-for="d in dates" :key="d">
+      <div v-if="d in holidays" class="schedule__holidays">
+        Каникулы {{ formatDateMonth(d) }} – {{ formatDateMonth(holidays[d]) }}
       </div>
-      <Vue3SlideUpDown :model-value="!!expanded[d]" :duration="200" class="schedule__row-expansion">
-        <div v-if="vacations[d]" class="lesson-item lesson-item__extra lesson-item__extra--vacation">
-          Государственный праздник
+      <div
+        v-if="d in lessonsByDate"
+        class="schedule__row"
+        :class="{
+          'schedule__row--expanded': expanded[d],
+          'schedule__row--today': d === todayDate,
+        }"
+      >
+        <div class="schedule__row-data" @click="expand(d)">
+          <div>
+            {{ formatDateMonth(d) }}
+            <span class="text-gray ml-1">
+              {{ dayLabels[getDay(d)] }}
+            </span>
+          </div>
+          <div>
+            {{ plural(lessonsByDate[d].length, ['занятие', 'занятия', 'занятий']) }}
+          </div>
+          <div>
+            <v-icon icon="$expand" color="gray" />
+          </div>
         </div>
-        <ScheduleRowLesson v-for="item in itemsByDate[d]" :id="`lesson-${item.id}`" :key="`l-${item.id}`" :item="item" />
-      </Vue3SlideUpDown>
-    </div>
+        <Vue3SlideUpDown :model-value="!!expanded[d]" :duration="200" class="schedule__row-expansion">
+          <ScheduleRowLesson v-for="item in lessonsByDate[d]" :id="`lesson-${item.id}`" :key="`l-${item.id}`" :item="item" />
+        </Vue3SlideUpDown>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -294,6 +291,16 @@ nextTick(loadAvailableYears)
         background-color: rgba(var(--v-theme-primary), 0.3);
       }
     }
+  }
+
+  &__holidays {
+    font-size: 18px;
+    height: 164px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eaf5f1;
+    border-bottom: 1px solid rgb(var(--v-theme-bg));
   }
 }
 </style>

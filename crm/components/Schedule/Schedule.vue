@@ -18,18 +18,20 @@ import {
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { groupBy } from 'lodash-es'
 import { formatDateMonth } from '~/utils'
+import { holidays } from '.'
+import { school89 } from '../Program'
 
-const { group, teacherId, clientId, programFilter, headTeacher } = defineProps<{
+const { group, teacherId, clientId, programFilter, headTeacher, showHolidays } = defineProps<{
   group?: GroupResource
   teacherId?: number
   clientId?: number
   programFilter?: boolean
   headTeacher?: boolean
+  showHolidays?: boolean
 }>()
 
 const selectedProgram = ref<Program>()
 const selectedYear = ref<Year>()
-const hideEmptyDates = ref<number>(1)
 const { user, isTeacher, isClient } = useAuthStore()
 const showSchedule = ref(true)
 const isMassEditable = user?.entity_type === EntityTypeValue.user && group
@@ -51,7 +53,6 @@ const clientLessonEditPriceDialog = ref<InstanceType<typeof ClientLessonEditPric
 const lessonBulkUpdateDialog = ref<InstanceType<typeof LessonBulkUpdateDialog>>()
 const lessonBulkCreateDialog = ref<InstanceType<typeof LessonBulkCreateDialog>>()
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
-const vacations = ref<Record<string, boolean>>({})
 const checkboxes = ref<{ [key: number]: boolean }>({})
 const selectedIds = computed((): number[] => {
   const result = []
@@ -74,6 +75,11 @@ const filteredLessons = computed(() =>
     : lessons.value,
 )
 
+// показывать каникула когда: есть флаг + есть занятия 8-9 класса
+const showHolidaysReal = computed<boolean>(() =>
+  showHolidays && lessons.value.some(e => school89.includes(e.group.program)),
+)
+
 const dates = computed(() => {
   if (!selectedYear.value) {
     return []
@@ -88,21 +94,17 @@ const dates = computed(() => {
   const result = []
   for (const d of allDates) {
     const dateString = format(d, 'yyyy-MM-dd')
-    if (hideEmptyDates.value) {
-      if (
-        filteredLessons.value.some(e => e.date === dateString)
-      ) {
-        result.push(dateString)
-      }
+    if (filteredLessons.value.some(e => e.date === dateString)) {
+      result.push(dateString)
     }
-    else {
+    else if (showHolidaysReal.value && dateString in holidays) {
       result.push(dateString)
     }
   }
   return result
 })
 
-const itemsByDate = computed(
+const lessonsByDate = computed(
   (): Record<string, Array<LessonListResource>> =>
     groupBy([...filteredLessons.value], 'date'),
 )
@@ -171,21 +173,6 @@ async function loadTeeth() {
   }
 }
 
-async function loadVacations() {
-  vacations.value = {}
-  const { data } = await useHttp<ApiResponse<VacationResource>>(
-    `vacations`,
-    {
-      params: { year: selectedYear.value },
-    },
-  )
-  if (data.value) {
-    for (const { date } of data.value.data) {
-      vacations.value[date] = true
-    }
-  }
-}
-
 async function loadData() {
   selectedProgram.value = undefined
   if (!selectedYear.value) {
@@ -194,7 +181,6 @@ async function loadData() {
   }
   await loadTeeth()
   await loadLessons()
-  await loadVacations()
 }
 
 function onBulkUpdated() {
@@ -355,38 +341,34 @@ nextTick(loadAvailableYears)
   <UiNoData v-if="lessons.length === 0 && !loading" />
   <UiLoader v-else-if="loading" />
   <div v-else class="schedule">
-    <div
-      v-for="d in dates"
-      :key="d"
-      :class="{
-        'week-separator': !hideEmptyDates && getDay(d) === 0,
-      }"
-    >
-      <div>
-        {{ formatDateMonth(d) }}
-        <span class="text-gray ml-1">
-          {{ dayLabels[getDay(d)] }}
-        </span>
+    <template v-for="d in dates" :key="d">
+      <div v-if="d in holidays" class="schedule__holidays">
+        Каникулы {{ formatDateMonth(d) }} – {{ formatDateMonth(holidays[d]) }}
       </div>
-      <div v-if="vacations[d]" class="lesson-item lesson-item__extra lesson-item__extra--vacation">
-        Государственный праздник
+      <div v-if="d in lessonsByDate">
+        <div>
+          {{ formatDateMonth(d) }}
+          <span class="text-gray ml-1">
+            {{ dayLabels[getDay(d)] }}
+          </span>
+        </div>
+        <component
+          :is="lessonComponent"
+          v-for="item in lessonsByDate[d]"
+          :id="`lesson-${item.id}`"
+          :key="`l-${item.id}`"
+          :item="item"
+          :group="group"
+          :checkboxes="checkboxes"
+          :mass-edit-mode="massEditMode"
+          class="lesson-item lesson-item__lesson"
+          @edit="lessonDialog?.edit"
+          @conduct="conductDialog?.open"
+          @edit-price="clientLessonEditPriceDialog?.edit"
+          @click="e => onMassEditClick(item, e)"
+        />
       </div>
-      <component
-        :is="lessonComponent"
-        v-for="item in itemsByDate[d]"
-        :id="`lesson-${item.id}`"
-        :key="`l-${item.id}`"
-        :item="item"
-        :group="group"
-        :checkboxes="checkboxes"
-        :mass-edit-mode="massEditMode"
-        class="lesson-item lesson-item__lesson"
-        @edit="lessonDialog?.edit"
-        @conduct="conductDialog?.open"
-        @edit-price="clientLessonEditPriceDialog?.edit"
-        @click="e => onMassEditClick(item, e)"
-      />
-    </div>
+    </template>
   </div>
   <LessonDialog ref="lessonDialog" />
   <ClientLessonEditPriceDialog v-if="clientId" ref="clientLessonEditPriceDialog" />
@@ -446,6 +428,16 @@ nextTick(loadAvailableYears)
         left: 20px;
       }
     }
+  }
+
+  &__holidays {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eaf5f1;
+    font-size: 24px;
+    // font-weight: 500;
   }
 }
 </style>

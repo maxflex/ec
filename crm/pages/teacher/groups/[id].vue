@@ -26,7 +26,7 @@ nextTick(loadData)
       <UiTabs v-model="selectedTab" :items="tabs" />
     </div>
     <div>
-      <Schedule v-if="selectedTab === 'schedule'" :group="group" />
+      <Schedule v-if="selectedTab === 'schedule'" :group="group" show-holidays  />
       <GroupVisitsTab v-else-if="selectedTab === 'visits'" :id="group.id" />
       <GroupStudentsTab v-else :group="group" />
     </div>
