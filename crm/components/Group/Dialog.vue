@@ -126,7 +126,7 @@ defineExpose({ create, edit })
         </div>
         <div>
           <v-text-field
-            v-model="group.level"
+            v-model="group.letter"
             v-maska="{ mask: '*' }"
             label="Уровень группы"
           />

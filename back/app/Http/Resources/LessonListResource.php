@@ -42,7 +42,7 @@ class LessonListResource extends JsonResource
                 ? $this->clientLessons()->count()
                 : $this->group->clientGroups()->count(),
             'group' => extract_fields($this->group, [
-                'program', 'zoom', 'level', 'draft_students_count',
+                'program', 'zoom', 'letter', 'draft_students_count',
             ]),
         ]);
     }

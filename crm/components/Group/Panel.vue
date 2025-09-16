@@ -10,7 +10,7 @@ const { item } = defineProps<{
   <div class="panel-info">
     <div>
       <h2 style="font-size: 28px" class="pt-1">
-        ГР-{{ item.id + (item.level ? `-${item.level}` : '') }}
+        ГР-{{ item.id + (item.letter ? `-${item.letter}` : '') }}
       </h2>
     </div>
 

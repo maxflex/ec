@@ -13,7 +13,7 @@ export interface GroupListResource {
   client_groups_count: number
   draft_students_count: number
   first_lesson_date?: string
-  level: number | null
+  letter: number | null
   program: Program
   teachers: PersonResource[]
   teeth: Teeth
@@ -23,7 +23,7 @@ export interface GroupListResource {
 
 export interface GroupResource {
   id: number
-  level?: string
+  letter?: string
   program?: Program
   year: Year
   teachers: PersonResource[]

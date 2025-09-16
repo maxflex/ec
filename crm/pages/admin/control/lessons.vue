@@ -154,7 +154,7 @@ function showPercent(item: Item, field: Field): string {
   }
 
   &__comment {
-    width: 130px;
+    width: 150px;
     position: relative;
 
     & > div {
