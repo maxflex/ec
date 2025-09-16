@@ -591,12 +591,12 @@ declare global {
     left: number
     width: number
     time: string
+    weekday: Weekday
     time_end: string
     is_past: boolean
   }
 
-  type Teeth = Partial<Record<Weekday, Tooth[]>>
-
+  type Teeth = Tooth[]
   interface ClientGroupResource {
     id: number
     contract_version_program_id: number

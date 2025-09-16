@@ -23,7 +23,7 @@ const iconColor = computed(() => (hasOverlap.value || hasProcessInAnotherContrac
 <template>
   <v-tooltip v-if="hasProblems" location="bottom">
     <template #activator="{ props }">
-      <v-icon :icon="mdiAlertBox" v-bind="props" :color="iconColor" :size="26" />
+      <v-icon :icon="mdiAlertBox" v-bind="props" :color="iconColor" :size="26" class="vfn-1" />
     </template>
     <div v-if="hasProcessInAnotherContract">
       добавлен в эту группу по другому договору –

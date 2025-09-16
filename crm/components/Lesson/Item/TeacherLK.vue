@@ -66,9 +66,7 @@ const isConductDisabled = isEditDisabled || item.status === 'cancelled'
       {{ ProgramShortLabel[item.group.program] }}
     </div>
     <div style="width: 60px">
-      <template v-if="item.status !== 'cancelled'">
-        {{ item.group.students_count }} уч.
-      </template>
+      <GroupStudentsCount v-if="item.status !== 'cancelled'" :item="item" />
     </div>
     <div style="width: 60px">
       <template v-if="item.cabinet">

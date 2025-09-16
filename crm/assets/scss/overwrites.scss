@@ -85,13 +85,15 @@ main {
 .v-switch {
   scale: 0.8;
   transform-origin: top left;
+  top: 1px;
+  position: relative;
 
   .v-switch__track {
     padding: 0 !important;
   }
 
   .v-selection-control {
-    min-height: 34px !important;
+    min-height: 28px !important;
 
     &:not(.v-selection-control--dirty) {
       .v-switch__track {
