@@ -28,13 +28,13 @@ const { item } = defineProps<{
 
     <RouterLink
       :to="{
-        name: 'schedule-drafts-editor',
+        name: 'projects-editor',
         query: {
-          id: item.changes.schedule_draft_id,
+          id: item.changes.project_id,
         },
       }"
     >
-      {{ item.changes.schedule_draft_id }}
+      {{ item.changes.project_id }}
     </RouterLink>
   </div>
 </template>

@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use App\Models\Client;
 use App\Models\ContractVersionProgram;
 use App\Models\Group;
-use App\Models\ScheduleDraft;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,30 +27,30 @@ class SwampListResource extends JsonResource
             $group->loadCount('clientGroups');
         }
 
-        $scheduleDraft = ScheduleDraft::query()
+        $project = Project::query()
             ->where('client_id', $this->client_id)
             ->where('contract_id', $this->contract_id)
             ->get()
-            ->filter(fn (ScheduleDraft $e) => ! $e->is_archived)
+            ->filter(fn (Project $e) => ! $e->is_archived)
             ->first();
 
         $changesType = null;
-        if ($scheduleDraft) {
-            $draftProgram = $scheduleDraft->programs->firstWhere('id', $this->id);
+        if ($project) {
+            $projectProgram = $project->programs->firstWhere('id', $this->id);
 
-            $draftGroup = $draftProgram && $draftProgram['group_id']
-                ? Group::find($draftProgram['group_id'])
+            $projectGroup = $projectProgram && $projectProgram['group_id']
+                ? Group::find($projectProgram['group_id'])
                 : null;
 
-            if ($draftGroup?->id !== $group?->id) {
+            if ($projectGroup?->id !== $group?->id) {
                 // добавлено в проекте
-                if (! $group && $draftGroup) {
+                if (! $group && $projectGroup) {
                     $changesType = 'added';
                 }
                 // убрано в проекте
-                elseif (! $draftGroup && $group) {
+                elseif (! $projectGroup && $group) {
                     $changesType = 'removed';
-                } elseif ($group && $draftGroup && $group->id !== $draftGroup->id) {
+                } elseif ($group && $projectGroup && $group->id !== $projectGroup->id) {
                     $changesType = 'changed';
                 }
             }
@@ -66,9 +66,9 @@ class SwampListResource extends JsonResource
 
             // проектные изменения
             'changes' => $changesType === null ? null : [
-                'schedule_draft_id' => $scheduleDraft->id,
+                'project_id' => $project->id,
                 'type' => $changesType,
-                'group_id' => $draftGroup?->id,
+                'group_id' => $projectGroup?->id,
             ],
         ]);
     }

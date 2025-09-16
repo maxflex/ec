@@ -49,7 +49,7 @@ const tables = [
   'photos',
   'reports',
   'requests',
-  'schedule_drafts',
+  'projects',
   'sms_messages',
   'stats_presets',
   'teacher_payments',

@@ -32,9 +32,9 @@ class LessonListResource extends JsonResource
                 $request->has('client_id'),
                 fn () => $this->getClientLesson(intval($request->client_id)),
             ),
-            'draft_students_count' => $this->when(
+            'project_students_count' => $this->when(
                 $isAdmin,
-                fn () => $this->group->draft_students_count
+                fn () => $this->group->project_students_count
             ),
             // если занятие проведено: берем фактическое из client_lessons
             // иначе берем из client_groups
@@ -42,7 +42,7 @@ class LessonListResource extends JsonResource
                 ? $this->clientLessons()->count()
                 : $this->group->clientGroups()->count(),
             'group' => extract_fields($this->group, [
-                'program', 'zoom', 'letter', 'draft_students_count',
+                'program', 'zoom', 'letter', 'project_students_count',
             ]),
         ]);
     }

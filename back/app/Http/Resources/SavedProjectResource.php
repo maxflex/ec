@@ -2,12 +2,12 @@
 
 namespace App\Http\Resources;
 
-use App\Models\ScheduleDraft;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin ScheduleDraft */
-class SavedScheduleDraftResource extends JsonResource
+/** @mixin Project */
+class SavedProjectResource extends JsonResource
 {
     public function toArray(Request $request): array
     {

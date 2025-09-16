@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 
-class ScheduleDraft extends Model
+class Project extends Model
 {
     protected $fillable = [
         'programs', 'client_id', 'user_id',
@@ -22,34 +22,34 @@ class ScheduleDraft extends Model
         'programs' => 'collection',
     ];
 
-    public static function fromRam(int $userId): ?ScheduleDraft
+    public static function fromRam(int $userId): ?Project
     {
         return cache(self::getCacheKey($userId));
     }
 
     private static function getCacheKey(int $userId): string
     {
-        return sprintf('schedule-draft-%d', $userId);
+        return sprintf('project-%d', $userId);
     }
 
     /**
-     * Получить пустой черновик по клиенту
+     * Получить пустой проект по клиенту
      * Исходное состояние, когда первый раз открываем
      * Год – всегда текущий учебный год
      *
      * $contract – к какому договору добавляем проект
      * Если не указан, то новая цепь договора, иначе добавление новой версии к $contract
      */
-    public static function fromActualContracts(Client $client): ScheduleDraft
+    public static function fromActualContracts(Client $client): Project
     {
-        $scheduleDraft = new ScheduleDraft([
+        $project = new Project([
             'client_id' => $client->id,
             'year' => current_academic_year(),
         ]);
 
-        $scheduleDraft->programs = $scheduleDraft->getActualPrograms();
+        $project->programs = $project->getActualPrograms();
 
-        return $scheduleDraft;
+        return $project;
     }
 
     private function getActualPrograms(): Collection
@@ -84,20 +84,20 @@ class ScheduleDraft extends Model
      */
     // public static function selectorForContract(Contract $contract)
     // {
-    //     $scheduleDrafts = $contract->client->scheduleDrafts()
+    //     $projects = $contract->client->projects()
     //         ->where('created_at', '>', $contract->active_version->created_at->format('Y-m-d H:i:s'))
     //         ->where('year', $contract->year)
     //         ->get()
     //         ->sortByDesc('created_at')
     //         ->values();
     //
-    //     $scheduleDrafts = json_redecode(SavedScheduleDraftResource::collection($scheduleDrafts));
+    //     $projects = json_redecode(SavedProjectResource::collection($projects));
     //
     //     $result = [];
-    //     foreach ($scheduleDrafts as $scheduleDraft) {
-    //         $changes = $scheduleDraft['changes'];
+    //     foreach ($projects as $project) {
+    //         $changes = $project['changes'];
     //         if (isset($changes[$contract->id])) {
-    //             $result[] = $scheduleDraft;
+    //             $result[] = $project;
     //         }
     //     }
     //
@@ -129,7 +129,7 @@ class ScheduleDraft extends Model
             }
         }
 
-        // и добавляем согласно черновику
+        // и добавляем согласно проекту
         // программы выбранного $contractId
         // $programs = $this->programs
         //     ->filter(fn ($p) => $p['group_id'] && $p['contract_id'] === $cv->contract_id);
@@ -152,7 +152,7 @@ class ScheduleDraft extends Model
      */
     public static function getAllActive(): Collection
     {
-        return once(fn () => ScheduleDraft::all()->filter(fn ($e) => ! $e->is_archived));
+        return once(fn () => Project::all()->filter(fn ($e) => ! $e->is_archived));
     }
 
     public function addToGroup(int $programId, int $groupId): bool
@@ -187,7 +187,7 @@ class ScheduleDraft extends Model
     }
 
     /**
-     * Программы из черновика + все остальные.
+     * Программы из проекта + все остальные.
      * Добавляем contract_id в каждую программу для последующих группировок
      * TODO: всё таки-изменить структуру так, чтобы было contract_id => [..programs]
      * потому что при добавлении новой цепи программ не будет
@@ -207,7 +207,7 @@ class ScheduleDraft extends Model
     // }
 
     /**
-     * Сохранить текущий черновик в оперативную память
+     * Сохранить текущий проект в оперативную память
      */
     public function toRam(): bool
     {
@@ -223,7 +223,7 @@ class ScheduleDraft extends Model
 
         // если есть добавления в группу по новым программам – ошибка
         if ($programs->where('id', '<', 0)->whereNotNull('group_id')->count()) {
-            throw new Exception('<b>Невозможно применить перемещения в группах:</b> в проекте есть программы "добавлено в черновике"');
+            throw new Exception('<b>Невозможно применить перемещения в группах:</b> в проекте есть программы "добавлено в проекте"');
         }
 
         // only real programs
@@ -388,7 +388,7 @@ class ScheduleDraft extends Model
                 'program', 'client_groups_count', 'zoom', 'lessons_planned',
                 'teacher_counts', 'lesson_counts', 'first_lesson_date', 'swamp',
                 'overlap', 'uncunducted_count', 'original_contract_id',
-                'current_contract_id', 'letter', 'draft_students_count',
+                'current_contract_id', 'letter', 'project_students_count',
             ], [
                 'cabinets' => $g->cabinets,
                 'teeth' => $g->getSavedSchedule($g->year),
@@ -531,9 +531,9 @@ class ScheduleDraft extends Model
             }
             $programFromContract = $activeVersion->programs->where('program', $p['program'])->first();
             // группа, в которую ученика поместили в проекте (или он там и был)
-            $groupFromDraft = $p['group_id'] ? Group::find($p['group_id']) : null;
+            $groupFromProject = $p['group_id'] ? Group::find($p['group_id']) : null;
             $lessonsConducted = $programFromContract?->lessons_conducted ?: 0;
-            $lessonsSuggest = $programFromContract ? $programFromContract->getLessonsSuggest($groupFromDraft) : 0;
+            $lessonsSuggest = $programFromContract ? $programFromContract->getLessonsSuggest($groupFromProject) : 0;
 
             $program = [
                 'id' => $id,
@@ -556,12 +556,12 @@ class ScheduleDraft extends Model
                     // кол-во занятий меняется только в случае, если ученика переместили в другую группу,
                     // где кол-во занятий отличается от той, где он был
                     $updateLessons = $index === $programFromContract->prices->count() - 1
-                        && $groupFromDraft
-                        && $groupFromDraft->id !== $programFromContract->clientGroup?->group_id;
+                        && $groupFromProject
+                        && $groupFromProject->id !== $programFromContract->clientGroup?->group_id;
 
                     $lessons = $updateLessons
                         // сколько планируется в группе минус сколько проведено по программе
-                        ? ($groupFromDraft->lesson_counts['planned'] - $lessonsConducted)
+                        ? ($groupFromProject->lesson_counts['planned'] - $lessonsConducted)
                         : $price->lessons;
 
                     $prices->push([
@@ -579,7 +579,7 @@ class ScheduleDraft extends Model
                 $prices->push([
                     'id' => $pricesId,
                     'contract_version_program_id' => $id,
-                    'lessons' => $groupFromDraft ? ($groupFromDraft->lessons_planned - $lessonsConducted) : 0,
+                    'lessons' => $groupFromProject ? ($groupFromProject->lessons_planned - $lessonsConducted) : 0,
                     'price' => 0,
                 ]);
             }
@@ -632,13 +632,13 @@ class ScheduleDraft extends Model
         $id = -1;
         $pricesId = -1;
         foreach ($programs as $p) {
-            $groupFromDraft = $p['group_id'] ? Group::find($p['group_id']) : null;
+            $groupFromProject = $p['group_id'] ? Group::find($p['group_id']) : null;
 
             $item->programs->push([
                 'id' => $id,
                 'program' => $p['program'],
                 'group_id' => $p['group_id'],
-                'lessons_planned' => $groupFromDraft?->lessons_planned,
+                'lessons_planned' => $groupFromProject?->lessons_planned,
                 'lessons_conducted' => 0,
                 'lessons_to_be_conducted' => 0,
                 'lessons_suggest' => 0,
@@ -650,7 +650,7 @@ class ScheduleDraft extends Model
                 'prices' => [(object) [
                     'id' => $pricesId,
                     'price' => null,
-                    'lessons' => $groupFromDraft?->lessons_planned,
+                    'lessons' => $groupFromProject?->lessons_planned,
                 ]],
             ]);
 
@@ -675,12 +675,12 @@ class ScheduleDraft extends Model
     public function getIsArchivedAttribute(): bool
     {
         // есть драфты, созданные позже текущего
-        $hasDraftsAfter = self::query()
+        $hasProjectsAfter = self::query()
             ->where('client_id', $this->client_id)
             ->where('id', '>', $this->id)
             ->exists();
 
-        if ($hasDraftsAfter) {
+        if ($hasProjectsAfter) {
             return true;
         }
 
@@ -736,7 +736,7 @@ class ScheduleDraft extends Model
     }
 
     /**
-     * "Есть проблемы" для списка на /schedule-drafts
+     * "Есть проблемы" для списка на /projects
      * Отображается если в позициях с изменениями есть проблемы
      */
     public function getHasProblemsInListAttribute(): bool
@@ -753,17 +753,17 @@ class ScheduleDraft extends Model
         return $this->belongsTo(Contract::class);
     }
 
-    public function saveDraft(int $contractId): ScheduleDraft
+    public function saveProject(int $contractId): Project
     {
-        $scheduleDraft = $this->replicate();
+        $project = $this->replicate();
 
-        $scheduleDraft->contract_id = $contractId < 0 ? null : $contractId;
+        $project->contract_id = $contractId < 0 ? null : $contractId;
 
-        $scheduleDraft->programs = $scheduleDraft->getProgramsOnlyForSelectedContract($contractId);
+        $project->programs = $project->getProgramsOnlyForSelectedContract($contractId);
 
-        $scheduleDraft->save();
+        $project->save();
 
-        return $scheduleDraft;
+        return $project;
     }
 
     /**
@@ -789,12 +789,12 @@ class ScheduleDraft extends Model
     }
 
     /**
-     * Загрузить программы из ScheduleDraft в проект из Ram
+     * Загрузить программы из Project в проект из Ram
      * (меню загрузить проект из Editor)
      */
-    public function insertPrograms(ScheduleDraft $scheduleDraft)
+    public function insertPrograms(Project $project)
     {
-        $contractId = $scheduleDraft->contract_id ?? -1;
+        $contractId = $project->contract_id ?? -1;
 
         $programs = collect();
 
@@ -804,7 +804,7 @@ class ScheduleDraft extends Model
             }
         }
 
-        foreach ($scheduleDraft->programs as $p) {
+        foreach ($project->programs as $p) {
             $programs->push($p);
         }
 

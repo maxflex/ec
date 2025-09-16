@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ContractResource, ContractVersionListResource, ContractVersionPaymentResource, ContractVersionProgramPrice, ContractVersionProgramResource, ContractVersionResource } from '.'
-import type { SavedScheduleDraftResource } from '../ScheduleDraft'
+import type { SavedProjectResource } from '../Project'
 import { mdiFlipVertical } from '@mdi/js'
 import { addMonths, format } from 'date-fns'
 import { cloneDeep } from 'lodash-es'
@@ -13,7 +13,7 @@ const emit = defineEmits<{
 
 const route = useRoute()
 const router = useRouter()
-const selectedDraft = ref<SavedScheduleDraftResource>() // хранит ID загруженного проекта
+const selectedProject = ref<SavedProjectResource>() // хранит ID загруженного проекта
 const applyMoveGroups = ref(false) // применить изменения в группах (для подгруженного проекта договора)
 
 const { user } = useAuthStore()
@@ -38,34 +38,34 @@ function newContract(clientId: number) {
 }
 
 /**
- * @param savedDraft загрузить из ранее сохраненного драфта
- * @param contractId если подгружаем draft из RAM, то обязательно указать по какому договору
+ * @param savedProject загрузить из ранее сохраненного проекта
+ * @param contractId если подгружаем проект из RAM, то обязательно указать по какому договору
  */
-async function fromDraft({ savedDraft, contractId: cId }: {
-  savedDraft?: SavedScheduleDraftResource
+async function fromProject({ savedProject, contractId: cId }: {
+  savedProject?: SavedProjectResource
   contractId?: number
 }) {
   loading.value = true
-  const contractIdFromDraft = cId !== undefined ? (cId < 0 ? undefined : cId) : (savedDraft!.contract_id || undefined)
+  const contractIdFromProject = cId !== undefined ? (cId < 0 ? undefined : cId) : (savedProject!.contract_id || undefined)
   // @ts-expect-error
-  selectedDraft.value = savedDraft || { id: -1 }
-  mode.value = contractIdFromDraft ? 'new-version' : 'new-contract'
+  selectedProject.value = savedProject || { id: -1 }
+  mode.value = contractIdFromProject ? 'new-version' : 'new-contract'
   if (mode.value === 'new-contract') {
     contractId.value = undefined
     seq.value = undefined
   }
   else {
-    contractId.value = contractIdFromDraft
+    contractId.value = contractIdFromProject
   }
 
   dialog.value = true
 
   const { data } = await useHttp<ContractVersionResource>(
-    `schedule-drafts/fill-contract`,
+    `projects/fill-contract`,
     {
       method: 'POST',
       body: {
-        id: savedDraft?.id,
+        id: savedProject?.id,
         contract_id: cId,
       },
     },
@@ -89,7 +89,7 @@ async function edit(cv: ContractVersionListResource, m: ContractEditMode = 'edit
   loading.value = true
   mode.value = m
   contractId.value = cv.contract.id
-  selectedDraft.value = undefined
+  selectedProject.value = undefined
   seq.value = cv.seq + (m === 'edit' ? 0 : 1)
   dialog.value = true
   const { data } = await useHttp<ContractVersionResource>(
@@ -478,7 +478,7 @@ function removePrice(p: ContractVersionProgramResource) {
 }
 
 function isChanged(p: ContractVersionProgramResource, field: keyof ContractVersionProgramResource): boolean {
-  if (!selectedDraft.value) {
+  if (!selectedProject.value) {
     return false
   }
 
@@ -520,7 +520,7 @@ function isChanged(p: ContractVersionProgramResource, field: keyof ContractVersi
   return false
 }
 
-defineExpose({ edit, newContract, newVersion, fromDraft })
+defineExpose({ edit, newContract, newVersion, fromProject })
 </script>
 
 <template>
@@ -548,19 +548,19 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
             Новая версия договора
             <span>№{{ contractId }}–{{ seq }}</span>
           </template>
-          <div v-if="selectedDraft" class="dialog-subheader">
-            <template v-if="selectedDraft.id > 0">
+          <div v-if="selectedProject" class="dialog-subheader">
+            <template v-if="selectedProject.id > 0">
               На основе
               <RouterLink
                 target="_blank"
                 :to="{
-                  name: 'schedule-drafts-editor',
-                  query: { id: selectedDraft.id },
+                  name: 'projects-editor',
+                  query: { id: selectedProject.id },
                 }"
               >
-                проекта №{{ selectedDraft.id }}
+                проекта №{{ selectedProject.id }}
               </RouterLink>
-              от {{ formatDateTime(selectedDraft.created_at) }}
+              от {{ formatDateTime(selectedProject.created_at) }}
             </template>
             <template v-else>
               На основе текущего проекта
@@ -668,7 +668,7 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
                 </td>
                 <td :class="{ changed: isChanged(p, 'group_id') }">
                   <!-- если подгрузили проект, то показываем оригинальную программу unless отмечено applyMoveGroups -->
-                  <template v-if="selectedDraft">
+                  <template v-if="selectedProject">
                     <template v-if="applyMoveGroups">
                       <span v-if="p.group_id" class="pl-4">
                         ГР-{{ p.group_id }}
@@ -797,7 +797,7 @@ defineExpose({ edit, newContract, newVersion, fromDraft })
           </table>
         </div>
 
-        <div v-if="selectedDraft">
+        <div v-if="selectedProject">
           <v-checkbox v-model="applyMoveGroups" label="Применить изменения в группах" />
         </div>
 

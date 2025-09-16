@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\SavedScheduleDraftResource;
+use App\Http\Resources\SavedProjectResource;
 use App\Models\Client;
-use App\Models\ScheduleDraft;
+use App\Models\Project;
 use Exception;
 use Illuminate\Http\Request;
 
-class ScheduleDraftController extends Controller
+class ProjectController extends Controller
 {
     protected $filters = [
         'equals' => ['client_id', 'year'],
@@ -17,11 +17,11 @@ class ScheduleDraftController extends Controller
 
     public function index(Request $request)
     {
-        $query = ScheduleDraft::latest();
+        $query = Project::latest();
 
         $this->filter($request, $query);
 
-        return $this->handleIndexRequest($request, $query, SavedScheduleDraftResource::class);
+        return $this->handleIndexRequest($request, $query, SavedProjectResource::class);
     }
 
     /**
@@ -30,22 +30,22 @@ class ScheduleDraftController extends Controller
     public function fromActualContracts(Request $request)
     {
         $request->validate([
-            'id' => ['sometimes', 'exists:schedule_drafts,id'],
+            'id' => ['sometimes', 'exists:projects,id'],
             'client_id' => ['required', 'exists:clients,id'],
         ]);
 
         if ($request->has('id')) {
-            $scheduleDraft = ScheduleDraft::find($request->input('id'));
-            $scheduleDraft->unpack();
+            $project = Project::find($request->input('id'));
+            $project->unpack();
         } else {
             $client = Client::find($request->client_id);
-            $scheduleDraft = ScheduleDraft::fromActualContracts($client);
+            $project = Project::fromActualContracts($client);
         }
 
-        $scheduleDraft->user_id = auth()->id();
-        $scheduleDraft->toRam();
+        $project->user_id = auth()->id();
+        $project->toRam();
 
-        return $scheduleDraft->getData();
+        return $project->getData();
     }
 
     public function removeFromGroup(Request $request)
@@ -55,11 +55,11 @@ class ScheduleDraftController extends Controller
             'program_id' => ['required', 'numeric'],
         ]);
 
-        $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
-        $scheduleDraft->removeFromGroup(intval($request->program_id));
-        $scheduleDraft->toRam();
+        $project = Project::fromRam(auth()->id());
+        $project->removeFromGroup(intval($request->program_id));
+        $project->toRam();
 
-        return $scheduleDraft->getData();
+        return $project->getData();
     }
 
     public function addToGroup(Request $request)
@@ -70,17 +70,17 @@ class ScheduleDraftController extends Controller
             'group_id' => ['required', 'exists:groups,id'],
         ]);
 
-        $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
-        $wasAdded = $scheduleDraft->addToGroup(
+        $project = Project::fromRam(auth()->id());
+        $wasAdded = $project->addToGroup(
             intval($request->program_id),
             intval($request->group_id)
         );
 
         abort_if(! $wasAdded, 422);
 
-        $scheduleDraft->toRam();
+        $project->toRam();
 
-        return $scheduleDraft->getData();
+        return $project->getData();
     }
 
     public function removeProgram(Request $request)
@@ -89,11 +89,11 @@ class ScheduleDraftController extends Controller
             'id' => ['required', 'numeric', 'max:-1'],
         ]);
 
-        $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
-        $scheduleDraft->removeProgram(intval($request->id));
-        $scheduleDraft->toRam();
+        $project = Project::fromRam(auth()->id());
+        $project->removeProgram(intval($request->id));
+        $project->toRam();
 
-        return $scheduleDraft->getData();
+        return $project->getData();
     }
 
     public function addPrograms(Request $request)
@@ -103,28 +103,28 @@ class ScheduleDraftController extends Controller
             'new_programs' => ['sometimes', 'array'],
         ]);
 
-        $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
-        $scheduleDraft->addPrograms($request->new_programs, intval($request->contract_id));
-        $scheduleDraft->toRam();
+        $project = Project::fromRam(auth()->id());
+        $project->addPrograms($request->new_programs, intval($request->contract_id));
+        $project->toRam();
 
-        return $scheduleDraft->getData();
+        return $project->getData();
     }
 
     public function getTeeth()
     {
-        return ScheduleDraft::fromRam(auth()->id())->getSchedule();
+        return Project::fromRam(auth()->id())->getSchedule();
     }
 
     public function applyMoveGroups()
     {
-        $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
+        $project = Project::fromRam(auth()->id());
         try {
-            $scheduleDraft->applyMoveGroups();
+            $project->applyMoveGroups();
         } catch (Exception $e) {
             abort(422, $e->getMessage());
         }
 
-        return $scheduleDraft->getData();
+        return $project->getData();
     }
 
     public function save(Request $request)
@@ -134,29 +134,29 @@ class ScheduleDraftController extends Controller
         ]);
 
         $contractId = intval($request->contract_id);
-        $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
+        $project = Project::fromRam(auth()->id());
 
-        return new SavedScheduleDraftResource(
-            $scheduleDraft->saveDraft($contractId)
+        return new SavedProjectResource(
+            $project->saveProject($contractId)
         );
     }
 
     /**
      * Загрузить сохранённый проект
      */
-    public function show(ScheduleDraft $scheduleDraft)
+    public function show(Project $project)
     {
-        return new SavedScheduleDraftResource($scheduleDraft);
+        return new SavedProjectResource($project);
     }
 
     /**
      * Загрузить проект (из Editor)
      */
-    public function load(ScheduleDraft $scheduleDraft)
+    public function load(Project $project)
     {
-        $fromRam = ScheduleDraft::fromRam(auth()->id());
+        $fromRam = Project::fromRam(auth()->id());
 
-        $fromRam->insertPrograms($scheduleDraft);
+        $fromRam->insertPrograms($project);
         $fromRam->toRam();
 
         return $fromRam->getData();
@@ -170,26 +170,26 @@ class ScheduleDraftController extends Controller
         // если ID не передан – создаём из RAM, тогда нам нужно знать
         // к какому договору из RAM будем создавать
         $request->validate([
-            'id' => ['sometimes', 'exists:schedule_drafts,id'],
+            'id' => ['sometimes', 'exists:projects,id'],
             'contract_id' => ['sometimes', 'numeric'],
         ]);
 
         if ($request->has('id')) {
-            $scheduleDraft = ScheduleDraft::find($request->id);
+            $project = Project::find($request->id);
         } else {
             $contractId = intval($request->contract_id);
-            $scheduleDraft = ScheduleDraft::fromRam(auth()->id());
-            $scheduleDraft->contract_id = $contractId < 0 ? null : $contractId;
+            $project = Project::fromRam(auth()->id());
+            $project->contract_id = $contractId < 0 ? null : $contractId;
         }
 
-        return $scheduleDraft->fillContract();
+        return $project->fillContract();
     }
 
     /**
      * Удалить сохранённый проект
      */
-    public function destroy(ScheduleDraft $scheduleDraft)
+    public function destroy(Project $project)
     {
-        $scheduleDraft->delete();
+        $project->delete();
     }
 }

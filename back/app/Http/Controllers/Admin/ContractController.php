@@ -8,7 +8,7 @@ use App\Http\Resources\ContractResource;
 use App\Models\Client;
 use App\Models\Contract;
 use App\Models\ContractVersionProgram;
-use App\Models\ScheduleDraft;
+use App\Models\Project;
 use Illuminate\Http\Request;
 
 class ContractController extends Controller
@@ -49,7 +49,7 @@ class ContractController extends Controller
 
         // применяем перемещения в группах согласно проекту, если нужно
         if ($request->apply_move_groups) {
-            ScheduleDraft::applyMoveGroupsContract($contractVersion, $request->programs);
+            Project::applyMoveGroupsContract($contractVersion, $request->programs);
         }
 
         return new ContractResource($contract->fresh());

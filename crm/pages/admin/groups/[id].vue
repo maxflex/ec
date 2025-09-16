@@ -18,7 +18,7 @@ async function loadData() {
   group.value = data.value as GroupResource
   tabCounts.value.students = group.value.client_groups_count
   tabCounts.value.acts = group.value.acts_count
-  tabCountsExtra.value.students = group.value.draft_students_count
+  tabCountsExtra.value.students = group.value.project_students_count
 }
 
 function onGroupDeleted() {

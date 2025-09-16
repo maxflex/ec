@@ -36,7 +36,7 @@ use App\Http\Controllers\Admin\PreviewModeController;
 use App\Http\Controllers\Admin\PrintController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RequestsController;
-use App\Http\Controllers\Admin\ScheduleDraftController;
+use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Admin\SmsMessageController;
 use App\Http\Controllers\Admin\StatsController;
@@ -103,20 +103,20 @@ Route::get('instructions/diff/{instruction}', [InstructionController::class, 'di
 
 Route::apiResource('swamps', SwampController::class)->only('index');
 
-Route::prefix('schedule-drafts')->controller(ScheduleDraftController::class)->group(function () {
+Route::prefix('projects')->controller(ProjectController::class)->group(function () {
     Route::post('/add-to-group', 'addToGroup');
     Route::post('/remove-from-group', 'removeFromGroup');
     Route::post('/add-programs', 'addPrograms');
     Route::post('/remove-program', 'removeProgram');
     Route::post('/save', 'save');
     Route::post('/apply-move-groups', 'applyMoveGroups');
-    Route::post('/load/{scheduleDraft}', 'load');
+    Route::post('/load/{project}', 'load');
     Route::get('/from-actual-contracts', 'fromActualContracts');
     Route::get('/get-teeth', 'getTeeth');
     Route::post('/fill-contract', 'fillContract');
 });
 
-Route::apiResource('schedule-drafts', ScheduleDraftController::class)->only(['index', 'show', 'destroy']);
+Route::apiResource('projects', ProjectController::class)->only(['index', 'show', 'destroy']);
 
 Route::prefix('event-participants')->controller(EventParticipantController::class)->group(function () {
     Route::post('/', 'store');

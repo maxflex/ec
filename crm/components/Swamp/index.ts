@@ -12,7 +12,7 @@ export interface SwampListResource {
   client_group_id: number | null
   group: GroupListResource | null
   changes: null | {
-    schedule_draft_id: number
+    project_id: number
     type: 'changed' | 'added' | 'removed'
     group_id: number | null
   }
