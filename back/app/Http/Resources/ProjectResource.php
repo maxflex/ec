@@ -7,17 +7,17 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /** @mixin Project */
-class SavedProjectResource extends JsonResource
+class ProjectResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
             'created_at', 'contract_id', 'year', 'changes',
-            'contract_id', 'is_archived', 'comment',
+            'contract_id', 'is_archived', 'comments_count',
         ], [
-            'has_problems_in_list' => $this->when(
-                $request->boolean('has_problems_in_list'),
-                fn () => $this->has_problems_in_list
+            'has_problems' => $this->when(
+                $request->boolean('with_problems'),
+                fn () => $this->has_problems,
             ),
             'client' => new PersonResource($this->client),
             'user' => new PersonResource($this->user),

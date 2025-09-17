@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import type { SavedProjectResource } from '.'
+import type { ProjectResource } from '.'
 import { mdiAlertBox } from '@mdi/js'
 
-const { items } = defineProps<{ items: SavedProjectResource[] }>()
+const { items } = defineProps<{ items: ProjectResource[] }>()
 const emit = defineEmits<{
-  delete: [e: SavedProjectResource]
+  delete: [e: ProjectResource]
 }>()
 const router = useRouter()
 </script>
 
 <template>
-  <v-table class="table-padding saved-project-list" hover>
+  <v-table class="table-padding project-list" hover>
     <tbody>
       <tr
         v-for="item in items" :key="item.id"
@@ -21,16 +21,16 @@ const router = useRouter()
           {{ item.id }}
         </td>
 
-        <td width="200">
+        <td width="220">
           <UiPerson v-if="item.client" :item="item.client" />
           <span v-else class="text-gray">без клиента</span>
         </td>
 
-        <td width="150">
+        <td width="170">
           {{ YearLabel[item.year] }}
         </td>
 
-        <td width="200" :class="{ 'text-gray': item.is_archived }">
+        <td width="220" :class="{ 'text-gray': item.is_archived }">
           <span v-if="item.contract_id">
             договор №{{ item.contract_id }}
           </span>
@@ -45,15 +45,24 @@ const router = useRouter()
             :content="item.changes"
           ></v-badge>
           <v-icon
-            v-if="item.has_problems_in_list"
+            v-if="item.has_problems"
             :icon="mdiAlertBox"
             color="error"
             class="ml-1"
           />
         </td>
 
-        <td class="text-truncate">
-          {{ item.comment }}
+        <td>
+          <div class="project-list__comments">
+            <CommentBtn
+              color="gray"
+              :size="42"
+              :class="{ 'no-items': item.comments_count === 0 }"
+              :count="item.comments_count"
+              :entity-id="item.id"
+              :entity-type="EntityTypeValue.project"
+            />
+          </div>
         </td>
 
         <td width="340" class="text-gray">
@@ -71,9 +80,18 @@ const router = useRouter()
 </template>
 
 <style lang="scss">
-.saved-project-list {
+.project-list {
   table {
     table-layout: fixed;
+    overflow: hidden;
+  }
+  &__comments {
+    position: absolute;
+    top: 1px;
+    left: 0;
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
   }
 }
 </style>

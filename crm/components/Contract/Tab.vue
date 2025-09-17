@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { ContractEditSourceDialog, ContractPaymentDialog, ContractVersionDialog } from '#build/components'
 import type { ContractResource, ContractVersionListResource, ContractVersionResource } from '../ContractVersion'
-import type { SavedProjectResource } from '../Project'
+import type { ProjectResource } from '../Project'
 import type { ContractPaymentResource } from '~/components/ContractPayment'
 
 type ProjectsByContract = Record<number, {
-  projects: SavedProjectResource[]
+  projects: ProjectResource[]
   changes: number
 }>
 
@@ -15,7 +15,7 @@ const contractPaymentDialog = ref<InstanceType<typeof ContractPaymentDialog>>()
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
 const contractEditSourceDialog = ref<InstanceType<typeof ContractEditSourceDialog>>()
 const selected = ref(-1) // -1 это "новый договор"
-const projects = ref<SavedProjectResource[]>([])
+const projects = ref<ProjectResource[]>([])
 const loading = ref(true)
 const showBalance = ref(false)
 const route = useRoute()
@@ -112,7 +112,7 @@ async function loadData() {
 }
 
 async function loadProjects() {
-  const { data } = await useHttp<ApiResponse<SavedProjectResource>>(
+  const { data } = await useHttp<ApiResponse<ProjectResource>>(
     `projects`,
     {
       params: {
@@ -207,7 +207,7 @@ nextTick(loadData)
               @click="selected = i; contractVersionDialog?.fromProject({ savedProject: d })"
             >
               <div>
-                добавить версию на основе проекта №{{ d.id }}
+                добавить версию на основе проекта {{ d.id }}
                 <v-badge
                   color="orange-lighten-3"
                   inline
@@ -283,7 +283,7 @@ nextTick(loadData)
             @click="selected = -1; contractVersionDialog?.fromProject({ savedProject: d })"
           >
             <div>
-              создать новый договор на основе проекта №{{ d.id }}
+              создать новый договор на основе проекта {{ d.id }}
               <v-badge
                 v-if="projectsByContract[-1]?.changes"
                 color="orange-lighten-3"

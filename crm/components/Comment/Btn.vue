@@ -54,7 +54,7 @@ async function loadData() {
 <template>
   <div
     class="badge"
-    @click="commentDialog?.open()"
+    @click.stop="commentDialog?.open()"
   >
     <v-btn
       v-bind="$attrs"

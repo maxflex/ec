@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Project, ProjectGroup, ProjectProgram, SavedProjectResource } from '.'
-import { ContractVersionDialog, ProjectSaveDialog } from '#components'
+import type { Project, ProjectGroup, ProjectProgram, ProjectResource } from '.'
+import { ContractVersionDialog } from '#components'
 import { mdiChevronRight } from '@mdi/js'
 import { apiUrl, isGroupChangedInContract } from '.'
 
@@ -8,22 +8,22 @@ const { client, savedProject } = defineProps<{
   /**
    * Если загружаем конкретный ID проекта
    */
-  savedProject?: SavedProjectResource
+  savedProject?: ProjectResource
   client?: PersonResource
 }>()
 
 defineEmits<{ back: [] }>()
 
+const router = useRouter()
 const loading = ref(false)
 const teeth = ref<Teeth>()
 const project = ref<Project>()
 const selectedContractId = ref<number>() // ID выбранной вкладки договора
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
-const saveDialog = ref<InstanceType<typeof ProjectSaveDialog>>()
 const key = ref(0)
 
 // сохранённые проекты расписания (доступные для загрузки)
-const savedProjects = ref<SavedProjectResource[]>([])
+const savedProjects = ref<ProjectResource[]>([])
 
 async function fromActualContracts() {
   loading.value = true
@@ -53,7 +53,7 @@ async function loadSavedProjects() {
     return
   }
 
-  const { data } = await useHttp<ApiResponse<SavedProjectResource>>(apiUrl, {
+  const { data } = await useHttp<ApiResponse<ProjectResource>>(apiUrl, {
     params: {
       client_id: client.id,
     },
@@ -162,12 +162,20 @@ async function removeProgram(p: ProjectProgram) {
   loading.value = false
 }
 
-function jumpToContract(item: ProjectGroup) {
-  selectedContractId.value = item.swamp!.contract_id as number
-  nextTick(() => {
-    const selector = `#project-group-${item.id}${selectedContractId.value ? `-${selectedContractId.value}` : ''}`
-    highlight(selector, 'item-updated', 'instant')
-  })
+async function save(contractId: number) {
+  const { data } = await useHttp<ProjectResource>(
+    `${apiUrl}/save`,
+    {
+      method: 'POST',
+      body: {
+        contract_id: contractId,
+      },
+    },
+  )
+  const id = data.value!.id
+  const link = router.resolve({ name: 'projects-editor', query: { id } }).href
+  useGlobalMessage(`<a href="${link}">Проект ${id}</a> сохранён`, 'success')
+  loadSavedProjects()
 }
 
 function getChangesCnt(contractId: number | string) {
@@ -189,8 +197,8 @@ function getChangesCnt(contractId: number | string) {
   return cnt
 }
 
-const savedProjectsByContract = computed<Record<number, SavedProjectResource[]>>(() => {
-  const result: Record<number, SavedProjectResource[]> = {}
+const savedProjectsByContract = computed<Record<number, ProjectResource[]>>(() => {
+  const result: Record<number, ProjectResource[]> = {}
   for (const contractId in project.value) {
     const cId = Number.parseInt(contractId)
     result[cId] = savedProjects.value.filter(e => e.contract_id === (cId === -1 ? null : cId))
@@ -198,7 +206,7 @@ const savedProjectsByContract = computed<Record<number, SavedProjectResource[]>>
   return result
 })
 
-async function loadProject(d: SavedProjectResource) {
+async function loadProject(d: ProjectResource) {
   selectedContractId.value = d.contract_id || -1
   loading.value = true
   const { data } = await useHttp<Project>(
@@ -254,6 +262,16 @@ nextTick(fromActualContracts)
         </template>
       </div>
       <TeethBar v-if="teeth" :items="teeth" style="width: fit-content" />
+      <div v-if="savedProject" class="project__comments">
+        <CommentBtn
+          color="gray"
+          :size="42"
+          :class="{ 'no-items': savedProject.comments_count === 0 }"
+          :count="savedProject.comments_count"
+          :entity-id="savedProject.id"
+          :entity-type="EntityTypeValue.project"
+        />
+      </div>
     </template>
 
     <template v-if="project && selectedContractId">
@@ -304,7 +322,7 @@ nextTick(fromActualContracts)
               <v-list-item :disabled="contractId < 0 || !getChangesCnt(contractId)" @click="applyMoveGroups(contractId)">
                 применить перемещения в группах
               </v-list-item>
-              <v-list-item :disabled="!getChangesCnt(contractId)" @click="saveDialog?.open(contractId)">
+              <v-list-item :disabled="!getChangesCnt(contractId)" @click="save(contractId)">
                 сохранить проект
               </v-list-item>
               <v-list-item
@@ -362,7 +380,6 @@ nextTick(fromActualContracts)
           :contract-id="selectedContractId"
           @add-to-group="g => addToGroup(p, g)"
           @remove-from-group="removeFromGroup"
-          @jump-to-contract="jumpToContract"
         />
         <div v-else class="project__no-groups">
           <UiNoData>
@@ -373,7 +390,6 @@ nextTick(fromActualContracts)
     </template>
   </UiIndexPage>
   <ContractVersionDialog ref="contractVersionDialog" />
-  <ProjectSaveDialog ref="saveDialog" @saved="loadSavedProjects" />
 </template>
 
 <style lang="scss">
@@ -469,6 +485,19 @@ nextTick(fromActualContracts)
     .v-badge__wrapper {
       margin: 0 !important;
     }
+  }
+
+  &__comments {
+    width: 44px;
+    text-align: right;
+    flex: 1;
+  }
+}
+.project__filters {
+  overflow: hidden;
+  & > .filters__inputs {
+    overflow: hidden;
+    width: 100%;
   }
 }
 </style>

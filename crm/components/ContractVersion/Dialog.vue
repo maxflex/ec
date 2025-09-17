@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ContractResource, ContractVersionListResource, ContractVersionPaymentResource, ContractVersionProgramPrice, ContractVersionProgramResource, ContractVersionResource } from '.'
-import type { SavedProjectResource } from '../Project'
+import type { ProjectResource } from '../Project'
 import { mdiFlipVertical } from '@mdi/js'
 import { addMonths, format } from 'date-fns'
 import { cloneDeep } from 'lodash-es'
@@ -13,7 +13,7 @@ const emit = defineEmits<{
 
 const route = useRoute()
 const router = useRouter()
-const selectedProject = ref<SavedProjectResource>() // хранит ID загруженного проекта
+const selectedProject = ref<ProjectResource>() // хранит ID загруженного проекта
 const applyMoveGroups = ref(false) // применить изменения в группах (для подгруженного проекта договора)
 
 const { user } = useAuthStore()
@@ -42,7 +42,7 @@ function newContract(clientId: number) {
  * @param contractId если подгружаем проект из RAM, то обязательно указать по какому договору
  */
 async function fromProject({ savedProject, contractId: cId }: {
-  savedProject?: SavedProjectResource
+  savedProject?: ProjectResource
   contractId?: number
 }) {
   loading.value = true
@@ -558,7 +558,7 @@ defineExpose({ edit, newContract, newVersion, fromProject })
                   query: { id: selectedProject.id },
                 }"
               >
-                проекта №{{ selectedProject.id }}
+                проекта {{ selectedProject.id }}
               </RouterLink>
               от {{ formatDateTime(selectedProject.created_at) }}
             </template>

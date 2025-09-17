@@ -10,7 +10,6 @@ const { items, contractId } = defineProps<{
 const emit = defineEmits<{
   addToGroup: [e: ProjectGroup]
   removeFromGroup: [e: ProjectGroup]
-  jumpToContract: [e: ProjectGroup]
 }>()
 
 function getElementId(groupId: number, cId: number | null | undefined) {

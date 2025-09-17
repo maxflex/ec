@@ -370,6 +370,7 @@ export const EntityTypeValue = {
   user: 'App\\Models\\User',
   group: 'App\\Models\\Group',
   report: 'App\\Models\\Report',
+  project: 'App\\Models\\Project',
 } as const
 
 export const EntityTypeLabel = {
@@ -381,6 +382,7 @@ export const EntityTypeLabel = {
   'App\\Models\\User': 'Администратор',
   'App\\Models\\Group': 'Группа',
   'App\\Models\\Report': 'Отчет',
+  'App\\Models\\Project': 'Проект',
 } as const
 
 export const LessonScoreLabel = {

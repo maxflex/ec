@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\SavedProjectResource;
+use App\Http\Resources\ProjectResource;
 use App\Models\Client;
 use App\Models\Project;
 use Exception;
@@ -17,11 +17,11 @@ class ProjectController extends Controller
 
     public function index(Request $request)
     {
-        $query = Project::latest();
+        $query = Project::latest()->withCount('comments');
 
         $this->filter($request, $query);
 
-        return $this->handleIndexRequest($request, $query, SavedProjectResource::class);
+        return $this->handleIndexRequest($request, $query, ProjectResource::class);
     }
 
     /**
@@ -133,14 +133,12 @@ class ProjectController extends Controller
     {
         $request->validate([
             'contract_id' => ['required', 'numeric'],
-            'comment' => ['sometimes', 'string'],
         ]);
 
         $contractId = intval($request->contract_id);
         $project = Project::fromRam(auth()->id());
-        $project->comment = $request->comment;
 
-        return new SavedProjectResource(
+        return new ProjectResource(
             $project->saveProject($contractId)
         );
     }
@@ -150,7 +148,9 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        return new SavedProjectResource($project);
+        $project->loadCount('comments');
+
+        return new ProjectResource($project);
     }
 
     /**
@@ -194,6 +194,7 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
+        $project->comments->each->delete();
         $project->delete();
     }
 }

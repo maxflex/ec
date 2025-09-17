@@ -5,7 +5,7 @@ export const apiUrl = 'projects'
 /**
  * Сохраненные проекты расписания
  */
-export interface SavedProjectResource {
+export interface ProjectResource {
   id: number
   user: PersonResource
   client: PersonResource | null
@@ -14,8 +14,8 @@ export interface SavedProjectResource {
   is_archived: boolean
   changes: number
   contract_id: number | null
-  comment: string | null
-  has_problems_in_list: boolean
+  comments_count: number
+  has_problems: boolean
 }
 
 /**

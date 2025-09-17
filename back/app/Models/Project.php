@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\LessonStatus;
 use App\Http\Resources\ContractVersionResource;
 use App\Http\Resources\PersonResource;
+use App\Traits\HasComments;
 use App\Utils\Teeth;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,8 @@ use Illuminate\Support\Collection;
 
 class Project extends Model
 {
+    use HasComments;
+
     protected $fillable = [
         'programs', 'client_id', 'user_id', 'year',
     ];
@@ -751,7 +754,7 @@ class Project extends Model
      * "Есть проблемы" для списка на /projects
      * Отображается если в позициях с изменениями есть проблемы
      */
-    public function getHasProblemsInListAttribute(): bool
+    public function getHasProblemsAttribute(): bool
     {
         if ($this->changes === 0) {
             return false;
