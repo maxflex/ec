@@ -189,9 +189,11 @@ nextTick(loadAvailableYears)
       </v-chip>
     </div>
     <template v-for="d in dates" :key="d">
-      <div v-if="d in holidays" class="schedule__holidays">
-        Каникулы {{ formatDateMonth(d) }} – {{ formatDateMonth(holidays[d]) }}
-      </div>
+      <template v-if="showHolidays">
+        <div v-if="d in holidays" class="schedule__holidays">
+          Каникулы {{ formatDateMonth(d) }} – {{ formatDateMonth(holidays[d]) }}
+        </div>
+      </template>
       <div
         v-if="d in lessonsByDate"
         class="schedule__row"

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Project, ProjectGroup, ProjectProgram, ProjectResource } from '.'
-import { ContractVersionDialog } from '#components'
+import { ContractVersionDialog, ProjectNameDialog } from '#components'
 import { mdiChevronRight } from '@mdi/js'
 import { apiUrl, isGroupChangedInContract } from '.'
 
@@ -20,7 +20,10 @@ const teeth = ref<Teeth>()
 const project = ref<Project>()
 const selectedContractId = ref<number>() // ID выбранной вкладки договора
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
+const nameDialog = ref<InstanceType<typeof ProjectNameDialog>>()
 const key = ref(0)
+// название проекта (можно добавлять к проектам без клиента)
+const projectName = ref<string>()
 
 // сохранённые проекты расписания (доступные для загрузки)
 const savedProjects = ref<ProjectResource[]>([])
@@ -169,6 +172,7 @@ async function save(contractId: number) {
       method: 'POST',
       body: {
         contract_id: contractId,
+        name: projectName.value,
       },
     },
   )
@@ -258,12 +262,27 @@ nextTick(fromActualContracts)
             icon="$back" :size="44" variant="plain" color="black"
             :to="{ name: 'projects' }"
           />
-          Новый проект
+          <template v-if="projectName">
+            {{ projectName }}
+          </template>
+          <template v-else>
+            {{ savedProject?.name || 'Новый проект' }}
+          </template>
         </template>
       </div>
       <TeethBar v-if="teeth" :items="teeth" style="width: fit-content" />
-      <div v-if="savedProject" class="project__comments">
+      <div class="project__comments">
+        <v-btn
+          v-if="!client && (!savedProject || !savedProject.client)"
+          icon="$edit"
+          color="gray"
+          :size="42"
+          variant="plain"
+          class="vfn-2"
+          @click="nameDialog?.open()"
+        />
         <CommentBtn
+          v-if="savedProject"
           color="gray"
           :size="42"
           :class="{ 'no-items': savedProject.comments_count === 0 }"
@@ -390,6 +409,7 @@ nextTick(fromActualContracts)
     </template>
   </UiIndexPage>
   <ContractVersionDialog ref="contractVersionDialog" />
+  <ProjectNameDialog ref="nameDialog" @saved="name => (projectName = name)" />
 </template>
 
 <style lang="scss">
@@ -488,9 +508,12 @@ nextTick(fromActualContracts)
   }
 
   &__comments {
-    width: 44px;
     text-align: right;
     flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1px;
   }
 }
 .project__filters {

@@ -168,6 +168,28 @@ class ContractVersion extends Model
     }
 
     /**
+     * Среднее последних цен в программах
+     */
+    public function getPriceAvgAttribute(): float
+    {
+        // COMPLETE THE CODE
+        // взять все программы, в каждой программе берем самый последний prices->price, и получаем среднее арифметическое
+        $result = [];
+        foreach ($this->programs as $program) {
+            $price = $program->prices->last();
+            if ($price) {
+                $result[] = $price->price;
+            }
+        }
+
+        if (count($result) === 0) {
+            return 0;
+        }
+
+        return round(array_sum($result) / count($result), 2);
+    }
+
+    /**
      * Все направления (без учета активна / неактивна программа)
      *
      * @return Direction[]

@@ -133,10 +133,16 @@ class ProjectController extends Controller
     {
         $request->validate([
             'contract_id' => ['required', 'numeric'],
+            'name' => ['sometimes', 'string'],
         ]);
 
         $contractId = intval($request->contract_id);
         $project = Project::fromRam(auth()->id());
+
+        // название проекта (можно добавлять для проектов без клиента)
+        if ($request->input('name')) {
+            $project->name = $request->input('name');
+        }
 
         return new ProjectResource(
             $project->saveProject($contractId)

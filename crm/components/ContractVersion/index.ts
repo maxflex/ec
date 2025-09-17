@@ -61,6 +61,7 @@ export interface ContractVersionListResource {
   direction_counts: DirectionCounts
   is_active: boolean
   created_at: string
+  price_avg: number
   contract: {
     id: number
     year: Year

@@ -23,6 +23,9 @@ const router = useRouter()
 
         <td width="220">
           <UiPerson v-if="item.client" :item="item.client" />
+          <span v-else-if="item.name">
+            {{ item.name }}
+          </span>
           <span v-else class="text-gray">без клиента</span>
         </td>
 

@@ -14,6 +14,7 @@ class ProjectResource extends JsonResource
         return extract_fields($this, [
             'created_at', 'contract_id', 'year', 'changes',
             'contract_id', 'is_archived', 'comments_count',
+            'name',
         ], [
             'has_problems' => $this->when(
                 $request->boolean('with_problems'),

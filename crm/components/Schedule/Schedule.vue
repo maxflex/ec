@@ -76,9 +76,16 @@ const filteredLessons = computed(() =>
 )
 
 // показывать каникула когда: есть флаг + есть занятия 8-9 класса
-const showHolidaysReal = computed<boolean>(() =>
-  showHolidays && lessons.value.some(e => school89.includes(e.group.program)),
-)
+const showHolidaysReal = computed<boolean>(() => {
+  if (!showHolidays) {
+    return false
+  }
+  if (group) {
+    return school89.includes(group.program!)
+  }
+
+  return lessons.value.some(e => school89.includes(e.group.program))
+})
 
 const dates = computed(() => {
   if (!selectedYear.value) {
@@ -342,9 +349,11 @@ nextTick(loadAvailableYears)
   <UiLoader v-else-if="loading" />
   <div v-else class="schedule">
     <template v-for="d in dates" :key="d">
-      <div v-if="d in holidays" class="schedule__holidays">
-        Каникулы {{ formatDateMonth(d) }} – {{ formatDateMonth(holidays[d]) }}
-      </div>
+      <template v-if="showHolidaysReal">
+        <div v-if="d in holidays" class="schedule__holidays">
+          Каникулы {{ formatDateMonth(d) }} – {{ formatDateMonth(holidays[d]) }}
+        </div>
+      </template>
       <div v-if="d in lessonsByDate">
         <div>
           {{ formatDateMonth(d) }}

@@ -16,6 +16,7 @@ export interface ProjectResource {
   contract_id: number | null
   comments_count: number
   has_problems: boolean
+  name: string | null
 }
 
 /**
