@@ -328,11 +328,11 @@ nextTick(loadAvailableYears)
             </v-btn>
           </div>
         </template>
-        <v-list>
-          <v-list-item @click="lessonDialog?.create(group.id, group!.year, group.program)">
+        <v-list v-if="group">
+          <v-list-item @click="lessonDialog?.create(group.id, group.year, group.program!)">
             добавить одно занятие
           </v-list-item>
-          <v-list-item @click="lessonBulkCreateDialog?.create(group.id, group.year, group.program)">
+          <v-list-item @click="lessonBulkCreateDialog?.create(group.id, group.year, group.program!)">
             добавить несколько занятий
           </v-list-item>
         </v-list>
@@ -371,7 +371,7 @@ nextTick(loadAvailableYears)
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
           @edit-price="clientLessonEditPriceDialog?.edit"
-          @click="e => onMassEditClick(item, e)"
+          @click="(e: MouseEvent) => onMassEditClick(item, e)"
         />
       </div>
     </template>

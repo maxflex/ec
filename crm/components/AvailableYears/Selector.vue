@@ -2,7 +2,7 @@
 const { items } = defineProps<{
   items: Year[] | undefined
 }>()
-const model = defineModel<Year | null>({ required: true })
+const model = defineModel<Year | undefined | null>({ required: true })
 
 const availableYears = computed(() => {
   if (!Array.isArray(items)) {
