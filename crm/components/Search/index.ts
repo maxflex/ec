@@ -1,3 +1,4 @@
+import type { ContractVersionListResource } from '../ContractVersion'
 import type { RequestListResource } from '../Request'
 
 export interface SearchResultResource extends PersonWithPhotoResource, HasPhones {
@@ -11,12 +12,6 @@ export interface SearchResultResource extends PersonWithPhotoResource, HasPhones
     status: TeacherStatus
     subjects: Subject[]
   }
-  contract?: {
-    year: Year
-    company: Company
-    programs_count: number
-    directions: Direction[]
-    client_id: number
-  }
+  contract?: ContractVersionListResource
   request?: RequestListResource
 }

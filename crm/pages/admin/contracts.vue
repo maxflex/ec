@@ -41,10 +41,15 @@ function onClientCreated(c: ClientListResource) {
         добавить клиента
       </v-btn>
     </template>
-    <ContractVersionListAll
-      :items="items"
-      @edit="contractVersionDialog?.edit"
-    />
+
+    <div class="table table--padding flex-start">
+      <ContractVersionItem
+        v-for="item in items"
+        :key="item.id"
+        :item="item"
+        @edit="contractVersionDialog?.edit"
+      />
+    </div>
     <ContractVersionDialog ref="contractVersionDialog" @updated="onUpdated" />
     <ClientDialog ref="clientDialog" @created="onClientCreated" />
   </UiIndexPage>

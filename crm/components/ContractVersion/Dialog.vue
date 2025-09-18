@@ -869,7 +869,6 @@ defineExpose({ edit, newContract, newVersion, fromProject })
       </div>
     </div>
   </v-dialog>
-  <LazyPrintDialog ref="printDialog" />
 </template>
 
 <style lang="scss">

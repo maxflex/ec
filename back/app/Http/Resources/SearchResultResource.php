@@ -26,13 +26,9 @@ class SearchResultResource extends JsonResource
 
         switch ($class) {
             case Contract::class:
+                /** @var Contract $model */
                 $extra = [
-                    'contract' => extract_fields($model, [
-                        'year', 'company', 'client_id',
-                    ], [
-                        'programs_count' => $model->activeVersion->programs()->count(),
-                        'directions' => $model->activeVersion->directions,
-                    ]),
+                    'contract' => new ContractVersionListResource($model->active_version),
                 ];
                 break;
 
