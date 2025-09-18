@@ -580,7 +580,7 @@ defineExpose({ edit, newContract, newVersion, fromProject })
           <v-btn v-if="mode !== 'new-contract'" :icon="mdiFlipVertical" variant="text" :size="48" @click="splitPrices()" />
           <PrintBtn
             v-if="mode === 'edit'"
-            :items="[1, 2, 3, 16, 4, 5, 6, 8, 7]"
+            :items="[1, 2, 3, 16, 19, 4, 5, 6, 8, 7]"
             :extra="{ contract_version_id: item.id }"
           />
           <v-btn
