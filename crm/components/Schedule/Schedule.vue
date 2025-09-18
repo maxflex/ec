@@ -35,7 +35,6 @@ const selectedYear = ref<Year>()
 const { user, isTeacher, isClient } = useAuthStore()
 const showSchedule = ref(true)
 const isMassEditable = user?.entity_type === EntityTypeValue.user && group
-const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const params = {
   // только один из них НЕ undefined
   teacher_id: teacherId,
@@ -356,7 +355,7 @@ nextTick(loadAvailableYears)
         <div>
           {{ formatDateMonth(d) }}
           <span class="text-gray ml-1">
-            {{ dayLabels[getDay(d)] }}
+            {{ WeekdayLabel[getDay(d) as Weekday] }}
           </span>
         </div>
         <component

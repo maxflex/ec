@@ -9,8 +9,6 @@ const { $addSseListener, $removeSseListener } = useNuxtApp()
 const route = useRoute()
 
 const item = ref<EventResource>()
-const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
-const dayLabel = ref('')
 
 async function loadData() {
   const { data } = await useHttp<EventResource>(
@@ -18,7 +16,6 @@ async function loadData() {
   )
   if (data.value) {
     item.value = data.value
-    dayLabel.value = dayLabels[getDay(data.value.date)]
   }
 }
 
@@ -93,7 +90,7 @@ nextTick(loadData)
             />
           </div>
           <span class="event__header-date">
-            {{ formatDate(item.date) }} {{ dayLabel }}
+            {{ formatDate(item.date) }} {{ WeekdayLabel[getDay(item.date) as Weekday] }}
             <span v-if="item.time" class="event__header-time">
               {{ formatTime(item.time) }}
             </span>

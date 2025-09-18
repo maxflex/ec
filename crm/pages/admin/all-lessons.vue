@@ -17,7 +17,6 @@ interface AllLessons {
 const response = ref<AllLessons>({})
 const todayDate = today()
 
-const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const filters = ref<YearFilters>(loadFilters({
   year: currentAcademicYear(),
 }))
@@ -119,7 +118,7 @@ nextTick(() => {
         <div>
           {{ formatTextDate(d) }}
           <span class="text-gray ml-1">
-            {{ dayLabels[getDay(d)] }}
+            {{ WeekdayLabel[getDay(d) as Weekday] }}
             <template v-if="todayDate === d">
               (сегодня)
             </template>

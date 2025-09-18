@@ -84,6 +84,9 @@ export const modelDefaults: ClientResource = {
       fact_address: null,
     },
   },
+  bio: null,
+  schedule: null,
+  current_lesson: null,
 }
 
 export const apiUrl = 'clients'

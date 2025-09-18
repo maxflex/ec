@@ -5,7 +5,6 @@ import { isEqual, uniqWith } from 'lodash-es'
 const { id } = defineProps<{ id: number }>()
 const items = ref<GroupVisitResource[]>([])
 const loading = ref(true)
-const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const clients = computed(() => {
   const result: PersonResource[] = []
   for (const item of items.value) {
@@ -154,7 +153,7 @@ nextTick(loadData)
           <td class="pl-5">
             {{ formatTextDate(l.dateTime) }}
             <span class="text-gray ml-1">
-              {{ dayLabels[getDay(l.dateTime)] }}
+              {{ WeekdayLabel[getDay(l.dateTime) as Weekday] }}
             </span>
           </td>
           <td v-for="t in teachers" :key="t.id">

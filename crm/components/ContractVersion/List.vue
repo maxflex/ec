@@ -1,5 +1,7 @@
 <!-- Вкладка "Договоры" в клиенте -->
 <script setup lang="ts">
+import type { ContractVersionListResource } from '.'
+
 const { items } = defineProps<{ items: ContractVersionListResource[] }>()
 const emit = defineEmits<{
   edit: [cv: ContractVersionListResource]
