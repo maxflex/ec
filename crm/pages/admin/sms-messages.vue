@@ -8,7 +8,7 @@ const { items, indexPageData } = useIndex<SmsMessageListResource>(`sms-messages`
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <UiClearableSelect :items="yesNo('доставлено', 'не доставлено')" v-model="filters.status" label="Статус доставки" density="comfortable" />
+      <UiClearableSelect v-model="filters.status" :items="yesNo('доставлено', 'не доставлено')" label="Статус доставки" density="comfortable" />
     </template>
     <SmsMessageList :items="items" />
   </UiIndexPage>

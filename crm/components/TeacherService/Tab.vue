@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { TeacherServiceDialog } from '#build/components'
-import { apiUrl, type TeacherServiceResource } from '.'
+import type { TeacherServiceResource } from '.'
+import { apiUrl } from '.'
 
 const { teacherId } = defineProps<{ teacherId: number }>()
 const teacherServiceDialog = ref<InstanceType<typeof TeacherServiceDialog>>()

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { SearchResultResource } from '~/components/Search'
-import { mdiTextBoxSearchOutline } from '@mdi/js'
 import { useDebounceFn } from '@vueuse/core'
 
 interface Filters {

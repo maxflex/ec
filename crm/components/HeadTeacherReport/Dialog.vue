@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { HeadTeacherReportResource } from '.'
 import { cloneDeep } from 'lodash-es'
-import { apiUrl, type HeadTeacherReportResource, modelDefaults } from '.'
+import { apiUrl, modelDefaults } from '.'
 
 const emit = defineEmits<{
   updated: [item: HeadTeacherReportResource]

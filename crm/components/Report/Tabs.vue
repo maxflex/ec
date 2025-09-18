@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ReportDialog } from '#components'
-import { mdiCheckAll } from '@mdi/js'
 
 const route = useRoute()
 const id = Number.parseInt(route.params.id as string)

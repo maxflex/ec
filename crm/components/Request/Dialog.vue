@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { RequestListResource, RequestResource } from '.'
 import { cloneDeep } from 'lodash-es'
-import { apiUrl, modelDefaults, type RequestListResource, type RequestResource } from '.'
+import { apiUrl, modelDefaults } from '.'
 
 const emit = defineEmits<{
   updated: [r: RequestListResource]

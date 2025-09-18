@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { TopicDialog } from '#build/components'
-import { mdiCheckAll } from '@mdi/js'
 
 const { items } = defineProps<{
   items: TopicListResource[]

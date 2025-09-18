@@ -81,18 +81,6 @@ async function destroy() {
   }
 }
 
-/**
- *   $max = 1000; // сколько символов = 100% заполняемость
-
-        $totalLength = collect([
-            $this->homework_comment,
-            $this->recommendation_comment,
-            $this->cognitive_ability_comment,
-            $this->knowledge_level_comment,
-        ])->reduce(fn ($carry, $comment) => $carry + mb_strlen($comment), 0);
-
-        return min(round($totalLength * 100 / $max), 100);
- */
 const fill = computed<number>(() => {
   if (!item.value) {
     return 0

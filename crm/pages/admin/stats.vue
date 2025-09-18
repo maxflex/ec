@@ -2,7 +2,7 @@
 import type { StatsDialog } from '#build/components'
 import type { StatsApiResponse, StatsDisplay, StatsListResource, StatsParams } from '~/components/Stats'
 import type { StatsMetric } from '~/components/Stats/Metrics'
-import { mdiDownload, mdiTable, mdiTune } from '@mdi/js'
+import { mdiDownload, mdiTune } from '@mdi/js'
 import { cloneDeep } from 'lodash-es'
 import { defaultStatsParams, formatDateMode, StatsDisplayIcon, StatsDisplayLabel } from '~/components/Stats'
 import { MetricComponents } from '~/components/Stats/Metrics'

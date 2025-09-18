@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CallListResource } from '.'
-import { mdiArrowRight, mdiArrowRightThin, mdiCallMade, mdiCallMissed, mdiCallReceived } from '@mdi/js'
+import { mdiCallMade, mdiCallMissed, mdiCallReceived } from '@mdi/js'
 
 const { items } = defineProps<{
   items: CallListResource[]

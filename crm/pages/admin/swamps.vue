@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { SwampFilters } from '~/components/Swamp/Filters.vue'
 import { orderBy } from 'lodash-es'
-import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 
 type Field = 'active_no_group' |
   'active_in_group' |

@@ -24,7 +24,7 @@ const itemsByWeekday = computed<Result>(() => {
       result.push({
         weekday,
         teeth,
-        all_past: teeth.some(e => !e.is_past) === false
+        all_past: teeth.some(e => !e.is_past) === false,
       })
     }
   }
@@ -39,7 +39,7 @@ const itemsByWeekday = computed<Result>(() => {
       v-for="item in itemsByWeekday"
       :key="item.weekday"
       :class="{
-        'teeth-as-text--is-past': item.all_past
+        'teeth-as-text--is-past': item.all_past,
       }"
     >
       <span>

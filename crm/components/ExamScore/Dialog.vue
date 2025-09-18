@@ -40,7 +40,7 @@ async function save() {
   saving.value = true
   const method = itemId.value ? `put` : `post`
   const url = itemId.value ? `${API_URL}/${itemId.value}` : API_URL
-  const { data } = await useHttp<ExamScoreResource >(url, {
+  const { data } = await useHttp<ExamScoreResource>(url, {
     method,
     body: item.value,
   })

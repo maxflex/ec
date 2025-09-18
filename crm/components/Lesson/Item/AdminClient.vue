@@ -4,7 +4,6 @@ import {
   mdiBookOpenVariant,
   mdiPaperclip,
 } from '@mdi/js'
-import { Cabinets } from '~/components/Cabinet'
 
 const { item } = defineProps<{
   item: LessonListResource
@@ -24,7 +23,8 @@ function deleteFromClientLessons() {
     useHttp(`client-lessons/${item.client_lesson!.id}`, {
       method: 'delete',
     })
-    item.client_lesson = undefined
+    // Unexpected mutation of "item" prop
+    // item.client_lesson = undefined
   }, 300)
 }
 

@@ -1,5 +1,5 @@
 import type { ChartOptions } from 'chart.js'
-import { mdiAccountArrowRight, mdiAccountGroup, mdiAccountMultipleOutline, mdiCalendarAlert, mdiCancel, mdiClockTimeEight, mdiCurrencyRub, mdiCurrencyUsd, mdiFileCompare, mdiFileDocumentAlert, mdiFileDocumentEditOutline, mdiHome, mdiHumanMaleBoard, mdiStarCircle, mdiStarCircleOutline, mdiStarShooting } from '@mdi/js'
+import { mdiAccountArrowRight, mdiAccountGroup, mdiAccountMultipleOutline, mdiCalendarAlert, mdiCancel, mdiClockTimeEight, mdiCurrencyRub, mdiFileDocumentAlert, mdiHome } from '@mdi/js'
 
 interface TeacherStats {
   lessons: Array<{

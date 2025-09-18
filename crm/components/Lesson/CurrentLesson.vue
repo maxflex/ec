@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import type { CurrentLessonResource } from '.'
 import { format } from 'date-fns'
-import { Cabinets } from '../Cabinet'
 
 const { item, teacherId } = defineProps<{
   item: CurrentLessonResource | null

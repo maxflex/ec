@@ -53,7 +53,7 @@ const phoneDialog = ref<InstanceType<typeof PhoneDialog>>()
         :item="item"
         class="phone-list__number"
         :request="request"
-        @click.native.stop="phoneDialog?.open(item)"
+        @click.stop="phoneDialog?.open(item)"
       />
       <div
         v-if="showComment"

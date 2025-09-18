@@ -39,9 +39,9 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   /**
-   * @param u Пользователь будет записан в useAuthStore
-   * @param t Токен для сохранения в Cookies
-   * @param phone Номер телефона для rememberUser
+   * u Пользователь будет записан в useAuthStore
+   * t Токен для сохранения в Cookies
+   * phone Номер телефона для rememberUser
    */
   function logInAndRemember({ token: t, user: u, phone }: TokenResponse) {
     // учителя не сохраняем в rememberUser

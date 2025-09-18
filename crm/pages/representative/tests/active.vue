@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { mdiMessageAlertOutline } from '@mdi/js'
-import { cloneDeep } from 'lodash-es'
 import type { ClientTestResource } from '~/components/ClientTest'
 import type { TestAnswers } from '~/components/Test'
+import { mdiMessageAlertOutline } from '@mdi/js'
+import { cloneDeep } from 'lodash-es'
 
 const isTimeout = ref(false)
 const answers = ref<TestAnswers>({})
@@ -79,6 +79,10 @@ function toggleAnswer(i: number, answer: number) {
   }
 }
 
+function isSelected(i: number, n: number): boolean {
+  return (i in answers.value) && answers.value[i].includes(n)
+}
+
 watch(answers, saveAnswers, { deep: true })
 
 nextTick(loadData)
@@ -112,7 +116,7 @@ nextTick(loadData)
               variant="text"
               icon
               border
-              :class="{ 'bg-primary': (i in answers) && answers[i].some(e => e === n) }"
+              :class="{ 'bg-primary': isSelected(i, n) }"
               @click="toggleAnswer(i, n)"
             >
               {{ n }}

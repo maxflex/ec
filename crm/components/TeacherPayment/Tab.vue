@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { TeacherPaymentDialog } from '#build/components'
-import { apiUrl, type TeacherPaymentResource } from '.'
+import type { TeacherPaymentResource } from '.'
+import { apiUrl } from '.'
 
 const { teacherId } = defineProps<{ teacherId: number }>()
 

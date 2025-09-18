@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { mdiArrowRightThin } from '@mdi/js'
-import { format } from 'date-fns'
 
 const { item } = defineProps<{
   item: GroupListResource | GroupResource

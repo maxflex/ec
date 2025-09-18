@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { mdiLockOpenOutline } from '@mdi/js'
-
 const { user } = useAuthStore()
 const loading = ref(true)
 const seconds = ref<number>(-1)

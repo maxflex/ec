@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { TeacherServiceResource } from '.'
 import { cloneDeep } from 'lodash-es'
-import { apiUrl, modelDefaults, type TeacherServiceResource } from '.'
+import { apiUrl, modelDefaults } from '.'
 
 const emit = defineEmits<{
   updated: [ts: TeacherServiceResource]

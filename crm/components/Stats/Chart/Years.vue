@@ -5,7 +5,6 @@ import { Chart, registerables } from 'chart.js'
 import { format, getMonth, parseISO } from 'date-fns'
 import { BarChart } from 'vue-chart-3'
 import { colors } from '~/plugins/vuetify'
-import { formatDateMode } from '..'
 
 const { items, params } = defineProps<{
   items: StatsListResource[] // [{ date: '2024-01-01', values: number[] }, ...]

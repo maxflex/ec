@@ -1,5 +1,3 @@
-import type { ClientTestResource } from '../ClientTest'
-
 export interface TestQuestion {
   answers: number[]
   score: number | null

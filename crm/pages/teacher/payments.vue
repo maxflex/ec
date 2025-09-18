@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { TeacherPaymentResource } from '~/components/TeacherPayment'
-import { mdiLockOpenOutline } from '@mdi/js'
 
 const filters = useAvailableYearsFilter()
 

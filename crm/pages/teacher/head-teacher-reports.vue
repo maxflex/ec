@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { HeadTeacherReportDialog } from '#components'
 import type { HeadTeacherReportResource } from '~/components/HeadTeacherReport'
+import { HeadTeacherReportDialog } from '#components'
 
 const filters = ref<YearFilters>(loadFilters({
   year: currentAcademicYear(),

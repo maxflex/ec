@@ -1,3 +1,5 @@
+import type { PrintOption } from '../Print'
+
 export interface ContractPaymentResource {
   id: number
   contract_id: number

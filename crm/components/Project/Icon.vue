@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { mdiFileDocumentEditOutline } from '@mdi/js'
 </script>
 
 <template>

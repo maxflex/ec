@@ -38,8 +38,8 @@ function newContract(clientId: number) {
 }
 
 /**
- * @param savedProject загрузить из ранее сохраненного проекта
- * @param contractId если подгружаем проект из RAM, то обязательно указать по какому договору
+ * savedProject  загрузить из ранее сохраненного проекта
+ * contractId если подгружаем проект из RAM, то обязательно указать по какому договору
  */
 async function fromProject({ savedProject, contractId: cId }: {
   savedProject?: ProjectResource

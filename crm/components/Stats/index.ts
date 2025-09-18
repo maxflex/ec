@@ -1,5 +1,5 @@
 import type { StatsMetric } from './Metrics'
-import { mdiChartBar, mdiChartLine, mdiChartTimeline, mdiTable } from '@mdi/js'
+import { mdiChartBar, mdiChartTimeline, mdiTable } from '@mdi/js'
 import { endOfWeek, format, getMonth, getYear, isAfter, isSameDay, toDate } from 'date-fns'
 
 export const StatsModeLabel = {
@@ -81,7 +81,7 @@ export function formatDateMode(date: string, mode: StatsMode, dateTo: string | n
       const year = getYear(end) // обычно конец недели — ориентир года
 
       return month === endMonth
-        ? `${format(date, 'd')} – ${format(end, 'd')} ${monthLabel} ${year}`
+        ? `${format(date, 'd')} – ${format(end, 'd')} ${monthLabel} ${year}`
         : `${format(date, 'd')} ${monthLabel} – ${format(end, 'd')} ${endMonthLabel} ${year}`
 
     case 'month': return format(date, `${monthLabel} yyyy`)

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { WebReviewResource } from '.'
-import { mdiAccount, mdiAccountCircleOutline, mdiWeb } from '@mdi/js'
+import { mdiAccountCircleOutline, mdiWeb } from '@mdi/js'
 
 const { items } = defineProps<{ items: WebReviewResource[] }>()
 defineEmits<{

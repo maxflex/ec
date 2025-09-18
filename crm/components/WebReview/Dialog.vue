@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { WebReviewResource } from '.'
 import { cloneDeep } from 'lodash-es'
-import { apiUrl, modelDefaults, type WebReviewResource } from '.'
+import { apiUrl, modelDefaults } from '.'
 
 const emit = defineEmits<{
   updated: [item: WebReviewResource, deleted: boolean]

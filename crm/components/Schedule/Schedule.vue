@@ -203,9 +203,7 @@ function onMassEditClick(item: LessonListResource, e: MouseEvent) {
 }
 
 /**
- *
- * @param id
- * @param selectAllTheSame  выбрать все похожие (сгруппированные по времени и дню недели)
+ * selectAllTheSame  выбрать все похожие (сгруппированные по времени и дню недели)
  */
 function toggleCheckboxes(item: LessonListResource, selectAllTheSame: boolean) {
   const id = item.id

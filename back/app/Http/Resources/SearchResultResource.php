@@ -15,6 +15,7 @@ class SearchResultResource extends JsonResource
     {
         $document = $this->resource['document'];
         [$className, $id] = explode('-', $document['id']);
+        /** @var class-string $class */
         $class = "App\\Models\\$className";
         $model = $class::find($id);
 
