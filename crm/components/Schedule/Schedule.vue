@@ -15,13 +15,13 @@ import {
   LessonItemHeadTeacherLK,
   LessonItemTeacherLK,
 } from '#components'
-import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
-import { groupBy } from 'lodash-es'
+import { getDay } from 'date-fns'
+import { groupBy, uniq } from 'lodash-es'
 import { formatDateMonth } from '~/utils'
 import { holidays } from '.'
 import { school89 } from '../Program'
 
-const { group, teacherId, clientId, programFilter, headTeacher, showHolidays } = defineProps<{
+const { group, teacherId, clientId, programFilter, headTeacher, showHolidays: showHolidaysProp } = defineProps<{
   group?: GroupResource
   teacherId?: number
   clientId?: number
@@ -33,7 +33,8 @@ const { group, teacherId, clientId, programFilter, headTeacher, showHolidays } =
 const selectedProgram = ref<Program>()
 const selectedYear = ref<Year>()
 const { user, isTeacher, isClient } = useAuthStore()
-const showSchedule = ref(true)
+// "зубы" показываются не везде (например, в группе не показываются)
+const showTeeth = ref(true)
 const isMassEditable = user?.entity_type === EntityTypeValue.user && group
 const params = {
   // только один из них НЕ undefined
@@ -68,17 +69,23 @@ if (group) {
   loadData()
 }
 
-const filteredLessons = computed(() =>
+/**
+ * Занятия могут быть срезаны по программе на фронте
+ */
+const filteredLessons = computed<LessonListResource[]>(() =>
   selectedProgram.value
     ? lessons.value.filter(l => l.group.program === selectedProgram.value)
     : lessons.value,
 )
 
-// показывать каникула когда: есть флаг + есть занятия 8-9 класса
-const showHolidaysReal = computed<boolean>(() => {
-  if (!showHolidays) {
+/**
+ * Показывать каникула когда: установлен параметр + есть занятия 8-9 класса
+ */
+const showHolidays = computed<boolean>(() => {
+  if (!showHolidaysProp) {
     return false
   }
+
   if (group) {
     return school89.includes(group.program!)
   }
@@ -86,40 +93,47 @@ const showHolidaysReal = computed<boolean>(() => {
   return lessons.value.some(e => school89.includes(e.group.program))
 })
 
-const dates = computed(() => {
+/**
+ * Все даты, где есть данные
+ * В дате могут быть занятия, могут быть каникулы и другие данные
+ */
+const allDates = computed<string[]>(() => {
   if (!selectedYear.value) {
     return []
   }
-  // Define start and end dates for the academic year
-  const startDate = startOfMonth(new Date(selectedYear.value, 8, 1)) // 1 сентября (0-indexed)
-  const endDate = endOfMonth(new Date(selectedYear.value + 1, 5, 30)) // 30 июня (0-indexed)
 
-  // Generate array of all dates between startDate and endDate
-  const allDates = eachDayOfInterval({ start: startDate, end: endDate })
+  // все даты занятий
+  const dates: string[] = uniq(filteredLessons.value.map(e => e.date)).sort()
 
-  const result = []
-  for (const d of allDates) {
-    const dateString = format(d, 'yyyy-MM-dd')
-    if (filteredLessons.value.some(e => e.date === dateString)) {
-      result.push(dateString)
-    }
-    else if (showHolidaysReal.value && dateString in holidays) {
-      result.push(dateString)
+  if (showHolidays.value) {
+    for (const holidayDate in holidays) {
+      // дата уже добавлена
+      if (dates.includes(holidayDate)) {
+        continue
+      }
+      // каникулы вставляются только между занятиями
+      if (holidayDate > dates[0] && holidayDate < dates[dates.length - 1]) {
+        dates.push(holidayDate)
+      }
     }
   }
-  return result
+
+  return dates.sort()
 })
 
-const lessonsByDate = computed(
-  (): Record<string, Array<LessonListResource>> =>
-    groupBy([...filteredLessons.value], 'date'),
+/**
+ * Занятия, сгруппированные по дате
+ * Нужно для O(1) получения всех занятий по дате
+ */
+const lessonsByDate = computed<Record<string, LessonListResource[]>>(() =>
+  groupBy([...filteredLessons.value], 'date'),
 )
 
 const availableYears = ref<Year[]>()
-const availablePrograms = computed(() => [...new Set(lessons.value.map(l => l.group.program))])
+const availablePrograms = computed<Program[]>(() => uniq(lessons.value.map(l => l.group.program)))
 
 async function loadAvailableYears() {
-  // в расписании группы не подгружаем
+  // в группе год всегда один – из параметров группы
   if (group) {
     return
   }
@@ -162,7 +176,10 @@ async function loadLessons() {
 }
 
 async function loadTeeth() {
-  if (group || !showSchedule.value) {
+  if (!showTeeth.value) {
+    return
+  }
+  if (group) {
     return
   }
   const { data } = await useHttp<Teeth>(
@@ -174,9 +191,7 @@ async function loadTeeth() {
       },
     },
   )
-  if (data.value) {
-    teeth.value = data.value
-  }
+  teeth.value = data.value!
 }
 
 async function loadData() {
@@ -258,7 +273,7 @@ const lessonComponent = (function () {
   }
   else if (clientId) {
     console.log('LessonItemAdminClient')
-    showSchedule.value = false
+    showTeeth.value = false
     return LessonItemAdminClient
   }
   else if (isTeacher) {
@@ -267,7 +282,7 @@ const lessonComponent = (function () {
   }
   else if (teacherId) {
     console.log('LessonItemAdminTeacher')
-    showSchedule.value = false
+    showTeeth.value = false
     return LessonItemAdminTeacher
   }
   console.log('LessonItemAdminGroup')
@@ -337,7 +352,7 @@ nextTick(loadAvailableYears)
           </v-list-item>
         </v-list>
       </v-menu>
-      <v-fade-transition v-else-if="showSchedule">
+      <v-fade-transition v-else-if="showTeeth">
         <TeethBar v-if="teeth" :items="teeth" />
       </v-fade-transition>
     </template>
@@ -345,8 +360,8 @@ nextTick(loadAvailableYears)
   <UiNoData v-if="lessons.length === 0 && !loading" />
   <UiLoader v-else-if="loading" />
   <div v-else class="schedule">
-    <template v-for="d in dates" :key="d">
-      <template v-if="showHolidaysReal">
+    <template v-for="d in allDates" :key="d">
+      <template v-if="showHolidays">
         <div v-if="d in holidays" class="schedule__holidays">
           Каникулы {{ formatDateMonth(d) }} – {{ formatDateMonth(holidays[d]) }}
         </div>

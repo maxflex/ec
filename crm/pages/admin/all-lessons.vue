@@ -25,15 +25,11 @@ const lessons = ref<LessonListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
 
-const dates = computed(() => {
-  // Define start and end dates for the academic year
+const allDates = computed(() => {
   const startDate = startOfMonth(new Date(filters.value.year, 8, 1)) // 1 сентября (0-indexed)
   const endDate = endOfMonth(new Date(filters.value.year + 1, 5, 30)) // 30 июня (0-indexed)
 
-  // Generate array of all dates between startDate and endDate
-  const allDates = eachDayOfInterval({ start: startDate, end: endDate })
-
-  return allDates.map(d => format(d, 'yyyy-MM-dd'))
+  return eachDayOfInterval({ start: startDate, end: endDate }).map(d => format(d, 'yyyy-MM-dd'))
 })
 
 async function loadData() {
@@ -105,7 +101,7 @@ nextTick(() => {
   <UiLoader v-if="loading" />
   <div v-else class="all-lessons">
     <div
-      v-for="d in dates"
+      v-for="d in allDates"
       :key="d"
       :class="{ 'week-separator': getDay(d) === 0 }"
     >

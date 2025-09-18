@@ -23,7 +23,6 @@ const todayDate = today()
 // const tabName = teacherId ? 'TeacherSchedule' : groupId ? 'GroupSchedule' : 'ClientSchedule'
 const selectedProgram = ref<Program>()
 const selectedYear = ref<Year>()
-const dayLabels = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб']
 const params = {
   // только один из них НЕ undefined
   teacher_id: teacherId,
@@ -58,11 +57,19 @@ const allDates = computed<string[]>(() => selectedYear.value
   : [],
 )
 
+/**
+ * Занятия, сгруппированные по дате
+ * Нужно для O(1) получения всех занятий по дате
+ */
+const lessonsByDate = computed<Record<string, LessonListResource[]>>(() =>
+  groupBy([...filteredLessons.value], 'date'),
+)
+
 // даты с контентом
 const dates = computed(() => {
   const result = []
   for (const d of allDates.value) {
-    if (hasContentAtDate(d)) {
+    if (d in lessonsByDate.value) {
       // если дата больше чем 3 дня назад или нажата "показать все даты"
       if (showAllDates.value || differenceInDays(todayDate, d) < 3) {
         result.push(d)
@@ -74,15 +81,6 @@ const dates = computed(() => {
   }
   return result
 })
-
-function hasContentAtDate(d: string): boolean {
-  return filteredLessons.value.some(e => e.date === d)
-}
-
-const lessonsByDate = computed(
-  (): Record<string, Array<LessonListResource>> =>
-    groupBy([...filteredLessons.value], 'date'),
-)
 
 // если есть скрытый контент, то кнопка "показать более ранние даты"
 const hasHiddenContent = computed<boolean>(() => {
@@ -98,7 +96,7 @@ const hasHiddenContent = computed<boolean>(() => {
   const firstShownDate = dates.value[0]
 
   for (const d of allDates.value) {
-    if (d < firstShownDate && hasContentAtDate(d)) {
+    if (d < firstShownDate && (d in lessonsByDate.value)) {
       return true
     }
   }
@@ -206,7 +204,7 @@ nextTick(loadAvailableYears)
           <div>
             {{ formatDateMonth(d) }}
             <span class="text-gray ml-1">
-              {{ dayLabels[getDay(d)] }}
+              {{ WeekdayLabel[getDay(d) as Weekday] }}
             </span>
           </div>
           <div>
