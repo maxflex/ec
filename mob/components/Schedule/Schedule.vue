@@ -2,7 +2,7 @@
 import { differenceInDays, eachDayOfInterval, format, getDay } from 'date-fns'
 import { groupBy } from 'lodash-es'
 import { Vue3SlideUpDown } from 'vue3-slide-up-down'
-import { formatDateMonth } from '~/utils'
+import { formatDateMonth, formatWeekday } from '~/utils'
 import { holidays } from '.'
 import { school89 } from '../Program'
 
@@ -204,7 +204,7 @@ nextTick(loadAvailableYears)
           <div>
             {{ formatDateMonth(d) }}
             <span class="text-gray ml-1">
-              {{ WeekdayLabel[getDay(d) as Weekday] }}
+              {{ formatWeekday(d) }}
             </span>
           </div>
           <div>

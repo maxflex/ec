@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { getDay } from 'date-fns'
 import { isEqual, uniqWith } from 'lodash-es'
 
 const { id } = defineProps<{ id: number }>()
@@ -153,7 +152,7 @@ nextTick(loadData)
           <td class="pl-5">
             {{ formatTextDate(l.dateTime) }}
             <span class="text-gray ml-1">
-              {{ WeekdayLabel[getDay(l.dateTime) as Weekday] }}
+              {{ formatWeekday(l.dateTime) }}
             </span>
           </td>
           <td v-for="t in teachers" :key="t.id">

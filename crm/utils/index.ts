@@ -7,6 +7,7 @@ import {
   differenceInWeeks,
   differenceInYears,
   format,
+  getDay,
   getMonth,
   getYear,
 } from 'date-fns'
@@ -42,6 +43,15 @@ export function getEntityStringFromToken(): EntityString | null {
     return token.split('|')[0] as EntityString
   }
   return null
+}
+
+/**
+ * День недели по дате (пн, вт, ср..)
+ */
+export function formatWeekday(date: string): string {
+  const day = (getDay(date) + 6) % 7
+
+  return WeekdayLabel[day as Weekday]
 }
 
 export function getEntityString(entityType: EntityType): EntityString {

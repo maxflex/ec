@@ -114,7 +114,7 @@ nextTick(() => {
         <div>
           {{ formatTextDate(d) }}
           <span class="text-gray ml-1">
-            {{ WeekdayLabel[getDay(d) as Weekday] }}
+            {{ formatWeekday(d) }}
             <template v-if="todayDate === d">
               (сегодня)
             </template>

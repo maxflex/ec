@@ -6,6 +6,7 @@ import {
   differenceInWeeks,
   differenceInYears,
   format,
+  getDay,
   getMonth,
   getYear,
 } from 'date-fns'
@@ -354,6 +355,15 @@ export function formatPrice(price: number, showZero: boolean = false) {
   const formatted = Math.abs(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
 
   return price < 0 ? `-${formatted}` : formatted
+}
+
+/**
+ * День недели по дате (пн, вт, ср..)
+ */
+export function formatWeekday(date: string): string {
+  const day = (getDay(date) + 6) % 7
+
+  return WeekdayLabel[day as Weekday]
 }
 
 export function formatFileSize(file: UploadedFile) {

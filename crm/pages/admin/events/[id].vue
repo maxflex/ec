@@ -2,7 +2,6 @@
 import type { EventDialog } from '#components'
 import type { EventParticipant, EventResource } from '~/components/Event'
 import { mdiPlus } from '@mdi/js'
-import { getDay } from 'date-fns'
 
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
 const { $addSseListener, $removeSseListener } = useNuxtApp()
@@ -90,7 +89,7 @@ nextTick(loadData)
             />
           </div>
           <span class="event__header-date">
-            {{ formatDate(item.date) }} {{ WeekdayLabel[getDay(item.date) as Weekday] }}
+            {{ formatDate(item.date) }} {{ formatWeekday(item.date) }}
             <span v-if="item.time" class="event__header-time">
               {{ formatTime(item.time) }}
             </span>

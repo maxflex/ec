@@ -370,7 +370,7 @@ nextTick(loadAvailableYears)
         <div>
           {{ formatDateMonth(d) }}
           <span class="text-gray ml-1">
-            {{ WeekdayLabel[getDay(d) as Weekday] }}
+            {{ formatWeekday(d) }}
           </span>
         </div>
         <component
