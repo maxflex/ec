@@ -610,6 +610,7 @@ class Project extends Model
             $id--;
         }
 
+        $item->date = now()->format('Y-m-d');
         $item->programs_original = $item->programs;
         $item->programs = $programs;
         $item->payments = $payments;
