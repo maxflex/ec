@@ -17,7 +17,12 @@ class ClientListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'first_name', 'last_name', 'middle_name', 'directions', 'created_at'
+            'first_name', 'last_name', 'middle_name', 'directions', 'created_at',
+        ], [
+            'schedule' => $this->when(
+                $request->has('can_login'),
+                fn () => $this->getSavedSchedule(current_academic_year())
+            ),
         ]);
     }
 }

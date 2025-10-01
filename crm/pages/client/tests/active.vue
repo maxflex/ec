@@ -96,10 +96,7 @@ nextTick(loadData)
     <iframe :src="test.file.url" />
     <div>
       <div class="test__questions">
-        <div
-          v-for="i in test.question_counts.length"
-          :key="i"
-        >
+        <div v-for="i in test.question_counts.length" :key="i">
           <h2>
             Вопрос {{ i }}
           </h2>

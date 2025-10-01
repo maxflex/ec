@@ -2,7 +2,9 @@
 import {
   mdiAccount,
   mdiAccountGroup,
+  mdiAccountSearch,
   mdiCalendar,
+  mdiCardAccountDetailsOutline,
   mdiCashMultiple,
   mdiFileDocumentEditOutline,
   mdiHumanMaleBoard,
@@ -11,6 +13,7 @@ import {
   mdiLogout,
   mdiSeatPassenger,
   mdiSendCircle,
+  mdiTableAccount,
 } from '@mdi/js'
 import { callAppDialog } from '~/components/CallApp'
 
@@ -29,13 +32,11 @@ const menu: Menu = [
     icon: mdiAccount,
     title: 'Клиенты',
     items: [
+      { title: 'Активные клиенты', to: '/clients/active' },
       { title: 'Договоры', to: '/contracts' },
       { title: 'Проекты', to: '/projects' },
       { title: 'Жалобы', to: '/client-complaints' },
       { title: 'Отзывы', to: '/client-reviews' },
-      { title: 'Контроль ЛК', to: '/control/lk' },
-      { title: 'Контроль занятий', to: '/control/lessons' },
-      { title: 'Контроль оценок', to: '/control/grades' },
       { title: 'Пройденные тесты', to: '/client-tests' },
     ],
   },
@@ -53,6 +54,7 @@ const menu: Menu = [
     items: [
       { title: 'Все занятия', to: '/all-lessons' },
       { title: 'Темы', to: '/topics' },
+      { title: 'Кабинеты', to: '/cabinets' },
       { title: 'Итоговые оценки', to: '/grades' },
     ],
   },
@@ -94,6 +96,15 @@ const menu: Menu = [
     ],
   },
   {
+    icon: mdiCardAccountDetailsOutline,
+    title: 'Контроль',
+    items: [
+      { title: 'Контроль ЛК', to: '/control/lk' },
+      { title: 'Контроль занятий', to: '/control/lessons' },
+      { title: 'Контроль оценок', to: '/control/grades' },
+    ],
+  },
+  {
     icon: '$pass',
     title: 'Пропуски',
     items: [
@@ -101,11 +112,6 @@ const menu: Menu = [
       { title: 'Постоянные', to: '/passes/permanent' },
       { title: 'Статистика', to: '/passes/stats' },
     ],
-  },
-  {
-    icon: mdiSeatPassenger,
-    title: 'Кабинеты',
-    to: '/cabinets',
   },
   {
     icon: mdiLockOpenOutline,

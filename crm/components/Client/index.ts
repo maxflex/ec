@@ -16,6 +16,7 @@ export interface RepresentativeResource extends HasName, HasPhones {
 }
 
 export interface ClientListResource extends PersonResource {
+  schedule?: Teeth
   directions: ClientDirections
   created_at: string
 }

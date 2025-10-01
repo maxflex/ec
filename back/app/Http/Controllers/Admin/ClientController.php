@@ -22,13 +22,24 @@ class ClientController extends Controller
         'search' => ['q'],
         'request' => ['request_id'],
         'headTeacher' => ['head_teacher_id'],
+        'program' => ['program'],
         'year' => ['year'],
     ];
 
     public function index(Request $request)
     {
-        $query = Client::orderBy('id', 'desc');
+        $query = Client::query()
+            ->with('contracts')
+            ->orderBy('last_name')
+            ->orderBy('first_name')
+            ->orderBy('middle_name');
+
         $this->filter($request, $query);
+
+        if ($request->has('can_login')) {
+            $query->canLogin();
+
+        }
 
         return $this->handleIndexRequest($request, $query, ClientListResource::class);
     }
@@ -126,5 +137,24 @@ class ClientController extends Controller
     protected function getAvailableYears($query): Collection
     {
         return $query->join('contracts as c', 'c.client_id', '=', 'clients.id')->pluck('year');
+    }
+
+    protected function filterProgram($query, array $programs)
+    {
+        if (count($programs) === 0) {
+            return;
+        }
+
+        $query->whereHas(
+            'contracts',
+            fn ($q) => $q
+                ->where('year', current_academic_year())
+                ->whereHas('versions', fn ($q) => $q
+                    ->where('is_active', true)
+                    ->whereHas('programs', fn ($q) => $q
+                        ->whereIn('program', $programs)
+                    )
+                )
+        );
     }
 }
