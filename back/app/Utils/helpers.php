@@ -254,3 +254,13 @@ function save_csv(array|Collection $csv): string
 
     return cdn('other', $filename);
 }
+
+// доля
+function share(int $numerator, int $denominator)
+{
+    if ($denominator === 0) {
+        return 0;
+    }
+
+    return round($numerator / $denominator, 2);
+}

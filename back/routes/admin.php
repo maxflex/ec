@@ -34,9 +34,9 @@ use App\Http\Controllers\Admin\PassController;
 use App\Http\Controllers\Admin\PeopleSelectorController;
 use App\Http\Controllers\Admin\PreviewModeController;
 use App\Http\Controllers\Admin\PrintController;
+use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RequestsController;
-use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Admin\SmsMessageController;
 use App\Http\Controllers\Admin\StatsController;
@@ -46,6 +46,7 @@ use App\Http\Controllers\Admin\TeacherBalanceController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TeacherPaymentController;
 use App\Http\Controllers\Admin\TeacherServiceController;
+use App\Http\Controllers\Admin\TeacherStatsController;
 use App\Http\Controllers\Admin\TelegramListController;
 use App\Http\Controllers\Admin\TelegramMessageController;
 use App\Http\Controllers\Admin\TestController;
@@ -166,10 +167,11 @@ Route::get('teachers/stats/{teacher}', [TeacherController::class, 'stats']);
 
 Route::apiResource('vacations', VacationController::class)->only(['index', 'store']);
 Route::apiResource('logs', LogController::class)->only(['index', 'store']);
+Route::apiResource('sms-messages', SmsMessageController::class)->only('index');
 
+Route::get('teacher-stats', TeacherStatsController::class);
 Route::get('teeth', TeethController::class);
 Route::get('exams', ExamController::class);
-Route::apiResource('sms-messages', SmsMessageController::class)->only('index');
 
 Route::apiResources([
     'telegram-lists' => TelegramListController::class,

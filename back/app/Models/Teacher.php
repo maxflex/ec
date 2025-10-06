@@ -29,6 +29,7 @@ class Teacher extends Person implements HasSchedule
         'is_published' => 'bool',
         'passport' => 'array',
         'stats' => 'array',
+        'stats_new' => 'array',
         'schedule' => 'array',
     ];
 

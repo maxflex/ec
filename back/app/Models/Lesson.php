@@ -22,7 +22,7 @@ class Lesson extends Model
     protected $fillable = [
         'teacher_id', 'group_id', 'price', 'cabinet', 'date', 'time',
         'status', 'topic', 'conducted_at', 'is_topic_verified', 'is_unplanned',
-        'quarter', 'homework', 'files', 'is_free',
+        'quarter', 'homework', 'files', 'is_free', 'is_violation', 'violation_comment',
     ];
 
     protected $casts = [

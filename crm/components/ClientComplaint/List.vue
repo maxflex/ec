@@ -29,13 +29,13 @@ const emit = defineEmits<{
       <div style="width: 180px">
         <UiPerson :item="item.teacher" />
       </div>
-      <div style="width: 100px">
+      <div style="width: 120px">
         {{ ProgramShortLabel[item.program] }}
       </div>
       <div class="text-truncate pr-2" style="flex: 1">
         {{ item.text }}
       </div>
-      <div style="flex: initial; width: 130px" class="text-gray">
+      <div style="flex: initial; width: 130px" class="text-gray text-right">
         {{ formatDateTime(item.created_at) }}
       </div>
     </div>

@@ -221,6 +221,8 @@ declare global {
     is_topic_verified: boolean
     is_unplanned: boolean
     is_free: boolean
+    is_violation: number | null
+    violation_comment?: ?string
     teacher?: PersonResource
     user?: PersonResource
     created_at?: string
@@ -241,6 +243,8 @@ declare global {
     is_topic_verified: boolean
     is_need_conduct: boolean
     is_free: boolean
+    is_violation: number | null
+    violation_comment?: ?string
     homework: ?string
     quarter: Quarter | null
     has_files: boolean

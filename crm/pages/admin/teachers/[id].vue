@@ -18,6 +18,7 @@ const { tabs, selectedTab } = useTabs({
   services: 'допуслуги',
   instructions: 'инструкции',
   stats: 'статистика',
+  // stats2: 'статистика 2.0',
   headTeacherClients: 'классрук',
   headTeacherReports: 'отчёты кр',
 })
@@ -75,7 +76,10 @@ nextTick(loadData)
           </div>
         </div>
         <div class="panel-actions">
-          <!-- <PreviewMode :teacher-id="teacher.id" /> -->
+          <CommentBtn
+            :entity-id="teacher.id"
+            :entity-type="EntityTypeValue.teacher"
+          />
           <v-btn
             icon="$edit"
             :size="48"
@@ -101,6 +105,7 @@ nextTick(loadData)
     <ClientReviewTab v-else-if="selectedTab === 'clientReviews'" :teacher-id="teacher.id" />
     <Balance v-else-if="selectedTab === 'balance'" :teacher-id="teacher.id" :split="teacher.is_split_balance" />
     <TeacherStatsCharts v-else-if="selectedTab === 'stats'" :teacher="teacher" />
+    <!-- <TeacherStats2 v-else-if="selectedTab === 'stats2'" :teacher-id="teacher.id" /> -->
     <HeadTeacherReportTab v-else-if="selectedTab === 'headTeacherReports'" :teacher-id="teacher.id" />
     <HeadTeacherClientsTab v-else-if="selectedTab === 'headTeacherClients'" :teacher-id="teacher.id" />
   </template>

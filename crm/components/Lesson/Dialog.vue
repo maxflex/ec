@@ -150,6 +150,7 @@ defineExpose({ create, edit })
             :disabled="isConducted"
           />
         </div>
+
         <div v-if="isAdmin" class="double-input">
           <v-text-field
             v-model="lesson.price"
@@ -182,6 +183,26 @@ defineExpose({ create, edit })
             />
           </div>
         </div>
+
+        <div v-if="isAdmin">
+          <UiClearableSelect
+            v-model="lesson.is_violation"
+            not-set="не проверено"
+            nullify
+            :items="yesNo('есть нарушения', 'нет нарушений')"
+            label="Нарушения"
+          />
+        </div>
+
+        <div v-if="isAdmin">
+          <v-textarea
+            v-model="lesson.violation_comment"
+            :disabled="lesson.is_violation === null"
+            label="Комментарий к нарушению"
+            no-resize
+          />
+        </div>
+
         <div class="input-with-counter">
           <v-textarea
             ref="topicInput"

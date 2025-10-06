@@ -11,6 +11,8 @@ interface AllLessons {
     need_conduct_count: number
     unplanned_count: number
     free_count: number
+    violations_violated_count: number
+    violations_checked_count: number
   }
 }
 
@@ -121,23 +123,26 @@ nextTick(() => {
           </span>
         </div>
         <template v-if="d in response">
-          <div style="width: 200px" class="text-gray">
+          <div style="width: 100px" class="text-gray">
             {{ formatPrice(response[d].planned_count) }}
             <!--            <span v-if="response[d].need_conduct_count" class="text-error"> -->
             <!--              / {{ response[d].need_conduct_count }} -->
             <!--            </span> -->
           </div>
-          <div style="width: 200px" class="text-success">
+          <div style="width: 100px" class="text-success">
             {{ formatPrice(response[d].conducted_count) }}
           </div>
-          <div style="width: 200px" class="text-error">
+          <div style="width: 100px" class="text-error">
             {{ formatPrice(response[d].cancelled_count) }}
           </div>
-          <div style="width: 200px" class="text-purple">
+          <div style="width: 100px" class="text-purple">
             {{ formatPrice(response[d].unplanned_count) }}
           </div>
-          <div style="width: 200px" class="text-deepOrange">
+          <div style="width: 100px" class="text-deepOrange">
             {{ formatPrice(response[d].free_count) }}
+          </div>
+          <div style="width: 100px" class="text-brown">
+            {{ formatPrice(response[d].violations_checked_count) }}
           </div>
         </template>
         <div>
@@ -197,7 +202,7 @@ nextTick(() => {
         }
         & > div {
           &:first-child {
-            width: 250px;
+            width: 300px;
           }
           &:last-child {
             flex: 1;

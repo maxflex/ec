@@ -24,7 +24,7 @@ class LessonListResource extends JsonResource
             'status', 'date', 'time', 'time_end', 'seq',
             'cabinet', 'is_unplanned', 'is_first', 'quarter',
             'topic', 'is_topic_verified', 'is_free', 'homework',
-            'is_need_conduct',
+            'is_need_conduct', 'is_violation', 'violation_comment',
         ], [
             'has_files' => count($this->files) > 0,
             'teacher' => new PersonResource($this->teacher),
