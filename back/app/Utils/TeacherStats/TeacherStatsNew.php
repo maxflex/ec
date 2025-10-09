@@ -300,27 +300,47 @@ readonly class TeacherStatsNew
     public function getTotals(array $stats): TeacherStatsItem
     {
         $totals = new TeacherStatsItem;
-        $floats = [];
+        $cnt = new TeacherStatsItem;
 
         foreach ($stats as $item) {
             foreach (get_object_vars($item) as $key => $value) {
-                if (! is_numeric($value) || ! $value) {
+                if (! $value) {
                     continue;
                 }
 
-                if (is_float($value)) {
-                    if (! isset($floats[$key])) {
-                        $floats[$key] = 0;
-                    }
-                    $floats[$key]++;
-                }
-
                 $totals->{$key} += $value;
+                $cnt->{$key} += 1;
             }
         }
 
-        foreach ($floats as $key => $cnt) {
-            $totals->{$key} = round($totals->{$key} / $cnt, 1);
+        // floats
+        foreach (get_object_vars($totals) as $key => $value) {
+            if (! is_float($value)) {
+                continue;
+            }
+
+            switch ($key) {
+                case 'client_lessons_scores_avg':
+                case 'client_lessons_avg':
+                    // client_lessons_avg => client_lessons
+                    $key2 = str($key)->beforeLast('_')->value();
+                    $totals->{$key} = share($totals->{$key2}, $cnt->{$key2});
+                    break;
+
+                case 'client_lessons_late_share':
+                case 'client_lessons_online_share':
+                case 'client_lessons_absent_share':
+                    // доля от client_lessons
+                    // client_lessons_late_share => client_lessons_late
+                    $key2 = str($key)->beforeLast('_')->value();
+                    $totals->{$key} = share($totals->{$key2}, $totals->client_lessons, true);
+                    break;
+
+                default:
+                    // среднее средних
+                    $totals->{$key} = share($totals->{$key}, $cnt->{$key});
+                    break;
+            }
         }
 
         return $totals;

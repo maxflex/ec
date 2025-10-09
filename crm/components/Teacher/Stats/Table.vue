@@ -13,6 +13,7 @@ const percentFields: TeacherStatsField[] = [
   'client_lessons_absent_share',
   'client_lessons_online_share',
   'retention_share',
+  'reports_fill_avg',
 ]
 
 function formatField(item: TeacherStatsItem, field: TeacherStatsField): string {
