@@ -17,7 +17,7 @@ class BillingResource extends JsonResource
         $version = $this->versions[0];
 
         return extract_fields($this, [
-            'year', 'company',
+            'year', 'company', 'is_closed',
         ], [
             'representative' => new PersonResource($this->client->representative),
             'payments' => extract_fields_array($this->payments, [

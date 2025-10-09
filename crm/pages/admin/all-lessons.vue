@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { LessonConductDialog, LessonDialog } from '#build/components'
+import { mdiVideo } from '@mdi/js'
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 
@@ -12,7 +13,7 @@ interface AllLessons {
     unplanned_count: number
     free_count: number
     violations_violated_count: number
-    violations_checked_count: number
+    violations_ok_count: number
   }
 }
 
@@ -141,8 +142,15 @@ nextTick(() => {
           <div style="width: 100px" class="text-deepOrange">
             {{ formatPrice(response[d].free_count) }}
           </div>
-          <div style="width: 100px" class="text-brown">
-            {{ formatPrice(response[d].violations_checked_count) }}
+          <div style="width: 200px" class="d-inline-flex align-center ga-4">
+            <div v-if="response[d].violations_ok_count" class="d-flex ga-1 text-success">
+              <v-icon :icon="mdiVideo" color="success" />
+              {{ formatPrice(response[d].violations_ok_count) }}
+            </div>
+            <div v-if="response[d].violations_violated_count" class="d-flex ga-1 text-error">
+              <v-icon :icon="mdiVideo" color="error" />
+              {{ formatPrice(response[d].violations_violated_count) }}
+            </div>
           </div>
         </template>
         <div>
@@ -157,7 +165,7 @@ nextTick(() => {
       </div>
 
       <Vue3SlideUpDown :model-value="expanded.date === d && !expanded.loading" :duration="200">
-        <LessonItemAllLessons
+        <LessonItemAdminAllLessons
           v-for="lesson in lessons"
           :key="lesson.id"
           class="lesson-item lesson-item__lesson"

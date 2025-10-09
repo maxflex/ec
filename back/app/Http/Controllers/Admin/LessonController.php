@@ -14,8 +14,9 @@ use Illuminate\Support\Carbon;
 class LessonController extends Controller
 {
     protected $filters = [
-        'equals' => ['group_id', 'teacher_id', 'date', 'is_violation'],
+        'equals' => ['group_id', 'teacher_id', 'date'],
         'group' => ['year'],
+        'null' => ['is_violation'],
     ];
 
     public function index(Request $request)

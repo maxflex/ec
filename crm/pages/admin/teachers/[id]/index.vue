@@ -14,11 +14,11 @@ const { tabs, selectedTab } = useTabs({
   balance: 'баланс',
   reports: 'отчёты',
   clientComplaints: 'жалобы',
+  violations: 'нарушения',
   clientReviews: 'отзывы',
   services: 'допуслуги',
   instructions: 'инструкции',
   stats: 'статистика',
-  // stats2: 'статистика 2.0',
   headTeacherClients: 'классрук',
   headTeacherReports: 'отчёты кр',
 })
@@ -92,7 +92,11 @@ nextTick(loadData)
         <TeethBar :items="teacher.schedule" />
         <LessonCurrentLesson :item="teacher.current_lesson" :teacher-id="teacher.id" />
       </div>
-      <UiTabs v-model="selectedTab" :items="tabs" :available="availableTabs" />
+      <UiTabs v-model="selectedTab" :items="tabs" :available="availableTabs">
+        <RouterLink :to="{ name: 'teachers-id-stats', params: { id: teacher.id } }" class="tabs-item">
+          статистика 2.0
+        </RouterLink>
+      </UiTabs>
     </div>
     <TeacherGroupsTab v-if="selectedTab === 'groups'" :teacher-id="teacher.id" />
     <Schedule v-else-if="selectedTab === 'schedule'" :teacher-id="teacher.id" />
@@ -102,10 +106,10 @@ nextTick(loadData)
     <TeacherPaymentTab v-else-if="selectedTab === 'payments'" :teacher-id="teacher.id" />
     <TeacherServiceTab v-else-if="selectedTab === 'services'" :teacher-id="teacher.id" />
     <ClientComplaintTab v-else-if="selectedTab === 'clientComplaints'" :teacher-id="teacher.id" />
+    <TeacherViolationsTab v-else-if="selectedTab === 'violations'" :teacher-id="teacher.id" />
     <ClientReviewTab v-else-if="selectedTab === 'clientReviews'" :teacher-id="teacher.id" />
     <Balance v-else-if="selectedTab === 'balance'" :teacher-id="teacher.id" :split="teacher.is_split_balance" />
     <TeacherStatsCharts v-else-if="selectedTab === 'stats'" :teacher="teacher" />
-    <!-- <TeacherStats2 v-else-if="selectedTab === 'stats2'" :teacher-id="teacher.id" /> -->
     <HeadTeacherReportTab v-else-if="selectedTab === 'headTeacherReports'" :teacher-id="teacher.id" />
     <HeadTeacherClientsTab v-else-if="selectedTab === 'headTeacherClients'" :teacher-id="teacher.id" />
   </template>

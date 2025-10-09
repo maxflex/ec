@@ -246,6 +246,12 @@ defineExpose({ create, edit })
             :disabled="isTeacher"
             label="Бесплатное для детей"
           />
+          <v-checkbox
+            v-if="isAdmin"
+            v-model="lesson.is_substitute"
+            :disabled="isTeacher"
+            label="Замена преподавателя"
+          />
         </div>
       </div>
     </div>

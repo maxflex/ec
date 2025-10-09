@@ -20,15 +20,17 @@ use Illuminate\Support\Facades\DB;
 class Lesson extends Model
 {
     protected $fillable = [
-        'teacher_id', 'group_id', 'price', 'cabinet', 'date', 'time',
-        'status', 'topic', 'conducted_at', 'is_topic_verified', 'is_unplanned',
-        'quarter', 'homework', 'files', 'is_free', 'is_violation', 'violation_comment',
+        'teacher_id', 'group_id', 'price', 'cabinet', 'date', 'time', 'status',
+        'topic', 'conducted_at', 'is_topic_verified', 'is_unplanned', 'quarter',
+        'homework', 'files', 'is_free', 'is_violation', 'violation_comment',
+        'is_substitute',
     ];
 
     protected $casts = [
         'is_topic_verified' => 'boolean',
         'is_unplanned' => 'boolean',
         'is_free' => 'boolean',
+        'is_substitute' => 'boolean',
         'status' => LessonStatus::class,
         'cabinet' => Cabinet::class,
         'files' => JsonArrayCast::class,

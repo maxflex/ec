@@ -36,26 +36,6 @@ class ContractVersion extends Model
     }
 
     /**
-     * Последние версии в цепи
-     * TODO: remove @DEPRICATED
-     */
-    public function scopeLastVersions($query)
-    {
-        $sub = self::selectRaw(<<<'SQL'
-            contract_id as max_contract_id,
-            MAX(version) as max_version
-        SQL)->groupBy('contract_id');
-
-        $query->joinSub(
-            $sub,
-            'last_versions',
-            fn ($join) => $join
-                ->on('contract_versions.contract_id', '=', 'last_versions.max_contract_id')
-                ->on('contract_versions.version', '=', 'last_versions.max_version')
-        );
-    }
-
-    /**
      * Номер по порядку
      */
     public function getSeqAttribute()
@@ -123,6 +103,7 @@ class ContractVersion extends Model
             $query->update(['contract_version_program_id' => $newProgramId]);
         }
 
+        // TODO: проверить
         $old->programs()->update(['status' => null]);
         foreach ($this->programs as $program) {
             $program->updateStatus();

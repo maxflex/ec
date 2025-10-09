@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { weekdays } from '.'
+
 const { items, current } = defineProps<{
   items: Teeth
   current?: Teeth
@@ -25,7 +27,7 @@ function getForWeekday(teeth: Teeth, weekday: Weekday): Teeth {
 const itemsByWeekday = computed(() => {
   const result: Partial<Record<Weekday, Teeth>> = {}
 
-  for (const weekday of [0, 1, 2, 3, 4, 5, 6, 7] as Weekday[]) {
+  for (const weekday of weekdays) {
     result[weekday] = getForWeekday(items, weekday)
 
     if (!current) {
@@ -47,7 +49,7 @@ const itemsByWeekday = computed(() => {
   <!-- <pre style="background: white; z-index: 1;">{{ allItems }}</pre> -->
   <div class="teeth">
     <div
-      v-for="(label, weekday) in WeekdayLabel"
+      v-for="weekday in weekdays"
       :key="weekday"
       :class="`teeth__day teeth__day--${weekday}`"
     >
@@ -68,7 +70,7 @@ const itemsByWeekday = computed(() => {
           <template #activator="{ props }">
             <div v-bind="props" />
           </template>
-          {{ label.toUpperCase() }} {{ formatTime(tooth.time) }} – {{ formatTime(tooth.time_end) }}
+          {{ WeekdayLabel[weekday].toUpperCase() }} {{ formatTime(tooth.time) }} – {{ formatTime(tooth.time_end) }}
         </v-tooltip>
       </div>
     </div>

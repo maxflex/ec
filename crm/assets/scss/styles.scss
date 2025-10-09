@@ -25,7 +25,7 @@ main {
   overflow-x: scroll;
 }
 
-a:not(.v-list-item):not(.table-item) {
+a:not(.v-list-item):not(.table-item):not(.tabs-item) {
   text-decoration: none;
   color: rgb(var(--v-theme-secondary));
   &:hover {
@@ -37,6 +37,11 @@ a:not(.v-list-item):not(.table-item) {
 a.table-item {
   text-decoration: none;
   color: initial;
+}
+
+a.tabs-item {
+  text-decoration: none;
+  color: rgba(var(--v-theme-on-background), var(--v-high-emphasis-opacity));
 }
 
 .page-title {

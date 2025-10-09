@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { weekdays } from '.'
+
 const { items, oneLine } = defineProps<{
   items: Teeth
   oneLine?: boolean
@@ -18,7 +20,7 @@ const itemsByWeekday = computed<Result>(() => {
   // const result: Partial<Record<Weekday, Teeth>> = {}
   const result: Result = []
 
-  for (const weekday of [0, 1, 2, 3, 4, 5, 6, 7] as Weekday[]) {
+  for (const weekday of weekdays) {
     const teeth = getForWeekday(items, weekday)
     if (teeth.length) {
       result.push({

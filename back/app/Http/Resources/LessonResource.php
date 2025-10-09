@@ -20,6 +20,7 @@ class LessonResource extends JsonResource
             'status', 'date', 'time', 'cabinet', 'teacher_id', 'price', 'created_at',
             'conducted_at', 'topic', 'is_topic_verified', 'is_unplanned', 'quarter',
             'files', 'homework', 'group_id', 'is_free', 'is_violation', 'violation_comment',
+            'is_substitute',
         ], [
             'group' => extract_fields($this->group, ['program']),
             'teacher' => new PersonResource($this->teacher),

@@ -488,6 +488,9 @@ nextTick(fromActualContracts)
       display: flex;
       align-items: center;
       gap: 8px;
+      &a {
+        color: black !important;
+      }
 
       .v-icon {
         $size: 20px;

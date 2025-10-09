@@ -3,6 +3,7 @@ import {
   mdiBookOpenOutline,
   mdiBookOpenVariant,
   mdiPaperclip,
+  mdiSwapHorizontal,
 } from '@mdi/js'
 
 const { item } = defineProps<{
@@ -70,6 +71,9 @@ const isConductDisabled = item.status !== 'conducted'
       </div>
       <div>
         <v-icon v-if="item.has_files" :icon="mdiPaperclip" />
+      </div>
+      <div>
+        <v-icon v-if="item.is_substitute" :icon="mdiSwapHorizontal" />
       </div>
     </div>
     <div style="width: 70px">

@@ -95,6 +95,11 @@ class Contract extends Model
         return $this->hasMany(ContractPayment::class);
     }
 
+    public function getIsClosedAttribute(): bool
+    {
+        return $this->active_version->programs->firstWhere(fn (ContractVersionProgram $p) => $p->is_active) === null;
+    }
+
     public function getBalance(): Balance
     {
         $clientLessons = $this->clientLessonsQuery()->get();

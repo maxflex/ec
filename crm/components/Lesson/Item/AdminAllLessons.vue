@@ -3,6 +3,7 @@ import {
   mdiBookOpenOutline,
   mdiBookOpenVariant,
   mdiPaperclip,
+  mdiSwapHorizontal,
   mdiVideo,
 } from '@mdi/js'
 
@@ -62,7 +63,7 @@ const isConductDisabled = item.status !== 'conducted'
       <GroupStudentsCount v-if="item.status !== 'cancelled'" :item="item" />
     </div>
 
-    <div style="width: 120px" class="lesson-item__icons">
+    <div style="width: 140px" class="lesson-item__icons">
       <div>
         <v-icon v-if="item.topic" :icon="mdiBookOpenOutline" :class="{ 'opacity-3': !item.is_topic_verified }" />
       </div>
@@ -71,6 +72,9 @@ const isConductDisabled = item.status !== 'conducted'
       </div>
       <div>
         <v-icon v-if="item.has_files" :icon="mdiPaperclip" />
+      </div>
+      <div>
+        <v-icon v-if="item.is_substitute" :icon="mdiSwapHorizontal" />
       </div>
       <div>
         <v-icon v-if="item.is_violation !== null" :icon="mdiVideo" :color="item.is_violation ? 'error' : 'success'" />

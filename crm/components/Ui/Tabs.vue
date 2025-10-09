@@ -64,6 +64,7 @@ function isTabAvailable(tab: Tab): boolean {
         </span>
       </div>
     </template>
+    <slot></slot>
   </div>
 </template>
 

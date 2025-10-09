@@ -256,11 +256,11 @@ function save_csv(array|Collection $csv): string
 }
 
 // доля
-function share(int $numerator, int $denominator)
+function share(int $numerator, int $denominator, bool $multiplyBy100 = false): float
 {
     if ($denominator === 0) {
         return 0;
     }
 
-    return round($numerator / $denominator, 2);
+    return round($numerator / $denominator * ($multiplyBy100 ? 100 : 1), 1);
 }

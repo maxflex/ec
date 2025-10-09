@@ -53,6 +53,13 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
   )
 }
 
+const showQr = computed<boolean>(() => {
+  if (selectedContract.value.year < currentAcademicYear()) {
+    return false
+  }
+  return !selectedContract.value.is_closed
+})
+
 // const testValue = 'ST00012|Name=ИП Горшкова Анастасия Александровна|PersonalAcc=40802810401400004731|BankName=АО "АЛЬФА-БАНК"|BIC=044525593|CorrespAcc=30101810200000000593|Purpose=Платные образовательные услуги по договору № 14340 от 24.05.24 г.|PayeeINN=622709802712|KPP=|LastName=Мирошниченко|FirstName=Татьяна|MiddleName=Петровна'
 </script>
 
@@ -157,7 +164,7 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
             </tbody>
           </table>
         </div>
-        <div v-if="selectedContract.year >= currentAcademicYear()" class="billing__qr">
+        <div v-if="showQr" class="billing__qr">
           <QrcodeVue
             :value="qrValue"
             :size="300"
@@ -170,7 +177,7 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
             }"
           />
           <p>
-            QR-код для оплаты
+            Откройте приложение банка <br />и наведите камеру на QR-код
           </p>
         </div>
       </div>

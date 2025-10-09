@@ -25,7 +25,7 @@ class AllLessonsController extends Controller
                  CAST(SUM(IF(is_unplanned, 1, 0)) AS UNSIGNED) as unplanned_count,
                  CAST(SUM(IF(is_free, 1, 0)) AS UNSIGNED) as free_count,
                  CAST(SUM(IF(is_violation, 1, 0)) AS UNSIGNED) as violations_violated_count,
-                 CAST(SUM(IF(is_violation IS NOT NULL, 1, 0)) AS UNSIGNED) as violations_checked_count,
+                 CAST(SUM(IF(is_violation = 0, 1, 0)) AS UNSIGNED) as violations_ok_count,
                  CAST(SUM(IF(
                     `status` = 'planned' AND TIMESTAMP(`date`, `time`) < NOW() - INTERVAL 1 HOUR
                  , 1, 0)) AS UNSIGNED) as need_conduct_count

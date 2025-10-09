@@ -221,6 +221,7 @@ declare global {
     is_topic_verified: boolean
     is_unplanned: boolean
     is_free: boolean
+    is_substitute: boolean
     is_violation: number | null
     violation_comment?: ?string
     teacher?: PersonResource
@@ -240,6 +241,7 @@ declare global {
     is_unplanned: boolean
     is_first: boolean
     topic: ?string
+    is_substitute: boolean
     is_topic_verified: boolean
     is_need_conduct: boolean
     is_free: boolean
@@ -394,6 +396,7 @@ declare global {
     id: number
     year: Year
     company: Company
+    is_closed: boolean
     representative: PersonResource
     payments: Array<{
       id: number
