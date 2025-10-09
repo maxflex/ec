@@ -21,10 +21,11 @@ readonly class TeacherStatsNew
     ) {}
 
     /**
-     * @param  'day'|'week'|'month'  $mode
+     * Статистика по дням
+     *
      * @return array<string, TeacherStatsItem>
      */
-    public function get(int $year, string $mode, array $directions = []): array
+    public function getDaily(int $year, array $directions = []): array
     {
         $programs = [];
         foreach ($directions as $direction) {
@@ -241,44 +242,36 @@ readonly class TeacherStatsNew
             $result[$date] = $item;
         }
 
-        if ($mode === 'day') {
-            return $result;
-        }
-
-        return $this->groupBy($result, $mode);
+        return $result;
     }
 
     /**
      * Группирует дневные элементы в недели/месяцы и для каждого бакета
      * просто вызывает ваш getTotals (минимум кода).
      *
-     * @param  array<string, TeacherStatsItem>  $daily
-     * @param  'week'|'month'  $mode
+     * @param  array<string, TeacherStatsItem>  $dailyStats
+     * @param  'day'|'week'|'month'  $mode
      * @return array<string, TeacherStatsItem>
      */
-    private function groupBy(array $daily, string $mode): array
+    public function groupBy(array $dailyStats, string $mode): array
     {
-        // гарантируем хронологию, чтобы "последний день" бакета был реально последним
-        // ksort($daily);
+        if ($mode === 'day') {
+            return $dailyStats;
+        }
 
         // соберём по бакетам
         $buckets = [];              // bucketKey => TeacherStatsItem[]
-        $lastRetention = [];        // bucketKey => float (retention_share последнего дня)
-        foreach ($daily as $date => $item) {
+        foreach ($dailyStats as $date => $item) {
             $b = $this->bucketKey($date, $mode);
             $buckets[$b][] = $item;
-            // $lastRetention[$b] = $item->retention_share; // перезаписывается — в итоге будет из последнего дня бакета
         }
 
         // агрегируем каждым бакетом через getTotals
         $out = [];
         foreach ($buckets as $b => $items) {
             $totals = $this->getTotals($items);          // уже умеет суммировать числа и усреднять float'ы «как есть»
-            // $totals->retention_share = $lastRetention[$b] ?? $totals->retention_share; // берём «последнее»
             $out[$b] = $totals;
         }
-
-        // ksort($out);
 
         return $out;
     }
@@ -295,14 +288,14 @@ readonly class TeacherStatsNew
     }
 
     /**
-     * @param  array<string, TeacherStatsItem>  $stats
+     * @param  array<string, TeacherStatsItem>  $dailyStats
      */
-    public function getTotals(array $stats): TeacherStatsItem
+    public function getTotals(array $dailyStats): TeacherStatsItem
     {
         $totals = new TeacherStatsItem;
         $cnt = new TeacherStatsItem;
 
-        foreach ($stats as $item) {
+        foreach ($dailyStats as $item) {
             foreach (get_object_vars($item) as $key => $value) {
                 if (! $value) {
                     continue;

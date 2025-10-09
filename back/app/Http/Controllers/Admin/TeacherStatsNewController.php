@@ -25,15 +25,14 @@ class TeacherStatsNewController extends Controller
             return $stats->getAvailableYears();
         }
 
-        $items = $stats->get(
+        $dailyStats = $stats->getDaily(
             intval($request->year),
-            $request->mode,
             $request->direction ?? [],
         );
 
         return [
-            'items' => $items,
-            'totals' => $stats->getTotals($items),
+            'items' => $stats->groupBy($dailyStats, $request->mode),
+            'totals' => $stats->getTotals($dailyStats),
         ];
     }
 }
