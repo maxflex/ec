@@ -130,4 +130,9 @@ class User extends Person
     {
         return $this->hasMany(StatsPreset::class);
     }
+
+    public function clientComplaints(): HasMany
+    {
+        return $this->hasMany(ClientComplaint::class);
+    }
 }

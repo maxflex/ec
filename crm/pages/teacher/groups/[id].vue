@@ -23,7 +23,7 @@ nextTick(loadData)
   <div v-if="group" class="group">
     <div class="panel">
       <GroupPanel :item="group" />
-      <UiTabs v-model="selectedTab" :items="tabs" />
+      <UiTabs v-model="selectedTab" :items="tabs" :counts="tabCounts" />
     </div>
     <div>
       <Schedule v-if="selectedTab === 'schedule'" :group="group" show-holidays />

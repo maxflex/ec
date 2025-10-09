@@ -29,7 +29,7 @@ class ClientComplaintController extends Controller
 
     public function store(ClientComplaintRequest $request)
     {
-        $clientComplaint = ClientComplaint::create($request->all());
+        $clientComplaint = auth()->user()->clientComplaints()->create($request->all());
 
         return new ClientComplaintListResource($clientComplaint);
     }
