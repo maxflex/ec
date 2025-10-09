@@ -118,12 +118,9 @@ readonly class TeacherStatsNew
             $item->retention_new_students = $newToday;
             $item->retention_stopped_students = $stoppedToday;
 
-            if ($newToday || $stoppedToday) {
-                $item->retention_share = share($activeToDate, $totalSeenSoFar, true);
-            }
-
             if ($lessonsByDate->has($date)) {
                 $lessons = $lessonsByDate[$date];
+                $item->retention_share = share($activeToDate, $totalSeenSoFar, true);
 
                 /**
                  * Опоздания проводки:

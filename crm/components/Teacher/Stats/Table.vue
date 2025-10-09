@@ -59,8 +59,7 @@ function formatDateMode(d: string) {
       <div class="text-gray">
         <!-- дата -->
       </div>
-      <div v-for="(label, key) in labels" :key="key" :class="`teacher-stats-table--${key}`">
-        {{ label }}
+      <div v-for="(label, key) in labels" :key="key" :class="`teacher-stats-table--${key}`" v-html="label">
       </div>
     </div>
     <div
@@ -126,13 +125,14 @@ function formatDateMode(d: string) {
       }
 
       &:not(:first-child) {
-        min-width: 150px;
+        min-width: 130px;
       }
     }
   }
 
   &__header {
     top: 0;
+    line-height: 20px;
   }
 
   &__footer {
@@ -164,6 +164,22 @@ function formatDateMode(d: string) {
   &--retention_share,
   &--client_lessons_comments {
     border-right: thin solid rgb(var(--v-theme-border));
+  }
+
+  &--lessons_conducted {
+    min-width: 80px !important;
+  }
+
+  &--retention_new_students {
+    min-width: 80px !important;
+  }
+
+  &--retention_stopped_students {
+    min-width: 100px !important;
+  }
+
+  &--retention_share {
+    min-width: 120px !important;
   }
 }
 </style>

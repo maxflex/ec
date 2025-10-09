@@ -103,7 +103,7 @@ export type TeacherStatsField = keyof TeacherStatsItem
 
 export const labels: Record<TeacherStatsField, string> = {
   // ОПОЗДАНИЯ ПРОВОДКИ
-  lessons_conducted: 'проведено всего',
+  lessons_conducted: 'проведено',
   lessons_conducted_next_day: 'с опозданием',
 
   // ПОСЕЩАЕМОСТЬ
