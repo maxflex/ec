@@ -4,13 +4,13 @@ use App\Http\Controllers\Admin\AllLessonsController;
 use App\Http\Controllers\Admin\AllPaymentsController;
 use App\Http\Controllers\Admin\CabinetController;
 use App\Http\Controllers\Admin\CallController;
-use App\Http\Controllers\Admin\ClientComplaintController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\ClientGroupController;
 use App\Http\Controllers\Admin\ClientLessonController;
 use App\Http\Controllers\Admin\ClientReviewController;
 use App\Http\Controllers\Admin\ClientTestController;
 use App\Http\Controllers\Admin\CommentController;
+use App\Http\Controllers\Admin\ComplaintController;
 use App\Http\Controllers\Admin\ContractBalanceController;
 use App\Http\Controllers\Admin\ContractController;
 use App\Http\Controllers\Admin\ContractPaymentController;
@@ -183,10 +183,10 @@ Route::apiResources([
     'contracts' => ContractController::class,
     'contract-versions' => ContractVersionController::class,
     'contract-payments' => ContractPaymentController::class,
+    'complaints' => ComplaintController::class,
     'macros' => MacroController::class,
     'tests' => TestController::class,
     'client-tests' => ClientTestController::class,
-    'client-complaints' => ClientComplaintController::class,
     'client-reviews' => ClientReviewController::class,
     'teacher-services' => TeacherServiceController::class,
     'teacher-payments' => TeacherPaymentController::class,

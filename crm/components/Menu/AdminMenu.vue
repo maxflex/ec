@@ -35,7 +35,7 @@ const menu: Menu = [
       { title: 'Активные клиенты', to: '/clients/active' },
       { title: 'Договоры', to: '/contracts' },
       { title: 'Проекты', to: '/projects' },
-      { title: 'Жалобы', to: '/client-complaints' },
+      { title: 'Жалобы', to: '/complaints' },
       { title: 'Отзывы', to: '/client-reviews' },
       { title: 'Пройденные тесты', to: '/client-tests' },
     ],

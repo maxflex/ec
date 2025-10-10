@@ -1,6 +1,6 @@
-export const apiUrl = 'client-complaints'
+export const apiUrl = 'complaints'
 
-export interface ClientComplaintResource {
+export interface ComplaintResource {
   id: number
   client_id: number
   teacher_id?: number
@@ -9,16 +9,17 @@ export interface ClientComplaintResource {
   user?: PersonResource
 }
 
-export interface ClientComplaintListResource {
+export interface ComplaintListResource {
   id: number
   client: PersonResource
   teacher: PersonResource
   program: Program
   text: string
+  comments_count: number
   created_at: string
 }
 
-export const modelDefaults: ClientComplaintResource = {
+export const modelDefaults: ComplaintResource = {
   id: newId(),
   client_id: -1,
   text: '',

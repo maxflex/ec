@@ -6,7 +6,7 @@ use App\Enums\Program;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class ClientComplaintRequest extends FormRequest
+class ComplaintRequest extends FormRequest
 {
     public function rules(): array
     {

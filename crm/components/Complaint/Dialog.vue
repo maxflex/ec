@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import type { ClientComplaintListResource, ClientComplaintResource } from '.'
+import type { ComplaintListResource, ComplaintResource } from '.'
+import type { TeacherListResource } from '../Teacher'
 import { apiUrl, modelDefaults } from '.'
 
-const items = defineModel<ClientComplaintListResource[]>({ required: true })
+const items = defineModel<ComplaintListResource[]>({ required: true })
 const teachers = ref<TeacherListResource[]>([])
 const programs = ref<Program[]>([])
 
-const { item, expose, dialog, dialogData } = useCrud<ClientComplaintResource, ClientComplaintListResource>(
+const { item, expose, dialog, dialogData } = useCrud<ComplaintResource, ComplaintListResource>(
   apiUrl,
   modelDefaults,
   items,

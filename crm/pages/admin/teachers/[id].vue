@@ -101,7 +101,7 @@ nextTick(loadData)
     <EventTab v-else-if="selectedTab === 'events'" :teacher-id="teacher.id" />
     <TeacherPaymentTab v-else-if="selectedTab === 'payments'" :teacher-id="teacher.id" />
     <TeacherServiceTab v-else-if="selectedTab === 'services'" :teacher-id="teacher.id" />
-    <ClientComplaintTab v-else-if="selectedTab === 'clientComplaints'" :teacher-id="teacher.id" />
+    <ComplaintTab v-else-if="selectedTab === 'clientComplaints'" :teacher-id="teacher.id" />
     <TeacherViolationsTab v-else-if="selectedTab === 'violations'" :teacher-id="teacher.id" />
     <ClientReviewTab v-else-if="selectedTab === 'clientReviews'" :teacher-id="teacher.id" />
     <TeacherStatsTab v-else-if="selectedTab === 'stats'" :teacher="teacher" />

@@ -35,7 +35,7 @@ class Teacher extends Person implements HasSchedule
 
     public function clientComplaints(): HasMany
     {
-        return $this->hasMany(ClientComplaint::class);
+        return $this->hasMany(Complaint::class);
     }
 
     public function signs(): HasMany

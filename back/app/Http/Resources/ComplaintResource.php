@@ -2,12 +2,12 @@
 
 namespace App\Http\Resources;
 
-use App\Models\ClientComplaint;
+use App\Models\Complaint;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin ClientComplaint */
-class ClientComplaintResource extends JsonResource
+/** @mixin Complaint */
+class ComplaintResource extends JsonResource
 {
     public function toArray(Request $request): array
     {

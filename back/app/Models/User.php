@@ -133,6 +133,6 @@ class User extends Person
 
     public function clientComplaints(): HasMany
     {
-        return $this->hasMany(ClientComplaint::class);
+        return $this->hasMany(Complaint::class);
     }
 }

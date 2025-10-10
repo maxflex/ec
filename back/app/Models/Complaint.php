@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use App\Enums\Program;
+use App\Traits\HasComments;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ClientComplaint extends Model
+class Complaint extends Model
 {
+    use HasComments;
+
     protected $fillable = [
         'client_id', 'teacher_id', 'program', 'text',
     ];

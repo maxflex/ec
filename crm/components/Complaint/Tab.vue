@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { ClientComplaintDialog } from '#components'
-import type { ClientComplaintListResource } from '.'
+import type { ComplaintDialog } from '#components'
+import type { ComplaintListResource } from '.'
 import { apiUrl } from '.'
 
 const { clientId, teacherId } = defineProps<{
   clientId?: number
   teacherId?: number
 }>()
-const dialog = ref<InstanceType<typeof ClientComplaintDialog>>()
-const { items, indexPageData, reloadData } = useIndex<ClientComplaintListResource>(apiUrl, ref({}), {
+const dialog = ref<InstanceType<typeof ComplaintDialog>>()
+const { items, indexPageData, reloadData } = useIndex<ComplaintListResource>(apiUrl, ref({}), {
   staticFilters: {
     teacher_id: teacherId,
     client_id: clientId,
@@ -28,7 +28,7 @@ const { items, indexPageData, reloadData } = useIndex<ClientComplaintListResourc
         добавить жалобу
       </v-btn>
     </template>
-    <ClientComplaintList :items="items" @edit="dialog?.edit" />
+    <ComplaintList :items="items" :teacher-id="teacherId" :client-id="clientId" @edit="dialog?.edit" />
   </UiIndexPage>
-  <ClientComplaintDialog ref="dialog" v-model="items" @updated="reloadData" />
+  <ComplaintDialog ref="dialog" v-model="items" @updated="reloadData" />
 </template>
