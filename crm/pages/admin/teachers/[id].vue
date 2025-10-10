@@ -18,6 +18,7 @@ const { tabs, selectedTab } = useTabs({
   clientReviews: 'отзывы',
   services: 'допуслуги',
   instructions: 'инструкции',
+  stats: 'статистика 2.0',
   headTeacherClients: 'классрук',
   headTeacherReports: 'отчёты кр',
 })
@@ -91,11 +92,7 @@ nextTick(loadData)
         <TeethBar :items="teacher.schedule" />
         <LessonCurrentLesson :item="teacher.current_lesson" :teacher-id="teacher.id" />
       </div>
-      <UiTabs v-model="selectedTab" :items="tabs" :available="availableTabs">
-        <RouterLink :to="{ name: 'teachers-id-stats', params: { id: teacher.id } }" class="tabs-item">
-          статистика 2.0
-        </RouterLink>
-      </UiTabs>
+      <UiTabs v-model="selectedTab" :items="tabs" :available="availableTabs" />
     </div>
     <TeacherGroupsTab v-if="selectedTab === 'groups'" :teacher-id="teacher.id" />
     <Schedule v-else-if="selectedTab === 'schedule'" :teacher-id="teacher.id" />
@@ -107,6 +104,7 @@ nextTick(loadData)
     <ClientComplaintTab v-else-if="selectedTab === 'clientComplaints'" :teacher-id="teacher.id" />
     <TeacherViolationsTab v-else-if="selectedTab === 'violations'" :teacher-id="teacher.id" />
     <ClientReviewTab v-else-if="selectedTab === 'clientReviews'" :teacher-id="teacher.id" />
+    <TeacherStatsTab v-else-if="selectedTab === 'stats'" :teacher="teacher" />
     <Balance v-else-if="selectedTab === 'balance'" :teacher-id="teacher.id" :split="teacher.is_split_balance" />
     <HeadTeacherReportTab v-else-if="selectedTab === 'headTeacherReports'" :teacher-id="teacher.id" />
     <HeadTeacherClientsTab v-else-if="selectedTab === 'headTeacherClients'" :teacher-id="teacher.id" />

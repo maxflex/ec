@@ -96,8 +96,8 @@ function formatDateMode(d: string) {
   // width: calc(100vw - var(--menuWidth));
   // overflow: scroll;
 
-  overflow: scroll;
-  max-height: calc(100vh - 81px);
+  // overflow: scroll;
+  // max-height: calc(100vh - 81px);
 
   & > div {
     flex-wrap: nowrap !important;
@@ -131,7 +131,8 @@ function formatDateMode(d: string) {
   }
 
   &__header {
-    top: 0;
+    // top: 81px;
+    top: 311px;
     line-height: 20px;
   }
 
