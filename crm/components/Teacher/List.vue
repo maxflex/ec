@@ -16,7 +16,7 @@ const { items } = defineProps<{
       <!-- <div style="width: 50px">
         {{ teacher.id }}
       </div> -->
-      <div style="width: 200px">
+      <div style="width: 150px">
         <NuxtLink :to="{ name: 'teachers-id', params: { id: teacher.id } }">
           {{ formatName(teacher, 'initials') }}
         </NuxtLink>
