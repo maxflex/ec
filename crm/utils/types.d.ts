@@ -396,7 +396,6 @@ declare global {
     id: number
     year: Year
     company: Company
-    is_closed: boolean
     representative: PersonResource
     payments: Array<{
       id: number

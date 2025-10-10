@@ -53,11 +53,16 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
   )
 }
 
+// остаток по договору - осталось к оплате
+const toPayLeft = computed<number>(() =>
+  totalSum(selectedContract.value.version.payments) - totalSum(selectedContract.value.payments),
+)
+
 const showQr = computed<boolean>(() => {
   if (selectedContract.value.year < currentAcademicYear()) {
     return false
   }
-  return !selectedContract.value.is_closed
+  return toPayLeft.value > 0
 })
 
 // const testValue = 'ST00012|Name=ИП Горшкова Анастасия Александровна|PersonalAcc=40802810401400004731|BankName=АО "АЛЬФА-БАНК"|BIC=044525593|CorrespAcc=30101810200000000593|Purpose=Платные образовательные услуги по договору № 14340 от 24.05.24 г.|PayeeINN=622709802712|KPP=|LastName=Мирошниченко|FirstName=Татьяна|MiddleName=Петровна'
@@ -152,12 +157,8 @@ const showQr = computed<boolean>(() => {
                   </b>
                 </td>
                 <td>
-                  <b v-if="totalSum(selectedContract.version.payments) - totalSum(selectedContract.payments)">
-                    {{ formatPrice(totalSum(selectedContract.version.payments) - totalSum(selectedContract.payments)) }}
-                    руб.
-                  </b>
-                  <b v-else class="text-gray">
-                    0 руб.
+                  <b :class="{ 'text-gray': toPayLeft <= 0 }">
+                    {{ formatPrice(toPayLeft, true) }} руб.
                   </b>
                 </td>
               </tr>

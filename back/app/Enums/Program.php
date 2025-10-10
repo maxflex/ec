@@ -135,6 +135,8 @@ enum Program: string
     case geoPract = 'geoPract';
 
     /**
+     * Все программы экстерната
+     *
      * @return Collection<int, Program>
      */
     public static function getAllExternal(): Collection
@@ -264,6 +266,8 @@ enum Program: string
     }
 
     /**
+     * Все программы школы
+     *
      * @return Collection<int, Program>
      */
     public static function getAllSchool(): Collection
@@ -277,22 +281,21 @@ enum Program: string
             ]));
     }
 
-    public function getSchool() {}
-
-    // /**
-    //  * @return array<int, Program>
-    //  */
-    // public static function getAllSchool(): array
-    // {
-    //     return collect(Program::cases())
-    //         ->filter(fn (Program $p) => in_array($p->getDirection(), [
-    //             Direction::school8,
-    //             Direction::school9,
-    //             Direction::school10,
-    //             Direction::school11,
-    //         ]))
-    //         ->all();
-    // }
+    /**
+     * Все программы курсов
+     *
+     * @return Collection<int, Program>
+     */
+    public static function getAllCourses(): Collection
+    {
+        return collect(Program::cases())
+            ->filter(fn (Program $p) => in_array($p->getDirection(), [
+                Direction::courses9,
+                Direction::courses10,
+                Direction::courses11,
+                Direction::coursesExtra,
+            ]));
+    }
 
     public function getHumanName(): string
     {

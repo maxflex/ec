@@ -400,6 +400,7 @@ declare global {
     version: {
       id: number
       date: string
+      has_courses_program: boolean
       payments: Array<{
         id: number
         date: string

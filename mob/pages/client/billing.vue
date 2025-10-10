@@ -14,6 +14,21 @@ function totalSum(payments: Array<{ sum: number, is_return?: boolean }>) {
   )
 }
 
+// остаток по договору - осталось к оплате
+const toPayLeft = computed<number>(() =>
+  totalSum(selectedContract.value.version.payments) - totalSum(selectedContract.value.payments),
+)
+
+const isSbpPaymentAvailable = computed<boolean>(() => {
+  if (selectedContract.value.year < currentAcademicYear()) {
+    return false
+  }
+  if (toPayLeft.value <= 0) {
+    return false
+  }
+  return selectedContract.value.version.has_courses_program
+})
+
 async function pay() {
   if (!amount.value) {
     return
@@ -115,18 +130,14 @@ async function pay() {
           по договору
         </div>
         <div>
-          <b v-if="totalSum(selectedContract.version.payments) - totalSum(selectedContract.payments)">
-            {{ formatPrice(totalSum(selectedContract.version.payments) - totalSum(selectedContract.payments)) }}
-            руб.
-          </b>
-          <b v-else class="text-gray">
-            0 руб.
+          <b :class="{ 'text-gray': toPayLeft <= 0 }">
+            {{ formatPrice(toPayLeft, true) }} руб.
           </b>
         </div>
       </div>
     </div>
-    <!-- <div class="billing-qr">
-      <div class="billing-qr__title">
+    <div v-if="isSbpPaymentAvailable" class="billing-sbp">
+      <div class="billing-sbp__title">
         <img src="/img/sbp.svg" />
         Оплатить через СБП
       </div>
@@ -145,7 +156,7 @@ async function pay() {
       <v-btn color="primary" :loading="loading" @click="pay()">
         Оплатить
       </v-btn>
-    </div> -->
+    </div>
   </UiIndexPage>
 </template>
 
@@ -196,7 +207,7 @@ async function pay() {
   }
 }
 
-.billing-qr {
+.billing-sbp {
   margin-top: 40px;
   padding: 20px 20px 100px;
   background: rgba(var(--v-theme-primary), 0.1);
