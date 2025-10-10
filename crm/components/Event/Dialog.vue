@@ -145,12 +145,6 @@ defineExpose({ create, edit })
         <div>
           <FileUploader v-model="item.file" folder="events" label="прикрепить изображение" />
         </div>
-        <div>
-          <v-checkbox
-            v-model="item.is_private"
-            label="Конфиденциальное"
-          />
-        </div>
       </div>
     </div>
   </v-dialog>

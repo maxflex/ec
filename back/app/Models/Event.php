@@ -11,13 +11,11 @@ class Event extends Model
 {
     protected $fillable = [
         'date', 'time', 'name', 'description',
-        'duration', 'year',
-        'is_private', 'file',
+        'duration', 'year', 'file',
     ];
 
     protected $casts = [
         'file' => 'array',
-        'is_private' => 'boolean',
         'duration' => 'int',
     ];
 

@@ -7,7 +7,6 @@ use App\Http\Resources\EventResource;
 use App\Models\Client;
 use App\Models\Event;
 use App\Models\Teacher;
-use App\Models\User;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
@@ -28,11 +27,6 @@ class EventController extends Controller
                 date ASC,
                 time ASC
             ');
-
-        // конфиденциальные события видны только админам
-        if (get_class(auth()->user()) !== User::class) {
-            $query->where('is_private', false);
-        }
 
         $this->filter($request, $query);
 

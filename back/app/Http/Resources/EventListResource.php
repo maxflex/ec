@@ -19,9 +19,8 @@ class EventListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'date', 'name', 'time', 'time_end',
-            'description', 'is_private', 'telegram_lists_count',
-            'file',
+            'date', 'name', 'time', 'time_end', 'description',
+            'telegram_lists_count', 'file',
         ], [
             'user' => new PersonResource($this->user),
             'participant' => $this->whenLoaded(

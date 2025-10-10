@@ -84,11 +84,6 @@ function getParticipantsCount(item: EventListResource): number {
           {{ item.telegram_lists_count }} рассылок
         </span>
       </div>
-      <div style="width: 140px; flex: initial">
-        <span v-if="item.is_private" class="text-purple">
-          конфиденциальное
-        </span>
-      </div>
     </div>
   </div>
 </template>

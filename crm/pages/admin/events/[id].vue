@@ -78,9 +78,6 @@ nextTick(loadData)
         <h1 class="event__header">
           <div>
             {{ item.name }}
-            <v-chip density="compact">
-              {{ item.is_private ? 'конфиденциальное' : 'публичное' }}
-            </v-chip>
             <v-btn
               variant="plain"
               icon="$edit"
