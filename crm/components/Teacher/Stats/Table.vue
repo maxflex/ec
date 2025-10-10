@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TeacherStats, TeacherStatsField, TeacherStatsItem, TeacherStatsMode } from '.'
 import { endOfWeek, format, getMonth } from 'date-fns'
-import { labels } from '.'
+import { grayFields, labels, tooltips } from '.'
 
 const { stats, mode } = defineProps<{
   stats: TeacherStats
@@ -59,7 +59,15 @@ function formatDateMode(d: string) {
       <div class="text-gray">
         <!-- дата -->
       </div>
-      <div v-for="(label, key) in labels" :key="key" :class="`teacher-stats-table--${key}`" v-html="label">
+      <div v-for="(label, key) in labels" :key="key" :class="`cursor-default teacher-stats-table--${key}`">
+        <v-tooltip location="bottom">
+          <template #activator="{ props }">
+            <span v-bind="props">
+              {{ label }}
+            </span>
+          </template>
+          {{ tooltips[key] }}
+        </v-tooltip>
       </div>
     </div>
     <div
@@ -76,6 +84,9 @@ function formatDateMode(d: string) {
       </div>
       <div v-for="(_, key) in labels" :key="key" :class="`teacher-stats-table--${key}`">
         {{ formatField(item, key) }}
+        <span v-if="key in grayFields && item[key]" class="teacher-stats-table__gray text-gray ml-2">
+          {{ formatField(item, grayFields[key]!) }}
+        </span>
       </div>
     </div>
     <div class="teacher-stats-table__footer">
@@ -123,10 +134,6 @@ function formatDateMode(d: string) {
         border-right: thin solid rgb(var(--v-theme-border));
         z-index: 0 !important;
       }
-
-      &:not(:first-child) {
-        min-width: 130px;
-      }
     }
   }
 
@@ -160,6 +167,10 @@ function formatDateMode(d: string) {
     }
   }
 
+  &__gray {
+    color: var(--v-theme-gray);
+  }
+
   &--lessons_conducted_next_day,
   &--client_lessons_online_share,
   &--retention_share,
@@ -167,20 +178,83 @@ function formatDateMode(d: string) {
     border-right: thin solid rgb(var(--v-theme-border));
   }
 
+  // ОПОЗДАНИЯ ПРОВОДКИ
   &--lessons_conducted {
-    min-width: 80px !important;
+    min-width: 70px;
+  }
+  &--lessons_conducted_next_day {
+    min-width: 80px;
   }
 
+  // ПОСЕЩАЕМОСТЬ
+  &--client_lessons {
+    min-width: 70px;
+  }
+  &--client_lessons_avg {
+    min-width: 80px;
+  }
+  &--client_lessons_absent {
+    min-width: 70px;
+  }
+  &--client_lessons_late {
+    min-width: 80px;
+  }
+  &--client_lessons_online {
+    min-width: 80px;
+  }
+  &--client_lessons_absent_share {
+    min-width: 90px;
+  }
+  &--client_lessons_late_share {
+    min-width: 90px;
+  }
+  &--client_lessons_online_share {
+    min-width: 90px;
+  }
+
+  // УДЕРЖАНИЕ АУДИТОРИИ
   &--retention_new_students {
-    min-width: 80px !important;
+    min-width: 80px;
   }
-
   &--retention_stopped_students {
-    min-width: 100px !important;
+    min-width: 90px;
+  }
+  &--retention_share {
+    min-width: 110px;
   }
 
-  &--retention_share {
-    min-width: 120px !important;
+  // ВЕДОМОСТЬ
+  &--lessons_with_homework {
+    min-width: 60px;
+  }
+  &--lessons_with_files {
+    min-width: 70px;
+  }
+  &--client_lessons_scores {
+    min-width: 70px;
+  }
+  &--client_lessons_scores_avg {
+    min-width: 90px;
+  }
+  &--client_lessons_score_comments {
+    min-width: 100px;
+  }
+  &--client_lessons_comments {
+    min-width: 80px;
+  }
+
+  // ОТЧЁТЫ
+  &--reports_published {
+    min-width: 80px;
+  }
+  &--reports_published_no_price {
+    min-width: 100px;
+  }
+  &--reports_fill_avg {
+    min-width: 90px;
+  }
+  &--reports_grade_avg {
+    min-width: 100px;
   }
 }
 </style>

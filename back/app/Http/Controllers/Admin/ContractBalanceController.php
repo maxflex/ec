@@ -16,11 +16,14 @@ class ContractBalanceController extends Controller
     public function __invoke(Request $request)
     {
         $request->validate([
-            'year' => ['required', 'numeric', 'min:2015']
+            'year' => ['required', 'numeric', 'min:2015'],
         ]);
 
         $contracts = Contract::query()
-            ->with(['client', 'payments'])
+            ->with('payments')
+            ->with('client', fn ($q) => $q->withCount([
+                'comments' => fn ($q) => $q->where('extra', 'contract-balances'),
+            ]))
             ->where('year', $request->year)
             ->get()
             ->sortBy(['client.last_name', 'client.first_name', 'client.middle_name'])

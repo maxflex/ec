@@ -21,8 +21,13 @@ const { item } = defineProps<{
         ГР-{{ item.group.id }}
       </NuxtLink>
     </div>
-    <div v-if="item.teacher" style="width: 140px">
-      {{ formatNameInitials(item.teacher) }}
+    <div v-if="item.teacher" style="width: 160px; line-height: 20px;" class="vf-1">
+      <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }" @click.stop>
+        {{ formatNameInitials(item.teacher) }}
+      </NuxtLink>
+      <div v-if="item.is_substitute" class="text-gray" style="font-size: 14px">
+        замена преподавателя
+      </div>
     </div>
     <div style="width: 110px">
       {{ ProgramShortLabel[item.group.program] }}

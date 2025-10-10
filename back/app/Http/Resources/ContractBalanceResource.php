@@ -15,6 +15,7 @@ class ContractBalanceResource extends JsonResource
             'company',
         ], [
             'client' => new PersonResource($this->client),
+            'comments_count' => $this->client->comments_count,
             'active_version_sum' => $this->active_version->sum,
             'latest_payment_date' => $this->payments->max('date'),
             ...$this->balances,

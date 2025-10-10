@@ -3,7 +3,6 @@ import {
   mdiBookOpenOutline,
   mdiBookOpenVariant,
   mdiPaperclip,
-  mdiSwapHorizontal,
 } from '@mdi/js'
 
 const { item } = defineProps<{
@@ -68,10 +67,13 @@ const isConductDisabled = item.status !== 'conducted'
     <div style="width: 80px">
       <GroupLink :item="item.group" />
     </div>
-    <div v-if="item.teacher" style="width: 150px">
+    <div v-if="item.teacher" style="width: 150px; line-height: 20px;" class="vf-1">
       <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }" @click.stop>
         {{ formatNameInitials(item.teacher) }}
       </NuxtLink>
+      <div v-if="item.is_substitute" class="text-gray" style="font-size: 14px">
+        замена преподавателя
+      </div>
     </div>
     <div style="width: 110px">
       {{ ProgramShortLabel[item.group.program] }}
@@ -96,9 +98,6 @@ const isConductDisabled = item.status !== 'conducted'
       </div>
       <div>
         <v-icon v-if="item.has_files" :icon="mdiPaperclip" />
-      </div>
-      <div>
-        <v-icon v-if="item.is_substitute" :icon="mdiSwapHorizontal" />
       </div>
     </div>
 

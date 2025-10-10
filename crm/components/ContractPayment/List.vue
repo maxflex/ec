@@ -44,12 +44,7 @@ const emit = defineEmits<{
         </div>
       </div>
       <div style="width: 200px">
-        <span v-if="item.is_confirmed" class="text-success">
-          подтверждён
-        </span>
-        <span v-else class="text-gray">
-          не подтверждён
-        </span>
+        <UiPaymentConfirm :item="item" />
       </div>
       <div>
         {{ formatPrice(item.sum) }} руб.

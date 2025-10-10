@@ -101,39 +101,113 @@ export interface TeacherStats {
 
 export type TeacherStatsField = keyof TeacherStatsItem
 
-export const labels: Record<TeacherStatsField, string> = {
+export const labels: Partial<Record<TeacherStatsField, string>> = {
   // ОПОЗДАНИЯ ПРОВОДКИ
-  lessons_conducted: 'проведено',
-  lessons_conducted_next_day: 'с опозданием',
+  lessons_conducted: 'пров.',
+  lessons_conducted_next_day: 'опозд.',
 
   // ПОСЕЩАЕМОСТЬ
-  client_lessons: 'посещений',
-  client_lessons_avg: 'посещений сред.',
-  client_lessons_absent: 'пропуски',
-  client_lessons_late: 'опоздания',
-  client_lessons_online: 'удалёнка',
-  client_lessons_absent_share: '% пропусков',
-  client_lessons_late_share: '% опозданий',
-  client_lessons_online_share: '% удалёнки',
+  client_lessons: 'посещ.',
+  client_lessons_avg: 'сред.уч.',
+  client_lessons_absent: 'проп.',
+  client_lessons_late: 'опозд.',
+  client_lessons_online: 'удал.',
+  // client_lessons_absent_share: '%проп.',
+  // client_lessons_late_share: '%опозд.',
+  // client_lessons_online_share: '%удал.',
 
   // УДЕРЖАНИЕ АУДИТОРИИ
   retention_new_students: 'новых',
-  retention_stopped_students: 'ушедших',
-  retention_share: '% удержания',
+  retention_stopped_students: 'ушедш.',
+  // retention_share: '%удерж.',
 
   // ВЕДОМОСТЬ
-  lessons_with_homework: 'с дз',
-  lessons_with_files: 'с файлами',
-  client_lessons_scores: 'оценок',
-  client_lessons_scores_avg: 'средн. оценка',
-  client_lessons_score_comments: 'комм. к оценкам',
-  client_lessons_comments: 'комм. общий',
+  lessons_with_homework: 'дз',
+  lessons_with_files: 'файлы',
+  client_lessons_scores: 'оцен.',
+  client_lessons_scores_avg: 'ср.оц.',
+  client_lessons_score_comments: 'комм.оц.',
+  client_lessons_comments: 'комм.',
 
   // ОТЧЁТЫ
-  reports_published: 'отчётов',
-  reports_published_no_price: 'без начисл.',
-  reports_fill_avg: 'заполн. %',
-  reports_grade_avg: 'оценка отчёта',
+  reports_published: 'отч.',
+  reports_published_no_price: 'безнач.',
+  reports_fill_avg: '%зап.',
+  reports_grade_avg: 'оц.отч.',
+
+  // // ОПОЗДАНИЯ ПРОВОДКИ
+  // lessons_conducted: 'проведено',
+  // lessons_conducted_next_day: 'с опозданием',
+
+  // // ПОСЕЩАЕМОСТЬ
+  // client_lessons: 'посещений',
+  // client_lessons_avg: 'посещений сред.',
+  // client_lessons_absent: 'пропуски',
+  // client_lessons_late: 'опоздания',
+  // client_lessons_online: 'удалёнка',
+  // client_lessons_absent_share: '% пропусков',
+  // client_lessons_late_share: '% опозданий',
+  // client_lessons_online_share: '% удалёнки',
+
+  // // УДЕРЖАНИЕ АУДИТОРИИ
+  // retention_new_students: 'новых',
+  // retention_stopped_students: 'ушедших',
+  // retention_share: '% удержания',
+
+  // // ВЕДОМОСТЬ
+  // lessons_with_homework: 'с дз',
+  // lessons_with_files: 'с файлами',
+  // client_lessons_scores: 'оценок',
+  // client_lessons_scores_avg: 'средн. оценка',
+  // client_lessons_score_comments: 'комм. к оценкам',
+  // client_lessons_comments: 'комм. общий',
+
+  // // ОТЧЁТЫ
+  // reports_published: 'отчётов',
+  // reports_published_no_price: 'без начисл.',
+  // reports_fill_avg: 'заполн. %',
+  // reports_grade_avg: 'оценка отчёта',
+}
+
+export const tooltips: Partial<Record<TeacherStatsField, string>> = {
+  // ОПОЗДАНИЯ ПРОВОДКИ
+  lessons_conducted: 'Количество проведённых занятий всего',
+  lessons_conducted_next_day: 'Количество занятий, которые были проведены с опозданием (не в день занятия)',
+
+  // ПОСЕЩАЕМОСТЬ
+  client_lessons: 'Суммарное количество посещений',
+  client_lessons_avg: 'Среднее количество учеников на одном проведённом занятии',
+  client_lessons_absent: 'Количество пропусков («не был»).',
+  client_lessons_late: 'Количество опозданий («опоздал» + «опоздал дист.»).',
+  client_lessons_online: 'Количество посещений в формате онлайн («дист.» + «опоздал дист.»).',
+  client_lessons_absent_share: 'Доля пропусков = пропуски / общее число посещений × 100%.',
+  client_lessons_late_share: 'Доля опозданий = опоздания / общее число посещений × 100%.',
+  client_lessons_online_share: 'Доля онлайн = онлайн / общее число посещений × 100%.',
+
+  // УДЕРЖАНИЕ АУДИТОРИИ
+  retention_new_students: 'Количество учеников, которые впервые пришли к преподавателю в этот день (по программе).',
+  retention_stopped_students: 'Количество учеников, которые ушли (последний день посещения).',
+  retention_share: 'Доля удержания = активные ученики / общее количество учеников × 100%.',
+
+  // ВЕДОМОСТЬ
+  lessons_with_homework: 'Количество занятий, где было задано домашнее задание.',
+  lessons_with_files: 'Количество занятий, к которым были прикреплены файлы.',
+  client_lessons_scores: 'Количество выставленных оценок по занятиям.',
+  client_lessons_scores_avg: 'Средняя оценка по всем выставленным оценкам.',
+  client_lessons_score_comments: 'Количество комментариев к отдельным оценкам.',
+  client_lessons_comments: 'Количество общих комментариев к занятиям.',
+
+  // ОТЧЁТЫ
+  reports_published: 'Количество отчётов со статусом «опубликовано».',
+  reports_published_no_price: 'Количество опубликованных отчётов без начисления.',
+  reports_fill_avg: 'Средний процент заполненности отчётов.',
+  reports_grade_avg: 'Средняя оценка по опубликованным отчётам.',
+}
+
+export const grayFields: Partial<Record<TeacherStatsField, TeacherStatsField>> = {
+  client_lessons_absent: 'client_lessons_absent_share',
+  client_lessons_late: 'client_lessons_late_share',
+  client_lessons_online: 'client_lessons_online_share',
 }
 
 /**

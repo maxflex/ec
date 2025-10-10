@@ -59,8 +59,13 @@ const isConductDisabled = isEditDisabled || item.status === 'cancelled'
         ГР-{{ item.group.id }}
       </NuxtLink>
     </div>
-    <div v-if="item.teacher" style="width: 150px">
-      {{ formatNameInitials(item.teacher) }}
+    <div v-if="item.teacher" style="width: 180px; line-height: 20px;" class="vf-1">
+      <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }" @click.stop>
+        {{ formatNameInitials(item.teacher) }}
+      </NuxtLink>
+      <div v-if="item.is_substitute" class="text-gray" style="font-size: 14px">
+        замена преподавателя
+      </div>
     </div>
     <div style="width: 140px">
       {{ ProgramShortLabel[item.group.program] }}

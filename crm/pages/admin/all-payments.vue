@@ -122,12 +122,7 @@ function getId(item: AllPaymentResource) {
           </span>
         </div>
         <div style="width: 140px; flex: initial">
-          <span v-if="item.is_confirmed" class="text-success">
-            подтверждён
-          </span>
-          <span v-else class="text-gray">
-            не подтверждён
-          </span>
+          <UiPaymentConfirm :item="item" />
         </div>
       </div>
     </div>

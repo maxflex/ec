@@ -7,6 +7,7 @@ interface ContractBalance {
   client_lessons: number
   active_version_sum: number
   contract_payments: number
+  comments_count: number
   remainder: number
   to_pay: number
 }
@@ -120,6 +121,7 @@ watch(filters.value, () => (sort.value = undefined))
             <span v-html="h.title" />
             <v-icon v-if="sort?.field === h.field" icon="$collapse" />
           </th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -138,6 +140,19 @@ watch(filters.value, () => (sort.value = undefined))
               : formatPrice(item[field] as number)
             }}
           </td>
+          <td class="contract-balances-table__comment">
+            <div>
+              <CommentBtn
+                color="gray"
+                :size="42"
+                :class="{ 'no-items': item.comments_count === 0 }"
+                :count="item.comments_count"
+                :entity-id="item.id"
+                :entity-type="EntityTypeValue.client"
+                extra
+              />
+            </div>
+          </td>
         </tr>
       </tbody>
       <tfoot>
@@ -147,6 +162,7 @@ watch(filters.value, () => (sort.value = undefined))
           <td v-for="{ field } in tableFields" :key="field">
             {{ field === 'latest_payment_date' ? '' : formatPrice(getTotal(field)) }}
           </td>
+          <td></td>
         </tr>
       </tfoot>
     </v-table>
@@ -174,7 +190,8 @@ watch(filters.value, () => (sort.value = undefined))
       //  width: 150px;
       //}
       //&:nth-child(6),
-      &:nth-child(7) {
+      &:nth-child(7),
+      &:nth-child(9) {
         border-left: 1px solid rgb(var(--v-theme-border));
       }
     }
@@ -188,6 +205,18 @@ watch(filters.value, () => (sort.value = undefined))
   tfoot td {
     font-weight: 500;
     border-top-width: 1px !important;
+  }
+
+  &__comment {
+    width: 80px;
+    position: relative;
+
+    & > div {
+      width: 44px;
+      position: absolute;
+      left: 8px;
+      top: 8px;
+    }
   }
 }
 </style>

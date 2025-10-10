@@ -57,18 +57,7 @@ function onDeleted(tp: TeacherPaymentResource) {
         {{ formatDate(payment.date) }}
       </div>
       <div>
-        <span
-          v-if="payment.is_confirmed"
-          class="text-success"
-        >
-          подтверждён
-        </span>
-        <span
-          v-else
-          class="text-gray"
-        >
-          не подтверждён
-        </span>
+        <UiPaymentConfirm :item="payment" />
       </div>
     </div>
     <TeacherPaymentDialog

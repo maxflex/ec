@@ -3,7 +3,6 @@ import {
   mdiBookOpenOutline,
   mdiBookOpenVariant,
   mdiPaperclip,
-  mdiSwapHorizontal,
 } from '@mdi/js'
 
 const { item } = defineProps<{
@@ -50,10 +49,13 @@ const isConductDisabled = item.status !== 'conducted'
     <div style="width: 90px">
       <GroupLink :item="item.group" />
     </div>
-    <div v-if="item.teacher" style="width: 140px">
+    <div v-if="item.teacher" style="width: 150px; line-height: 20px;" class="vf-1">
       <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }" @click.stop>
         {{ formatNameInitials(item.teacher) }}
       </NuxtLink>
+      <div v-if="item.is_substitute" class="text-gray" style="font-size: 14px">
+        замена преподавателя
+      </div>
     </div>
     <div style="width: 125px">
       {{ ProgramShortLabel[item.group.program] }}
@@ -61,8 +63,7 @@ const isConductDisabled = item.status !== 'conducted'
     <div style="width: 60px">
       <GroupStudentsCount v-if="item.status !== 'cancelled'" :item="item" />
     </div>
-
-    <div style="width: 100px" class="lesson-item__icons">
+    <div style="width: 80px" class="lesson-item__icons">
       <div>
         <v-icon v-if="item.topic" :icon="mdiBookOpenOutline" :class="{ 'opacity-3': !item.is_topic_verified }" />
       </div>
@@ -71,9 +72,6 @@ const isConductDisabled = item.status !== 'conducted'
       </div>
       <div>
         <v-icon v-if="item.has_files" :icon="mdiPaperclip" />
-      </div>
-      <div>
-        <v-icon v-if="item.is_substitute" :icon="mdiSwapHorizontal" />
       </div>
     </div>
     <div style="width: 70px">

@@ -54,10 +54,13 @@ const isConductDisabled = item.status !== 'conducted'
     <div style="width: 120px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
-    <div v-if="item.teacher" style="width: 180px">
+    <div v-if="item.teacher" style="width: 180px; line-height: 20px;" class="vf-1">
       <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }" @click.stop>
         {{ formatNameInitials(item.teacher) }}
       </NuxtLink>
+      <div v-if="item.is_substitute" class="text-gray" style="font-size: 14px">
+        замена преподавателя
+      </div>
     </div>
     <div style="width: 125px">
       {{ ProgramShortLabel[item.group.program] }}
@@ -75,9 +78,6 @@ const isConductDisabled = item.status !== 'conducted'
       </div>
       <div>
         <v-icon v-if="item.has_files" :icon="mdiPaperclip" />
-      </div>
-      <div>
-        <v-icon v-if="item.is_substitute" :icon="mdiSwapHorizontal" />
       </div>
     </div>
     <div style="width: 70px">
