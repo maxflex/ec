@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Company;
+use App\Traits\HasComments;
 use App\Traits\IsSearchable;
 use App\Utils\Balance\Balance;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Contract extends Model
 {
-    use IsSearchable;
+    use HasComments, IsSearchable;
 
     public $timestamps = false;
 

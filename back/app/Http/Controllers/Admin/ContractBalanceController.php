@@ -20,10 +20,8 @@ class ContractBalanceController extends Controller
         ]);
 
         $contracts = Contract::query()
-            ->with('payments')
-            ->with('client', fn ($q) => $q->withCount([
-                'comments' => fn ($q) => $q->where('extra', 'contract-balances'),
-            ]))
+            ->with(['payments', 'client'])
+            ->withCount(['comments' => fn ($q) => $q->where('extra', 'contract-balances')])
             ->where('year', $request->year)
             ->get()
             ->sortBy(['client.last_name', 'client.first_name', 'client.middle_name'])

@@ -148,7 +148,7 @@ watch(filters.value, () => (sort.value = undefined))
                 :class="{ 'no-items': item.comments_count === 0 }"
                 :count="item.comments_count"
                 :entity-id="item.id"
-                :entity-type="EntityTypeValue.client"
+                :entity-type="EntityTypeValue.contract"
                 extra
               />
             </div>
