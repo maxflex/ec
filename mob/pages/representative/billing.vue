@@ -23,6 +23,9 @@ const isSbpPaymentAvailable = computed<boolean>(() => {
   if (selectedContract.value.year < currentAcademicYear()) {
     return false
   }
+  if (selectedContract.value.company === 'ooo') {
+    return false
+  }
   if (toPayLeft.value <= 0) {
     return false
   }

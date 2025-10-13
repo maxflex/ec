@@ -8,6 +8,7 @@ enum ContractPaymentMethod: string
     case cash = 'cash';
     case bill = 'bill';
     case matcap = 'matcap';
+
     /**
      * СПБ касса
      */

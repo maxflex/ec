@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Pub;
 use App\Enums\ContractPaymentMethod;
 use App\Http\Controllers\Controller;
 use App\Models\Contract;
-use App\Models\ContractPayment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use YooKassa\Client;
@@ -79,12 +78,14 @@ class SbpController extends Controller
             logger(json_encode($payment, JSON_PRETTY_PRINT));
         }
 
-        $contract->payments()->create([
+        $contractPayment = $contract->payments()->make([
             'sum' => $amount,
             'date' => now()->format('Y-m-d'),
-            'method' => ContractPaymentMethod::sbp,
+            'method' => ContractPaymentMethod::sbpOnline,
             'sbp_id' => $payment->getId(),
         ]);
+
+        cache()->put('sbp-'.$payment->getId(), $contractPayment, now()->addHour());
 
         return [
             'url' => $payment->getConfirmation()->getConfirmationData(),
@@ -100,9 +101,9 @@ class SbpController extends Controller
             logger(json_encode($request->all(), JSON_PRETTY_PRINT));
         }
 
-        $contractPayment = ContractPayment::query()
-            ->where('sbp_id', $request->object['payment_id'] ?? $request->object['id'])
-            ->first();
+        $paymentId = $request->object['payment_id'] ?? $request->object['id'];
+
+        $contractPayment = cache()->get('sbp-'.$paymentId);
 
         if ($contractPayment === null) {
             return;
@@ -110,12 +111,12 @@ class SbpController extends Controller
 
         switch ($request->event) {
             case NotificationEventType::PAYMENT_SUCCEEDED:
-                $contractPayment->update(['is_confirmed' => true]);
+                $contractPayment->save();
                 break;
 
-            case NotificationEventType::PAYMENT_CANCELED:
-                $contractPayment->delete();
-                break;
+                // case NotificationEventType::PAYMENT_CANCELED:
+                //     $contractPayment->delete();
+                //     break;
 
             case NotificationEventType::REFUND_SUCCEEDED:
                 $refund = $contractPayment->replicate();
