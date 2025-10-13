@@ -1,28 +1,32 @@
 <script setup lang="ts">
 import type { TeacherStats, TeacherStatsField, TeacherStatsItem, TeacherStatsMode } from '.'
 import { endOfWeek, format, getMonth } from 'date-fns'
-import { grayFields, labels, tooltips } from '.'
+import { avgFields, grayFields, labels, percentFields, tooltips } from '.'
 
 const { stats, mode } = defineProps<{
   stats: TeacherStats
   mode: TeacherStatsMode
 }>()
 
-const percentFields: TeacherStatsField[] = [
-  'client_lessons_late_share',
-  'client_lessons_absent_share',
-  'client_lessons_online_share',
-  'retention_share',
-  'reports_fill_avg',
-]
-
 function formatField(item: TeacherStatsItem, field: TeacherStatsField): string {
   const value = item[field]
   if (!value) {
+    if (field === 'retention_left' && item.retention_share > 0) {
+      return '0'
+    }
+    if (field === 'retention_share' && item.retention_left > 0) {
+      return `${Math.round(100 - value)}%`
+    }
     return ''
   }
+  if (field === 'retention_share') {
+    return `${Math.round(100 - value)}%`
+  }
+  if (avgFields.includes(field)) {
+    return `${value.toFixed(1)}`
+  }
   if (percentFields.includes(field)) {
-    return `${value.toFixed(1)}%`
+    return `${Math.round(value)}%`
   }
 
   return formatPrice(value).toString()
@@ -60,7 +64,7 @@ function formatDateMode(d: string) {
         <!-- дата -->
       </div>
       <div v-for="(label, key) in labels" :key="key" :class="`cursor-default teacher-stats-table--${key}`">
-        <v-tooltip location="bottom">
+        <v-tooltip location="bottom" :max-width="300">
           <template #activator="{ props }">
             <span v-bind="props">
               {{ label }}
@@ -84,7 +88,7 @@ function formatDateMode(d: string) {
       </div>
       <div v-for="(_, key) in labels" :key="key" :class="`teacher-stats-table--${key}`">
         {{ formatField(item, key) }}
-        <span v-if="key in grayFields && item[key]" class="teacher-stats-table__gray text-gray ml-2">
+        <span v-if="key in grayFields" class="teacher-stats-table__gray">
           {{ formatField(item, grayFields[key]!) }}
         </span>
       </div>
@@ -95,6 +99,9 @@ function formatDateMode(d: string) {
       </div>
       <div v-for="(_, key) in labels" :key="key" :class="`teacher-stats-table--${key}`">
         {{ formatField(stats.totals, key) }}
+        <span v-if="key in grayFields" class="teacher-stats-table__gray">
+          {{ formatField(stats.totals, grayFields[key]!) }}
+        </span>
       </div>
     </div>
   </div>
@@ -168,13 +175,15 @@ function formatDateMode(d: string) {
   }
 
   &__gray {
-    color: var(--v-theme-gray);
+    color: rgb(var(--v-theme-gray));
+    margin-left: 6px;
+    font-size: 12px;
   }
 
   &--lessons_conducted_next_day,
-  &--client_lessons_online_share,
-  &--retention_share,
-  &--client_lessons_comments {
+  &--client_lessons_online,
+  &--retention_left,
+  &--comments {
     border-right: thin solid rgb(var(--v-theme-border));
   }
 
@@ -213,14 +222,11 @@ function formatDateMode(d: string) {
   }
 
   // УДЕРЖАНИЕ АУДИТОРИИ
-  &--retention_new_students {
+  &--retention_new {
     min-width: 80px;
   }
-  &--retention_stopped_students {
+  &--retention_left {
     min-width: 90px;
-  }
-  &--retention_share {
-    min-width: 110px;
   }
 
   // ВЕДОМОСТЬ
@@ -230,16 +236,16 @@ function formatDateMode(d: string) {
   &--lessons_with_files {
     min-width: 70px;
   }
-  &--client_lessons_scores {
+  &--scores {
     min-width: 70px;
   }
-  &--client_lessons_scores_avg {
+  &--scores_avg {
     min-width: 90px;
   }
-  &--client_lessons_score_comments {
+  &--scores_comments {
     min-width: 100px;
   }
-  &--client_lessons_comments {
+  &--comments {
     min-width: 80px;
   }
 

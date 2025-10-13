@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import type { GroupListResource, GroupResource } from '.'
 import { mdiArrowRightThin } from '@mdi/js'
 
 const { item } = defineProps<{
   item: GroupListResource | GroupResource
-  // складывать бесплатные занятия
+  /**
+   * Суммировать бесплатные занятия
+   */
   sumFree?: boolean
 }>()
 </script>

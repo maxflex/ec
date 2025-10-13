@@ -63,17 +63,22 @@ class TeacherStatsItem
     /**
      * Количество детей, начавших заниматься у преподавателя в конфигурации client_ID*teacher_ID*program*year
      */
-    public int $retention_new_students = 0;
+    public int $retention_new = 0;
 
     /**
      * Количество детей, прекративших заниматься (определяется в дату последнего занятия в client_lessons) в конфигурации client_ID*teacher_ID*program*year
      */
-    public int $retention_stopped_students = 0;
+    public int $retention_left = 0;
 
     /**
-     * Доля накоплением
+     * Удержание аудитории %
      */
     public float $retention_share = 0;
+
+    /**
+     * Ушло (100% – удержание аудитории%)
+     */
+    // public float $retention_left_share = 0;
 
     // ВЕДОМОСТЬ
 
@@ -90,22 +95,27 @@ class TeacherStatsItem
     /**
      * Количество выставленных оценок
      */
-    public int $client_lessons_scores = 0;
+    public int $scores = 0;
 
     /**
      * Средняя оценка по занятиям
      */
-    public float $client_lessons_scores_avg = 0;
+    public float $scores_avg = 0;
+
+    /**
+     * Сумма оценок по занятиям (для подсчета среднего)
+     */
+    public float $scores_sum = 0;
 
     /**
      * Количество оставленных комментариев к оценкам
      */
-    public int $client_lessons_score_comments = 0;
+    public int $scores_comments = 0;
 
     /**
      * Количество оставленных общих комментариев
      */
-    public int $client_lessons_comments = 0;
+    public int $comments = 0;
 
     // ОТЧЕТЫ
 

@@ -115,12 +115,14 @@ readonly class TeacherStatsNew
 
             $activeToDate = $totalSeenSoFar - $stoppedSoFar;
 
-            $item->retention_new_students = $newToday;
-            $item->retention_stopped_students = $stoppedToday;
+            $item->retention_new = $newToday;
+            $item->retention_left = $stoppedToday;
+            $item->retention_share = share($activeToDate, $totalSeenSoFar, true);
+            // $item->retention_left_share = 100.0 - share($activeToDate, $totalSeenSoFar, true);
 
             if ($lessonsByDate->has($date)) {
                 $lessons = $lessonsByDate[$date];
-                $item->retention_share = share($activeToDate, $totalSeenSoFar, true);
+                // $item->retention_share = share($activeToDate, $totalSeenSoFar, true);
 
                 /**
                  * Опоздания проводки:
@@ -211,10 +213,11 @@ readonly class TeacherStatsNew
                         }
                     }
                 }
-                $item->client_lessons_scores = $scoresCount;
-                $item->client_lessons_scores_avg = share($scoresSum, $scoresCount);
-                $item->client_lessons_score_comments = $scoreCommentsCount;
-                $item->client_lessons_comments = $commentsCount;
+                $item->scores = $scoresCount;
+                $item->scores_sum = $scoresSum;
+                $item->scores_avg = share($scoresSum, $scoresCount);
+                $item->scores_comments = $scoreCommentsCount;
+                $item->comments = $commentsCount;
             }
 
             /**
@@ -310,11 +313,18 @@ readonly class TeacherStatsNew
             }
 
             switch ($key) {
-                case 'client_lessons_scores_avg':
+                case 'scores_avg':
+                    $totals->scores_avg = share(
+                        $totals->scores_sum,
+                        $totals->scores,
+                    );
+                    break;
+
                 case 'client_lessons_avg':
-                    // client_lessons_avg => client_lessons
-                    $key2 = str($key)->beforeLast('_')->value();
-                    $totals->{$key} = share($totals->{$key2}, $cnt->{$key2});
+                    $totals->client_lessons_avg = share(
+                        $totals->client_lessons,
+                        $totals->lessons_conducted
+                    );
                     break;
 
                 case 'client_lessons_late_share':

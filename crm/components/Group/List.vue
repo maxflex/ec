@@ -31,10 +31,10 @@ const { items, blurOthers } = defineProps<{
         <td width="140">
           {{ ProgramShortLabel[item.program] }}
         </td>
-        <td width="80">
+        <td width="70">
           <GroupFirstLessonDate :date="item.first_lesson_date" />
         </td>
-        <td width="140">
+        <td width="80">
           <UiIfSet :value="item.lesson_counts.conducted || item.lesson_counts.planned">
             <template #empty>
               занятий нет
@@ -42,7 +42,7 @@ const { items, blurOthers } = defineProps<{
             <GroupLessonCounts :item="item" />
           </UiIfSet>
         </td>
-        <td width="80">
+        <td width="60">
           <GroupStudentsCount :item="item" />
         </td>
         <td width="140">
@@ -61,7 +61,7 @@ const { items, blurOthers } = defineProps<{
           </div>
         </td>
         <td>
-          <div v-if="item.zoom && item.zoom.id">
+          <div v-if="item.zoom && item.zoom.id" class="text-truncate">
             {{ item.zoom.id }} <br />
             {{ item.zoom.password }}
           </div>
