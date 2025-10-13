@@ -72,7 +72,7 @@ const { isAdmin, isClient } = useAuthStore()
         <div v-else class="text-gray">
           не пройден
         </div>
-        <div v-if="isAdmin" class="text-gray">
+        <div v-if="isAdmin">
           создан {{ formatDateTime(t.created_at) }}
         </div>
       </div>
