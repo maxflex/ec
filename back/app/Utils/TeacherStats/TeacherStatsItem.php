@@ -87,10 +87,14 @@ class TeacherStatsItem
      */
     public int $lessons_with_homework = 0;
 
+    public float $lessons_with_homework_avg = 0;
+
     /**
      * Количество занятий, в которых есть хотя бы 1 прикрепленный файл
      */
     public int $lessons_with_files = 0;
+
+    public float $lessons_with_files_avg = 0;
 
     /**
      * Количество выставленных оценок
@@ -101,6 +105,12 @@ class TeacherStatsItem
      * Средняя оценка по занятиям
      */
     public float $scores_avg = 0;
+
+    /**
+     * Заполняемость оценок в процентах
+     * (все статусы client_lessons, кроме "не был" * 3 - это 100%)
+     */
+    public float $scores_share = 0;
 
     /**
      * Сумма оценок по занятиям (для подсчета среднего)

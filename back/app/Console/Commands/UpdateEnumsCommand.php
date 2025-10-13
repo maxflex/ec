@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\Cabinet;
+use App\Enums\ContractPaymentMethod;
 use App\Enums\RequestStatus;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
@@ -17,9 +17,16 @@ class UpdateEnumsCommand extends Command
 
     public function handle(): void
     {
-        $table = 'lessons';
-        $field = 'cabinet';
-        $enums = Cabinet::cases();
+        // таблица с enum-полем
+        $table = 'contract_payments';
+
+        // название enum-поля в таблице
+        $field = 'method';
+
+        // место enum-поля в таблице
+        $after = 'date';
+
+        $enums = ContractPaymentMethod::cases();
 
         Schema::table($table, function (Blueprint $table) {
             $table->string('new_enum');
@@ -43,11 +50,11 @@ class UpdateEnumsCommand extends Command
         //     ]);
         // конец обновление значений
 
-        Schema::table($table, function (Blueprint $table) use ($field, $enums) {
+        Schema::table($table, function (Blueprint $table) use ($field, $enums, $after) {
             $table->dropColumn($field);
             $table->enum($field, array_column($enums, 'value'))
-                ->default($enums[0]->value)
-                ->after('status')
+                // ->default($enums[0]->value)
+                ->after($after)
                 ->index();
         });
 

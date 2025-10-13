@@ -53,15 +53,19 @@ export interface TeacherStatsItem {
 
   /** Количество занятий, в которых дом.задание НЕ = NULL */
   lessons_with_homework: number
+  lessons_with_homework_avg: number
 
   /** Количество занятий, в которых есть хотя бы 1 прикрепленный файл */
   lessons_with_files: number
+  lessons_with_files_avg: number
 
   /** Количество выставленных оценок */
   scores: number
 
   /** Средняя оценка по занятиям */
   scores_avg: number
+
+  scores_share: number
 
   /** Количество оставленных комментариев к оценкам */
   scores_comments: number
@@ -209,14 +213,20 @@ export const grayFields: Partial<Record<TeacherStatsField, TeacherStatsField>> =
   client_lessons_late: 'client_lessons_late_share',
   client_lessons_online: 'client_lessons_online_share',
   retention_left: 'retention_share',
+  lessons_with_files: 'lessons_with_files_avg',
+  lessons_with_homework: 'lessons_with_homework_avg',
+  scores: 'scores_share',
 }
 
 export const percentFields: TeacherStatsField[] = [
   'client_lessons_late_share',
   'client_lessons_absent_share',
   'client_lessons_online_share',
+  'lessons_with_homework_avg',
+  'lessons_with_files_avg',
   'retention_share',
   'reports_fill_avg',
+  'scores_share'
 ]
 
 export const avgFields: TeacherStatsField[] = [

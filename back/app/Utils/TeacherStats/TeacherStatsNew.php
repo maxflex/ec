@@ -184,10 +184,14 @@ readonly class TeacherStatsNew
                 // уже есть
 
                 // количество занятий, в которых дом.задание НЕ = NULL
-                $item->lessons_with_homework = $lessons->whereNotNull('homework')->count();
+                $lessonsWithHomework = $lessons->whereNotNull('homework')->count();
+                $item->lessons_with_homework = $lessonsWithHomework;
+                $item->lessons_with_homework_avg = share($lessonsWithHomework, $lessonsConducted, true);
 
                 // количество занятий, в которых есть хотя бы 1 прикрепленный файл
-                $item->lessons_with_files = $lessons->where(fn (Lesson $l) => count($l->files) > 0)->count();
+                $lessonsWithFiles = $lessons->where(fn (Lesson $l) => count($l->files) > 0)->count();
+                $item->lessons_with_files = $lessonsWithFiles;
+                $item->lessons_with_files_avg = share($lessonsWithFiles, $lessonsConducted, true);
 
                 // количество выставленных оценок
                 // средняя оценка по занятиям
@@ -218,6 +222,12 @@ readonly class TeacherStatsNew
                 $item->scores_avg = share($scoresSum, $scoresCount);
                 $item->scores_comments = $scoreCommentsCount;
                 $item->comments = $commentsCount;
+                // (clientLessons - clientLessonsAbsent) * 3 - это 100%
+                $item->scores_share = share(
+                    $scoresCount,
+                    ($clientLessons - $clientLessonsAbsent) * 3,
+                    true
+                );
             }
 
             /**
@@ -317,6 +327,22 @@ readonly class TeacherStatsNew
                     $totals->scores_avg = share(
                         $totals->scores_sum,
                         $totals->scores,
+                    );
+                    break;
+
+                case 'lessons_with_homework_avg':
+                    $totals->lessons_with_homework_avg = share(
+                        $totals->lessons_with_homework,
+                        $totals->client_lessons,
+                        100
+                    );
+                    break;
+
+                case 'lessons_with_files_avg':
+                    $totals->lessons_with_files_avg = share(
+                        $totals->lessons_with_files,
+                        $totals->client_lessons,
+                        100
                     );
                     break;
 

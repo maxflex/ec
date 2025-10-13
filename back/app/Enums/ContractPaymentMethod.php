@@ -8,17 +8,15 @@ enum ContractPaymentMethod: string
     case cash = 'cash';
     case bill = 'bill';
     case matcap = 'matcap';
+    /**
+     * СПБ касса
+     */
     case sbp = 'sbp';
 
-    public static function fromOld(string $method): self
-    {
-        return match ($method) {
-            'card' => self::card,
-            'cash' => self::cash,
-            'bill' => self::bill,
-            'card_online' => self::matcap
-        };
-    }
+    /**
+     * СПБ онлайн
+     */
+    case sbpOnline = 'sbpOnline';
 
     public function getTitle(): string
     {
@@ -27,7 +25,8 @@ enum ContractPaymentMethod: string
             self::cash => 'наличные',
             self::bill => 'счёт',
             self::matcap => 'маткапитал',
-            self::sbp => 'СБП',
+            self::sbp => 'СБП касса',
+            self::sbpOnline => 'СБП онлайн',
         };
     }
 }
