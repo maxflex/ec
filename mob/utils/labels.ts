@@ -113,6 +113,7 @@ export const ProgramLabel = {
   izl9: 'собеседование',
   soch11: 'сочинение',
   engSpoken: 'разговорный английский',
+  orgHour: 'организационный час',
 } as const
 
 export const TelegramTemplateLabel = {
@@ -239,6 +240,7 @@ export const ProgramShortLabel = {
   rusExternal: 'Э-РУС',
   physExternal: 'Э-ФИЗ',
   chemExternal: 'Э-ХИМ',
+  orgHour: 'ОРГ-ЧАС',
 } as const
 
 export const BranchLabel = {

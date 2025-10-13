@@ -134,6 +134,8 @@ enum Program: string
     case engPract = 'engPract';
     case geoPract = 'geoPract';
 
+    case orgHour = 'orgHour';
+
     /**
      * Все программы экстерната
      *
@@ -262,6 +264,8 @@ enum Program: string
             self::rusExternal => Direction::external,
             self::physExternal => Direction::external,
             self::chemExternal => Direction::external,
+
+            default => Direction::coursesExtra,
         };
     }
 
@@ -425,6 +429,8 @@ enum Program: string
             self::geoExternal => 'география (ЕГЭ)',
             self::geoOgeSchool9 => 'география (ОГЭ)',
             self::geoPract => 'география (практикум)',
+
+            self::orgHour => 'организационный час',
         };
     }
 
@@ -545,6 +551,7 @@ enum Program: string
             self::geoSchool11 => '11 школа ГЕО',
             self::infPract => 'практикум ИНФ',
             self::geoPract => 'практикум ГЕО',
+            self::orgHour => 'орг час',
         };
     }
 
@@ -665,6 +672,7 @@ enum Program: string
             self::rusExternal => 'Э-РУС',
             self::physExternal => 'Э-ФИЗ',
             self::chemExternal => 'Э-ХИМ',
+            self::orgHour => 'ОРГ-ЧАС',
         };
     }
 
