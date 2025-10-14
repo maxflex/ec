@@ -169,8 +169,9 @@ function getFiltersKey(
     const route = useRoute()
     routeName = String(route.name)
   }
+  const prefix = 'filters-gz'
   return [
-    'filters-gl',
+    prefix,
     getEntityStringFromToken(),
     `${tabName || ''}${routeName}`,
   ].join('-')

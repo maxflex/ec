@@ -12,7 +12,7 @@ class Complaint extends Model
     use HasComments;
 
     protected $fillable = [
-        'client_id', 'teacher_id', 'program', 'text',
+        'client_id', 'teacher_id', 'program', 'text', 'year',
     ];
 
     protected $casts = [

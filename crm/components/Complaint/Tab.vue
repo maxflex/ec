@@ -7,17 +7,26 @@ const { clientId, teacherId } = defineProps<{
   clientId?: number
   teacherId?: number
 }>()
+const filters = useAvailableYearsFilter()
 const dialog = ref<InstanceType<typeof ComplaintDialog>>()
-const { items, indexPageData, reloadData } = useIndex<ComplaintListResource>(apiUrl, ref({}), {
-  staticFilters: {
-    teacher_id: teacherId,
-    client_id: clientId,
+const { items, indexPageData, reloadData, availableYears } = useIndex<ComplaintListResource>(
+  apiUrl,
+  filters,
+  {
+    loadAvailableYears: true,
+    staticFilters: {
+      teacher_id: teacherId,
+      client_id: clientId,
+    },
   },
-})
+)
 </script>
 
 <template>
   <UiIndexPage :data="indexPageData">
+    <template #filters>
+      <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
+    </template>
     <template v-if="clientId" #buttons>
       <v-btn
         color="primary"

@@ -7,6 +7,7 @@ export interface ComplaintResource {
   program?: Program
   text: string
   user?: PersonResource
+  year: Year
 }
 
 export interface ComplaintListResource {
@@ -23,4 +24,5 @@ export const modelDefaults: ComplaintResource = {
   id: newId(),
   client_id: -1,
   text: '',
+  year: currentAcademicYear(),
 }

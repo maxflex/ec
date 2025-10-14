@@ -12,7 +12,8 @@ use Illuminate\Http\Request;
 class ComplaintController extends Controller
 {
     protected $filters = [
-        'equals' => ['client_id', 'teacher_id', 'program'],
+        'equals' => ['client_id', 'teacher_id', 'year'],
+        'findInSet' => ['program'],
     ];
 
     public function index(Request $request)

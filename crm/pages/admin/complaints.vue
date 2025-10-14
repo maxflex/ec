@@ -1,18 +1,33 @@
 <script setup lang="ts">
 import type { ComplaintDialog } from '#components'
 import type { ComplaintListResource } from '~/components/Complaint'
-import type { Filters } from '~/components/Complaint/Filters.vue'
 import { apiUrl } from '~/components/Complaint'
 
-const filters = ref<Filters>({})
-const { items, indexPageData } = useIndex<ComplaintListResource>(apiUrl, filters)
+export interface Filters {
+  year?: Year
+  program: Program[]
+}
+
+const filters = ref<Filters>({
+  year: undefined,
+  program: [],
+})
+
+const { items, indexPageData, availableYears } = useIndex<ComplaintListResource>(apiUrl, filters, {
+  loadAvailableYears: true,
+})
+
 const dialog = ref<InstanceType<typeof ComplaintDialog>>()
 </script>
 
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <ComplaintFilters v-model="filters" />
+      <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
+      <ProgramSelector
+        v-model="filters.program"
+        multiple
+      />
     </template>
     <ComplaintList :items="items" @edit="dialog?.edit" />
   </UiIndexPage>

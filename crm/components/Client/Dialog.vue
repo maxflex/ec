@@ -196,6 +196,11 @@ defineExpose({ create, edit })
             v-model="item.is_risk"
             label="Группа риска"
           />
+
+          <v-checkbox
+            v-model="item.is_consult_agree"
+            label="Согласие на психологическое консультирование"
+          />
         </div>
 
         <div class="dialog-section__title">

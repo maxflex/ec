@@ -37,6 +37,7 @@ export interface ClientResource extends PersonWithPhotoResource, HasPhones {
   is_remote: boolean
   user?: PersonResource
   is_risk: boolean
+  is_consult_agree: boolean
   created_at?: string
   email?: string
   heard_about_us?: HeardAboutUs
@@ -62,6 +63,7 @@ export const modelDefaults: ClientResource = {
   photo_url: null,
   is_remote: false,
   is_risk: false,
+  is_consult_agree: false,
   entity_type: EntityTypeValue.client,
   mark_sheet: null,
   passport: {

@@ -25,6 +25,7 @@ class Client extends Person implements HasSchedule
         'first_name', 'last_name', 'middle_name', 'branches',
         'head_teacher_id', 'passport', 'is_remote', 'email',
         'heard_about_us', 'mark_sheet', 'is_risk', 'bio',
+        'is_consult_agree',
     ];
 
     protected $casts = [
@@ -32,6 +33,7 @@ class Client extends Person implements HasSchedule
         'schedule' => 'array',
         'is_remote' => 'bool',
         'is_risk' => 'bool',
+        'is_consult_agree' => 'bool',
         'mark_sheet' => 'array',
         'heard_about_us' => HeadAboutUs::class,
     ];

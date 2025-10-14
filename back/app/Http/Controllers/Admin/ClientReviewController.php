@@ -29,7 +29,7 @@ class ClientReviewController extends Controller
 
     public function store(ClientReviewRequest $request)
     {
-        $clientReview = ClientReview::create($request->all());
+        $clientReview = auth()->user()->clientReviews()->create($request->all());
 
         return new ClientReviewListResource($clientReview);
     }

@@ -16,6 +16,7 @@ class ClientResource extends JsonResource
             'head_teacher_id', 'photo_url', 'created_at',
             'passport', 'is_remote', 'directions', 'email',
             'heard_about_us', 'mark_sheet', 'is_risk', 'bio',
+            'is_consult_agree',
         ], [
             'current_lesson' => new CurrentLessonResource($this->current_lesson),
             'schedule' => $this->schedule[current_academic_year()] ?? null,

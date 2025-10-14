@@ -63,6 +63,13 @@ defineExpose(expose)
       Редактировать жалобу
     </template>
     <div>
+      <v-select
+        v-model="item.year"
+        label="Учебный год"
+        :items="selectItems(YearLabel)"
+      />
+    </div>
+    <div>
       <TeacherSelector v-model="item.teacher_id" :items="teachers" label="Преподаватель" />
     </div>
     <div>
