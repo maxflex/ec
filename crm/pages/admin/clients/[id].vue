@@ -12,11 +12,11 @@ const { tabs, selectedTab } = useTabs({
   markSheet: 'ведомость',
   grades: 'оценки',
   reports: 'отчёты',
-  webReviews: 'отзывы',
+  clientReviews: 'отзывы',
+  webReviews: 'отзывы на сайте',
   tests: 'тесты',
   logs: 'логи',
   clientComplaints: 'жалобы',
-  clientReviews: 'отзывы',
 })
 
 const route = useRoute()

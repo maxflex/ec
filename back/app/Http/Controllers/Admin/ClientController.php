@@ -38,7 +38,6 @@ class ClientController extends Controller
 
         if ($request->has('can_login')) {
             $query->canLogin();
-
         }
 
         return $this->handleIndexRequest($request, $query, ClientListResource::class);
@@ -126,7 +125,7 @@ class ClientController extends Controller
     // https://doc.ege-centr.ru/tasks/834
     protected function filterHeadTeacher($query, $headTeacherId)
     {
-        $query->where('head_teacher_id', $headTeacherId);
+        $query->where('head_teacher_id', $headTeacherId)->canLogin();
     }
 
     protected function filterYear($query, $year)

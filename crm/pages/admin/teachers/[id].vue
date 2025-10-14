@@ -18,7 +18,7 @@ const { tabs, selectedTab } = useTabs({
   clientReviews: 'отзывы',
   services: 'допуслуги',
   instructions: 'инструкции',
-  stats: 'статистика 2.0',
+  stats: 'статистика',
   headTeacherClients: 'классрук',
   headTeacherReports: 'отчёты кр',
 })
