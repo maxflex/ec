@@ -1,4 +1,4 @@
-export const apiUrl = `teacher-stats-new`
+export const apiUrl = `teacher-stats`
 
 export interface TeacherStatsItem {
   // ОПОЗДАНИЯ ПРОВОДКИ

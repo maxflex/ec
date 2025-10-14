@@ -24,8 +24,6 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('scout:reimport-all')->dailyAt('01:00');
 
-        $schedule->command('app:teacher-stats')->weeklyOn(7, '05:00');
-
         // first lesson
         $schedule->command('notification:first-lesson 2d')->dailyAt('20:00');
         $schedule->command('notification:first-lesson 1d')->dailyAt('20:00');

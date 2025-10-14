@@ -46,7 +46,7 @@ use App\Http\Controllers\Admin\TeacherBalanceController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TeacherPaymentController;
 use App\Http\Controllers\Admin\TeacherServiceController;
-use App\Http\Controllers\Admin\TeacherStatsNewController;
+use App\Http\Controllers\Admin\TeacherStatsController;
 use App\Http\Controllers\Admin\TelegramListController;
 use App\Http\Controllers\Admin\TelegramMessageController;
 use App\Http\Controllers\Admin\TestController;
@@ -163,13 +163,11 @@ Route::get('all-lessons', AllLessonsController::class);
 
 Route::get('reports/tabs', [ReportController::class, 'tabs']);
 
-Route::get('teachers/stats/{teacher}', [TeacherController::class, 'stats']);
-
 Route::apiResource('vacations', VacationController::class)->only(['index', 'store']);
 Route::apiResource('logs', LogController::class)->only(['index', 'store']);
 Route::apiResource('sms-messages', SmsMessageController::class)->only('index');
 
-Route::get('teacher-stats-new', TeacherStatsNewController::class);
+Route::get('teacher-stats', TeacherStatsController::class);
 Route::get('teeth', TeethController::class);
 Route::get('exams', ExamController::class);
 

@@ -28,8 +28,6 @@ class Teacher extends Person implements HasSchedule
         'is_split_balance' => 'bool',
         'is_published' => 'bool',
         'passport' => 'array',
-        'stats' => 'array',
-        'stats_new' => 'array',
         'schedule' => 'array',
     ];
 

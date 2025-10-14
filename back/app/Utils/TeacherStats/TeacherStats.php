@@ -5,7 +5,6 @@ namespace App\Utils\TeacherStats;
 use App\Enums\ClientLessonStatus;
 use App\Enums\Direction;
 use App\Enums\LessonStatus;
-use App\Enums\Program;
 use App\Enums\ReportStatus;
 use App\Models\ClientLesson;
 use App\Models\Lesson;
@@ -14,7 +13,7 @@ use App\Models\Teacher;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
-readonly class TeacherStatsNew
+readonly class TeacherStats
 {
     public function __construct(
         private Teacher $teacher,

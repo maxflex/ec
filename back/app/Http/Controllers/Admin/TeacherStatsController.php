@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Teacher;
-use App\Utils\TeacherStats\TeacherStatsNew;
+use App\Utils\TeacherStats\TeacherStats;
 use Illuminate\Http\Request;
 
-class TeacherStatsNewController extends Controller
+class TeacherStatsController extends Controller
 {
     public function __invoke(Request $request)
     {
@@ -19,7 +19,7 @@ class TeacherStatsNewController extends Controller
         ]);
 
         $teacher = Teacher::find($request->teacher_id);
-        $stats = new TeacherStatsNew($teacher);
+        $stats = new TeacherStats($teacher);
 
         if ($request->has('available_years')) {
             return $stats->getAvailableYears();

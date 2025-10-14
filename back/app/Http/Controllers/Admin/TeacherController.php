@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\TeacherListResource;
 use App\Http\Resources\TeacherResource;
 use App\Models\Teacher;
-use App\Utils\TeacherStats;
 use Illuminate\Http\Request;
 
 class TeacherController extends Controller
@@ -57,14 +56,6 @@ class TeacherController extends Controller
     {
         $teacher->phones->each->delete();
         $teacher->delete();
-    }
-
-    public function stats(Teacher $teacher)
-    {
-        return [
-            'teacher' => $teacher->stats,
-            'avg' => TeacherStats::loadAvg(),
-        ];
     }
 
     protected function filterSearch($query, $value)

@@ -67,7 +67,7 @@ watch(filters, loadData, { deep: true })
 
 onMounted(() => {
   panel = document.documentElement.querySelector('.panel') as HTMLElement
-  const filtersEl = document.documentElement.querySelector('.teacher-stats-new__filters') as HTMLElement
+  const filtersEl = document.documentElement.querySelector('.teacher-stats__filters') as HTMLElement
   filtersEl.style.top = `${panel.clientHeight}px`
 
   setTimeout(() => {
@@ -81,8 +81,8 @@ nextTick(loadAvailableYears)
 
 <template>
   <UiIndexPage
-    class="teacher-stats-new"
-    :class="{ 'teacher-stats-new--expanded': isExpanded }"
+    class="teacher-stats"
+    :class="{ 'teacher-stats--expanded': isExpanded }"
     :data="{ loading, noData: stats === undefined }"
   >
     <template #filters>
@@ -113,7 +113,7 @@ nextTick(loadAvailableYears)
 </template>
 
 <style lang="scss">
-.teacher-stats-new {
+.teacher-stats {
   &__filters {
     position: sticky;
     top: 230px;
