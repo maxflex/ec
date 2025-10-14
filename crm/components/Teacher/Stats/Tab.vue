@@ -102,8 +102,9 @@ nextTick(loadAvailableYears)
     </template>
     <template #buttons>
       <v-btn
-        icon="$collapse" color="gray" variant="plain" :size="48"
-        style="right: -10px; transition: all ease-in-out 0.2s"
+        icon="$collapse" color="primary"
+        :size="48"
+        style="transition: all ease-in-out 0.2s"
         @click="toggleExpand()"
       />
     </template>

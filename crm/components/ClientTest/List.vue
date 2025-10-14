@@ -51,6 +51,9 @@ const { isAdmin, isClient } = useAuthStore()
         </div>
       </div>
       <div style="width: 250px">
+        <div v-if="isAdmin">
+          создан {{ formatDateTime(t.created_at) }}
+        </div>
         <div v-if="t.started_at">
           начат
           <span>
@@ -71,9 +74,6 @@ const { isAdmin, isClient } = useAuthStore()
         </div>
         <div v-else class="text-gray">
           не пройден
-        </div>
-        <div v-if="isAdmin">
-          создан {{ formatDateTime(t.created_at) }}
         </div>
       </div>
       <div style="width: 100px">
@@ -116,6 +116,20 @@ const { isAdmin, isClient } = useAuthStore()
           }"
         >
           начать тест
+        </v-btn>
+        <v-btn
+          v-else
+          color="secondary"
+          density="comfortable"
+          variant="tonal"
+          class="tests-result-id"
+          :width="154"
+          :to="{
+            name: 'tests-id',
+            params: { id: t.id },
+          }"
+        >
+          просмотр
         </v-btn>
       </div>
     </div>

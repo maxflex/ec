@@ -179,7 +179,7 @@ export const tooltips: Partial<Record<TeacherStatsField, string>> = {
   lessons_conducted_next_day: 'Количество занятий, которые были проведены с опозданием (не в день занятия)',
 
   // ПОСЕЩАЕМОСТЬ
-  client_lessons: 'Общее количество посещений',
+  client_lessons: 'Суммарное количество посещений (во всех статусах)',
   client_lessons_avg: 'Среднее количество учеников на одном проведённом занятии',
   client_lessons_absent: 'Пропуски – количество посещений в статусе «не был». Рядом указан % от общего количества посещений',
   client_lessons_late: 'Опоздания – количество посещений в статусах «опоздал» + «опоздал дист.». Рядом указан % от общего количества посещений',
@@ -226,7 +226,7 @@ export const percentFields: TeacherStatsField[] = [
   'lessons_with_files_avg',
   'retention_share',
   'reports_fill_avg',
-  'scores_share'
+  'scores_share',
 ]
 
 export const avgFields: TeacherStatsField[] = [

@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\ClientTest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -28,6 +29,14 @@ class ClientTestResource extends JsonResource
                 'questions' => $this->questions,
                 'answers' => $this->answers,
                 'results' => $this->results,
+            ];
+        }
+
+        // у админов для отображения теста всегда подгружаем вопросы
+        if (auth()->user() instanceof User) {
+            $extra = [
+                ...$extra,
+                'questions' => $this->questions,
             ];
         }
 
