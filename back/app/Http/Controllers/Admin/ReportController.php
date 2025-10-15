@@ -16,10 +16,8 @@ class ReportController extends Controller
 {
     protected $filters = [
         'equals' => [
-            'year', 'program', 'status', 'client_id', 'teacher_id',
-            'requirement',
+            'year', 'program', 'status', 'client_id', 'teacher_id', 'is_required',
         ],
-        'excludeNotRequired' => ['exclude_not_required'],
     ];
 
     /**
@@ -31,11 +29,8 @@ class ReportController extends Controller
             Report::selectForUnion()->union(Report::requirements())
         );
 
-        $query->orderByRaw("
-            IF(
-                requirement = 'required', 2,
-                IF(requirement = 'created', 1, 0)
-            ) DESC,
+        $query->orderByRaw('
+            `is_required` DESC,
             CASE `status`
                 WHEN ? THEN 4
                 WHEN ? THEN 3
@@ -45,7 +40,7 @@ class ReportController extends Controller
             END DESC,
             `status` DESC,
             `created_at` DESC
-        ", [
+        ', [
             ReportStatus::draft,
             ReportStatus::toCheck,
             ReportStatus::refused,
@@ -104,21 +99,24 @@ class ReportController extends Controller
 
         $items = Report::where($params)->get();
 
-        if (get_class(auth()->user()) === Teacher::class) {
-            $newReport = new Report([
-                ...$params,
-                'status' => ReportStatus::draft,
-            ]);
-            $newReport->id = -1;
-            $newReport->setCreatedAt(now());
-            $items->push($newReport);
+        // у преподов вкладка "новый отчет"
+        if (auth()->user() instanceof Teacher) {
+            // появляется, только если отчет реально требуется
+            $hasRequirement = Report::requirements()
+                ->where('teacher_id', auth()->id())
+                ->where($params)
+                ->exists();
+            if ($hasRequirement) {
+                $newReport = new Report([
+                    ...$params,
+                    'status' => ReportStatus::draft,
+                ]);
+                $newReport->id = -1;
+                $newReport->setCreatedAt(now());
+                $items->push($newReport);
+            }
         }
 
         return ReportResource::collection($items);
-    }
-
-    protected function filterExcludeNotRequired($query)
-    {
-        $query->where('requirement', '<>', 'notRequired');
     }
 }

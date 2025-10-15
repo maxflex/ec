@@ -176,14 +176,19 @@ defineExpose({ open })
               </v-list-item>
             </template>
           </v-select>
-          <v-text-field
-            v-model="item.price"
-            :disabled="isDisabled || isTeacher"
-            label="Цена"
-            type="number"
-            suffix="руб."
-            hide-spin-buttons
-          />
+          <div>
+            <v-text-field
+              v-model="item.price"
+              :disabled="isDisabled || isTeacher"
+              label="Цена"
+              type="number"
+              suffix="руб."
+              hide-spin-buttons
+            />
+            <div v-if="!(isDisabled || isTeacher)" class="d-flex ga-2 date-input__today">
+              <a v-for="i in [200, 400]" :key="i" @click="item.price = i">{{ i }}</a>
+            </div>
+          </div>
         </div>
         <div>
           <v-textarea

@@ -16,7 +16,7 @@ const { isTeacher } = useAuthStore()
 
 const filters = ref<{
   year?: Year
-  requirement?: ReportRequirement
+  is_required?: number
 }>({
   year: undefined,
 })
@@ -39,9 +39,9 @@ const { availableYears, items, indexPageData } = useIndex<ReportListResource>(
     <template #filters>
       <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
       <UiClearableSelect
-        v-model="filters.requirement"
+        v-model="filters.is_required"
         label="Тип"
-        :items="selectItems(ReportRequirementLabel)"
+        :items="yesNo('только требования', 'только созданные')"
         density="comfortable"
       />
     </template>

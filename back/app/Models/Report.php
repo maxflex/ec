@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\Direction;
 use App\Enums\LessonStatus;
 use App\Enums\Program;
 use App\Enums\ReportDelivery;
@@ -37,156 +36,160 @@ class Report extends Model
      */
     public static function requirements()
     {
-        // сколько занятий должно пройти до требования отчета,
-        // где ученик в каком-то варианте присутствовал (был/дист/опоздал)
-        $lessonsNeeded = 4;
         $year = current_academic_year();
         $nextYear = $year + 1;
-
-        // все даты последнего отчета
-        $groupBy = 'teacher_id, client_id, `year`, program';
-        $maxDates = DB::table('reports', 'r')
-            ->where('year', $year)
-            ->groupByRaw($groupBy)
-            ->selectRaw("$groupBy, MAX(DATE(IFNULL(to_check_at, created_at))) as max_date");
-
-        $programsCourses = [];
-        $programsSchoolAndExternal = [];
-        foreach (Program::cases() as $program) {
-            // ОГЭ исключить
-            if (str($program->value)->contains('Oge')) {
-                continue;
-            }
-            switch ($program->getDirection()) {
-                case Direction::courses9:
-                case Direction::courses10:
-                case Direction::courses11:
-                    $programsCourses[] = $program;
-                    break;
-
-                case Direction::school8:
-                case Direction::school9:
-                case Direction::school10:
-                case Direction::school11:
-                case Direction::external:
-                    $programsSchoolAndExternal[] = $program;
-                    break;
-
-                default:
-            }
-        }
-
-        $courses = DB::table('lessons', 'l')
-            ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
-            ->join('contract_version_programs as cvp', 'cvp.id', '=', 'cl.contract_version_program_id')
-            ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
-            ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
-            ->join('groups as g', 'g.id', '=', 'l.group_id')
-            ->leftJoin('md', fn ($join) => $join
-                ->on('md.teacher_id', '=', 'l.teacher_id')
-                ->on('md.client_id', '=', 'c.client_id')
-                ->on('md.year', '=', 'g.year')
-                ->on('md.program', '=', 'g.program')
-            )
-            // требование отчёта может возникать только в текущем учебном году
-            ->where('g.year', $year)
-            // на всякий случай, но в любом случае client_lessons должны соответствовать только проведённым
-            ->where('l.status', LessonStatus::conducted->value)
-            ->whereRaw('IF(ISNULL(md.max_date), TRUE, l.date > md.max_date)')
-            ->whereIn('g.program', $programsCourses)
-            ->groupByRaw('l.teacher_id, c.client_id, g.year, g.program')
-            ->selectRaw("
-                NULL as `id`,
-                NULL as `status`,
-                l.teacher_id,
-                c.client_id,
-                g.year,
-                g.program,
-                COUNT(*) as lessons_count,
-                IF((
-                    COUNT(*) >= 6
-                    AND SUM(IF(cl.status <> 'late', 1, 0)) >= $lessonsNeeded
-                ), 'required', 'notRequired') as `requirement`,
-                NULL as `created_at`
-            ");
+        $today = now()->toDateString();
 
         $periods = [
-            ["$year-10-15", "$year-10-25"],
-            ["$year-12-15", "$year-12-25"],
-            ["$nextYear-02-15", "$nextYear-02-25"],
-            ["$nextYear-04-15", "$nextYear-04-25"],
+            ["$year-10-15",      "$year-11-10"],
+            ["$year-12-15",      "$nextYear-01-10"],
+            ["$nextYear-02-15",  "$nextYear-03-10"],
+            ["$nextYear-04-15",  "$nextYear-05-10"],
         ];
-        $schoolAndExternal = DB::table('lessons', 'l')
+
+        [$periodStart, $periodEnd] = collect($periods)
+            ->first(fn ($p) => $today >= $p[0] && $today <= $p[1]) ?? [null, null];
+
+        $courses = Program::getAllCourses()->map(fn (Program $p) => $p->value)->all();
+        $schoolAndExternal = Program::getAllSchool()
+            ->merge(Program::getAllExternal())
+            ->merge(Program::getAllPracticum())
+            ->map(fn (Program $p) => $p->value)
+            ->all();
+
+        // Последний отчёт по каждой плоскости в текущем учебном году
+        $md = DB::table('reports as r')
+            ->where('r.year', $year)
+            ->groupBy('r.teacher_id', 'r.client_id', 'r.year', 'r.program')
+            ->selectRaw('
+            r.teacher_id,
+            r.client_id,
+            r.year,
+            r.program,
+            MAX(r.created_at) as last_report_at
+        ');
+
+        // ==== КУРСЫ: требование, если прошло >= 6 занятий с момента последнего отчёта ====
+        $lessonsNeeded = 6;
+        $coursesRequired = DB::table('lessons as l')
             ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
+            ->join('groups as g', 'g.id', '=', 'l.group_id')
             ->join('contract_version_programs as cvp', 'cvp.id', '=', 'cl.contract_version_program_id')
             ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
             ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
-            ->join('groups as g', 'g.id', '=', 'l.group_id')
-            ->leftJoin('md', fn ($join) => $join
-                ->on('md.teacher_id', '=', 'l.teacher_id')
-                ->on('md.client_id', '=', 'c.client_id')
-                ->on('md.year', '=', 'g.year')
-                ->on('md.program', '=', 'g.program')
-            )
-            // требование отчёта может возникать только в текущем учебном году
+            ->leftJoinSub($md, 'md', function ($join) {
+                $join->on('md.teacher_id', '=', 'l.teacher_id')
+                    ->on('md.client_id', '=', 'c.client_id')
+                    ->on('md.year', '=', 'g.year')
+                    ->on('md.program', '=', 'g.program');
+            })
             ->where('g.year', $year)
-            // на всякий случай, но в любом случае client_lessons должны соответствовать только проведённым
-            ->where('l.status', LessonStatus::conducted->value)
-            ->whereRaw('IF(ISNULL(md.max_date), TRUE, l.date > md.max_date)')
-            ->whereIn('g.program', $programsSchoolAndExternal)
+            ->whereIn('g.program', $courses)
+            ->groupBy('l.teacher_id', 'c.client_id', 'g.year', 'g.program')
+            ->havingRaw("
+            SUM(
+                CASE
+                    WHEN md.last_report_at IS NULL THEN 1
+                    WHEN CONCAT(l.date, ' ', l.time) > md.last_report_at THEN 1
+                    ELSE 0
+                END
+            ) >= $lessonsNeeded
+        ")
             ->selectRaw("
-                NULL as `id`,
-                NULL as `status`,
+            NULL as id,
+            NULL as status,
+            l.teacher_id,
+            c.client_id,
+            g.year,
+            g.program,
+            SUM(
+                CASE
+                    WHEN md.last_report_at IS NULL THEN 1
+                    WHEN CONCAT(l.date, ' ', l.time) > md.last_report_at THEN 1
+                    ELSE 0
+                END
+            ) as lessons_count,
+            1 as `is_required`,
+            NULL as created_at
+        ");
+
+        // ==== SCHOOL/EXTERNAL/PRACTICUM: требование только внутри периода и если в нём ещё нет отчёта ====
+        // Если вне периода — просто не добавляем этот блок в UNION
+        $schoolRequired = null;
+        if ($periodStart !== null) {
+            $schoolRequired = DB::table('lessons as l')
+                ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
+                ->join('groups as g', 'g.id', '=', 'l.group_id')
+                ->join('contract_version_programs as cvp', 'cvp.id', '=', 'cl.contract_version_program_id')
+                ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
+                ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
+                ->leftJoinSub($md, 'md', function ($join) {
+                    $join->on('md.teacher_id', '=', 'l.teacher_id')
+                        ->on('md.client_id', '=', 'c.client_id')
+                        ->on('md.year', '=', 'g.year')
+                        ->on('md.program', '=', 'g.program');
+                })
+                ->where('g.year', $year)
+                ->whereIn('g.program', $schoolAndExternal)
+                // Нет отчёта в текущем периоде
+                ->whereNotExists(function ($q) use ($periodStart, $periodEnd) {
+                    $q->from('reports as r')
+                        ->whereColumn('r.teacher_id', 'l.teacher_id')
+                        ->whereColumn('r.client_id', 'c.client_id')
+                        ->whereColumn('r.year', 'g.year')
+                        ->whereColumn('r.program', 'g.program')
+                        ->whereBetween('r.created_at', [$periodStart, $periodEnd]);
+                })
+                ->groupBy('l.teacher_id', 'c.client_id', 'g.year', 'g.program')
+                ->selectRaw("
+                NULL as id,
+                NULL as status,
                 l.teacher_id,
                 c.client_id,
                 g.year,
                 g.program,
-                COUNT(*) as lessons_count,
-                IF((
-                    (
-                        IF(ISNULL(md.max_date), TRUE, md.max_date < ?) AND
-                        SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
-                    )
-                    OR
-                    (
-                        IF(ISNULL(md.max_date), TRUE, md.max_date < ?) AND
-                        SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
-                    )
-                    OR
-                    (
-                        IF(ISNULL(md.max_date), TRUE, md.max_date < ?) AND
-                        SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
-                    )
-                    OR
-                    (
-                        IF(ISNULL(md.max_date), TRUE, md.max_date < ?) AND
-                        SUM(IF(cl.status <> 'absent' AND CURRENT_DATE() >= ? AND l.date <= ?, 1, 0)) >= $lessonsNeeded
-                    )
-                ), 'required', 'notRequired') as `requirement`,
-                -- для сортировки
-                MAX(CONCAT(l.date, ' ', l.time)) as `created_at`
-            ", [
-                $periods[0][0], $periods[0][0], $periods[0][1],
-                $periods[1][0], $periods[1][0], $periods[1][1],
-                $periods[2][0], $periods[2][0], $periods[2][1],
-                $periods[3][0], $periods[3][0], $periods[3][1],
-            ])
-            ->groupByRaw('l.teacher_id, c.client_id, g.year, g.program');
+                SUM(
+                    CASE
+                        WHEN md.last_report_at IS NULL THEN 1
+                        WHEN CONCAT(l.date, ' ', l.time) > md.last_report_at THEN 1
+                        ELSE 0
+                    END
+                ) as lessons_count,
+                1 as `is_required`,
+                NULL as created_at
+            ");
+        }
 
-        $requirements = DB::table('courses')
-            ->withExpression('md', $maxDates)
-            ->withExpression('courses', $courses)
-            ->union($schoolAndExternal);
+        // Собираем итоговую «requirements»
+        if ($schoolRequired) {
+            $requirements = $coursesRequired->unionAll($schoolRequired);
+        } else {
+            $requirements = $coursesRequired;
+        }
 
-        return DB::table('requirements')->withExpression('requirements', $requirements);
+        // Вернём CTE 'requirements'
+        return DB::table('requirements')
+            ->withExpression('md', $md)
+            ->withExpression('requirements', $requirements);
     }
 
+    /**
+     * Либо отчет требуется, либо есть отчет "возвращено"
+     */
     public static function getMenuCounts(int $teacherId): bool
     {
-        return Report::query()
+        $hasRefused = Report::query()
+            ->where('year', current_academic_year())
             ->where('teacher_id', $teacherId)
             ->where('status', ReportStatus::refused)
             ->exists();
+
+        $hasRequirements = Report::requirements()
+            ->where('year', current_academic_year())
+            ->where('teacher_id', $teacherId)
+            ->exists();
+
+        return $hasRefused || $hasRequirements;
     }
 
     public function teacher(): BelongsTo
@@ -281,7 +284,7 @@ class Report extends Model
 
     public function scopeSelectForUnion($query)
     {
-        return $query->selectRaw("
+        return $query->selectRaw('
             id,
             status,
             teacher_id,
@@ -289,8 +292,8 @@ class Report extends Model
             year,
             program,
             NULL as lessons_count,
-            'created' as `requirement`,
+            0 as `is_required`,
             created_at
-        ");
+        ');
     }
 }

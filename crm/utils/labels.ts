@@ -579,12 +579,6 @@ export const ReportStatusLabel = {
   empty: 'пустой отчет',
 } as const
 
-export const ReportRequirementLabel = {
-  created: 'созданные',
-  required: 'требуется отчёт',
-  notRequired: 'пока не требуется',
-} as const
-
 export const HeardAboutUsLabel = {
   internet: 'интернет',
   fromClient: 'от ученика / знакомых / друзей',

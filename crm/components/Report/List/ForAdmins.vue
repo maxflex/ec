@@ -83,8 +83,10 @@ function isRealReport(r: ReportListResource): r is RealReport {
             +{{ plural(r.count, ['отчёт', 'отчёта', 'отчётов']) }}
           </div>
         </div>
-        <div style="width: 160px; flex: initial">
-          <ReportRequirement :requirement="r.requirement" />
+        <div style="width: 160px; flex: initial" class="">
+          <span v-if="r.is_required" class="text-error">
+            требуется отчёт
+          </span>
         </div>
       </template>
     </div>

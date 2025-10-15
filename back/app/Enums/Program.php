@@ -288,6 +288,16 @@ enum Program: string
      *
      * @return Collection<int, Program>
      */
+    public static function getAllPracticum(): Collection
+    {
+        return collect(Program::cases())->filter(fn (Program $p) => $p->getDirection() === Direction::practicum);
+    }
+
+    /**
+     * Все программы курсов
+     *
+     * @return Collection<int, Program>
+     */
     public static function getAllCourses(): Collection
     {
         return collect(Program::cases())

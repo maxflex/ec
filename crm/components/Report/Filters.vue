@@ -2,7 +2,7 @@
 export interface ReportFilters {
   year: Year
   program?: Program
-  requirement?: ReportRequirement
+  is_required?: number
   status?: ReportStatus
   teacher_id?: number
 }
@@ -18,9 +18,9 @@ const model = defineModel<ReportFilters>({ required: true })
     density="comfortable"
   />
   <UiClearableSelect
-    v-model="model.requirement"
+    v-model="model.is_required"
     label="Тип"
-    :items="selectItems(ReportRequirementLabel)"
+    :items="yesNo('только требования', 'только созданные')"
     density="comfortable"
   />
   <UiClearableSelect

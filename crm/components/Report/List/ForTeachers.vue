@@ -105,7 +105,9 @@ function getFillColor(r: RealReport) {
           </div>
         </div>
         <div style="width: 160px; flex: initial">
-          <ReportRequirement :requirement="r.requirement" />
+          <span v-if="r.is_required" class="text-error">
+            требуется отчёт
+          </span>
         </div>
       </template>
     </div>
