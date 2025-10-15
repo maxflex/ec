@@ -479,6 +479,7 @@ export const ContractPaymentMethodLabel = {
 export const CompanyLabel = {
   ooo: 'ООО',
   ip: 'ИП',
+  ano: 'АНО',
 } as const
 
 export const ExamLabel = {

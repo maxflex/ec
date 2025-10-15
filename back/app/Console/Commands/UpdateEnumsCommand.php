@@ -2,12 +2,12 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\ContractPaymentMethod;
-use App\Enums\RequestStatus;
+use App\Enums\Company;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use UnitEnum;
 
 class UpdateEnumsCommand extends Command
 {
@@ -17,52 +17,65 @@ class UpdateEnumsCommand extends Command
 
     public function handle(): void
     {
-        // таблица с enum-полем
-        $table = 'contract_payments';
+        /** @var object{enums: UnitEnum[], table: string, field: string, after: ?string, index: bool} $settings */
+        $settings = (object) [
+            // enums
+            'enums' => Company::cases(),
 
-        // название enum-поля в таблице
-        $field = 'method';
+            // таблица с enum-полем
+            'table' => 'contracts',
 
-        // место enum-поля в таблице
-        $after = 'date';
+            // название enum-поля в таблице
+            'field' => 'company',
 
-        $enums = ContractPaymentMethod::cases();
+            // место enum-поля в таблице
+            'after' => 'year',
 
-        Schema::table($table, function (Blueprint $table) {
+            // сделать поле index?
+            'index' => true,
+        ];
+
+        Schema::table($settings->table, function (Blueprint $table) {
             $table->string('new_enum');
         });
 
-        DB::table($table)->update([
-            'new_enum' => DB::raw($field),
+        DB::table($settings->table)->update([
+            'new_enum' => DB::raw($settings->field),
         ]);
 
         // обновление значений
-        // DB::table($table)
-        //     ->where($field, 'awaiting')
+        // DB::table($settings->table)
+        //     ->where($settings->field, 'awaiting')
         //     ->update([
         //         'new_enum' => RequestStatus::waiting->value,
         //     ]);
         //
-        // DB::table($table)
-        //     ->where($field, 'trash')
+        // DB::table($settings->table)
+        //     ->where($settings->field, 'trash')
         //     ->update([
         //         'new_enum' => RequestStatus::refused->value,
         //     ]);
         // конец обновление значений
 
-        Schema::table($table, function (Blueprint $table) use ($field, $enums, $after) {
-            $table->dropColumn($field);
-            $table->enum($field, array_column($enums, 'value'))
-                // ->default($enums[0]->value)
-                ->after($after)
-                ->index();
+        Schema::table($settings->table, function (Blueprint $table) use ($settings) {
+            $table->dropColumn($settings->field);
+
+            $upd = $table->enum($settings->field, array_column($settings->enums, 'value'));
+
+            if ($settings->after) {
+                $upd->after($settings->after);
+            }
+
+            if ($settings->index) {
+                $upd->index();
+            }
         });
 
-        DB::table($table)->update([
-            $field => DB::raw('new_enum'),
+        DB::table($settings->table)->update([
+            $settings->field => DB::raw('new_enum'),
         ]);
 
-        Schema::table($table, function (Blueprint $table) {
+        Schema::table($settings->table, function (Blueprint $table) {
             $table->dropColumn('new_enum');
         });
     }

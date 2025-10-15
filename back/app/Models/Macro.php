@@ -6,9 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Macro extends Model
 {
-    public $timestamps = false;
-
     protected $fillable = [
-        'title', 'text_ooo', 'text_ip'
+        'title', 'text_ooo', 'text_ip', 'text_ano',
     ];
 }

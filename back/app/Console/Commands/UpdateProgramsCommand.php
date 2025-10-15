@@ -6,23 +6,21 @@ use App\Enums\Program;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class AddNewProgramCommand extends Command
+class UpdateProgramsCommand extends Command
 {
-    protected $signature = 'app:add-new-program {--dry}';
+    protected $signature = 'app:update-programs {--dry}';
 
-    protected $description = 'Добавить новую программу';
+    protected $description = 'Обновить программы';
 
     public function handle(): void
     {
-        /**
-         * SELECT
-         * TABLE_SCHEMA,
-         * TABLE_NAME,
-         * COLUMN_NAME,
-         * COLUMN_TYPE
-         * FROM INFORMATION_SCHEMA.COLUMNS
-         * WHERE COLUMN_NAME = 'program' AND DATA_TYPE = 'enum' AND TABLE_SCHEMA = DATABASE();
-         */
+        // SELECT
+        // TABLE_SCHEMA,
+        // TABLE_NAME,
+        // COLUMN_NAME,
+        // COLUMN_TYPE
+        // FROM INFORMATION_SCHEMA.COLUMNS
+        // WHERE COLUMN_NAME = 'program' AND DATA_TYPE = 'enum' AND TABLE_SCHEMA = DATABASE();
         $tables = [
             'client_reviews',
             'complaints',
