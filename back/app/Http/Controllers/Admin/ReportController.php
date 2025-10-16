@@ -67,7 +67,7 @@ class ReportController extends Controller
     {
         $report->update($request->all());
 
-        return new ReportListResource($report);
+        return new ReportResource($report);
     }
 
     /**

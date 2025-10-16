@@ -25,6 +25,10 @@ async function loadData() {
   loading.value = false
 }
 
+function onUpdated(r: RealReport) {
+  items.value[index.value] = r
+}
+
 watch(index, () => smoothScroll('main', 'top', 'instant'))
 
 nextTick(loadData)
@@ -201,7 +205,7 @@ nextTick(loadData)
       </div>
     </div>
   </div>
-  <ReportDialog ref="reportDialog" />
+  <ReportDialog ref="reportDialog" @updated="onUpdated" />
 </template>
 
 <style lang="scss">

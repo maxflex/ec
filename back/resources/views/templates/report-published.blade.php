@@ -4,4 +4,5 @@
 
 Преподаватель {{ $report->teacher->formatName('initials') }} написал новый отчёт по программе {{ $report->program->getName() }} об ученике {{ $report->client->formatName() }}.
 
-Нажмите, чтобы посмотреть отчёт:
+<a href="https://t.me/{{ config('telegram.bot') }}/?startapp=reports_{{ $report->id }}">Посмотреть отчет</a>
+

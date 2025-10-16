@@ -18,8 +18,12 @@ const { error } = defineProps({
           <div>
             <v-icon :icon="mdiCancel" />
           </div>
-          У вас нет доступа к этой странице
+          У вас нет доступа <br />
+          к этой странице
         </span>
+        <v-btn color="primary" :to="{ name: 'index' }" class="mt-4">
+          на главную
+        </v-btn>
       </v-main>
     </v-app>
   </ClientOnly>

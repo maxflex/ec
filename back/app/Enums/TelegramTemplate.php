@@ -45,15 +45,15 @@ enum TelegramTemplate: string
         $callbackData['tid'] = $this->getId();
 
         return match ($this) {
-            self::reportPublished => new InlineKeyboardMarkup([
-                [[
-                    'text' => 'Посмотреть отчёт',
-                    'web_app' => [
-                        'url' => config('app.frontend_url').'/reports/'.$callbackData['id'],
-                    ],
-                    // 'callback_data' => json_encode($callbackData),
-                ]],
-            ]),
+            // self::reportPublished => new InlineKeyboardMarkup([
+            //     [[
+            //         'text' => 'Посмотреть отчёт',
+            //         'web_app' => [
+            //             'url' => config('app.frontend_url').'/reports/'.$callbackData['id'],
+            //         ],
+            //         // 'callback_data' => json_encode($callbackData),
+            //     ]],
+            // ]),
 
             default => null
         };

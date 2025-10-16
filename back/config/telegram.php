@@ -1,5 +1,6 @@
 <?php
 
 return [
-    'key' => env('TELEGRAM_KEY')
+    'key' => env('TELEGRAM_KEY'),
+    'bot' => env('TELEGRAM_BOT'),
 ];

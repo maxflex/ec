@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { cloneDeep } from 'lodash-es'
 
+const emit = defineEmits<{
+  updated: [r: ReportResource]
+}>()
 const { dialog, width } = useDialog('medium')
 const item = ref<ReportResource>()
 const deleting = ref(false)
 const saving = ref(false)
 const router = useRouter()
 const { isTeacher } = useAuthStore()
-
 const availableTeacherStatuses: ReportStatus[] = [
   'draft',
   'toCheck',
@@ -40,7 +42,7 @@ function open(report: ReportResource) {
 async function save() {
   saving.value = true
   if (item.value!.id > 0) {
-    await useHttp<RealReport>(
+    const { data } = await useHttp<ReportResource>(
       `reports/${item.value!.id}`,
       {
         method: 'put',
@@ -49,6 +51,7 @@ async function save() {
     )
     saving.value = false
     dialog.value = false
+    emit('updated', data.value!)
   }
   else {
     const { data } = await useHttp<RealReport>(
