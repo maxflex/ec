@@ -44,14 +44,12 @@ function isRealReport(r: ReportListResource): r is RealReport {
         <div style="flex: 1">
           <ReportStatus :status="r.status" />
           <v-icon
-            v-if="r.delivery !== null"
+            v-if="r.status === 'published'"
             class="ml-2"
             :icon="mdiCheckAll"
             size="20"
-            :color="r.delivery === 'read' ? 'secondary' : 'gray'"
-            :class="{
-              'opacity-5': r.delivery === 'delivered',
-            }"
+            :color="r.is_read ? 'secondary' : 'gray'"
+            :class="{ 'opacity-3': !r.is_read }"
           />
         </div>
         <div style="width: 70px">

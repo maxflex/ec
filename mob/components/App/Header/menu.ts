@@ -56,8 +56,8 @@ export const clientMenu: MenuItem[] = [
 export const adminMenu: MenuItem[] = [
   {
     icon: mdiAccountGroup,
-    title: 'Договоры',
-    to: '/contracts',
+    title: 'Главная',
+    to: '/',
   },
   {
     icon: mdiAccount,

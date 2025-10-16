@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use App\Enums\LogDevice;
-use App\Enums\ReportDelivery;
 use App\Enums\ReportStatus;
 use App\Models\Client;
 use App\Models\Representative;
@@ -33,7 +32,7 @@ class ControlLkResource extends JsonResource
                 'logs_count' => $this->representative->logs->count(),
                 'tg_logs_count' => $this->representative->logs->where('device', LogDevice::telegram)->count(),
                 'phones' => PhoneResource::collection($this->representative->phones),
-                'reports_read_count' => $this->reports->where('delivery', ReportDelivery::read)->count(),
+                'reports_read_count' => $this->reports->where('is_read', true)->count(),
                 'reports_published_count' => $this->reports->where('status', ReportStatus::published)->count(),
             ]),
         ]);

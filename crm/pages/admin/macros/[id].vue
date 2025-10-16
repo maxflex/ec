@@ -62,6 +62,11 @@ nextTick(loadData)
         :options="cmOptions"
       />
       <Codemirror
+        v-else-if="company === 'ano'"
+        v-model:value="item.text_ano"
+        :options="cmOptions"
+      />
+      <Codemirror
         v-else
         v-model:value="item.text_ip"
         :options="cmOptions"

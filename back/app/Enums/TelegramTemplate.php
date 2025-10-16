@@ -8,7 +8,7 @@ use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 enum TelegramTemplate: string
 {
     case reportPublished = 'reportPublished';
-    case reportRead = 'reportRead';
+    case reportRead = 'reportRead'; // больше не используется
     case clientLessonStatus = 'clientLessonStatus';
     case teacherConductMissing = 'teacherConductMissing';
     case paymentReminder = 'paymentReminder';
@@ -41,13 +41,17 @@ enum TelegramTemplate: string
 
     public function getReplyMarkup(array $callbackData = [])
     {
+        // save template ID
         $callbackData['tid'] = $this->getId();
 
         return match ($this) {
             self::reportPublished => new InlineKeyboardMarkup([
                 [[
                     'text' => 'Посмотреть отчёт',
-                    'callback_data' => json_encode($callbackData),
+                    'web_app' => [
+                        'url' => config('app.frontend_url').'/reports/'.$callbackData['id'],
+                    ],
+                    // 'callback_data' => json_encode($callbackData),
                 ]],
             ]),
 
@@ -66,9 +70,15 @@ enum TelegramTemplate: string
         return -1;
     }
 
+    /**
+     * Обработка кнопок в боте
+     */
     public function callback($callbackData, ?int $telegramId = null)
     {
         switch ($this) {
+            /**
+             * Кнопка "прочитать отчет"
+             */
             case self::reportPublished:
                 $report = Report::find($callbackData->id);
                 $report->read($telegramId);

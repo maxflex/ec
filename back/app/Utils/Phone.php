@@ -7,12 +7,12 @@ use ValueError;
 class Phone
 {
     /**
-     * @param $clean – очищать номер перед валидацией
-     * @param $mobile – валидация только мобильных
+     * @param  $clean  – очищать номер перед валидацией
+     * @param  $mobile  – валидация только мобильных
      */
     public static function validate(string $number, bool $clean = true, bool $mobile = false): bool
     {
-        $pattern = $mobile ? "/^79[0-9]{9}$/" : "/^7[0,4,9][0-9]{9}$/";
+        $pattern = $mobile ? '/^79[0-9]{9}$/' : '/^7[0,4,9][0-9]{9}$/';
 
         return preg_match($pattern, $clean ? self::clean($number) : $number);
     }
@@ -22,7 +22,7 @@ class Phone
      */
     public static function clean($phone): string
     {
-        return preg_replace("/[^0-9]/", "", (string) $phone);
+        return preg_replace('/[^0-9]/', '', (string) $phone);
     }
 
     /**
@@ -38,7 +38,7 @@ class Phone
         }
 
         if (@$phone[0] !== '7') {
-            $phone = '7' . $phone;
+            $phone = '7'.$phone;
         }
 
         return $phone;
@@ -50,7 +50,8 @@ class Phone
     public static function lastDigits($phone): string
     {
         $phone = self::clean($phone);
-        return '7' . substr($phone, -10);
+
+        return '7'.substr($phone, -10);
     }
 
     /**
@@ -74,6 +75,7 @@ class Phone
             }
             $i += $cut;
         }
+
         return "+$parts[0] ({$parts[1]}) {$parts[2]}-{$parts[3]}-{$parts[4]}";
     }
 }

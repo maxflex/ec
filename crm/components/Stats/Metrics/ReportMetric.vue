@@ -3,7 +3,7 @@ interface Filters {
   aggregate: MetricAggregate
   status: ReportStatus[]
   direction: Direction[]
-  delivery?: ReportDelivery
+  is_read?: boolean
 }
 
 const filterDefaults: Filters = {
@@ -43,9 +43,9 @@ defineExpose({ filters })
   </div>
   <div>
     <UiClearableSelect
-      v-model="filters.delivery"
-      :items="selectItems(ReportDeliveryLabel)"
-      label="Доставка"
+      v-model="filters.is_read"
+      :items="yesNo('отчет прочитан', 'отчет не прочитан')"
+      label="Прочтение"
     />
   </div>
 </template>

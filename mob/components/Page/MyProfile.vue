@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { user, logOut } = useAuthStore()
+const { user, logOut, isPreviewMode } = useAuthStore()
 const { $isTgMiniApp } = useNuxtApp()
 </script>
 
@@ -19,7 +19,7 @@ const { $isTgMiniApp } = useNuxtApp()
         </div>
       </div>
     </div>
-    <v-btn v-if="!$isTgMiniApp" color="primary" style="width: 300px" @click="logOut()">
+    <v-btn v-if="!$isTgMiniApp || isPreviewMode" color="primary" style="width: 300px" block @click="logOut()">
       выйти из профиля
     </v-btn>
   </div>

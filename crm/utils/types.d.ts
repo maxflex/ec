@@ -7,8 +7,6 @@ declare global {
 
   type InstructionStatus = keyof typeof InstructionStatusLabel
 
-  type ReportDelivery = keyof typeof ReportDeliveryLabel
-
   type Direction = keyof typeof DirectionLabel
 
   type ReportStatus = keyof typeof ReportStatusLabel
@@ -315,6 +313,7 @@ declare global {
     title: string
     text_ooo: string
     text_ip: string
+    text_ano: string
   }
 
   interface VacationResource {
@@ -353,7 +352,7 @@ declare global {
     price: ?number
     grade: ?LessonScore
     fill: number
-    delivery: ?ReportDelivery
+    is_read: boolean
     is_required?: number
     created_at: string
   }
@@ -379,7 +378,7 @@ declare global {
     cognitive_ability_comment?: string
     knowledge_level_comment?: string
     recommendation_comment?: string
-    delivery: ?ReportDelivery
+    is_read: boolean
     grade: ?LessonScore
     price: ?number
     teacher?: PersonResource

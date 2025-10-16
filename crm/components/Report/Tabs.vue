@@ -88,9 +88,6 @@ nextTick(loadData)
               требуется отчёт
             </span>
             <ReportStatus v-else :status="item.status" />
-            <span v-if="item.delivery">
-              / {{ ReportDeliveryLabel[item.delivery] }}
-            </span>
           </div>
         </div>
 

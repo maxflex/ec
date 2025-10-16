@@ -8,7 +8,7 @@ use App\Models\Report;
 class ReportMetric extends BaseMetric
 {
     protected $filters = [
-        'equals' => ['delivery'],
+        'equals' => ['is_read'],
         'findInSet' => ['year', 'program', 'status'],
         'direction' => ['direction'],
     ];

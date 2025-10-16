@@ -34,7 +34,7 @@ class ReportListResource extends JsonResource
 
             return extract_fields($report, [
                 'year', 'program', 'status', 'fill', 'price',
-                'grade', 'to_check_at', 'is_required', 'delivery',
+                'grade', 'to_check_at', 'is_required', 'is_read',
             ], [
                 'lessons_count' => $report->lessons->count(),
                 'teacher' => new PersonResource($report->teacher),

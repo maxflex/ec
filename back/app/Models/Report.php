@@ -4,9 +4,7 @@ namespace App\Models;
 
 use App\Enums\LessonStatus;
 use App\Enums\Program;
-use App\Enums\ReportDelivery;
 use App\Enums\ReportStatus;
-use App\Enums\TelegramTemplate;
 use App\Observers\ReportObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,14 +19,33 @@ class Report extends Model
     protected $fillable = [
         'year', 'program', 'price', 'client_id', 'status', 'grade',
         'recommendation_comment', 'knowledge_level_comment', 'teacher_id',
-        'cognitive_ability_comment', 'homework_comment', 'delivery',
+        'cognitive_ability_comment', 'homework_comment',
     ];
 
     protected $casts = [
         'program' => Program::class,
         'status' => ReportStatus::class,
-        'delivery' => ReportDelivery::class,
+        'is_read' => 'boolean',
     ];
+
+    /**
+     * Либо отчет требуется, либо есть отчет "возвращено"
+     */
+    public static function getMenuCounts(int $teacherId): bool
+    {
+        $hasRefused = Report::query()
+            ->where('year', current_academic_year())
+            ->where('teacher_id', $teacherId)
+            ->where('status', ReportStatus::refused)
+            ->exists();
+
+        $hasRequirements = Report::requirements()
+            ->where('year', current_academic_year())
+            ->where('teacher_id', $teacherId)
+            ->exists();
+
+        return $hasRefused || $hasRequirements;
+    }
 
     /**
      * Запрос получает все "требуется создать"
@@ -117,6 +134,7 @@ class Report extends Model
         // Если вне периода — просто не добавляем этот блок в UNION
         $schoolRequired = null;
         if ($periodStart !== null) {
+            $lessonsNeeded = 3;
             $schoolRequired = DB::table('lessons as l')
                 ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
                 ->join('groups as g', 'g.id', '=', 'l.group_id')
@@ -142,22 +160,23 @@ class Report extends Model
                 })
                 ->groupBy('l.teacher_id', 'c.client_id', 'g.year', 'g.program')
                 ->selectRaw("
-                NULL as id,
-                NULL as status,
-                l.teacher_id,
-                c.client_id,
-                g.year,
-                g.program,
-                SUM(
-                    CASE
-                        WHEN md.last_report_at IS NULL THEN 1
-                        WHEN CONCAT(l.date, ' ', l.time) > md.last_report_at THEN 1
-                        ELSE 0
-                    END
-                ) as lessons_count,
-                1 as `is_required`,
-                NULL as created_at
-            ");
+                    NULL as id,
+                    NULL as status,
+                    l.teacher_id,
+                    c.client_id,
+                    g.year,
+                    g.program,
+                    SUM(
+                        CASE
+                            WHEN md.last_report_at IS NULL THEN 1
+                            WHEN CONCAT(l.date, ' ', l.time) > md.last_report_at THEN 1
+                            ELSE 0
+                        END
+                    ) as lessons_count,
+                    1 as `is_required`,
+                    NULL as created_at
+                ")
+                ->having('lessons_count', '>=', $lessonsNeeded);
         }
 
         // Собираем итоговую «requirements»
@@ -171,25 +190,6 @@ class Report extends Model
         return DB::table('requirements')
             ->withExpression('md', $md)
             ->withExpression('requirements', $requirements);
-    }
-
-    /**
-     * Либо отчет требуется, либо есть отчет "возвращено"
-     */
-    public static function getMenuCounts(int $teacherId): bool
-    {
-        $hasRefused = Report::query()
-            ->where('year', current_academic_year())
-            ->where('teacher_id', $teacherId)
-            ->where('status', ReportStatus::refused)
-            ->exists();
-
-        $hasRequirements = Report::requirements()
-            ->where('year', current_academic_year())
-            ->where('teacher_id', $teacherId)
-            ->exists();
-
-        return $hasRefused || $hasRequirements;
     }
 
     public function teacher(): BelongsTo
@@ -262,24 +262,12 @@ class Report extends Model
     }
 
     /**
-     * Прочитать отчёт
+     * Прочитать отчет
      */
-    public function read(?int $telegramId = null): void
+    public function read(): void
     {
-        if ($telegramId !== null) {
-            $phone = Phone::where('telegram_id', $telegramId)->first();
-
-            TelegramMessage::sendTemplate(
-                TelegramTemplate::reportRead,
-                $phone,
-                ['report' => $this]
-            );
-
-        }
-
-        $this->update([
-            'delivery' => ReportDelivery::read,
-        ]);
+        $this->is_read = true;
+        $this->save();
     }
 
     public function scopeSelectForUnion($query)

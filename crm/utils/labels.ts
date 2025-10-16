@@ -592,11 +592,6 @@ export const MetricAggregateLabel = {
   count: 'кол-во',
 } as const
 
-export const ReportDeliveryLabel = {
-  delivered: 'отправлено',
-  read: 'прочитано',
-}
-
 export const InstructionStatusLabel = {
   draft: 'в разработке',
   readyForConst: 'подготовлено для Кости',
