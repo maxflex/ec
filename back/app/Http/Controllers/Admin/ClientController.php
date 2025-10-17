@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 class ClientController extends Controller
 {
     protected $filters = [
-        'equals' => ['status'],
+        'equals' => ['status', 'is_risk'],
         'contract' => ['year'],
         'search' => ['q'],
         'request' => ['request_id'],

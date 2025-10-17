@@ -4,6 +4,7 @@ import type { ClientListResource } from '~/components/Client'
 
 interface Filters {
   program: Program[]
+  is_risk?: boolean
 }
 
 const filters = ref<Filters>(loadFilters({
@@ -29,6 +30,7 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
   <UiIndexPage :data="indexPageData">
     <template #filters>
       <ProgramSelector v-model="filters.program" multiple />
+      <UiClearableSelect v-model="filters.is_risk" label="Группа риска" :items="yesNo()" density="comfortable" />
     </template>
     <template #buttons>
       <UiQuestionTooltip>
