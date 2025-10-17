@@ -4,15 +4,15 @@ import type { EventListResource } from '.'
 const { items } = defineProps<{
   items: EventListResource[]
 }>()
-
+const router = useRouter()
 function getParticipantsCount(item: EventListResource): number {
   return Object.values(item.participants).reduce((carry, x) => carry + x, 0)
 }
 </script>
 
 <template>
-  <div class="table table--padding event-list">
-    <div v-for="item in items" :key="item.id">
+  <div class="table table--padding table--hover event-list">
+    <div v-for="item in items" :key="item.id" class="cursor-pointer" @click="router.push({ name: 'events-id', params: { id: item.id } })">
       <div class="event-list__img">
         <div v-if="item.file" :style="{ backgroundImage: `url(${item.file.url})` }" />
       </div>

@@ -533,9 +533,9 @@ export const CvpStatusLabel = {
 } as const
 
 export const EventParticipantConfirmationLabel = {
-  confirmed: 'участвует',
-  rejected: 'отказался',
-  pending: 'не подтвердил',
+  confirmed: 'вы подтвердили участие',
+  rejected: 'вы отказались от участия',
+  pending: 'участие не подтверждено',
 } as const
 
 export const TelegramListStatusLabel = {

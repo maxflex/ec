@@ -75,7 +75,7 @@ class TelegramMessage extends Model
 
         if ($textOrList instanceof TelegramList) {
             $listId = $textOrList->id;
-            $text = $textOrList->text;
+            $text = $textOrList->parseText();
         } else {
             $listId = null;
             $text = $textOrList;

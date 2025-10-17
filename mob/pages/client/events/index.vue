@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { EventListResource } from '~/components/Event'
+
 const { user } = useAuthStore()
 const { items, indexPageData } = useIndex<EventListResource>(
   `events`,
@@ -12,7 +14,10 @@ const { items, indexPageData } = useIndex<EventListResource>(
 </script>
 
 <template>
+  <UiPageTitle>
+    События
+  </UiPageTitle>
   <UiIndexPage :data="indexPageData">
-    <EventListForLk :items="items" />
+    <EventList :items="items" />
   </UiIndexPage>
 </template>

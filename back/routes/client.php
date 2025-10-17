@@ -2,12 +2,12 @@
 
 use App\Http\Controllers\Client\BillingController;
 use App\Http\Controllers\Client\ClientTestController;
+use App\Http\Controllers\Client\EventController;
 use App\Http\Controllers\Client\GradeController;
 use App\Http\Controllers\Client\GroupController;
 use App\Http\Controllers\Client\JournalController;
 use App\Http\Controllers\Client\LessonController;
 use App\Http\Controllers\Client\ReportController;
-use App\Http\Controllers\EventController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\Pub\SbpController;
 use App\Http\Controllers\TeethController;
@@ -33,7 +33,7 @@ Route::get('journal', JournalController::class);
 Route::apiResource('logs', LogController::class)->only('store');
 Route::apiResource('vacations', VacationController::class)->only('index');
 Route::get('teeth', TeethController::class);
-Route::apiResource('events', EventController::class)->only('index');
+Route::apiResource('events', EventController::class)->only(['index', 'show', 'update']);
 Route::prefix('upload')->controller(UploadController::class)->group(function () {
     Route::post('photos', 'photos');
 });

@@ -2,9 +2,9 @@
 
 use App\Http\Controllers\Admin\ClientTestController;
 use App\Http\Controllers\Admin\CommentController;
+use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\ExamScoreController;
 use App\Http\Controllers\BalanceController;
-use App\Http\Controllers\EventController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\Teacher\BalanceVerificationController;
 use App\Http\Controllers\Teacher\ClientController;

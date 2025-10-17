@@ -73,44 +73,14 @@ nextTick(loadData)
   <v-fade-transition>
     <UiLoader v-if="item === undefined" />
     <div v-else class="show">
-      <div v-if="item.file" class="event__img" :style="{ backgroundImage: `url(${item.file.url})` }" />
-      <div class="show__title">
-        <h1 class="event__header">
-          <div>
-            {{ item.name }}
-            <v-btn
-              variant="plain"
-              icon="$edit"
-              :size="42"
-              @click="eventDialog?.edit(item.id)"
-            />
-          </div>
-          <span class="event__header-date">
-            {{ formatDate(item.date) }} {{ formatWeekday(item.date) }}
-            <span v-if="item.time" class="event__header-time">
-              {{ formatTime(item.time) }}
-            </span>
-          </span>
-        </h1>
+      <EventHeader :item="item" @edit="eventDialog?.edit" />
+
+      <div v-for="tl in item.telegram_lists" :key="tl.id">
+        <RouterLink :to="{ name: 'telegram-lists-id', params: { id: tl.id } }">
+          рассылка от {{ formatDateTime(tl.created_at!) }}
+        </RouterLink>
       </div>
-      <div class="event__desc">
-        {{ item.description }}
-        <div v-for="tl in item.telegram_lists" :key="tl.id">
-          <RouterLink :to="{ name: 'telegram-lists-id', params: { id: tl.id } }">
-            рассылка от {{ formatDateTime(tl.created_at!) }}
-          </RouterLink>
-        </div>
-      </div>
-      <!-- <div class="event__date">
-        <v-icon :icon="mdiCalendar" />
-        <span>
-          {{ formatDate(item.date) }}
-          <template v-if="item.time">
-            в
-            {{ formatTime(item.time) }}
-          </template>
-        </span>
-      </div> -->
+
       <div class="show__content">
         <div>
           <div>
@@ -238,58 +208,6 @@ nextTick(loadData)
     &:hover {
       color: rgb(var(--v-theme-error)) !important;
     }
-  }
-}
-
-.event {
-  &__date {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
-  &__header {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    & > div {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .v-btn {
-      font-size: 16px;
-    }
-    span {
-      // color: rgb(var(--v-theme-gray));
-    }
-    .v-chip {
-      font-size: 12px;
-    }
-
-    &-date {
-      position: relative;
-      font-size: 24px;
-      top: 8px;
-    }
-
-    &-time {
-      position: absolute;
-      top: 22px;
-      right: 0px;
-      font-size: 60px;
-    }
-  }
-
-  &__img {
-    width: 100%;
-    height: 300px;
-    background-size: cover;
-    background-position: center center;
-    margin-bottom: 30px;
-  }
-
-  &__desc {
-    width: 70%;
   }
 }
 </style>

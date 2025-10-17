@@ -15,11 +15,7 @@ const { items, indexPageData, availableYears } = useIndex<EventListResource>(`ev
       <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
     </template>
     <template #buttons>
-      <v-btn
-        append-icon="$next"
-        color="primary"
-        @click="eventDialog?.create()"
-      >
+      <v-btn color="primary" @click="eventDialog?.create()">
         добавить событие
       </v-btn>
     </template>

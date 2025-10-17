@@ -622,7 +622,6 @@ declare global {
     id: number
     send_to: SendTo[]
     status: TelegramListStatus
-    is_confirmable: boolean
     recipients: Recipients
     scheduled_at?: string
     created_at?: string

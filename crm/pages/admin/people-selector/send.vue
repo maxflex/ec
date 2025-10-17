@@ -5,7 +5,6 @@ import { cloneDeep } from 'lodash-es'
 const modelDefaults: TelegramListResource = {
   id: newId(),
   send_to: ['students', 'representatives', 'teachers'],
-  is_confirmable: false,
   text: '',
   status: 'scheduled',
   recipients: {
@@ -78,6 +77,10 @@ function select(key: SendTo) {
 
 function isSelected(key: SendTo): boolean {
   return item.value.send_to.includes(key)
+}
+
+function addConfirmation() {
+  item.value.text += `\n<a>Подтвердить участие</a>`
 }
 
 const maxRows = computed<number>(() =>
@@ -245,11 +248,6 @@ nextTick(async () => {
       <div class="show__inputs mt-12">
         <div v-if="event">
           <v-select label="Событие" :model-value="event.name" disabled />
-          <v-checkbox
-            v-model="item.is_confirmable"
-            label="Запросить подтверждение участия"
-            color="secondary"
-          />
         </div>
         <div>
           <v-textarea
@@ -259,6 +257,9 @@ nextTick(async () => {
             auto-grow
             label="Текст сообщения"
           />
+          <a v-if="event" class="cursor-pointer date-input__today " @click="addConfirmation()">
+            запросить подтверждение участия
+          </a>
         </div>
         <div class="double-input">
           <UiDateInput v-model="scheduledAt.date" />

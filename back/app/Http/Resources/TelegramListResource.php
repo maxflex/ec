@@ -12,8 +12,7 @@ class TelegramListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'send_to', 'text', 'created_at', 'scheduled_at',
-            'is_confirmable', 'status',
+            'send_to', 'text', 'created_at', 'scheduled_at', 'status',
         ], [
             'user' => new PersonResource($this->user),
             'recipients' => TelegramList::getPeople($this->recipients),

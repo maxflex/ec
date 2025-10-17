@@ -546,6 +546,12 @@ export const EventParticipantConfirmationLabel = {
   pending: 'не подтвердил',
 } as const
 
+export const EventParticipantConfirmationLkLabel = {
+  confirmed: 'вы подтвердили участие',
+  rejected: 'вы отказались от участия',
+  pending: 'участие не подтверждено',
+} as const
+
 export const TelegramListStatusLabel = {
   scheduled: 'запланировано',
   sending: 'отправляется',

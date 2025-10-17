@@ -27,14 +27,6 @@ if (item.scheduled_at) {
         label="Текст сообщения"
         disabled
       />
-      <v-checkbox
-        v-if="item.event"
-        disabled
-        :model-value="item.is_confirmable"
-        label="Запросить подтверждение участия"
-        color="secondary"
-        class="ml-2"
-      />
     </div>
     <div class="double-input">
       <UiDateInput :model-value="scheduledAt.date" disabled />

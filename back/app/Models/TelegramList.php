@@ -18,7 +18,7 @@ class TelegramList extends Model
 {
     protected $fillable = [
         'recipients', 'send_to', 'scheduled_at', 'text',
-        'event_id', 'is_confirmable', 'status',
+        'event_id', 'status',
     ];
 
     protected $casts = [
@@ -26,7 +26,6 @@ class TelegramList extends Model
         'send_to' => Set::class,
         'status' => TelegramListStatus::class,
         'scheduled_at' => 'datetime',
-        'is_confirmable' => 'boolean',
     ];
 
     public static function getPeople($recipients)
@@ -142,6 +141,29 @@ class TelegramList extends Model
         }
 
         return $result;
+    }
+
+    /**
+     * Парсит ссылки "подтвердить участие" в тексте
+     */
+    public function parseText(): string
+    {
+        if (! $this->event_id) {
+            return $this->text;
+        }
+
+        $href = sprintf(
+            'https://t.me/%s/?startapp=events_%d',
+            config('telegram.bot'),
+            $this->event_id
+        );
+
+        // Заменяем все <a>…</a> на <a href="...">…</a>
+        return preg_replace(
+            '#<a>(.*?)</a>#si',
+            '<a href="'.$href.'">$1</a>',
+            $this->text
+        );
     }
 
     public function user(): BelongsTo

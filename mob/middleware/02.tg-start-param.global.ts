@@ -7,13 +7,11 @@ export default defineNuxtRouteMiddleware((to) => {
     return
   }
 
-  console.log('hia')
-
   const config = useRuntimeConfig()
   const { tgWebAppStartParam } = to.query
 
   if (config.public.isTgMiniApp && tgWebAppStartParam) {
-    console.log('navigateTo', (tgWebAppStartParam as string).replaceAll('_', '/'))
+    // console.log('navigateTo', (tgWebAppStartParam as string).replaceAll('_', '/'))
     return navigateTo((tgWebAppStartParam as string).replaceAll('_', '/'))
   }
 })

@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\EventParticipantConfirmation;
 use App\Enums\SendTo;
 use App\Enums\TelegramListStatus;
 use App\Models\Client;
@@ -11,8 +10,6 @@ use App\Models\TelegramList;
 use App\Models\TelegramMessage;
 use DB;
 use Illuminate\Console\Command;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
-use TelegramBot\Api\Types\ReplyKeyboardRemove;
 
 class SendTelegramMessages extends Command
 {
@@ -35,12 +32,12 @@ class SendTelegramMessages extends Command
      */
     public function handle()
     {
-        if (is_localhost()) {
-            DB::table('telegram_messages')->truncate();
-            DB::table('telegram_lists')
-                ->where('id', 6)
-                ->update(['status' => TelegramListStatus::scheduled->value]);
-        }
+        // if (is_localhost()) {
+        //     DB::table('telegram_messages')->truncate();
+        //     DB::table('telegram_lists')
+        //         ->where('id', 6)
+        //         ->update(['status' => TelegramListStatus::scheduled->value]);
+        // }
         $sent = 0;
         $lists = TelegramList::query()
             ->where('status', TelegramListStatus::scheduled)
@@ -72,27 +69,7 @@ class SendTelegramMessages extends Command
                 }
             }
             foreach ($phones as $phone) {
-                if ($list->event_id && $list->is_confirmable) {
-                    $replyMarkup = new InlineKeyboardMarkup([
-                        [[
-                            'text' => '✅ подтвердить участие',
-                            'callback_data' => json_encode([
-                                'event_id' => $list->event_id,
-                                'phone_id' => $phone->id,
-                                'confirmation' => EventParticipantConfirmation::confirmed->value,
-                            ]),
-                        ]], [[
-                            'text' => 'отказаться',
-                            'callback_data' => json_encode([
-                                'event_id' => $list->event_id,
-                                'phone_id' => $phone->id,
-                                'confirmation' => EventParticipantConfirmation::rejected->value,
-                            ]),
-                        ]]]);
-                } else {
-                    $replyMarkup = new ReplyKeyboardRemove;
-                }
-                $telegramMessage = TelegramMessage::send($phone, $list, $replyMarkup);
+                $telegramMessage = TelegramMessage::send($phone, $list);
                 if ($telegramMessage?->telegram_id) {
                     $sent++;
                 }

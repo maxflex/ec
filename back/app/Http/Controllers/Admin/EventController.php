@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\EventListResource;
 use App\Http\Resources\EventResource;
 use App\Models\Client;
@@ -57,7 +58,7 @@ class EventController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Event $event)
+    public function update(Event $event, Request $request)
     {
         $event->update($request->all());
         $event->loadCount('participants');
@@ -82,7 +83,7 @@ class EventController extends Controller
         ];
         $query
             ->whereHas('participants', fn ($q) => $q->where($where))
-            ->with('participants', fn ($q) => $q->where($where));
+            ->with(['participants' => fn ($q) => $q->where($where)]);
     }
 
     protected function filterTeacher($query, $teacherId)
@@ -93,6 +94,6 @@ class EventController extends Controller
         ];
         $query
             ->whereHas('participants', fn ($q) => $q->where($where))
-            ->with('participants', fn ($q) => $q->where($where));
+            ->with(['participants' => fn ($q) => $q->where($where)]);
     }
 }

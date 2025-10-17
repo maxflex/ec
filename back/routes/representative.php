@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\EventController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\Pub\SbpController;
 use App\Http\Controllers\Representative\BillingController;
 use App\Http\Controllers\Representative\ClientTestController;
+use App\Http\Controllers\Representative\EventController;
 use App\Http\Controllers\Representative\GradeController;
 use App\Http\Controllers\Representative\GroupController;
 use App\Http\Controllers\Representative\JournalController;
@@ -33,7 +33,7 @@ Route::get('journal', JournalController::class);
 Route::apiResource('logs', LogController::class)->only('store');
 Route::apiResource('vacations', VacationController::class)->only('index');
 Route::get('teeth', TeethController::class);
-Route::apiResource('events', EventController::class)->only('index');
+Route::apiResource('events', EventController::class)->only(['index', 'show', 'update']);
 Route::prefix('upload')->controller(UploadController::class)->group(function () {
     Route::post('photos', 'photos');
 });
