@@ -13,6 +13,8 @@ export default defineNuxtConfig({
     public: {
       env: '',
       baseUrl: '',
+      // если передан флаг, то явно в находимся в контесте TG Mini App
+      isTgMiniApp: false,
     },
   },
 

@@ -6,8 +6,7 @@ export function useHttp<T = any>(
   options: UseFetchOptions<T> = {},
 ) {
   const { getCurrentToken, clearCurrentToken, getOriginalToken, isPreviewMode } = useAuthStore()
-  const { $isTgMiniApp } = useNuxtApp()
-  const { public: { baseUrl, env } } = useRuntimeConfig()
+  const { public: { baseUrl, env, isTgMiniApp } } = useRuntimeConfig()
   const token = getCurrentToken().value
   let url = baseUrl
 
@@ -24,7 +23,7 @@ export function useHttp<T = any>(
     }
   }
 
-  if ($isTgMiniApp) {
+  if (isTgMiniApp) {
     headers.Telegram = '1'
   }
   else {
