@@ -1,10 +1,15 @@
 <script setup lang="ts">
+import type { CommentTab } from '.'
 import { mdiSendVariant } from '@mdi/js'
 import { format } from 'date-fns'
 
-const { entityId, entityType, extra } = defineProps<{
+const { entityId, entityType, extra: extraProp } = defineProps<{
   entityId: number
   entityType: EntityType
+
+  /**
+   * Записывает в поле comments.extra текущий url страницы
+   */
   extra?: string
 }>()
 const emit = defineEmits<{ (e: 'created'): void }>()
@@ -18,6 +23,13 @@ const noScroll = ref(false)
 const isLoaded = ref(false)
 const editId = ref<number>()
 const { user, isAdmin } = useAuthStore()
+// у клиента всегда показываем вкладки
+const tabs = entityType === EntityTypeValue.client
+const isTabCountsLoaded = ref(false)
+let extra: string | undefined = extraProp
+
+const selectedTab = ref<CommentTab>((extra || '') as CommentTab)
+const tabCounts = ref<Record<CommentTab, number>>()
 
 function scrollBottom() {
   nextTick(() => {
@@ -27,10 +39,21 @@ function scrollBottom() {
   })
 }
 
-function open() {
+async function open() {
   dialog.value = true
   editId.value = undefined
-  loadData()
+
+  if (tabs && !isTabCountsLoaded.value) {
+    watch(selectedTab, (newVal) => {
+      extra = newVal || ''
+      loadData()
+    })
+
+    await loadTabCounts()
+    isTabCountsLoaded.value = true
+  }
+
+  await loadData()
 }
 
 async function send() {
@@ -57,6 +80,17 @@ async function send() {
     noScroll.value = true
     comments.value.push(data.value)
     text.value = ''
+    if (tabs && tabCounts.value) {
+      if (selectedTab.value in tabCounts.value) {
+        tabCounts.value[selectedTab.value]++
+      }
+      else {
+        tabCounts.value = {
+          ...tabCounts.value,
+          [selectedTab.value]: 1,
+        }
+      }
+    }
     scrollBottom()
     emit('created')
     setTimeout(() => noScroll.value = false, 200)
@@ -64,6 +98,7 @@ async function send() {
 }
 
 async function loadData() {
+  isLoaded.value = false
   const { data } = await useHttp<ApiResponse<CommentResource>>(
     `comments`,
     {
@@ -83,6 +118,22 @@ async function loadData() {
       isLoaded.value = true
     }, 200)
   }
+}
+
+async function loadTabCounts() {
+  if (!tabs) {
+    return
+  }
+  const { data } = await useHttp<Record<CommentTab, number>>(`comments`, {
+    params: {
+      entity_id: entityId,
+      entity_type: entityType,
+      tab_counts: 1,
+    },
+  })
+
+  tabCounts.value = data.value!
+  console.log('tabCounts loaded', data.value!)
 }
 
 function destroy(c: CommentResource) {
@@ -153,6 +204,7 @@ defineExpose({ open })
       <v-fade-transition>
         <UiLoader v-if="!isLoaded" />
       </v-fade-transition>
+      <CommentTabs v-if="isTabCountsLoaded" v-model="selectedTab" :counts="tabCounts" />
       <transition-group
         name="new-comment"
         class="comments__items"

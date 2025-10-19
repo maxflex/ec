@@ -69,6 +69,16 @@
       z-index: 10;
     }
 
+    .tabs {
+      min-height: 48px !important;
+      max-height: 48px !important;
+      width: 100%;
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 1;
+    }
+
     &--no-scroll {
       &::-webkit-scrollbar {
         display: none;

@@ -17,11 +17,15 @@ class CommentController extends Controller
     {
         $query = Comment::with('user');
 
+        $this->filter($request, $query);
+
+        if ($request->has('tab_counts')) {
+            return $query->get()->countBy('extra')->all();
+        }
+
         if (! $request->has('extra')) {
             $query->whereNull('extra');
         }
-
-        $this->filter($request, $query);
 
         return $this->handleIndexRequest($request, $query, CommentResource::class);
     }

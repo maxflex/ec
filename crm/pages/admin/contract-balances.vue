@@ -149,7 +149,6 @@ watch(filters.value, () => (sort.value = undefined))
                 :count="item.comments_count"
                 :entity-id="item.id"
                 :entity-type="EntityTypeValue.contract"
-                extra
               />
             </div>
           </td>

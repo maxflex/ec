@@ -21,6 +21,7 @@ const {
    * Берется текущая страница из useRoute и сохраняется в extra
    */
   extra?: boolean
+
   variant?: 'flat' | 'text' | 'elevated' | 'tonal' | 'outlined' | 'plain'
 }>()
 
