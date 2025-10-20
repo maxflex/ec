@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\Company;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
+use App\Models\Contract;
 use App\Models\ContractPayment;
 use App\Models\ContractVersion;
 use App\Models\Group;
@@ -66,24 +67,10 @@ class PrintController extends Controller
 
     private function generateQr(ContractPayment $payment)
     {
+        /** @var Contract $contract */
         $contract = $payment->contract;
-        $data = $contract->company === Company::ooo ? [
-            'Name' => 'ООО "ЕГЭ-Центр"',
-            'PersonalAcc' => '40702810801960000153',
-            'PayeeINN' => '9701038111',
-            'KPP' => '770101001',
-        ] : [
-            'Name' => 'ИП Горшкова Анастасия Александровна',
-            'PersonalAcc' => '40802810401400004731',
-            'PayeeINN' => '622709802712',
-            'KPP' => '',
-        ];
-
         $data = collect([
-            ...$data,
-            'BankName' => 'АО "АЛЬФА-БАНК"',
-            'BIC' => '044525593',
-            'CorrespAcc' => '30101810200000000593',
+            ...$contract->company->bankAccount(),
             'Purpose' => sprintf(
                 'Платные образовательные услуги по договору №%d от %s г.',
                 $contract->id,

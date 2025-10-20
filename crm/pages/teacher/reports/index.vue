@@ -3,21 +3,15 @@ interface Filters {
   year?: undefined
   is_required?: number
 }
-const { user } = useAuthStore()
-
 const filters = ref<Filters>({
   year: undefined,
 })
 
-const { items, indexPageData, availableYears } = useIndex<ReportListResource, Filters>(
+const { items, indexPageData, availableYears } = useIndex<ReportListResource>(
   `reports`,
   filters,
   {
     loadAvailableYears: true,
-    staticFilters: {
-      teacher_id: user?.id,
-      exclude_not_required: 1,
-    },
   },
 )
 </script>
