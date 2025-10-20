@@ -24,9 +24,17 @@ const { item } = defineProps<{
         {{ ProgramShortLabel[item.group.program] }}
       </div>
     </div>
-    <div class="lesson-item__row">
+    <div v-if="item.group.zoom.id" class="lesson-item__row">
+      <div>
+        ZOOM логин
+      </div>
       <div>
         {{ item.group.zoom.id }}
+      </div>
+    </div>
+    <div v-if="item.group.zoom.password" class="lesson-item__row">
+      <div>
+        ZOOM пароль
       </div>
       <div>
         {{ item.group.zoom.password }}
