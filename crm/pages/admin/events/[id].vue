@@ -18,17 +18,6 @@ async function loadData() {
   }
 }
 
-function setParticipantConfirmation(
-  p: EventParticipant,
-  confirmation: EventParticipantConfirmation,
-) {
-  p.confirmation = confirmation
-  useHttp(`event-participants/${p.id}`, {
-    method: 'put',
-    body: { confirmation },
-  })
-}
-
 const maxRows = 3
 
 const expanded = ref({
@@ -59,12 +48,19 @@ function deleteParticipant(key: 'clients' | 'teachers', p: EventParticipant) {
   })
 }
 
-$addSseListener('ParticipantConfirmationEvent', (data: any) => {
-  console.log('ParticipantConfirmationEvent', data)
-  loadData()
-})
-
-onUnmounted(() => $removeSseListener('ParticipantConfirmationEvent'))
+function updateParticipant(
+  p: EventParticipant,
+  body: Partial<EventParticipant>,
+) {
+  for (const key in body) {
+    // @ts-ignore
+    p[key] = body[key]
+  }
+  useHttp(`event-participants/${p.id}`, {
+    method: 'put',
+    body,
+  })
+}
 
 nextTick(loadData)
 </script>
@@ -104,13 +100,13 @@ nextTick(loadData)
             <v-table class="event-participants">
               <tbody>
                 <tr v-for="p in displayedParticipants[key]" :key="p.id">
-                  <td width="400" class="pl-5">
+                  <td width="350" class="pl-5">
                     <UiPerson :item="p.entity" />
                   </td>
-                  <td width="230" class="pr-0">
+                  <td width="180" class="pr-0">
                     <v-menu>
                       <template #activator="{ props }">
-                        <span v-bind="props" class="cursor-pointer">
+                        <span v-bind="props" class="cursor-pointer unselectable">
                           <span
                             :class="{
                               'text-success': p.confirmation === 'confirmed',
@@ -132,9 +128,35 @@ nextTick(loadData)
                           v-for="(label, confirmation) in EventParticipantConfirmationLabel"
                           :key="confirmation"
                           :class="{ 'text-gray': confirmation === 'pending' }"
-                          @click="setParticipantConfirmation(p, confirmation)"
+                          @click="updateParticipant(p, { confirmation })"
                         >
                           {{ label }}
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </td>
+                  <td width="180" class="pr-0">
+                    <v-menu>
+                      <template #activator="{ props }">
+                        <span v-bind="props" class="cursor-pointer unselectable">
+                          <span :class="p.is_visited ? 'text-success' : 'text-gray'">
+                            {{ p.is_visited ? 'приходил' : 'не приходил' }}
+                            <v-icon
+                              icon="$expand"
+                              size="16"
+                              class="vfn-1 ml-1"
+                            />
+                          </span>
+                        </span>
+                      </template>
+                      <v-list>
+                        <v-list-item
+                          v-for="({ value, title }) in yesNo('приходил', 'не приходил')"
+                          :key="value"
+                          :class="{ 'text-gray': value === 0 }"
+                          @click="updateParticipant(p, { is_visited: !!value })"
+                        >
+                          {{ title }}
                         </v-list-item>
                       </v-list>
                     </v-menu>

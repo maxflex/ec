@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\EventParticipant;
 use App\Models\Phone;
 use Illuminate\Http\Request;
+use TelegramBot\Api\Client;
 use TelegramBot\Api\Exception;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
 use TelegramBot\Api\Types\ReplyKeyboardRemove;
@@ -29,7 +30,7 @@ class TelegramBotController extends Controller
         }
 
         try {
-            $bot = new \TelegramBot\Api\Client(config('telegram.key'));
+            $bot = new Client(config('telegram.key'));
 
             // Handle /ping command
             $bot->command('ping', function ($message) use ($bot) {
@@ -87,12 +88,13 @@ class TelegramBotController extends Controller
                     }
                     /**
                      * Подтверждение событий
+                     * upd. Больше не используется
                      */
-                    if (isset($data->event_id)) {
-                        EventParticipant::confirm($data, $bot, $callback);
-
-                        return;
-                    }
+                    // if (isset($data->event_id)) {
+                    //     EventParticipant::confirm($data, $bot, $callback);
+                    //
+                    //     return;
+                    // }
 
                     // logger("answerCallbackQuery");
                     // $bot->answerCallbackQuery(

@@ -18,6 +18,7 @@ export interface EventListResource {
 export interface EventParticipant {
   id: number
   confirmation: EventParticipantConfirmation
+  is_visited: boolean
   entity: PersonResource
 }
 

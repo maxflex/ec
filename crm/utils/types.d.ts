@@ -591,7 +591,6 @@ declare global {
     | 'CallEvent'
     | 'CallSummaryEvent'
     | 'TelegramBotAdded'
-    | 'ParticipantConfirmationEvent'
     | 'TelegramListSentEvent'
     | 'AppUpdatedEvent'
     | 'ClientTestUpdatedEvent'
