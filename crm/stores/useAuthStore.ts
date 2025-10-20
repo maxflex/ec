@@ -10,6 +10,8 @@ export const useAuthStore = defineStore('auth', () => {
   const isAdmin = ref(false)
   const isClient = ref(false)
   const isTeacher = ref(false)
+  const isStudent = ref(false)
+  const isRepresentative = ref(false)
   const isPreviewMode = !!previewToken.value
 
   /**
@@ -94,10 +96,26 @@ export const useAuthStore = defineStore('auth', () => {
   async function getLoggedUser() {
     const { data } = await useHttp<AuthResource>(`pub/auth/user`)
     if (data.value) {
-      const entityType = data.value.entity_type
-      isAdmin.value = entityType === EntityTypeValue.user
-      isClient.value = (entityType === EntityTypeValue.client) || (entityType === EntityTypeValue.representative)
-      isTeacher.value = entityType === EntityTypeValue.teacher
+      switch (data.value.entity_type) {
+        case EntityTypeValue.client:
+          isClient.value = true
+          isStudent.value = true
+          break
+
+        case EntityTypeValue.representative:
+          isClient.value = true
+          isRepresentative.value = true
+          break
+
+        case EntityTypeValue.teacher:
+          isTeacher.value = true
+          break
+
+        case EntityTypeValue.user:
+          isAdmin.value = true
+          break
+      }
+
       user.value = data.value
     }
   }
@@ -108,6 +126,8 @@ export const useAuthStore = defineStore('auth', () => {
     isAdmin,
     isClient,
     isTeacher,
+    isStudent,
+    isRepresentative,
     isPreviewMode,
     logIn,
     logInAndRemember,

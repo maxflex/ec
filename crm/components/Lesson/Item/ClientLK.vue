@@ -4,6 +4,8 @@ import { Cabinets } from '~/components/Cabinet'
 const { item } = defineProps<{
   item: LessonListResource
 }>()
+
+const { isStudent } = useAuthStore()
 </script>
 
 <template>
@@ -25,21 +27,24 @@ const { item } = defineProps<{
     <div style="width: 140px">
       {{ ProgramShortLabel[item.group.program] }}
     </div>
-    <div style="width: 60px">
+    <div style="width: 90px">
       <template v-if="item.cabinet">
         {{ Cabinets[item.cabinet].label }}
       </template>
     </div>
-    <div style="width: 60px">
+    <!-- <div style="width: 60px">
       <span v-if="item.quarter">
         {{ QuarterShortLabel[item.quarter] }}
       </span>
-    </div>
+    </div> -->
     <div class="lesson-item__status" style="flex: 1">
       <LessonItemStatus :item="item" show-unplanned />
     </div>
-    <div class="group-list__zoom">
+    <div style="width: 250px; flex: initial">
       <template v-if="item.group.zoom?.id && item.status !== 'cancelled'">
+        <template v-if="isStudent">
+          ZOOM:
+        </template>
         {{ item.group.zoom.id }} /
         {{ item.group.zoom.password }}
       </template>

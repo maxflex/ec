@@ -13,7 +13,7 @@ class BillingController extends Controller
         $contracts = Contract::query()
             ->where('client_id', auth()->user()->client_id)
             ->with('client.representative')
-            ->with(['payments' => fn ($q) => $q->where('is_confirmed', true)->orderBy('date')])
+            ->with(['payments' => fn ($q) => $q->orderBy('date')])
             ->with(
                 'versions',
                 fn ($q) => $q
