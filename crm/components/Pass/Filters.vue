@@ -2,9 +2,11 @@
 export interface PassFilters {
   status?: PassStatus
   direction: Direction[]
+  q?: string
 }
 
 const model = defineModel<PassFilters>({ required: true })
+const q = ref(model.value.q)
 </script>
 
 <template>
@@ -19,5 +21,11 @@ const model = defineModel<PassFilters>({ required: true })
     label="Направление"
     :items="selectItems(DirectionLabel)"
     density="comfortable"
+  />
+  <v-text-field
+    v-model="q"
+    label="Поиск"
+    density="comfortable"
+    @keydown.enter="model.q = (q || undefined)"
   />
 </template>

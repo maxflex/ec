@@ -17,6 +17,7 @@ class PassController extends Controller
         'equals' => ['request_id'],
         'status' => ['status'],
         'direction' => ['direction'],
+        'q' => ['q'],
     ];
 
     protected $statsFilters = [
@@ -120,5 +121,12 @@ class PassController extends Controller
         }
 
         $query->whereHas('request', fn ($q) => $q->whereIn('direction', $directions));
+    }
+
+    protected function filterQ($query, $q)
+    {
+        if ($q) {
+            return $query->where('name', 'like', '%'.$q.'%');
+        }
     }
 }
