@@ -3,6 +3,8 @@ interface Filters {
   year?: undefined
   is_required?: number
 }
+
+const { user } = useAuthStore()
 const filters = ref<Filters>({
   year: undefined,
 })
@@ -12,6 +14,9 @@ const { items, indexPageData, availableYears } = useIndex<ReportListResource>(
   filters,
   {
     loadAvailableYears: true,
+    staticFilters: {
+      teacher_id: user?.id,
+    },
   },
 )
 </script>
