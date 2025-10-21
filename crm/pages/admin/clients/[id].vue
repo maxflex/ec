@@ -118,7 +118,7 @@ nextTick(loadData)
     <ClientMarkSheetTab v-else-if="selectedTab === 'markSheet'" :client="client" />
     <ComplaintTab v-else-if="selectedTab === 'clientComplaints'" :client-id="client.id" />
     <ClientReviewTab v-else-if="selectedTab === 'clientReviews'" :client-id="client.id" />
-    <Schedule v-else :client-id="client.id" program-filter show-holidays />
+    <Schedule v-else :client-id="client.id" program-filter show-holidays show-calendar />
     <ClientDialog ref="clientDialog" @updated="onClientUpdated" />
   </template>
   <PrintSpravkaDialog ref="printSpravkaDialog" />

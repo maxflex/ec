@@ -23,6 +23,16 @@
     }
   }
 
+  &--has-lesson {
+    background: rgb(var(--v-theme-gray)) !important;
+    border-color: rgb(var(--v-theme-gray)) !important;
+
+    &-accent {
+      background: #ce93d8 !important;
+      border-color: #ce93d8 !important;
+    }
+  }
+
   &-dialog {
     &__header {
       position: sticky;
@@ -62,6 +72,7 @@
       grid-column-gap: 4px;
 
       // grid-gap: 1;
+      // DAY
       & > div {
         height: $size;
         // width: $size;
@@ -78,6 +89,14 @@
         letter-spacing: 0.0892857143em;
         text-indent: 0.0892857143em;
         position: relative;
+
+        .v-pie {
+          position: absolute;
+          left: -2px;
+          top: -1px;
+          pointer-events: none;
+          z-index: -1;
+        }
 
         &:hover {
           background: rgb(var(--v-theme-on-surface-variant));

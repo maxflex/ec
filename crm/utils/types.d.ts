@@ -330,6 +330,7 @@ declare global {
     emulation_user: ?PersonResource
     row_id: ?number
     device: LogDevice
+    number: ?string
     ip: string
     data: any
   }

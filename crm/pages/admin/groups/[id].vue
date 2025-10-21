@@ -69,7 +69,7 @@ nextTick(loadData)
 
       <UiTabs v-model="selectedTab" :items="tabs" :counts="tabCounts" :counts-extra="tabCountsExtra" show-zero />
     </div>
-    <Schedule v-if="selectedTab === 'schedule'" :group="group" show-holidays />
+    <Schedule v-if="selectedTab === 'schedule'" :group="group" show-holidays show-calendar />
     <GroupVisitsTab v-else-if="selectedTab === 'visits'" :id="group.id" />
     <GroupActTab v-else-if="selectedTab === 'acts'" :id="group.id" />
     <GroupStudentsTab v-else :group="group" @updated="loadData" />

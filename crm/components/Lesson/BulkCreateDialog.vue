@@ -170,7 +170,7 @@ defineExpose({ create })
         </div>
         <div>
           <v-btn color="primary" block @click="addItem()">
-            добавить
+            добавить день
           </v-btn>
         </div>
       </div>

@@ -21,13 +21,14 @@ import { formatDateMonth } from '~/utils'
 import { holidays } from '.'
 import { school89 } from '../Program'
 
-const { group, teacherId, clientId, programFilter, headTeacher, showHolidays: showHolidaysProp } = defineProps<{
+const { group, teacherId, clientId, programFilter, headTeacher, showHolidays: showHolidaysProp, showCalendar } = defineProps<{
   group?: GroupResource
   teacherId?: number
   clientId?: number
   programFilter?: boolean
   headTeacher?: boolean
   showHolidays?: boolean
+  showCalendar?: boolean
 }>()
 
 const selectedProgram = ref<Program>()
@@ -311,6 +312,7 @@ nextTick(loadAvailableYears)
       density="comfortable"
     />
     <div v-if="group && group.teeth" style="width: fit-content" class="d-flex ga-2">
+      <ScheduleCalendar v-if="showCalendar && !massEditMode" :lessons="lessons" class="mr-4" />
       <template v-if="Object.keys(group.teeth).length">
         <TeethBar :items="group.teeth!" />
       </template>
@@ -320,41 +322,43 @@ nextTick(loadAvailableYears)
     </div>
 
     <template #buttons>
-      <div v-if="massEditMode" class="d-flex ga-4">
-        <v-btn variant="text" @click="cancelMassEdit()">
-          отмена
-        </v-btn>
-        <v-btn variant="text" @click="selectAll()">
-          выбрать всё
-        </v-btn>
-        <v-btn color="primary" :width="220" @click="lessonBulkUpdateDialog?.open(selectedIds, group!.program!)">
-          редактировать
-          {{ selectedIds.length }}/{{ lessons.length }}
-        </v-btn>
-      </div>
-      <v-menu v-else-if="isMassEditable">
-        <template #activator="{ props }">
-          <div class="d-flex ga-4">
-            <v-btn variant="text" @click="massEditMode = true">
-              массовое редактирование
-            </v-btn>
+      <div class="d-flex align-center ga-4">
+        <template v-if="massEditMode">
+          <v-btn variant="text" @click="cancelMassEdit()">
+            отмена
+          </v-btn>
+          <v-btn variant="text" @click="selectAll()">
+            выбрать всё
+          </v-btn>
+          <v-btn color="primary" :width="220" @click="lessonBulkUpdateDialog?.open(selectedIds, group!.program!)">
+            редактировать
+            {{ selectedIds.length }}/{{ lessons.length }}
+          </v-btn>
+        </template>
+        <v-menu v-else-if="isMassEditable">
+          <template #activator="{ props }">
             <v-btn color="primary" v-bind="props" :width="220">
               добавить занятия
             </v-btn>
-          </div>
-        </template>
-        <v-list v-if="group">
-          <v-list-item @click="lessonDialog?.create(group.id, group.year, group.program!)">
-            добавить одно занятие
-          </v-list-item>
-          <v-list-item @click="lessonBulkCreateDialog?.create(group.id, group.year, group.program!)">
-            добавить несколько занятий
-          </v-list-item>
-        </v-list>
-      </v-menu>
-      <v-fade-transition v-else-if="showTeeth">
-        <TeethBar v-if="teeth" :items="teeth" />
-      </v-fade-transition>
+          </template>
+          <v-list v-if="group">
+            <v-list-item @click="lessonDialog?.create(group.id, group.year, group.program!)">
+              добавить одно занятие
+            </v-list-item>
+            <v-list-item @click="lessonBulkCreateDialog?.create(group.id, group.year, group.program!)">
+              добавить несколько занятий
+            </v-list-item>
+            <v-list-item @click="massEditMode = true">
+              массовое редактирование
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
+        <v-fade-transition v-else-if="showTeeth">
+          <TeethBar v-if="teeth" :items="teeth" />
+        </v-fade-transition>
+        <ScheduleCalendar v-else-if="showCalendar && !massEditMode" :lessons="lessons" />
+      </div>
     </template>
   </UiFilters>
   <UiNoData v-if="lessons.length === 0 && !loading" />

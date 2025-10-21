@@ -20,6 +20,7 @@ import {
 } from '@mdi/js'
 import { createVuetify } from 'vuetify'
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
+import { VPie } from 'vuetify/labs/VPie'
 
 const icons = {
   defaultSet: 'mdi',
@@ -74,6 +75,9 @@ const myTheme: ThemeDefinition = {
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
     icons,
+    components: {
+      VPie,
+    },
     defaults: {
       VTextField: {
         variant: 'outlined',

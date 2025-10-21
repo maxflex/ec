@@ -9,7 +9,7 @@ const userDialog = ref<InstanceType<typeof UserDialog>>()
 </script>
 
 <template>
-  <div class="table log-list">
+  <div class="table table--padding flex-start log-list">
     <div v-for="log in items" :key="log.id">
       <div style="width: 126px" class="text-gray">
         {{ formatDateTime(log.created_at) }}
@@ -33,6 +33,9 @@ const userDialog = ref<InstanceType<typeof UserDialog>>()
           <UiPerson v-else :item="log.entity" />
           <div style="font-size: 14px" class="text-gray">
             {{ EntityTypeLabel[log.entity.entity_type] }}
+          </div>
+          <div v-if="log.number" class="text-gray" style="font-size: 14px">
+            {{ formatPhone(log.number) }}
           </div>
         </template>
         <template v-else>

@@ -1,10 +1,19 @@
 <script setup lang="ts">
 import { VDialogTransition } from 'vuetify/components'
+import { colors } from '~/plugins/vuetify'
 
+interface PieItem {
+  key: string
+  title: string
+  value: number
+}
+
+const { lessons } = defineProps<{
+  lessons?: Record<string, Record<LessonStatus, number>>
+}>()
 const emit = defineEmits(['close'])
 const model = defineModel<string | string[]>({ required: true })
 const { dialog } = useDialog('large')
-
 // начиная с какой даты возможен выбор в календаре
 const startYear = 2015
 const years = Array.from({ length: currentAcademicYear() - startYear + 4 }, (_, i) => startYear + i)
@@ -57,6 +66,10 @@ function isToday(y: number, m: number, d: number) {
 }
 
 function isSelected(y: number, m: number, d: number) {
+  if (lessons !== undefined) {
+    return
+  }
+
   const date = getDate(y, m, d)
   return Array.isArray(model.value)
     ? model.value.includes(date)
@@ -82,6 +95,33 @@ function close() {
   emit('close')
 }
 
+function hasLesson(y: number, m: number, d: number): boolean {
+  if (!lessons) {
+    return false
+  }
+  const date = getDate(y, m, d)
+  return date in lessons
+}
+
+function getPieData(y: number, m: number, d: number): PieItem[] {
+  if (!lessons) {
+    return []
+  }
+
+  const data = lessons[getDate(y, m, d)]
+  const result: PieItem[] = []
+
+  for (const status in data) {
+    result.push({
+      key: status,
+      value: data[status as LessonStatus],
+      title: LessonStatusLabel[status as LessonStatus],
+    })
+  }
+
+  return result
+}
+
 defineExpose({ open })
 </script>
 
@@ -98,7 +138,7 @@ defineExpose({ open })
     <v-card class="calendar-card">
       <div v-for="y in years" :key="y" class="calendar__year">
         <h2>{{ y }}</h2>
-        <div class="calendar">
+        <div class="calendar" :class="{ 'no-pointer-events': lessons !== undefined }">
           <div v-for="m in 12" :key="m" class="calendar__month">
             <div class="calendar__month-label">
               <span class="text-grey-light">
@@ -108,11 +148,25 @@ defineExpose({ open })
             <div class="calendar__month-days">
               <div v-for="x in firstDayOfWeek(y, m)" :key="`x${x}`" class="no-pointer-events" />
               <div
-                v-for="d in daysInMonth(y, m)" :key="d" :class="{
+                v-for="d in daysInMonth(y, m)"
+                :key="d"
+                :class="{
                   'calendar--today': isToday(y, m, d),
                   'calendar--selected': isSelected(y, m, d),
-                }" @click="onClick(y, m, d)"
+                }"
+                @click="onClick(y, m, d)"
               >
+                <v-pie
+                  v-if="hasLesson(y, m, d)"
+                  :size="32"
+                  :palette="[
+                    '#e0e0e0',
+                    '#ff9f95',
+                    colors.primary,
+                  ]"
+                  :animation="false"
+                  :items="getPieData(y, m, d)"
+                />
                 {{ d }}
               </div>
             </div>

@@ -41,13 +41,14 @@ const { isStudent } = useAuthStore()
       <LessonItemStatus :item="item" show-unplanned />
     </div>
     <div style="width: 250px; flex: initial">
-      <template v-if="item.group.zoom?.id && item.status !== 'cancelled'">
-        <template v-if="isStudent">
-          ZOOM:
-        </template>
-        {{ item.group.zoom.id }} /
-        {{ item.group.zoom.password }}
-      </template>
+      <div v-if="item.group.zoom?.id && item.status !== 'cancelled'" class="d-flex ga-2 align-center">
+        <div style="float: left">
+          <img v-if="isStudent" src="/public/img/zoom.png" :width="26" style="float: left" />
+        </div>
+        <span>
+          {{ item.group.zoom.id }} / {{ item.group.zoom.password }}
+        </span>
+      </div>
     </div>
   </div>
 </template>
