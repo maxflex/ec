@@ -312,7 +312,7 @@ nextTick(loadAvailableYears)
       density="comfortable"
     />
     <div v-if="group && group.teeth" style="width: fit-content" class="d-flex ga-2">
-      <ScheduleCalendar v-if="showCalendar && !massEditMode" :lessons="lessons" class="mr-4" />
+      <ScheduleCalendar v-if="showCalendar" :lessons="lessons" class="mr-3" />
       <template v-if="Object.keys(group.teeth).length">
         <TeethBar :items="group.teeth!" />
       </template>
@@ -357,7 +357,7 @@ nextTick(loadAvailableYears)
         <v-fade-transition v-else-if="showTeeth">
           <TeethBar v-if="teeth" :items="teeth" />
         </v-fade-transition>
-        <ScheduleCalendar v-else-if="showCalendar && !massEditMode" :lessons="lessons" />
+        <ScheduleCalendar v-else-if="showCalendar" :lessons="lessons" />
       </div>
     </template>
   </UiFilters>
