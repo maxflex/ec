@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { HeadTeacherReportResource } from '.'
+
 const { items } = defineProps<{
   items: HeadTeacherReportResource[]
   showTeacher?: boolean

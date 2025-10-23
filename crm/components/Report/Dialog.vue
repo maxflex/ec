@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { RealReport, ReportResource, ReportTextFields } from '.'
+import { mdiAutoFix } from '@mdi/js'
 import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{
@@ -8,6 +10,7 @@ const { dialog, width } = useDialog('medium')
 const item = ref<ReportResource>()
 const deleting = ref(false)
 const saving = ref(false)
+const aiLoading = ref(false)
 const router = useRouter()
 const { isTeacher } = useAuthStore()
 const availableTeacherStatuses: ReportStatus[] = [
@@ -103,6 +106,21 @@ const fill = computed<number>(() => {
   return Math.min(Math.round(total * 100 / max), 100)
 })
 
+async function improve() {
+  if (!item.value) {
+    return
+  }
+  aiLoading.value = true
+  const { data, error } = await useHttp<ReportTextFields>(`reports/improve/${item.value.id}`)
+  if (error.value) {
+    setTimeout(() => useGlobalMessage(`<b>Ошибка ИИ</b>: ${error.value!.data.message}`, 'error'), 100)
+  }
+  if (data.value) {
+    item.value.ai_text = data.value!
+  }
+  aiLoading.value = false
+}
+
 defineExpose({ open })
 </script>
 
@@ -129,6 +147,14 @@ defineExpose({ open })
             icon="$delete"
             variant="text"
             @click="destroy()"
+          />
+          <v-btn
+            :icon="mdiAutoFix"
+            :size="48"
+            :loading="aiLoading"
+            variant="text"
+            :disabled="isDisabled"
+            @click="improve()"
           />
           <v-btn
             icon="$save"
@@ -193,7 +219,7 @@ defineExpose({ open })
             </div>
           </div>
         </div>
-        <div>
+        <div class="double-input">
           <v-textarea
             v-model="item.homework_comment"
             :disabled="isDisabled"
@@ -202,8 +228,17 @@ defineExpose({ open })
             auto-grow
             label="Выполнение домашнего задания"
           />
+          <v-textarea
+            v-if="item.ai_text"
+            v-model="item.ai_text.homework_comment"
+            :disabled="isDisabled"
+            rows="3"
+            no-resize
+            auto-grow
+            label="ИИ: Выполнение домашнего задания"
+          />
         </div>
-        <div>
+        <div class="double-input">
           <v-textarea
             v-model="item.cognitive_ability_comment"
             :disabled="isDisabled"
@@ -212,8 +247,17 @@ defineExpose({ open })
             auto-grow
             label="Способность усваивать новый материал"
           />
+          <v-textarea
+            v-if="item.ai_text"
+            v-model="item.ai_text.cognitive_ability_comment"
+            :disabled="isDisabled"
+            rows="3"
+            no-resize
+            auto-grow
+            label="ИИ: Способность усваивать новый материал"
+          />
         </div>
-        <div>
+        <div class="double-input">
           <v-textarea
             v-model="item.knowledge_level_comment"
             :disabled="isDisabled"
@@ -222,8 +266,17 @@ defineExpose({ open })
             auto-grow
             label="Текущий уровень знаний"
           />
+          <v-textarea
+            v-if="item.ai_text"
+            v-model="item.ai_text.knowledge_level_comment"
+            :disabled="isDisabled"
+            rows="3"
+            no-resize
+            auto-grow
+            label="ИИ: Текущий уровень знаний"
+          />
         </div>
-        <div>
+        <div class="double-input">
           <v-textarea
             v-model="item.recommendation_comment"
             :disabled="isDisabled"
@@ -231,6 +284,15 @@ defineExpose({ open })
             no-resize
             auto-grow
             label="Рекомендации родителям"
+          />
+          <v-textarea
+            v-if="item.ai_text"
+            v-model="item.ai_text.recommendation_comment"
+            :disabled="isDisabled"
+            rows="3"
+            no-resize
+            auto-grow
+            label="ИИ: Рекомендации родителям"
           />
         </div>
       </div>

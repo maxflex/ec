@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { RealReport, ReportResource } from '.'
 import { ReportDialog } from '#components'
 
 const route = useRoute()

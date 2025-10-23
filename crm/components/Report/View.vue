@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ReportResource } from '.'
+
 const route = useRoute()
 // const { user } = useAuthStore()
 const item = ref<ReportResource>()

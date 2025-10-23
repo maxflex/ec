@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ReportListResource } from '.'
+
 /**
  * Вкладка "отчеты" в профиле клиента у классрука
  */
