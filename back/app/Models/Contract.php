@@ -72,7 +72,10 @@ class Contract extends Model
      */
     public function getBalancesAttribute(): array
     {
-        $contractPayments = $this->payments->reduce(fn ($carry, $p) => $carry + $p->realSum, 0);
+        $contractPayments = $this->payments
+            ->where('is_confirmed', true)
+            ->reduce(fn ($carry, $p) => $carry + $p->realSum, 0);
+
         $clientLessons = intval($this->clientLessonsQuery()->sum('price'));
 
         return [
@@ -127,8 +130,9 @@ class Contract extends Model
                 $payment->created_at->format('Y-m-d H:i:s'),
                 sprintf(
                     '%s (обучение)',
-                    $payment->method->getTitle()
+                    $payment->method->getTitle(),
                 ),
+                $payment->is_confirmed
             );
         }
 

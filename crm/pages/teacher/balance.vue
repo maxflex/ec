@@ -16,7 +16,7 @@ nextTick(checkVerification)
 <template>
   <UiLoader v-if="loading" />
   <template v-else-if="seconds > 0">
-    <Balance :teacher-id="user?.id!">
+    <Balance :teacher-id="user?.id!" show-totals>
       <UiCountDown :seconds="seconds" @timeout="checkVerification()">
         Просмотр разрешён ещё
       </UiCountDown>

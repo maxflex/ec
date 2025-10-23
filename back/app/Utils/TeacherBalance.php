@@ -36,12 +36,12 @@ class TeacherBalance
             ],
             (object) [
                 'name' => 'paid_lessons',
-                'query' => TeacherPayment::query(),
+                'query' => TeacherPayment::where('is_confirmed', true),
                 'sum' => 'sum',
             ],
             (object) [
                 'name' => 'paid_other',
-                'query' => TeacherPayment::query(),
+                'query' => TeacherPayment::where('is_confirmed', true),
                 'sum' => 'sum',
             ],
             (object) [

@@ -9,6 +9,7 @@ use App\Http\Resources\ReportListResource;
 use App\Http\Resources\ReportResource;
 use App\Models\Report;
 use App\Models\Teacher;
+use App\Utils\ChatGPT;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -118,5 +119,10 @@ class ReportController extends Controller
         }
 
         return ReportResource::collection($items);
+    }
+
+    public function improve(Report $report)
+    {
+        return ChatGPT::improveReport($report);
     }
 }

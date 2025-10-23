@@ -1,8 +1,9 @@
 <script setup lang="ts">
-const { contractId, teacherId, split } = defineProps<{
+const { contractId, teacherId, split, showTotals } = defineProps<{
   contractId?: number
   teacherId?: number
   split?: boolean
+  showTotals?: boolean
 }>()
 
 interface Filters {
@@ -26,6 +27,37 @@ const { indexPageData, availableYears, items } = useIndex<Balance>(
     },
   },
 )
+
+const totals = computed(() => {
+  if (!showTotals) {
+    return null
+  }
+  const result = {
+    lessons: 0,
+    reports: 0,
+    services: 0,
+  }
+  for (const item of items.value) {
+    for (const i of item.items) {
+      if (!i.is_confirmed) {
+        continue
+      }
+      if (i.comment.startsWith('занятие')) {
+        result.lessons += i.sum
+      }
+      else if (i.comment.startsWith('выплата')) {
+        // result.payouts += i.sum
+      }
+      else if (i.comment.startsWith('отчет')) {
+        result.reports += i.sum
+      }
+      else {
+        result.services += i.sum
+      }
+    }
+  }
+  return result
+})
 </script>
 
 <template>
@@ -66,7 +98,7 @@ const { indexPageData, availableYears, items } = useIndex<Balance>(
                 <td>
                   <span
                     v-if="balanceItem.sum > 0"
-                    class="text-success"
+                    :class="balanceItem.is_confirmed ? 'text-success' : 'text-gray'"
                   >
                     +{{ formatPrice(balanceItem.sum) }} руб.
                   </span>
@@ -78,7 +110,7 @@ const { indexPageData, availableYears, items } = useIndex<Balance>(
                 <td>
                   <span
                     v-if="balanceItem.sum < 0"
-                    class="text-error"
+                    :class="balanceItem.is_confirmed ? 'text-error' : 'text-gray'"
                   >
                     {{ formatPrice(balanceItem.sum) }} руб.
                   </span>
@@ -90,6 +122,20 @@ const { indexPageData, availableYears, items } = useIndex<Balance>(
               </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+      <div v-if="totals" class="balance__totals">
+        <div class="font-weight-bold">
+          Итого начислено
+        </div>
+        <div>
+          занятия: {{ formatPrice(totals.lessons, true) }} руб.
+        </div>
+        <div>
+          отчеты: {{ formatPrice(totals.reports, true) }} руб.
+        </div>
+        <div>
+          допуслуги: {{ formatPrice(totals.services, true) }} руб.
         </div>
       </div>
     </div>
@@ -109,6 +155,20 @@ const { indexPageData, availableYears, items } = useIndex<Balance>(
     & > div {
       padding: 12px 20px !important;
       align-items: flex-end !important;
+    }
+  }
+
+  &__totals {
+    position: sticky !important;
+    bottom: 0;
+    z-index: 1;
+    background: rgb(var(--v-theme-bg));
+    border-top: 1px solid rgb(var(--v-theme-border));
+    gap: 60px !important;
+    font-size: 16px !important;
+    & > div {
+      top: -2px;
+      position: relative;
     }
   }
 }

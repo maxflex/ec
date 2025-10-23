@@ -28,10 +28,10 @@ class Balance
             ->all();
     }
 
-    public function push(int $sum, string $dateTime, string $comment)
+    public function push(int $sum, string $dateTime, string $comment, bool $isConfirmed = true)
     {
         $this->items->push(
-            new BalanceItem($sum, $dateTime, $comment),
+            new BalanceItem($sum, $dateTime, $comment, $isConfirmed),
         );
     }
 
@@ -53,13 +53,14 @@ class Balance
         $balance = 0;
 
         foreach ($itemsGrouped as $date => $items) {
-            $balance += $items->sum(fn (BalanceItem $e) => $e->sum);
+            $balance += $items->where('isConfirmed', true)->sum(fn (BalanceItem $e) => $e->sum);
             $data[] = (object) [
                 'date' => $date,
                 'balance' => $balance,
                 'items' => $items->map(fn (BalanceItem $e) => (object) [
                     'sum' => $e->sum,
-                    'comment' => $e->comment,
+                    'comment' => $e->comment.($e->isConfirmed ? '' : ' – операция в обработке'),
+                    'is_confirmed' => $e->isConfirmed,
                 ])->all(),
             ];
         }

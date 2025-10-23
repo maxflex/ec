@@ -167,6 +167,7 @@ class Teacher extends Person implements HasSchedule
                     'выплата, %s',
                     $payment->method->getTitle()
                 ),
+                $payment->is_confirmed
             );
         }
 

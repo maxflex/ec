@@ -26,6 +26,7 @@ class Report extends Model
         'program' => Program::class,
         'status' => ReportStatus::class,
         'is_read' => 'boolean',
+        'ai_text' => 'array',
     ];
 
     /**

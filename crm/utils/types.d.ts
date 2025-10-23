@@ -288,6 +288,7 @@ declare global {
   interface BalanceItem {
     comment: string
     sum: number
+    is_confirmed: boolean
   }
 
   interface Balance {
