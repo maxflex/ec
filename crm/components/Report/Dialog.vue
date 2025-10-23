@@ -12,7 +12,7 @@ const deleting = ref(false)
 const saving = ref(false)
 const aiLoading = ref(false)
 const router = useRouter()
-const { isTeacher } = useAuthStore()
+const { isAdmin, isTeacher } = useAuthStore()
 const availableTeacherStatuses: ReportStatus[] = [
   'draft',
   'toCheck',
@@ -149,6 +149,7 @@ defineExpose({ open })
             @click="destroy()"
           />
           <v-btn
+            v-if="isAdmin"
             :icon="mdiAutoFix"
             :size="48"
             :loading="aiLoading"
