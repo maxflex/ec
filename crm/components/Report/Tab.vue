@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ReportListResource } from '.'
+
 /**
  * Вкладка "отчёты".
  *
@@ -29,6 +31,7 @@ const { availableYears, items, indexPageData } = useIndex<ReportListResource>(
     staticFilters: {
       client_id: clientId,
       teacher_id: teacherId,
+      paginate: 999,
     },
   },
 )
