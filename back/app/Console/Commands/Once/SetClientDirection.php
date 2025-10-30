@@ -20,7 +20,7 @@ class SetClientDirection extends Command
             ->get();
 
         $result = [
-            ['client_id', 'year', 'directions_all', 'directions_uniq'],
+            ['client_id', 'year', 'directions_separate', 'directions_merge', 'contract_ids'],
         ];
 
         $bar = $this->output->createProgressBar(count($items));
@@ -43,6 +43,7 @@ class SetClientDirection extends Command
                 $item->year,
                 $directions->sort()->join(','),
                 $directions->unique()->sort()->join(','),
+                $contracts->map(fn (Contract $c) => $c->id)->join(','),
             ];
 
             $bar->advance();
