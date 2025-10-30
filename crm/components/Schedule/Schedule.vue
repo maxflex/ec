@@ -105,6 +105,8 @@ const allDates = computed<string[]>(() => {
 
   // все даты занятий
   const dates: string[] = uniq(filteredLessons.value.map(e => e.date)).sort()
+  const minLessonDate = dates[0]
+  const maxLessonDate = dates[dates.length - 1]
 
   if (showHolidays.value) {
     for (const holidayDate in holidays) {
@@ -113,7 +115,7 @@ const allDates = computed<string[]>(() => {
         continue
       }
       // каникулы вставляются только между занятиями
-      if (holidayDate > dates[0] && holidayDate < dates[dates.length - 1]) {
+      if (holidayDate > minLessonDate && holidayDate < maxLessonDate) {
         dates.push(holidayDate)
       }
     }

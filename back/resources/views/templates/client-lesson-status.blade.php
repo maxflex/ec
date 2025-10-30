@@ -6,3 +6,5 @@
     ClientLessonStatus::presentOnline,
 ])) был(а) удалённо на уроке @elseif ($clientLesson->minutes_late) опоздал(а) на {{ $clientLesson->minutes_late }} минут на урок
 @endif по программе {{ $clientLesson->contractVersionProgram->program->getName() }} {{ date('d.m.Y', strtotime($clientLesson->lesson->date)) }} в {{ $clientLesson->lesson->timeFormatted }}
+
+С уважением, учебная часть ЕГЭ-Центра.

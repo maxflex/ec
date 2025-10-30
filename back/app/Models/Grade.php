@@ -14,29 +14,18 @@ class Grade extends Model
 {
     protected $fillable = [
         'grade', 'client_id', 'program', 'year', 'quarter',
-        'teacher_id'
+        'teacher_id',
     ];
 
     protected $casts = [
         'grade' => 'int',
     ];
 
-    public function client(): BelongsTo
-    {
-        return $this->belongsTo(Client::class);
-    }
-
-    public function teacher(): BelongsTo
-    {
-        return $this->belongsTo(Teacher::class);
-    }
-
     /**
      * Получаем все комбинации ученик-программа-год,
      * в группах, где установлена хотя бы одна четверть
-     *
      */
-    public static function fakeQuery(int $teacherId = null): Builder
+    public static function fakeQuery(?int $teacherId = null): Builder
     {
         $cte = DB::table('lessons', 'l')
             ->whereNotNull('quarter')
@@ -47,8 +36,8 @@ class Grade extends Model
             ->join('groups as g', 'g.id', '=', 'l.group_id')
             ->selectRaw("
                 CONCAT(c.client_id, '-',  g.`year`, '-', cvp.program) AS `id`,
-                c.client_id, 
-                cvp.program, 
+                c.client_id,
+                cvp.program,
                 g.year,
                 CAST(sum(if(`quarter` = 'q1', 1, 0)) AS UNSIGNED) AS `q1_conducted_lessons_count`,
                 CAST(sum(if(`quarter` = 'q2', 1, 0)) AS UNSIGNED) AS `q2_conducted_lessons_count`,
@@ -64,5 +53,15 @@ class Grade extends Model
         return DB::table('fake_grades')
             ->withExpression('fake_grades', $cte)
             ->selectRaw('*');
+    }
+
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(Client::class);
+    }
+
+    public function teacher(): BelongsTo
+    {
+        return $this->belongsTo(Teacher::class);
     }
 }
