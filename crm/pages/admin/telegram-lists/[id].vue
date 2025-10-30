@@ -112,7 +112,7 @@ nextTick(loadData)
                         </div>
                       </div>
                       <div class="control-lk__directions">
-                        <ClientDirections :item="item.recipients.students[i - 1].directions" />
+                        <ClientDirections :items="item.recipients.students[i - 1].directions" />
                       </div>
                     </div>
                     <div

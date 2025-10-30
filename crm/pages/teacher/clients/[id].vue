@@ -58,7 +58,7 @@ nextTick(loadData)
         <div>
           <div>направления</div>
           <div>
-            <ClientDirections :item="client.directions" />
+            <ClientDirections :items="client.directions" />
           </div>
         </div>
         <div>

@@ -67,10 +67,8 @@ const itemsFiltered = computed<RecepientPerson[]>(() => {
       ? [c.last_name, c.first_name].join(' ').toLowerCase().includes(query)
       : true
 
-    const clientDirections = c.directions![year] ?? []
-
-    const directionsMatch = directions.length
-      ? directions.some(d => clientDirections.includes(d))
+    const directionsMatch = directions.length && c.directions
+      ? c.directions.some(d => d.year === year && directions.includes(d.direction))
       : true
 
     return nameMatch && directionsMatch

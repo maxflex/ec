@@ -47,7 +47,7 @@ function getYearAgo(year: Year): string {
         нет договоров
       </span>
       <span v-else>
-        <ClientDirections :item="client.directions" />
+        <ClientDirections :items="client.directions" />
       </span>
     </div>
     <div style="width: 250px">

@@ -1,3 +1,5 @@
+import type { ClientDirection } from '~/components/Client'
+
 declare global {
   type LogDevice = keyof typeof LogDeviceLabel
 
@@ -560,10 +562,8 @@ declare global {
 
   type RecipientIds = Record<Recepient, number[]>
 
-  type ClientDirections = Partial<Record<Year, Direction[]>>
-
   interface RecepientPerson extends PersonResource {
-    directions?: ClientDirections
+    directions?: ClientDirection[]
     years?: Year[]
   }
 

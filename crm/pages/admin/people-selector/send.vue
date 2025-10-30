@@ -184,7 +184,7 @@ nextTick(async () => {
                         </div>
                       </div>
                       <div class="control-lk__directions">
-                        <ClientDirections :item="item.recipients.students[i - 1].directions" />
+                        <ClientDirections :items="item.recipients.students[i - 1].directions" />
                       </div>
                     </div>
                     <div class="control-lk__item-representative" :class="{ 'send-to-table__hidden': !isSelected('representatives') }">

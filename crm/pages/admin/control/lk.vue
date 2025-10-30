@@ -65,7 +65,7 @@ const { indexPageData, items } = useIndex<ControlLkResource>(`control/lk`, filte
             </span>
           </div>
           <div class="control-lk__directions">
-            <ClientDirections :item="item.directions" />
+            <ClientDirections :items="item.directions" />
           </div>
         </div>
         <div class="control-lk__item-representative">

@@ -54,6 +54,7 @@ class ClientController extends Controller
         $representative = $client->representative()->create($request->representative);
 
         sync_relation($client, 'phones', $request->all());
+        sync_relation($client, 'directions', $request->all());
         sync_relation($representative, 'phones', $request->representative);
 
         if ($request->has('request_id')) {
@@ -79,6 +80,7 @@ class ClientController extends Controller
         $client->representative->update($request->representative);
 
         sync_relation($client, 'phones', $request->all());
+        sync_relation($client, 'directions', $request->all());
         sync_relation($client->representative, 'phones', $request->representative);
 
         return new ClientResource($client);

@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Contracts\HasSchedule;
 use App\Enums\CvpStatus;
-use App\Enums\Direction;
 use App\Enums\HeadAboutUs;
 use App\Enums\LessonStatus;
 use App\Traits\HasComments;
@@ -268,29 +267,9 @@ class Client extends Person implements HasSchedule
         return $this->hasMany(Project::class);
     }
 
-    /**
-     * Год: все направления клиента в этом году
-     * Все направления без учета активна / неактивна программа
-     *
-     * @return object<int, Direction[]>
-     */
-    public function getDirectionsAttribute(): object
+    public function directions(): HasMany
     {
-        $years = $this->contracts->pluck('year')->sort()->values();
-        $result = (object) [];
-
-        foreach ($years as $year) {
-            $result->$year = $this->contracts
-                ->where('year', $year)
-                ->map(fn ($c) => $c->active_version)
-                ->map(fn ($activeVersion) => $activeVersion->directions)
-                ->flatten()
-                ->unique()
-                ->values()
-                ->all();
-        }
-
-        return $result;
+        return $this->hasMany(ClientDirection::class);
     }
 
     public function getSearchWeight(): int

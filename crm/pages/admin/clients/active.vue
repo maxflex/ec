@@ -58,7 +58,7 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
           <UiPerson :item="item" />
         </div>
         <div style="width: 300px">
-          <ClientDirections :item="item.directions" />
+          <ClientDirections :items="item.directions" />
         </div>
         <div>
           <TeethBar :items="item.schedule!" />

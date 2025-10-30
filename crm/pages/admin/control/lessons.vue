@@ -92,7 +92,7 @@ function showPercent(item: Item, field: Field): string {
             <UiPerson :item="item" />
           </td>
           <td>
-            <ClientDirections :item="item.directions" />
+            <ClientDirections :items="item.directions" />
           </td>
           <td v-for="{ field, percent } in tableFields" :key="`${field}${percent}`" width="110">
             <span v-if="percent" class="text-gray">

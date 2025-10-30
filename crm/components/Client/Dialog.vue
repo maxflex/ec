@@ -274,6 +274,12 @@ defineExpose({ create, edit })
           />
         </div>
         <PhoneEditor v-model="item.representative.phones" edit-telegram />
+
+        <div class="dialog-section__title">
+          Направления
+        </div>
+
+        <ClientDirectionsEditor v-model="item.directions" />
       </div>
     </div>
   </v-dialog>

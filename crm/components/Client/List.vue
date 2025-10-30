@@ -33,7 +33,7 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
         </NuxtLink>
       </div>
       <div>
-        <ClientDirections :item="item.directions" />
+        <ClientDirections :items="item.directions" />
       </div>
       <div class="text-right text-gray">
         {{ formatDateTime(item.created_at) }}

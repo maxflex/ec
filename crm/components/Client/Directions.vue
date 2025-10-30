@@ -1,10 +1,12 @@
 <script setup lang="ts">
-const { item } = defineProps<{
-  item: ClientDirections
+import type { ClientDirection } from '.'
+import { sortBy } from 'lodash-es'
+
+const { items } = defineProps<{
+  items: ClientDirection[]
 }>()
 
-const years = Object.keys(item)
-  .map(y => Number.parseInt(y) as Year)
+const itemsByYear = sortBy(items, 'year')
 
 function formatYear(y: Year) {
   const year = y - 2000
@@ -14,9 +16,12 @@ function formatYear(y: Year) {
 </script>
 
 <template>
-  <div class="client-directions">
-    <div v-for="year in years" :key="year" class="text-truncate">
-      {{ formatYear(year) }}: {{ item[year]!.map(d => DirectionLabel[d]).join(', ') }}
+  <div v-if="items.length" class="client-directions">
+    <div v-for="item in itemsByYear" :key="item.id" class="text-truncate">
+      {{ formatYear(item.year) }}: {{ DirectionLabel[item.direction] }}
     </div>
   </div>
+  <span v-else class="text-gray">
+    не установлено
+  </span>
 </template>
