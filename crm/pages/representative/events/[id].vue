@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { EventListResource } from '~/components/Event'
 import { UiLoader } from '#components'
-import { mdiArrowLeftThin, mdiCheckAll } from '@mdi/js'
 
 const route = useRoute()
 const item = ref<EventListResource>()

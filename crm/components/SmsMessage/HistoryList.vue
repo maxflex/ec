@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { SmsMessageListResource } from '.'
-import { mdiAlertCircleOutline, mdiCheckAll } from '@mdi/js'
 import { format } from 'date-fns'
 
 const { items } = defineProps<{
@@ -24,19 +23,15 @@ const { items } = defineProps<{
             ЕГЭ-Центр
           </span>
           <span class="d-flex align-center ga-1">
-            <v-tooltip>
-              <template #activator="{ props }">
-                <v-icon v-if="item.status === 1" color="success" :icon="mdiCheckAll" :size="14" v-bind="props" />
-                <v-icon v-else color="error" :icon="mdiAlertCircleOutline" :size="14" v-bind="props" />
-              </template>
-              {{ item.status_name.toLowerCase() }}
-            </v-tooltip>
             <span v-if="item.created_at">
               {{ format(item.created_at, 'dd.MM.yy в HH:mm') }}
             </span>
           </span>
         </div>
         <div class="sms-message__text" v-html="item.text" />
+        <div v-if="item.status !== 1" class="text-error">
+          {{ item.status_name }}
+        </div>
       </div>
     </div>
   </div>

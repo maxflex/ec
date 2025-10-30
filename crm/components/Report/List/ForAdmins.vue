@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { mdiCheckAll } from '@mdi/js'
+import type { RealReport, ReportListResource } from '..'
+import { mdiCheck, mdiCheckAll } from '@mdi/js'
 
 const props = defineProps<{
   items: ReportListResource[]
@@ -46,10 +47,9 @@ function isRealReport(r: ReportListResource): r is RealReport {
           <v-icon
             v-if="r.status === 'published'"
             class="ml-2"
-            :icon="mdiCheckAll"
+            :icon="r.is_read ? mdiCheckAll : mdiCheck"
             size="20"
-            :color="r.is_read ? 'secondary' : 'gray'"
-            :class="{ 'opacity-3': !r.is_read }"
+            color="secondary"
           />
         </div>
         <div style="width: 70px">

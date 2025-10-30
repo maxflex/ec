@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { mdiCamera, mdiVideo } from '@mdi/js'
 import { Cabinets } from '~/components/Cabinet'
 
 const { item } = defineProps<{
@@ -41,10 +42,10 @@ const { isStudent } = useAuthStore()
       <LessonItemStatus :item="item" show-unplanned />
     </div>
     <div style="width: 250px; flex: initial">
-      <div v-if="item.group.zoom?.id && item.status !== 'cancelled'" class="d-flex ga-2 align-center">
-        <div style="float: left">
-          <img v-if="isStudent" src="/public/img/zoom.png" :width="26" style="float: left" />
-        </div>
+      <div v-if="item.group.zoom?.id && item.status !== 'cancelled'" class="d-flex ga-1 align-center">
+        <span style="color: #2d8cff">
+          zoom:
+        </span>
         <span>
           {{ item.group.zoom.id }} / {{ item.group.zoom.password }}
         </span>

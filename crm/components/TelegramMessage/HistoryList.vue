@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { mdiAlertCircleOutline, mdiCheckAll } from '@mdi/js'
 import { format } from 'date-fns'
 
 const { items } = defineProps<{
@@ -23,14 +22,15 @@ const { items } = defineProps<{
             ЕГЭ-Центр
           </span>
           <span class="d-flex align-center ga-1">
-            <v-icon v-if="item.telegram_id" color="success" :icon="mdiCheckAll" :size="14" />
-            <v-icon v-else color="error" :icon="mdiAlertCircleOutline" :size="14" />
             <span v-if="item.created_at">
               {{ format(item.created_at, 'dd.MM.yy в HH:mm') }}
             </span>
           </span>
         </div>
         <div class="tg-message__text" v-html="item.text" />
+        <div v-if="!item.telegram_id" class="text-error">
+          Сообщение не доставлено
+        </div>
       </div>
     </div>
   </div>

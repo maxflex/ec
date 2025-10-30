@@ -51,7 +51,7 @@ const isConductDisabled = isEditDisabled || item.status === 'cancelled'
         </v-list>
       </v-menu>
     </div>
-    <div style="width: 120px">
+    <div style="width: 100px">
       {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
     </div>
     <div v-if="!group" style="width: 70px">
@@ -59,21 +59,13 @@ const isConductDisabled = isEditDisabled || item.status === 'cancelled'
         ГР-{{ item.group.id }}
       </NuxtLink>
     </div>
-    <div v-if="item.teacher" style="width: 180px; line-height: 20px;" class="vf-1">
-      <NuxtLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }" @click.stop>
-        {{ formatNameInitials(item.teacher) }}
-      </NuxtLink>
-      <div v-if="item.is_substitute" class="text-gray" style="font-size: 14px">
-        замена преподавателя
-      </div>
-    </div>
-    <div style="width: 140px">
+    <div style="width: 120px">
       {{ ProgramShortLabel[item.group.program] }}
     </div>
-    <div style="width: 60px">
+    <div style="width: 50px">
       <GroupStudentsCount v-if="item.status !== 'cancelled'" :item="item" />
     </div>
-    <div style="width: 60px">
+    <div style="width: 50px">
       <template v-if="item.cabinet">
         {{ Cabinets[item.cabinet].label }}
       </template>
@@ -96,6 +88,11 @@ const isConductDisabled = isEditDisabled || item.status === 'cancelled'
     </div>
     <div class="lesson-item__status">
       <LessonItemStatus :item="item" show-unplanned />
+    </div>
+    <div style="width: 180px; flex: initial">
+      <div v-if="item.group.zoom?.id && item.status !== 'cancelled'">
+        {{ item.group.zoom.id }} / {{ item.group.zoom.password }}
+      </div>
     </div>
     <LessonItemSeqQuarter :item="item" hide-quarter />
   </div>
