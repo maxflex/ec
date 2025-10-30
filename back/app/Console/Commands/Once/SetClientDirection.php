@@ -2,8 +2,7 @@
 
 namespace App\Console\Commands\Once;
 
-use App\Models\ContractVersion;
-use App\Models\ContractVersionProgram;
+use App\Models\Contract;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -21,26 +20,29 @@ class SetClientDirection extends Command
             ->get();
 
         $result = [
-            ['client_id', 'year', 'directions', 'url'],
+            ['client_id', 'year', 'directions_all', 'directions_uniq'],
         ];
 
         $bar = $this->output->createProgressBar(count($items));
         foreach ($items as $item) {
-            // first contract version
-            $firstContractVersion = ContractVersion::query()
-                ->whereHas('contract',
-                    fn ($q) => $q->where([
-                        'year' => $item->year,
-                        'client_id' => $item->client_id,
-                    ]))
-                ->orderBy('created_at', 'asc')
-                ->first();
+            $contracts = Contract::where([
+                'year' => $item->year,
+                'client_id' => $item->client_id,
+            ])->get();
+
+            $directions = collect();
+
+            foreach ($contracts as $contract) {
+                foreach ($contract->first_version->programs as $program) {
+                    $directions->push($program->program->getDirection()->value);
+                }
+            }
 
             $result[] = [
                 $item->client_id,
                 $item->year,
-                $firstContractVersion->programs->map(fn (ContractVersionProgram $p) => $p->program->getDirection()->value)->sort()->join(','),
-                "https://lk.ege-centr.ru/clients/{$item->client_id}?contract_id={$firstContractVersion->contract_id}",
+                $directions->sort()->join(','),
+                $directions->unique()->sort()->join(','),
             ];
 
             $bar->advance();
