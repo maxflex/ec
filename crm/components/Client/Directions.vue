@@ -16,8 +16,14 @@ function formatYear(y: Year) {
 </script>
 
 <template>
-  <div v-if="items.length" class="client-directions">
-    <div v-for="item in itemsByYear" :key="item.id" class="text-truncate">
+  <div
+    v-if="items.length"
+    class="client-directions"
+  >
+    <div
+      v-for="item in itemsByYear" :key="item.id" class="text-truncate"
+      :class="`client-directions--${item.status}`"
+    >
       {{ formatYear(item.year) }}: {{ DirectionLabel[item.direction] }}
     </div>
   </div>
@@ -25,3 +31,14 @@ function formatYear(y: Year) {
     не установлено
   </span>
 </template>
+
+<style lang="scss">
+.client-directions {
+  &--finished {
+    color: rgb(var(--v-theme-gray)) !important;
+  }
+  &--exceeded {
+    color: rgb(var(--v-theme-error)) !important;
+  }
+}
+</style>

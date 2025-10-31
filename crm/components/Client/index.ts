@@ -19,6 +19,7 @@ export interface ClientDirection {
   id: number
   year: Year
   direction: Direction
+  status: CvpStatus
 }
 
 export interface ClientListResource extends PersonResource {
