@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { Project, ProjectGroup, ProjectProgram, ProjectResource } from '.'
+import type { ClientResource } from '../Client'
 import { ContractVersionDialog, ProjectNameDialog } from '#components'
 import { mdiChevronRight } from '@mdi/js'
+import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 import { apiUrl, isGroupChangedInContract } from '.'
 
 const { client, savedProject } = defineProps<{
@@ -9,13 +11,13 @@ const { client, savedProject } = defineProps<{
    * Если загружаем конкретный ID проекта
    */
   savedProject?: ProjectResource
-  client?: PersonResource
+  client?: ClientResource
 }>()
 
 defineEmits<{ back: [] }>()
 
 const router = useRouter()
-const loading = ref(false)
+const loading = ref(true)
 const teeth = ref<Teeth>()
 const project = ref<Project>()
 const selectedContractId = ref<number>() // ID выбранной вкладки договора
@@ -24,6 +26,9 @@ const nameDialog = ref<InstanceType<typeof ProjectNameDialog>>()
 const key = ref(0)
 // название проекта (можно добавлять к проектам без клиента)
 const projectName = ref<string>()
+
+// свернуть панель клиента (чтоб не занимало вертикальное пространство)
+const isMinimized = ref(false)
 
 // сохранённые проекты расписания (доступные для загрузки)
 const savedProjects = ref<ProjectResource[]>([])
@@ -230,25 +235,7 @@ nextTick(fromActualContracts)
 </script>
 
 <template>
-  <UiIndexPage
-    class="project"
-    :data="{ loading: loading && !project, noData: false }"
-    sticky
-  >
-    <template #filters>
-      <!-- <div class="d-flex align-center ga-6">
-        <UiAvatar :item="client" :size="60" />
-        <div class="panel-info pa-0" style="border: none">
-          <div>
-            <div>
-              ученик
-            </div>
-            <div>
-              {{ formatName(client) }}
-            </div>
-          </div>
-        </div>
-      </div> -->
+  <!-- <template #filters>
       <div class="project__header">
         <template v-if="client">
           <v-btn
@@ -291,10 +278,53 @@ nextTick(fromActualContracts)
           :entity-type="EntityTypeValue.project"
         />
       </div>
-    </template>
-
-    <template v-if="project && selectedContractId">
-      <div class="tabs">
+    </template> -->
+  <UiLoader v-if="loading && !project" />
+  <template v-else>
+    <div class="panel" :class="{ 'panel--minimized': isMinimized }">
+      <Vue3SlideUpDown :model-value="!isMinimized" :duration="150">
+        <ClientPanel v-if="client" :item="client" />
+        <div v-else class="panel-info panel-info__empty-project">
+          <div class="font-weight-bold">
+            <template v-if="projectName">
+              {{ projectName }}
+            </template>
+            <template v-else>
+              {{ savedProject?.name || 'Новый проект' }}
+            </template>
+          </div>
+          <div class="panel-actions">
+            <CommentBtn
+              v-if="savedProject"
+              color="gray"
+              :size="42"
+              :class="{ 'no-items': savedProject.comments_count === 0 }"
+              :count="savedProject.comments_count"
+              :entity-id="savedProject.id"
+              :entity-type="EntityTypeValue.project"
+            />
+            <v-btn
+              icon="$edit"
+              color="gray"
+              :size="42"
+              variant="plain"
+              class="vfn-2"
+              @click="nameDialog?.open()"
+            />
+          </div>
+        </div>
+      </Vue3SlideUpDown>
+      <div class="panel-schedule">
+        <TeethBar v-if="teeth" :items="teeth" />
+        <TeethBar v-else :items="[]" />
+        <v-btn
+          icon="$collapse" color="primary"
+          :size="38"
+          style=""
+          @click="isMinimized = !isMinimized"
+        />
+      </div>
+      <div v-if="project && selectedContractId" class="tabs">
         <div
           v-for="(_, contractId) in project"
           :key="contractId"
@@ -367,6 +397,8 @@ nextTick(fromActualContracts)
           </v-menu>
         </div>
       </div>
+    </div>
+    <template v-if="project && selectedContractId">
       <UiNoData v-if="project[selectedContractId].length === 0" />
       <div
         v-for="p in project[selectedContractId]"
@@ -407,12 +439,72 @@ nextTick(fromActualContracts)
         </div>
       </div>
     </template>
-  </UiIndexPage>
+  </template>
+
   <ContractVersionDialog ref="contractVersionDialog" />
   <ProjectNameDialog ref="nameDialog" @saved="name => (projectName = name)" />
 </template>
 
 <style lang="scss">
+.page-projects-editor {
+  .panel-schedule {
+    justify-content: space-between;
+    .v-btn {
+      transition: all ease-in-out 0.2s;
+    }
+  }
+  .panel--minimized {
+    .panel-schedule .v-btn {
+      transform: rotate(180deg);
+    }
+  }
+
+  .panel-info__empty-project {
+    align-items: center;
+    padding: 0 20px !important;
+    $height: 50px !important;
+    height: $height;
+    min-height: $height;
+    .panel-actions {
+      position: relative;
+      top: 1px;
+      right: -1px;
+      gap: 4px;
+    }
+  }
+
+  .tabs {
+    position: sticky;
+    top: 64px;
+    z-index: 1;
+    background: white;
+    .tabs-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      &a {
+        color: black !important;
+      }
+
+      .v-icon {
+        $size: 20px;
+        height: $size;
+        width: $size;
+        font-size: 14px;
+        transform: rotate(90deg);
+        transition: transform ease-in-out 0.2s;
+        &[aria-expanded='true'] {
+          transform: rotate(-90deg);
+        }
+      }
+    }
+
+    .v-badge__wrapper {
+      margin: 0 !important;
+    }
+  }
+}
+
 .project {
   &__header {
     font-weight: bold;
@@ -477,53 +569,6 @@ nextTick(fromActualContracts)
 
   &__changes-cnt {
     color: rgb(var(--v-theme-gray));
-  }
-
-  .tabs {
-    position: sticky;
-    top: 64px;
-    z-index: 1;
-    background: white;
-    .tabs-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      &a {
-        color: black !important;
-      }
-
-      .v-icon {
-        $size: 20px;
-        height: $size;
-        width: $size;
-        font-size: 14px;
-        transform: rotate(90deg);
-        transition: transform ease-in-out 0.2s;
-        &[aria-expanded='true'] {
-          transform: rotate(-90deg);
-        }
-      }
-    }
-
-    .v-badge__wrapper {
-      margin: 0 !important;
-    }
-  }
-
-  &__comments {
-    text-align: right;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 1px;
-  }
-}
-.project__filters {
-  overflow: hidden;
-  & > .filters__inputs {
-    overflow: hidden;
-    width: 100%;
   }
 }
 </style>

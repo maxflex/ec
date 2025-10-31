@@ -30,19 +30,21 @@ const isAlreadyInOtherGroup = computed(() =>
         :key="item.id"
         :class="{ changed: isGroupChangedInContract(item, contractId!) }"
       >
-        <td width="80">
-          <GroupLink :item="item" />
+        <td width="90">
+          <div class="pl-1">
+            <GroupLink :item="item" />
+          </div>
         </td>
-        <td width="190">
+        <td width="180">
           <GroupTeachers :item="item" />
         </td>
-        <td width="130">
+        <td width="100">
           {{ ProgramShortLabel[item.program] }}
         </td>
         <td width="70">
           <GroupFirstLessonDate :date="item.first_lesson_date" />
         </td>
-        <td width="140">
+        <td width="100">
           <UiIfSet :value="item.lesson_counts.conducted || item.lesson_counts.planned">
             <template #empty>
               занятий нет
@@ -50,7 +52,7 @@ const isAlreadyInOtherGroup = computed(() =>
             <GroupLessonCounts :item="item" />
           </UiIfSet>
         </td>
-        <td width="80">
+        <td width="70">
           <GroupStudentsCount :item="item" />
         </td>
         <td width="160">

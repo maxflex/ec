@@ -6,7 +6,7 @@ import { apiUrl } from '~/components/Project'
 const route = useRoute()
 const loading = ref(true)
 const { id, client_id: clientId } = route.query
-const client = ref<PersonResource>()
+const client = ref<ClientResource>()
 const savedProject = ref<ProjectResource>()
 
 async function loadClient() {
@@ -16,8 +16,12 @@ async function loadClient() {
 
 async function loadProject() {
   const { data } = await useHttp<ProjectResource>(`${apiUrl}/${id}`)
-  savedProject.value = data.value!
-  client.value = data.value!.client
+  if (data.value) {
+    savedProject.value = data.value
+    if (data.value.client) {
+      client.value = data.value!.client
+    }
+  }
 }
 
 nextTick(async () => {
@@ -32,6 +36,5 @@ nextTick(async () => {
 </script>
 
 <template>
-  <UiLoader v-if="loading" />
-  <ProjectEditor v-else :client="client" :saved-project="savedProject" />
+  <ProjectEditor v-if="!loading" :client="client" :saved-project="savedProject" />
 </template>

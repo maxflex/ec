@@ -50,6 +50,7 @@ export interface ClientResource extends PersonWithPhotoResource, HasPhones {
   mark_sheet: MarkSheet | null
   schedule: Teeth | null
   current_lesson: null | CurrentLessonResource
+  comments_count: number
   passport: {
     series: string | null
     number: string | null
@@ -72,6 +73,7 @@ export const modelDefaults: ClientResource = {
   is_consult_agree: false,
   entity_type: EntityTypeValue.client,
   mark_sheet: null,
+  comments_count: 0,
   passport: {
     series: null,
     number: null,

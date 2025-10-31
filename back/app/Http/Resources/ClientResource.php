@@ -25,6 +25,7 @@ class ClientResource extends JsonResource
             'user' => new PersonResource($this->user),
             'representative' => new RepresentativeResource($this->representative),
             'phones' => PhoneResource::collection($this->phones),
+            'comments_count' => $this->comments()->whereNull('extra')->count(),
         ]);
     }
 }

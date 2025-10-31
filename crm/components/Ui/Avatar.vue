@@ -9,6 +9,6 @@ const src = computed(() => item.photo_url ?? `/img/avatar/male.png`)
 
 <template>
   <v-avatar :size="size">
-    <v-img :src="src" />
+    <v-img eager :src="src" />
   </v-avatar>
 </template>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { ClientDialog, PrintSpravkaDialog } from '#build/components'
 import type { ClientResource } from '~/components/Client'
 
 const { tabs, selectedTab } = useTabs({
@@ -21,9 +20,6 @@ const { tabs, selectedTab } = useTabs({
 
 const route = useRoute()
 const client = ref<ClientResource>()
-const clientDialog = ref<InstanceType<typeof ClientDialog>>()
-
-const printSpravkaDialog = ref<InstanceType<typeof PrintSpravkaDialog>>()
 
 async function loadData() {
   const { data } = await useHttp<ClientResource>(`clients/${route.params.id}`)
@@ -43,61 +39,7 @@ nextTick(loadData)
 <template>
   <template v-if="client">
     <div class="panel">
-      <div class="panel-info">
-        <UiAvatar :item="client" :size="120" />
-        <div>
-          <div>
-            ученик
-            <ClientRiskLabel :item="client" />
-          </div>
-          <div class="text-truncate">
-            {{ formatName(client) }}
-            <div v-if="client.phones" class="mt-5">
-              <PhoneList :items="client.phones" show-icons />
-            </div>
-          </div>
-        </div>
-        <div>
-          <div>представитель</div>
-          <div class="text-truncate">
-            {{ formatName(client.representative) }}
-            <div v-if="client.representative.phones" class="mt-5">
-              <PhoneList :items="client.representative.phones" show-icons />
-            </div>
-          </div>
-        </div>
-        <div>
-          <div>направления</div>
-          <div>
-            <ClientDirections :items="client.directions" />
-          </div>
-        </div>
-        <div>
-          <div>куратор</div>
-          <UiPerson v-if="client.head_teacher" :item="client.head_teacher" />
-          <div v-else>
-            не установлено
-          </div>
-        </div>
-        <div class="panel-actions">
-          <CommentBtn
-            :entity-id="client.id"
-            :entity-type="EntityTypeValue.client"
-          />
-          <v-btn
-            icon="$print"
-            :size="48"
-            variant="plain"
-            @click="printSpravkaDialog?.open(client.id)"
-          />
-          <v-btn
-            icon="$edit"
-            :size="48"
-            variant="plain"
-            @click="clientDialog?.edit(client.id)"
-          />
-        </div>
-      </div>
+      <ClientPanel :item="client" @updated="onClientUpdated" />
       <div v-if="client.schedule" class="panel-schedule">
         <TeethBar :items="client.schedule" />
         <LessonCurrentLesson :item="client.current_lesson" />
@@ -119,16 +61,5 @@ nextTick(loadData)
     <ComplaintTab v-else-if="selectedTab === 'clientComplaints'" :client-id="client.id" />
     <ClientReviewTab v-else-if="selectedTab === 'clientReviews'" :client-id="client.id" />
     <Schedule v-else :client-id="client.id" program-filter show-holidays show-calendar />
-    <ClientDialog ref="clientDialog" @updated="onClientUpdated" />
   </template>
-  <PrintSpravkaDialog ref="printSpravkaDialog" />
 </template>
-
-<style lang="scss">
-.page-clients-id {
-  .last-seen-at {
-    font-size: 14px;
-    margin-left: 2px;
-  }
-}
-</style>
