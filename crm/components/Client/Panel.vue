@@ -19,7 +19,13 @@ const printSpravkaDialog = ref<InstanceType<typeof PrintSpravkaDialog>>()
         <ClientRiskLabel :item="item" />
       </div>
       <div class="text-truncate">
-        {{ formatName(item) }}
+        <div>
+          {{ item.last_name }}
+          {{ item.first_name }}
+        </div>
+        <div v-if="item.middle_name">
+          {{ item.middle_name }}
+        </div>
         <div v-if="item.phones" class="mt-5">
           <PhoneList :items="item.phones" show-icons />
         </div>
@@ -28,7 +34,13 @@ const printSpravkaDialog = ref<InstanceType<typeof PrintSpravkaDialog>>()
     <div>
       <div>представитель</div>
       <div class="text-truncate">
-        {{ formatName(item.representative) }}
+        <div>
+          {{ item.representative.last_name }}
+          {{ item.representative.first_name }}
+        </div>
+        <div v-if="item.representative.middle_name">
+          {{ item.representative.middle_name }}
+        </div>
         <div v-if="item.representative.phones" class="mt-5">
           <PhoneList :items="item.representative.phones" show-icons />
         </div>
