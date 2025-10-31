@@ -318,8 +318,9 @@ nextTick(fromActualContracts)
         <TeethBar v-if="teeth" :items="teeth" />
         <TeethBar v-else :items="[]" />
         <v-btn
-          icon="$collapse" color="primary"
-          :size="38"
+          icon="$collapse"
+          color="primary"
+          :size="28"
           style=""
           @click="isMinimized = !isMinimized"
         />

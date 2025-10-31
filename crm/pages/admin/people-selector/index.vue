@@ -263,7 +263,7 @@ nextTick(async () => {
           <UiPerson :item="item" teacher-format="full" />
         </div>
         <div>
-          <ClientDirections v-if="item.directions" :item="item.directions" />
+          <ClientDirections v-if="item.directions" :items="item.directions" />
         </div>
       </div>
     </div>
