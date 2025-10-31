@@ -20,7 +20,7 @@ class ProjectResource extends JsonResource
                 $request->boolean('with_problems'),
                 fn () => $this->has_problems,
             ),
-            'client' => new PersonResource($this->client),
+            'client' => new ClientResource($this->client),
             'user' => new PersonResource($this->user),
         ]);
     }

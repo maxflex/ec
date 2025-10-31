@@ -1,3 +1,4 @@
+import type { ClientResource } from '../Client'
 import type { GroupListResource } from '../Group'
 
 export const apiUrl = 'projects'
@@ -8,7 +9,7 @@ export const apiUrl = 'projects'
 export interface ProjectResource {
   id: number
   user: PersonResource
-  client: PersonResource | null
+  client: ClientResource | null
   year: Year
   created_at: string
   is_archived: boolean
