@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use _PHPStan_ac6dae9b0\Nette\Neon\Exception;
 use App\Casts\JsonArrayCast;
 use App\Enums\Cabinet;
 use App\Enums\ClientLessonStatus;
@@ -124,27 +125,38 @@ class Lesson extends Model
      */
     public function conduct($students)
     {
-        foreach ($students as $s) {
-            $s = (object) $s;
+        DB::transaction(function () use ($students) {
+            foreach ($students as $s) {
+                $s = (object) $s;
 
-            $contractVersionProgram = ContractVersionProgram::find($s->contract_version_program_id);
-            $clientLesson = new ClientLesson([
-                'status' => $s->status,
-                'comment' => $s->comment,
-                'minutes_late' => $s->status === ClientLessonStatus::late->value
-                    ? $s->minutes_late
-                    : null,
-                'price' => $this->is_free ? 0 : $contractVersionProgram->getNextPrice(),
-                'scores' => $s->scores,
+                $contractVersionProgram = ContractVersionProgram::find($s->contract_version_program_id);
+
+                // занятие можно провести только если contractVersionProgram относится к активному договору
+                if (! $contractVersionProgram->contractVersion->is_active) {
+                    throw new Exception(sprintf(
+                        'Попытка провести занятие по программе ID %d, которая относится к неактивной версии договора',
+                        $contractVersionProgram->id,
+                    ));
+                }
+
+                $clientLesson = new ClientLesson([
+                    'status' => $s->status,
+                    'comment' => $s->comment,
+                    'minutes_late' => $s->status === ClientLessonStatus::late->value
+                        ? $s->minutes_late
+                        : null,
+                    'price' => $this->is_free ? 0 : $contractVersionProgram->getNextPrice(),
+                    'scores' => $s->scores,
+                ]);
+                $clientLesson->contract_version_program_id = $contractVersionProgram->id;
+                $this->clientLessons()->save($clientLesson);
+            }
+
+            $this->update([
+                'conducted_at' => now(),
+                'status' => LessonStatus::conducted,
             ]);
-            $clientLesson->contract_version_program_id = $contractVersionProgram->id;
-            $this->clientLessons()->save($clientLesson);
-        }
-
-        $this->update([
-            'conducted_at' => now(),
-            'status' => LessonStatus::conducted,
-        ]);
+        });
     }
 
     public function clientLessons(): HasMany
