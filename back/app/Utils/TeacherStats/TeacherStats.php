@@ -329,18 +329,13 @@ readonly class TeacherStats
                     );
                     break;
 
-                case 'lessons_with_homework_avg':
-                    $totals->lessons_with_homework_avg = share(
-                        $totals->lessons_with_homework,
-                        $totals->client_lessons,
-                        100
-                    );
-                    break;
-
                 case 'lessons_with_files_avg':
-                    $totals->lessons_with_files_avg = share(
-                        $totals->lessons_with_files,
-                        $totals->client_lessons,
+                case 'lessons_with_homework_avg':
+                    // lessons_with_files_avg => lessons_with_files
+                    $key2 = str($key)->beforeLast('_')->value();
+                    $totals->{$key} = share(
+                        $totals->{$key2},
+                        $totals->lessons_conducted,
                         100
                     );
                     break;

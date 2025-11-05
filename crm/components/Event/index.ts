@@ -1,3 +1,5 @@
+import type { ClientDirection } from '../Client'
+
 export interface EventListResource {
   id: number
   name: string
@@ -20,6 +22,7 @@ export interface EventParticipant {
   confirmation: EventParticipantConfirmation
   is_visited: boolean
   entity: PersonResource
+  directions?: ClientDirection[]
 }
 
 export interface EventResource {

@@ -4,7 +4,6 @@ import type { EventParticipant, EventResource } from '~/components/Event'
 import { mdiPlus } from '@mdi/js'
 
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
-const { $addSseListener, $removeSseListener } = useNuxtApp()
 const route = useRoute()
 
 const item = ref<EventResource>()
@@ -97,13 +96,16 @@ nextTick(loadData)
             <h2 class="mb-5">
               {{ key === 'clients' ? 'Клиенты' : 'Преподаватели' }}
             </h2>
-            <v-table class="event-participants">
+            <v-table class="event-participants table-padding">
               <tbody>
                 <tr v-for="p in displayedParticipants[key]" :key="p.id">
-                  <td width="350" class="pl-5">
+                  <td width="320" class="pl-5">
                     <UiPerson :item="p.entity" />
                   </td>
-                  <td width="180" class="pr-0">
+                  <td width="240">
+                    <ClientDirections v-if="p.directions" :items="p.directions" />
+                  </td>
+                  <td width="220" class="pr-0">
                     <v-menu>
                       <template #activator="{ props }">
                         <span v-bind="props" class="cursor-pointer unselectable">
@@ -135,7 +137,7 @@ nextTick(loadData)
                       </v-list>
                     </v-menu>
                   </td>
-                  <td width="180" class="pr-0">
+                  <td width="220" class="pr-0">
                     <v-menu>
                       <template #activator="{ props }">
                         <span v-bind="props" class="cursor-pointer unselectable">
@@ -220,7 +222,7 @@ nextTick(loadData)
     }
     &:hover {
       .event-participants__remove {
-        opacity: 1;
+        opacity: 0.5;
       }
     }
   }
@@ -229,6 +231,7 @@ nextTick(loadData)
     transition: opacity ease-in-out 0.2s;
     &:hover {
       color: rgb(var(--v-theme-error)) !important;
+      opacity: 1 !important;
     }
   }
 }

@@ -20,7 +20,7 @@ class EventResource extends JsonResource
     {
         $participants = [];
         foreach (['clients', 'teachers'] as $key) {
-            $participants[$key] = $this->participants()
+            $participant = $this->participants()
                 ->with('entity')
                 ->where('entity_type', $key === 'clients' ? Client::class : Teacher::class)
                 ->get()
@@ -32,8 +32,11 @@ class EventResource extends JsonResource
                 ->map(fn ($p) => extract_fields($p, [
                     'confirmation', 'is_visited',
                 ], [
+                    'directions' => $key === 'clients' ? $p->entity->directions : null,
                     'entity' => new PersonResource($p->entity),
                 ]));
+
+            $participants[$key] = $participant;
         }
 
         return extract_fields($this, ['*'], [
