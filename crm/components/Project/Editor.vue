@@ -315,8 +315,15 @@ nextTick(fromActualContracts)
         </div>
       </Vue3SlideUpDown>
       <div class="panel-schedule">
-        <TeethBar v-if="teeth" :items="teeth" />
-        <TeethBar v-else :items="[]" />
+        <div class="d-flex align-center">
+          <RouterLink v-if="client" :to="{ name: 'clients-id', params: { id: client.id } }">
+            <UiIconLink prepend icon="$back" class="project__back-link">
+              вернуться к ученику
+            </UiIconLink>
+          </RouterLink>
+          <TeethBar v-if="teeth" :items="teeth" />
+          <TeethBar v-else :items="[]" />
+        </div>
         <v-btn
           icon="$collapse"
           color="primary"
@@ -326,6 +333,10 @@ nextTick(fromActualContracts)
         />
       </div>
       <div v-if="project && selectedContractId" class="tabs">
+        <!-- <div class="tabs-item project__back">
+          <v-icon icon="$back" />
+          к ученику
+        </div> -->
         <div
           v-for="(_, contractId) in project"
           :key="contractId"
@@ -570,6 +581,20 @@ nextTick(fromActualContracts)
 
   &__changes-cnt {
     color: rgb(var(--v-theme-gray));
+  }
+
+  // &__back {
+  //   align-items: center;
+  //   .v-icon {
+  //     transform: none !important;
+  //     font-size: 18px !important;
+  //   }
+  // }
+
+  &__back-link {
+    left: -2px;
+    position: relative;
+    margin-right: 30px;
   }
 }
 </style>

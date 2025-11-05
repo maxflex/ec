@@ -18,6 +18,7 @@ export const printOptions = {
   17: 'договор на преподавателя 8, 9 кл',
   18: 'акт оказанных услуг 8, 9 кл',
   19: 'договор маткап ИП',
+  20: 'договор курсы',
 } as const satisfies Record<number, string>
 
 export type PrintOptionId = keyof typeof printOptions

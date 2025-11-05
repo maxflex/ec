@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ClientDialog, PrintSpravkaDialog } from '#components'
 import type { ClientResource } from '.'
+import { mdiOpenInNew } from '@mdi/js'
 
 const { item } = defineProps<{ item: ClientResource }>()
 const emit = defineEmits<{ updated: [c: ClientResource] }>()
@@ -10,9 +11,7 @@ const printSpravkaDialog = ref<InstanceType<typeof PrintSpravkaDialog>>()
 
 <template>
   <div class="panel-info">
-    <RouterLink :to="{ name: 'clients-id', params: { id: item.id } }">
-      <UiAvatar :item="item" :size="120" />
-    </RouterLink>
+    <UiAvatar :item="item" :size="120" />
     <div>
       <div>
         ученик
@@ -25,6 +24,9 @@ const printSpravkaDialog = ref<InstanceType<typeof PrintSpravkaDialog>>()
         </div>
         <div v-if="item.middle_name">
           {{ item.middle_name }}
+          <!-- <a class="vfn-1">
+            <v-icon :icon="mdiOpenInNew" :size="16" />
+          </a> -->
         </div>
         <div v-if="item.phones" class="mt-5">
           <PhoneList :items="item.phones" show-icons />
