@@ -2,7 +2,6 @@
 import type { ReportResource } from '.'
 
 const route = useRoute()
-// const { user } = useAuthStore()
 const item = ref<ReportResource>()
 
 async function loadData() {
@@ -55,6 +54,15 @@ nextTick(loadData)
         <div>дата</div>
         <div>
           {{ formatDate(item.created_at!) }}
+        </div>
+      </div>
+
+      <div>
+        <div>
+          просмотр родителем
+        </div>
+        <div>
+          {{ item.is_read ? 'прочитано' : 'не прочитано' }}
         </div>
       </div>
     </div>

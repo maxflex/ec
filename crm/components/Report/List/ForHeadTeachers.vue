@@ -43,16 +43,19 @@ function getFillColor(r: RealReport) {
         <div style="width: 180px">
           занятий: {{ r.lessons_count }}
         </div>
+
+        <div style="width: 130px" class="text-center d-flex ga-5">
+          <ReportStatus :status="r.status" />
+        </div>
+
+        <div style="width: 120px">
+          {{ r.is_read ? 'прочитано' : 'не прочитано' }}
+        </div>
+
         <div style="width: 50px">
           <span v-if="r.grade" :class="`text-score text-score--${r.grade}`">
             {{ r.grade }}
           </span>
-        </div>
-        <div
-          style="width: 150px"
-          class="text-center d-flex ga-5"
-        >
-          <ReportStatus :status="r.status" />
         </div>
 
         <div style="width: 100px" class="pr-5">

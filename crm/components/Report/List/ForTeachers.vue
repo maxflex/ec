@@ -22,10 +22,10 @@ function getFillColor(r: RealReport) {
 <template>
   <div class="table">
     <div v-for="r in items" :id="`report-${r.id}`" :key="r.id">
-      <div style="width: 180px">
+      <div style="width: 190px">
         <UiPerson :item="r.client" />
       </div>
-      <div style="width: 120px">
+      <div style="width: 100px">
         {{ ProgramShortLabel[r.program] }}
       </div>
       <template v-if="isRealReport(r)">
@@ -38,7 +38,7 @@ function getFillColor(r: RealReport) {
             :to="{ name: 'reports-id-edit', params: { id: r.id } }"
           />
         </div>
-        <div style="width: 180px">
+        <div style="width: 110px">
           занятий: {{ r.lessons_count }}
           <div v-if="r.count" class="text-gray text-caption">
             +{{ plural(r.count, ['отчёт', 'отчёта', 'отчётов']) }}
@@ -54,6 +54,10 @@ function getFillColor(r: RealReport) {
           class="text-center d-flex ga-5"
         >
           <ReportStatus :status="r.status" />
+        </div>
+
+        <div style="width: 120px">
+          {{ r.is_read ? 'прочитано' : 'не прочитано' }}
         </div>
 
         <div style="width: 50px">

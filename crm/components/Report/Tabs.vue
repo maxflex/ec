@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { RealReport, ReportResource } from '.'
 import { ReportDialog } from '#components'
+import { mdiCheck, mdiCheckAll } from '@mdi/js'
 
 const route = useRoute()
 const id = Number.parseInt(route.params.id as string)
@@ -92,7 +93,24 @@ nextTick(loadData)
             <span v-if="item.id < 0" class="text-error">
               требуется отчёт
             </span>
-            <ReportStatus v-else :status="item.status" />
+            <div v-else class="d-flex align-center">
+              <ReportStatus :status="item.status" />
+              <!-- <v-icon
+                v-if="item.status === 'published'"
+                class="ml-2"
+                :icon="item.is_read ? mdiCheckAll : mdiCheck"
+                size="20"
+                color="secondary"
+              /> -->
+            </div>
+          </div>
+        </div>
+        <div v-if="item.id">
+          <div>
+            просмотр родителем
+          </div>
+          <div>
+            {{ item.is_read ? 'прочитано' : 'не прочитано' }}
           </div>
         </div>
 
