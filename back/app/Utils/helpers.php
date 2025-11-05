@@ -111,11 +111,11 @@ function get_max_pko_number(Company $company, string $date)
     $year = intval(explode('-', $date)[0]);
 
     // платежи пробный ЕГЭ – все ООО
-    $paymentsMaxPko = $company === Company::ip ? 0 : intval(OtherPayment::query()
+    $paymentsMaxPko = $company === Company::ooo ? intval(OtherPayment::query()
         ->where('method', OtherPaymentMethod::cash)
         ->where('is_return', false)
         ->whereRaw('YEAR(`date`) = ?', [$year])
-        ->max('pko_number'));
+        ->max('pko_number')) : 0;
 
     $contractPaymentsMaxPko = intval(ContractPayment::query()
         ->whereHas('contract', fn ($q) => $q->where('company', $company))
