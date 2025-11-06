@@ -20,7 +20,8 @@ const isSbpPaymentAvailable = computed<boolean>(() => {
   if (selectedContract.value.year < currentAcademicYear()) {
     return false
   }
-  if (selectedContract.value.company === 'ooo') {
+  // оплата по QR доступна только для ИП
+  if (selectedContract.value.company !== 'ip') {
     return false
   }
   if (toPayLeft.value <= 0) {
