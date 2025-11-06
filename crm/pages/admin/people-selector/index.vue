@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import type { EventResource } from '~/components/Event'
 
-const currentYear = currentAcademicYear()
-const nextYear = (currentYear + 1) as Year
 const modeLabel = {
-  clientsCurrentYear: `клиенты ${currentYear}-${nextYear}`,
-  clientsNextYear: `клиенты ${nextYear}-${nextYear + 1}`,
+  clients: `клиенты`,
   teachers: 'преподаватели',
 } as const
 
@@ -22,7 +19,7 @@ const sendEventId = route.query.event_id
 const participantsEventId = route.query.participants
 
 const saving = ref(false)
-const mode = ref<Mode>('clientsCurrentYear')
+const mode = ref<Mode>('clients')
 // const mode = ref<Recepient>('clients')
 const people = ref<Recipients>({
   clients: [],
@@ -43,15 +40,7 @@ const selected = ref<RecipientIds>({
 
 const noData = computed(() => !Object.values(people.value).some(e => !!e.length))
 
-const currentPeople = computed<RecepientPerson[]>(() => {
-  if (mode.value === 'clientsCurrentYear') {
-    return people.value.clients.filter(c => c.years!.includes(currentYear))
-  }
-  if (mode.value === 'clientsNextYear') {
-    return people.value.clients.filter(c => c.years!.includes(nextYear))
-  }
-  return people.value.teachers
-})
+const currentPeople = computed<RecepientPerson[]>(() => people.value[mode.value])
 
 const itemsFiltered = computed<RecepientPerson[]>(() => {
   if (mode.value === 'teachers') {
@@ -60,7 +49,6 @@ const itemsFiltered = computed<RecepientPerson[]>(() => {
 
   const { q, directions } = clientLiveFilters.value
   const query = q.trim().toLowerCase()
-  const year = mode.value === 'clientsCurrentYear' ? currentYear : nextYear
 
   return currentPeople.value.filter((c) => {
     const nameMatch = query
@@ -68,7 +56,7 @@ const itemsFiltered = computed<RecepientPerson[]>(() => {
       : true
 
     const directionsMatch = directions.length && c.directions
-      ? c.directions.some(d => d.year === year && directions.includes(d.direction))
+      ? c.directions.some(d => directions.includes(d.direction))
       : true
 
     return nameMatch && directionsMatch
@@ -94,11 +82,14 @@ const selectedTotal = computed(() => {
 
 async function loadData() {
   loading.value = true
-  const { data } = await useHttp<Recipients>(`people-selector`, {
-    params: {
-      event_id: sendEventId,
+  const { data } = await useHttp<Recipients>(
+    `people-selector`,
+    {
+      params: {
+        event_id: sendEventId,
+      },
     },
-  })
+  )
   people.value = data.value!
   loading.value = false
 }

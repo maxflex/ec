@@ -48,6 +48,7 @@ class PeopleSelectorController extends Controller
     {
         return Client::canLogin()
             ->with(['contracts.versions.programs'])
+            ->whereHas('contracts', fn ($q) => $q->where('year', current_academic_year()))
             ->orderByRaw('last_name, first_name, middle_name')
             ->get();
     }

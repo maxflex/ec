@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { orderBy } from 'lodash-es'
+
 interface Fields {
   lessons_count: number
   absent_count: number
@@ -13,12 +15,13 @@ type Item = PersonResource & Fields & {
   comments_count: number
 }
 
-const year = currentAcademicYear()
-const nextYear = year + 1 as Year
-
-const filters = ref<YearFilters>(loadFilters({
+const filters = ref<{
+  year: Year
+  direction: Direction[]
+}>({
   year: currentAcademicYear(),
-}))
+  direction: [],
+})
 
 const tableFields: Array<{
   title: string
@@ -26,18 +29,54 @@ const tableFields: Array<{
   percent?: boolean
 }> = [
   { title: 'онлайн', field: 'online_count' },
-  { title: 'доля', field: 'online_count', percent: true },
+  // { title: 'доля', field: 'online_count', percent: true },
   { title: 'пропусков', field: 'absent_count' },
-  { title: 'доля', field: 'absent_count', percent: true },
+  // { title: 'доля', field: 'absent_count', percent: true },
   { title: 'опозданий', field: 'late_count' },
-  { title: 'доля', field: 'late_count', percent: true },
-  { title: 'занятий<br/>всего', field: 'lessons_count' },
+  // { title: 'доля', field: 'late_count', percent: true },
+  { title: 'занятий всего', field: 'lessons_count' },
 ]
+
+const grayFields: Partial<Record<Field, boolean>> = {
+  online_count: true,
+  absent_count: true,
+  late_count: true,
+}
 
 const { indexPageData, items } = useIndex<Item>(
   `control/lessons`,
   filters,
 )
+
+const sort = ref<{
+  field: Field
+  direction: 'asc' | 'desc'
+}>()
+
+function toggleSort(field: Field) {
+  if (!sort.value || sort.value.field !== field) {
+    sort.value = {
+      field,
+      direction: 'asc',
+    }
+  }
+  else if (sort.value.direction === 'asc') {
+    sort.value.direction = 'desc'
+  }
+  else {
+    sort.value = undefined
+  }
+}
+
+const sortedItems = computed(() => {
+  if (!sort.value) {
+    return items.value
+  }
+
+  const { field, direction } = sort.value
+
+  return orderBy(items.value, x => x[field], direction)
+})
 
 function showPercent(item: Item, field: Field): string {
   if (field === 'lessons_count' || item.lessons_count === 0) {
@@ -50,20 +89,20 @@ function showPercent(item: Item, field: Field): string {
     return ''
   }
 
-  return `${percent.toFixed(1)}%`
+  return `${Math.round(percent)}%`
 }
 </script>
 
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <v-btn
-        v-for="y in [year, nextYear]" :key="y"
-        :color="filters.year === y ? 'primary' : 'bg'"
-        @click="filters.year = y"
-      >
-        {{ y }}–{{ y + 1 }}
-      </v-btn>
+      <UiYearSelector v-model="filters.year" disabled density="comfortable" />
+      <UiMultipleSelect
+        v-model="filters.direction"
+        density="comfortable"
+        :items="selectItems(DirectionLabel)"
+        label="Направление"
+      />
     </template>
     <template #buttons>
       <UiQuestionTooltip>
@@ -80,26 +119,35 @@ function showPercent(item: Item, field: Field): string {
         <tr>
           <th />
           <th />
-          <th v-for="h in tableFields" :key="h.field">
+          <th
+            v-for="h in tableFields"
+            :key="h.field"
+            class="sortable"
+            :class="{
+              'sortable--desc': sort?.direction === 'desc',
+            }"
+            @click="toggleSort(h.field)"
+          >
             <span v-html="h.title" />
+            <v-icon v-if="sort?.field === h.field" icon="$collapse" />
           </th>
           <th />
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in items" :key="item.id">
-          <td width="400">
+        <tr v-for="item in sortedItems" :key="item.id">
+          <td width="300">
             <UiPerson :item="item" />
           </td>
           <td>
             <ClientDirections :items="item.directions" />
           </td>
-          <td v-for="{ field, percent } in tableFields" :key="`${field}${percent}`" width="110">
-            <span v-if="percent" class="text-gray">
-              {{ showPercent(item, field) }}
-            </span>
-            <span v-else>
+          <td v-for="{ field, percent } in tableFields" :key="`${field}${percent}`" width="150">
+            <span>
               {{ formatPrice(item[field] as number) }}
+            </span>
+            <span v-if="field in grayFields" class="control-lessons__gray">
+              {{ showPercent(item, field) }}
             </span>
           </td>
           <td class="control-lessons__comment">
@@ -126,10 +174,8 @@ function showPercent(item: Item, field: Field): string {
   td,
   th {
     &:nth-child(2),
-    &:nth-child(4),
-    &:nth-child(6),
-    &:nth-child(8),
-    &:nth-child(9) {
+    &:nth-child(5),
+    &:nth-child(6) {
       border-right: 1px solid rgb(var(--v-theme-border));
     }
 
@@ -137,14 +183,15 @@ function showPercent(item: Item, field: Field): string {
     &:nth-child(5),
     &:nth-child(7),
     &:nth-child(9) {
-      span {
+      span:first-child {
         display: inline-block;
         padding-left: 10px !important;
       }
     }
 
-    &:nth-child(9) {
+    &:nth-child(6) {
       font-weight: 500;
+      width: 160px !important;
     }
   }
 
@@ -163,6 +210,12 @@ function showPercent(item: Item, field: Field): string {
       left: 8px;
       top: 8px;
     }
+  }
+
+  &__gray {
+    color: rgb(var(--v-theme-gray));
+    margin-left: 6px;
+    font-size: 12px;
   }
 }
 </style>

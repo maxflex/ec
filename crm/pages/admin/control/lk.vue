@@ -18,13 +18,15 @@ interface ControlLkResource extends PersonResource {
   }
 }
 
-const year = currentAcademicYear()
-const nextYear = year + 1 as Year
-const clientDialog = ref<InstanceType<typeof ClientDialog>>()
-
-const filters = ref<YearFilters>({
+const filters = ref<{
+  year: Year
+  direction: Direction[]
+}>({
   year: currentAcademicYear(),
+  direction: [],
 })
+
+const clientDialog = ref<InstanceType<typeof ClientDialog>>()
 
 const { indexPageData, items } = useIndex<ControlLkResource>(`control/lk`, filters)
 </script>
@@ -32,13 +34,13 @@ const { indexPageData, items } = useIndex<ControlLkResource>(`control/lk`, filte
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <v-btn
-        v-for="y in [year, nextYear]" :key="y"
-        :color="filters.year === y ? 'primary' : 'bg'"
-        @click="filters.year = y"
-      >
-        {{ y }}–{{ y + 1 }}
-      </v-btn>
+      <UiYearSelector v-model="filters.year" disabled density="comfortable" />
+      <UiMultipleSelect
+        v-model="filters.direction"
+        density="comfortable"
+        :items="selectItems(DirectionLabel)"
+        label="Направление"
+      />
     </template>
     <template #buttons>
       <UiQuestionTooltip>

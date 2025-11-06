@@ -61,6 +61,13 @@ class ControlController extends Controller
             ->orderByRaw('last_name, first_name')
             ->groupBy('clients.id');
 
+        if ($request->has('direction') && count($request->direction)) {
+            $this->query->whereHas('directions', fn ($q) => $q
+                ->where('year', $request->year)
+                ->whereIn('direction', $request->direction)
+            );
+        }
+
         $data = ControlLessonsResource::collection($this->query->get());
 
         return paginate($data);
@@ -84,6 +91,13 @@ class ControlController extends Controller
                 'comments' => fn ($q) => $q->where('extra', 'control-lk'),
             ])
             ->orderByRaw('last_name, first_name');
+
+        if ($request->has('direction') && count($request->direction)) {
+            $this->query->whereHas('directions', fn ($q) => $q
+                ->where('year', $request->year)
+                ->whereIn('direction', $request->direction)
+            );
+        }
 
         return $this->handleIndexRequest(
             $request,
