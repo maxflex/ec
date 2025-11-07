@@ -13,10 +13,12 @@ class Complaint extends Model
 
     protected $fillable = [
         'client_id', 'teacher_id', 'program', 'text', 'year',
+        'is_resolved',
     ];
 
     protected $casts = [
         'program' => Program::class,
+        'is_resolved' => 'boolean',
     ];
 
     public function user(): BelongsTo

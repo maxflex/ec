@@ -7,6 +7,7 @@ export interface ComplaintResource {
   program?: Program
   text: string
   user?: PersonResource
+  is_resolved: boolean
   year: Year
 }
 
@@ -18,11 +19,13 @@ export interface ComplaintListResource {
   text: string
   comments_count: number
   created_at: string
+  is_resolved: boolean
 }
 
 export const modelDefaults: ComplaintResource = {
   id: newId(),
   client_id: -1,
   text: '',
+  is_resolved: false,
   year: currentAcademicYear(),
 }

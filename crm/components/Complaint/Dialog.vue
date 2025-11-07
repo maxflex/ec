@@ -83,5 +83,11 @@ defineExpose(expose)
     <div>
       <v-textarea v-model="item.text" label="Текст жалобы" auto-grow />
     </div>
+    <div>
+      <v-checkbox
+        v-model="item.is_resolved"
+        label="Вопрос решён"
+      />
+    </div>
   </CrudDialog>
 </template>

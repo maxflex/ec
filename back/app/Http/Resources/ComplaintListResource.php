@@ -13,6 +13,7 @@ class ComplaintListResource extends JsonResource
     {
         return extract_fields($this, [
             'text', 'program', 'created_at', 'comments_count',
+            'is_resolved',
         ], [
             'teacher' => new PersonResource($this->teacher),
             'client' => new PersonResource($this->client),

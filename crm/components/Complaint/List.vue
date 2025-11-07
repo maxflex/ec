@@ -16,6 +16,9 @@ const emit = defineEmits<{
 <template>
   <div class="table">
     <div v-for="item in items" :id="`${apiUrl}-${item.id}`" :key="item.id" class="pr-2">
+      <div>
+        <div class="complaints__status" :class="`complaints__status--${item.is_resolved ? 'resolved' : 'unresolved'}`" />
+      </div>
       <div v-if="!clientId" style="width: 180px" class="text-truncate">
         <UiPerson :item="item.client" />
       </div>
@@ -63,6 +66,22 @@ const emit = defineEmits<{
     top: 16px;
     color: rgb(var(--v-theme-gray));
     gap: 10px;
+  }
+
+  &__status {
+    --size: 10px;
+    height: var(--size);
+    width: var(--size);
+    background: var(--background);
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    &--unresolved {
+      --background: rgb(var(--v-theme-warning));
+    }
+    &--resolved {
+      --background: rgba(var(--v-theme-success));
+    }
   }
 }
 </style>
