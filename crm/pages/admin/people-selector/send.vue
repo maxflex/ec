@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { EventResource } from '~/components/Event'
+import { format, getMonth } from 'date-fns'
 import { cloneDeep } from 'lodash-es'
 
 const modelDefaults: TelegramListResource = {
@@ -81,6 +82,18 @@ function isSelected(key: SendTo): boolean {
 
 function addConfirmation() {
   item.value.text += `\n<a>Подтвердить участие</a>`
+}
+
+function addDateTime() {
+  if (!event.value) {
+    return
+  }
+
+  const month = getMonth(event.value.date) + 1
+  const monthLabel = MonthLabelDative[month as Month]
+  const dateTime = format(event.value.date, `d ${monthLabel} yyyy`)
+
+  item.value.text += `\nКогда: ${dateTime} в ${event.value.time ? formatTime(event.value.time) : ''}`
 }
 
 const maxRows = computed<number>(() =>
@@ -245,11 +258,11 @@ nextTick(async () => {
           </v-table>
         </div>
       </div>
-      <div class="show__inputs mt-12">
+      <div class="show__inputs">
         <div v-if="event">
           <v-select label="Событие" :model-value="event.name" disabled />
         </div>
-        <div>
+        <div style="position: relative;">
           <v-textarea
             v-model="item.text"
             rows="3"
@@ -257,9 +270,34 @@ nextTick(async () => {
             auto-grow
             label="Текст сообщения"
           />
-          <a v-if="event" class="cursor-pointer date-input__today " @click="addConfirmation()">
-            запросить подтверждение участия
-          </a>
+          <div v-if="event" class="d-flex">
+            <a class="cursor-pointer date-input__today " @click="addConfirmation()">
+              добавить ссылку на событие
+            </a>
+            <a class="cursor-pointer date-input__today " @click="addDateTime()">
+              добавить время события
+            </a>
+          </div>
+          <v-slide-x-transition>
+            <div v-if="item.text" class="page-people-selector-send__preview">
+              <div class="text-gray mb-2">
+                Так будет выглядеть сообщение в Телеграмме
+              </div>
+              <div class="message">
+                <div>
+                  <div class="tg-message__avatar">
+                    EC
+                  </div>
+                </div>
+                <div>
+                  <div class="font-weight-bold">
+                    ЕГЭ-Центр
+                  </div>
+                  <div class="page-people-selector-send__preview-text" v-html="item.text"></div>
+                </div>
+              </div>
+            </div>
+          </v-slide-x-transition>
         </div>
         <div class="double-input">
           <UiDateInput v-model="scheduledAt.date" />
@@ -289,6 +327,27 @@ nextTick(async () => {
 .page-people-selector-send {
   .show__content {
     gap: 50px !important;
+  }
+
+  &__preview {
+    position: absolute;
+    left: 520px;
+    top: 0;
+    width: 468px;
+    cursor: default;
+    font-size: 14px;
+    .message {
+      background: rgb(var(--v-theme-bg));
+      border-radius: 8px;
+      padding: 10px 20px;
+      display: flex;
+      align-items: flex-start;
+    }
+    &-text {
+      white-space: break-spaces;
+      word-break: break-all;
+      pointer-events: none;
+    }
   }
 }
 </style>

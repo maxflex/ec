@@ -8,6 +8,14 @@ const route = useRoute()
 
 const item = ref<EventResource>()
 
+const filters = ref<{
+  recepient: Recepient
+  confirmation?: EventParticipantConfirmation
+  is_visited?: number
+}>({
+  recepient: 'clients',
+})
+
 async function loadData() {
   const { data } = await useHttp<EventResource>(
     `events/${route.params.id}`,
@@ -17,47 +25,36 @@ async function loadData() {
   }
 }
 
-const maxRows = 3
-
-const expanded = ref({
-  clients: false,
-  teachers: false,
-})
-
-const displayedParticipants = computed(() => {
+const displayedParticipants = computed<EventParticipant[]>(() => {
   if (!item.value) {
-    return {
-      teachers: [],
-      clients: [],
-    }
+    return []
   }
-  const { teachers, clients } = item.value.participants!
 
-  return {
-    teachers: teachers.slice(0, expanded.value.teachers ? 999 : maxRows),
-    clients: clients.slice(0, expanded.value.clients ? 999 : maxRows),
-  }
+  return item.value.participants![filters.value.recepient].filter((e) => {
+    if (filters.value.confirmation !== undefined && e.confirmation !== filters.value.confirmation) {
+      return false
+    }
+    if (filters.value.is_visited !== undefined && e.is_visited !== !!filters.value.is_visited) {
+      return false
+    }
+    return true
+  })
 })
 
-function deleteParticipant(key: 'clients' | 'teachers', p: EventParticipant) {
-  const index = item.value!.participants![key].findIndex(e => e.id === p.id)
-  item.value!.participants![key].splice(index, 1)
+function deleteParticipant(p: EventParticipant) {
+  const index = item.value!.participants![filters.value.recepient].findIndex(e => e.id === p.id)
+  item.value!.participants![filters.value.recepient].splice(index, 1)
   useHttp(`event-participants/${p.id}`, {
     method: 'delete',
   })
 }
 
-function updateParticipant(
-  p: EventParticipant,
-  body: Partial<EventParticipant>,
-) {
-  for (const key in body) {
-    // @ts-ignore
-    p[key] = body[key]
-  }
-  useHttp(`event-participants/${p.id}`, {
-    method: 'put',
-    body,
+function updateParticipant(p: EventParticipant) {
+  nextTick(() => {
+    useHttp(`event-participants/${p.id}`, {
+      method: 'put',
+      body: p,
+    })
   })
 }
 
@@ -68,18 +65,16 @@ nextTick(loadData)
   <v-fade-transition>
     <UiLoader v-if="item === undefined" />
     <div v-else class="show">
-      <EventHeader :item="item" @edit="eventDialog?.edit" />
-
-      <div v-for="tl in item.telegram_lists" :key="tl.id">
-        <RouterLink :to="{ name: 'telegram-lists-id', params: { id: tl.id } }">
-          рассылка от {{ formatDateTime(tl.created_at!) }}
-        </RouterLink>
-      </div>
-
-      <div class="show__content">
-        <div>
-          <div>
+      <EventHeader :item="item">
+        <div class="mt-4">
+          <div v-for="tl in item.telegram_lists" :key="tl.id">
+            <RouterLink :to="{ name: 'telegram-lists-id', params: { id: tl.id } }">
+              рассылка от {{ formatDateTime(tl.created_at!) }}
+            </RouterLink>
           </div>
+        </div>
+
+        <div class="mt-6">
           <div class="d-flex ga-6 align-center">
             <UiAvatar :item="item.user" :size="80" />
             <div>
@@ -90,124 +85,113 @@ nextTick(loadData)
             </div>
           </div>
         </div>
+        <div class="mt-12">
+          <v-btn color="primary" @click="eventDialog?.edit(item.id)">
+            редактировать событие
+          </v-btn>
+        </div>
+      </EventHeader>
 
-        <template v-for="(participants, key) in item.participants">
-          <div v-if="participants.length" :key="key">
-            <h2 class="mb-5">
-              {{ key === 'clients' ? 'Клиенты' : 'Преподаватели' }}
-            </h2>
-            <v-table class="event-participants table-padding">
-              <tbody>
-                <tr v-for="p in displayedParticipants[key]" :key="p.id">
-                  <td width="320" class="pl-5">
-                    <UiPerson :item="p.entity" />
-                  </td>
-                  <td width="240">
-                    <ClientDirections v-if="p.directions" :items="p.directions" />
-                  </td>
-                  <td width="220" class="pr-0">
-                    <v-menu>
-                      <template #activator="{ props }">
-                        <span v-bind="props" class="cursor-pointer unselectable">
-                          <span
-                            :class="{
-                              'text-success': p.confirmation === 'confirmed',
-                              'text-error': p.confirmation === 'rejected',
-                              'text-gray': p.confirmation === 'pending',
-                            }"
-                          >
-                            {{ EventParticipantConfirmationLabel[p.confirmation] }}
-                            <v-icon
-                              icon="$expand"
-                              size="16"
-                              class="vfn-1 ml-1"
-                            />
-                          </span>
-                        </span>
-                      </template>
-                      <v-list>
-                        <v-list-item
-                          v-for="(label, confirmation) in EventParticipantConfirmationLabel"
-                          :key="confirmation"
-                          :class="{ 'text-gray': confirmation === 'pending' }"
-                          @click="updateParticipant(p, { confirmation })"
-                        >
-                          {{ label }}
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                  </td>
-                  <td width="220" class="pr-0">
-                    <v-menu>
-                      <template #activator="{ props }">
-                        <span v-bind="props" class="cursor-pointer unselectable">
-                          <span :class="p.is_visited ? 'text-success' : 'text-gray'">
-                            {{ p.is_visited ? 'приходил' : 'не приходил' }}
-                            <v-icon
-                              icon="$expand"
-                              size="16"
-                              class="vfn-1 ml-1"
-                            />
-                          </span>
-                        </span>
-                      </template>
-                      <v-list>
-                        <v-list-item
-                          v-for="({ value, title }) in yesNo('приходил', 'не приходил')"
-                          :key="value"
-                          :class="{ 'text-gray': value === 0 }"
-                          @click="updateParticipant(p, { is_visited: !!value })"
-                        >
-                          {{ title }}
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                  </td>
-                  <td class="pl-0">
-                    <v-icon
-                      :icon="mdiPlus"
-                      color="gray"
-                      class="event-participants__remove"
-                      @click.stop="deleteParticipant(key, p)"
-                    />
-                  </td>
-                </tr>
-                <tr v-if="participants.length !== displayedParticipants[key].length" class="cursor-pointer" @click="expanded[key] = true">
-                  <td>
-                    <a>
-                      показать всех {{ participants.length }}
-                    </a>
-                  </td>
-                </tr>
-              </tbody>
-            </v-table>
+      <div>
+        <div class="filters event-participants__filters">
+          <div class="filters__inputs">
+            <v-select v-model="filters.recepient" density="comfortable" :items="selectItems(RecepientLabel)"></v-select>
+            <UiClearableSelect
+              v-model="filters.confirmation"
+              density="comfortable"
+              :items="selectItems(EventParticipantConfirmationLabel)"
+              label="Подтверждение"
+            />
+            <UiClearableSelect
+              v-model="filters.is_visited"
+              density="comfortable"
+              :items="yesNo('приходил', 'не приходил')"
+              label="Посещение"
+            />
+            <div class="text-gray">
+              всего: {{ displayedParticipants.length }}
+            </div>
           </div>
-        </template>
-      </div>
-      <div class="mt-8 d-flex align-center ga-6">
-        <v-btn
-          color="primary"
-          :to="{
-            name: 'people-selector',
-            query: {
-              participants: item.id,
-            },
-          }"
-        >
-          редактировать участников
-        </v-btn>
-        <v-btn
-          v-if="item?.participants?.clients.length || item?.participants?.teachers.length"
-          color="primary"
-          :to="{
-            name: 'people-selector',
-            query: {
-              event_id: item.id,
-            },
-          }"
-        >
-          отправить сообщение
-        </v-btn>
+          <div class="d-flex ga-4 align-center">
+            <v-tooltip location="bottom">
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  :size="48"
+                  icon="$edit"
+                  color="primary"
+                  :to="{
+                    name: 'people-selector',
+                    query: {
+                      participants: item.id,
+                    },
+                  }"
+                />
+              </template>
+              редактировать участников
+            </v-tooltip>
+            <v-tooltip v-if="item?.participants?.clients.length || item?.participants?.teachers.length" location="bottom">
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  icon="$send"
+                  :size="48"
+                  color="primary"
+                  :to="{
+                    name: 'people-selector',
+                    query: {
+                      event_id: item.id,
+                    },
+                  }"
+                />
+              </template>
+              сообщение участникам
+            </v-tooltip>
+          </div>
+        </div>
+        <v-table class="event-participants table-padding">
+          <tbody>
+            <tr v-for="p in displayedParticipants" :key="p.id">
+              <td width="320" class="pl-5">
+                <UiPerson :item="p.entity" />
+              </td>
+              <td width="240">
+                <ClientDirections v-if="p.directions" :items="p.directions" />
+              </td>
+              <td width="220" class="pr-0">
+                <UiToggler
+                  v-model="p.confirmation"
+                  :class="{
+                    'text-gray': p.confirmation === 'pending',
+                    'text-success': p.confirmation === 'confirmed',
+                    'text-error': p.confirmation === 'rejected',
+                  }"
+                  :items="selectItems(EventParticipantConfirmationLabel)"
+                  @click="updateParticipant(p)"
+                />
+              </td>
+              <td width="220" class="pr-0">
+                <a
+                  class="cursor-pointer unselectable"
+                  :class="{
+                    'text-gray': !p.is_visited,
+                    'text-success': p.is_visited,
+                  }"
+                  @click="p.is_visited = !p.is_visited; updateParticipant(p)"
+                >
+                  {{ p.is_visited ? 'приходил' : 'не приходил' }}
+                </a>
+              </td>
+              <td class="pl-0">
+                <v-icon
+                  :icon="mdiPlus"
+                  color="gray"
+                  class="event-participants__remove"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </v-table>
       </div>
     </div>
   </v-fade-transition>
@@ -233,6 +217,21 @@ nextTick(loadData)
       color: rgb(var(--v-theme-error)) !important;
       opacity: 1 !important;
     }
+  }
+
+  &__filters {
+    margin-top: 40px;
+    margin-left: -20px;
+    width: calc(100% + 40px);
+    min-width: calc(100% + 40px);
+    // padding: 20px;
+    border-top: 1px solid rgb(var(--v-theme-border));
+  }
+
+  .v-table__wrapper {
+    margin-left: -20px;
+    width: calc(100% + 40px);
+    min-width: calc(100% + 40px);
   }
 }
 </style>
