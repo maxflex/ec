@@ -94,7 +94,13 @@ class TelegramMessage extends Model
 
         if ($phone->telegram_id) {
             try {
-                $telegramId = is_localhost() ? 84626120 : $phone->telegram_id;
+                $telegramId = $phone->telegram_id;
+
+                // на локалхосте всегда отправляем самому себе
+                if (is_localhost() && ! in_array($telegramId, [84626120, 980106803])) {
+                    $telegramId = 84626120;
+                }
+
                 $message = Telegram::sendMessage(
                     $telegramId,
                     $text,

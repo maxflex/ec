@@ -159,12 +159,9 @@ nextTick(loadData)
 
   &__score {
     margin-top: 30px;
-    height: 90px;
-    width: 130px;
     flex: 1;
     text-align: center;
-    padding: 10px;
-    font-size: 14px;
+    padding: 20px;
     border-radius: 8px;
     display: inline-block;
 
@@ -183,7 +180,7 @@ nextTick(loadData)
     }
 
     .text-score {
-      font-size: 24px;
+      font-size: 42px;
     }
   }
 

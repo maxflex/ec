@@ -6,9 +6,12 @@ export const useAuthStore = defineStore('auth', () => {
   const token = useCookie('token', forever)
   const rememberUser = useCookie<RememberUser | undefined>('remember-user', forever)
   const previewToken = useCookie('preview-token')
+  const redirectCookie = useCookie('redirect')
   const isAdmin = ref(false)
   const isClient = ref(false)
   const isTeacher = ref(false)
+  const isStudent = ref(false)
+  const isRepresentative = ref(false)
   const isPreviewMode = !!previewToken.value
 
   /**
@@ -19,29 +22,42 @@ export const useAuthStore = defineStore('auth', () => {
    */
   function logIn(u: AuthResource, t: string, preview: boolean = false) {
     user.value = u
-    if (preview) {
-      previewToken.value = t
 
-      // сохранить path перед переходом в режим просмотра,
-      // чтобы после выхода из режима просмотра вернуться на исходную страницу
-      sessionStorage.setItem('redirect', useRoute().fullPath)
-      setTimeout(() => window.location.href = '/')
+    if (preview) {
+      const route = useRoute()
+      previewToken.value = t
+      /**
+       * Сохранить path перед переходом в режим просмотра,
+       * чтобы после выхода из режима просмотра вернуться на исходную страницу
+       */
+      saveRedirectUrl(route.fullPath)
+
+      return redirect('/')
     }
-    else {
-      const redirectTo = isPreviewMode
-        ? (sessionStorage.getItem('redirect') || '/')
-        : '/'
-      previewToken.value = undefined
-      token.value = t
-      setTimeout(() => window.location.href = redirectTo)
-      // navigateTo({ path })
-    }
+
+    const url = redirectCookie.value || '/'
+    previewToken.value = undefined
+    redirectCookie.value = undefined
+    token.value = t
+
+    redirect(url)
+  }
+
+  function redirect(url: string) {
+    setTimeout(() => window.location.href = url)
   }
 
   /**
-   * @param u Пользователь будет записан в useAuthStore
-   * @param t Токен для сохранения в Cookies
-   * @param phone Номер телефона для rememberUser
+   * Сохраняем URL для редиректа после успешного логина
+   */
+  function saveRedirectUrl(url: string) {
+    redirectCookie.value = url
+  }
+
+  /**
+   * u Пользователь будет записан в useAuthStore
+   * t Токен для сохранения в Cookies
+   * phone Номер телефона для rememberUser
    */
   function logInAndRemember({ token: t, user: u, phone }: TokenResponse) {
     // учителя не сохраняем в rememberUser
@@ -56,6 +72,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function clearCurrentToken() {
+    redirectCookie.value = undefined
     getCurrentToken().value = undefined
   }
 
@@ -70,18 +87,35 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function logOut() {
     await useHttp(`pub/auth/logout`)
+    const url = redirectCookie.value || '/'
     clearCurrentToken()
-    const path = sessionStorage.getItem('redirect') || '/'
-    window.location.href = path
+
+    redirect(url)
   }
 
   async function getLoggedUser() {
     const { data } = await useHttp<AuthResource>(`pub/auth/user`)
     if (data.value) {
-      const entityType = data.value.entity_type
-      isAdmin.value = entityType === EntityTypeValue.user
-      isClient.value = (entityType === EntityTypeValue.client) || (entityType === EntityTypeValue.representative)
-      isTeacher.value = entityType === EntityTypeValue.teacher
+      switch (data.value.entity_type) {
+        case EntityTypeValue.client:
+          isClient.value = true
+          isStudent.value = true
+          break
+
+        case EntityTypeValue.representative:
+          isClient.value = true
+          isRepresentative.value = true
+          break
+
+        case EntityTypeValue.teacher:
+          isTeacher.value = true
+          break
+
+        case EntityTypeValue.user:
+          isAdmin.value = true
+          break
+      }
+
       user.value = data.value
     }
   }
@@ -92,6 +126,8 @@ export const useAuthStore = defineStore('auth', () => {
     isAdmin,
     isClient,
     isTeacher,
+    isStudent,
+    isRepresentative,
     isPreviewMode,
     logIn,
     logInAndRemember,
@@ -100,5 +136,6 @@ export const useAuthStore = defineStore('auth', () => {
     clearCurrentToken,
     getLoggedUser,
     getOriginalToken,
+    saveRedirectUrl,
   }
 })

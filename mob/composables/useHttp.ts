@@ -5,7 +5,7 @@ export function useHttp<T = any>(
   path: string,
   options: UseFetchOptions<T> = {},
 ) {
-  const { getCurrentToken, clearCurrentToken, getOriginalToken, isPreviewMode } = useAuthStore()
+  const { getCurrentToken, clearCurrentToken, getOriginalToken, saveRedirectUrl, isPreviewMode } = useAuthStore()
   const { public: { baseUrl, env, isTgMiniApp } } = useRuntimeConfig()
   const token = getCurrentToken().value
   let url = baseUrl
@@ -54,7 +54,7 @@ export function useHttp<T = any>(
           const route = useRoute()
           clearCurrentToken()
           if (route.name !== 'login') {
-            sessionStorage.setItem('redirect', route.fullPath)
+            saveRedirectUrl(route.fullPath)
             window.location.href = '/login'
           }
           break

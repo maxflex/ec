@@ -40,7 +40,7 @@ watch(clientId, loadClient)
 <template>
   <div class="index-page">
     <div class="index-page__content pa-4">
-      <v-text-field v-model="clientId" label="Client ID" type="tel"></v-text-field>
+      <v-text-field v-model="clientId" label="Client ID" inputmode="numeric"></v-text-field>
     </div>
     <template v-if="client">
       <UiPageTitle>

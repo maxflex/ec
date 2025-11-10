@@ -1,12 +1,22 @@
 <script setup lang="ts">
+import type { RealReport } from '..'
+
 const { items } = defineProps<{
   items: RealReport[]
 }>()
+
+const router = useRouter()
 </script>
 
 <template>
-  <div class="table">
-    <div v-for="r in items" :id="`report-${r.id}`" :key="r.id">
+  <div class="table table--hover">
+    <div
+      v-for="r in items"
+      :id="`report-${r.id}`"
+      :key="r.id"
+      class="cursor-pointer"
+      @click="router.push({ name: 'reports-id', params: { id: r.id } })"
+    >
       <div style="width: 170px">
         <UiPerson :item="r.teacher" />
       </div>
@@ -26,11 +36,6 @@ const { items } = defineProps<{
         <span v-if="r.to_check_at">
           {{ formatTextDate(r.to_check_at, true) }}
         </span>
-      </div>
-      <div class="text-right">
-        <RouterLink :to="{ name: 'reports-id', params: { id: r.id } }">
-          читать отчёт
-        </RouterLink>
       </div>
     </div>
   </div>
