@@ -38,4 +38,15 @@ export default <RouterConfig>{
     }
     return myRoutes
   },
+
+  scrollBehavior(to, from, savedPosition) {
+    // если это переход по браузерному back/forward,
+    // Vue Router передаёт savedPosition
+    if (savedPosition) {
+      return savedPosition
+    }
+
+    // для обычной навигации – наверх
+    return { top: 0 }
+  },
 }

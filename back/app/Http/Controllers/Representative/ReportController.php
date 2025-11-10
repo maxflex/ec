@@ -11,11 +11,18 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
+    protected $filters = [
+        'equals' => ['year'],
+    ];
+
     public function index(Request $request)
     {
         $query = Report::query()
             ->where('client_id', auth()->user()->client_id)
-            ->where('status', ReportStatus::published);
+            ->where('status', ReportStatus::published)
+            ->orderBy('to_check_at');
+
+        $this->filter($request, $query);
 
         return $this->handleIndexRequest($request, $query, ReportListResource::class);
     }
