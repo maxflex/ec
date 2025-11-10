@@ -1,9 +1,76 @@
 <script setup lang="ts">
-import { adminMenu, clientMenu } from './menu'
+import {
+  mdiAccount,
+  mdiAccountGroup,
+  mdiBookOpenBlankVariantOutline,
+  mdiCalendar,
+  mdiCreditCardCheckOutline,
+  mdiDotsTriangle,
+  mdiFileDocumentEditOutline,
+  mdiNumeric5BoxMultiple,
+  mdiTicket,
+} from '@mdi/js'
 
-const { isAdmin } = useAuthStore()
+const { isAdmin, user } = useAuthStore()
 
-const menu = isAdmin ? adminMenu : clientMenu
+const clientMenu: MenuItem[] = [
+  {
+    icon: mdiBookOpenBlankVariantOutline,
+    title: 'Дневник',
+    to: '/journal',
+  },
+  {
+    icon: mdiCalendar,
+    title: 'Расписание',
+    to: '/schedule',
+  },
+  {
+    icon: mdiNumeric5BoxMultiple,
+    title: 'Оценки',
+    to: '/grades',
+    hide: !user?.has_grades,
+  },
+  {
+    icon: mdiFileDocumentEditOutline,
+    title: 'Отчёты',
+    to: '/reports',
+  },
+  {
+    icon: mdiDotsTriangle,
+    title: 'Тесты',
+    to: '/tests',
+  },
+  {
+    icon: mdiTicket,
+    title: 'События',
+    to: '/events',
+  },
+  {
+    icon: mdiCreditCardCheckOutline,
+    title: 'Оплата обучения',
+    to: '/billing',
+  },
+  {
+    icon: mdiAccount,
+    title: 'Мой профиль',
+    to: '/profile',
+  },
+]
+
+const adminMenu: MenuItem[] = [
+  {
+    icon: mdiAccountGroup,
+    title: 'Главная',
+    to: '/',
+  },
+  {
+    icon: mdiAccount,
+    title: 'Мой профиль',
+    to: '/profile',
+  },
+]
+
+const menu = isAdmin ? adminMenu : clientMenu.filter(m => !m.hide)
 const dialog = ref(false)
 const showMenu = ref(false)
 const isBurgerClosing = ref(false)

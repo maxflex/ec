@@ -14,7 +14,7 @@ const currentPageClass = computed(() => [
   <ClientOnly>
     <v-app>
       <v-main v-if="isClient || user?.id === 5" :class="currentPageClass">
-        <AppHeader />
+        <AppMenu />
         <NuxtPage />
       </v-main>
       <PageOnlyDesktop v-else />

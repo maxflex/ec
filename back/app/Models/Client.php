@@ -252,6 +252,9 @@ class Client extends Person implements HasSchedule
         ] : json_decode($value);
     }
 
+    /**
+     * Для отображения пункта меню "оценки"
+     */
     public function getHasGradesAttribute(): bool
     {
         return $this->grades()->exists();

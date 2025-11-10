@@ -41,6 +41,14 @@ class Representative extends Person
             );
     }
 
+    /**
+     * Для отображения пункта меню "оценки"
+     */
+    public function getHasGradesAttribute(): bool
+    {
+        return $this->client->has_grades;
+    }
+
     public function scopeCanLogin($query)
     {
         $query->whereHas('client', fn ($q) => $q->canLogin());
