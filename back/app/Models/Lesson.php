@@ -74,6 +74,11 @@ class Lesson extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function violations(): HasMany
+    {
+        return $this->hasMany(Violation::class);
+    }
+
     public function scopeConducted($query)
     {
         return $query->where('status', LessonStatus::conducted);

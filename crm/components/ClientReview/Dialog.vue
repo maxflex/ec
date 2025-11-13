@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ClientReviewListResource, ClientReviewResource } from '.'
+import type { TeacherListResource } from '../Teacher'
 import { apiUrl, modelDefaults } from '.'
 
 const items = defineModel<ClientReviewListResource[]>({ required: true })

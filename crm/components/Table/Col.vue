@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import type { CSSProperties } from 'vue'
+
 const { width } = defineProps<{
   width?: number
 }>()
 
-const style = width
+const style: CSSProperties = width
   ? {
       width: `${width}px`,
     }
@@ -13,7 +15,7 @@ const style = width
 </script>
 
 <template>
-  <div class="table-col" :style="style">
+  <div class="table-col" :style="style" :class="{ 'text-truncate': !width }">
     <slot></slot>
   </div>
 </template>

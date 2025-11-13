@@ -53,6 +53,7 @@ use App\Http\Controllers\Admin\TelegramMessageController;
 use App\Http\Controllers\Admin\TestController;
 use App\Http\Controllers\Admin\TopicController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ViolationController;
 use App\Http\Controllers\Admin\WebReviewController;
 use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\LogController;
@@ -172,6 +173,8 @@ Route::get('teacher-stats', TeacherStatsController::class);
 Route::get('teeth', TeethController::class);
 Route::get('exams', ExamController::class);
 
+Route::get('complaints/available-programs', [ComplaintController::class, 'availablePrograms']);
+
 Route::apiResources([
     'telegram-lists' => TelegramListController::class,
     'requests' => RequestsController::class,
@@ -206,4 +209,5 @@ Route::apiResources([
     'stats-presets' => StatsPresetController::class,
     'events' => EventController::class,
     'client-lessons' => ClientLessonController::class,
+    'violations' => ViolationController::class,
 ]);

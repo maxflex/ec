@@ -5,8 +5,10 @@ import type {
   LessonBulkUpdateDialog,
   LessonConductDialog,
   LessonDialog,
+  ViolationDialog,
 } from '#build/components'
 import type { GroupResource } from '../Group'
+import type { ViolationResource } from '../Violation'
 import {
   LessonItemAdminClient,
   LessonItemAdminGroup,
@@ -50,6 +52,8 @@ const loading = ref(true)
 const teeth = ref<Teeth>()
 const lessons = ref<LessonListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
+const violationDialog = ref<InstanceType<typeof ViolationDialog>>()
+const violations = ref<ViolationResource[]>([]) // not used
 const clientLessonEditPriceDialog = ref<InstanceType<typeof ClientLessonEditPriceDialog>>()
 const lessonBulkUpdateDialog = ref<InstanceType<typeof LessonBulkUpdateDialog>>()
 const lessonBulkCreateDialog = ref<InstanceType<typeof LessonBulkCreateDialog>>()
@@ -391,6 +395,7 @@ nextTick(loadAvailableYears)
           class="lesson-item lesson-item__lesson"
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
+          @violation="id => violationDialog?.create({ lesson_id: id })"
           @edit-price="clientLessonEditPriceDialog?.edit"
           @click="(e: MouseEvent) => onMassEditClick(item, e)"
         />
@@ -400,6 +405,7 @@ nextTick(loadAvailableYears)
   <LessonDialog ref="lessonDialog" />
   <ClientLessonEditPriceDialog v-if="clientId" ref="clientLessonEditPriceDialog" />
   <LessonConductDialog ref="conductDialog" @conducted="loadLessons" />
+  <ViolationDialog v-if="group" ref="violationDialog" v-model="violations" />
   <template v-if="isMassEditable">
     <LessonBulkUpdateDialog ref="lessonBulkUpdateDialog" @updated="onBulkUpdated" />
     <LessonBulkCreateDialog ref="lessonBulkCreateDialog" @updated="loadLessons" />

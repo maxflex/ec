@@ -252,6 +252,7 @@ declare global {
     has_files: boolean
     students_count: number
     project_students_count?: number
+    violations_count?: number
     client_lesson?: {
       id: number
       status: ClientLessonStatus

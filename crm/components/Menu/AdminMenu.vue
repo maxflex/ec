@@ -53,6 +53,7 @@ const menu: Menu = [
     title: 'Занятия',
     items: [
       { title: 'Все занятия', to: '/all-lessons' },
+      { title: 'Нарушения', to: '/violations' },
       { title: 'Темы', to: '/topics' },
       { title: 'Кабинеты', to: '/cabinets' },
       { title: 'Итоговые оценки', to: '/grades' },

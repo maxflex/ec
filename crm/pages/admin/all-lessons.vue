@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { LessonConductDialog, LessonDialog } from '#build/components'
-import { mdiVideo } from '@mdi/js'
+import type { LessonConductDialog, LessonDialog, ViolationDialog } from '#build/components'
+import type { ViolationResource } from '~/components/Violation'
+import { mdiCellphoneRemove, mdiVideo } from '@mdi/js'
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 
@@ -14,6 +15,9 @@ interface AllLessons {
     free_count: number
     violations_violated_count: number
     violations_ok_count: number
+
+    client_lesson_violations_count: number
+    client_lesson_violations_resolved_count: number
   }
 }
 
@@ -27,6 +31,8 @@ const loading = ref(false)
 const lessons = ref<LessonListResource[]>([])
 const lessonDialog = ref<InstanceType<typeof LessonDialog>>()
 const conductDialog = ref<InstanceType<typeof LessonConductDialog>>()
+const violationDialog = ref<InstanceType<typeof ViolationDialog>>()
+const violations = ref<ViolationResource[]>([]) // not used
 
 const allDates = computed(() => {
   const startDate = startOfMonth(new Date(filters.value.year, 8, 1)) // 1 сентября (0-indexed)
@@ -151,6 +157,15 @@ nextTick(() => {
               <v-icon :icon="mdiVideo" color="error" />
               {{ formatPrice(response[d].violations_violated_count) }}
             </div>
+            <div
+              v-if="response[d].client_lesson_violations_count"
+              class="d-flex align-center ga-1"
+              :class="response[d].client_lesson_violations_count === response[d].client_lesson_violations_resolved_count ? 'text-gray' : 'text-error'"
+            >
+              <v-icon :icon="mdiCellphoneRemove" :size="20" />
+              {{ response[d].client_lesson_violations_resolved_count }} /
+              {{ response[d].client_lesson_violations_count }}
+            </div>
           </div>
         </template>
         <div>
@@ -172,6 +187,7 @@ nextTick(() => {
           :item="lesson"
           @edit="lessonDialog?.edit"
           @conduct="conductDialog?.open"
+          @violation="id => violationDialog?.create({ lesson_id: id })"
         />
       </Vue3SlideUpDown>
 
@@ -180,6 +196,7 @@ nextTick(() => {
       <!--      </div> -->
     </div>
   </div>
+  <ViolationDialog ref="violationDialog" v-model="violations" />
   <LessonDialog ref="lessonDialog" />
   <LessonConductDialog ref="conductDialog" />
 </template>

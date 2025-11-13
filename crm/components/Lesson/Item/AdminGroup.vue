@@ -4,7 +4,6 @@ import {
   mdiBookOpenOutline,
   mdiBookOpenVariant,
   mdiPaperclip,
-  mdiSwapHorizontal,
 } from '@mdi/js'
 
 const { item, checkboxes, massEditMode } = defineProps<{
@@ -16,6 +15,7 @@ const { item, checkboxes, massEditMode } = defineProps<{
 const emit = defineEmits<{
   edit: [id: number]
   conduct: [id: number, status: LessonStatus]
+  violation: [id: number]
 }>()
 
 // можно только редактировать проводку
@@ -42,11 +42,11 @@ const isConductDisabled = item.status !== 'conducted'
           <v-list-item @click="emit('edit', item.id)">
             редактировать
           </v-list-item>
-          <v-list-item
-            :disabled="isConductDisabled"
-            @click="emit('conduct', item.id, item.status)"
-          >
+          <v-list-item :disabled="isConductDisabled" @click="emit('conduct', item.id, item.status)">
             проводка занятия
+          </v-list-item>
+          <v-list-item :disabled="isConductDisabled" @click="emit('violation', item.id)">
+            добавить нарушение
           </v-list-item>
         </v-list>
       </v-menu>

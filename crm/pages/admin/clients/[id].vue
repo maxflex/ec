@@ -15,7 +15,8 @@ const { tabs, selectedTab } = useTabs({
   webReviews: 'отзывы на сайте',
   tests: 'тесты',
   logs: 'логи',
-  clientComplaints: 'жалобы',
+  complaints: 'жалобы',
+  violations: 'нарушения',
 })
 
 const route = useRoute()
@@ -58,8 +59,9 @@ nextTick(loadData)
     <EventTab v-else-if="selectedTab === 'events'" :client-id="client.id" />
     <LogTab v-else-if="selectedTab === 'logs'" :client-id="client.id" />
     <ClientMarkSheetTab v-else-if="selectedTab === 'markSheet'" :client="client" />
-    <ComplaintTab v-else-if="selectedTab === 'clientComplaints'" :client-id="client.id" />
+    <ComplaintTab v-else-if="selectedTab === 'complaints'" :client-id="client.id" />
     <ClientReviewTab v-else-if="selectedTab === 'clientReviews'" :client-id="client.id" />
+    <ViolationTab v-else-if="selectedTab === 'violations'" :client-id="client.id" />
     <Schedule v-else :client-id="client.id" program-filter show-holidays show-calendar />
   </template>
 </template>

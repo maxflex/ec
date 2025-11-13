@@ -2,8 +2,8 @@
 import {
   mdiBookOpenOutline,
   mdiBookOpenVariant,
+  mdiCellphoneRemove,
   mdiPaperclip,
-  mdiSwapHorizontal,
   mdiVideo,
 } from '@mdi/js'
 
@@ -14,6 +14,7 @@ const { item } = defineProps<{
 const emit = defineEmits<{
   edit: [id: number]
   conduct: [id: number, status: LessonStatus]
+  violation: [id: number]
 }>()
 
 const isConductDisabled = item.status !== 'conducted'
@@ -36,11 +37,11 @@ const isConductDisabled = item.status !== 'conducted'
           <v-list-item @click="emit('edit', item.id)">
             редактировать
           </v-list-item>
-          <v-list-item
-            :disabled="isConductDisabled"
-            @click="emit('conduct', item.id, item.status)"
-          >
+          <v-list-item :disabled="isConductDisabled" @click="emit('conduct', item.id, item.status)">
             проводка занятия
+          </v-list-item>
+          <v-list-item :disabled="isConductDisabled" @click="emit('violation', item.id)">
+            добавить нарушение
           </v-list-item>
         </v-list>
       </v-menu>
@@ -66,7 +67,7 @@ const isConductDisabled = item.status !== 'conducted'
       <GroupStudentsCount v-if="item.status !== 'cancelled'" :item="item" />
     </div>
 
-    <div style="width: 130px" class="lesson-item__icons">
+    <div style="width: 150px" class="lesson-item__icons">
       <div>
         <v-icon v-if="item.topic" :icon="mdiBookOpenOutline" :class="{ 'opacity-3': !item.is_topic_verified }" />
       </div>
@@ -78,6 +79,9 @@ const isConductDisabled = item.status !== 'conducted'
       </div>
       <div>
         <v-icon v-if="item.is_violation !== null" :icon="mdiVideo" :color="item.is_violation ? 'error' : 'success'" />
+      </div>
+      <div>
+        <v-icon v-if="!!item.violations_count" :icon="mdiCellphoneRemove" :size="20" />
       </div>
     </div>
     <div style="width: 70px">

@@ -90,14 +90,14 @@ nextTick(async () => {
                 {{ EventParticipantConfirmationLabel[p.confirmation] }}
               </TableCol>
               <TableCol>
-                <TableActions v-if="p.is_me && p.confirmation === 'pending'">
+                <TableButtons v-if="p.is_me && p.confirmation === 'pending'">
                   <v-btn color="primary" density="comfortable" :width="166" @click="setConfirmation('confirmed')">
                     подтвердить
                   </v-btn>
                   <v-btn color="error" density="comfortable" :width="166" @click="setConfirmation('rejected')">
                     отказаться
                   </v-btn>
-                </TableActions>
+                </TableButtons>
               </TableCol>
             </TableRow>
           </Table>

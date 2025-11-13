@@ -32,7 +32,7 @@ export default function<Resource extends AbstractItem, ListResource extends Abst
   const deleting = ref(false)
   const isEditing = computed<boolean>(() => item.value.id > 0)
 
-  function create(overrideProps: object = {}) {
+  function create(overrideProps: Partial<Resource> = {}) {
     item.value = cloneDeep({
       ...modelDefaults,
       ...overrideProps,
@@ -102,6 +102,8 @@ export default function<Resource extends AbstractItem, ListResource extends Abst
 
     dialog.value = false
     saving.value = false
+
+    // useGlobalMessage(isEditing.value ? 'Сохранено' : `Запись создана`, 'success')
 
     return data.value as ListResource
   }
