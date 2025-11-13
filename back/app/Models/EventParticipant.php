@@ -27,4 +27,10 @@ class EventParticipant extends Model
     {
         return $this->morphTo('entity');
     }
+
+    public function getIsMe(Client|Teacher $model): bool
+    {
+        return $this->entity_id === $model->id
+            && $this->entity_type === get_class($model);
+    }
 }

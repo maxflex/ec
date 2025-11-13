@@ -44,32 +44,6 @@ function formatDateLocal(date: string) {
 
       <slot>
       </slot>
-
-      <div v-if="!isAdmin" class="event__participants">
-        <div>
-          <span v-if="getParticipantsCount(item) === 0" class="text-gray">
-            нет участников
-          </span>
-          <span v-else>
-            {{ getParticipantsCount(item) }} участников
-          </span>
-        </div>
-        <div
-          v-if="item.participant"
-          class="event__confirmation"
-          :class="{
-            'text-success': item.participant.confirmation === 'confirmed',
-            'text-error': item.participant.confirmation === 'rejected',
-            'text-gray': item.participant.confirmation === 'pending',
-          }"
-        >
-          <v-icon
-            :icon="item.participant.confirmation === 'confirmed' ? mdiCheckAll : (item.participant.confirmation === 'rejected' ? '$close' : '$complete')"
-            class="vfn-1"
-          />
-          {{ EventParticipantConfirmationLkLabel[item.participant.confirmation] }}
-        </div>
-      </div>
     </div>
     <div>
       <div v-if="item.file" class="event__img" :style="{ backgroundImage: `url(${item.file.url})` }" />

@@ -1,3 +1,10 @@
+<template>
+  <div class="table">
+    <slot></slot>
+  </div>
+</template>
+
+<style lang="scss">
 .table {
   --height: 57px;
   &-header {
@@ -131,3 +138,4 @@
     }
   }
 }
+</style>

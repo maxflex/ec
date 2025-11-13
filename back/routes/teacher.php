@@ -2,13 +2,14 @@
 
 use App\Http\Controllers\Admin\ClientTestController;
 use App\Http\Controllers\Admin\CommentController;
-use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\ExamScoreController;
 use App\Http\Controllers\BalanceController;
+use App\Http\Controllers\Client\EventParticipantController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\Teacher\BalanceVerificationController;
 use App\Http\Controllers\Teacher\ClientController;
 use App\Http\Controllers\Teacher\ClientGroupController;
+use App\Http\Controllers\Teacher\EventController;
 use App\Http\Controllers\Teacher\GradeController;
 use App\Http\Controllers\Teacher\GroupController;
 use App\Http\Controllers\Teacher\HeadTeacherReportController;
@@ -39,7 +40,8 @@ Route::apiResource('instructions', InstructionController::class)->only('index', 
 Route::apiResource('instructions-check', InstructionCheckController::class)->except('destroy');
 Route::apiResource('clients', ClientController::class)->only('index', 'show');
 Route::get('reports/tabs', [ReportController::class, 'tabs']);
-Route::apiResource('events', EventController::class)->only('index');
+Route::apiResource('events', EventController::class)->only(['index', 'show']);
+Route::apiResource('event-participants', EventParticipantController::class)->only(['index', 'update']);
 Route::apiResource('comments', CommentController::class)->only('index');
 Route::apiResources([
     'reports' => ReportController::class,

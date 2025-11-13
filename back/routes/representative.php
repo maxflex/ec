@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Client\EventParticipantController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\Pub\SbpController;
 use App\Http\Controllers\Representative\BillingController;
@@ -33,7 +34,8 @@ Route::get('journal', JournalController::class);
 Route::apiResource('logs', LogController::class)->only('store');
 Route::apiResource('vacations', VacationController::class)->only('index');
 Route::get('teeth', TeethController::class);
-Route::apiResource('events', EventController::class)->only(['index', 'show', 'update']);
+Route::apiResource('events', EventController::class)->only(['index', 'show']);
+Route::apiResource('event-participants', EventParticipantController::class)->only(['index', 'update']);
 Route::prefix('upload')->controller(UploadController::class)->group(function () {
     Route::post('photos', 'photos');
 });

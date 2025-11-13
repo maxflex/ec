@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Client;
+namespace App\Http\Controllers\Teacher;
 
 use Illuminate\Http\Request;
 
@@ -12,7 +12,7 @@ class EventController extends \App\Http\Controllers\Admin\EventController
     public function index(Request $request)
     {
         $request->merge([
-            'client_id' => auth()->id(),
+            'teacher_id' => auth()->id(),
         ]);
 
         return parent::index($request);
