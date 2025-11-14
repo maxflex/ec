@@ -104,7 +104,7 @@ function onFileSelected(e: Event) {
       </a>
       <div class="text-truncate">
         <div class="text-gray text-truncate">
-          {{ model.name }}
+          {{ filterTruncate(model.name, 26) }}
           ({{ formatFileSize(model) }})
         </div>
         <div>
