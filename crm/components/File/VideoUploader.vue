@@ -154,11 +154,13 @@ function onFileSelected(e: Event) {
         transition: all ease-in-out 0.2s;
         font-size: 44px;
         position: absolute;
+        opacity: 0.8;
         color: white !important;
       }
       &:hover {
         .v-icon {
           font-size: 40px;
+          opacity: 1;
         }
       }
 
