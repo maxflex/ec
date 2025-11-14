@@ -50,6 +50,11 @@ class ViolationController extends Controller
         return new ViolationListResource($violation);
     }
 
+    public function destroy(Violation $violation)
+    {
+        $violation->delete();
+    }
+
     protected function filterClient($query, $clientId)
     {
         $query->whereHas(
