@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ViolationListResource } from '.'
-import { mdiCamera, mdiImage, mdiVideo } from '@mdi/js'
+import { mdiCamera, mdiVideo } from '@mdi/js'
 import { apiUrl } from '.'
 
 const { items } = defineProps<{
@@ -48,12 +48,12 @@ const emit = defineEmits<{
         </span>
       </TableCol>
       <TableCol :width="30">
-        <a v-if="item.photo" class="black-link" target="_blank" :href="item.photo.url">
+        <a v-if="item.photo" class="gray-link" target="_blank" :href="item.photo.url">
           <v-icon :icon="mdiCamera" />
         </a>
       </TableCol>
       <TableCol :width="20">
-        <a v-if="item.video" class="black-link" target="_blank" :href="item.video.url">
+        <a v-if="item.video" class="gray-link" target="_blank" :href="item.video.url">
           <v-icon :icon="mdiVideo" />
         </a>
       </TableCol>

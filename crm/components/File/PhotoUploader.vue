@@ -136,6 +136,7 @@ function onFileSelected(e: Event) {
       height: auto;
       display: inline-block;
       border-radius: 8px;
+      cursor: zoom-in;
       // background: rgb(var(--v-theme-bg));
 
       img {

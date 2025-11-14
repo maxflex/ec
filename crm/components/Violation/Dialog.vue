@@ -39,7 +39,7 @@ defineExpose(expose)
     <template #title-edit>
       Редактировать нарушение
     </template>
-    <!-- <UiLoader v-if="clientLessons.length === 0" fixed /> -->
+    <UiLoader v-if="clientLessons.length === 0" />
     <Table>
       <TableRow v-for="cl in clientLessons" :key="cl.id">
         <TableCol :width="250">

@@ -28,6 +28,8 @@ const style = offset
   justify-content: center;
   position: absolute;
   z-index: 1;
+  left: 0;
+
   &--fixed {
     position: fixed;
     top: 0;

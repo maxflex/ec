@@ -497,7 +497,10 @@ tr.hoverable {
 }
 
 .black-link:not(:hover) {
-  // color: #212121 !important;
+  color: #212121 !important;
+}
+
+.gray-link:not(:hover) {
   color: rgb(190, 194, 206) !important;
 }
 
