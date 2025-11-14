@@ -28,7 +28,7 @@ const emit = defineEmits<{
       <TableCol :width="190">
         <UiIfSet :value="!!item.client_lesson_id">
           <template #empty>
-            ученик не определён
+            ученик не установлен
           </template>
           <UiPerson :item="item.client!" />
         </UiIfSet>

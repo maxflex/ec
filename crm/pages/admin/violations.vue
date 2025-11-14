@@ -20,8 +20,8 @@ const dialog = ref<InstanceType<typeof ViolationDialog>>()
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
+      <UiClearableSelect v-model="filters.client_lesson_id" density="comfortable" label="Ученик" :items="yesNo('установлен', 'не установлен')" />
       <UiClearableSelect v-model="filters.is_resolved" density="comfortable" label="Статус" :items="yesNo('обработано', 'не обработано')" />
-      <UiClearableSelect v-model="filters.client_lesson_id" density="comfortable" label="Ученик" :items="yesNo('определён', 'не определён')" />
     </template>
     <ViolationList :items="items" @edit="dialog?.edit" />
   </UiIndexPage>
