@@ -28,6 +28,15 @@ async function loadClientLessons() {
   clientLessons.value = data.value!.data
 }
 
+function toggleClientLesson(cl: ClientLessonResource) {
+  if (item.value.client_lesson_id === cl.id) {
+    item.value.client_lesson_id = null
+    return
+  }
+
+  item.value.client_lesson_id = cl.id
+}
+
 defineExpose(expose)
 </script>
 
@@ -51,7 +60,7 @@ defineExpose(expose)
         </TableCol>
         <TableCol>
           <div class="violation-dialog__switch">
-            <v-switch :model-value="cl.id === item.client_lesson_id" @click="item.client_lesson_id = cl.id" />
+            <v-switch :model-value="cl.id === item.client_lesson_id" @click="toggleClientLesson(cl)" />
           </div>
         </TableCol>
       </TableRow>
@@ -68,10 +77,6 @@ defineExpose(expose)
         label="Нарушение обработано"
       />
     </div>
-
-    <!-- <pre>
-      {{ clientLessons }}
-    </pre> -->
   </CrudDialog>
 </template>
 

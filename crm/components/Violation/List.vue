@@ -16,10 +16,10 @@ const emit = defineEmits<{
   <Table>
     <TableRow v-for="item in items" :id="`${apiUrl}-${item.id}`" :key="item.id">
       <TableActions @click="emit('edit', item.id)" />
-      <TableCol :width="200">
-        <span class="mr-6">
-          {{ formatDate(item.lesson.date) }}
-        </span>
+      <TableCol :width="70">
+        {{ formatDate(item.lesson.date) }}
+      </TableCol>
+      <TableCol :width="120">
         {{ formatTime(item.lesson.time) }} – {{ formatTime(item.lesson.time_end) }}
       </TableCol>
       <TableCol :width="100">
