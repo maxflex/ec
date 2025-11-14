@@ -2,17 +2,22 @@
 
 namespace App\Models;
 
+use App\Traits\HasComments;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Violation extends Model
 {
+    use HasComments;
+
     protected $fillable = [
-        'comment', 'is_resolved', 'lesson_id', 'client_lesson_id', 'file',
+        'is_resolved', 'lesson_id', 'client_lesson_id',
+        'photo', 'video',
     ];
 
     protected $casts = [
-        'file' => 'array',
+        'photo' => 'array',
+        'video' => 'array',
         'is_resolved' => 'boolean',
     ];
 

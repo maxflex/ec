@@ -37,10 +37,6 @@ class LessonListResource extends JsonResource
                 $isAdmin,
                 fn () => $this->group->project_students_count
             ),
-            'violations_count' => $this->when(
-                $isAdmin && $request->has('date'),
-                fn () => $this->violations()->count()
-            ),
             // если занятие проведено: берем фактическое из client_lessons
             // иначе берем из client_groups
             'students_count' => $this->status === LessonStatus::conducted

@@ -103,7 +103,9 @@ export default function<Resource extends AbstractItem, ListResource extends Abst
     dialog.value = false
     saving.value = false
 
-    // useGlobalMessage(isEditing.value ? 'Сохранено' : `Запись создана`, 'success')
+    if (!isEditing.value) {
+      useGlobalMessage('Запись создана', 'success')
+    }
 
     return data.value as ListResource
   }

@@ -22,7 +22,7 @@ class ViolationController extends Controller
             'clientLesson.contractVersionProgram.contractVersion.contract.client',
             'lesson.teacher',
             'lesson.group',
-        ]);
+        ])->withCount('comments');
 
         $this->filter($request, $query);
 

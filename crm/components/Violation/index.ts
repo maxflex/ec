@@ -3,8 +3,8 @@ export interface ViolationResource {
   is_resolved: boolean
   lesson_id: number
   client_lesson_id: number | null
-  comment: string
-  file: UploadedFile | null
+  photo: UploadedFile | null
+  video: UploadedFile | null
   user?: PersonResource
   created_at?: string
 }
@@ -12,12 +12,13 @@ export interface ViolationResource {
 export interface ViolationListResource extends ViolationResource {
   user: PersonResource
   client: PersonResource | null
-  group: {
-    id: number
-    letter: number | null
-    program: Program
-  }
+  comments_count: number
   lesson: {
+    group: {
+      id: number
+      letter: number | null
+      program: Program
+    }
     date: string
     time: string
     time_end: string
@@ -32,6 +33,6 @@ export const modelDefaults: ViolationResource = {
   is_resolved: false,
   lesson_id: newId(),
   client_lesson_id: null,
-  comment: '',
-  file: null,
+  photo: null,
+  video: null,
 }

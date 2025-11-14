@@ -80,9 +80,6 @@ const isConductDisabled = item.status !== 'conducted'
       <div>
         <v-icon v-if="item.is_violation !== null" :icon="mdiVideo" :color="item.is_violation ? 'error' : 'success'" />
       </div>
-      <div>
-        <v-icon v-if="!!item.violations_count" :icon="mdiCellphoneRemove" :size="20" />
-      </div>
     </div>
     <div style="width: 70px">
       <CabinetWithCapacity v-if="item.cabinet" :item="item.cabinet" />

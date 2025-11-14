@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignIdFor(Lesson::class)->constrained('lessons');
             $table->foreignIdFor(ClientLesson::class)->nullable()->constrained();
             $table->boolean('is_resolved')->index();
-            $table->string('comment', 1000)->nullable();
-            $table->json('file')->nullable();
+            $table->json('photo')->nullable();
+            $table->json('video')->nullable();
             $table->foreignIdFor(User::class)->constrained('users');
             $table->timestamps();
         });

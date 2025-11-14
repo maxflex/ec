@@ -15,9 +15,6 @@ interface AllLessons {
     free_count: number
     violations_violated_count: number
     violations_ok_count: number
-
-    client_lesson_violations_count: number
-    client_lesson_violations_resolved_count: number
   }
 }
 
@@ -156,15 +153,6 @@ nextTick(() => {
             <div v-if="response[d].violations_violated_count" class="d-flex ga-1 text-error">
               <v-icon :icon="mdiVideo" color="error" />
               {{ formatPrice(response[d].violations_violated_count) }}
-            </div>
-            <div
-              v-if="response[d].client_lesson_violations_count"
-              class="d-flex align-center ga-1"
-              :class="response[d].client_lesson_violations_count === response[d].client_lesson_violations_resolved_count ? 'text-gray' : 'text-error'"
-            >
-              <v-icon :icon="mdiCellphoneRemove" :size="20" />
-              {{ response[d].client_lesson_violations_resolved_count }} /
-              {{ response[d].client_lesson_violations_count }}
             </div>
           </div>
         </template>

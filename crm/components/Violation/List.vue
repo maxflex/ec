@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ViolationListResource } from '.'
-import { mdiImage, mdiVideo } from '@mdi/js'
+import { mdiCamera, mdiImage, mdiVideo } from '@mdi/js'
 import { apiUrl } from '.'
 
 const { items } = defineProps<{
@@ -16,11 +16,17 @@ const emit = defineEmits<{
   <Table>
     <TableRow v-for="item in items" :id="`${apiUrl}-${item.id}`" :key="item.id">
       <TableActions @click="emit('edit', item.id)" />
-      <TableCol :width="150">
-        Занятие от {{ formatDate(item.lesson.date) }}
-      </TableCol>
-      <TableCol :width="130">
+      <TableCol :width="200">
+        <span class="mr-6">
+          {{ formatDate(item.lesson.date) }}
+        </span>
         {{ formatTime(item.lesson.time) }} – {{ formatTime(item.lesson.time_end) }}
+      </TableCol>
+      <TableCol :width="100">
+        <GroupLink :item="item.lesson.group" />
+      </TableCol>
+      <TableCol :width="140">
+        {{ ProgramShortLabel[item.lesson.group.program] }}
       </TableCol>
       <TableCol :width="160">
         <UiPerson :item="item.lesson.teacher" />
@@ -41,14 +47,39 @@ const emit = defineEmits<{
           не обработано
         </span>
       </TableCol>
+      <TableCol :width="30">
+        <a v-if="item.photo" class="black-link" target="_blank" :href="item.photo.url">
+          <v-icon :icon="mdiCamera" />
+        </a>
+      </TableCol>
       <TableCol :width="20">
-        <a v-if="item.file" class="black-link" target="_blank" :href="item.file.url">
+        <a v-if="item.video" class="black-link" target="_blank" :href="item.video.url">
           <v-icon :icon="mdiVideo" />
         </a>
       </TableCol>
       <TableCol>
-        {{ item.comment }}
+        <div class="violation__comment">
+          <CommentBtn
+            :size="42"
+            :class="{ 'no-items': item.comments_count === 0 }"
+            :count="item.comments_count"
+            :entity-id="item.id"
+            :entity-type="EntityTypeValue.violation"
+          />
+        </div>
       </TableCol>
     </TableRow>
   </Table>
 </template>
+
+<style lang="scss">
+.violation {
+  &__comment {
+    display: flex;
+    align-items: center;
+    width: 44px;
+    color: rgb(var(--v-theme-gray));
+    gap: 10px;
+  }
+}
+</style>

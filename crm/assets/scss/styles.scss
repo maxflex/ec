@@ -497,7 +497,8 @@ tr.hoverable {
 }
 
 .black-link:not(:hover) {
-  color: #212121 !important;
+  // color: #212121 !important;
+  color: rgb(190, 194, 206) !important;
 }
 
 .input-actions {
