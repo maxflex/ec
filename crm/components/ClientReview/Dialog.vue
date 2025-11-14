@@ -34,10 +34,9 @@ async function loadPrograms() {
     return
   }
   const { data } = await useHttp<Program[]>(
-    `client-lessons`,
+    `client/available-programs`,
     {
       params: {
-        pluck: 'program',
         client_id: item.value.client_id,
         teacher_id: item.value.teacher_id,
       },

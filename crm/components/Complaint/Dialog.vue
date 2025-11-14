@@ -34,7 +34,7 @@ async function loadPrograms() {
     return
   }
   const { data } = await useHttp<Program[]>(
-    `${apiUrl}/available-programs`,
+    `client/available-programs`,
     {
       params: {
         client_id: item.value.client_id,

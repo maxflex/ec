@@ -122,7 +122,7 @@ const emit = defineEmits<{
     align-items: center;
     justify-content: flex-end;
     text-align: center;
-    gap: 4px;
+    gap: 6px;
     & > div {
       display: inline-block;
       width: 42px;

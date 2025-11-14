@@ -8,6 +8,7 @@ use App\Http\Resources\ClientListResource;
 use App\Http\Resources\ClientResource;
 use App\Http\Resources\PersonResource;
 use App\Models\Client;
+use App\Models\ClientLesson;
 use App\Models\Phone;
 use App\Models\Representative;
 use Illuminate\Http\Request;
@@ -96,6 +97,28 @@ class ClientController extends Controller
         });
     }
 
+    /**
+     * Используется для получения доступных программ у ученика в связке с преподом
+     * Complaint/Dialog, ClientReview/Dialog
+     */
+    public function availablePrograms(Request $request)
+    {
+        $request->validate([
+            'client_id' => ['required', 'exists:clients,id'],
+            'teacher_id' => ['required', 'exists:teachers,id'],
+        ]);
+
+        return ClientLesson::query()
+            ->join('lessons as l', 'l.id', '=', 'client_lessons.lesson_id')
+            ->join('contract_version_programs as cvp', 'cvp.id', '=', 'client_lessons.contract_version_program_id')
+            ->join('contract_versions as cv', 'cv.id', '=', 'cvp.contract_version_id')
+            ->join('contracts as c', 'c.id', '=', 'cv.contract_id')
+            ->where('c.client_id', $request->client_id)
+            ->where('l.teacher_id', $request->teacher_id)
+            ->selectRaw('DISTINCT(cvp.program) as `program`')
+            ->pluck('program');
+    }
+
     protected function filterSearch($query, $value)
     {
         $words = explode(' ', $value);
@@ -113,6 +136,8 @@ class ClientController extends Controller
         $query->whereHas('contracts', fn ($q) => $q->where($field, $value));
     }
 
+    // https://doc.ege-centr.ru/tasks/834
+
     protected function filterRequest($query, $requestId)
     {
         $numbers = Phone::where('entity_id', $requestId)
@@ -124,7 +149,6 @@ class ClientController extends Controller
         );
     }
 
-    // https://doc.ege-centr.ru/tasks/834
     protected function filterHeadTeacher($query, $headTeacherId)
     {
         $query->where('head_teacher_id', $headTeacherId)->canLogin();

@@ -82,7 +82,6 @@ Route::prefix('control')->controller(ControlController::class)->group(function (
 });
 
 Route::apiResource('topics', TopicController::class)->only('index');
-Route::post('lessons/bulk', [LessonController::class, 'bulk']);
 
 Route::prefix('lessons')->controller(LessonController::class)->group(function () {
     // Групповое редактирование уроков
@@ -93,6 +92,7 @@ Route::prefix('lessons')->controller(LessonController::class)->group(function ()
     });
 });
 
+Route::get('client/available-programs', [ClientController::class, 'availablePrograms']);
 Route::get('representatives/{representative}', [ClientController::class, 'representative']);
 
 Route::prefix('groups')->controller(GroupController::class)->group(function () {
@@ -172,8 +172,6 @@ Route::apiResource('sms-messages', SmsMessageController::class)->only('index');
 Route::get('teacher-stats', TeacherStatsController::class);
 Route::get('teeth', TeethController::class);
 Route::get('exams', ExamController::class);
-
-Route::get('complaints/available-programs', [ComplaintController::class, 'availablePrograms']);
 
 Route::apiResources([
     'telegram-lists' => TelegramListController::class,
