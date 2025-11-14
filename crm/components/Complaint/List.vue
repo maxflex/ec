@@ -17,7 +17,12 @@ const emit = defineEmits<{
   <div class="table">
     <div v-for="item in items" :id="`${apiUrl}-${item.id}`" :key="item.id" class="pr-2">
       <div>
-        <div class="complaints__status" :class="`complaints__status--${item.is_resolved ? 'resolved' : 'unresolved'}`" />
+        <v-tooltip>
+          <template #activator="{ props }">
+            <div class="complaints__status" :class="`complaints__status--${item.is_resolved ? 'resolved' : 'unresolved'}`" v-bind="props" />
+          </template>
+          {{ item.is_resolved ? 'вопрос решен' : 'требует решения' }}
+        </v-tooltip>
       </div>
       <div v-if="!clientId" style="width: 180px" class="text-truncate">
         <UiPerson :item="item.client" />
