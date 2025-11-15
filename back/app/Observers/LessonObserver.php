@@ -2,12 +2,27 @@
 
 namespace App\Observers;
 
+use App\Enums\LessonStatus;
 use App\Jobs\UpdateScheduleJob;
 use App\Models\Lesson;
 use App\Models\Teacher;
+use Illuminate\Validation\ValidationException;
 
 class LessonObserver
 {
+    public function updating(Lesson $lesson): void
+    {
+        // Нельзя менять статус уже проведённого урока
+        if (
+            $lesson->getOriginal('status') === LessonStatus::conducted
+            && $lesson->isDirty('status')
+        ) {
+            throw ValidationException::withMessages([
+                'status' => 'Нельзя менять статус уже проведённого урока.',
+            ]);
+        }
+    }
+
     public function saved(Lesson $lesson): void
     {
         $this->updateComputed($lesson);

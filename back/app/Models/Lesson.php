@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use _PHPStan_ac6dae9b0\Nette\Neon\Exception;
 use App\Casts\JsonArrayCast;
 use App\Enums\Cabinet;
 use App\Enums\ClientLessonStatus;
 use App\Enums\LessonStatus;
 use App\Http\Resources\LessonListResource;
 use App\Observers\LessonObserver;
+use App\Observers\UserIdObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,13 +16,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
-#[ObservedBy(LessonObserver::class)]
+#[ObservedBy([LessonObserver::class, UserIdObserver::class])]
 class Lesson extends Model
 {
     protected $fillable = [
-        'teacher_id', 'group_id', 'price', 'cabinet', 'date', 'time', 'status',
-        'topic', 'conducted_at', 'is_topic_verified', 'is_unplanned', 'quarter',
+        'teacher_id', 'group_id', 'price', 'cabinet', 'date', 'time',
+        'topic', 'is_topic_verified', 'is_unplanned', 'quarter', 'status',
         'homework', 'files', 'is_free', 'is_violation', 'violation_comment',
         'is_substitute',
     ];
@@ -138,10 +139,12 @@ class Lesson extends Model
 
                 // занятие можно провести только если contractVersionProgram относится к активному договору
                 if (! $contractVersionProgram->contractVersion->is_active) {
-                    throw new Exception(sprintf(
-                        'Попытка провести занятие по программе ID %d, которая относится к неактивной версии договора',
-                        $contractVersionProgram->id,
-                    ));
+                    throw ValidationException::withMessages([
+                        'contractVersion' => sprintf(
+                            'Нельзя провести занятие по программе #%d: договор неактивен.',
+                            $contractVersionProgram->id
+                        ),
+                    ]);
                 }
 
                 $clientLesson = new ClientLesson([
@@ -157,10 +160,9 @@ class Lesson extends Model
                 $this->clientLessons()->save($clientLesson);
             }
 
-            $this->update([
-                'conducted_at' => now(),
-                'status' => LessonStatus::conducted,
-            ]);
+            $this->conducted_at = now();
+            $this->status = LessonStatus::conducted;
+            $this->save();
         });
     }
 

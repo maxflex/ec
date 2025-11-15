@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Collection;
 
+/**
+ * @property-read ContractVersion $contractVersion
+ */
 #[ObservedBy(ContractVersionProgramObserver::class)]
 class ContractVersionProgram extends Model
 {

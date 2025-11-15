@@ -44,7 +44,7 @@ class LessonController extends Controller
 
     public function store(Request $request)
     {
-        $lesson = auth()->user()->lessons()->create($request->all());
+        $lesson = Lesson::create($request->all());
 
         return new LessonListResource($lesson);
     }
@@ -73,7 +73,7 @@ class LessonController extends Controller
                 if (intval($item['weekday']) !== $dayOfWeek) {
                     continue;
                 }
-                $lessons[] = auth()->user()->lessons()->create([
+                $lessons[] = Lesson::create([
                     'date' => $from->format('Y-m-d'),
                     'time' => $item['time'],
                     'cabinet' => $item['cabinet'] ?: null,

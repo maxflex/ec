@@ -101,11 +101,6 @@ class User extends Person
         return $this->hasMany(TeacherService::class);
     }
 
-    public function lessons(): HasMany
-    {
-        return $this->hasMany(Lesson::class);
-    }
-
     public function groups(): HasMany
     {
         return $this->hasMany(Group::class);
