@@ -51,7 +51,7 @@ class ClientController extends Controller
 
     public function store(ClientRequest $request)
     {
-        $client = auth()->user()->clients()->create($request->all());
+        $client = Client::create($request->all());
         $representative = $client->representative()->create($request->representative);
 
         sync_relation($client, 'phones', $request->all());

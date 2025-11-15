@@ -4,16 +4,17 @@ namespace App\Models;
 
 use App\Enums\Direction;
 use App\Observers\ContractVersionObserver;
+use App\Observers\UserIdObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[ObservedBy(ContractVersionObserver::class)]
+#[ObservedBy([ContractVersionObserver::class, UserIdObserver::class])]
 class ContractVersion extends Model
 {
     protected $fillable = [
-        'user_id', 'date', 'sum', 'is_active',
+        'date', 'sum', 'is_active',
     ];
 
     protected $casts = [

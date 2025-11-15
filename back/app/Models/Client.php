@@ -6,9 +6,11 @@ use App\Contracts\HasSchedule;
 use App\Enums\CvpStatus;
 use App\Enums\HeadAboutUs;
 use App\Enums\LessonStatus;
+use App\Observers\UserIdObserver;
 use App\Traits\HasComments;
 use App\Traits\HasScheduleTrait;
 use App\Traits\IsSearchable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 
+#[ObservedBy(UserIdObserver::class)]
 class Client extends Person implements HasSchedule
 {
     use HasComments, HasScheduleTrait, IsSearchable;

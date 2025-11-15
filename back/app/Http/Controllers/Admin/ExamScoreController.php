@@ -30,7 +30,7 @@ class ExamScoreController extends Controller
 
     public function store(Request $request)
     {
-        $examScore = auth()->user()->examScores()->create($request->all());
+        $examScore = ExamScore::create($request->all());
 
         return new ExamScoreResource($examScore);
     }

@@ -14,6 +14,7 @@ class ContractPaymentController extends Controller
         $query = ContractPayment::query()
             ->with(['user', 'contract'])
             ->latest();
+
         return $this->handleIndexRequest(
             $request,
             $query,
@@ -28,13 +29,15 @@ class ContractPaymentController extends Controller
 
     public function store(Request $request)
     {
-        $contractPayment = auth()->user()->contractPayments()->create($request->all());
+        $contractPayment = ContractPayment::create($request->all());
+
         return new ContractPaymentResource($contractPayment);
     }
 
     public function update(ContractPayment $contractPayment, Request $request)
     {
         $contractPayment->update($request->all());
+
         return new ContractPaymentResource($contractPayment);
     }
 

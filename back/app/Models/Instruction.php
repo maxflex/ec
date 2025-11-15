@@ -4,13 +4,14 @@ namespace App\Models;
 
 use App\Enums\InstructionStatus;
 use App\Observers\InstructionObserver;
+use App\Observers\UserIdObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Jfcherng\Diff\Differ;
 use Jfcherng\Diff\DiffHelper;
 use tidy;
 
-#[ObservedBy(InstructionObserver::class)]
+#[ObservedBy([InstructionObserver::class, UserIdObserver::class])]
 class Instruction extends Model
 {
     protected $fillable = [

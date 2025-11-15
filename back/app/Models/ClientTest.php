@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\Casts\JsonArrayCast;
+use App\Observers\UserIdObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
+#[ObservedBy(UserIdObserver::class)]
 class ClientTest extends Model
 {
     protected $fillable = [

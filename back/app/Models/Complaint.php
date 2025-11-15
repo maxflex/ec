@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\Enums\Program;
+use App\Observers\UserIdObserver;
 use App\Traits\HasComments;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[ObservedBy(UserIdObserver::class)]
 class Complaint extends Model
 {
     use HasComments;

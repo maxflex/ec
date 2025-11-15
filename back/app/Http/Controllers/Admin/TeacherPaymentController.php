@@ -40,7 +40,7 @@ class TeacherPaymentController extends Controller
 
     public function store(Request $request)
     {
-        $teacherPayment = auth()->user()->teacherPayments()->create($request->all());
+        $teacherPayment = TeacherPayment::create($request->all());
 
         return new TeacherPaymentResource($teacherPayment);
     }

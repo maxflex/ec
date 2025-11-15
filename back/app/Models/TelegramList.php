@@ -9,11 +9,14 @@ use App\Enums\TelegramListStatus;
 use App\Events\TelegramListSentEvent;
 use App\Http\Resources\PersonResource;
 use App\Http\Resources\PersonWithPhonesResource;
+use App\Observers\UserIdObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 
+#[ObservedBy(UserIdObserver::class)]
 class TelegramList extends Model
 {
     protected $fillable = [

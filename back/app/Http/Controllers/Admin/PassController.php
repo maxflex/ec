@@ -79,9 +79,7 @@ class PassController extends Controller
 
     public function store(Request $request)
     {
-        $pass = auth()->user()->passes()->create(
-            $request->all()
-        );
+        $pass = Pass::create($request->all());
 
         return new PassResource($pass);
     }

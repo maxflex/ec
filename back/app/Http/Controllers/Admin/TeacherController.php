@@ -44,9 +44,7 @@ class TeacherController extends Controller
 
     public function store(Request $request)
     {
-        $teacher = auth()->user()->teachers()->create(
-            $request->all()
-        );
+        $teacher = Teacher::create($request->all());
         sync_relation($teacher, 'phones', $request->all());
 
         return new TeacherResource($teacher);

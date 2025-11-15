@@ -37,9 +37,7 @@ class RequestsController extends Controller
 
     public function store(Request $request)
     {
-        $clientRequest = auth()->user()->requests()->create(
-            $request->all()
-        );
+        $clientRequest = ClientRequest::create($request->all());
         sync_relation($clientRequest, 'phones', $request->all());
 
         $clientRequest->refresh();

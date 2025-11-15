@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use App\Enums\Exam;
+use App\Observers\UserIdObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 
+#[ObservedBy(UserIdObserver::class)]
 class ExamScore extends Model
 {
     protected $fillable = [

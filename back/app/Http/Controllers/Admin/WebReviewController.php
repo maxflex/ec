@@ -27,7 +27,7 @@ class WebReviewController extends Controller
 
     public function store(Request $request)
     {
-        $webReview = auth()->user()->webReviews()->create($request->all());
+        $webReview = WebReview::create($request->all());
         $webReview->savePrograms($request->programs);
 
         return new WebReviewResource($webReview);

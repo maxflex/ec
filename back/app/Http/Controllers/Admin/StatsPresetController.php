@@ -16,9 +16,9 @@ class StatsPresetController extends Controller
 
     public function store(Request $request)
     {
-        return new StatsPresetResource(
-            auth()->user()->statsPresets()->create($request->all())
-        );
+        $statsPreset = StatsPreset::create($request->all());
+
+        return new StatsPresetResource($statsPreset);
     }
 
     public function show(StatsPreset $statsPreset)

@@ -178,7 +178,7 @@ class GroupController extends Controller
 
     public function store(GroupRequest $request)
     {
-        $group = auth()->user()->groups()->create($request->all());
+        $group = Group::create($request->all());
 
         return new GroupListResource($group);
     }

@@ -6,14 +6,17 @@ use App\Contracts\HasSchedule;
 use App\Enums\LessonStatus;
 use App\Enums\TeacherPaymentMethod;
 use App\Enums\TeacherStatus;
+use App\Observers\UserIdObserver;
 use App\Traits\HasScheduleTrait;
 use App\Traits\IsSearchable;
 use App\Utils\Balance\Balance;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[ObservedBy(UserIdObserver::class)]
 class Teacher extends Person implements HasSchedule
 {
     use HasScheduleTrait, IsSearchable;

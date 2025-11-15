@@ -6,12 +6,15 @@ use App\Contracts\HasSchedule;
 use App\Enums\Cabinet;
 use App\Enums\LessonStatus;
 use App\Enums\Program;
+use App\Observers\UserIdObserver;
 use App\Traits\HasScheduleTrait;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 
+#[ObservedBy(UserIdObserver::class)]
 class Group extends Model implements HasSchedule
 {
     use HasScheduleTrait;

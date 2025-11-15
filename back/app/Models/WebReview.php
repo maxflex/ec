@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use App\Enums\Program;
+use App\Observers\UserIdObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 
+#[ObservedBy(UserIdObserver::class)]
 class WebReview extends Model
 {
     protected $fillable = [

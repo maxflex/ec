@@ -12,7 +12,7 @@ class OtherPaymentController extends Controller
 {
     public function store(Request $request)
     {
-        $otherPayment = auth()->user()->otherPayments()->create($request->all());
+        $otherPayment = OtherPayment::create($request->all());
 
         return new AllPaymentsResource(
             $otherPayment->formatForAllPayments()

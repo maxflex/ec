@@ -31,9 +31,7 @@ class TelegramListController extends Controller
 
     public function store(Request $request)
     {
-        $telegramList = auth()->user()->telegramLists()->create(
-            $request->all(),
-        );
+        $telegramList = TelegramList::create($request->all());
 
         return new TelegramListResource($telegramList);
     }

@@ -38,7 +38,7 @@ class ClientTestController extends Controller
         $tests = Test::whereIn('id', $request->ids)->get();
         $clientTests = [];
         foreach ($tests as $test) {
-            $clientTests[] = auth()->user()->clientTests()->create([
+            $clientTests[] = ClientTest::create([
                 ...$request->all(),
                 'name' => $test->name,
                 'description' => $test->description,

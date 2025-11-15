@@ -53,10 +53,7 @@ class ContractVersionController extends Controller
 
         $contract = Contract::find($request->contract['id']);
 
-        $contractVersion = $contract->versions()->create([
-            ...$request->all(),
-            'user_id' => auth()->id(),
-        ]);
+        $contractVersion = $contract->versions()->create($request->all());
 
         foreach ($request->programs as $p) {
             $contractVersionProgram = $contractVersion->programs()->create($p);

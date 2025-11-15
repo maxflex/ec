@@ -4,13 +4,16 @@ namespace App\Models;
 
 use App\Enums\Company;
 use App\Enums\OtherPaymentMethod;
+use App\Observers\UserIdObserver;
 use App\Traits\HasName;
 use App\Utils\AllPayments;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Фактически эти платежи сейчас только для пробных ЕГЭ
  */
+#[ObservedBy(UserIdObserver::class)]
 class OtherPayment extends Model
 {
     use HasName;

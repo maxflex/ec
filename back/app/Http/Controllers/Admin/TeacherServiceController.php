@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class TeacherServiceController extends Controller
 {
     protected $filters = [
-        'equals' => ['teacher_id', 'year']
+        'equals' => ['teacher_id', 'year'],
     ];
 
     /**
@@ -20,6 +20,7 @@ class TeacherServiceController extends Controller
     {
         $query = TeacherService::latest();
         $this->filter($request, $query);
+
         return $this->handleIndexRequest($request, $query, TeacherServiceResource::class);
     }
 
@@ -28,7 +29,8 @@ class TeacherServiceController extends Controller
      */
     public function store(Request $request)
     {
-        $teacherService = auth()->user()->teacherServices()->create($request->all());
+        $teacherService = TeacherService::create($request->all());
+
         return new TeacherServiceResource($teacherService);
     }
 
@@ -46,6 +48,7 @@ class TeacherServiceController extends Controller
     public function update(Request $request, TeacherService $teacherService)
     {
         $teacherService->update($request->all());
+
         return new TeacherServiceResource($teacherService);
     }
 
