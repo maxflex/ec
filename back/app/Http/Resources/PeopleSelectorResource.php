@@ -2,12 +2,12 @@
 
 namespace App\Http\Resources;
 
-use App\Enums\CvpStatus;
 use App\Models\Client;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin Client */
+/** @mixin Client|Teacher */
 class PeopleSelectorResource extends JsonResource
 {
     public function toArray(Request $request): array
@@ -16,15 +16,20 @@ class PeopleSelectorResource extends JsonResource
             'first_name', 'last_name', 'middle_name',
             'directions',
         ], [
-            'years' => $this->contracts
-                ->where('year', '>=', current_academic_year())
-                ->filter(
-                    fn ($c) => $c->active_version->programs->some(
-                        fn ($p) => in_array($p->status, CvpStatus::getActiveStatuses())
-                    ))
-                ->pluck('year')
-                ->unique()
-                ->all(),
+            'entity_type' => get_class($this->resource),
+            'event_participant' => $this->whenHas('event_participant'),
+
+            /**
+             * используется на странице group-message/send
+             */
+            'phones' => $this->whenLoaded(
+                'phones',
+                fn () => PhoneResource::collection($this->phones)
+            ),
+            'representative' => $this->whenLoaded(
+                'representative',
+                fn () => new PersonWithPhonesResource($this->representative)
+            ),
         ]);
     }
 }

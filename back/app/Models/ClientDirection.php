@@ -19,6 +19,7 @@ class ClientDirection extends Model
         'direction' => Direction::class,
     ];
 
+    // отображение направлений всегда идёт со статусом
     protected $appends = [
         'status',
     ];
@@ -35,10 +36,15 @@ class ClientDirection extends Model
      */
     public function getStatusAttribute(): CvpStatus
     {
-        $contracts = Contract::where([
-            'year' => $this->year,
-            'client_id' => $this->client_id,
-        ])->get();
+        $contracts = Contract::query()
+            ->with('versions', fn ($q) => $q
+                ->where('is_active', true)
+                ->with('programs')
+            )
+            ->where([
+                'year' => $this->year,
+                'client_id' => $this->client_id,
+            ])->get();
 
         $hasActive = false;
         foreach ($contracts as $contract) {

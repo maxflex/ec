@@ -5,8 +5,6 @@ declare global {
 
   type CvpStatus = keyof typeof CvpStatusLabel
 
-  type Recepient = keyof typeof RecepientLabel
-
   type InstructionStatus = keyof typeof InstructionStatusLabel
 
   type Direction = keyof typeof DirectionLabel
@@ -198,6 +196,8 @@ declare global {
     icon: string
     color: string
   }
+
+  type UploadFolder = 'lessons' | 'tests' | 'events' | 'violations'
 
   interface LessonResource {
     id: number
@@ -570,23 +570,6 @@ declare global {
 
   type Recipients = Record<Recepient, RecepientPerson[]>
 
-  interface TelegramListResource {
-    id: number
-    send_to: SendTo[]
-    status: TelegramListStatus
-    recipients: Recipients
-    scheduled_at?: string
-    created_at?: string
-    event_id?: number
-    event?: {
-      id: number
-      name: string
-    }
-    text: string
-    user: PersonResource
-    result: Record<SendTo, TelegramListResult[]>
-  }
-
   interface GroupActResource {
     id: number
     date: string
@@ -629,7 +612,6 @@ declare global {
     count: number
     programs: Program[]
   }
-
 }
 
 export {}

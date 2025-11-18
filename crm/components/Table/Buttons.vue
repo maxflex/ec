@@ -6,8 +6,6 @@
 
 <style lang="scss">
 .table-buttons {
-  position: absolute;
-  top: -18px;
   display: flex;
   align-items: center;
   justify-content: flex-end;

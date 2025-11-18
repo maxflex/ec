@@ -3,7 +3,7 @@ import { mdiDownload } from '@mdi/js'
 
 const { folder, label = 'прикрепить файл' } = defineProps<{
   label?: string
-  folder: 'lessons' | 'tests' | 'events' | 'violations'
+  folder: UploadFolder
 }>()
 
 const accept = (function () {

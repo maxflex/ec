@@ -21,6 +21,7 @@ class User extends Person
         $query->where('is_active', true);
     }
 
+    /** @noinspection PhpUnused */
     public function responsibleRequests(): HasMany
     {
         return $this->hasMany(Request::class, 'responsible_user_id');

@@ -23,7 +23,8 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Event::withCount(['participants', 'telegramLists'])
+        $query = Event::query()
+            ->withCount('telegramLists')
             ->orderByRaw('
                 date ASC,
                 time ASC
@@ -50,8 +51,6 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
-        $event->loadCount('participants');
-
         return new EventResource($event);
     }
 

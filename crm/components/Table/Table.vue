@@ -1,5 +1,11 @@
+<script setup lang="ts">
+const { hoverable } = defineProps<{
+  hoverable?: boolean
+}>()
+</script>
+
 <template>
-  <div class="table">
+  <div class="table" :class="{ 'table--hoverable': hoverable }">
     <slot></slot>
   </div>
 </template>
@@ -87,7 +93,7 @@
   &-actions {
     text-align: right;
   }
-  &--hover {
+  &--hoverable {
     & > div,
     & > a {
       transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);

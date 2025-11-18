@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { TelegramListResource } from '.'
+
 const { items } = defineProps<{
   items: TelegramListResource[]
 }>()

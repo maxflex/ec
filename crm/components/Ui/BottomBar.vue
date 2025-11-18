@@ -22,7 +22,7 @@ const model = defineModel<boolean>({
   left: var(--menuWidth);
   padding: 0 20px;
   height: 52px;
-  z-index: 3;
+  z-index: 100;
   background: rgb(var(--v-theme-bg));
   width: calc(100vw - var(--menuWidth));
   display: flex;

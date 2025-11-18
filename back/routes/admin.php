@@ -120,13 +120,6 @@ Route::prefix('projects')->controller(ProjectController::class)->group(function 
 
 Route::apiResource('projects', ProjectController::class)->only(['index', 'show', 'destroy']);
 
-Route::prefix('event-participants')->controller(EventParticipantController::class)->group(function () {
-    Route::post('/', 'store');
-    Route::put('/{eventParticipant}', 'update');
-    Route::delete('/{eventParticipant}', 'destroy');
-    Route::get('/{event}', 'show');
-});
-
 Route::get('teacher-balances', TeacherBalanceController::class);
 Route::get('contract-balances', ContractBalanceController::class);
 
@@ -140,10 +133,15 @@ Route::prefix('errors')->controller(ErrorController::class)->group(function () {
     Route::post('/check', 'check');
 });
 
+Route::prefix('people-selector')->controller(PeopleSelectorController::class)->group(function () {
+    Route::get('get-all', 'getAll');
+    Route::get('get-for-event/{event}', 'getForEvent');
+    Route::post('unpack-localstorage', 'unpackLocalStorage');
+    Route::get('unpack-event/{event}', 'unpackEvent');
+});
+
 Route::get('search', SearchController::class);
 Route::post('print', PrintController::class);
-
-Route::get('people-selector', PeopleSelectorController::class);
 
 Route::get('cabinets', [CabinetController::class, 'index']);
 
@@ -208,4 +206,5 @@ Route::apiResources([
     'events' => EventController::class,
     'client-lessons' => ClientLessonController::class,
     'violations' => ViolationController::class,
+    'event-participants' => EventParticipantController::class,
 ]);

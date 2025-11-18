@@ -15,9 +15,16 @@ export interface RepresentativeResource extends HasName, HasPhones {
   }
 }
 
+export interface ClientDirection {
+  id: number
+  year: Year
+  direction: Direction
+  status: CvpStatus
+}
+
 export interface ClientListResource extends PersonResource {
   schedule?: Teeth
-  directions: ClientDirections
+  directions: ClientDirection[]
   created_at: string
 }
 
@@ -30,7 +37,7 @@ export type MarkSheet = Partial<Record<Subject, number>>
 export interface ClientResource extends PersonWithPhotoResource, HasPhones {
   bio: string | null
   branches: Branch[]
-  directions: ClientDirections
+  directions: ClientDirection[]
   head_teacher_id: number | null
   head_teacher?: PersonResource
   representative: RepresentativeResource
@@ -44,6 +51,7 @@ export interface ClientResource extends PersonWithPhotoResource, HasPhones {
   mark_sheet: MarkSheet | null
   schedule: Teeth | null
   current_lesson: null | CurrentLessonResource
+  comments_count: number
   passport: {
     series: string | null
     number: string | null
@@ -58,7 +66,7 @@ export const modelDefaults: ClientResource = {
   middle_name: null,
   head_teacher_id: null,
   branches: [],
-  directions: {},
+  directions: [],
   phones: [],
   photo_url: null,
   is_remote: false,
@@ -66,6 +74,7 @@ export const modelDefaults: ClientResource = {
   is_consult_agree: false,
   entity_type: EntityTypeValue.client,
   mark_sheet: null,
+  comments_count: 0,
   passport: {
     series: null,
     number: null,

@@ -5,9 +5,6 @@ const { items } = defineProps<{
   items: EventListResource[]
 }>()
 const router = useRouter()
-function getParticipantsCount(item: EventListResource): number {
-  return Object.values(item.participants).reduce((carry, x) => carry + x, 0)
-}
 </script>
 
 <template>
@@ -36,22 +33,22 @@ function getParticipantsCount(item: EventListResource): number {
         </div>
       </div>
       <div style="width: 150px; flex: initial">
-        <span v-if="getParticipantsCount(item) === 0" class="text-gray">
+        <span v-if="item.participant_counts.confirmed === 0" class="text-gray">
           нет участников
         </span>
         <span v-else>
-          {{ getParticipantsCount(item) }} участников
+          {{ item.participant_counts.confirmed }} участников
         </span>
         <div
-          v-if="item.participant"
+          v-if="item.me"
           class="event-list__confirmation"
           :class="{
-            'text-success': item.participant.confirmation === 'confirmed',
-            'text-error': item.participant.confirmation === 'rejected',
-            'text-gray': item.participant.confirmation === 'pending',
+            'text-success': item.me.confirmation === 'confirmed',
+            'text-error': item.me.confirmation === 'rejected',
+            'text-gray': item.me.confirmation === 'pending',
           }"
         >
-          {{ EventParticipantConfirmationLabel[item.participant.confirmation] }}
+          {{ EventParticipantConfirmationLkLabel[item.me.confirmation] }}
         </div>
       </div>
     </div>

@@ -1,3 +1,10 @@
+import type { ClientDirection } from '../Client'
+
+export const EntityTypeEventLabel = {
+  [EntityTypeValue.client]: 'Клиенты',
+  [EntityTypeValue.teacher]: 'Преподаватели',
+}
+
 export interface EventListResource {
   id: number
   name: string
@@ -8,17 +15,20 @@ export interface EventListResource {
   file: UploadedFile | null
   time_end?: string
   user: PersonResource
-  participants: Record<EventParticipantConfirmation, number>
-  participant?: {
+  participant_counts: Record<EventParticipantConfirmation, number>
+  me?: {
     id: number
     confirmation: EventParticipantConfirmation
   }
 }
 
-export interface EventParticipant {
+export interface EventParticipantResource {
   id: number
   confirmation: EventParticipantConfirmation
+  is_visited: boolean
   entity: PersonResource
+  is_me: boolean
+  directions?: ClientDirection[]
 }
 
 export interface EventResource {
@@ -36,10 +46,6 @@ export interface EventResource {
     id: number
     created_at: string
   }>
-  participants?: {
-    clients: EventParticipant[]
-    teachers: EventParticipant[]
-  }
 }
 
 export const modelDefaults: EventResource = {

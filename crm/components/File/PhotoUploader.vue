@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { folder, label = 'прикрепить фото' } = defineProps<{
   label?: string
-  folder: 'violations'
+  folder: UploadFolder
 }>()
 
 const fileInput = ref<HTMLInputElement>()

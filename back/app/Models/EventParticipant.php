@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\EventParticipantConfirmation;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class EventParticipant extends Model
 {
@@ -18,12 +20,12 @@ class EventParticipant extends Model
         'is_visited' => 'boolean',
     ];
 
-    public function event()
+    public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
     }
 
-    public function entity()
+    public function entity(): MorphTo
     {
         return $this->morphTo('entity');
     }

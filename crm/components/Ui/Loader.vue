@@ -27,8 +27,9 @@ const style = offset
   align-items: center;
   justify-content: center;
   position: absolute;
-  z-index: 1;
-  left: 0;
+  z-index: 99;
+  // left: 0;
+  max-width: calc(100vw - var(--menuWidth));
 
   &--fixed {
     position: fixed;

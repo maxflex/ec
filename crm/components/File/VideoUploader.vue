@@ -3,7 +3,7 @@ import { mdiPlayCircle } from '@mdi/js'
 
 const { folder, label = 'прикрепить видео' } = defineProps<{
   label?: string
-  folder: 'violations'
+  folder: UploadFolder
 }>()
 
 const fileInput = ref<HTMLInputElement>()

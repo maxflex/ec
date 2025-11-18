@@ -5,6 +5,7 @@
   $font-size-root: 16px
 );
 @use 'overwrites';
+@use 'variables';
 @use 'styles';
 @use 'test';
 @use 'quill';

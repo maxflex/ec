@@ -1,55 +1,59 @@
 <script setup lang="ts">
 import type { EventDialog } from '#components'
-import type { EventParticipant, EventResource } from '~/components/Event'
-import { mdiPlus } from '@mdi/js'
+import type { EventParticipantResource, EventResource } from '~/components/Event'
+import { EntityTypeEventLabel } from '~/components/Event'
 
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
 const route = useRoute()
 
 const item = ref<EventResource>()
+const eventId = Number.parseInt(route.params.id as string)
+const participants = ref<EventParticipantResource[]>()
 
 const filters = ref<{
-  recepient: Recepient
+  entity_type: EntityType
   confirmation?: EventParticipantConfirmation
   is_visited?: number
 }>({
-  recepient: 'clients',
+  entity_type: EntityTypeValue.client,
 })
 
-async function loadData() {
-  const { data } = await useHttp<EventResource>(
-    `events/${route.params.id}`,
-  )
-  if (data.value) {
-    item.value = data.value
-  }
+async function loadEvent() {
+  const { data } = await useHttp<EventResource>(`events/${eventId}`)
+  item.value = data.value!
 }
 
-const displayedParticipants = computed<EventParticipant[]>(() => {
-  if (!item.value) {
+async function loadParticipants() {
+  const { data } = await useHttp<ApiResponse<EventParticipantResource>>(
+    `event-participants`,
+    {
+      params: {
+        event_id: eventId,
+      },
+    },
+  )
+  participants.value = data.value!.data
+}
+
+const displayedParticipants = computed<EventParticipantResource[]>(() => {
+  if (!participants.value) {
     return []
   }
 
-  return item.value.participants![filters.value.recepient].filter((e) => {
-    if (filters.value.confirmation !== undefined && e.confirmation !== filters.value.confirmation) {
-      return false
-    }
-    if (filters.value.is_visited !== undefined && e.is_visited !== !!filters.value.is_visited) {
-      return false
-    }
-    return true
-  })
+  return participants.value
+    .filter(e => e.entity.entity_type === filters.value.entity_type)
+    .filter((e) => {
+      if (filters.value.confirmation !== undefined && e.confirmation !== filters.value.confirmation) {
+        return false
+      }
+      if (filters.value.is_visited !== undefined && e.is_visited !== !!filters.value.is_visited) {
+        return false
+      }
+      return true
+    })
 })
 
-function deleteParticipant(p: EventParticipant) {
-  const index = item.value!.participants![filters.value.recepient].findIndex(e => e.id === p.id)
-  item.value!.participants![filters.value.recepient].splice(index, 1)
-  useHttp(`event-participants/${p.id}`, {
-    method: 'delete',
-  })
-}
-
-function updateParticipant(p: EventParticipant) {
+function updateParticipant(p: EventParticipantResource) {
   nextTick(() => {
     useHttp(`event-participants/${p.id}`, {
       method: 'put',
@@ -58,12 +62,15 @@ function updateParticipant(p: EventParticipant) {
   })
 }
 
-nextTick(loadData)
+nextTick(async () => {
+  await loadEvent()
+  await loadParticipants()
+})
 </script>
 
 <template>
   <v-fade-transition>
-    <UiLoader v-if="item === undefined" />
+    <UiLoader v-if="!item || !participants" />
     <div v-else class="show">
       <EventHeader :item="item">
         <div class="mt-4">
@@ -76,7 +83,7 @@ nextTick(loadData)
 
         <div class="mt-6">
           <div class="d-flex ga-6 align-center">
-            <UiAvatar :item="item.user" :size="80" />
+            <UiAvatar v-if="item.user" :item="item.user" :size="80" />
             <div>
               <div>
                 Ответственный
@@ -95,7 +102,7 @@ nextTick(loadData)
       <div>
         <div class="filters event-participants__filters">
           <div class="filters__inputs">
-            <v-select v-model="filters.recepient" density="comfortable" :items="selectItems(RecepientLabel)"></v-select>
+            <v-select v-model="filters.entity_type" density="comfortable" :items="selectItems(EntityTypeEventLabel)" />
             <UiClearableSelect
               v-model="filters.confirmation"
               density="comfortable"
@@ -121,26 +128,24 @@ nextTick(loadData)
                   icon="$edit"
                   color="primary"
                   :to="{
-                    name: 'people-selector',
-                    query: {
-                      participants: item.id,
-                    },
+                    name: 'events-id-participants',
+                    params: { id: eventId },
                   }"
                 />
               </template>
               редактировать участников
             </v-tooltip>
-            <v-tooltip v-if="item?.participants?.clients.length || item?.participants?.teachers.length" location="bottom">
+            <v-tooltip location="bottom">
               <template #activator="{ props }">
                 <v-btn
                   v-bind="props"
+                  color="primary"
                   icon="$send"
                   :size="48"
-                  color="primary"
                   :to="{
-                    name: 'people-selector',
+                    name: 'group-message-send',
                     query: {
-                      event_id: item.id,
+                      event_id: eventId,
                     },
                   }"
                 />
@@ -170,7 +175,7 @@ nextTick(loadData)
                   @click="updateParticipant(p)"
                 />
               </td>
-              <td width="220" class="pr-0">
+              <td>
                 <a
                   class="cursor-pointer unselectable"
                   :class="{
@@ -182,20 +187,13 @@ nextTick(loadData)
                   {{ p.is_visited ? 'приходил' : 'не приходил' }}
                 </a>
               </td>
-              <td class="pl-0">
-                <v-icon
-                  :icon="mdiPlus"
-                  color="gray"
-                  class="event-participants__remove"
-                />
-              </td>
             </tr>
           </tbody>
         </v-table>
       </div>
     </div>
   </v-fade-transition>
-  <EventDialog ref="eventDialog" @updated="loadData()" />
+  <EventDialog ref="eventDialog" @updated="loadEvent()" />
 </template>
 
 <style lang="scss">

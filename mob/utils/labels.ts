@@ -328,6 +328,21 @@ export const MonthLabel = {
   12: 'декабрь',
 } as const
 
+export const MonthLabelDative = {
+  1: 'января',
+  2: 'февраля',
+  3: 'марта',
+  4: 'апреля',
+  5: 'мая',
+  6: 'июня',
+  7: 'июля',
+  8: 'августа',
+  9: 'сентября',
+  10: 'октября',
+  11: 'ноября',
+  12: 'декабря',
+} as const
+
 export const MonthLabelShort = {
   1: 'янв',
   2: 'фев',
@@ -533,6 +548,12 @@ export const CvpStatusLabel = {
 } as const
 
 export const EventParticipantConfirmationLabel = {
+  confirmed: 'участвует',
+  rejected: 'отказался',
+  pending: 'не подтвердил',
+} as const
+
+export const EventParticipantConfirmationLkLabel = {
   confirmed: 'вы подтвердили участие',
   rejected: 'вы отказались от участия',
   pending: 'участие не подтверждено',

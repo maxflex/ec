@@ -7,12 +7,6 @@ const { item } = defineProps<{
   item: EventResource | EventListResource
 }>()
 
-const { isAdmin } = useAuthStore()
-
-function getParticipantsCount(item: EventListResource): number {
-  return Object.values(item.participants).reduce((carry, x) => carry + x, 0)
-}
-
 function formatDateLocal(date: string) {
   const month = getMonth(date) + 1
   const monthLabel = MonthLabelDative[month as Month]
@@ -36,7 +30,7 @@ function formatDateLocal(date: string) {
       </div>
 
       <div class="mt-4 event__date-time">
-        {{ formatDateLocal(item.date) }} {{ }}
+        {{ formatDateLocal(item.date) }}
         <span v-if="item.time">
           в {{ formatTime(item.time) }}
         </span>

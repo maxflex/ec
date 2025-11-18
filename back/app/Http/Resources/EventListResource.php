@@ -23,13 +23,13 @@ class EventListResource extends JsonResource
             'telegram_lists_count', 'file',
         ], [
             'user' => new PersonResource($this->user),
-            'participant' => $this->whenLoaded(
+            'me' => $this->whenLoaded(
                 'participants',
                 fn () => extract_fields($this->participants[0], [
                     'confirmation',
                 ])
             ),
-            'participants' => $this->participants()
+            'participant_counts' => $this->participants()
                 ->selectRaw('confirmation, COUNT(*) as cnt')
                 ->groupBy('confirmation')
                 ->pluck('cnt', 'confirmation'),

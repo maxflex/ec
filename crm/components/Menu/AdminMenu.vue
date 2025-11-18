@@ -92,7 +92,7 @@ const menu: Menu = [
     items: [
       { title: 'История Telegram', to: '/telegram-messages' },
       { title: 'История SMS', to: '/sms-messages' },
-      { title: 'Групповое сообщение', to: '/people-selector' },
+      { title: 'Групповое сообщение', to: '/group-message' },
       { title: 'Рассылки', to: '/telegram-lists' },
     ],
   },
