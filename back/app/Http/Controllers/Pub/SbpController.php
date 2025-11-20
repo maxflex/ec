@@ -82,7 +82,7 @@ class SbpController extends Controller
             'sum' => $amount,
             'date' => now()->format('Y-m-d'),
             'method' => ContractPaymentMethod::sbpOnline,
-            'sbp_id' => $payment->getId(),
+            'external_id' => $payment->getId(),
         ]);
 
         cache()->put('sbp-'.$payment->getId(), $contractPayment, now()->addHour());
