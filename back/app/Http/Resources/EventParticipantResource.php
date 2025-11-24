@@ -18,7 +18,7 @@ class EventParticipantResource extends JsonResource
         $entity = $this->entity;
 
         return extract_fields($this, [
-            'confirmation', 'is_me',
+            'confirmation', 'is_visited', 'is_me',
         ], [
             'entity' => new PersonResource($entity),
             'directions' => $this->when(
