@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { AllPaymentResource, OtherPaymentResource } from '.'
+import type { AllPaymentsResource, OtherPaymentResource } from '.'
 import { cloneDeep } from 'lodash-es'
 import { apiUrl, modelDefaults, OtherPaymentMethodLabel } from '.'
 
 const emit = defineEmits<{
-  updated: [e: AllPaymentResource]
+  updated: [e: AllPaymentsResource]
   deleted: [id: number]
 }>()
 
@@ -33,7 +33,7 @@ async function save() {
   saving.value = true
   const method = itemId.value ? `put` : `post`
   const url = itemId.value ? `${apiUrl}/${itemId.value}` : apiUrl
-  const { data } = await useHttp<AllPaymentResource>(url, {
+  const { data } = await useHttp<AllPaymentsResource>(url, {
     method,
     body: item.value,
   })
