@@ -23,6 +23,20 @@ const selectedQuarter = computed(() => item.value ? item.value.quarters[quarter.
 //  – либо администратор
 const isDisabled = computed(() => isTeacher && selectedQuarter.value?.last_teacher_id !== user?.id)
 
+const allScores = computed(() => {
+  if (!selectedQuarter.value) {
+    return []
+  }
+  const result = []
+  for (const clientLesson of selectedQuarter.value.client_lessons!) {
+    for (const score of clientLesson.scores) {
+      result.push(score)
+    }
+  }
+
+  return result
+})
+
 async function setFinalGrade(score: LessonScore) {
   if (!item.value) {
     return
@@ -72,99 +86,120 @@ nextTick(loadData)
 </script>
 
 <template>
-  <UiFilters>
-    <v-btn
+  <div class="tabs">
+    <div
       v-for="(label, q) in QuarterLabel"
       :key="q"
-      class="tab-btn"
-      :class="{ 'tab-btn--active': quarter === q }"
-      variant="plain"
-      :ripple="false"
+      class="tabs-item"
+      :class="{ 'tabs-item--active': quarter === q }"
       @click="quarter = q"
     >
       {{ label }}
-    </v-btn>
-  </UiFilters>
+    </div>
+  </div>
   <template v-if="item && selectedQuarter">
     <UiNoData v-if="!selectedQuarter.client_lessons?.length" class="grades__no-data" />
     <JournalList v-else :items="selectedQuarter.client_lessons" />
-    <div v-if="selectedQuarter.grade" :key="selectedQuarter.grade.id" class="grades__final">
-      <div class="dialog-section__title mt-0">
-        <span v-if="quarter === 'final'">
-          Итоговая оценка:
-        </span>
-        <span v-else>
-          Оценка за четверть:
-        </span>
-      </div>
-      <v-menu
-        :disabled="isDisabled"
-        :close-on-content-click="isChangeGradeSubmenu"
-        :width="160"
-      >
-        <template #activator="{ props }">
-          <v-btn
-            v-bind="props"
-            :size="48"
-            @click="isChangeGradeSubmenu = false"
-          >
-            <span :class="`text-score text-score--${selectedQuarter.grade.grade}`" class="no-pointer-events">
-              {{ selectedQuarter.grade.grade }}
-            </span>
-          </v-btn>
-        </template>
-        <v-list v-if="isChangeGradeSubmenu" class="grades__final-selector">
-          <v-list-item v-for="(label, score) in LessonScoreLabel" :key="score" @click="updateFinalGrade(score)">
-            <template #title>
-              <span :class="`text-score text-score--${score}`" class="mr-2">
-                {{ score }}
+    <UiContentBlocks v-if="selectedQuarter.client_lessons?.length">
+      <div>
+        <div>Все оценки на уроках</div>
+        <div>
+          <div class="journal__scores">
+            <div v-for="(score, i) in allScores" :key="i">
+              <span :class="`text-score text-score--small text-score--${score.score}`">
+                {{ score.score }}
               </span>
-              {{ label }}
-            </template>
-          </v-list-item>
-        </v-list>
-        <v-list v-else>
-          <v-list-item @click="isChangeGradeSubmenu = true">
-            изменить оценку
-          </v-list-item>
-          <v-list-item @click="deleteFinalGrade()">
-            удалить оценку
-          </v-list-item>
-        </v-list>
-      </v-menu>
-      <div v-if="selectedQuarter.grade.teacher" class="text-gray pl-2 flex-1-0 text-right">
-        <UiPerson :item="selectedQuarter.grade.teacher" teacher-format="full" />
-        {{ formatDateTime(selectedQuarter.grade.created_at) }}
+              – {{ score.comment || 'комментария нет' }}
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div v-else class="grades__final">
-      <v-menu>
-        <template #activator="{ props }">
-          <v-btn
-            color="primary"
-            v-bind="props"
+      <div>
+        <div class="d-flex align-center">
+          <div v-if="quarter === 'final'">
+            Итоговая оценка
+          </div>
+          <div v-else>
+            Оценка за четверть
+          </div>
+        </div>
+        <div v-if="selectedQuarter.grade">
+          <div v-if="selectedQuarter.grade" class="journal__scores">
+            <div>
+              <span :class="`text-score text-score--small text-score--${selectedQuarter.grade.grade}`">
+                {{ selectedQuarter.grade.grade }}
+              </span>
+              –
+              оценка выставлена <UiPerson :item="selectedQuarter.grade.teacher" teacher-format="full" />
+              {{ formatDateTime(selectedQuarter.grade.created_at) }}
+            </div>
+          </div>
+        </div>
+        <div v-if="selectedQuarter.grade">
+          <v-menu
             :disabled="isDisabled"
+            :close-on-content-click="isChangeGradeSubmenu"
+            :width="160"
           >
-            <template v-if="quarter === 'final'">
-              выставить итоговую оценку
+            <template #activator="{ props }">
+              <v-btn color="primary" v-bind="props" @click="isChangeGradeSubmenu = false">
+                редактировать оценку
+              </v-btn>
             </template>
-            <template v-else>
-              выставить оценку за {{ QuarterLabel[quarter] }}
+            <v-list v-if="isChangeGradeSubmenu" class="grades__final-selector">
+              <v-list-item
+                v-for="(label, score) in LessonScoreLabel"
+                :key="score"
+                @click="updateFinalGrade(score)"
+              >
+                <template #title>
+                  <span :class="`text-score text-score--${score}`" class="mr-2">
+                    {{ score }}
+                  </span>
+                  {{ label }}
+                </template>
+              </v-list-item>
+            </v-list>
+            <v-list v-else>
+              <v-list-item @click="isChangeGradeSubmenu = true">
+                изменить оценку
+              </v-list-item>
+              <v-list-item @click="deleteFinalGrade()">
+                удалить оценку
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
+        <div v-else>
+          <v-menu>
+            <template #activator="{ props }">
+              <v-btn color="primary" v-bind="props" :disabled="isDisabled">
+                <template v-if="quarter === 'final'">
+                  выставить итоговую оценку
+                </template>
+                <template v-else>
+                  выставить оценку
+                </template>
+              </v-btn>
             </template>
-          </v-btn>
-        </template>
-        <v-list class="grades__final-selector">
-          <v-list-item v-for="(label, score) in LessonScoreLabel" :key="score" @click="setFinalGrade(score)">
-            <template #title>
-              <span :class="`text-score text-score--${score}`" class="mr-2">
-                {{ score }}
-              </span>
-              {{ label }}
-            </template>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </div>
+            <v-list class="grades__final-selector">
+              <v-list-item
+                v-for="(label, score) in LessonScoreLabel"
+                :key="score"
+                @click="setFinalGrade(score)"
+              >
+                <template #title>
+                  <span :class="`text-score text-score--${score}`" class="mr-2">
+                    {{ score }}
+                  </span>
+                  {{ label }}
+                </template>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
+      </div>
+    </UiContentBlocks>
   </template>
   <UiLoader v-else />
 </template>
@@ -215,6 +250,44 @@ nextTick(loadData)
   .filters {
     padding: 0 20px !important;
     --height: 70px !important;
+  }
+
+  .content-blocks {
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
+
+  .journal {
+    tr:last-child td {
+      border-bottom: 1px solid rgb(var(--v-theme-border)) !important;
+    }
+  }
+
+  .grade-teacher {
+    font-weight: normal !important;
+  }
+
+  .tabs {
+    position: sticky;
+    top: 0;
+    min-height: 51px;
+    z-index: 1;
+    background: white;
+    a {
+      color: black !important;
+    }
+    &-item {
+      background: white;
+      & > div {
+        text-align: center;
+        //&:last-child {
+        //  font-size: 13px;
+        //}
+      }
+      &--active {
+        background: #e4e4e4 !important;
+      }
+    }
   }
 }
 </style>
