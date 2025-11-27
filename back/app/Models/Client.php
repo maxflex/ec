@@ -50,6 +50,9 @@ class Client extends Person implements HasSchedule
         return $this->hasMany(ClientTest::class);
     }
 
+    /**
+     * @return HasOne<Representative>
+     */
     public function representative(): HasOne
     {
         return $this->hasOne(Representative::class);

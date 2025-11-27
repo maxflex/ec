@@ -8,6 +8,7 @@ export interface ContractPaymentResource {
   method: ContractPaymentMethod
   is_return: boolean
   is_confirmed: boolean
+  is_1c_synced: boolean
   pko_number: number | null
   card_number: string | null
   created_at?: string
@@ -21,6 +22,7 @@ export const modelDefaults: ContractPaymentResource = {
   method: 'card',
   is_confirmed: false,
   is_return: false,
+  is_1c_synced: false,
   contract_id: newId(),
   pko_number: null,
   card_number: null,

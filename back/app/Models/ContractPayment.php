@@ -3,23 +3,26 @@
 namespace App\Models;
 
 use App\Enums\ContractPaymentMethod;
+use App\Observers\ContractPaymentObserver;
 use App\Observers\UserIdObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[ObservedBy(UserIdObserver::class)]
+#[ObservedBy([UserIdObserver::class, ContractPaymentObserver::class])]
 class ContractPayment extends Model
 {
     protected $fillable = [
         'contract_id', 'sum', 'date', 'is_confirmed', 'is_return',
         'card_number', 'pko_number', 'method', 'external_id',
+        'is_1c_synced',
     ];
 
     protected $casts = [
         'method' => ContractPaymentMethod::class,
         'is_confirmed' => 'boolean',
         'is_return' => 'boolean',
+        'is_1c_synced' => 'boolean',
     ];
 
     public static function booted()
@@ -42,6 +45,9 @@ class ContractPayment extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return BelongsTo<Contract>
+     */
     public function contract(): BelongsTo
     {
         return $this->belongsTo(Contract::class);

@@ -25,6 +25,9 @@ class Contract extends Model
         'company' => Company::class,
     ];
 
+    /**
+     * @return BelongsTo<Client>
+     */
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);

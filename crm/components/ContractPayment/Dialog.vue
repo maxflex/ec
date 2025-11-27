@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#components'
 import type { ContractPaymentResource } from '.'
+import type { ContractResource } from '../ContractVersion'
 import { cloneDeep } from 'lodash-es'
 import { ContractPaymentMethodLabel } from '~/utils/labels'
 import { apiUrl, modelDefaults, printOptions } from '.'
@@ -16,11 +17,14 @@ const { width, dialog } = useDialog('default')
 const saving = ref(false)
 const loading = ref(false)
 const itemId = ref<number>()
+// был синхронизирован на момент открытия диалога
+const was1cSynced = ref(false)
 
 const printDialog = ref<InstanceType<typeof PrintDialog>>()
 const item = ref<ContractPaymentResource>(modelDefaults)
 
 function create(c: ContractResource) {
+  was1cSynced.value = false
   itemId.value = undefined
   item.value = cloneDeep(modelDefaults)
   item.value.contract_id = c.id
@@ -34,6 +38,7 @@ async function edit(id: number) {
   const { data } = await useHttp<ContractPaymentResource>(`${apiUrl}/${id}`)
   if (data.value) {
     item.value = data.value
+    was1cSynced.value = data.value.is_1c_synced
   }
   loading.value = false
 }
@@ -159,6 +164,11 @@ defineExpose({ create, edit })
           <v-checkbox
             v-model="item.is_return"
             label="Возврат"
+          />
+          <v-checkbox
+            v-model="item.is_1c_synced"
+            :disabled="was1cSynced"
+            :label="was1cSynced ? 'Синхронизирован с 1С' : 'Синхронизировать с 1С'"
           />
         </div>
       </div>
