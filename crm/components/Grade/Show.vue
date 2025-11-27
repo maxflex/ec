@@ -103,7 +103,7 @@ nextTick(loadData)
     <UiContentBlocks v-if="selectedQuarter.client_lessons?.length">
       <div>
         <div>Все оценки на уроках</div>
-        <div>
+        <div v-if="allScores.length">
           <div class="journal__scores">
             <div v-for="(score, i) in allScores" :key="i">
               <span :class="`text-score text-score--small text-score--${score.score}`">
@@ -112,6 +112,9 @@ nextTick(loadData)
               – {{ score.comment || 'комментария нет' }}
             </div>
           </div>
+        </div>
+        <div v-else class="text-gray">
+          оценок нет
         </div>
       </div>
       <div>
