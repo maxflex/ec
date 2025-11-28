@@ -18,7 +18,9 @@ class AllPayments
             first_name, last_name, middle_name,
             is_return, method, is_confirmed, `date`,
             "%s" as `company`, `purpose`, NULL as contract_id,
-            `sum`, id, pko_number, NULL as client_id
+            `sum`, id, pko_number,
+            NULL as client_id,
+            NULL as is_1c_synced
         ',
             Company::ooo->value, // прочие платежи всегда ООО
         ));
@@ -27,7 +29,8 @@ class AllPayments
             first_name, last_name, middle_name,
             is_return, method, is_confirmed, `date`,
             `company`, NULL as `purpose`, contract_id,
-            `sum`, contract_payments.id, pko_number, `client_id`
+            `sum`, contract_payments.id, pko_number, `client_id`,
+            is_1c_synced
         ')
             ->join('contracts as c', 'c.id', '=', 'contract_id')
             ->join('clients as cl', 'cl.id', '=', 'c.client_id');

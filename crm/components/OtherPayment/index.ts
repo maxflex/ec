@@ -23,7 +23,7 @@ export interface OtherPaymentResource {
   user?: PersonResource
 }
 
-export interface AllPaymentResource {
+export interface AllPaymentsResource {
   id: number
   date: string
   first_name: string
@@ -38,6 +38,7 @@ export interface AllPaymentResource {
   contract_id: number | null
   pko_number: number | null
   client_id: number | null
+  is_1c_synced: boolean | null
   sum: number
 }
 

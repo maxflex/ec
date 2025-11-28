@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ContractPaymentDialog, OtherPaymentDialog } from '#build/components'
-import type { AllPaymentResource } from '~/components/OtherPayment'
+import type { AllPaymentsResource } from '~/components/OtherPayment'
+import { mdiCheckAll } from '@mdi/js'
 
 interface Filters {
   contract_id?: number
@@ -16,18 +17,18 @@ const filters = ref<Filters>(loadFilters({
   method: [],
 }))
 
-const { items, indexPageData } = useIndex<AllPaymentResource>(
+const { items, indexPageData } = useIndex<AllPaymentsResource>(
   `all-payments`,
   filters,
 )
 
-function edit(item: AllPaymentResource) {
+function edit(item: AllPaymentsResource) {
   item.contract_id
     ? contractPaymentDialog.value?.edit(item.id)
     : otherPaymentDialog.value?.edit(item.id)
 }
 
-function onUpdated(item: AllPaymentResource) {
+function onUpdated(item: AllPaymentsResource) {
   const index = items.value.findIndex(e => e.id === item.id && !e.contract_id)
   index === -1
     ? items.value.unshift(item)
@@ -42,7 +43,7 @@ function onDeleted(id: number) {
   }
 }
 
-function getId(item: AllPaymentResource) {
+function getId(item: AllPaymentsResource) {
   return `${item.contract_id ? 'contract-payment' : 'other-payment'}-${item.id}`
 }
 </script>
@@ -98,7 +99,7 @@ function getId(item: AllPaymentResource) {
             {{ formatName(item) }}
           </span>
         </div>
-        <div style="width: 120px">
+        <div style="width: 100px">
           {{ formatDate(item.date) }}
         </div>
         <div style="width: 140px" :class="{ 'text-error': item.is_return }">
@@ -119,6 +120,11 @@ function getId(item: AllPaymentResource) {
           </span>
           <span v-else>
             {{ item.purpose }}
+          </span>
+        </div>
+        <div style="width: 80px">
+          <span v-if="item.is_1c_synced">
+            в 1С
           </span>
         </div>
         <div style="width: 140px; flex: initial">
