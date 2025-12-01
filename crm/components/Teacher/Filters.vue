@@ -7,15 +7,24 @@ export interface TeacherFilters {
 
 const model = defineModel<TeacherFilters>({ required: true })
 const q = ref(model.value.q)
+
+function clear() {
+  q.value = ''
+  model.value.q = ''
+}
 </script>
 
 <template>
-  <v-text-field
-    v-model="q"
-    label="Имя"
-    density="comfortable"
-    @keydown.enter="model.q = q"
-  />
+  <div class="relative">
+    <v-text-field
+      v-model="q"
+      label="Имя"
+      density="comfortable"
+      @keydown.enter="model.q = q"
+    />
+    <UiClear v-if="!!q" @click="clear()" />
+  </div>
+
   <UiClearableSelect
     v-model="model.status"
     label="Статус"

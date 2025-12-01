@@ -18,14 +18,14 @@ from information_schema.TABLES
 where TABLE_SCHEMA = 'ec' and `TABLE_NAME` not in ('logs', 'calls', 'migrations', 'macros', 'errors');
  */
 const tables = [
-  'client_complaints',
+  'client_directions',
   'client_groups',
   'client_lessons',
-  'client_parents',
   'client_reviews',
   'client_tests',
   'clients',
   'comments',
+  'complaints',
   'contract_payments',
   'contract_version_payments',
   'contract_version_program_prices',
@@ -47,10 +47,10 @@ const tables = [
   'passes',
   'phones',
   'photos',
-  'reports',
-  'requests',
   'projects',
-  'sms_messages',
+  'reports',
+  'representatives',
+  'requests',
   'stats_presets',
   'teacher_payments',
   'teacher_services',
@@ -60,9 +60,20 @@ const tables = [
   'tests',
   'users',
   'vacations',
+  'violations',
   'web_review_programs',
   'web_reviews',
 ]
+
+function clearRowId() {
+  rowId.value = ''
+  model.value.row_id = ''
+}
+
+function clear() {
+  q.value = ''
+  model.value.q = ''
+}
 </script>
 
 <template>
@@ -88,18 +99,25 @@ const tables = [
     v-model="model.user_id"
     density="comfortable"
   />
-  <v-text-field
-    v-model="rowId"
-    label="ID"
-    density="comfortable"
-    hide-spin-buttons
-    type="number"
-    @keydown.enter="model.row_id = rowId"
-  />
-  <v-text-field
-    v-model="q"
-    label="Поиск"
-    density="comfortable"
-    @keydown.enter="model.q = (q || undefined)"
-  />
+  <div class="relative">
+    <v-text-field
+      v-model="rowId"
+      label="ID"
+      density="comfortable"
+      hide-spin-buttons
+      type="number"
+      @keydown.enter="model.row_id = rowId"
+    />
+    <UiClear v-if="!!rowId" @click="clearRowId()" />
+  </div>
+
+  <div class="relative">
+    <v-text-field
+      v-model="q"
+      label="Поиск"
+      density="comfortable"
+      @keydown.enter="model.q = (q || undefined)"
+    />
+    <UiClear v-if="!!q" @click="clear()" />
+  </div>
 </template>
