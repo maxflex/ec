@@ -114,17 +114,21 @@ readonly class OneC
             'Контрагент_Type' => 'StandardODATA.Catalog_Контрагенты',
             'ВидОперации' => 'ОплатаПокупателя',
             'Комментарий' => sprintf(
-                'Создан из CRM (contract_payment_id: %d)',
-                $this->payment->id
+                'Создан из CRM (contract_payment_id: %d)%s',
+                $this->payment->id,
+                is_localhost() ? ' localhost' : '',
             ),
             'СуммаДокумента' => $this->payment->sum,
-            'DeletionMark' => true,
+            'Posted' => true,
+            // 'DeletionMark' => true,
             'РасшифровкаПлатежа' => [[
                 ...$paymentData['РасшифровкаПлатежа'],
                 'LineNumber' => '1',
                 'ДоговорКонтрагента_Key' => $contract->Ref_Key,
                 'СпособПогашенияЗадолженности' => 'Автоматически',
                 'СуммаПлатежа' => $this->payment->sum,
+                'СуммаВзаиморасчетов' => $this->payment->sum,
+                'КурсВзаиморасчетов' => 1,
             ]],
         ];
 
@@ -185,9 +189,10 @@ readonly class OneC
             'Description' => $representative->formatName('full'),
             'ЮридическоеФизическоеЛицо' => 'ФизическоеЛицо',
             'Комментарий' => sprintf(
-                'Создан из CRM (%s/clients/%d)',
+                'Создан из CRM (%s/clients/%d)%s',
                 config('app.frontend_url'),
                 $this->payment->contract->client_id,
+                is_localhost() ? ' localhost' : '',
             ),
             // чтобы созданных с localhost можно было быстро удалить
             'DeletionMark' => true,
@@ -232,10 +237,11 @@ readonly class OneC
             'Owner_Key' => $counteragentKey,
             'ВидДоговора' => 'СПокупателем',
             'Комментарий' => sprintf(
-                'Создан из CRM (%s/clients/%d?contract_id=%d)',
+                'Создан из CRM (%s/clients/%d?contract_id=%d)%s',
                 config('app.frontend_url'),
                 $this->payment->contract->client_id,
                 $this->payment->contract_id,
+                is_localhost() ? ' localhost' : '',
             ),
             // чтобы созданных с localhost можно было быстро удалить
             'DeletionMark' => true,
