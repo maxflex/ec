@@ -114,13 +114,12 @@ readonly class OneC
             'Контрагент_Type' => 'StandardODATA.Catalog_Контрагенты',
             'ВидОперации' => 'ОплатаПокупателя',
             'Комментарий' => sprintf(
-                'Создан из CRM (contract_payment_id: %d)%s',
+                'Создан из CRM (contract_payment_id: %d)',
                 $this->payment->id,
-                is_localhost() ? ' localhost' : '',
             ),
             'СуммаДокумента' => $this->payment->sum,
-            'Posted' => true,
-            // 'DeletionMark' => true,
+            'Posted' => ! is_localhost(), // платежи, помеченные к удалению, нельзя Posted=true
+            'DeletionMark' => is_localhost(),
             'РасшифровкаПлатежа' => [[
                 ...$paymentData['РасшифровкаПлатежа'],
                 'LineNumber' => '1',
@@ -189,13 +188,12 @@ readonly class OneC
             'Description' => $representative->formatName('full'),
             'ЮридическоеФизическоеЛицо' => 'ФизическоеЛицо',
             'Комментарий' => sprintf(
-                'Создан из CRM (%s/clients/%d)%s',
+                'Создан из CRM (%s/clients/%d)',
                 config('app.frontend_url'),
                 $this->payment->contract->client_id,
-                is_localhost() ? ' localhost' : '',
             ),
             // чтобы созданных с localhost можно было быстро удалить
-            'DeletionMark' => true,
+            'DeletionMark' => is_localhost(),
         ];
 
         return (object) $this->http()->post(self::URL_COUNTERAGENTS, $payload)->json();
@@ -237,14 +235,13 @@ readonly class OneC
             'Owner_Key' => $counteragentKey,
             'ВидДоговора' => 'СПокупателем',
             'Комментарий' => sprintf(
-                'Создан из CRM (%s/clients/%d?contract_id=%d)%s',
+                'Создан из CRM (%s/clients/%d?contract_id=%d)',
                 config('app.frontend_url'),
                 $this->payment->contract->client_id,
                 $this->payment->contract_id,
-                is_localhost() ? ' localhost' : '',
             ),
             // чтобы созданных с localhost можно было быстро удалить
-            'DeletionMark' => true,
+            'DeletionMark' => is_localhost(),
         ];
 
         return (object) $this->http()->post(self::URL_CONTRACTS, $payload)->json();
