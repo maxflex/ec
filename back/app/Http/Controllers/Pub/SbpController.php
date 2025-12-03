@@ -105,6 +105,7 @@ class SbpController extends Controller
 
         $contractPayment = cache()->get('sbp-'.$paymentId);
 
+        // Тут важно: платежи могут быть также из MR. Их не обрабатывать
         if ($contractPayment === null) {
             return;
         }
