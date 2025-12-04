@@ -26,12 +26,7 @@ const router = useRouter()
         @click="() => router.push({ name: 'grades-id', params: { id: g.id } })"
       >
         <td>
-          <NuxtLink
-            :to="{ name: 'clients-id', params: { id: g.client.id } }"
-            @click.stop
-          >
-            {{ formatName(g.client) }}
-          </NuxtLink>
+          <UiPerson :item="g.client" />
         </td>
         <td width="200">
           {{ ProgramShortLabel[g.program] }}
