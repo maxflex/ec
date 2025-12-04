@@ -11,33 +11,31 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <Table hoverable>
+  <Table>
     <TableRow v-for="item in items" :key="item.id">
-      <TableCol :width="230">
+      <TableCol :width="250">
         <UiPerson :item="item.client" />
       </TableCol>
       <TableCol :width="100">
         {{ formatDate(item.date) }}
       </TableCol>
-      <TableCol :width="120" :class="{ 'text-error': item.is_return }">
+      <TableCol :width="140" :class="{ 'text-error': item.is_return }">
         {{ formatPrice(item.sum) }} руб.
       </TableCol>
-      <TableCol :width="70">
+      <TableCol :width="80">
         {{ ContractPaymentMethodLabel[item.method] }}
       </TableCol>
       <TableCol :width="70">
         {{ CompanyLabel[item.contract.company] }}
       </TableCol>
-      <TableCol :width="150">
+      <TableCol :width="160">
         договор №{{ item.contract_id }}
       </TableCol>
       <TableCol class="text-gray" :width="140">
         не подтверждён
       </TableCol>
       <TableButtons>
-        <v-btn density="comfortable" color="primary" @click="emit('create', item)">
-          создать платеж
-        </v-btn>
+        <v-btn icon="$edit" :size="48" variant="plain" color="gray" @click="emit('create', item)" />
       </TableButtons>
     </TableRow>
   </Table>

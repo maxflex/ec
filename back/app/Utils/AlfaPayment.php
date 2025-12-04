@@ -6,6 +6,7 @@ use App\Enums\ContractPaymentMethod;
 use App\Models\Contract;
 use App\Models\ContractPayment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
 readonly class AlfaPayment
@@ -123,13 +124,15 @@ readonly class AlfaPayment
 
     /**
      * Получить все платежи, сохраненные в кэше
+     *
+     * @return Collection<int, ContractPayment>
      */
-    public static function getAllPayments(): array
+    public static function getAllPayments(): Collection
     {
         // @phpstan-ignore-next-line
         $rawKeys = cache()->connection()->keys('*'.self::CACHE_KEY.'*');
 
-        $items = [];
+        $items = collect();
         $id = -1;
         foreach ($rawKeys as $rawKey) {
             // обрезать префикс в rawKey
@@ -149,7 +152,7 @@ readonly class AlfaPayment
             ]);
             $contractPayment->setAttribute('id', $id);
             $contractPayment->setAttribute('purpose', $data['purpose']);
-            $items[] = $contractPayment;
+            $items->push($contractPayment);
             $id--;
         }
 
