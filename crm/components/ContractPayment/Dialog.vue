@@ -189,7 +189,7 @@ defineExpose({ create, edit, createFromAlfaPayment })
           />
           <v-checkbox
             v-model="item.is_1c_synced"
-            :disabled="was1cSynced"
+            :disabled="item.method !== 'card' || was1cSynced"
             :label="was1cSynced ? 'Синхронизирован с 1С' : 'Синхронизировать с 1С'"
           />
         </div>
