@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ContractPaymentResource;
 use App\Models\ContractPayment;
+use App\Utils\AlfaPayment;
 use Illuminate\Http\Request;
 
 class ContractPaymentController extends Controller
@@ -30,6 +31,9 @@ class ContractPaymentController extends Controller
     public function store(Request $request)
     {
         $contractPayment = ContractPayment::create($request->all());
+
+        // Если создаём из Альфа-Платежа, то удаляем его из кэша
+        AlfaPayment::removeFromCache($contractPayment);
 
         return new ContractPaymentResource($contractPayment);
     }

@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import type { Menu } from '.'
 import {
   mdiAccount,
   mdiAccountGroup,
-  mdiAccountSearch,
   mdiCalendar,
   mdiCardAccountDetailsOutline,
   mdiCashMultiple,
@@ -11,11 +11,10 @@ import {
   mdiInbox,
   mdiLockOpenOutline,
   mdiLogout,
-  mdiSeatPassenger,
   mdiSendCircle,
-  mdiTableAccount,
 } from '@mdi/js'
 import { callAppDialog } from '~/components/CallApp'
+import { updateMenuCounts } from '.'
 
 const { $addSseListener, $removeSseListener } = useNuxtApp()
 
@@ -81,6 +80,7 @@ const menu: Menu = [
     items: [
       { title: 'Платежи клиентов', to: '/all-payments' },
       { title: 'Платежи препод', to: '/teacher-payments' },
+      { title: 'Входящие платежи', to: '/alfa-payments', count: true },
       { title: 'Балансы препод', to: '/teacher-balances' },
       { title: 'Балансы договоров', to: '/contract-balances' },
       { title: 'Допуслуги', to: '/teacher-services' },

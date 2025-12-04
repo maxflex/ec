@@ -119,28 +119,6 @@ declare global {
   // type Date = `${Year}-${number}${number}-${number}${number}`
   // type Time = `${number}${number}:${number}${number}:${number}${number}`
 
-  type MenuCountsKey = 'reports' | 'requests'
-
-  // number – показывать цифру, boolean – показывать только кружок
-  type MenuCounts = Partial<Record<MenuCountsKey, number | boolean>>
-
-  interface MenuItem {
-    to: string
-    title: string
-    icon?: string
-    hide?: boolean
-    count?: boolean
-  }
-
-  interface Submenu {
-    title: string
-    icon: string
-    items: MenuItem[]
-    hide?: boolean
-  }
-
-  type Menu = Array<MenuItem | Submenu>
-
   interface Zoom {
     id: ?string
     password: ?string

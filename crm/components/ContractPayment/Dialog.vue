@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#components'
 import type { ContractPaymentResource } from '.'
+import type { AlfaPaymentResource } from '../AlfaPayment'
 import type { ContractResource } from '../ContractVersion'
 import { cloneDeep } from 'lodash-es'
 import { ContractPaymentMethodLabel } from '~/utils/labels'
 import { apiUrl, modelDefaults, printOptions } from '.'
+import { updateMenuCounts } from '../Menu'
 
 const emit = defineEmits<{
   updated: [e: ContractPaymentResource]
@@ -31,6 +33,13 @@ function create(c: ContractResource) {
   dialog.value = true
 }
 
+function createFromAlfaPayment(e: AlfaPaymentResource) {
+  was1cSynced.value = false
+  itemId.value = undefined
+  item.value = cloneDeep(e)
+  dialog.value = true
+}
+
 async function edit(id: number) {
   itemId.value = id
   loading.value = true
@@ -54,6 +63,13 @@ async function save() {
   if (data.value) {
     emit('updated', data.value)
   }
+  if (!itemId.value) {
+    useGlobalMessage(`Создан платеж к договору №${item.value.contract_id}`, 'success')
+    // если создали из Альфа-Платежа, обновить счетчики
+    if (item.value.external_id) {
+      updateMenuCounts()
+    }
+  }
   dialog.value = false
   setTimeout(() => saving.value = false, 300)
 }
@@ -63,7 +79,7 @@ function onDeleted() {
   emit('deleted', item.value)
 }
 
-defineExpose({ create, edit })
+defineExpose({ create, edit, createFromAlfaPayment })
 </script>
 
 <template>
@@ -81,6 +97,9 @@ defineExpose({ create, edit })
         </span>
         <span v-else>
           Новый платеж
+          <div class="dialog-subheader">
+            к договору №{{ item.contract_id }}
+          </div>
         </span>
         <div>
           <template
@@ -155,6 +174,9 @@ defineExpose({ create, edit })
             hide-spin-buttons
           />
           <v-text-field v-else disabled model-value="Будет присвоен" label="Номер ПКО" />
+        </div>
+        <div v-if="item.purpose">
+          <v-textarea :model-value="item.purpose" label="Назначение платежа" disabled />
         </div>
         <div>
           <v-checkbox

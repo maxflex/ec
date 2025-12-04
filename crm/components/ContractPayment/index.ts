@@ -13,6 +13,8 @@ export interface ContractPaymentResource {
   card_number: string | null
   created_at?: string
   user?: PersonResource
+  external_id?: string
+  purpose?: string // только у альфа-платежей
 }
 
 export const modelDefaults: ContractPaymentResource = {

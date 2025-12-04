@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Menu, MenuItem, Submenu } from '.'
+
 const { items } = defineProps<{
   items: Menu
 }>()

@@ -12,13 +12,6 @@ import {
   getYear,
 } from 'date-fns'
 
-export const menuCounts = ref<MenuCounts>({ })
-
-export async function updateMenuCounts() {
-  const { data } = await useHttp<MenuCounts>(`menu-counts`)
-  menuCounts.value = data.value!
-}
-
 export function today(): string {
   return format(new Date(), 'yyyy-MM-dd')
 }

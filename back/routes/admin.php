@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AlfaPaymentController;
 use App\Http\Controllers\Admin\AllLessonsController;
 use App\Http\Controllers\Admin\AllPaymentsController;
 use App\Http\Controllers\Admin\CabinetController;
@@ -196,6 +197,7 @@ Route::apiResources([
     'web-reviews' => WebReviewController::class,
     'reports' => ReportController::class,
     'grades' => GradeController::class,
+    'alfa-payments' => AlfaPaymentController::class,
     'exam-scores' => ExamScoreController::class,
     'telegram-messages' => TelegramMessageController::class,
     'instructions' => InstructionController::class,

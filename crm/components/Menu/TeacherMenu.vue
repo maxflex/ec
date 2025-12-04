@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Menu } from '.'
 import {
   mdiAccountGroup,
   mdiCalendar,
@@ -10,6 +11,7 @@ import {
   mdiNumeric5BoxMultiple,
   mdiTicket,
 } from '@mdi/js'
+import { updateMenuCounts } from '.'
 
 const { user } = useAuthStore()
 

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import type { MenuItem } from '.'
+import { menuCounts } from '.'
+
 const { item } = defineProps<{
   item: MenuItem
 }>()
@@ -7,7 +10,7 @@ const count = computed<number | boolean>(() => {
   if (!item.count) {
     return 0
   }
-  const key = item.to.slice(1) as MenuCountsKey
+  const key = item.to.slice(1)
   return menuCounts.value[key] || 0
 })
 </script>
