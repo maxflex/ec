@@ -29,10 +29,18 @@ readonly class AlfaPayment
                 continue;
             }
 
+            if (data_get($event, 'actionType') !== 'create') {
+                continue;
+            }
+
             // 3. Назначение
             $purpose = (string) data_get($event, 'data.paymentPurpose', '');
 
-            if (! preg_match('/договор[\D]?[\s]?[\D]?(\d{5,7})/miu', $purpose, $m)) {
+            if (! preg_match('/договор\D*(\d{5})/miu', $purpose, $m)) {
+                Log::warning('ALFA WEBHOOK: regex mismatch', [
+                    'purpose' => $purpose,
+                ]);
+
                 continue;
             }
 
@@ -43,8 +51,6 @@ readonly class AlfaPayment
             if (! $contract) {
                 Log::warning('ALFA WEBHOOK: contract not found', [
                     'contract_id' => $contractId,
-                    'purpose' => $purpose,
-                    'event' => $event,
                 ]);
 
                 continue;
@@ -86,6 +92,12 @@ readonly class AlfaPayment
 
             // 7. Идемпотентность по external_id (очень желательно)
             if (ContractPayment::where('external_id', $externalId)->exists()) {
+                Log::warning('ALFA WEBHOOK: idempotency', [
+                    'contract_id' => $contractId,
+                    'purpose' => $purpose,
+                    'external_id' => $externalId,
+                ]);
+
                 continue;
             }
 
