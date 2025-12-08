@@ -1,26 +1,26 @@
 <template>
-  <v-app class="login-layout">
-    <div class="video-background">
-      <video
-        id="background-video"
-        autoplay
-        loop
-        muted
-        poster="https://cdn.ege-centr.ru/crm/videos/first-frame.webp"
-      >
-        <source
-          src="https://cdn.ege-centr.ru/crm/videos/loop.mp4"
-          type="video/mp4"
+  <ClientOnly>
+    <v-app class="login-layout">
+      <div class="video-background">
+        <video
+          id="background-video"
+          autoplay
+          loop
+          muted
+          poster="https://cdn.ege-centr.ru/crm/videos/first-frame.webp"
         >
-        Your browser does not support the video tag.
-      </video>
-    </div>
-    <div class="login-layout__content">
-      <ClientOnly>
+          <source
+            src="https://cdn.ege-centr.ru/crm/videos/loop-1080.mp4"
+            type="video/mp4"
+          >
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      <div class="login-layout__content">
         <slot />
-      </ClientOnly>
-    </div>
-  </v-app>
+      </div>
+    </v-app>
+  </ClientOnly>
 </template>
 
 <style lang="scss">
