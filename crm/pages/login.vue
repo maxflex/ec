@@ -254,6 +254,7 @@ definePageMeta({ layout: 'login' })
           :error="!!errors.code"
           :length="4"
           class="mt-5"
+          style="margin-bottom: 22px"
           width="240"
           @finish="onOtpFinish"
         />
