@@ -309,9 +309,11 @@ definePageMeta({ layout: 'login' })
   &__logo {
     text-align: center;
     padding: 50px 0 30px;
+    height: 139px;
 
     img {
       width: 80px;
+      height: 100%;
     }
   }
 
