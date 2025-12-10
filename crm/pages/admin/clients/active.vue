@@ -11,7 +11,7 @@ const filters = ref<Filters>(loadFilters({
   program: [],
 }))
 
-const year = currentAcademicYear()
+const router = useRouter()
 
 const { items, indexPageData } = useIndex<ClientListResource>(
   `clients`,
@@ -24,6 +24,10 @@ const { items, indexPageData } = useIndex<ClientListResource>(
 )
 
 const clientDialog = ref<InstanceType<typeof ClientDialog>>()
+
+function onClientCreated(c: ClientListResource) {
+  router.push({ name: 'clients-id', params: { id: c.id } })
+}
 </script>
 
 <template>
@@ -33,12 +37,9 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
       <UiClearableSelect v-model="filters.is_risk" label="Группа риска" :items="yesNo()" density="comfortable" />
     </template>
     <template #buttons>
-      <UiQuestionTooltip>
-        На данной странице отображаются клиенты, допущенные ко входу в личный кабинет.
-        Доступ сохраняется до 30 июня {{ year + 1 }}.
-        Если у клиента заключён договор на следующий учебный год, срок продлевается до 30 июня {{ year + 2 }}.
-        Доступ также может быть закрыт раньше — в случае полного расторжения договора.
-      </UiQuestionTooltip>
+      <v-btn color="primary" @click="clientDialog?.create()">
+        добавить клиента
+      </v-btn>
     </template>
     <div class="active-clients table table--padding">
       <div
@@ -66,7 +67,7 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
       </div>
     </div>
   </UiIndexPage>
-  <ClientDialog ref="clientDialog" />
+  <ClientDialog ref="clientDialog" @created="onClientCreated" />
 </template>
 
 <style lang="scss">

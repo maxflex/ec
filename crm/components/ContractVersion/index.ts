@@ -42,6 +42,7 @@ export interface ContractVersionResource {
     client_id: number
     client?: PersonResource
     source: string | null
+    is_realized: boolean
   }
   free_lessons_count?: number
   created_at?: string
@@ -67,6 +68,7 @@ export interface ContractVersionListResource {
     year: Year
     client: PersonResource
     company: Company
+    is_realized: boolean
     source: string | null
   }
 }
@@ -106,6 +108,7 @@ export const modelDefaults: ContractVersionResource = {
     id: newId(),
     client_id: -1,
     year: currentAcademicYear(),
+    is_realized: false,
     company: null,
     source: null,
   },

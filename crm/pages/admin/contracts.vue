@@ -6,7 +6,6 @@ import type { ContractVersionFilters } from '~/components/ContractVersion/Filter
 
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
 const clientDialog = ref<InstanceType<typeof ClientDialog>>()
-const router = useRouter()
 
 const filters = ref<ContractVersionFilters>(loadFilters({
   year: currentAcademicYear(),
@@ -25,21 +24,12 @@ function onUpdated(cv: ContractVersionListResource) {
     itemUpdated('contract-version', cv.id)
   }
 }
-
-function onClientCreated(c: ClientListResource) {
-  router.push({ name: 'clients-id', params: { id: c.id } })
-}
 </script>
 
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
       <ContractVersionFilters v-model="filters" />
-    </template>
-    <template #buttons>
-      <v-btn color="primary" @click="clientDialog?.create()">
-        добавить клиента
-      </v-btn>
     </template>
 
     <div class="table table--padding flex-start">
@@ -51,7 +41,6 @@ function onClientCreated(c: ClientListResource) {
       />
     </div>
     <ContractVersionDialog ref="contractVersionDialog" @updated="onUpdated" />
-    <ClientDialog ref="clientDialog" @created="onClientCreated" />
   </UiIndexPage>
 </template>
 

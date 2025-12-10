@@ -866,6 +866,12 @@ defineExpose({ edit, newContract, newVersion, fromProject })
             </tbody>
           </table>
         </div>
+        <div>
+          <v-checkbox
+            v-model="item.contract.is_realized"
+            label="Реализован"
+          />
+        </div>
       </div>
     </div>
   </v-dialog>

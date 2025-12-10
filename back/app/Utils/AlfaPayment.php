@@ -36,7 +36,8 @@ readonly class AlfaPayment
             // 3. Назначение
             $purpose = (string) data_get($event, 'data.paymentPurpose', '');
 
-            if (! preg_match('/договор\D*(\d{5})/miu', $purpose, $m)) {
+            // Регулярка: "договор", мусор, и далее цифры (одна или много)
+            if (! preg_match('/договор\D*(\d+)/miu', $purpose, $m)) {
                 Log::warning('ALFA WEBHOOK: regex mismatch', [
                     'purpose' => $purpose,
                 ]);
@@ -44,7 +45,19 @@ readonly class AlfaPayment
                 continue;
             }
 
-            $contractId = (int) $m[1];
+            $rawContractId = $m[1];
+
+            // Длинна номера договора должна быть 5
+            if (strlen($rawContractId) !== 5) {
+                Log::warning('ALFA WEBHOOK: invalid contract length (ignored)', [
+                    'found_number' => $rawContractId,
+                    'purpose' => $purpose,
+                ]);
+
+                continue;
+            }
+
+            $contractId = (int) $rawContractId;
 
             $contract = Contract::find($contractId);
 

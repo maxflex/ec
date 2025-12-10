@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import type { StyleValue } from 'vue'
 
-const { size = 8, color } = defineProps<{
+const { size = 8, color = 'gray' } = defineProps<{
   size?: number
-  color: string
+  color?: string
 }>()
 
 let className: string

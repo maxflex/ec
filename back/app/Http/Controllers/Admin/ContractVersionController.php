@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 class ContractVersionController extends Controller
 {
     protected $filters = [
-        'contract' => ['year', 'company'],
+        'contract' => ['year', 'company', 'is_realized'],
         'direction' => ['direction'],
         'isActive' => ['is_active'],
     ];
@@ -96,6 +96,7 @@ class ContractVersionController extends Controller
 
         $contractVersion->contract->update([
             'source' => $request->contract['source'] ?? null,
+            'is_realized' => $request->contract['is_realized'] ?? false,
         ]);
 
         return new ContractVersionListResource($contractVersion);

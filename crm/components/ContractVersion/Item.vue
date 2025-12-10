@@ -22,28 +22,36 @@ const emit = defineEmits<{
         @click="emit('edit', item)"
       />
     </div>
-    <div style="width: 230px">
+    <div style="width: 210px" class="text-truncate">
       <router-link :to="{ name: 'clients-id', params: { id: item.contract.client.id } }">
         {{ formatName(item.contract.client) }}
       </router-link>
     </div>
-    <div style="width: 130px">
+    <div style="width: 24px">
+      <v-tooltip v-if="item.contract.source" location="bottom" :max-width="400">
+        <template #activator="{ props }">
+          <v-icon :icon="mdiTextBoxCheckOutline" v-bind="props" />
+        </template>
+        {{ item.contract.source }}
+      </v-tooltip>
+    </div>
+    <div style="width: 120px">
       <div class="d-flex ga-2 align-center">
+        <v-tooltip location="bottom">
+          <template #activator="{ props }">
+            <UiCircle v-bind="props" :color="item.contract.is_realized ? 'success' : 'border'" />
+          </template>
+          {{ item.contract.is_realized ? 'реализован' : 'не реализован' }}
+        </v-tooltip>
         <span>
           №{{ item.contract.id }}-{{ item.seq }}
         </span>
-        <v-tooltip v-if="item.contract.source" location="bottom">
-          <template #activator="{ props }">
-            <v-icon :icon="mdiTextBoxCheckOutline" :size="18" color="primary" v-bind="props" />
-          </template>
-          {{ item.contract.source }}
-        </v-tooltip>
       </div>
     </div>
-    <div style="width: 100px">
+    <div style="width: 80px">
       {{ formatDate(item.date) }}
     </div>
-    <div style="width: 140px">
+    <div style="width: 120px">
       <div v-for="(value, d) in item.direction_counts" :key="d">
         {{ DirectionLabel[d] }} / {{ value }}
       </div>
@@ -69,7 +77,7 @@ const emit = defineEmits<{
         {{ formatPrice(item.sum) }} руб.
       </UiIfSet>
     </div>
-    <div>
+    <div style="width: 110px">
       <ContractVersionSumChange :item="item" />
     </div>
   </div>

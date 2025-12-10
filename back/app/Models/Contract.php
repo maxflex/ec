@@ -18,11 +18,12 @@ class Contract extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'year', 'company', 'source',
+        'year', 'company', 'source', 'is_realized',
     ];
 
     protected $casts = [
         'company' => Company::class,
+        'is_realized' => 'boolean',
     ];
 
     /**

@@ -23,7 +23,7 @@ class ContractVersionListResource extends JsonResource
             'programs_count' => $this->programs_count ?? $this->programs()->count(),
             'payments_count' => $this->payments_count ?? $this->payments()->count(),
             'contract' => extract_fields($this->contract, [
-                'year', 'company', 'source',
+                'year', 'company', 'source', 'is_realized',
             ], [
                 'client' => new PersonResource($this->contract->client),
             ]),

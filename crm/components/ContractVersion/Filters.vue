@@ -3,6 +3,7 @@ export interface ContractVersionFilters {
   year: Year
   company?: Company
   is_active?: number
+  is_realized?: number
   direction: Direction[]
 }
 
@@ -24,10 +25,7 @@ const model = defineModel<ContractVersionFilters>({ required: true })
   />
   <UiClearableSelect
     v-model="model.is_active"
-    :items="[
-      { value: 0, title: 'первая' },
-      { value: 1, title: 'активная' },
-    ]"
+    :items="yesNo('активная', 'первая', true)"
     density="comfortable"
     label="Версия"
   />
@@ -36,5 +34,11 @@ const model = defineModel<ContractVersionFilters>({ required: true })
     :items="selectItems(DirectionLabel)"
     label="Направления"
     density="comfortable"
+  />
+  <UiClearableSelect
+    v-model="model.is_realized"
+    :items="yesNo('реализован', 'не реализован')"
+    density="comfortable"
+    label="Реализация"
   />
 </template>
