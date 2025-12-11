@@ -299,7 +299,7 @@ defineExpose({ open })
           <div v-if="item.ai_text && item.ai_text[field]" class="ai-suggest__wrapper">
             <template v-if="!aiDiff[field]">
               <div class="ai-suggest">
-                <span class="text-gray">без изменений</span>
+                <span class="text-label">без изменений</span>
               </div>
             </template>
             <template v-else>
