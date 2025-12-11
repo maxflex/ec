@@ -45,6 +45,7 @@ function open(report: ReportResource) {
 }
 
 const aiImproved = ref<Partial<Record<ReportTextField, boolean>>>({})
+const aiDiff = ref<Partial<Record<ReportTextField, string | boolean>>>({})
 
 async function save() {
   saving.value = true
@@ -115,12 +116,24 @@ async function improve() {
     return
   }
   aiLoading.value = true
-  const { data, error } = await useHttp<ReportTextFields>(`reports/improve/${item.value.id}`)
+  const { data, error } = await useHttp<ReportTextFields>(`reports/improve`, {
+    method: 'POST',
+    body: {
+      cognitive_ability_comment: item.value!.cognitive_ability_comment,
+      homework_comment: item.value!.homework_comment,
+      knowledge_level_comment: item.value!.knowledge_level_comment,
+      recommendation_comment: item.value!.recommendation_comment,
+    } as ReportTextFields,
+  })
   if (error.value) {
     setTimeout(() => useGlobalMessage(`<b>Ошибка ИИ</b>: ${error.value!.data.message}`, 'error'), 100)
   }
   if (data.value) {
     item.value.ai_text = data.value!
+  }
+  for (const field in ReportTextFieldLabel) {
+    const diffHtml = generateDiffHtml(field as ReportTextField)
+    aiDiff.value[field as ReportTextField] = isTextEqual(field as ReportTextField) ? false : diffHtml
   }
   aiImproved.value = {}
   aiLoading.value = false
@@ -171,7 +184,7 @@ function generateDiffHtml(field: ReportTextField) {
 
 function applyAi(field: ReportTextField) {
   item.value![field] = item.value!.ai_text![field]
-  item.value!.ai_text![field] = ''
+  // item.value!.ai_text![field] = ''
   aiImproved.value[field] = true
 }
 
@@ -281,29 +294,36 @@ defineExpose({ open })
             rows="3"
             no-resize
             auto-grow
-          >
-            <template #label>
-              <div class="d-flex align-center ga-1">
-                <v-icon v-if="aiImproved[field]" :icon="mdiAutoFix" />
-                <span> {{ label }} </span>
+            :label="label"
+          />
+          <div v-if="item.ai_text && item.ai_text[field]" class="ai-suggest__wrapper">
+            <template v-if="!aiDiff[field]">
+              <div class="ai-suggest">
+                <span class="text-gray">без изменений</span>
               </div>
             </template>
-          </v-textarea>
-          <template v-if="item.ai_text && item.ai_text[field]">
-            <div
-              class="ai-suggest"
-              v-html="generateDiffHtml(field)"
-            />
-            <div class="ai-suggest__apply under-input">
-              <span v-if="isTextEqual(field)" class="text-gray">
-                без изменений
-              </span>
-              <a v-else @click="applyAi(field)">
-                <v-icon :icon="mdiAutoFix" />
-                применить изменения
-              </a>
+            <template v-else>
+              <div
+                class="ai-suggest"
+                v-html="aiDiff[field]"
+              />
+              <div class="ai-suggest__apply under-input">
+                <span v-if="aiImproved[field]" class="text-gray">
+                  применить изменения
+                </span>
+                <a v-else @click="applyAi(field)">
+                  применить изменения
+                </a>
+              </div>
+            </template>
+          </div>
+          <div v-else class="ai-suggest__wrapper">
+            <div class="ai-suggest">
+              <div class="ai-suggest__empty">
+                {{ item[field] }}
+              </div>
             </div>
-          </template>
+          </div>
         </div>
       </div>
     </div>
@@ -319,15 +339,31 @@ defineExpose({ open })
     left: 360px;
   }
 
+  .v-textarea {
+    .v-field {
+      border-radius: 4px 4px 0 0 !important;
+    }
+  }
+
   .ai-suggest {
     padding: 16px 16px;
     // border: 1px solid #9a9a9a;
     border: 1px solid rgb(var(--v-theme-secondary));
-    border-radius: 4px;
-    margin: 20px 0 4px;
+    border-radius: 0 0 4px 4px;
+    margin: 20px 0 0;
     position: relative;
     background: rgba(var(--v-theme-secondary), 0.05);
     white-space: break-spaces;
+    min-height: 104px;
+
+    &__wrapper {
+      top: -21px;
+      position: relative;
+    }
+
+    &__empty {
+      visibility: hidden;
+    }
 
     &:before {
       content: 'Предложение ИИ';

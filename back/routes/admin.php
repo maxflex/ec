@@ -162,7 +162,7 @@ Route::get('contract-version-programs', ContractVersionProgramController::class)
 Route::get('all-lessons', AllLessonsController::class);
 
 Route::get('reports/tabs', [ReportController::class, 'tabs']);
-Route::get('reports/improve/{report}', [ReportController::class, 'improve']);
+Route::post('reports/improve', [ReportController::class, 'improve']);
 
 Route::apiResource('vacations', VacationController::class)->only(['index', 'store']);
 Route::apiResource('logs', LogController::class)->only(['index', 'store']);

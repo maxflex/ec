@@ -121,8 +121,15 @@ class ReportController extends Controller
         return ReportResource::collection($items);
     }
 
-    public function improve(Report $report)
+    public function improve(Request $request)
     {
-        return ChatGPT::improveReport($report);
+        $validated = $request->validate([
+            'cognitive_ability_comment' => ['required', 'string'],
+            'homework_comment' => ['required', 'string'],
+            'knowledge_level_comment' => ['required', 'string'],
+            'recommendation_comment' => ['required', 'string'],
+        ]);
+
+        return ChatGPT::improveReport(new Report($validated));
     }
 }
