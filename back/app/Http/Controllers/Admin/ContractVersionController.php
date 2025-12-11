@@ -94,11 +94,6 @@ class ContractVersionController extends Controller
 
         sync_relation($contractVersion, 'payments', $request->all());
 
-        $contractVersion->contract->update([
-            'source' => $request->contract['source'] ?? null,
-            'is_realized' => $request->contract['is_realized'] ?? false,
-        ]);
-
         return new ContractVersionListResource($contractVersion);
     }
 

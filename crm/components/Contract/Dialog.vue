@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ContractResource } from '../ContractVersion'
+import { cloneDeep } from 'lodash-es'
 
 const { dialog, width } = useDialog('default')
 
@@ -7,22 +8,20 @@ const contract = ref<ContractResource>()
 const saving = ref(false)
 
 function open(c: ContractResource) {
-  contract.value = c
+  contract.value = cloneDeep(c)
   dialog.value = true
 }
 
 function save() {
   saving.value = true
-  const { id, source } = contract.value!
+  const { id } = contract.value!
   useHttp(`contracts/${id}`, {
     method: 'PUT',
-    body: {
-      source,
-    },
+    body: cloneDeep(contract.value),
   })
   dialog.value = false
   saving.value = false
-  useGlobalMessage(`Источник сохранён для договора №${id}`, 'success')
+  useGlobalMessage(`Договора №${id} сохранён`, 'success')
 }
 
 defineExpose({ open })
@@ -33,7 +32,7 @@ defineExpose({ open })
     <div v-if="contract" class="dialog-wrapper contract-version-dialog">
       <div class="dialog-header">
         <div>
-          Редактирование источника
+          Редактирование договора
           <div class="dialog-subheader">
             Договор №{{ contract.id }}
           </div>
@@ -48,11 +47,24 @@ defineExpose({ open })
       </div>
       <div class="dialog-body">
         <div>
+          <v-select
+            v-model="contract.company"
+            label="Компания"
+            :items="selectItems(CompanyLabel)"
+          />
+        </div>
+        <div>
           <v-textarea
             v-model="contract.source"
             label="Источник"
             no-resize
             rows="5"
+          />
+        </div>
+        <div>
+          <v-checkbox
+            v-model="contract.is_realized"
+            label="Реализован"
           />
         </div>
       </div>

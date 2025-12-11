@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ContractEditSourceDialog, ContractPaymentDialog, ContractVersionDialog } from '#build/components'
+import type { ContractDialog, ContractPaymentDialog, ContractVersionDialog } from '#build/components'
 import type { ContractResource, ContractVersionListResource, ContractVersionResource } from '../ContractVersion'
 import type { ProjectResource } from '../Project'
 import type { ContractPaymentResource } from '~/components/ContractPayment'
@@ -13,7 +13,7 @@ const { clientId } = defineProps <{ clientId: number }>()
 const items = ref<ContractResource[]>([])
 const contractPaymentDialog = ref<InstanceType<typeof ContractPaymentDialog>>()
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
-const contractEditSourceDialog = ref<InstanceType<typeof ContractEditSourceDialog>>()
+const contractDialog = ref<InstanceType<typeof ContractDialog>>()
 const selected = ref(-1) // -1 это "новый договор"
 const projects = ref<ProjectResource[]>([])
 const loading = ref(true)
@@ -198,8 +198,8 @@ nextTick(loadData)
             <v-list-item @click="showBalanceGo(i)">
               показать баланс
             </v-list-item>
-            <v-list-item @click="contractEditSourceDialog?.open(contract)">
-              редактировать источник
+            <v-list-item @click="contractDialog?.open(contract)">
+              редактировать договор
             </v-list-item>
             <v-list-item
               v-for="d in projectsByContract[contract.id].projects"
@@ -379,7 +379,7 @@ nextTick(loadData)
     @updated="onContractPaymentUpdated"
     @deleted="onContractPaymentDeleted"
   />
-  <ContractEditSourceDialog ref="contractEditSourceDialog" />
+  <ContractDialog ref="contractDialog" />
 </template>
 
 <style lang="scss">

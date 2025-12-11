@@ -80,6 +80,7 @@ export interface ContractResource {
   year: Year
   company: Company
   source: string | null
+  is_realized: boolean
   balances?: {
     to_pay: number
     remainder: number
