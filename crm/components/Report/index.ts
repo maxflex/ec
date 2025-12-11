@@ -29,12 +29,16 @@ interface FakeReport {
 
 export type ReportListResource = RealReport | FakeReport
 
-export interface ReportTextFields {
-  homework_comment: string
-  cognitive_ability_comment: string
-  knowledge_level_comment: string
-  recommendation_comment: string
-}
+export const ReportTextFieldLabel = {
+  homework_comment: 'Выполнение домашнего задания',
+  cognitive_ability_comment: 'Способность усваивать новый материал',
+  knowledge_level_comment: 'Текущий уровень знаний',
+  recommendation_comment: 'Рекомендации родителям',
+} as const
+
+export type ReportTextFields = Record<keyof typeof ReportTextFieldLabel, string>
+
+export type ReportTextField = keyof ReportTextFields
 
 export interface ReportResource extends ReportTextFields {
   id: number

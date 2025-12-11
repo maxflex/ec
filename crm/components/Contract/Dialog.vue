@@ -21,7 +21,7 @@ function save() {
   })
   dialog.value = false
   saving.value = false
-  useGlobalMessage(`Договора №${id} сохранён`, 'success')
+  useGlobalMessage(`Договор №${id} сохранён`, 'success')
 }
 
 defineExpose({ open })

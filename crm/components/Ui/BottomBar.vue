@@ -53,7 +53,7 @@ const model = defineModel<boolean>({
     border-color: #c8e6c9;
     background: #e8f5e9;
     color: black;
-    z-index: 999;
+    z-index: 9999;
   }
 }
 </style>

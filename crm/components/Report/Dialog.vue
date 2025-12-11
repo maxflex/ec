@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import type { RealReport, ReportResource, ReportTextFields } from '.'
+import type { RealReport, ReportResource, ReportTextField, ReportTextFields } from '.'
 import { mdiAutoFix } from '@mdi/js'
+import { diffWordsWithSpace } from 'diff'
 import { cloneDeep } from 'lodash-es'
+import { ReportTextFieldLabel } from '.'
 
 const emit = defineEmits<{
   updated: [r: ReportResource]
@@ -41,6 +43,8 @@ function open(report: ReportResource) {
   item.value = cloneDeep(report)
   dialog.value = true
 }
+
+const aiImproved = ref<Partial<Record<ReportTextField, boolean>>>({})
 
 async function save() {
   saving.value = true
@@ -118,7 +122,57 @@ async function improve() {
   if (data.value) {
     item.value.ai_text = data.value!
   }
+  aiImproved.value = {}
   aiLoading.value = false
+}
+
+function isTextEqual(field: ReportTextField): boolean {
+  // Безопасное получение значений (на случай null/undefined)
+  const original = item.value?.[field] ?? ''
+  const ai = item.value?.ai_text?.[field] ?? ''
+
+  const normalize = (str: string) => {
+    return str
+      .trim() // Убираем пробелы по краям
+      .replace(/\r\n/g, '\n') // Приводим переносы Windows к Unix
+      .replace(/\r/g, '\n') // Убираем старые Mac переносы
+      .replace(/\n+/g, '\n') // Считаем 1 Enter и 2 Enter одинаковыми (схлопываем пустые строки)
+      .replace(/[ \t]+/g, ' ') // Схлопываем двойные пробелы и табы в один пробел
+      // .replace(/ё/g, 'е')      // <-- Раскомментируйте, если хотите считать "е" и "ё" одинаковыми
+  }
+
+  return normalize(original) === normalize(ai)
+}
+
+// Функция принимает два текста и возвращает HTML с подсветкой
+function generateDiffHtml(field: ReportTextField) {
+  const diff = diffWordsWithSpace(item.value![field], item.value!.ai_text![field])
+
+  let html = ''
+
+  diff.forEach((part) => {
+    // part.added — если добавлено (зеленый)
+    // part.removed — если удалено (красный)
+    // иначе — обычный текст
+
+    if (part.added) {
+      html += `<span class="diff-added">${part.value}</span>`
+    }
+    else if (part.removed) {
+      html += `<span class="diff-removed">${part.value}</span>`
+    }
+    else {
+      html += part.value
+    }
+  })
+
+  return html
+}
+
+function applyAi(field: ReportTextField) {
+  item.value![field] = item.value!.ai_text![field]
+  item.value!.ai_text![field] = ''
+  aiImproved.value[field] = true
 }
 
 defineExpose({ open })
@@ -215,86 +269,41 @@ defineExpose({ open })
               suffix="руб."
               hide-spin-buttons
             />
-            <div v-if="!(isDisabled || isTeacher)" class="d-flex ga-2 date-input__today">
+            <div v-if="!(isDisabled || isTeacher)" class="d-flex ga-2 under-input">
               <a v-for="i in [200, 400]" :key="i" @click="item.price = i">{{ i }}</a>
             </div>
           </div>
         </div>
-        <div class="double-input">
+        <div v-for="(label, field) in ReportTextFieldLabel" :key="field">
           <v-textarea
-            v-model="item.homework_comment"
+            v-model="item[field]"
             :disabled="isDisabled"
             rows="3"
             no-resize
             auto-grow
-            label="Выполнение домашнего задания"
-          />
-          <v-textarea
-            v-if="item.ai_text"
-            v-model="item.ai_text.homework_comment"
-            :disabled="isDisabled"
-            rows="3"
-            no-resize
-            auto-grow
-            label="ИИ: Выполнение домашнего задания"
-          />
-        </div>
-        <div class="double-input">
-          <v-textarea
-            v-model="item.cognitive_ability_comment"
-            :disabled="isDisabled"
-            rows="3"
-            no-resize
-            auto-grow
-            label="Способность усваивать новый материал"
-          />
-          <v-textarea
-            v-if="item.ai_text"
-            v-model="item.ai_text.cognitive_ability_comment"
-            :disabled="isDisabled"
-            rows="3"
-            no-resize
-            auto-grow
-            label="ИИ: Способность усваивать новый материал"
-          />
-        </div>
-        <div class="double-input">
-          <v-textarea
-            v-model="item.knowledge_level_comment"
-            :disabled="isDisabled"
-            rows="3"
-            no-resize
-            auto-grow
-            label="Текущий уровень знаний"
-          />
-          <v-textarea
-            v-if="item.ai_text"
-            v-model="item.ai_text.knowledge_level_comment"
-            :disabled="isDisabled"
-            rows="3"
-            no-resize
-            auto-grow
-            label="ИИ: Текущий уровень знаний"
-          />
-        </div>
-        <div class="double-input">
-          <v-textarea
-            v-model="item.recommendation_comment"
-            :disabled="isDisabled"
-            rows="3"
-            no-resize
-            auto-grow
-            label="Рекомендации родителям"
-          />
-          <v-textarea
-            v-if="item.ai_text"
-            v-model="item.ai_text.recommendation_comment"
-            :disabled="isDisabled"
-            rows="3"
-            no-resize
-            auto-grow
-            label="ИИ: Рекомендации родителям"
-          />
+          >
+            <template #label>
+              <div class="d-flex align-center ga-1">
+                <v-icon v-if="aiImproved[field]" :icon="mdiAutoFix" />
+                <span> {{ label }} </span>
+              </div>
+            </template>
+          </v-textarea>
+          <template v-if="item.ai_text && item.ai_text[field]">
+            <div
+              class="ai-suggest"
+              v-html="generateDiffHtml(field)"
+            />
+            <div class="ai-suggest__apply under-input">
+              <span v-if="isTextEqual(field)" class="text-gray">
+                без изменений
+              </span>
+              <a v-else @click="applyAi(field)">
+                <v-icon :icon="mdiAutoFix" />
+                применить изменения
+              </a>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -308,6 +317,60 @@ defineExpose({ open })
     width: 100px;
     top: 26px !important;
     left: 360px;
+  }
+
+  .ai-suggest {
+    padding: 16px 16px;
+    // border: 1px solid #9a9a9a;
+    border: 1px solid rgb(var(--v-theme-secondary));
+    border-radius: 4px;
+    margin: 20px 0 4px;
+    position: relative;
+    background: rgba(var(--v-theme-secondary), 0.05);
+    white-space: break-spaces;
+
+    &:before {
+      content: 'Предложение ИИ';
+      position: absolute;
+      background: white;
+      z-index: 1;
+      font-size: 12px;
+      // color: rgb(var(--v-theme-label));
+      color: rgb(var(--v-theme-secondary));
+      padding: 0 4px;
+      left: 11px;
+      top: -7px;
+      line-height: 12px;
+      border-radius: 4px;
+    }
+
+    &__apply {
+      margin-bottom: 20px;
+      cursor: default !important;
+      a {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+      }
+    }
+  }
+
+  /* Удаленный текст: светло-красный фон, зачеркнутый текст */
+  .diff-removed {
+    background-color: #ffeef0;
+    // color: #b31d28;
+    // text-decoration: line-through;
+    // text-decoration-color: rgb(var(--v-theme-error)); /* Цвет зачеркивания */
+    background-color: #edc6cb;
+  }
+
+  /* Добавленный текст: светло-зеленый фон */
+  .diff-added {
+    // background-color: #e6ffed;
+    // color: #22863a;
+    background-color: #bdeec4;
+    // background-color: rgb(var(--v-theme-success));
   }
 }
 </style>
