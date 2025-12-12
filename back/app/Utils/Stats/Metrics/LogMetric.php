@@ -7,7 +7,7 @@ use App\Models\Log;
 class LogMetric extends BaseMetric
 {
     protected $filters = [
-        'findInSet' => ['device', 'table', 'entity_type', 'type'],
+        'multiple' => ['device', 'table', 'entity_type', 'type'],
     ];
 
     public function getDateField(): string

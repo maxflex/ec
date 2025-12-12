@@ -134,6 +134,15 @@ class Controller extends BaseController
         }
     }
 
+    protected function filterMultiple($query, array $values, $field)
+    {
+        if (count($values) === 0) {
+            return;
+        }
+
+        $query->whereIn($this->getFieldName($field), $values);
+    }
+
     protected function filterOrder($query, $value)
     {
         $order = is_array($value) ? (object) $value : json_decode($value);
