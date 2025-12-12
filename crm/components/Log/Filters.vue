@@ -1,7 +1,10 @@
 <script lang="ts" setup>
+import type { LogTable } from '.'
+import { tables } from '.'
+
 export interface LogFilters {
   type?: LogType
-  table?: string
+  table?: LogTable
   row_id?: string
   user_id?: number
   device?: LogDevice
@@ -11,59 +14,6 @@ export interface LogFilters {
 const model = defineModel<LogFilters>({ required: true })
 const rowId = ref(model.value.row_id)
 const q = ref(model.value.q)
-
-/**
-select group_concat(concat("'", `TABLE_NAME`, "'"))
-from information_schema.TABLES
-where TABLE_SCHEMA = 'ec' and `TABLE_NAME` not in ('logs', 'calls', 'migrations', 'macros', 'errors');
- */
-const tables = [
-  'client_directions',
-  'client_groups',
-  'client_lessons',
-  'client_reviews',
-  'client_tests',
-  'clients',
-  'comments',
-  'complaints',
-  'contract_payments',
-  'contract_version_payments',
-  'contract_version_program_prices',
-  'contract_version_programs',
-  'contract_versions',
-  'contracts',
-  'event_participants',
-  'events',
-  'exam_scores',
-  'grades',
-  'group_acts',
-  'groups',
-  'head_teacher_reports',
-  'instruction_signs',
-  'instructions',
-  'lessons',
-  'other_payments',
-  'pass_logs',
-  'passes',
-  'phones',
-  'photos',
-  'projects',
-  'reports',
-  'representatives',
-  'requests',
-  'stats_presets',
-  'teacher_payments',
-  'teacher_services',
-  'teachers',
-  'telegram_lists',
-  'telegram_messages',
-  'tests',
-  'users',
-  'vacations',
-  'violations',
-  'web_review_programs',
-  'web_reviews',
-]
 
 function clearRowId() {
   rowId.value = ''
