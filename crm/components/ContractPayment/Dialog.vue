@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { PrintDialog } from '#components'
 import type { ContractPaymentResource } from '.'
-import type { AlfaPaymentResource } from '../AlfaPayment'
 import type { ContractResource } from '../ContractVersion'
 import { cloneDeep } from 'lodash-es'
 import { ContractPaymentMethodLabel } from '~/utils/labels'
@@ -30,13 +29,6 @@ function create(c: ContractResource) {
   itemId.value = undefined
   item.value = cloneDeep(modelDefaults)
   item.value.contract_id = c.id
-  dialog.value = true
-}
-
-function createFromAlfaPayment(e: AlfaPaymentResource) {
-  was1cSynced.value = false
-  itemId.value = undefined
-  item.value = cloneDeep(e)
   dialog.value = true
 }
 
@@ -79,7 +71,7 @@ function onDeleted() {
   emit('deleted', item.value)
 }
 
-defineExpose({ create, edit, createFromAlfaPayment })
+defineExpose({ create, edit })
 </script>
 
 <template>
@@ -174,9 +166,6 @@ defineExpose({ create, edit, createFromAlfaPayment })
             hide-spin-buttons
           />
           <v-text-field v-else disabled model-value="Будет присвоен" label="Номер ПКО" />
-        </div>
-        <div v-if="item.purpose">
-          <v-textarea :model-value="item.purpose" label="Назначение платежа" disabled />
         </div>
         <div>
           <v-checkbox

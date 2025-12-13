@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Pub\AlfaController;
 use App\Http\Controllers\Pub\AuthController;
 use App\Http\Controllers\Pub\MangoController;
 use App\Http\Controllers\Pub\RequestsController;
@@ -46,7 +45,5 @@ Route::prefix('security')->controller(SecurityController::class)->group(function
 });
 
 Route::post('sbp', [SbpController::class, 'notification']);
-
-Route::post('alfa', Alfacontroller::class);
 
 Route::apiResource('reviews', WebReviewController::class)->only('index', 'show');
