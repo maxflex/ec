@@ -31,28 +31,6 @@ class TelegramList extends Model
         'scheduled_at' => 'datetime',
     ];
 
-    public static function getPeople($recipients)
-    {
-        $result = [];
-
-        foreach (['clients', 'teachers'] as $key) {
-            switch ($key) {
-                case 'clients':
-                    $clients = Client::with('representative')->whereIn('id', $recipients->clients)->get();
-                    $result['students'] = PersonWithPhonesResource::collection($clients);
-                    $result['representatives'] = PersonWithPhonesResource::collection($clients->map(fn ($c) => $c->representative));
-                    break;
-
-                case 'teachers':
-                    $teachers = Teacher::whereIn('id', $recipients->teachers)->get();
-                    $result['teachers'] = PersonWithPhonesResource::collection($teachers);
-                    break;
-            }
-        }
-
-        return $result;
-    }
-
     public static function booted()
     {
         static::updated(function (TelegramList $telegramList) {
@@ -60,6 +38,32 @@ class TelegramList extends Model
                 event(new TelegramListSentEvent($telegramList));
             }
         });
+    }
+
+    /**
+     * Список получателей
+     * JSON recipients => модели PersonWithPhonesResource
+     */
+    public function unpackRecipients()
+    {
+        $result = [];
+
+        foreach ($this->recipients as $key => $ids) {
+            switch ($key) {
+                case 'clients':
+                    $clients = Client::with('representative')->whereIn('id', $ids)->get();
+                    $result['students'] = PersonWithPhonesResource::collection($clients);
+                    $result['representatives'] = PersonWithPhonesResource::collection($clients->map(fn ($c) => $c->representative));
+                    break;
+
+                case 'teachers':
+                    $teachers = Teacher::whereIn('id', $ids)->get();
+                    $result['teachers'] = PersonWithPhonesResource::collection($teachers);
+                    break;
+            }
+        }
+
+        return $result;
     }
 
     public function event(): BelongsTo
@@ -72,6 +76,9 @@ class TelegramList extends Model
         return $this->hasMany(TelegramMessage::class, 'list_id');
     }
 
+    /**
+     * Результат отправки рассылки (кому доставлено/кому не доставлено)
+     */
     public function getResult()
     {
         return $this->status === TelegramListStatus::sent
@@ -79,6 +86,9 @@ class TelegramList extends Model
             : $this->getScheduledResult();
     }
 
+    /**
+     * Фактический (реальный) результат отправки рассылки (кому доставлено/кому не доставлено)
+     */
     private function getSentResult()
     {
         $result = $this->getResultDefaults();
@@ -115,6 +125,9 @@ class TelegramList extends Model
         return $result;
     }
 
+    /**
+     * Placeholder результата отправки рассылки, для запланированных рассылок (кому будет доставлено/ кому не будет)
+     */
     private function getScheduledResult()
     {
         $result = $this->getResultDefaults();

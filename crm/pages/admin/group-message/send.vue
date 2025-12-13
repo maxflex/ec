@@ -270,26 +270,7 @@ nextTick(async () => {
             добавить время события
           </a>
         </div>
-        <v-slide-x-transition>
-          <div v-if="item.text" class="page-group-message-send__preview">
-            <div class="text-gray mb-2">
-              Так будет выглядеть сообщение в Telegram
-            </div>
-            <div class="message">
-              <div>
-                <div class="tg-message__avatar">
-                  EC
-                </div>
-              </div>
-              <div>
-                <div class="font-weight-bold">
-                  ЕГЭ-Центр
-                </div>
-                <div class="page-group-message-send__preview-text" v-html="item.text"></div>
-              </div>
-            </div>
-          </div>
-        </v-slide-x-transition>
+        <TelegramMessagePreview :text="item.text" />
       </div>
       <div class="double-input">
         <UiDateInput v-model="scheduledAt.date" />
@@ -335,27 +316,6 @@ nextTick(async () => {
 
   .show__content {
     gap: 50px !important;
-  }
-
-  &__preview {
-    position: absolute;
-    left: 530px;
-    top: 0;
-    width: 468px;
-    cursor: default;
-    font-size: 14px;
-    .message {
-      background: rgb(var(--v-theme-bg));
-      border-radius: 8px;
-      padding: 10px 20px;
-      display: flex;
-      align-items: flex-start;
-    }
-    &-text {
-      white-space: break-spaces;
-      word-break: break-all;
-      pointer-events: none;
-    }
   }
 }
 </style>

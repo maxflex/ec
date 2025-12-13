@@ -15,7 +15,10 @@ class TelegramListResource extends JsonResource
             'send_to', 'text', 'created_at', 'scheduled_at', 'status',
         ], [
             'user' => new PersonResource($this->user),
-            'recipients' => TelegramList::getPeople($this->recipients),
+            'recipients' => $this->when(
+                $request->has('recipients'),
+                $this->unpackRecipients(),
+            ),
             'event' => $this->when(
                 (bool) $this->event_id,
                 fn () => extract_fields($this->event, ['name'])

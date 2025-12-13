@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import type { TelegramListResource } from '../TelegramList'
 import { format } from 'date-fns'
 
-const { item } = defineProps<{
-  item: TelegramListResource
-}>()
+const { item } = defineProps<{ item: TelegramListResource }>()
 
+const router = useRouter()
+const destroying = ref(false)
 const timeMask = { mask: '##:##' }
 const scheduledAt = reactive({
   date: '',
@@ -14,11 +15,32 @@ if (item.scheduled_at) {
   scheduledAt.date = format(item.scheduled_at, 'yyyy-MM-dd')
   scheduledAt.time = format(item.scheduled_at, 'HH:ss')
 }
+
+async function destroy() {
+  destroying.value = true
+  await useHttp(
+    `telegram-lists/${item.id}`,
+    {
+      method: 'DELETE',
+    },
+  )
+
+  router.push({ name: 'telegram-lists' })
+  useGlobalMessage('рассылка удалена', 'success')
+}
 </script>
 
 <template>
   <div class="show__inputs mt-12 telegram-list-form">
-    <div>
+    <div v-if="item.event" class="relative">
+      <v-select label="Событие" :model-value="item.event.name" disabled />
+      <UiUnderInput>
+        <RouterLink v-if="item.event" :to="`/events/${item.event.id}`">
+          перейти в событие
+        </RouterLink>
+      </UiUnderInput>
+    </div>
+    <div class="relative">
       <v-textarea
         :model-value="item.text"
         rows="3"
@@ -27,6 +49,7 @@ if (item.scheduled_at) {
         label="Текст сообщения"
         disabled
       />
+      <TelegramMessagePreview :text="item.text" />
     </div>
     <div class="double-input">
       <UiDateInput :model-value="scheduledAt.date" disabled />
@@ -47,8 +70,17 @@ if (item.scheduled_at) {
         </template>
       </div>
       <div>
-        {{ formatName(item.user) }}
+        {{ formatName(item.user!) }}
       </div>
+    </v-btn>
+    <v-btn
+      v-if="item.status === 'scheduled'" size="x-large"
+      color="error"
+      variant="outlined"
+      :loading="destroying"
+      @click="destroy()"
+    >
+      отменить рассылку
     </v-btn>
   </div>
 </template>

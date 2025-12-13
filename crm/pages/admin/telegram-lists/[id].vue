@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { TelegramListResource } from '~/components/TelegramList'
+
 const route = useRoute()
 
 const { $addSseListener, $removeSseListener } = useNuxtApp()
@@ -49,13 +51,10 @@ nextTick(loadData)
   <v-fade-transition>
     <UiLoader v-if="item === undefined" />
     <div v-else class="show pt-0">
-      <div class="show__title-new">
+      <div class="show__title-new pb-0">
         <h2>
           Рассылка от {{ formatDateTime(item.created_at!) }}
         </h2>
-        <RouterLink v-if="item.event" :to="`/events/${item.event.id}`">
-          {{ item.event.name }}
-        </RouterLink>
       </div>
 
       <div class="show__content">
@@ -154,20 +153,6 @@ nextTick(loadData)
                     </div>
                   </div>
                 </td>
-                <!-- <td v-for="(label, key) in SendToLabel" :key="key">
-                  <div v-if="item.result[key] && i <= item.result[key].length" class="send-to-table__content">
-                    <UiPerson :item="item.result[key][i - 1]" />
-                    <div class="send-to-table__phones">
-                      <div
-                        v-for="message in item.result[key][i - 1].messages"
-                        :key="message.id"
-                        :class="{ 'text-secondary': !!message.telegram_id }"
-                      >
-                        {{ formatPhone(message.number) }}
-                      </div>
-                    </div>
-                  </div>
-                </td> -->
               </tr>
               <tr v-if="maxDisplayedRows < maxRows" class="cursor-pointer" @click="isExpanded = true">
                 <td colspan="100">

@@ -146,8 +146,6 @@ Route::post('print', PrintController::class);
 
 Route::get('cabinets', [CabinetController::class, 'index']);
 
-Route::post('telegram-lists/load-people', [TelegramListController::class, 'loadPeople']);
-
 Route::get('requests/associated/{request}', [RequestsController::class, 'associated']);
 
 Route::get('passes/permanent', [PassController::class, 'permanent']);

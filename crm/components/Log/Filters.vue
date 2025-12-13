@@ -58,7 +58,7 @@ function clear() {
       type="number"
       @keydown.enter="model.row_id = rowId"
     />
-    <UiClear v-if="!!rowId" @click="clearRowId()" />
+    <UiUnderInput v-if="!!rowId" @click="clearRowId()" />
   </div>
 
   <div class="relative">
@@ -68,6 +68,6 @@ function clear() {
       density="comfortable"
       @keydown.enter="model.q = (q || undefined)"
     />
-    <UiClear v-if="!!q" @click="clear()" />
+    <UiUnderInput v-if="!!q" @click="clear()" />
   </div>
 </template>

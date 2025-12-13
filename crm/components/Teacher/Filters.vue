@@ -22,7 +22,7 @@ function clear() {
       density="comfortable"
       @keydown.enter="model.q = q"
     />
-    <UiClear v-if="!!q" @click="clear()" />
+    <UiUnderInput v-if="!!q" @click="clear()" />
   </div>
 
   <UiClearableSelect

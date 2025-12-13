@@ -16,7 +16,7 @@ class TelegramListController extends Controller
     public function index(Request $request)
     {
         $query = TelegramList::query()
-            ->with(['event', 'user'])
+            ->with(['event', 'user', 'telegramMessages.entity'])
             ->orderByRaw('IFNULL(scheduled_at, created_at) DESC');
 
         $this->filter($request, $query);
@@ -24,8 +24,11 @@ class TelegramListController extends Controller
         return $this->handleIndexRequest($request, $query, TelegramListResource::class);
     }
 
-    public function show(TelegramList $telegramList)
+    public function show(TelegramList $telegramList, Request $request)
     {
+        // чтобы recipients подгрузились в TelegramListResource
+        $request->merge(['recipients' => 1]);
+
         return new TelegramListResource($telegramList);
     }
 
@@ -39,10 +42,5 @@ class TelegramListController extends Controller
     public function destroy(TelegramList $telegramList)
     {
         $telegramList->delete();
-    }
-
-    public function loadPeople(Request $request)
-    {
-        return TelegramList::getPeople($request);
     }
 }

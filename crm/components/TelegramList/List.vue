@@ -4,9 +4,6 @@ import type { TelegramListResource } from '.'
 const { items } = defineProps<{
   items: TelegramListResource[]
 }>()
-const emit = defineEmits<{
-  deleted: [item: TelegramListResource]
-}>()
 const router = useRouter()
 
 function getTotal(tgList: TelegramListResource, onlySent: boolean = false): number {
@@ -20,17 +17,6 @@ function getTotal(tgList: TelegramListResource, onlySent: boolean = false): numb
 
   return result
 }
-
-async function destroy(item: TelegramListResource) {
-  await useHttp(
-    `telegram-lists/${item.id}`,
-    {
-      method: 'DELETE',
-    },
-  )
-  emit('deleted', item)
-  useGlobalMessage('рассылка удалена', 'success')
-}
 </script>
 
 <template>
@@ -41,23 +27,6 @@ async function destroy(item: TelegramListResource) {
       class="table-item cursor-pointer"
       @click="router.push({ name: 'telegram-lists-id', params: { id: item.id } })"
     >
-      <div v-if="item.status === 'scheduled'" class="table-actionss">
-        <v-menu>
-          <template #activator="{ props }">
-            <v-btn
-              icon="$more"
-              :size="48"
-              variant="plain"
-              v-bind="props"
-            />
-          </template>
-          <v-list>
-            <v-list-item class="text-error" @click="destroy(item)">
-              удалить
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </div>
       <div style="width: 300px">
         <span v-if="item.status === 'sent'">
           отправлено {{ formatDateTime(item.scheduled_at || item.created_at!) }}
@@ -86,9 +55,14 @@ async function destroy(item: TelegramListResource) {
         </template>
       </div>
       <div class="text-truncate">
-        <a v-if="item.event" @click.stop="router.push({ name: 'events-id', params: { id: item.event.id } })">
-          {{ item.event.name }}
-        </a>
+        <UiIfSet :value="!!item.event">
+          <a v-if="item.event" @click.stop="router.push({ name: 'events-id', params: { id: item.event.id } })">
+            {{ item.event.name }}
+          </a>
+          <template #empty>
+            нет события
+          </template>
+        </UiIfSet>
       </div>
     </div>
   </div>

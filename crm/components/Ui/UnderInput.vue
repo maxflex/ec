@@ -1,9 +1,13 @@
 <template>
-  <a class="ui-clear"> очистить </a>
+  <a class="ui-under-input">
+    <slot>
+      очистить
+    </slot>
+  </a>
 </template>
 
 <style lang="scss">
-.ui-clear {
+.ui-under-input {
   position: absolute;
   font-size: 12px;
   cursor: pointer;
