@@ -129,10 +129,7 @@ readonly class Receipt
                         'quantity' => 1.0,      // [cite: 265]
                         'measure' => 0,         // 0 соотв. "piece" (штуки)
                         'sum' => $sum,
-                        // В SBP у тебя full_prepayment.
-                        // Для АТОЛ v5 это тоже допустимо: full_prepayment (полная предоплата) или full_payment (полный расчет)
-                        // Если услуга уже оказана — ставь full_payment. Если это оплата вперед — full_prepayment.
-                        'payment_method' => 'full_payment',
+                        'payment_method' => 'prepayment',
                         'payment_object' => 4,  // 4 = услуга (payment_subject='service' из SBP)
                         'vat' => [
                             'type' => $this->config['vat'],
