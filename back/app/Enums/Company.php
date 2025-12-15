@@ -40,16 +40,4 @@ enum Company: string
             ],
         };
     }
-
-    /**
-     * Номер счета в Альфе
-     */
-    public function getAccountNumber(): string
-    {
-        return match ($this) {
-            self::ip => '40802810401400004731',
-            self::ooo => '40702810801960000153',
-            self::ano => 'XXXX', // TODO
-        };
-    }
 }

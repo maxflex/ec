@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ContractPaymentDialog, OtherPaymentDialog } from '#build/components'
 import type { AllPaymentsResource } from '~/components/OtherPayment'
-import { mdiCheckAll } from '@mdi/js'
+import { mdiCheckAll, mdiFileDocument, mdiFileDocumentArrowRightOutline, mdiFileDocumentRefreshOutline, mdiSyncCircle } from '@mdi/js'
 
 interface Filters {
   contract_id?: number
@@ -99,6 +99,9 @@ function getId(item: AllPaymentsResource) {
             {{ formatName(item) }}
           </span>
         </div>
+        <div style="width: 80px">
+          <ContractPaymentIcons :item="item" />
+        </div>
         <div style="width: 100px">
           {{ formatDate(item.date) }}
         </div>
@@ -111,7 +114,7 @@ function getId(item: AllPaymentsResource) {
             ПКО: {{ item.pko_number }}
           </div>
         </div>
-        <div style="width: 90px">
+        <div style="width: 70px">
           {{ CompanyLabel[item.company] }}
         </div>
         <div style="flex: 1" class="text-truncate">
@@ -122,12 +125,7 @@ function getId(item: AllPaymentsResource) {
             {{ item.purpose }}
           </span>
         </div>
-        <div style="width: 80px">
-          <span v-if="item.is_1c_synced">
-            в 1С
-          </span>
-        </div>
-        <div style="width: 140px; flex: initial">
+        <div style="width: 130px; flex: initial">
           <UiPaymentConfirm :item="item" />
         </div>
       </div>

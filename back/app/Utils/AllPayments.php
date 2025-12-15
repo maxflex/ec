@@ -20,7 +20,8 @@ class AllPayments
             "%s" as `company`, `purpose`, NULL as contract_id,
             `sum`, id, pko_number,
             NULL as client_id,
-            NULL as is_1c_synced
+            NULL as is_1c_synced,
+            NULL as receipt_sent_to
         ',
             Company::ooo->value, // прочие платежи всегда ООО
         ));
@@ -30,7 +31,7 @@ class AllPayments
             is_return, method, is_confirmed, `date`,
             `company`, NULL as `purpose`, contract_id,
             `sum`, contract_payments.id, pko_number, `client_id`,
-            is_1c_synced
+            is_1c_synced, receipt_sent_to
         ')
             ->join('contracts as c', 'c.id', '=', 'contract_id')
             ->join('clients as cl', 'cl.id', '=', 'c.client_id');

@@ -6,10 +6,15 @@ export interface ContractPaymentResource {
   sum: number
   date: string
   method: ContractPaymentMethod
+  contract: {
+    id: number
+    company: Company
+  }
   is_return: boolean
   is_confirmed: boolean
   is_1c_synced: boolean
   pko_number: number | null
+  receipt_sent_to?: string
   card_number: string | null
   created_at?: string
   user?: PersonResource
@@ -28,6 +33,10 @@ export const modelDefaults: ContractPaymentResource = {
   contract_id: newId(),
   pko_number: null,
   card_number: null,
+  contract: {
+    id: newId(),
+    company: 'ip',
+  },
 }
 
 export const printOptions: PrintOption[] = [

@@ -33,6 +33,7 @@ use App\Http\Controllers\Admin\MenuCountsController;
 use App\Http\Controllers\Admin\OtherPaymentController;
 use App\Http\Controllers\Admin\PassController;
 use App\Http\Controllers\Admin\PeopleSelectorController;
+use App\Http\Controllers\Admin\PhoneController;
 use App\Http\Controllers\Admin\PreviewModeController;
 use App\Http\Controllers\Admin\PrintController;
 use App\Http\Controllers\Admin\ProjectController;
@@ -168,6 +169,8 @@ Route::apiResource('sms-messages', SmsMessageController::class)->only('index');
 Route::get('teacher-stats', TeacherStatsController::class);
 Route::get('teeth', TeethController::class);
 Route::get('exams', ExamController::class);
+
+Route::apiResource('phones', PhoneController::class)->only('index');
 
 Route::apiResources([
     'telegram-lists' => TelegramListController::class,

@@ -20,14 +20,18 @@ const loading = ref(false)
 const itemId = ref<number>()
 // был синхронизирован на момент открытия диалога
 const was1cSynced = ref(false)
+// был отправлен чпек
+const wasReceiptSent = ref(false)
 
 const printDialog = ref<InstanceType<typeof PrintDialog>>()
 const item = ref<ContractPaymentResource>(modelDefaults)
 
 function create(c: ContractResource) {
   was1cSynced.value = false
+  wasReceiptSent.value = false
   itemId.value = undefined
   item.value = cloneDeep(modelDefaults)
+  item.value.contract = cloneDeep(c)
   item.value.contract_id = c.id
   dialog.value = true
 }
@@ -40,6 +44,7 @@ async function edit(id: number) {
   if (data.value) {
     item.value = data.value
     was1cSynced.value = data.value.is_1c_synced
+    wasReceiptSent.value = !!data.value.receipt_sent_to
   }
   loading.value = false
 }
@@ -166,6 +171,15 @@ defineExpose({ create, edit })
             hide-spin-buttons
           />
           <v-text-field v-else disabled model-value="Будет присвоен" label="Номер ПКО" />
+        </div>
+        <div v-if="item.method === 'bill'">
+          <v-select v-if="wasReceiptSent" disabled label="Чек отправлен" :model-value="formatPhone(item.receipt_sent_to!)" />
+          <ContractPaymentReceiptPhoneSelector
+            v-else
+            v-model="item.receipt_sent_to"
+            :disabled="item.contract.company !== 'ip'"
+            :contract-id="item.contract_id"
+          />
         </div>
         <div>
           <v-checkbox
