@@ -403,6 +403,7 @@ export const LessonScoreLabel = {
 } as const
 
 export const YearLabel = {
+  2026: '26–27 уч. г.',
   2025: '25–26 уч. г.',
   2024: '24–25 уч. г.',
   2023: '23–24 уч. г.',
