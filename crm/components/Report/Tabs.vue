@@ -214,7 +214,7 @@ nextTick(loadData)
           {{ item.recommendation_comment }}
         </div>
       </div>
-      <div v-if="item && item.grade" class="report-tabs__score">
+      <div v-if="item && item.grade" class="report-tabs__score" :class="`report-tabs__score--${item.grade}`">
         <div :class="`text-score text-score--${item.grade}`">
           {{ item.grade }}
         </div>
@@ -262,7 +262,24 @@ nextTick(loadData)
     border-radius: 8px;
     padding: 12px;
     width: 160px;
-    background-color: rgba(var(--v-theme-success), 0.1);
+
+    &--5 {
+      background-color: rgba(var(--v-theme-success), 0.1);
+    }
+
+    &--4 {
+      background-color: rgba(#e28f2d, 0.1);
+      //background-color: #62b44b;
+      //background-color: #4cb02f;
+      //background-color: #48ad36;
+    }
+
+    &--3,
+    &--2,
+    &--1 {
+      background-color: rgba(var(--v-theme-error), 0.1);
+    }
+
     & > div {
       text-align: center;
       text-transform: lowercase;
