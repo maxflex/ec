@@ -40,7 +40,13 @@ class ReportController extends Controller
                 ELSE 0
             END DESC,
             `status` DESC,
-            `created_at` DESC
+            `created_at` DESC,
+            -- СТАБИЛИЗАЦИЯ СОРТИРОВКИ --
+            `id` DESC,
+            `year` DESC,
+            `teacher_id` ASC,
+            `client_id` ASC,
+            `program` ASC
         ', [
             ReportStatus::draft,
             ReportStatus::toCheck,
