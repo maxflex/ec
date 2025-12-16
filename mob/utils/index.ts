@@ -297,6 +297,11 @@ export function formatDateAgo(dateStr: string): string {
 }
 
 export function formatPhone(number: string): string {
+  // неверный формат
+  if (!number || number.length !== 11 || number[0] !== '7') {
+    return 'no'
+  }
+
   return [
     '+7 (',
     number.slice(1, 4),

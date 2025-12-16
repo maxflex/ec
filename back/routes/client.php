@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\PhoneController;
 use App\Http\Controllers\Client\BillingController;
 use App\Http\Controllers\Client\ClientTestController;
 use App\Http\Controllers\Client\EventController;
@@ -26,6 +27,7 @@ Route::apiResource('sbp', SbpController::class)->only('store');
 Route::apiResource('lessons', LessonController::class)->only('index');
 Route::get('billing', BillingController::class);
 Route::apiResource('groups', GroupController::class)->only('index');
+Route::apiResource('phones', PhoneController::class)->only('index');
 Route::apiResource('grades', GradeController::class)->only('index');
 Route::apiResource('reports', ReportController::class)->only(['index', 'show']);
 Route::apiResource('client-tests', ClientTestController::class)->only('index', 'show');

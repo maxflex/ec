@@ -17,6 +17,7 @@ class SbpController extends Controller
         $request->validate([
             'contract_id' => ['required', 'exists:contracts,id'],
             'amount' => ['required', 'numeric'],
+            'number' => ['required', 'phone'],
         ]);
 
         $amount = intval($request->amount);
@@ -33,7 +34,7 @@ class SbpController extends Controller
 
         // для чека
         $fullName = $contract->client->representative->formatName('full');
-        $phone = is_localhost() ? '79252727210' : $contract->client->representative->getPhoneNumbers()->first();
+        $phone = is_localhost() ? '79252727210' : $request->input('number');
 
         $payment = $client->createPayment(
             [
@@ -62,9 +63,12 @@ class SbpController extends Controller
                                 'value' => $amount,
                                 'currency' => 'RUB',
                             ],
+                            // НДС по расчетной ставке 5/105
+                            // https://yookassa.ru/developers/payment-acceptance/receipts/54fz/other-services/parameters-values
                             'vat_code' => 9,
+                            // Частичная предоплата
+                            'payment_mode' => 'partial_prepayment',
                             'payment_subject' => 'service',
-                            'payment_mode' => 'full_prepayment',
                             'measure' => 'piece',
                             'type' => 'prepayment',
                         ],
@@ -105,7 +109,8 @@ class SbpController extends Controller
 
         $contractPayment = cache()->get('sbp-'.$paymentId);
 
-        // Тут важно: платежи могут быть также из MR. Их не обрабатывать
+        // Платежи могут быть также из MR. Их не обрабатывать
+        // https://ege-repetitor.ru/payment
         if ($contractPayment === null) {
             return;
         }

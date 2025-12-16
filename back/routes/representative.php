@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\PhoneController;
 use App\Http\Controllers\Client\EventParticipantController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\Pub\SbpController;
@@ -27,6 +28,7 @@ Route::apiResource('lessons', LessonController::class)->only('index');
 Route::get('billing', BillingController::class);
 Route::apiResource('groups', GroupController::class)->only('index');
 Route::apiResource('grades', GradeController::class)->only('index');
+Route::apiResource('phones', PhoneController::class)->only('index');
 Route::apiResource('reports', ReportController::class)->only(['index', 'show']);
 Route::apiResource('client-tests', ClientTestController::class)->only('index', 'show');
 Route::get('journal', JournalController::class);

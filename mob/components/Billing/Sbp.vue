@@ -1,10 +1,31 @@
 <script setup lang="ts">
+import { cloneDeep } from 'lodash-es'
+
 const { selectedContract } = defineProps<{ selectedContract: BillingResource }>()
-const amount = ref('')
+const phoneMask = { mask: '+7 (###) ###-##-##' }
+
+const payload = reactive({
+  amount: '',
+  number: undefined,
+})
+
+const phones = ref<PhoneResource[]>([])
 const loading = ref(false)
 
+async function loadData() {
+  const { data } = await useHttp<ApiResponse<PhoneResource>>(
+    `phones`,
+    {
+      params: {
+        contract_id: selectedContract.id,
+      },
+    },
+  )
+  phones.value = data.value!.data
+}
+
 async function pay() {
-  if (!amount.value) {
+  if (!payload.amount || !payload.number) {
     return
   }
   loading.value = true
@@ -13,7 +34,7 @@ async function pay() {
     {
       method: 'POST',
       body: {
-        amount: amount.value,
+        ...cloneDeep(payload),
         contract_id: selectedContract.id,
       },
     },
@@ -24,6 +45,8 @@ async function pay() {
   }
   window.location = data.value!.url as string & Location
 }
+
+nextTick(loadData)
 </script>
 
 <template>
@@ -34,7 +57,7 @@ async function pay() {
     </div>
     <div>
       <v-text-field
-        v-model="amount"
+        v-model="payload.amount"
         v-maska="{ mask: '######' }"
         hide-spin-buttons
         label="Сумма"
@@ -43,6 +66,29 @@ async function pay() {
         density="comfortable"
         bg-color="white"
       />
+    </div>
+    <div>
+      <v-select
+        v-model="payload.number"
+        v-maska="{ mask: phoneMask }"
+        item-value="number"
+        label="Куда отправить чек"
+        :items="phones"
+        density="comfortable"
+        bg-color="white"
+      >
+        <template #selection="{ item }">
+          {{ formatPhone(item.value) }}
+        </template>
+        <template #item="{ item, props }">
+          <v-list-item v-bind="props">
+            <template #prepend />
+            <template #title>
+              {{ formatPhone(item.value) }}
+            </template>
+          </v-list-item>
+        </template>
+      </v-select>
     </div>
     <v-btn color="primary" :loading="loading" @click="pay()">
       Оплатить
@@ -59,9 +105,12 @@ async function pay() {
   // border-radius: 8px 8px 0 0;
   display: flex;
   flex-direction: column;
-  & > div:nth-child(2) {
-    margin: 30px 0 20px;
+  gap: 20px;
+
+  button {
+    margin-top: 20px;
   }
+
   &__title {
     display: flex;
     align-items: center;
