@@ -44,7 +44,7 @@ const { text } = defineProps<{ text: string }>()
 
   &-text {
     white-space: break-spaces;
-    word-break: break-all;
+    word-break: break-word;
     pointer-events: none;
   }
 }

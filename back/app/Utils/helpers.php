@@ -206,7 +206,7 @@ function get_entity_type_key(string $entityType): string
     return match ($entityType) {
         Teacher::class => 'teachers',
         Client::class => 'students',
-        Representative::class => 'parents',
+        Representative::class => 'representatives',
     };
 }
 
