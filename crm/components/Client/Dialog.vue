@@ -46,7 +46,7 @@ async function save() {
   if (itemId.value) {
     const { data, error } = await useHttp<ClientResource>(`clients/${itemId.value}`, {
       method: 'put',
-      body: item.value,
+      body: cloneDeep(item.value),
     })
     if (data.value) {
       emit('updated', data.value)
@@ -60,7 +60,7 @@ async function save() {
     const { data, error } = await useHttp<ClientListResource>('clients', {
       method: 'post',
       body: {
-        ...item.value,
+        ...cloneDeep(item.value),
         request_id: requestId.value,
       },
     })

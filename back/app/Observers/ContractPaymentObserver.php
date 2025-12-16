@@ -10,10 +10,14 @@ class ContractPaymentObserver
 {
     public function saved(ContractPayment $contractPayment): void
     {
-        if ($contractPayment->wasChanged('is_1c_synced') && $contractPayment->is_1c_synced) {
+        // при создании или при изменении + установка
+        if (($contractPayment->wasChanged('is_1c_synced') || $contractPayment->wasRecentlyCreated)
+            && $contractPayment->is_1c_synced) {
             new OneC($contractPayment)->sync();
         }
-        if ($contractPayment->wasChanged('receipt_sent_to') && $contractPayment->receipt_sent_to) {
+        // при создании или при изменении + установка
+        if (($contractPayment->wasChanged('receipt_sent_to') || $contractPayment->wasRecentlyCreated)
+            && $contractPayment->receipt_sent_to) {
             new Receipt($contractPayment)->send();
         }
     }

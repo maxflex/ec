@@ -50,7 +50,7 @@ readonly class Receipt
             $this->contractPayment->update([
                 'receipt_sent_to' => null,
             ]);
-            throw new Exception('Ошибка регистрации чека АТОЛ: '.$errorText);
+            throw new Exception('RECEIPT: '.$errorText);
         }
 
         logger('RECEIPT');
