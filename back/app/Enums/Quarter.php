@@ -20,7 +20,7 @@ enum Quarter: string
     {
         $limits = [
             self::q2->value => [
-                2025 => '2025-12-29',
+                2025 => '2025-12-19',
             ],
         ];
 
