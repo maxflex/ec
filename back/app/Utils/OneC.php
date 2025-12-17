@@ -21,7 +21,7 @@ readonly class OneC
 
     private const string URL_PAYMENTS = 'Document_ОплатаПлатежнойКартой';
 
-    public function __construct(protected readonly ContractPayment $payment) {}
+    public function __construct(protected ContractPayment $payment) {}
 
     /**
      * Получить RefKey по ID из ссылки
@@ -112,7 +112,7 @@ readonly class OneC
             ),
             'Контрагент' => $counteragent->Ref_Key,
             'Контрагент_Type' => 'StandardODATA.Catalog_Контрагенты',
-            'ВидОперации' => 'ОплатаПокупателя',
+            'ВидОперации' => $this->payment->is_return ? 'ВозвратПокупателю' : 'ОплатаПокупателя',
             'Комментарий' => sprintf(
                 'Создан из CRM (contract_payment_id: %d)',
                 $this->payment->id,
