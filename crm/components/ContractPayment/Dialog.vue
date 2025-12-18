@@ -164,7 +164,6 @@ defineExpose({ create, edit })
             v-maska="cardNumberMask"
             placeholder="∗∗∗∗ ∗∗∗∗ ∗∗∗∗ ∗∗∗∗"
             label="Номер карты"
-            :disabled="disabled"
           />
         </div>
         <div v-else-if="item.method === 'cash'">
@@ -174,7 +173,6 @@ defineExpose({ create, edit })
             label="Номер ПКО"
             type="number"
             hide-spin-buttons
-            :disabled="disabled"
           />
           <v-text-field v-else disabled model-value="Будет присвоен" label="Номер ПКО" />
         </div>
