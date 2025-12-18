@@ -122,7 +122,7 @@ readonly class Receipt
         $phone = is_localhost() ? '+79252727210' : '+'.Phone::autoCorrectFirstDigit($this->contractPayment->receipt_number);
 
         // Сумма
-        $sum = $this->contractPayment->sum;
+        $sum = (int) $this->contractPayment->sum;
 
         return [
             'timestamp' => now()->format('d.m.Y H:i:s'), // [cite: 249]
