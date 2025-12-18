@@ -41,6 +41,13 @@ class ContractPaymentController extends Controller
 
         $contractPayment = ContractPayment::make($request->all());
 
+        abort_if(! $request->receipt_number
+        && $contractPayment->contract->company === Company::ip
+        && $contractPayment->method === ContractPaymentMethod::bill, 404);
+
+        /**
+         * РАСКОММЕНТИТЬ КОГДА РЕШИТСЯ ВОПРОС С ФФД 1.2
+         *
         // Логика проверки обязательности чека
         // 1. Компания НЕ "ООО" (значит ИП или АНО)
         $isReceiptRequiredCompany = $contractPayment->contract->company !== Company::ooo;
@@ -57,7 +64,7 @@ class ContractPaymentController extends Controller
             422,
             'Для ИП и АНО при оплате по Счету или СБП Онлайн указание номера чека (receipt_number) обязательно.'
         );
-
+         */
         $contractPayment->save();
 
         return new ContractPaymentResource($contractPayment->fresh());

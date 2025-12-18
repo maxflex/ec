@@ -181,7 +181,7 @@ defineExpose({ create, edit })
           <ContractPaymentReceiptPhoneSelector
             v-else
             v-model="item.receipt_number"
-            :disabled="item.contract.company === 'ooo'"
+            :disabled="item.contract.company !== 'ip'"
             :contract-id="item.contract_id"
           />
         </div>
