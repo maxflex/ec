@@ -126,7 +126,7 @@ readonly class Receipt
 
         return [
             'timestamp' => now()->format('d.m.Y H:i:s'), // [cite: 249]
-            'external_id' => $this->contractPayment->id,
+            'external_id' => uniqid(),
             'receipt' => [
                 'client' => [
                     'phone' => $phone,
