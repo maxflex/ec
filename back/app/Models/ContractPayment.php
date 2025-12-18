@@ -14,8 +14,8 @@ class ContractPayment extends Model
 {
     protected $fillable = [
         'contract_id', 'sum', 'date', 'is_confirmed', 'is_return',
-        'card_number', 'pko_number', 'method', 'external_id',
-        'is_1c_synced', 'receipt_sent_to',
+        'card_number', 'pko_number', 'method', 'is_1c_synced',
+        'receipt_number',
     ];
 
     protected $casts = [

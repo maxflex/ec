@@ -4,7 +4,7 @@ import { mdiFileDocumentArrowRightOutline, mdiFileDocumentRefreshOutline } from 
 const { item } = defineProps<{
   item: {
     is_1c_synced: boolean | null
-    receipt_sent_to: string | null
+    receipt_number: string | null
   }
 }>()
 </script>
@@ -20,11 +20,11 @@ const { item } = defineProps<{
       </v-tooltip>
     </div>
     <div>
-      <v-tooltip v-if="item.receipt_sent_to" location="bottom">
+      <v-tooltip v-if="item.receipt_number" location="bottom">
         <template #activator="{ props }">
           <v-icon :icon="mdiFileDocumentArrowRightOutline" v-bind="props" />
         </template>
-        Чек отправлен на {{ formatPhone(item.receipt_sent_to) }}
+        Чек отправлен на {{ formatPhone(item.receipt_number) }}
       </v-tooltip>
     </div>
   </div>

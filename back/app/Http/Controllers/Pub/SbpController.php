@@ -32,10 +32,6 @@ class SbpController extends Controller
             Carbon::parse($contract->active_version->date)->format('d.m.Y')
         );
 
-        // для чека
-        $fullName = $contract->client->representative->formatName('full');
-        $phone = is_localhost() ? '79252727210' : $request->input('number');
-
         $payment = $client->createPayment(
             [
                 'amount' => [
@@ -50,30 +46,6 @@ class SbpController extends Controller
                     'type' => 'sbp',
                 ],
                 'capture' => true,
-                'receipt' => [
-                    'customer' => [
-                        'full_name' => $fullName,
-                        'phone' => $phone,
-                    ],
-                    'items' => [
-                        [
-                            'description' => $description,
-                            'quantity' => 1.0,
-                            'amount' => [
-                                'value' => $amount,
-                                'currency' => 'RUB',
-                            ],
-                            // НДС по расчетной ставке 5/105
-                            // https://yookassa.ru/developers/payment-acceptance/receipts/54fz/other-services/parameters-values
-                            'vat_code' => 9,
-                            // Частичная предоплата
-                            'payment_mode' => 'partial_prepayment',
-                            'payment_subject' => 'service',
-                            'measure' => 'piece',
-                            'type' => 'prepayment',
-                        ],
-                    ],
-                ],
                 'description' => $description,
             ]
         );
@@ -86,7 +58,7 @@ class SbpController extends Controller
             'sum' => $amount,
             'date' => now()->format('Y-m-d'),
             'method' => ContractPaymentMethod::sbpOnline,
-            'external_id' => $payment->getId(),
+            'receipt_number' => is_localhost() ? '79252727210' : $request->input('number'),
         ]);
 
         cache()->put('sbp-'.$payment->getId(), $contractPayment, now()->addHour());

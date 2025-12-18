@@ -9,7 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('contract_payments', function (Blueprint $table) {
-            $table->string('receipt_number')->nullable()->after('is_1c_synced');
+            $table->renameColumn('receipt_sent_to', 'receipt_number');
+        });
+        Schema::table('contract_payments', function (Blueprint $table) {
+            $table->ipAddress('receipt_ip')->nullable()->after('receipt_number');
         });
     }
 };

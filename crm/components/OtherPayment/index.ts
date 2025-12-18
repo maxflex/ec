@@ -39,7 +39,7 @@ export interface AllPaymentsResource {
   pko_number: number | null
   client_id: number | null
   is_1c_synced: boolean | null
-  receipt_sent_to: string | null
+  receipt_number: string | null
   sum: number
 }
 

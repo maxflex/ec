@@ -9,11 +9,11 @@ import { updateMenuCounts } from '../Menu'
 
 const emit = defineEmits<{
   updated: [e: ContractPaymentResource]
-  deleted: [e: ContractPaymentResource]
+  // deleted: [e: ContractPaymentResource]
 }>()
 
 const cardNumberMask = { mask: '#∗∗∗ ∗∗∗∗ ∗∗∗∗ ####' }
-
+const sumInput = ref()
 const { width, dialog } = useDialog('default')
 const saving = ref(false)
 const loading = ref(false)
@@ -34,6 +34,7 @@ function create(c: ContractResource) {
   item.value.contract = cloneDeep(c)
   item.value.contract_id = c.id
   dialog.value = true
+  nextTick(() => sumInput.value?.focus())
 }
 
 async function edit(id: number) {
@@ -44,7 +45,7 @@ async function edit(id: number) {
   if (data.value) {
     item.value = data.value
     was1cSynced.value = data.value.is_1c_synced
-    wasReceiptSent.value = !!data.value.receipt_sent_to
+    wasReceiptSent.value = !!data.value.receipt_number
   }
   loading.value = false
 }
@@ -53,10 +54,16 @@ async function save() {
   saving.value = true
   const method = itemId.value ? `put` : `post`
   const url = itemId.value ? `${apiUrl}/${itemId.value}` : apiUrl
-  const { data } = await useHttp<ContractPaymentResource>(url, {
+  const { data, error } = await useHttp<ContractPaymentResource>(url, {
     method,
     body: item.value,
   })
+  if (error.value) {
+    useGlobalMessage(`Выберите, куда отправить чек`, 'error')
+    saving.value = false
+
+    return
+  }
   if (data.value) {
     emit('updated', data.value)
   }
@@ -71,10 +78,12 @@ async function save() {
   setTimeout(() => saving.value = false, 300)
 }
 
-function onDeleted() {
-  dialog.value = false
-  emit('deleted', item.value)
-}
+const disabled = computed<boolean>(() => !!itemId.value)
+
+// function onDeleted() {
+//   dialog.value = false
+//   emit('deleted', item.value)
+// }
 
 defineExpose({ create, edit })
 </script>
@@ -99,15 +108,7 @@ defineExpose({ create, edit })
           </div>
         </span>
         <div>
-          <template
-            v-if="itemId"
-          >
-            <CrudDeleteBtn
-              :id="itemId"
-              :api-url="apiUrl"
-              confirm-text="Вы уверены, что хотите удалить платеж?"
-              @deleted="onDeleted()"
-            />
+          <template v-if="itemId">
             <v-menu>
               <template #activator="{ props }">
                 <v-btn
@@ -140,18 +141,21 @@ defineExpose({ create, edit })
       <div v-else class="dialog-body">
         <div>
           <v-text-field
+            ref="sumInput"
             v-model="item.sum"
             label="Сумма"
             type="number"
+            :disabled="disabled"
             hide-spin-buttons
           />
         </div>
-        <UiDateInput v-model="item.date" today-btn />
+        <UiDateInput v-model="item.date" :disabled="disabled" today-btn />
         <div>
           <v-select
             v-model="item.method"
             label="Способ оплаты"
             :items="selectItems(ContractPaymentMethodLabel)"
+            :disabled="disabled"
           />
         </div>
         <div v-if="item.method === 'card'">
@@ -160,6 +164,7 @@ defineExpose({ create, edit })
             v-maska="cardNumberMask"
             placeholder="∗∗∗∗ ∗∗∗∗ ∗∗∗∗ ∗∗∗∗"
             label="Номер карты"
+            :disabled="disabled"
           />
         </div>
         <div v-else-if="item.method === 'cash'">
@@ -169,15 +174,16 @@ defineExpose({ create, edit })
             label="Номер ПКО"
             type="number"
             hide-spin-buttons
+            :disabled="disabled"
           />
           <v-text-field v-else disabled model-value="Будет присвоен" label="Номер ПКО" />
         </div>
-        <div v-if="item.method === 'bill'">
-          <v-select v-if="wasReceiptSent" disabled label="Чек отправлен" :model-value="formatPhone(item.receipt_sent_to!)" />
+        <div>
+          <v-select v-if="wasReceiptSent" disabled label="Чек отправлен" :model-value="formatPhone(item.receipt_number!)" />
           <ContractPaymentReceiptPhoneSelector
             v-else
-            v-model="item.receipt_sent_to"
-            :disabled="item.contract.company !== 'ip'"
+            v-model="item.receipt_number"
+            :disabled="item.contract.company === 'ooo'"
             :contract-id="item.contract_id"
           />
         </div>
@@ -188,6 +194,7 @@ defineExpose({ create, edit })
           />
           <v-checkbox
             v-model="item.is_return"
+            :disabled="disabled"
             label="Возврат"
           />
           <v-checkbox

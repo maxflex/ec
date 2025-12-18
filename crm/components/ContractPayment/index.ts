@@ -14,7 +14,7 @@ export interface ContractPaymentResource {
   is_confirmed: boolean
   is_1c_synced: boolean
   pko_number: number | null
-  receipt_sent_to?: string
+  receipt_number?: string
   card_number: string | null
   created_at?: string
   user?: PersonResource
@@ -24,7 +24,8 @@ export interface ContractPaymentResource {
 
 export const modelDefaults: ContractPaymentResource = {
   id: newId(),
-  sum: 0,
+  // @ts-expect-error
+  sum: '',
   date: today(),
   method: 'card',
   is_confirmed: false,

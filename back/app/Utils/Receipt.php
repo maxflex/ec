@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use App\Enums\Company;
 use App\Enums\ContractPaymentMethod;
 use App\Models\ContractPayment;
 use Exception;
@@ -17,14 +18,29 @@ readonly class Receipt
 {
     private Factory|PendingRequest $http;
 
+    private Company $company;
+
     private array $config;
 
     public function __construct(public ContractPayment $contractPayment)
     {
-        $this->config = config('receipt.'.$this->contractPayment->contract->company->value);
-        $this->http = Http::baseUrl($this->config['base_url'])->withHeaders([
-            'Content-Type' => 'application/json; charset=utf-8',
-        ]);
+        $this->company = $this->contractPayment->contract->company;
+        $this->config = config('receipt.'.$this->company->value);
+
+        $options = [
+            'headers' => [
+                'Content-Type' => 'application/json; charset=utf-8',
+            ],
+        ];
+
+        if ($this->company === Company::ano) {
+            // IP, с которого будет уходить чек
+            // Можно проверить из php artisan tinker
+            // Http::withOptions(['proxy' => '188.166.167.107:8888'])->get('https://api.ipify.org')->body();
+            $options['proxy'] = $this->config['proxy'].':8888';
+        }
+
+        $this->http = Http::baseUrl($this->config['base_url'])->withOptions($options);
     }
 
     public function send(): bool
@@ -48,7 +64,7 @@ readonly class Receipt
             // В v5 текст ошибки приходит в ['error']['text'] [cite: 88, 565]
             $errorText = $response['error']['text'] ?? $response->body();
             $this->contractPayment->update([
-                'receipt_sent_to' => null,
+                'receipt_number' => null,
             ]);
             throw new Exception('RECEIPT: '.$errorText);
         }
@@ -67,7 +83,7 @@ readonly class Receipt
      */
     private function getToken(): string
     {
-        $key = 'receipt_token_'.$this->contractPayment->contract->company->value;
+        $key = 'receipt_token_'.$this->company->value;
 
         return cache()->remember($key, 82800, function () {
             $response = $this->http->post('/getToken', [
@@ -103,7 +119,7 @@ readonly class Receipt
 
         // ФИО клиента
         $fullName = $contract->client->representative->formatName('full');
-        $phone = is_localhost() ? '+79252727210' : '+'.Phone::autoCorrectFirstDigit($this->contractPayment->receipt_sent_to);
+        $phone = is_localhost() ? '+79252727210' : '+'.Phone::autoCorrectFirstDigit($this->contractPayment->receipt_number);
 
         // Сумма
         $sum = $this->contractPayment->sum;

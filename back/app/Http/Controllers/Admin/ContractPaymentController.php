@@ -29,6 +29,11 @@ class ContractPaymentController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'sum' => ['required', 'numeric', 'min:1'],
+            'receipt_number' => ['required_unless:company,ooo'], // чек обязателен для всех, кроме ООО
+        ]);
+
         $contractPayment = ContractPayment::create($request->all());
 
         return new ContractPaymentResource($contractPayment);
@@ -41,8 +46,9 @@ class ContractPaymentController extends Controller
         return new ContractPaymentResource($contractPayment);
     }
 
-    public function destroy(ContractPayment $contractPayment)
-    {
-        $contractPayment->delete();
-    }
+    // Платежи нельзя удалять, т.к. отправляется чек
+    // public function destroy(ContractPayment $contractPayment)
+    // {
+    //     $contractPayment->delete();
+    // }
 }

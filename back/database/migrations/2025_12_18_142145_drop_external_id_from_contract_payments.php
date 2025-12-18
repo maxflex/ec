@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('contract_payments', function (Blueprint $table) {
-            $table->string('receipt_number')->nullable()->after('is_1c_synced');
+            $table->dropColumn('external_id');
         });
     }
 };

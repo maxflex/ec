@@ -84,12 +84,14 @@ function onManualKeyup() {
       />
       <v-icon icon="$next" @click="calendarDialog.open() " />
     </div>
-    <a v-if="todayBtn" class="date-input__today" @click="setToday()">
-      сегодня
-    </a>
-    <a v-if="clearable && model" class="date-input__today" @click="clear()">
-      очистить
-    </a>
+    <template v-if="!disabled">
+      <a v-if="todayBtn" class="date-input__today" @click="setToday()">
+        сегодня
+      </a>
+      <a v-if="clearable && model" class="date-input__today" @click="clear()">
+        очистить
+      </a>
+    </template>
   </div>
 
   <CalendarDialog
