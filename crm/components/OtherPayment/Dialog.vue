@@ -107,7 +107,7 @@ defineExpose({ create, edit })
           <v-select
             v-model="item.method"
             label="Способ оплаты"
-            :items="selectItems(OtherPaymentMethodLabel, ['card', 'cash'])"
+            :items="selectItems(OtherPaymentMethodLabel, item.method === 'sbp' ? undefined : ['card', 'cash'])"
           />
         </div>
         <div v-if="item.method === 'card'">

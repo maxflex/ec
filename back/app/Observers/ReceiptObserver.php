@@ -3,7 +3,6 @@
 namespace App\Observers;
 
 use App\Models\ContractPayment;
-use App\Models\OtherPayment;
 use App\Utils\Receipt\Receipt;
 
 /**
@@ -11,7 +10,7 @@ use App\Utils\Receipt\Receipt;
  */
 class ReceiptObserver
 {
-    public function created(ContractPayment|OtherPayment $payment): void
+    public function created(ContractPayment $payment): void
     {
         // отправить чек
         if ($payment->receipt_number) {
@@ -20,7 +19,7 @@ class ReceiptObserver
             new Receipt($receiptData)->send();
 
             // сохраняем IP, c которого будет уходить чек
-            $payment->receipt_ip = config('receipt. '.$receiptData->company->value.'.ip');
+            $payment->receipt_ip = config('receipt.'.$receiptData->company->value.'.ip');
             $payment->saveQuietly();
         }
     }

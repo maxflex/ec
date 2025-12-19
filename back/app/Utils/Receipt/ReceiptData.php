@@ -4,7 +4,6 @@ namespace App\Utils\Receipt;
 
 use App\Enums\Company;
 use App\Models\ContractPayment;
-use App\Models\OtherPayment;
 
 readonly class ReceiptData
 {
@@ -17,7 +16,7 @@ readonly class ReceiptData
     public bool $isReturn;
 
     public function __construct(
-        ContractPayment|OtherPayment $model,
+        ContractPayment $model,
         public string $purpose,
         public string $name,
         public Company $company,

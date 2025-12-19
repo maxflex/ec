@@ -1,7 +1,7 @@
 export const OtherPaymentMethodLabel = {
   card: 'карта',
   cash: 'наличные',
-  sbp: 'СБП',
+  sbp: 'СБП касса',
 } as const
 
 export type OtherPaymentMethod = keyof typeof OtherPaymentMethodLabel

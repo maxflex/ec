@@ -144,7 +144,13 @@ defineExpose({ create, edit })
           <v-select
             v-model="item.method"
             label="Способ оплаты"
-            :items="selectItems(ContractPaymentMethodLabel)"
+            :items="selectItems(ContractPaymentMethodLabel, item.method === 'sbpOnline' ? undefined : [
+              'bill',
+              'card',
+              'cash',
+              'matcap',
+              'sbp',
+            ])"
             :disabled="wasReceiptSent"
           />
         </div>
