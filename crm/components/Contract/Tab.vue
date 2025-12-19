@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ContractDialog, ContractPaymentDialog, ContractVersionDialog } from '#build/components'
+import type { ContractDialog, ContractPaymentDialog, ContractVersionDialog, PrintBillDialog } from '#build/components'
 import type { ContractResource, ContractVersionListResource, ContractVersionResource } from '../ContractVersion'
 import type { ProjectResource } from '../Project'
 import type { ContractPaymentResource } from '~/components/ContractPayment'
@@ -19,6 +19,7 @@ const projects = ref<ProjectResource[]>([])
 const loading = ref(true)
 const showBalance = ref(false)
 const route = useRoute()
+const printBillDialog = ref<InstanceType<typeof PrintBillDialog>>()
 
 const selectedContract = computed<ContractResource | null>(
   () => items.value.length ? items.value[selected.value] : null,
@@ -198,6 +199,9 @@ nextTick(loadData)
             <v-list-item @click="showBalanceGo(i)">
               показать баланс
             </v-list-item>
+            <v-list-item @click="printBillDialog?.open(contract.id)">
+              печать счета на оплату
+            </v-list-item>
             <v-list-item @click="contractDialog?.open(contract)">
               редактировать договор
             </v-list-item>
@@ -368,7 +372,7 @@ nextTick(loadData)
       </div>
     </template>
   </UiIndexPage>
-
+  <PrintBillDialog ref="printBillDialog" />
   <ContractVersionDialog
     ref="contractVersionDialog"
     @updated="onContractVersionUpdated"

@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import type { PrintDialog } from '#components'
 import type { ContractPaymentResource } from '.'
 import type { ContractResource } from '../ContractVersion'
 import { cloneDeep } from 'lodash-es'
 import { ContractPaymentMethodLabel } from '~/utils/labels'
-import { apiUrl, modelDefaults, printOptions } from '.'
+import { apiUrl, modelDefaults } from '.'
 import { updateMenuCounts } from '../Menu'
 
 const emit = defineEmits<{
@@ -23,7 +22,6 @@ const was1cSynced = ref(false)
 // был отправлен чпек
 const wasReceiptSent = ref(false)
 
-const printDialog = ref<InstanceType<typeof PrintDialog>>()
 const item = ref<ContractPaymentResource>(modelDefaults)
 
 function create(c: ContractResource) {
@@ -114,24 +112,11 @@ defineExpose({ create, edit })
               confirm-text="Вы уверены, что хотите удалить платеж?"
               @deleted="onDeleted()"
             />
-            <v-menu>
-              <template #activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  icon="$print"
-                  :size="48"
-                  variant="text"
-                />
-              </template>
-              <v-list>
-                <v-list-item
-                  v-for="p in printOptions" :key="p.id"
-                  @click="printDialog?.open(p, { contract_payment_id: item.id })"
-                >
-                  {{ p.label }}
-                </v-list-item>
-              </v-list>
-            </v-menu>
+            <PrintBtn
+              v-if="itemId"
+              :items="[9, 14]"
+              :extra="{ contract_payment_id: itemId }"
+            />
           </template>
           <v-btn
             icon="$save"
@@ -208,5 +193,4 @@ defineExpose({ create, edit })
       </div>
     </div>
   </v-dialog>
-  <LazyPrintDialog ref="printDialog" />
 </template>

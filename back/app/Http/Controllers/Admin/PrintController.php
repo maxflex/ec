@@ -27,14 +27,25 @@ class PrintController extends Controller
             'company' => ['sometimes', 'required', Rule::enum(Company::class)],
         ]);
 
-        $macro = Macro::findOrFail($request->input('id'));
+        $id = (int) $request->input('id');
+        $macro = Macro::findOrFail($id);
         $company = Company::tryFrom($request->input('company'));
         $variables = [];
 
-        if ($request->input('id') === 15) {
+        // Справка об оплате образовательных услуг
+        if ($id === 15) {
             $variables = [
                 ...$request->all(),
                 'client' => Client::find($request->client_id),
+            ];
+        } elseif ($id === 11) {
+            // Счёт на оплату
+            $contract = Contract::find($request->contract_id);
+            $company = $contract->company;
+            $variables = [
+                ...$request->all(),
+                'qr' => $this->generateQr($contract),
+                'contract' => $contract,
             ];
         } elseif ($request->has('contract_version_id')) {
             $contractVersion = ContractVersion::find($request->contract_version_id);
@@ -46,8 +57,7 @@ class PrintController extends Controller
             $company = Company::ooo;
         } elseif ($request->has('contract_payment_id')) {
             $payment = ContractPayment::find($request->contract_payment_id);
-            $qr = $this->generateQr($payment);
-            $variables = compact('payment', 'qr');
+            $variables = compact('payment');
             $company = $payment->contract->company;
         } elseif ($request->has('act_id')) {
             $act = GroupAct::find($request->act_id);
@@ -65,10 +75,8 @@ class PrintController extends Controller
         return ['text' => $renderedText];
     }
 
-    private function generateQr(ContractPayment $payment)
+    private function generateQr(Contract $contract)
     {
-        /** @var Contract $contract */
-        $contract = $payment->contract;
         $data = collect([
             ...$contract->company->bankAccount(),
             'Purpose' => sprintf(
