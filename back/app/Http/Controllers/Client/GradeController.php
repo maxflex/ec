@@ -34,11 +34,6 @@ class GradeController extends \App\Http\Controllers\Admin\GradeController
                     return true;
                 }
 
-                logger('limit date: '.$limitDate, $grade->toArray());
-                logger('', [
-                    'result' => $today->gte($limitDate),
-                ]);
-
                 // показываем только если сегодня >= лимита
                 return $today->gte($limitDate);
             })
