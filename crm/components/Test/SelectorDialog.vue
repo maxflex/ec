@@ -58,7 +58,7 @@ async function save() {
     {
       method: 'post',
       body: {
-        ...model.value,
+        ...cloneDeep(model.value),
         client_id: clientId,
       },
     },

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cloneDeep } from 'lodash-es'
 import { quarterEditablePrograms } from '.'
 
 const emit = defineEmits<{ (e: 'updated'): void }>()
@@ -29,8 +30,8 @@ async function save() {
   await useHttp(`lessons/bulk`, {
     method: 'put',
     body: {
-      ids: ids.value,
-      lesson: lesson.value,
+      ids: cloneDeep(ids.value),
+      lesson: cloneDeep(lesson.value),
     },
   })
   emit('updated')

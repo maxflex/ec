@@ -54,7 +54,7 @@ async function save() {
       `reports/${item.value!.id}`,
       {
         method: 'put',
-        body: { ...item.value },
+        body: cloneDeep(item.value),
       },
     )
     saving.value = false
@@ -67,7 +67,7 @@ async function save() {
       {
         method: 'post',
         body: {
-          ...item.value,
+          ...cloneDeep(item.value),
           client_id: item.value!.client?.id,
         },
       },

@@ -38,7 +38,7 @@ async function save() {
   if (item.value.id > 0) {
     const { data } = await useHttp<WebReviewResource>(`${apiUrl}/${item.value.id}`, {
       method: 'put',
-      body: item.value,
+      body: cloneDeep(item.value),
     })
     if (data.value) {
       item.value = data.value
@@ -47,7 +47,7 @@ async function save() {
   else {
     const { data } = await useHttp<WebReviewResource>(apiUrl, {
       method: 'post',
-      body: item.value,
+      body: cloneDeep(item.value),
     })
     if (data.value) {
       item.value = data.value

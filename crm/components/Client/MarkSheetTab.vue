@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ClientResource, MarkSheet } from '.'
+import { cloneDeep } from 'lodash-es'
 import { apiUrl } from '.'
 
 const { client } = defineProps <{ client: ClientResource }>()
@@ -28,7 +29,7 @@ async function save() {
   await useHttp(`${apiUrl}/${client.id}`, {
     method: 'put',
     body: {
-      ...client,
+      ...cloneDeep(client),
       mark_sheet: Object.keys(markSheet.value).length ? markSheet.value : null,
     },
   })

@@ -89,9 +89,7 @@ export default function<Resource extends AbstractItem, ListResource extends Abst
       url,
       {
         method,
-        body: {
-          ...item.value,
-        },
+        body: cloneDeep(item.value),
       },
     )
     if (error.value) {

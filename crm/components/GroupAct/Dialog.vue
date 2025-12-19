@@ -35,14 +35,14 @@ async function save() {
   if (item.value.id > 0) {
     const { data } = await useHttp<GroupActResource>(`${apiUrl}/${item.value.id}`, {
       method: 'put',
-      body: { ...item.value },
+      body: cloneDeep(item.value),
     })
     emit('updated', data.value!)
   }
   else {
     const { data } = await useHttp<GroupActResource>(apiUrl, {
       method: 'post',
-      body: { ...item.value },
+      body: cloneDeep(item.value),
     })
     emit('updated', data.value!)
   }

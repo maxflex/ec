@@ -71,7 +71,7 @@ async function save() {
   const url = itemId.value ? `lessons/${itemId.value}` : 'lessons'
   const { data } = await useHttp<LessonListResource>(url, {
     method,
-    body: lesson.value,
+    body: cloneDeep(lesson.value),
   })
   if (data.value) {
     emit('updated', data.value)

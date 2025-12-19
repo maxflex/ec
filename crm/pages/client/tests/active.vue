@@ -35,7 +35,7 @@ async function finish() {
     {
       method: 'post',
       body: {
-        answers: answers.value,
+        answers: cloneDeep(answers.value),
       },
     },
   )

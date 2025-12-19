@@ -34,14 +34,14 @@ async function save() {
       `${apiUrl}/${item.value.id}`,
       {
         method: 'put',
-        body: { ...item.value },
+        body: cloneDeep(item.value),
       },
     )
     : await useHttp<HeadTeacherReportResource>(
       apiUrl,
       {
         method: 'post',
-        body: { ...item.value },
+        body: cloneDeep(item.value),
       },
     )
   dialog.value = false

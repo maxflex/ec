@@ -45,7 +45,7 @@ async function loadMore() {
     {
       method: 'post',
       body: {
-        ...params.value,
+        ...cloneDeep(params.value),
         page: page.value,
       },
     },
@@ -72,7 +72,7 @@ async function exportDownload() {
     {
       method: 'post',
       body: {
-        ...params.value,
+        ...cloneDeep(params.value),
         export: true,
       },
       responseType: 'blob', // Important: Treat the response as a binary Blob

@@ -46,7 +46,7 @@ async function save() {
   const url = itemId.value ? `users/${itemId.value}` : 'users'
   const { data } = await useHttp<UserResource>(url, {
     method,
-    body: item.value,
+    body: cloneDeep(item.value),
   })
   if (data.value) {
     emit('updated', data.value)

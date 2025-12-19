@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { cloneDeep } from 'lodash-es'
+
 const emit = defineEmits(['conducted'])
 const { dialog } = useDialog('large')
 const itemId = ref(-1)
@@ -39,7 +41,7 @@ async function conduct() {
     `lessons/conduct/${itemId.value}`,
     {
       method: 'post',
-      body: item.value,
+      body: cloneDeep(item.value),
     },
   )
   if (error.value) {
@@ -60,7 +62,7 @@ async function save() {
     `lessons/${itemId.value}`,
     {
       method: 'put',
-      body: item.value,
+      body: cloneDeep(item.value),
     },
   )
   if (error.value) {

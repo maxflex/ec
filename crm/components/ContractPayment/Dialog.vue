@@ -54,7 +54,7 @@ async function save() {
   const url = itemId.value ? `${apiUrl}/${itemId.value}` : apiUrl
   const { data, error } = await useHttp<ContractPaymentResource>(url, {
     method,
-    body: { ...item.value },
+    body: cloneDeep(item.value),
   })
   if (error.value) {
     useGlobalMessage(`Выберите, куда отправить чек`, 'error')

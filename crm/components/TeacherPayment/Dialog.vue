@@ -56,7 +56,7 @@ async function save() {
   if (itemId.value) {
     const { data } = await useHttp<TeacherPaymentResource>(`${apiUrl}/${itemId.value}`, {
       method: 'put',
-      body: item.value,
+      body: cloneDeep(item.value),
     })
     if (data.value) {
       emit('updated', data.value)
@@ -65,7 +65,7 @@ async function save() {
   else {
     const { data } = await useHttp<TeacherPaymentResource>(apiUrl, {
       method: 'post',
-      body: item.value,
+      body: cloneDeep(item.value),
     })
     if (data.value) {
       emit('updated', data.value)

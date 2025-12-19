@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { cloneDeep } from 'lodash-es'
+
 const { width, dialog } = useDialog('default')
 const loading = ref(false)
 const saving = ref(false)
@@ -27,7 +29,7 @@ async function save() {
     `client-lessons/${item.value.id}`,
     {
       method: 'put',
-      body: item.value,
+      body: cloneDeep(item.value),
     },
   )
   if (error.value) {

@@ -30,7 +30,7 @@ async function save() {
     `lessons/${item.value?.id}`,
     {
       method: 'put',
-      body: item.value,
+      body: cloneDeep(item.value),
     },
   )
   if (data.value) {

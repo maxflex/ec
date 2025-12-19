@@ -33,11 +33,11 @@ async function save() {
   const { data } = item.value.id > 0
     ? await useHttp(`tests/${item.value.id}`, {
       method: 'PUT',
-      body: item.value,
+      body: cloneDeep(item.value),
     })
     : await useHttp('tests', {
       method: 'POST',
-      body: item.value,
+      body: cloneDeep(item.value),
     })
   item.value = data.value as TestResource
   dialog.value = false

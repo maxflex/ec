@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { EditorConfiguration } from 'codemirror'
 import Codemirror from 'codemirror-editor-vue3'
+import { cloneDeep } from 'lodash-es'
 import 'codemirror/mode/htmlmixed/htmlmixed.js'
 
 const route = useRoute()
@@ -27,7 +28,7 @@ async function save() {
   saving.value = true
   await useHttp(`macros/${item.value?.id}`, {
     method: 'put',
-    body: item.value,
+    body: cloneDeep(item.value),
   })
   setTimeout(() => saving.value = false, 300)
 }

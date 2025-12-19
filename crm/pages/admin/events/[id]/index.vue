@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { EventDialog } from '#components'
 import type { EventParticipantResource, EventResource } from '~/components/Event'
+import { cloneDeep } from 'lodash-es'
 import { EntityTypeEventLabel } from '~/components/Event'
 
 const eventDialog = ref<InstanceType<typeof EventDialog>>()
@@ -57,7 +58,7 @@ function updateParticipant(p: EventParticipantResource) {
   nextTick(() => {
     useHttp(`event-participants/${p.id}`, {
       method: 'put',
-      body: p,
+      body: cloneDeep(p),
     })
   })
 }

@@ -39,7 +39,7 @@ async function save() {
   if (itemId.value) {
     const { data } = await useHttp<RequestListResource>(`${apiUrl}/${itemId.value}`, {
       method: 'put',
-      body: request.value,
+      body: cloneDeep(request.value),
     })
     if (data.value) {
       console.log('SAVED')
@@ -49,7 +49,7 @@ async function save() {
   else {
     const { data } = await useHttp<RequestListResource>(apiUrl, {
       method: 'post',
-      body: request.value,
+      body: cloneDeep(request.value),
     })
     if (data.value) {
       emit('updated', data.value)

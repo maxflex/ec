@@ -42,7 +42,7 @@ async function save() {
   const url = itemId.value ? `${API_URL}/${itemId.value}` : API_URL
   const { data } = await useHttp<ExamScoreResource>(url, {
     method,
-    body: item.value,
+    body: cloneDeep(item.value),
   })
   if (data.value) {
     emit('updated', data.value)

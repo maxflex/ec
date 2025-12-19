@@ -57,7 +57,7 @@ async function save() {
     {
       method: 'POST',
       body: {
-        ...item.value,
+        ...cloneDeep(item.value),
         recipients: {
           clients: clients.value.map(e => e.id),
           teachers: teachers.value.map(e => e.id),

@@ -40,7 +40,7 @@ async function save() {
   if (itemId.value) {
     const { data } = await useHttp<GroupResource>(`groups/${itemId.value}`, {
       method: 'put',
-      body: group.value,
+      body: cloneDeep(group.value),
     })
     if (data.value) {
       emit('updated', data.value)
@@ -49,7 +49,7 @@ async function save() {
   else {
     const { data } = await useHttp<GroupListResource>(`groups`, {
       method: 'post',
-      body: group.value,
+      body: cloneDeep(group.value),
     })
     if (data.value) {
       emit('created', data.value)

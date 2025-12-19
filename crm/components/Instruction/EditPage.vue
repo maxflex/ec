@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { cloneDeep } from 'lodash-es'
+
 const modelDefaults: InstructionBaseResource = {
   id: newId(),
   title: '',
@@ -40,7 +42,7 @@ async function save() {
         apiUrl,
         {
           method: 'post',
-          body: item.value,
+          body: cloneDeep(item.value),
         },
       )
       if (data.value) {
@@ -57,7 +59,7 @@ async function save() {
         `${apiUrl}/${item.value.id}`,
         {
           method: 'put',
-          body: item.value,
+          body: cloneDeep(item.value),
         },
       )
       setTimeout(() => (saving.value = false), 200)

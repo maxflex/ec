@@ -41,7 +41,7 @@ async function save() {
   if (itemId.value) {
     const { data } = await useHttp<TeacherResource>(`teachers/${itemId.value}`, {
       method: 'put',
-      body: teacher.value,
+      body: cloneDeep(teacher.value),
     })
     if (data.value) {
       emit('updated', data.value)
@@ -50,7 +50,7 @@ async function save() {
   else {
     const { data } = await useHttp<TeacherResource>('teachers', {
       method: 'post',
-      body: teacher.value,
+      body: cloneDeep(teacher.value),
     })
     if (data.value) {
       await router.push({

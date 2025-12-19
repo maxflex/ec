@@ -39,7 +39,7 @@ async function save() {
   const url = itemId.value ? `events/${itemId.value}` : `events`
   const { data } = await useHttp<EventListResource>(url, {
     method,
-    body: item.value,
+    body: cloneDeep(item.value),
   })
   if (data.value) {
     emit('updated', data.value)

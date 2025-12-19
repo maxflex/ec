@@ -35,7 +35,7 @@ async function save() {
   const url = itemId.value ? `${apiUrl}/${itemId.value}` : apiUrl
   const { data, error } = await useHttp<AllPaymentsResource>(url, {
     method,
-    body: item.value,
+    body: cloneDeep(item.value),
   })
   if (error.value) {
     useGlobalMessage(`Заполните все поля`, 'error')
