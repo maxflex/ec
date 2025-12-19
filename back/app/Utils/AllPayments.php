@@ -21,7 +21,7 @@ class AllPayments
             `sum`, id, pko_number,
             NULL as client_id,
             NULL as is_1c_synced,
-            receipt_number
+            NULL as receipt_number
         ',
             new OtherPayment()->company->value,
         ));

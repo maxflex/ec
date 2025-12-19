@@ -4,27 +4,23 @@ namespace App\Models;
 
 use App\Enums\Company;
 use App\Enums\OtherPaymentMethod;
-use App\Observers\ReceiptObserver;
 use App\Observers\UserIdObserver;
 use App\Traits\HasName;
 use App\Utils\AllPayments;
-use App\Utils\Receipt\ReceiptData;
-use App\Utils\Receipt\ReceiptInterface;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Фактически эти платежи сейчас только для пробных ЕГЭ
  */
-#[ObservedBy([UserIdObserver::class, ReceiptObserver::class])]
-class OtherPayment extends Model implements ReceiptInterface
+#[ObservedBy([UserIdObserver::class])]
+class OtherPayment extends Model
 {
     use HasName;
 
     protected $fillable = [
         'sum', 'date', 'method', 'card_number', 'pko_number', 'is_confirmed',
         'is_return', 'first_name', 'last_name', 'middle_name', 'purpose',
-        'receipt_number',
     ];
 
     protected $casts = [
@@ -75,15 +71,5 @@ class OtherPayment extends Model implements ReceiptInterface
     public function setCardNumberAttribute($value)
     {
         $this->attributes['card_number'] = $value ? preg_replace('/\D/', '', $value) : null;
-    }
-
-    public function toReceipt(): ReceiptData
-    {
-        return new ReceiptData(
-            $this,
-            $this->purpose,
-            $this->formatName('full'),
-            $this->company,
-        );
     }
 }

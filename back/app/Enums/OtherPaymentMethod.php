@@ -6,7 +6,7 @@ enum OtherPaymentMethod: string
 {
     case card = 'card';
     case cash = 'cash';
-    case sbp = 'sbp';
+    case sbp = 'sbp'; // больше не используется
 
     public function getTitle(): string
     {

@@ -71,9 +71,10 @@ class ContractPaymentController extends Controller
         return new ContractPaymentResource($contractPayment);
     }
 
-    // Платежи нельзя удалять, т.к. отправляется чек
-    // public function destroy(ContractPayment $contractPayment)
-    // {
-    //     $contractPayment->delete();
-    // }
+    public function destroy(ContractPayment $contractPayment)
+    {
+        // нельзя удалить, если был отправлен чек
+        abort_if((bool) $contractPayment->receipt_number, 422);
+        $contractPayment->delete();
+    }
 }

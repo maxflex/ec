@@ -14,7 +14,6 @@ class OtherPaymentController extends Controller
 {
     public function store(Request $request)
     {
-
         $request->validate([
             'sum' => ['required', 'numeric', 'min:1'],
             'date' => ['required', 'date_format:Y-m-d'],
@@ -23,7 +22,6 @@ class OtherPaymentController extends Controller
             'middle_name' => ['required', 'string'],
             'purpose' => ['required', 'string'],
             'method' => ['required', Rule::enum(OtherPaymentMethod::class)],
-            'receipt_number' => ['required', 'phone'],
         ]);
 
         $otherPayment = OtherPayment::create($request->all());
@@ -47,9 +45,8 @@ class OtherPaymentController extends Controller
         );
     }
 
-    // Платежи нельзя удалять, т.к. отправляется чек
-    // public function destroy(OtherPayment $otherPayment)
-    // {
-    //     $otherPayment->delete();
-    // }
+    public function destroy(OtherPayment $otherPayment)
+    {
+        $otherPayment->delete();
+    }
 }

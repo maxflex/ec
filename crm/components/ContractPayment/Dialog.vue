@@ -9,7 +9,7 @@ import { updateMenuCounts } from '../Menu'
 
 const emit = defineEmits<{
   updated: [e: ContractPaymentResource]
-  // deleted: [e: ContractPaymentResource]
+  deleted: [e: ContractPaymentResource]
 }>()
 
 const cardNumberMask = { mask: '#∗∗∗ ∗∗∗∗ ∗∗∗∗ ####' }
@@ -78,12 +78,10 @@ async function save() {
   setTimeout(() => saving.value = false, 300)
 }
 
-const disabled = computed<boolean>(() => !!itemId.value)
-
-// function onDeleted() {
-//   dialog.value = false
-//   emit('deleted', item.value)
-// }
+function onDeleted() {
+  dialog.value = false
+  emit('deleted', item.value)
+}
 
 defineExpose({ create, edit })
 </script>
@@ -109,6 +107,13 @@ defineExpose({ create, edit })
         </span>
         <div>
           <template v-if="itemId">
+            <CrudDeleteBtn
+              v-if="!wasReceiptSent"
+              :id="itemId"
+              :api-url="apiUrl"
+              confirm-text="Вы уверены, что хотите удалить платеж?"
+              @deleted="onDeleted()"
+            />
             <v-menu>
               <template #activator="{ props }">
                 <v-btn
@@ -145,17 +150,17 @@ defineExpose({ create, edit })
             v-model="item.sum"
             label="Сумма"
             type="number"
-            :disabled="disabled"
+            :disabled="wasReceiptSent"
             hide-spin-buttons
           />
         </div>
-        <UiDateInput v-model="item.date" :disabled="disabled" today-btn />
+        <UiDateInput v-model="item.date" :disabled="wasReceiptSent" today-btn />
         <div>
           <v-select
             v-model="item.method"
             label="Способ оплаты"
             :items="selectItems(ContractPaymentMethodLabel)"
-            :disabled="disabled"
+            :disabled="wasReceiptSent"
           />
         </div>
         <div v-if="item.method === 'card'">
@@ -176,12 +181,11 @@ defineExpose({ create, edit })
           />
           <v-text-field v-else disabled model-value="Будет присвоен" label="Номер ПКО" />
         </div>
-        <div>
+        <div v-if="!(item.contract.company === 'ooo' || item.method !== 'bill')">
           <v-select v-if="wasReceiptSent" disabled label="Чек отправлен" :model-value="formatPhone(item.receipt_number!)" />
           <ContractPaymentReceiptPhoneSelector
             v-else
             v-model="item.receipt_number"
-            :disabled="item.contract.company === 'ooo'"
             :contract-id="item.contract_id"
           />
         </div>
@@ -192,7 +196,7 @@ defineExpose({ create, edit })
           />
           <v-checkbox
             v-model="item.is_return"
-            :disabled="disabled"
+            :disabled="wasReceiptSent"
             label="Возврат"
           />
           <v-checkbox

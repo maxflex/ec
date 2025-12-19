@@ -13,8 +13,6 @@ const saving = ref(false)
 const loading = ref(false)
 const itemId = ref<number>()
 const item = ref<OtherPaymentResource>(cloneDeep(modelDefaults))
-const phoneMask = { mask: '+7 (###) ###-##-##' }
-const disabled = computed<boolean>(() => !!itemId.value)
 
 function create() {
   itemId.value = undefined
@@ -40,7 +38,7 @@ async function save() {
     body: item.value,
   })
   if (error.value) {
-    useGlobalMessage(`Выберите, куда отправить чек`, 'error')
+    useGlobalMessage(`Заполните все поля`, 'error')
     saving.value = false
 
     return
@@ -50,11 +48,11 @@ async function save() {
   setTimeout(() => saving.value = false, 300)
 }
 
-// async function destroy() {
-//   useGlobalMessage('Платеж удален', 'success')
-//   emit('deleted', itemId.value!)
-//   dialog.value = false
-// }
+async function destroy() {
+  useGlobalMessage('Платеж удален', 'success')
+  emit('deleted', itemId.value!)
+  dialog.value = false
+}
 
 defineExpose({ create, edit })
 </script>
@@ -77,6 +75,12 @@ defineExpose({ create, edit })
         </span>
         <div>
           <template v-if="itemId">
+            <CrudDeleteBtn
+              :id="itemId"
+              :api-url="apiUrl"
+              confirm-text="Вы уверены, что хотите удалить платеж?"
+              @deleted="destroy()"
+            />
             <PrintBtn :items="[9, 14]" :extra="{ other_payment_id: itemId }" />
           </template>
           <v-btn
@@ -96,16 +100,14 @@ defineExpose({ create, edit })
             label="Сумма"
             type="number"
             hide-spin-buttons
-            :disabled="disabled"
           />
         </div>
-        <UiDateInput v-model="item.date" today-btn :disabled="disabled" />
+        <UiDateInput v-model="item.date" today-btn />
         <div>
           <v-select
             v-model="item.method"
             label="Способ оплаты"
-            :items="selectItems(OtherPaymentMethodLabel)"
-            :disabled="disabled"
+            :items="selectItems(OtherPaymentMethodLabel, ['card', 'cash'])"
           />
         </div>
         <div v-if="item.method === 'card'">
@@ -131,34 +133,24 @@ defineExpose({ create, edit })
           <v-text-field
             v-model="item.last_name"
             label="Фамилия"
-            :disabled="disabled"
           />
         </div>
         <div>
           <v-text-field
             v-model="item.first_name"
             label="Имя"
-            :disabled="disabled"
           />
         </div>
         <div>
           <v-text-field
             v-model="item.middle_name"
             label="Отчество"
-            :disabled="disabled"
           />
         </div>
-        <v-text-field
-          v-model="item.receipt_number"
-          v-maska="phoneMask"
-          :disabled="disabled"
-          :label="itemId && item.receipt_number ? 'Чек отправлен' : 'Отправить чек'"
-        />
         <div>
           <v-textarea
             v-model="item.purpose"
             label="Назначение"
-            :disabled="disabled"
             no-resize
             rows="3"
           />
@@ -170,7 +162,6 @@ defineExpose({ create, edit })
           />
           <v-checkbox
             v-model="item.is_return"
-            :disabled="disabled"
             label="Возврат"
           />
         </div>
