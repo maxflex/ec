@@ -18,6 +18,7 @@ export interface OtherPaymentResource {
   is_confirmed: boolean
   purpose: string | null
   pko_number: number | null
+  receipt_number: string | null
   card_number: string | null
   created_at?: string
   user?: PersonResource

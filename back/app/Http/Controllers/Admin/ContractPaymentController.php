@@ -34,6 +34,7 @@ class ContractPaymentController extends Controller
     {
         $request->validate([
             'contract_id' => ['required', 'exists:contracts,id'],
+            'date' => ['required', 'date_format:Y-m-d'],
             'sum' => ['required', 'numeric', 'min:1'],
             'method' => ['required', Rule::enum(ContractPaymentMethod::class)],
             'receipt_number' => ['sometimes', 'phone'],

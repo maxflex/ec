@@ -99,7 +99,7 @@ function getId(item: AllPaymentsResource) {
             {{ formatName(item) }}
           </span>
         </div>
-        <div style="width: 80px">
+        <div style="width: 80px; display: inline-flex; align-items: center;">
           <ContractPaymentIcons :item="item" />
         </div>
         <div style="width: 100px">

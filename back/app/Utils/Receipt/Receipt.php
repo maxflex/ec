@@ -1,14 +1,10 @@
 <?php
 
-namespace App\Utils;
+namespace App\Utils\Receipt;
 
 use App\Enums\Company;
-use App\Enums\ContractPaymentMethod;
-use App\Models\ContractPayment;
 use Exception;
-use Illuminate\Http\Client\Factory;
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -16,16 +12,13 @@ use Illuminate\Support\Facades\Http;
  */
 readonly class Receipt
 {
-    private Factory|PendingRequest $http;
-
-    private Company $company;
+    private PendingRequest $http;
 
     private array $config;
 
-    public function __construct(public ContractPayment $contractPayment)
+    public function __construct(private ReceiptData $data)
     {
-        $this->company = $this->contractPayment->contract->company;
-        $this->config = config('receipt.'.$this->company->value);
+        $this->config = config('receipt.'.$data->company->value);
 
         $options = [
             'headers' => [
@@ -33,11 +26,12 @@ readonly class Receipt
             ],
         ];
 
-        if ($this->company === Company::ano) {
+        // Для АНО отправляем чек через прокси, меняя IP-адрес
+        if ($data->company === Company::ano) {
             // IP, с которого будет уходить чек
             // Можно проверить из php artisan tinker
             // Http::withOptions(['proxy' => '188.166.167.107:8888'])->get('https://api.ipify.org')->body();
-            $options['proxy'] = $this->config['proxy'].':8888';
+            $options['proxy'] = $this->config['ip'].':8888';
         }
 
         $this->http = Http::baseUrl($this->config['base_url'])->withOptions($options);
@@ -52,7 +46,7 @@ readonly class Receipt
         // Меняем операцию в зависимости от флага
         // sell - приход [cite: 108]
         // sell_refund - возврат прихода [cite: 110]
-        $operation = $this->contractPayment->is_return ? 'sell_refund' : 'sell';
+        $operation = $this->data->isReturn ? 'sell_refund' : 'sell';
 
         // Отправка запроса "Приход" (sell) [cite: 108]
         // Важно: Токен передаем в заголовке 'Token', а не Bearer [cite: 101]
@@ -63,9 +57,6 @@ readonly class Receipt
         if ($response->failed()) {
             // В v5 текст ошибки приходит в ['error']['text'] [cite: 88, 565]
             $errorText = $response['error']['text'] ?? $response->body();
-            $this->contractPayment->update([
-                'receipt_number' => null,
-            ]);
             throw new Exception('RECEIPT: '.$errorText);
         }
 
@@ -83,7 +74,7 @@ readonly class Receipt
      */
     private function getToken(): string
     {
-        $key = 'receipt_token_'.$this->company->value;
+        $key = 'receipt_token_'.$this->data->company->value;
 
         return cache()->remember($key, 82800, function () {
             $response = $this->http->post('/getToken', [
@@ -104,33 +95,18 @@ readonly class Receipt
      */
     private function buildPayload(): array
     {
-        $contract = $this->contractPayment->contract;
-
-        $description = sprintf(
-            'Платные образовательные услуги по договору №%d от %sг.',
-            $contract->id,
-            Carbon::parse($contract->active_version->date)->format('d.m.Y')
-        );
-
         // Тип оплаты: 1 - безналичный, 0 - наличные [cite: 353]
         // $paymentType = $this->contractPayment->method === ContractPaymentMethod::cash ? 0 : 1;
         // пока только для онлайн-оплат, в будущем можно обсудить наличка + отказ от бумажного чека
         $paymentType = 1;
 
-        // ФИО клиента
-        $fullName = $contract->client->representative->formatName('full');
-        $phone = is_localhost() ? '+79252727210' : '+'.Phone::autoCorrectFirstDigit($this->contractPayment->receipt_number);
-
-        // Сумма
-        $sum = (int) $this->contractPayment->sum;
-
         return [
             'timestamp' => now()->format('d.m.Y H:i:s'), // [cite: 249]
-            'external_id' => uniqid(),
+            'external_id' => $this->data->externalId,
             'receipt' => [
                 'client' => [
-                    'phone' => $phone,
-                    'name' => $fullName, // [cite: 259]
+                    'phone' => $this->data->receiptNumber,
+                    'name' => $this->data->name,
                 ],
                 'company' => [
                     'email' => 'acc@ege-centr.ru',
@@ -140,11 +116,11 @@ readonly class Receipt
                 ],
                 'items' => [
                     [
-                        'name' => $description, // Из SBP логики [cite: 265]
-                        'price' => $sum,
+                        'name' => $this->data->purpose,
+                        'price' => $this->data->sum,
                         'quantity' => 1.0,      // [cite: 265]
                         'measure' => 0,         // 0 соотв. "piece" (штуки)
-                        'sum' => $sum,
+                        'sum' => $this->data->sum,
                         'payment_method' => 'prepayment',
                         'payment_object' => 4,  // 4 = услуга (payment_subject='service' из SBP)
                         'vat' => [
@@ -155,10 +131,10 @@ readonly class Receipt
                 'payments' => [
                     [
                         'type' => $paymentType,
-                        'sum' => $sum,
+                        'sum' => $this->data->sum,
                     ],
                 ],
-                'total' => $sum,
+                'total' => $this->data->sum,
             ],
         ];
     }

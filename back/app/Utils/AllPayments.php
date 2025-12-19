@@ -21,9 +21,9 @@ class AllPayments
             `sum`, id, pko_number,
             NULL as client_id,
             NULL as is_1c_synced,
-            NULL as receipt_number
+            receipt_number
         ',
-            Company::ooo->value, // прочие платежи всегда ООО
+            new OtherPayment()->company->value,
         ));
 
         $contractPayments = ContractPayment::selectRaw('
