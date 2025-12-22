@@ -77,10 +77,16 @@ nextTick(async () => {
           – это вы
         </span>
       </TableCol>
-      <TableCol class="text-lowercase" :width="200">
+      <TableCol class="text-lowercase" :width="140">
         {{ EntityTypeLabel[p.entity.entity_type] }}
       </TableCol>
-      <TableCol :width="200" :class="p.confirmation === 'confirmed' ? 'text-success' : 'text-gray'">
+      <TableCol :width="180">
+        <ClientDirections v-if="p.directions" :items="p.directions" :year="item?.year" />
+      </TableCol>
+      <TableCol
+        :width="160"
+        :class="p.confirmation === 'confirmed' ? 'text-success' : (p.confirmation === 'rejected' ? 'text-error' : 'text-gray')"
+      >
         {{ EventParticipantConfirmationLabel[p.confirmation] }}
       </TableCol>
       <TableCol>

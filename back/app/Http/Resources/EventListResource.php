@@ -20,7 +20,7 @@ class EventListResource extends JsonResource
     {
         return extract_fields($this, [
             'date', 'name', 'time', 'time_end', 'description',
-            'telegram_lists_count', 'file',
+            'telegram_lists_count', 'file', 'year',
         ], [
             'user' => new PersonResource($this->user),
             'me' => $this->whenLoaded(

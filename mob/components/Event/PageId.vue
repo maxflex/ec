@@ -107,24 +107,33 @@ nextTick(async () => {
       </div>
       <div v-for="p in displayedParticipants" :key="p.id" :style="p.is_me ? { backgroundColor: '#f6f8fb' } : {}">
         <div style="width: 160px; line-height: 16px;">
-          <UiPerson :item="p.entity" />
-          <div v-if="p.is_me" class="text-gray">
-            это вы
+          <div>
+            <UiPerson :item="p.entity" />
+            <span v-if="p.is_me" class="text-gray nowrap">
+              – это вы
+            </span>
+          </div>
+          <div v-if="p.entity.entity_type === 'App\\Models\\Teacher'">
+            {{ EntityTypeLabel[p.entity.entity_type] }}
+          </div>
+          <div v-if="p.directions">
+            <ClientDirections :items="p.directions" :year="item?.year" />
           </div>
         </div>
-        <div :class="p.confirmation === 'confirmed' ? 'text-success' : 'text-gray'">
+        <div
+          :class="p.confirmation === 'confirmed' ? 'text-success' : (p.confirmation === 'rejected' ? 'text-error' : 'text-gray')"
+        >
           {{ EventParticipantConfirmationLabel[p.confirmation] }}
         </div>
+        <div v-if="p.is_me && isConfirmationRequired" class="event__actions">
+          <v-btn color="primary" size="default" @click="setConfirmation('confirmed')">
+            подтвердить
+          </v-btn>
+          <v-btn color="error" size="default" @click="setConfirmation('rejected')">
+            отказаться
+          </v-btn>
+        </div>
       </div>
-    </div>
-
-    <div v-if="isConfirmationRequired" class="event__actions">
-      <v-btn color="primary" @click="setConfirmation('confirmed')">
-        подтвердить участие
-      </v-btn>
-      <v-btn color="error" @click="setConfirmation('rejected')">
-        отказаться
-      </v-btn>
     </div>
   </template>
 </template>
@@ -145,17 +154,21 @@ nextTick(async () => {
     & > div:last-child {
       border-bottom: 1px solid rgb(var(--v-theme-border)) !important;
     }
+
+    & > div {
+      align-items: flex-start !important;
+      padding: 12px 20px !important;
+    }
   }
 
   &__actions {
-    padding: 0 var(--offset) 40px;
-    box-shadow: 0 0 10px 10px rgba(white, 0.5);
     display: flex;
-    gap: var(--offset);
-    // position: sticky !important;
-    // bottom: var(--offset);
-    background: white;
-    flex-direction: column;
+    // flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    & > button {
+      width: 134px;
+    }
   }
 }
 </style>

@@ -15,6 +15,7 @@ export interface EventListResource {
   file: UploadedFile | null
   time_end?: string
   user: PersonResource
+  year: Year
   participant_counts: Record<EventParticipantConfirmation, number>
   me?: {
     id: number
