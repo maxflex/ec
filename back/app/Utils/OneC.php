@@ -159,6 +159,7 @@ readonly class OneC
             ->acceptJson()
             ->contentType('application/json')
             ->withOptions([
+                'proxy' => '37.140.195.195:8888',
                 'verify' => false,
                 'timeout' => 30,
             ]);

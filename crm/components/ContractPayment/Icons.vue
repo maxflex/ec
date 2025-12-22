@@ -5,6 +5,7 @@ const { item } = defineProps<{
   item: {
     is_1c_synced: boolean | null
     receipt_number: string | null
+    receipt_ip?: string | null
   }
 }>()
 </script>
@@ -25,6 +26,9 @@ const { item } = defineProps<{
           <v-icon :icon="mdiFileDocumentArrowRightOutline" v-bind="props" />
         </template>
         Чек отправлен на {{ formatPhone(item.receipt_number) }}
+        <div v-if="item.receipt_ip">
+          IP-адрес отправки: {{ item.receipt_ip }}
+        </div>
       </v-tooltip>
     </div>
   </div>

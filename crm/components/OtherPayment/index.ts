@@ -41,6 +41,7 @@ export interface AllPaymentsResource {
   client_id: number | null
   is_1c_synced: boolean | null
   receipt_number: string | null
+  receipt_ip?: string | null
   sum: number
 }
 
@@ -58,4 +59,5 @@ export const modelDefaults: OtherPaymentResource = {
   is_return: false,
   pko_number: null,
   card_number: null,
+  receipt_number: null,
 }

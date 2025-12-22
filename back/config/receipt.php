@@ -12,6 +12,7 @@ return [
         'vat' => env('RECEIPT_IP_VAT'),
         'inn' => env('RECEIPT_IP_INN'),
         'ip' => env('RECEIPT_IP_IP'),
+        'website' => env('RECEIPT_IP_WEBSITE'),
     ],
     Company::ano->value => [
         'base_url' => env('RECEIPT_ANO_BASE_URL'),
@@ -22,5 +23,6 @@ return [
         'vat' => env('RECEIPT_ANO_VAT'),
         'inn' => env('RECEIPT_ANO_INN'),
         'ip' => env('RECEIPT_ANO_IP'),
+        'website' => env('RECEIPT_ANO_WEBSITE'),
     ],
 ];

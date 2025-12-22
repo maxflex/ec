@@ -112,7 +112,7 @@ readonly class Receipt
                     'email' => 'acc@ege-centr.ru',
                     'sno' => $this->config['sno'],             // Обязательно [cite: 262]
                     'inn' => $this->config['inn'],             // Обязательно [cite: 262]
-                    'payment_address' => 'https://ege-centr.ru',
+                    'payment_address' => $this->config['website'],
                 ],
                 'items' => [
                     [
