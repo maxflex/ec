@@ -118,7 +118,6 @@ readonly class OneC
                 $this->payment->id,
             ),
             'СуммаДокумента' => $this->payment->sum,
-            // 'Posted' => ! is_localhost(), // платежи, помеченные к удалению, нельзя Posted=true
             'Posted' => false,
             'DeletionMark' => is_localhost(),
             'РасшифровкаПлатежа' => [[
@@ -136,7 +135,7 @@ readonly class OneC
 
         $document = (object) $this->http()->post(self::URL_PAYMENTS, $payload)->json();
 
-        // 6. Если это боевой сервер (не localhost), принудительно проводим документ
+        // Если это боевой сервер (не localhost), проводим документ
         if (! is_localhost()) {
             $postUrl = sprintf(
                 "%s(guid'%s')/Post",
@@ -282,6 +281,8 @@ readonly class OneC
                 'root' => [
                     // Эквайринг ПАО СБЕРБАНК
                     'ВидОплаты_Key' => 'ca6dda3e-c6c8-11f0-84e3-fa163e1f3769',
+                    'Эквайер_Key' => '81a84b6a-bfa5-11f0-9e2e-fa163e1f3769',
+                    'ДоговорЭквайринга_Key' => '81a864ce-bfa5-11f0-9e2e-fa163e1f3769',
                 ],
                 'РасшифровкаПлатежа' => [
                     'СтавкаНДС' => 'БезНДС',
@@ -291,12 +292,16 @@ readonly class OneC
                 ],
             ],
             Company::ip => [
-                'root' => [
-                    'ВидОплаты_Key' => $this->payment->method === ContractPaymentMethod::sbpOnline
-                        // Юмани
-                        ? '4bfb6328-8d76-11f0-91d2-fa163ea2e44c'
-                        // Эквайринг АО "Альфа-Банк"/
-                        : 'f0394772-16e6-11f0-9154-fa163ea2e44c',
+                'root' => $this->payment->method === ContractPaymentMethod::sbpOnline ? [
+                    // ЮМани
+                    'ВидОплаты_Key' => '4bfb6328-8d76-11f0-91d2-fa163ea2e44c',
+                    'Эквайер_Key' => 'd0c8b41e-5b0f-11f0-83d4-fa163ea2e44c',
+                    'ДоговорЭквайринга_Key' => 'd0c8cc60-5b0f-11f0-83d4-fa163ea2e44c',
+                ] : [
+                    // Эквайринг АО "Альфа-Банк"/
+                    'ВидОплаты_Key' => 'f0394772-16e6-11f0-9154-fa163ea2e44c',
+                    'Эквайер_Key' => '697ca82c-4143-11ec-8383-fa163e7e208e',
+                    'ДоговорЭквайринга_Key' => '39775c74-d6aa-11ec-9966-fa163e7e208e',
                 ],
                 'РасшифровкаПлатежа' => [
                     'СтавкаНДС' => 'НДС5_105',
@@ -309,6 +314,8 @@ readonly class OneC
                 'root' => [
                     // Эквайринг Альфа-Банка/3
                     'ВидОплаты_Key' => '624dbbde-49f2-11f0-8c82-fa163e4a3a63',
+                    'Эквайер_Key' => '1dc7ca27-12ce-11e6-9b25-005056011287',
+                    'ДоговорЭквайринга_Key' => 'f97b3fb9-b540-11e6-82e2-005056010915',
                 ],
                 'РасшифровкаПлатежа' => [
                     'СтавкаНДС' => 'БезНДС',
