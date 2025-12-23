@@ -118,7 +118,8 @@ readonly class OneC
                 $this->payment->id,
             ),
             'СуммаДокумента' => $this->payment->sum,
-            'Posted' => ! is_localhost(), // платежи, помеченные к удалению, нельзя Posted=true
+            // 'Posted' => ! is_localhost(), // платежи, помеченные к удалению, нельзя Posted=true
+            'Posted' => false,
             'DeletionMark' => is_localhost(),
             'РасшифровкаПлатежа' => [[
                 ...$paymentData['РасшифровкаПлатежа'],
@@ -133,7 +134,26 @@ readonly class OneC
             ]],
         ];
 
-        return (object) $this->http()->post(self::URL_PAYMENTS, $payload)->json();
+        $document = (object) $this->http()->post(self::URL_PAYMENTS, $payload)->json();
+
+        // 6. Если это боевой сервер (не localhost), принудительно проводим документ
+        if (! is_localhost()) {
+            $postUrl = sprintf(
+                "%s(guid'%s')/Post",
+                self::URL_PAYMENTS,
+                $document->Ref_Key
+            );
+
+            // Вызываем метод проведения
+            $this->http()->post($postUrl, [
+                'PostingModeOperational' => false,
+            ]);
+
+            // Обновляем статус в возвращаемом объекте для PHP
+            $document->Posted = true;
+        }
+
+        return $document;
     }
 
     /**
@@ -266,8 +286,8 @@ readonly class OneC
                 'РасшифровкаПлатежа' => [
                     'СтавкаНДС' => 'БезНДС',
                     'СуммаНДС' => 0,
-                    'СчетУчетаРасчетовСКонтрагентом_Key' => '845e5765-8881-11ee-9bf8-ad2ed440b4bb',
-                    'СчетУчетаРасчетовПоАвансам_Key' => '845e5766-8881-11ee-9bf8-ad2ed440b4bb',
+                    // 'СчетУчетаРасчетовСКонтрагентом_Key' => '845e5765-8881-11ee-9bf8-ad2ed440b4bb',
+                    // 'СчетУчетаРасчетовПоАвансам_Key' => '845e5766-8881-11ee-9bf8-ad2ed440b4bb',
                 ],
             ],
             Company::ip => [
@@ -281,8 +301,8 @@ readonly class OneC
                 'РасшифровкаПлатежа' => [
                     'СтавкаНДС' => 'НДС5_105',
                     'СуммаНДС' => round($this->payment->sum * (5 / 105), 2),
-                    'СчетУчетаРасчетовСКонтрагентом_Key' => 'fbb3a1fd-4405-11eb-ea9b-0242ac190005',
-                    'СчетУчетаРасчетовПоАвансам_Key' => 'fbb3a1fe-4405-11eb-ea9b-0242ac190005',
+                    // 'СчетУчетаРасчетовСКонтрагентом_Key' => 'fbb3a1fd-4405-11eb-ea9b-0242ac190005',
+                    // 'СчетУчетаРасчетовПоАвансам_Key' => 'fbb3a1fe-4405-11eb-ea9b-0242ac190005',
                 ],
             ],
             Company::ooo => [
@@ -293,8 +313,8 @@ readonly class OneC
                 'РасшифровкаПлатежа' => [
                     'СтавкаНДС' => 'БезНДС',
                     'СуммаНДС' => 0,
-                    'СчетУчетаРасчетовСКонтрагентом_Key' => '5926f3b6-6049-11e5-978e-3085a93ddca2',
-                    'СчетУчетаРасчетовПоАвансам_Key' => '5926f3b7-6049-11e5-978e-3085a93ddca2',
+                    // 'СчетУчетаРасчетовСКонтрагентом_Key' => '5926f3b6-6049-11e5-978e-3085a93ddca2',
+                    // 'СчетУчетаРасчетовПоАвансам_Key' => '5926f3b7-6049-11e5-978e-3085a93ddca2',
                 ],
             ],
         };
