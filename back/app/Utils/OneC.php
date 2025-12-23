@@ -128,6 +128,8 @@ readonly class OneC
                 'СуммаПлатежа' => $this->payment->sum,
                 'СуммаВзаиморасчетов' => $this->payment->sum,
                 'КурсВзаиморасчетов' => 1,
+                'ПорядокОтраженияАванса' => $this->payment->is_return ? '' : 'ДоходУСН',
+                'ПорядокОтраженияАванса_Type' => $this->payment->is_return ? 'StandardODATA.Undefined' : 'StandardODATA.ПорядокОтраженияАвансов',
             ]],
         ];
 
