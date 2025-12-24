@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { ContractPaymentDialog, OtherPaymentDialog } from '#build/components'
 import type { AllPaymentsResource } from '~/components/OtherPayment'
-import { mdiCheckAll, mdiFileDocument, mdiFileDocumentArrowRightOutline, mdiFileDocumentRefreshOutline, mdiSyncCircle } from '@mdi/js'
 
 interface Filters {
   contract_id?: number

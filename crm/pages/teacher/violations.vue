@@ -1,18 +1,15 @@
 <script setup lang="ts">
-import type { LessonDialog } from '#components'
 import { mdiOpenInNew, mdiVideo } from '@mdi/js'
 
-const { teacherId } = defineProps<{
-  teacherId?: number
-}>()
-const dialog = ref<InstanceType<typeof LessonDialog>>()
-const { items, indexPageData } = useIndex<LessonListResource>(
+const { user } = useAuthStore()
+
+const { indexPageData, items } = useIndex<LessonListResource>(
   `lessons`,
   ref({}),
   {
     staticFilters: {
-      teacher_id: teacherId,
       is_violation: 1,
+      teacher_id: user!.id,
     },
   },
 )
@@ -22,14 +19,6 @@ const { items, indexPageData } = useIndex<LessonListResource>(
   <UiIndexPage :data="indexPageData">
     <div class="table">
       <div v-for="item in items" :key="item.id">
-        <div class="table-actionss">
-          <v-btn
-            variant="plain"
-            icon="$edit"
-            :size="48"
-            @click="dialog?.edit(item.id)"
-          />
-        </div>
         <div>
           <v-icon :icon="mdiVideo" :color="item.is_violation ? 'error' : 'success'" />
         </div>
@@ -49,7 +38,7 @@ const { items, indexPageData } = useIndex<LessonListResource>(
         <div class="text-truncate pr-2" style="flex: 1">
           {{ item.violation_comment }}
         </div>
-        <!-- <div style="width: 150px; flex: initial">
+        <!-- <div style="width: 90px; flex: initial">
           <a v-if="item.violation_video" target="_blank" :href="item.violation_video.url">
             <v-icon :icon="mdiOpenInNew" :size="16" />
             видео
@@ -58,5 +47,4 @@ const { items, indexPageData } = useIndex<LessonListResource>(
       </div>
     </div>
   </UiIndexPage>
-  <LessonDialog ref="dialog" />
 </template>

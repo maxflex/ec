@@ -10,6 +10,7 @@ import {
   mdiHumanMaleBoard,
   mdiNumeric5BoxMultiple,
   mdiTicket,
+  mdiVideo,
 } from '@mdi/js'
 import { updateMenuCounts } from '.'
 
@@ -26,6 +27,11 @@ const menu: Menu = [
     title: 'Расписание',
     to: '/schedule',
   },
+  // {
+  //   icon: mdiVideo,
+  //   title: 'Рабочие заметки',
+  //   to: '/violations',
+  // },
   {
     icon: mdiFileDocumentEditOutline,
     title: 'Отчёты',

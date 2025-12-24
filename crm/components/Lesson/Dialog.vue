@@ -203,12 +203,12 @@ defineExpose({ create, edit })
               no-resize
             />
           </div>
-
+          <!--
           <FileVideoUploader
             v-model="lesson.violation_video"
             :disabled="lesson.is_violation === null"
             folder="violations"
-          />
+          /> -->
         </template>
 
         <div class="input-with-counter">
