@@ -192,7 +192,7 @@ defineExpose({ create, edit })
           />
           <v-checkbox
             v-model="item.is_1c_synced"
-            :disabled="item.method !== 'card' || was1cSynced"
+            :disabled="!['card', 'sbpOnline'].includes(item.method) || was1cSynced"
             :label="was1cSynced ? 'Синхронизирован с 1С' : 'Синхронизировать с 1С'"
           />
         </div>
