@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { mdiPlayCircle } from '@mdi/js'
 
-const { folder, label = 'прикрепить видео' } = defineProps<{
+const { folder, disabled, label = 'прикрепить видео' } = defineProps<{
+  disabled?: boolean
   label?: string
   folder: UploadFolder
 }>()
@@ -87,7 +88,7 @@ function onFileSelected(e: Event) {
 <template>
   <div class="video-uploader">
     <div v-if="model === null" class="mt-2">
-      <UiIconLink icon="$file" prepend @click="selectFile()">
+      <UiIconLink icon="$file" prepend :class="{ 'text-gray no-pointer-events': disabled }" @click="selectFile()">
         {{ label }}
       </UiIconLink>
     </div>

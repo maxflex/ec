@@ -15,6 +15,7 @@ export interface ContractPaymentResource {
   is_1c_synced: boolean
   pko_number: number | null
   receipt_number?: string
+  receipt_ip?: string
   card_number: string | null
   created_at?: string
   user?: PersonResource

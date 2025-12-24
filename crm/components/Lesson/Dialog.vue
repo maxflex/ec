@@ -168,40 +168,48 @@ defineExpose({ create, edit })
           </div>
         </div>
 
-        <div v-if="isAdmin" class="double-input">
-          <UiDateInput
-            v-model="lesson.date"
-            :year="year"
-            :disabled="isConducted"
-          />
-          <div>
-            <v-text-field
-              v-model="lesson.time"
-              v-maska="timeMask"
-              label="Время"
+        <template v-if="isAdmin">
+          <div class="double-input">
+            <UiDateInput
+              v-model="lesson.date"
+              :year="year"
               :disabled="isConducted"
             />
+            <div>
+              <v-text-field
+                v-model="lesson.time"
+                v-maska="timeMask"
+                label="Время"
+                :disabled="isConducted"
+              />
+            </div>
           </div>
-        </div>
 
-        <div v-if="isAdmin">
-          <UiClearableSelect
-            v-model="lesson.is_violation"
-            not-set="не проверено"
-            nullify
-            :items="yesNo('есть нарушения', 'нет нарушений')"
-            label="Нарушения"
-          />
-        </div>
+          <div>
+            <UiClearableSelect
+              v-model="lesson.is_violation"
+              not-set="не проверено"
+              nullify
+              :items="yesNo('есть нарушения', 'нет нарушений')"
+              label="Нарушения"
+            />
+          </div>
 
-        <div v-if="isAdmin">
-          <v-textarea
-            v-model="lesson.violation_comment"
+          <div>
+            <v-textarea
+              v-model="lesson.violation_comment"
+              :disabled="lesson.is_violation === null"
+              label="Комментарий к нарушению"
+              no-resize
+            />
+          </div>
+
+          <FileVideoUploader
+            v-model="lesson.violation_video"
             :disabled="lesson.is_violation === null"
-            label="Комментарий к нарушению"
-            no-resize
+            folder="violations"
           />
-        </div>
+        </template>
 
         <div class="input-with-counter">
           <v-textarea

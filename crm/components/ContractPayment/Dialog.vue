@@ -172,8 +172,17 @@ defineExpose({ create, edit })
           />
           <v-text-field v-else disabled model-value="Будет присвоен" label="Номер ПКО" />
         </div>
-        <div v-if="!(item.contract.company === 'ooo' || item.method !== 'bill')">
-          <v-select v-if="wasReceiptSent" disabled label="Чек отправлен" :model-value="formatPhone(item.receipt_number!)" />
+        <div v-if="!(item.contract.company === 'ooo' || item.method !== 'bill')" class="relative">
+          <template v-if="wasReceiptSent">
+            <v-select
+              disabled
+              label="Чек отправлен"
+              :model-value="formatPhone(item.receipt_number!)"
+            />
+            <div v-if="item.receipt_ip" class="date-input__today cursor-default text-gray">
+              IP-адрес отправки: {{ item.receipt_ip }}
+            </div>
+          </template>
           <ContractPaymentReceiptPhoneSelector
             v-else
             v-model="item.receipt_number"
@@ -193,7 +202,7 @@ defineExpose({ create, edit })
           <v-checkbox
             v-model="item.is_1c_synced"
             :disabled="!['card', 'sbpOnline'].includes(item.method) || was1cSynced"
-            :label="was1cSynced ? 'Синхронизирован с 1С' : 'Синхронизировать с 1С'"
+            :label="was1cSynced ? 'Отправлено в 1С' : 'Отправить в 1С'"
           />
         </div>
       </div>

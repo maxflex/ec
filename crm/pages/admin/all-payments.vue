@@ -81,7 +81,7 @@ function getId(item: AllPaymentsResource) {
         добавить платеж
       </v-btn>
     </template>
-    <div class="table">
+    <div class="table table--padding flex-start">
       <div v-for="item in items" :id="getId(item)" :key="getId(item)">
         <div class="table-actionss">
           <v-btn
@@ -99,19 +99,22 @@ function getId(item: AllPaymentsResource) {
             {{ formatName(item) }}
           </span>
         </div>
-        <div style="width: 80px; display: inline-flex; align-items: center;">
-          <ContractPaymentIcons :item="item" />
-        </div>
         <div style="width: 100px">
           {{ formatDate(item.date) }}
         </div>
         <div style="width: 140px" :class="{ 'text-error': item.is_return }">
           {{ formatPrice(item.sum) }} руб.
         </div>
-        <div style="width: 120px">
+        <div style="width: 200px">
           {{ ContractPaymentMethodLabel[item.method] }}
+          <div v-if="item.receipt_number" class="text-gray text-caption">
+            Чек отправлен
+          </div>
           <div v-if="item.pko_number" class="text-gray text-caption">
             ПКО: {{ item.pko_number }}
+          </div>
+          <div v-else-if="item.is_1c_synced" class="text-gray text-caption">
+            Отправлено в 1С
           </div>
         </div>
         <div style="width: 70px">

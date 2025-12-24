@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { LessonDialog } from '#components'
-import { mdiVideo } from '@mdi/js'
+import { mdiOpenInNew, mdiVideo } from '@mdi/js'
 
 const { teacherId } = defineProps<{
   teacherId?: number
@@ -41,6 +41,12 @@ const { items, indexPageData } = useIndex<LessonListResource>(
         </div>
         <div style="width: 100px">
           <GroupLink :item="item.group" />
+        </div>
+        <div style="width: 90px">
+          <a v-if="item.violation_video" target="_blank" :href="item.violation_video.url">
+            <v-icon :icon="mdiOpenInNew" :size="16" />
+            видео
+          </a>
         </div>
         <div style="width: 120px">
           {{ ProgramShortLabel[item.group.program] }}

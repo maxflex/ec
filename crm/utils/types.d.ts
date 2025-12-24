@@ -202,6 +202,7 @@ declare global {
     is_substitute: boolean
     is_violation: number | null
     violation_comment?: ?string
+    violation_video: UploadedFile | null
     teacher?: PersonResource
     user?: PersonResource
     created_at?: string
@@ -225,6 +226,7 @@ declare global {
     is_free: boolean
     is_violation: number | null
     violation_comment?: ?string
+    violation_video?: UploadedFile | null
     homework: ?string
     quarter: Quarter | null
     has_files: boolean

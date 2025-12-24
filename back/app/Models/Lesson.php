@@ -25,7 +25,7 @@ class Lesson extends Model
         'teacher_id', 'group_id', 'price', 'cabinet', 'date', 'time',
         'topic', 'is_topic_verified', 'is_unplanned', 'quarter', 'status',
         'homework', 'files', 'is_free', 'is_violation', 'violation_comment',
-        'is_substitute',
+        'is_substitute', 'violation_video',
     ];
 
     protected $casts = [
@@ -33,6 +33,7 @@ class Lesson extends Model
         'is_unplanned' => 'boolean',
         'is_free' => 'boolean',
         'is_substitute' => 'boolean',
+        'violation_video' => 'array',
         'status' => LessonStatus::class,
         'cabinet' => Cabinet::class,
         'files' => JsonArrayCast::class,
