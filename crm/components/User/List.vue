@@ -6,8 +6,8 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="table table--actions-on-hover">
-    <div
+  <Table class="table--actions-on-hover">
+    <TableRow
       v-for="item in items"
       :key="item.id"
     >
@@ -20,20 +20,20 @@ const emit = defineEmits<{
           @click="emit('edit', item.id)"
         />
       </div>
-      <div style="width: 30px">
+      <TableCol :width="30">
         {{ item.id }}
-      </div>
-      <div style="width: 300px">
+      </TableCol>
+      <TableCol :width="300">
         {{ formatName(item) }}
-      </div>
+      </TableCol>
 
-      <div style="flex: 1">
+      <TableCol>
         <PhoneList
           :items="item.phones"
           style="width: 250px"
         />
-      </div>
-      <div style="width: 300px">
+      </TableCol>
+      <TableCol :width="300">
         <span :class="{ 'text-gray': !item.is_active }">
           {{ UserStatusLabel[Number(item.is_active)] }}
         </span>
@@ -43,13 +43,13 @@ const emit = defineEmits<{
         <span v-else class="text-gray">
           больше не работает
         </span> -->
-      </div>
-      <div
+      </TableCol>
+      <TableCol
         class="text-gray"
         style="width: 150px; flex: initial"
       >
         {{ formatDateTime(item.created_at!) }}
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
 </template>

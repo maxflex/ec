@@ -8,23 +8,23 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="table">
-    <div v-for="item in items" :id="`group-act-${item.id}`" :key="item.id">
-      <div style="width: 150px">
+  <Table>
+    <TableRow v-for="item in items" :id="`group-act-${item.id}`" :key="item.id">
+      <TableCol :width="150">
         Акт №{{ item.id }}
-      </div>
-      <div style="width: 180px">
+      </TableCol>
+      <TableCol :width="180">
         <UiPerson :item="item.teacher!" />
-      </div>
-      <div style="width: 150px">
+      </TableCol>
+      <TableCol :width="150">
         {{ plural(item.lessons!, ['занятие', 'занятия', 'занятий']) }}
-      </div>
-      <div style="width: 150px">
+      </TableCol>
+      <TableCol :width="150">
         {{ formatPrice(item.sum!) }} руб.
-      </div>
-      <div>
+      </TableCol>
+      <TableCol style="flex: initial">
         {{ formatDate(item.date) }}
-      </div>
+      </TableCol>
       <div class="table-actionss">
         <v-btn
           icon="$edit"
@@ -33,6 +33,6 @@ const emit = defineEmits<{
           @click="emit('edit', item)"
         />
       </div>
-    </div>
-  </div>
+    </TableRow>
+  </Table>
 </template>

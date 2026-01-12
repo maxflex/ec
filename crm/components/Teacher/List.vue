@@ -8,31 +8,31 @@ const { items } = defineProps<{
 </script>
 
 <template>
-  <div class="table">
-    <div
+  <Table>
+    <TableRow
       v-for="teacher in items"
       :key="teacher.id"
     >
       <!-- <div style="width: 50px">
         {{ teacher.id }}
       </div> -->
-      <div style="width: 150px">
+      <TableCol :width="150">
         <NuxtLink :to="{ name: 'teachers-id', params: { id: teacher.id } }">
           {{ formatName(teacher, 'initials') }}
         </NuxtLink>
-      </div>
-      <div style="width: 200px">
+      </TableCol>
+      <TableCol :width="200">
         {{ TeacherStatusLabel[teacher.status] }}
-      </div>
-      <div style="width: 120px">
+      </TableCol>
+      <TableCol :width="120">
         {{ teacher.subjects.map(s => SubjectLabelShort[s]).join('+') }}
-      </div>
-      <div style="width: 50px">
+      </TableCol>
+      <TableCol :width="50">
         <v-icon :icon="mdiWeb" :class="teacher.is_published ? 'text-secondary' : 'opacity-2 text-gray'" />
-      </div>
-      <div>
+      </TableCol>
+      <TableCol>
         <TeethBar v-if="teacher.status === 'active'" :items="teacher.teeth" />
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
 </template>

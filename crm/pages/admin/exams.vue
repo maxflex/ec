@@ -8,14 +8,14 @@ const { items } = useIndex<ExamResource>(`exams`)
 </script>
 
 <template>
-  <div class="table table--hover">
-    <div v-for="item in items" :key="item.exam">
-      <div style="width: 300px">
+  <Table hoverable>
+    <TableRow v-for="item in items" :key="item.exam">
+      <TableCol :width="300">
         {{ ExamLabel[item.exam] }}
-      </div>
-      <div>
+      </TableCol>
+      <TableCol>
         {{ item.programs.map(e => ProgramShortLabel[e]).join(', ') }}
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
 </template>

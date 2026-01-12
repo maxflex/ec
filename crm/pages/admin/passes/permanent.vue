@@ -73,18 +73,18 @@ const itemsFiltered = computed<PassesPermanentResource[]>(() => {
         </template>
       </UiQuestionTooltip>
     </template>
-    <div class="table table--padding">
-      <div v-for="item in itemsFiltered" :key="item.id">
-        <div style="width: 300px">
+    <Table class="table--padding">
+      <TableRow v-for="item in itemsFiltered" :key="item.id">
+        <TableCol :width="300">
           <UiPerson :item="item" :no-link="filters.entity === EntityTypeValue.user" />
           <div v-if="item.representative">
             <UiPerson :item="item.representative" />
           </div>
-        </div>
-        <div>
+        </TableCol>
+        <TableCol>
           <ClientDirections v-if="item.directions" :item="item.directions" />
-        </div>
-      </div>
-    </div>
+        </TableCol>
+      </TableRow>
+    </Table>
   </UiIndexPage>
 </template>

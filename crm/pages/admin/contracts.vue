@@ -32,14 +32,14 @@ function onUpdated(cv: ContractVersionListResource) {
       <ContractVersionFilters v-model="filters" />
     </template>
 
-    <div class="table table--padding flex-start">
+    <Table class="table--padding flex-start">
       <ContractVersionItem
         v-for="item in items"
         :key="item.id"
         :item="item"
         @edit="contractVersionDialog?.edit"
       />
-    </div>
+    </Table>
     <ContractVersionDialog ref="contractVersionDialog" @updated="onUpdated" />
   </UiIndexPage>
 </template>

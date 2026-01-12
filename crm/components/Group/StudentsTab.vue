@@ -17,8 +17,8 @@ const { items, indexPageData } = useIndex<ClientGroupResource>(
 
 <template>
   <UiIndexPage :data="indexPageData">
-    <div class="table table--actions-on-hover">
-      <div
+    <Table class="table--actions-on-hover">
+      <TableRow
         v-for="(item, idx) in items"
         :key="item.id"
         :class="{
@@ -26,14 +26,14 @@ const { items, indexPageData } = useIndex<ClientGroupResource>(
           'students-tab--is-first-added': items[idx + 1]?.is_first_added,
         }"
       >
-        <div style="width: 280px">
+        <TableCol :width="280">
           <UiAvatar :item="item.client" :size="38" class="mr-4" />
           <UiPerson :item="item.client" />
-        </div>
-        <div>
+        </TableCol>
+        <TableCol>
           <TeethBar :items="item.teeth" :current="group.teeth" />
-        </div>
-        <div style="width: 240px" class="pl-6">
+        </TableCol>
+        <TableCol :width="240" class="pl-6">
           <template v-if="item.project_id">
             <template v-if="item.is_removed">
               <template v-if="item.group_id">
@@ -66,9 +66,9 @@ const { items, indexPageData } = useIndex<ClientGroupResource>(
               {{ item.project_id }}
             </RouterLink>
           </template>
-        </div>
-      </div>
-    </div>
+        </TableCol>
+      </TableRow>
+    </Table>
   </UiIndexPage>
 </template>
 

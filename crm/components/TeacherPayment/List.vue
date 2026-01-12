@@ -31,10 +31,8 @@ function onDeleted(tp: TeacherPaymentResource) {
 </script>
 
 <template>
-  <div
-    class="table"
-  >
-    <div v-for="payment in items" :key="payment.id">
+  <Table>
+    <TableRow v-for="payment in items" :key="payment.id">
       <div v-if="isAdmin" class="table-actionss">
         <v-btn
           icon="$edit"
@@ -44,27 +42,27 @@ function onDeleted(tp: TeacherPaymentResource) {
           @click="() => teacherPaymentDialog?.edit(payment)"
         />
       </div>
-      <div v-if="isAdmin" style="width: 200px">
+      <TableCol v-if="isAdmin" :width="200">
         <UiPerson :item="payment.teacher!" />
-      </div>
-      <div style="width: 180px">
+      </TableCol>
+      <TableCol :width="180">
         {{ formatPrice(payment.sum) }} руб.
-      </div>
-      <div style="width: 180px">
+      </TableCol>
+      <TableCol :width="180">
         {{ TeacherPaymentMethodLabel[payment.method] }}
-      </div>
-      <div style="width: 150px">
+      </TableCol>
+      <TableCol :width="150">
         {{ formatDate(payment.date) }}
-      </div>
-      <div>
+      </TableCol>
+      <TableCol>
         <UiPaymentConfirm :item="payment" />
-      </div>
-    </div>
+      </TableCol>
+    </TableRow>
     <TeacherPaymentDialog
       v-if="isAdmin"
       ref="teacherPaymentDialog"
       @updated="onUpdated"
       @destroyed="onDeleted"
     />
-  </div>
+  </Table>
 </template>

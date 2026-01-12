@@ -80,8 +80,8 @@ function getId(item: AllPaymentsResource) {
         добавить платеж
       </v-btn>
     </template>
-    <div class="table table--padding flex-start">
-      <div v-for="item in items" :id="getId(item)" :key="getId(item)">
+    <Table class="table--padding flex-start">
+      <TableRow v-for="item in items" :id="getId(item)" :key="getId(item)">
         <div class="table-actionss">
           <v-btn
             icon="$edit"
@@ -90,21 +90,21 @@ function getId(item: AllPaymentsResource) {
             @click="edit(item)"
           />
         </div>
-        <div style="width: 230px">
+        <TableCol :width="230">
           <RouterLink v-if="item.client_id" :to="{ name: 'clients-id', params: { id: item.client_id } }">
             {{ formatName(item) }}
           </RouterLink>
           <span v-else>
             {{ formatName(item) }}
           </span>
-        </div>
-        <div style="width: 100px">
+        </TableCol>
+        <TableCol :width="100">
           {{ formatDate(item.date) }}
-        </div>
-        <div style="width: 140px" :class="{ 'text-error': item.is_return }">
+        </TableCol>
+        <TableCol :width="140" :class="{ 'text-error': item.is_return }">
           {{ formatPrice(item.sum) }} руб.
-        </div>
-        <div style="width: 200px">
+        </TableCol>
+        <TableCol :width="200">
           {{ ContractPaymentMethodLabel[item.method] }}
           <div v-if="item.receipt_number" class="text-gray text-caption">
             Чек отправлен
@@ -115,23 +115,23 @@ function getId(item: AllPaymentsResource) {
           <div v-else-if="item.is_1c_synced" class="text-gray text-caption">
             Отправлено в 1С
           </div>
-        </div>
-        <div style="width: 70px">
+        </TableCol>
+        <TableCol :width="70">
           {{ CompanyLabel[item.company] }}
-        </div>
-        <div style="flex: 1" class="text-truncate">
+        </TableCol>
+        <TableCol class="text-truncate">
           <span v-if="item.contract_id">
             договор №{{ item.contract_id }}
           </span>
           <span v-else>
             {{ item.purpose }}
           </span>
-        </div>
-        <div style="width: 130px; flex: initial">
+        </TableCol>
+        <TableCol style="width: 130px; flex: initial">
           <UiPaymentConfirm :item="item" />
-        </div>
-      </div>
-    </div>
+        </TableCol>
+      </TableRow>
+    </Table>
   </UiIndexPage>
   <OtherPaymentDialog ref="otherPaymentDialog" @updated="onUpdated" @deleted="onDeleted" />
   <ContractPaymentDialog ref="contractPaymentDialog" />

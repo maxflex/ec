@@ -8,35 +8,35 @@ const readDialog = ref()
 </script>
 
 <template>
-  <div class="table telegram-message-list">
-    <div v-for="m in items" :key="m.id">
+  <Table class="telegram-message-list">
+    <TableRow v-for="m in items" :key="m.id">
       <div class="table-actionss">
         <v-btn :icon="mdiEye" :size="40" variant="plain" @click="readDialog.open(m.text)" />
       </div>
-      <div class="telegram-message-list__avatar-name">
+      <TableCol class="telegram-message-list__avatar-name">
         <UiPerson :item="m.entity" />
-      </div>
-      <div style="width: 170px">
+      </TableCol>
+      <TableCol :width="170">
         <span :class="m.telegram_id ? 'text-secondary' : 'text-black'">
           {{ formatPhone(m.number) }}
         </span>
-      </div>
-      <div style="flex: 1" class="text-truncate relative">
+      </TableCol>
+      <TableCol class="text-truncate relative">
         {{ m.text }}
-      </div>
-      <div style="width: 150px">
+      </TableCol>
+      <TableCol :width="150">
         <RouterLink v-if="m.list_id" :to="{ name: 'telegram-lists-id', params: { id: m.list_id } }">
           рассылка {{ m.list_id }}
         </RouterLink>
         <span v-else-if="m.template" class="text-gray">
           {{ TelegramTemplateLabel[m.template] }}
         </span>
-      </div>
-      <div style="flex: initial; width: 140px" class="text-gray">
+      </TableCol>
+      <TableCol style="width: 140px; flex: initial" class="text-gray">
         {{ formatDateTime(m.created_at) }}
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
   <TelegramMessageReadDialog ref="readDialog" />
 </template>
 

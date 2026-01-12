@@ -31,8 +31,8 @@ function onTeacherServiceDeleted(ts: TeacherServiceResource) {
 </script>
 
 <template>
-  <div class="table">
-    <div v-for="payment in items" :key="payment.id">
+  <Table>
+    <TableRow v-for="payment in items" :key="payment.id">
       <div class="table-actionss">
         <v-btn
           icon="$edit"
@@ -42,35 +42,34 @@ function onTeacherServiceDeleted(ts: TeacherServiceResource) {
           @click="() => teacherServiceDialog?.edit(payment)"
         />
       </div>
-      <div
+      <TableCol
         v-if="!teacherId"
-        style="width: 330px"
+        :width="330"
       >
         <NuxtLink :to="{ name: 'teachers-id', params: { id: payment.teacher_id } }">
           {{ formatFullName(payment.teacher!) }}
         </NuxtLink>
-      </div>
-      <div style="width: 150px">
+      </TableCol>
+      <TableCol :width="150">
         {{ formatDate(payment.date) }}
-      </div>
-      <div style="width: 180px">
+      </TableCol>
+      <TableCol :width="180">
         {{ formatPrice(payment.sum) }} руб.
-      </div>
-      <div
-        style="flex: 1"
+      </TableCol>
+      <TableCol
         class="text-truncate"
       >
         {{ payment.purpose }}
-      </div>
-      <div
+      </TableCol>
+      <TableCol
         v-if="teacherId"
         class="text-gray"
         style="width: 150px; flex: initial"
       >
         {{ formatDateTime(payment.created_at!) }}
-      </div>
-    </div>
-    <div
+      </TableCol>
+    </TableRow>
+    <TableRow
       v-if="teacherId"
       style="border: none"
     >
@@ -78,11 +77,11 @@ function onTeacherServiceDeleted(ts: TeacherServiceResource) {
         class="cursor-pointer"
         @click="teacherServiceDialog?.create(teacherId!)"
       >добавить допуслугу</a>
-    </div>
+    </TableRow>
     <TeacherServiceDialog
       ref="teacherServiceDialog"
       @updated="onTeacherServiceUpdated"
       @deleted="onTeacherServiceDeleted"
     />
-  </div>
+  </Table>
 </template>

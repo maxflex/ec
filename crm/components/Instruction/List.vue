@@ -5,7 +5,7 @@ const { items } = defineProps<{
 </script>
 
 <template>
-  <div class="table table--hover">
+  <Table hoverable>
     <NuxtLink
       v-for="item in items"
       :id="`instruction-${item.id}`"
@@ -13,21 +13,21 @@ const { items } = defineProps<{
       class="table-item"
       :to="{ path: `${$route.path}/${item.id}` }"
     >
-      <div style="flex: 1">
+      <TableCol>
         {{ item.title }}
-      </div>
-      <div style="width: 220px">
+      </TableCol>
+      <TableCol :width="220">
         {{ InstructionStatusLabel[item.status] }}
-      </div>
-      <div style="width: 120px">
+      </TableCol>
+      <TableCol :width="120">
         {{ plural(item.versions_count, ['версия', 'версии', 'версий']) }}
-      </div>
-      <div style="width: 160px">
+      </TableCol>
+      <TableCol :width="160">
         {{ item.signs_needed - item.signs_count }} не подписали
-      </div>
-      <div style="flex: initial; width: 150px" class="text-gray">
+      </TableCol>
+      <TableCol style="width: 150px; flex: initial" class="text-gray">
         {{ formatDateTime(item.created_at) }}
-      </div>
+      </TableCol>
     </NuxtLink>
-  </div>
+  </Table>
 </template>

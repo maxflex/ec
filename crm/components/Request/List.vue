@@ -44,7 +44,7 @@ async function expand(r: RequestListResource) {
 </script>
 
 <template>
-  <div class="table request-list">
+  <Table class="request-list">
     <template v-for="item in model" :key="item.id">
       <RequestItem
         :item="item"
@@ -57,19 +57,20 @@ async function expand(r: RequestListResource) {
       />
 
       <Vue3SlideUpDown
-        class="table"
         :model-value="!!expanded[item.id]"
         :duration="200"
       >
-        <RequestItem
-          v-for="r in expanded[item.id]"
-          :key="r.id"
-          :item="r"
-          @edit="requestDialog?.edit"
-        />
+        <Table>
+          <RequestItem
+            v-for="r in expanded[item.id]"
+            :key="r.id"
+            :item="r"
+            @edit="requestDialog?.edit"
+          />
+        </Table>
       </Vue3SlideUpDown>
     </template>
-  </div>
+  </Table>
   <RequestDialog
     ref="requestDialog"
     @updated="onRequestUpdated"

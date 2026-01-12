@@ -58,7 +58,7 @@ function formatDateMode(d: string) {
 </script>
 
 <template>
-  <div class="table teacher-stats-table">
+  <Table class="teacher-stats-table">
     <div class="teacher-stats-table__header">
       <div class="text-gray">
         <!-- дата -->
@@ -104,7 +104,7 @@ function formatDateMode(d: string) {
         </span>
       </div>
     </div>
-  </div>
+  </Table>
 </template>
 
 <style lang="scss">

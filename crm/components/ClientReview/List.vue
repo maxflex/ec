@@ -13,8 +13,8 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="table">
-    <div v-for="item in items" :id="`${apiUrl}-${item.id}`" :key="item.id">
+  <Table>
+    <TableRow v-for="item in items" :id="`${apiUrl}-${item.id}`" :key="item.id">
       <div class="table-actionss">
         <v-btn
           variant="plain"
@@ -23,24 +23,24 @@ const emit = defineEmits<{
           @click="emit('edit', item.id)"
         />
       </div>
-      <div v-if="showClient" style="width: 160px">
+      <TableCol v-if="showClient" :width="160">
         <UiPerson :item="item.client" />
-      </div>
-      <div style="width: 180px">
+      </TableCol>
+      <TableCol :width="180">
         <UiPerson :item="item.teacher" />
-      </div>
-      <div style="width: 100px">
+      </TableCol>
+      <TableCol :width="100">
         {{ ProgramShortLabel[item.program] }}
-      </div>
-      <div style="width: 110px">
+      </TableCol>
+      <TableCol :width="110">
         <UiRating v-model="item.rating" />
-      </div>
-      <div class="text-truncate pr-2" style="flex: 1">
+      </TableCol>
+      <TableCol class="text-truncate pr-2">
         {{ item.text }}
-      </div>
-      <div style="flex: initial; width: 130px" class="text-gray">
+      </TableCol>
+      <TableCol style="width: 130px; flex: initial" class="text-gray">
         {{ formatDateTime(item.created_at) }}
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
 </template>

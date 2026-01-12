@@ -24,11 +24,11 @@ function getComponent(item: SearchResultResource) {
 </script>
 
 <template>
-  <div class="table table--hover search-results">
+  <Table class="search-results" hoverable>
     <template v-for="item in items" :key="`${item.entity_type}${item.id}`">
       <component :is="getComponent(item)" :item="item" />
     </template>
-  </div>
+  </Table>
 </template>
 
 <style lang="scss">

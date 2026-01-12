@@ -11,8 +11,8 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="table">
-    <div
+  <Table>
+    <TableRow
       v-for="item in items"
       :id="`head-teacher-report-${item.id}`"
       :key="item.id"
@@ -25,20 +25,20 @@ defineEmits<{
           @click="$emit('edit', item)"
         />
       </div>
-      <div v-if="showTeacher" style="width: 180px">
+      <TableCol v-if="showTeacher" :width="180">
         <UiPerson :item="item.teacher!" />
-      </div>
-      <div style="width: 120px">
+      </TableCol>
+      <TableCol :width="120">
         {{ MonthLabel[item.month] }}
-      </div>
-      <div style="flex: 1" class="text-truncate">
+      </TableCol>
+      <TableCol class="text-truncate">
         {{ filterTruncate(item.text, 60) }}
-      </div>
-      <div class="text-gray" style="width: 80px; flex: initial">
+      </TableCol>
+      <TableCol class="text-gray" style="width: 80px; flex: initial">
         {{ formatDate(item.created_at!) }}
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
 </template>
 
 <style lang="scss">

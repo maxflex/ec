@@ -15,8 +15,8 @@ function onUpdated(item: TopicListResource) {
 </script>
 
 <template>
-  <div class="table">
-    <div v-for="l in items" :id="`topic-${l.id}`" :key="l.id">
+  <Table>
+    <TableRow v-for="l in items" :id="`topic-${l.id}`" :key="l.id">
       <div class="table-actionss">
         <v-btn
           icon="$edit"
@@ -26,34 +26,34 @@ function onUpdated(item: TopicListResource) {
           @click="topicDialog?.edit(l)"
         />
       </div>
-      <div style="width: 100px">
+      <TableCol :width="100">
         {{ formatDate(l.date) }}
-      </div>
-      <div style="width: 50px">
+      </TableCol>
+      <TableCol :width="50">
         {{ formatTime(l.time) }}
-      </div>
-      <div style="width: 170px">
+      </TableCol>
+      <TableCol :width="170">
         <NuxtLink :to="{ name: 'teachers-id', params: { id: l.teacher.id } }">
           {{ formatNameInitials(l.teacher) }}
         </nuxtlink>
-      </div>
-      <div style="flex: 1" class="text-truncate pr-10">
+      </TableCol>
+      <TableCol class="text-truncate pr-10">
         <span v-if="l.topic">
           {{ l.topic }}
         </span>
         <span v-else class="text-error">
           тема не установлена
         </span>
-      </div>
-      <div style="width: 140px; flex: initial">
+      </TableCol>
+      <TableCol style="width: 140px; flex: initial">
         <span v-if="l.is_topic_verified" class="text-success">
           подтверждена
         </span>
         <span v-else class="text-gray">
           не подтверждена
         </span>
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
   <TopicDialog ref="topicDialog" @updated="onUpdated" />
 </template>

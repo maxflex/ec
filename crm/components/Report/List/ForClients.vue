@@ -9,34 +9,34 @@ const router = useRouter()
 </script>
 
 <template>
-  <div class="table table--hover">
-    <div
+  <Table hoverable>
+    <TableRow
       v-for="r in items"
       :id="`report-${r.id}`"
       :key="r.id"
       class="cursor-pointer"
       @click="router.push({ name: 'reports-id', params: { id: r.id } })"
     >
-      <div style="width: 170px">
+      <TableCol :width="170">
         <UiPerson :item="r.teacher" />
-      </div>
-      <div style="width: 140px">
+      </TableCol>
+      <TableCol :width="140">
         {{ ProgramShortLabel[r.program] }}
-      </div>
-      <div style="width: 120px">
+      </TableCol>
+      <TableCol :width="120">
         занятий: {{ r.lessons_count }}
-      </div>
+      </TableCol>
 
-      <div style="width: 50px">
+      <TableCol :width="50">
         <span v-if="r.grade" :class="`text-score text-score--${r.grade}`">
           {{ r.grade }}
         </span>
-      </div>
-      <div style="width: 100px; flex: initial" class="text-gray">
+      </TableCol>
+      <TableCol style="width: 100px; flex: initial" class="text-gray">
         <span v-if="r.to_check_at">
           {{ formatTextDate(r.to_check_at, true) }}
         </span>
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
 </template>

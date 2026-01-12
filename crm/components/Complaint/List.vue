@@ -14,32 +14,32 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="table">
-    <div v-for="item in items" :id="`${apiUrl}-${item.id}`" :key="item.id" class="pr-2">
-      <div>
+  <Table>
+    <TableRow v-for="item in items" :id="`${apiUrl}-${item.id}`" :key="item.id" class="pr-2">
+      <TableCol :width="20">
         <v-tooltip>
           <template #activator="{ props }">
             <div class="complaints__status" :class="`complaints__status--${item.is_resolved ? 'resolved' : 'unresolved'}`" v-bind="props" />
           </template>
           {{ item.is_resolved ? 'вопрос решен' : 'требует решения' }}
         </v-tooltip>
-      </div>
-      <div v-if="!clientId" style="width: 180px" class="text-truncate">
+      </TableCol>
+      <TableCol v-if="!clientId" :width="180" class="text-truncate">
         <UiPerson :item="item.client" />
-      </div>
-      <div v-if="!teacherId" style="width: 180px" class="text-truncate">
+      </TableCol>
+      <TableCol v-if="!teacherId" :width="180" class="text-truncate">
         <UiPerson :item="item.teacher" />
-      </div>
-      <div style="width: 120px">
+      </TableCol>
+      <TableCol :width="120">
         {{ ProgramShortLabel[item.program] }}
-      </div>
-      <div style="width: 80px">
+      </TableCol>
+      <TableCol :width="80">
         {{ formatDate(item.created_at) }}
-      </div>
-      <div class="text-truncate pr-2" style="flex: 1">
+      </TableCol>
+      <TableCol class="text-truncate pr-2">
         {{ item.text }}
-      </div>
-      <div class="complaints__comment">
+      </TableCol>
+      <TableCol class="complaints__comment">
         <CommentBtn
           :size="42"
           :class="{ 'no-items': item.comments_count === 0 }"
@@ -55,9 +55,9 @@ const emit = defineEmits<{
             @click="emit('edit', item.id)"
           />
         </div>
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
 </template>
 
 <style lang="scss">

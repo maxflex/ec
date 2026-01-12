@@ -75,12 +75,12 @@ const totals = computed(() => {
     <template #buttons>
       <slot />
     </template>
-    <div class="table balance-table">
-      <div v-for="item in items" :key="item.date">
-        <div style="width: 200px">
+    <Table class="balance-table">
+      <TableRow v-for="item in items" :key="item.date">
+        <TableCol :width="200">
           {{ formatDate(item.date) }}
-        </div>
-        <div class="balance-items">
+        </TableCol>
+        <TableCol class="balance-items">
           <table>
             <tbody>
               <tr>
@@ -122,23 +122,23 @@ const totals = computed(() => {
               </tr>
             </tbody>
           </table>
-        </div>
-      </div>
-      <div v-if="totals" class="balance__totals">
-        <div class="font-weight-bold">
+        </TableCol>
+      </TableRow>
+      <TableRow v-if="totals" class="balance__totals">
+        <TableCol class="font-weight-bold">
           Итого начислено
-        </div>
-        <div>
+        </TableCol>
+        <TableCol>
           занятия: {{ formatPrice(totals.lessons, true) }} руб.
-        </div>
-        <div>
+        </TableCol>
+        <TableCol>
           отчеты: {{ formatPrice(totals.reports, true) }} руб.
-        </div>
-        <div>
+        </TableCol>
+        <TableCol>
           допуслуги: {{ formatPrice(totals.services, true) }} руб.
-        </div>
-      </div>
-    </div>
+        </TableCol>
+      </TableRow>
+    </Table>
   </UiIndexPage>
 </template>
 

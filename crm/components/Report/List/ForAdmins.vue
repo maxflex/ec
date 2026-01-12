@@ -13,17 +13,17 @@ function isRealReport(r: ReportListResource): r is RealReport {
 </script>
 
 <template>
-  <div class="table">
-    <div v-for="r in items" :id="`report-${r.id}`" :key="r.id">
-      <div style="width: 150px">
+  <Table>
+    <TableRow v-for="r in items" :id="`report-${r.id}`" :key="r.id">
+      <TableCol :width="150">
         <UiPerson :item="r.teacher" />
-      </div>
-      <div style="width: 180px">
+      </TableCol>
+      <TableCol :width="180">
         <UiPerson :item="r.client" />
-      </div>
-      <div style="width: 120px">
+      </TableCol>
+      <TableCol :width="120">
         {{ ProgramShortLabel[r.program] }}
-      </div>
+      </TableCol>
 
       <!--    real report -->
       <template v-if="isRealReport(r)">
@@ -36,13 +36,13 @@ function isRealReport(r: ReportListResource): r is RealReport {
             :to="{ name: 'reports-id-edit', params: { id: r.id } }"
           />
         </div>
-        <div style="width: 120px">
+        <TableCol :width="120">
           занятий: {{ r.lessons_count }}
           <div v-if="r.count" class="text-gray text-caption">
             +{{ plural(r.count, ['отчёт', 'отчёта', 'отчётов']) }}
           </div>
-        </div>
-        <div style="flex: 1">
+        </TableCol>
+        <TableCol>
           <ReportStatus :status="r.status" />
           <v-icon
             v-if="r.status === 'published'"
@@ -51,42 +51,42 @@ function isRealReport(r: ReportListResource): r is RealReport {
             size="20"
             color="secondary"
           />
-        </div>
-        <div style="width: 70px">
+        </TableCol>
+        <TableCol :width="70">
           <span v-if="r.price">
             {{ formatPrice(r.price) }} ₽
           </span>
-        </div>
-        <div style="width: 30px">
+        </TableCol>
+        <TableCol :width="30">
           <span v-if="r.grade" :class="`text-score text-score--${r.grade}`">
             {{ r.grade }}
           </span>
-        </div>
-        <div style="width: 100px" class="pr-2">
+        </TableCol>
+        <TableCol :width="100" class="pr-2">
           <ReportFill v-model="r.fill" />
-        </div>
+        </TableCol>
 
-        <div style="width: 100px; flex: initial" class="text-gray">
+        <TableCol style="width: 100px; flex: initial" class="text-gray">
           <span v-if="r.to_check_at">
             {{ formatTextDate(r.to_check_at, true) }}
           </span>
-        </div>
+        </TableCol>
       </template>
 
       <!--      fake report -->
       <template v-else>
-        <div style="width: 100px; flex: 1">
+        <TableCol style="width: 100px">
           занятий: {{ r.lessons_count }}
           <div v-if="r.count" class="text-gray text-caption">
             +{{ plural(r.count, ['отчёт', 'отчёта', 'отчётов']) }}
           </div>
-        </div>
-        <div style="width: 160px; flex: initial" class="">
+        </TableCol>
+        <TableCol style="width: 160px; flex: initial" class="">
           <span v-if="r.is_required" class="text-error">
             требуется отчёт
           </span>
-        </div>
+        </TableCol>
       </template>
-    </div>
-  </div>
+    </TableRow>
+  </Table>
 </template>

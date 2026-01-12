@@ -16,8 +16,8 @@ const { isAdmin, isClient } = useAuthStore()
 </script>
 
 <template>
-  <div class="table table--padding">
-    <div
+  <Table class="table--padding">
+    <TableRow
       v-for="t in items"
       :id="`client-test-${t.id}`"
       :key="t.id"
@@ -31,26 +31,26 @@ const { isAdmin, isClient } = useAuthStore()
           @click="emit('destroy', t)"
         />
       </div>
-      <div v-if="showClient" style="width: 200px">
+      <TableCol v-if="showClient" :width="200">
         <NuxtLink :to="{ name: 'clients-id', params: { id: t.client.id } }">
           {{ formatName(t.client) }}
         </NuxtLink>
-      </div>
-      <div style="width: 230px; flex: 1">
+      </TableCol>
+      <TableCol style="width: 230px">
         {{ t.name }}
         <div v-if="t.description">
           {{ t.description }}
         </div>
-      </div>
-      <div style="width: 130px">
+      </TableCol>
+      <TableCol :width="130">
         <div>
           {{ t.minutes }} минут
         </div>
         <div>
           {{ plural(t.question_counts.length, ["вопрос", "вопроса", "вопросов"]) }}
         </div>
-      </div>
-      <div style="width: 250px">
+      </TableCol>
+      <TableCol :width="250">
         <div v-if="isAdmin">
           создан {{ formatDateTime(t.created_at) }}
         </div>
@@ -75,16 +75,16 @@ const { isAdmin, isClient } = useAuthStore()
         <div v-else class="text-gray">
           не пройден
         </div>
-      </div>
-      <div style="width: 100px">
+      </TableCol>
+      <TableCol :width="100">
         <b v-if="t.results">
           <template v-if="t.finished_at">
             {{ t.results.score }} из {{ t.results.total }}
           </template>
         </b>
         <UiCountDown v-else-if="t.is_active" :seconds="t.seconds_left!" class="font-weight-bold" @timeout="emit('timeout')" />
-      </div>
-      <div style="width: 180px; flex: initial">
+      </TableCol>
+      <TableCol style="width: 180px; flex: initial">
         <template v-if="t.is_finished">
           <v-btn
             v-if="t.finished_at"
@@ -131,7 +131,7 @@ const { isAdmin, isClient } = useAuthStore()
         >
           просмотр
         </v-btn>
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
 </template>

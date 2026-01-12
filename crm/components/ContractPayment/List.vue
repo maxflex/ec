@@ -8,8 +8,8 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="table contract-payments">
-    <div
+  <Table class="contract-payments">
+    <TableRow
       v-for="item in items"
       :id="`contract-payment-${item.id}`"
       :key="item.id"
@@ -22,7 +22,7 @@ const emit = defineEmits<{
           @click="emit('edit', item.id)"
         />
       </div>
-      <div style="width: 150px">
+      <TableCol :width="150">
         <span
           v-if="item.is_return"
           class="text-error"
@@ -32,23 +32,23 @@ const emit = defineEmits<{
         <span v-else>
           платеж
         </span>
-      </div>
-      <div style="width: 200px">
+      </TableCol>
+      <TableCol :width="200">
         {{ formatDate(item.date) }}
-      </div>
+      </TableCol>
 
-      <div style="width: 200px">
+      <TableCol :width="200">
         {{ ContractPaymentMethodLabel[item.method] }}
         <div v-if="item.pko_number" class="text-gray text-caption">
           ПКО: {{ item.pko_number }}
         </div>
-      </div>
-      <div style="width: 200px">
+      </TableCol>
+      <TableCol :width="200">
         <UiPaymentConfirm :item="item" />
-      </div>
-      <div>
+      </TableCol>
+      <TableCol>
         {{ formatPrice(item.sum) }} руб.
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
 </template>

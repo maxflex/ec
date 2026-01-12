@@ -148,16 +148,16 @@ defineExpose({ edit, create })
           />
         </div>
 
-        <div class="table table--separated mt-6">
-          <div v-for="es in item.exam_scores" :key="es.id">
-            <div style="width: 320px">
+        <Table class="table--separated mt-6">
+          <TableRow v-for="es in item.exam_scores" :key="es.id">
+            <TableCol :width="320">
               {{ ExamLabel[es.exam] }}
-            </div>
-            <div>
+            </TableCol>
+            <TableCol>
               балл: {{ es.score }}
-            </div>
-          </div>
-        </div>
+            </TableCol>
+          </TableRow>
+        </Table>
       </div>
     </div>
   </v-dialog>

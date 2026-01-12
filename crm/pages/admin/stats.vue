@@ -150,7 +150,7 @@ nextTick(() => statsDialog.value?.open())
   <v-fade-transition>
     <UiLoader v-if="loading" />
   </v-fade-transition>
-  <div class="table table-stats" :class="`table-stats--${responseParams?.mode} table-stats--${display}`">
+  <Table class="table-stats" :class="`table-stats--${responseParams?.mode} table-stats--${display}`">
     <div class="table-stats__header">
       <div class="table-stats__header-mode">
         <v-btn
@@ -229,7 +229,7 @@ nextTick(() => statsDialog.value?.open())
       <StatsChartBar v-if="display === 'bar'" :key="refreshKey" :items="itemsReversed" :params="responseParams" />
       <StatsChartYears v-if="display === 'years'" :key="refreshKey" :items="itemsReversed" :params="responseParams" />
     </template>
-  </div>
+  </Table>
   <StatsDialog ref="statsDialog" @go="onGo" />
 </template>
 
