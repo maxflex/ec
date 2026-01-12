@@ -126,8 +126,8 @@ defineExpose({ open })
       </div>
       <UiLoader v-if="loading" />
       <div v-else-if="item" class="dialog-body pt-0 conduct-dialog">
-        <div v-if="item" class="table table--padding" :class="{ 'no-pointer-events': isAdmin }">
-          <div v-for="s in item.students" :key="s.id">
+        <Table v-if="item" class="table--padding" :class="{ 'no-pointer-events': isAdmin }">
+          <TableRow v-for="s in item.students" :key="s.id">
             <div class="table-actionss">
               <v-btn
                 v-if="s.status !== 'absent'"
@@ -136,16 +136,16 @@ defineExpose({ open })
                 @click="scoresDialog.open(s)"
               />
             </div>
-            <div style="width: 250px">
+            <TableCol :width="250">
               {{ formatName(s.client) }}
-            </div>
-            <div style="width: 100px">
+            </TableCol>
+            <TableCol :width="100">
               <UiToggler
                 v-model="s.status"
                 :items="selectItems(ClientLessonStatusLabel)"
               />
-            </div>
-            <div style="width: 230px; position: relative">
+            </TableCol>
+            <TableCol style="width: 230px; position: relative">
               <v-text-field
                 v-if="['late', 'lateOnline'].includes(s.status)"
                 v-model="s.minutes_late"
@@ -159,8 +159,8 @@ defineExpose({ open })
                 persistent-placeholder
                 placeholder="__"
               />
-            </div>
-            <div class="conduct-dialog__scores">
+            </TableCol>
+            <TableCol class="conduct-dialog__scores">
               <div v-if="!s.comment && s.scores.length === 0" class="text-gray">
                 комментарий и оценки отсутствуют
               </div>
@@ -175,9 +175,9 @@ defineExpose({ open })
                   – {{ score.comment || 'комментария нет' }}
                 </div>
               </template>
-            </div>
-          </div>
-        </div>
+            </TableCol>
+          </TableRow>
+        </Table>
         <template v-if="isTeacher">
           <div v-if="!item.topic">
             <v-alert type="error" variant="outlined">

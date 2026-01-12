@@ -14,7 +14,7 @@ nextTick(loadData)
 
 <template>
   <div>
-    <div class="table table--hover">
+    <Table hoverable>
       <NuxtLink
         v-for="m in macros"
         :key="m.id"
@@ -25,6 +25,6 @@ nextTick(loadData)
           {{ m.title }}
         </div>
       </NuxtLink>
-    </div>
+    </Table>
   </div>
 </template>

@@ -20,14 +20,14 @@ function getTotal(tgList: TelegramListResource, onlySent: boolean = false): numb
 </script>
 
 <template>
-  <div class="table table--hover">
-    <div
+  <Table hoverable>
+    <TableRow
       v-for="item in items"
       :key="item.id"
       class="table-item cursor-pointer"
       @click="router.push({ name: 'telegram-lists-id', params: { id: item.id } })"
     >
-      <div style="width: 300px">
+      <TableCol :width="300">
         <span v-if="item.status === 'sent'">
           отправлено {{ formatDateTime(item.scheduled_at || item.created_at!) }}
         </span>
@@ -38,23 +38,23 @@ function getTotal(tgList: TelegramListResource, onlySent: boolean = false): numb
           мгновенная отправка
         </span>
         <!-- <TelegramListStatus :item="item" /> -->
-      </div>
+      </TableCol>
 
-      <div style="width: 260px">
+      <TableCol :width="260">
         <TelegramListRecipients :item="item" />
-      </div>
-      <div style="width: 150px">
+      </TableCol>
+      <TableCol :width="150">
         получатели: {{ getTotal(item) }}
-      </div>
-      <div :class="{ 'opacity-5': item.status !== 'sent' }" style="width: 70px">
+      </TableCol>
+      <TableCol :width="70" :class="{ 'opacity-5': item.status !== 'sent' }">
         <template v-if="item.result">
           <span class="text-secondary">
             {{ getTotal(item, true) }}
           </span>
           / {{ getTotal(item) - getTotal(item, true) }}
         </template>
-      </div>
-      <div class="text-truncate">
+      </TableCol>
+      <TableCol class="text-truncate">
         <UiIfSet :value="!!item.event">
           <a v-if="item.event" @click.stop="router.push({ name: 'events-id', params: { id: item.event.id } })">
             {{ item.event.name }}
@@ -63,7 +63,7 @@ function getTotal(tgList: TelegramListResource, onlySent: boolean = false): numb
             нет события
           </template>
         </UiIfSet>
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
 </template>

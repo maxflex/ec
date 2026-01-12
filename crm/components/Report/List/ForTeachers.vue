@@ -20,14 +20,14 @@ function getFillColor(r: RealReport) {
 </script>
 
 <template>
-  <div class="table">
-    <div v-for="r in items" :id="`report-${r.id}`" :key="r.id">
-      <div style="width: 190px">
+  <Table>
+    <TableRow v-for="r in items" :id="`report-${r.id}`" :key="r.id">
+      <TableCol :width="190">
         <UiPerson :item="r.client" />
-      </div>
-      <div style="width: 100px">
+      </TableCol>
+      <TableCol :width="100">
         {{ ProgramShortLabel[r.program] }}
-      </div>
+      </TableCol>
       <template v-if="isRealReport(r)">
         <div class="table-actionss">
           <v-btn
@@ -38,35 +38,35 @@ function getFillColor(r: RealReport) {
             :to="{ name: 'reports-id-edit', params: { id: r.id } }"
           />
         </div>
-        <div style="width: 110px">
+        <TableCol :width="110">
           занятий: {{ r.lessons_count }}
           <div v-if="r.count" class="text-gray text-caption">
             +{{ plural(r.count, ['отчёт', 'отчёта', 'отчётов']) }}
           </div>
-        </div>
-        <div style="width: 100px">
+        </TableCol>
+        <TableCol :width="100">
           <span v-if="r.price">
             {{ formatPrice(r.price) }} руб.
           </span>
-        </div>
-        <div
-          style="width: 150px"
+        </TableCol>
+        <TableCol
+          :width="150"
           class="text-center d-flex ga-5"
         >
           <ReportStatus :status="r.status" />
-        </div>
+        </TableCol>
 
-        <div style="width: 120px">
+        <TableCol :width="120">
           {{ r.is_read ? 'прочитано' : 'не прочитано' }}
-        </div>
+        </TableCol>
 
-        <div style="width: 50px">
+        <TableCol :width="50">
           <span v-if="r.grade" :class="`text-score text-score--${r.grade}`">
             {{ r.grade }}
           </span>
-        </div>
+        </TableCol>
 
-        <div style="width: 100px" class="pr-2">
+        <TableCol :width="100" class="pr-2">
           <v-progress-linear
             bg-color="#92aed9"
             :color="getFillColor(r)"
@@ -76,13 +76,13 @@ function getFillColor(r: RealReport) {
             :model-value="r.fill"
             rounded
           />
-        </div>
+        </TableCol>
 
-        <div style="width: 100px; flex: initial" class="text-gray">
+        <TableCol style="width: 100px; flex: initial" class="text-gray">
           <span v-if="r.to_check_at">
             {{ formatTextDate(r.to_check_at, true) }}
           </span>
-        </div>
+        </TableCol>
       </template>
       <template v-else>
         <div class="table-actionss">
@@ -102,18 +102,18 @@ function getFillColor(r: RealReport) {
             }"
           />
         </div>
-        <div style="width: 100px; flex: 1">
+        <TableCol style="width: 100px">
           занятий: {{ r.lessons_count }}
           <div v-if="r.count" class="text-gray text-caption">
             +{{ plural(r.count, ['отчёт', 'отчёта', 'отчётов']) }}
           </div>
-        </div>
-        <div style="width: 160px; flex: initial">
+        </TableCol>
+        <TableCol style="width: 160px; flex: initial">
           <span v-if="r.is_required" class="text-error">
             требуется отчёт
           </span>
-        </div>
+        </TableCol>
       </template>
-    </div>
-  </div>
+    </TableRow>
+  </Table>
 </template>

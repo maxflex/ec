@@ -8,8 +8,8 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="table table--padding test-list">
-    <div v-for="t in tests" :key="t.id">
+  <Table class="table--padding test-list">
+    <TableRow v-for="t in tests" :key="t.id">
       <div class="table-actionss">
         <v-btn
           variant="plain"
@@ -19,14 +19,14 @@ const emit = defineEmits<{
           @click="emit('open', t)"
         />
       </div>
-      <div style="width: 380px">
+      <TableCol :width="380">
         {{ t.name }}
         <div v-if="t.description">
           {{ t.description }}
         </div>
-      </div>
+      </TableCol>
 
-      <div style="width: 160px">
+      <TableCol :width="160">
         {{ t.minutes }} минут
         <div>
           <span v-if="t.questions?.length">
@@ -34,15 +34,15 @@ const emit = defineEmits<{
           </span>
           <span v-else class="text-gray"> нет вопросов </span>
         </div>
-      </div>
-      <div style="width: 150px" class="font-weight-bold">
+      </TableCol>
+      <TableCol :width="150" class="font-weight-bold">
         {{ t.max_score }} баллов
-      </div>
-      <div>
+      </TableCol>
+      <TableCol>
         <FileItem v-if="t.file" :item="t.file" class="vf-1" style="top: 3px; width: 400px" downloadable />
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
 </template>
 
 <style lang="scss">

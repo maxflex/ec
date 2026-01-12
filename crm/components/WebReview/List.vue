@@ -9,8 +9,8 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="table table--padding">
-    <div
+  <Table class="table--padding">
+    <TableRow
       v-for="item in items"
       :id="`web-review-${item.id}`"
       :key="item.id"
@@ -23,31 +23,30 @@ defineEmits<{
           @click="$emit('edit', item.id)"
         />
       </div>
-      <div style="width: 50px">
+      <TableCol :width="50">
         {{ item.id }}
-      </div>
-      <div
+      </TableCol>
+      <TableCol
         v-if="item.client"
-        style="width: 200px"
+        :width="200"
       >
         <NuxtLink :to="{ name: 'clients-id', params: { id: item.client.id } }">
           {{ formatName(item.client) }}
         </NuxtLink>
-      </div>
-      <div
-        style="flex: 1"
+      </TableCol>
+      <TableCol
         class="text-truncate"
       >
         {{ item.text }}
-      </div>
-      <div
-        style="width: 150px"
+      </TableCol>
+      <TableCol
+        :width="150"
         class="text-truncate"
       >
         {{ item.signature }}
-      </div>
+      </TableCol>
 
-      <div style="width: 250px" class="d-flex flex-column">
+      <TableCol :width="250" class="d-flex flex-column">
         <span
           v-for="es in item.exam_scores"
           :key="es.id"
@@ -55,17 +54,17 @@ defineEmits<{
         >
           {{ ExamLabel[es.exam] }}: {{ es.score }}
         </span>
-      </div>
+      </TableCol>
 
-      <div style="width: 60px" class="d-flex align-center ga-2">
+      <TableCol :width="60" class="d-flex align-center ga-2">
         <v-icon :icon="mdiWeb" :class="item.is_published ? 'text-secondary' : 'opacity-2 text-gray'" />
         <v-icon :icon="mdiAccountCircleOutline" :class="item.has_photo ? 'text-secondary' : 'opacity-2 text-gray'" />
-      </div>
-      <div
+      </TableCol>
+      <TableCol
         style="width: 100px; flex: initial !important"
       >
         <UiRating v-model="item.rating" />
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
 </template>

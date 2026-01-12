@@ -15,8 +15,8 @@ function getTotalParticipants(item: EventListResource): number {
 </script>
 
 <template>
-  <div class="table event-list table--padding table--hover">
-    <div v-for="item in items" :key="item.id" class="cursor-pointer" @click="router.push({ name: 'events-id', params: { id: item.id } })">
+  <Table class="event-list table--padding" hoverable>
+    <TableRow v-for="item in items" :key="item.id" class="cursor-pointer" @click="router.push({ name: 'events-id', params: { id: item.id } })">
       <div class="table-actionss">
         <v-btn
           icon="$edit"
@@ -25,10 +25,10 @@ function getTotalParticipants(item: EventListResource): number {
           @click.stop="emit('edit', item.id)"
         />
       </div>
-      <div class="event-list__img">
+      <TableCol class="event-list__img">
         <div v-if="item.file" :style="{ backgroundImage: `url(${item.file.url})` }" />
-      </div>
-      <div style="width: 100px" class="table-two-lines">
+      </TableCol>
+      <TableCol :width="100" class="table-two-lines">
         <span>
           {{ formatDate(item.date) }}
         </span>
@@ -38,15 +38,15 @@ function getTotalParticipants(item: EventListResource): number {
             – {{ item.time_end }}
           </template>
         </div>
-      </div>
+      </TableCol>
 
-      <div style="flex: 1" class="text-truncate pr-2">
+      <TableCol class="text-truncate pr-2">
         {{ item.name }}
-      </div>
-      <div style="width: 180px">
+      </TableCol>
+      <TableCol :width="180">
         {{ formatName(item.user) }}
-      </div>
-      <div style="width: 150px" class="table-two-lines">
+      </TableCol>
+      <TableCol :width="150" class="table-two-lines">
         <span v-if="getTotalParticipants(item) === 0" class="text-gray">
           нет участников
         </span>
@@ -73,15 +73,15 @@ function getTotalParticipants(item: EventListResource): number {
             {{ item.participant_counts[key] || 0 }}
           </span>
         </div>
-      </div>
-      <div style="width: 110px">
+      </TableCol>
+      <TableCol :width="110">
         <span v-if="item.telegram_lists_count === 0" class="text-gray">
           нет рассылок
         </span>
         <span v-else>
           {{ item.telegram_lists_count }} рассылок
         </span>
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
 </template>

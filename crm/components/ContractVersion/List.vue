@@ -9,8 +9,8 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="table contract-version-list-2 table--padding">
-    <div
+  <Table class="contract-version-list-2 table--padding">
+    <TableRow
       v-for="version in items"
       :id="`contract-version-${version.id}`"
       :key="version.id"
@@ -24,13 +24,13 @@ const emit = defineEmits<{
           @click="emit('edit', version)"
         />
       </div>
-      <div width="150">
+      <TableCol :width="150">
         версия {{ version.seq }}
-      </div>
-      <div width="220">
+      </TableCol>
+      <TableCol :width="220">
         {{ formatDate(version.date) }}
-      </div>
-      <div width="220">
+      </TableCol>
+      <TableCol :width="220">
         <span
           v-if="version.payments_count === 0"
           class="text-grey"
@@ -40,25 +40,25 @@ const emit = defineEmits<{
         <template v-else>
           {{ version.payments_count }} платежей
         </template>
-      </div>
-      <div>
+      </TableCol>
+      <TableCol>
         <div v-for="(value, d) in version.direction_counts" :key="d">
           {{ DirectionLabel[d] }} / {{ value }}
         </div>
-      </div>
-      <div style="width: 200px">
+      </TableCol>
+      <TableCol :width="200">
         <UiIfSet :value="version.sum">
           <template #empty>
             без суммы
           </template>
           {{ formatPrice(version.sum) }} руб.
         </UiIfSet>
-      </div>
-      <div>
+      </TableCol>
+      <TableCol>
         <ContractVersionSumChange :item="version" />
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
 </template>
 
 <style lang="scss">

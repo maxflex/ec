@@ -20,8 +20,8 @@ const { items, indexPageData } = useIndex<LessonListResource>(
 
 <template>
   <UiIndexPage :data="indexPageData">
-    <div class="table">
-      <div v-for="item in items" :key="item.id">
+    <Table>
+      <TableRow v-for="item in items" :key="item.id">
         <div class="table-actionss">
           <v-btn
             variant="plain"
@@ -30,33 +30,33 @@ const { items, indexPageData } = useIndex<LessonListResource>(
             @click="dialog?.edit(item.id)"
           />
         </div>
-        <div>
+        <TableCol :width="30">
           <v-icon :icon="mdiVideo" :color="item.is_violation ? 'error' : 'success'" />
-        </div>
-        <div style="width: 80px">
+        </TableCol>
+        <TableCol :width="80">
           {{ formatDate(item.date) }}
-        </div>
-        <div style="width: 120px">
+        </TableCol>
+        <TableCol :width="120">
           {{ formatTime(item.time) }} – {{ formatTime(item.time_end) }}
-        </div>
-        <div style="width: 100px">
+        </TableCol>
+        <TableCol :width="100">
           <GroupLink :item="item.group" />
-        </div>
+        </TableCol>
 
-        <div style="width: 120px">
+        <TableCol :width="120">
           {{ ProgramShortLabel[item.group.program] }}
-        </div>
-        <div class="text-truncate pr-2" style="flex: 1">
+        </TableCol>
+        <TableCol class="text-truncate pr-2">
           {{ item.violation_comment }}
-        </div>
+        </TableCol>
         <!-- <div style="width: 150px; flex: initial">
           <a v-if="item.violation_video" target="_blank" :href="item.violation_video.url">
             <v-icon :icon="mdiOpenInNew" :size="16" />
             видео
           </a>
         </div> -->
-      </div>
-    </div>
+      </TableRow>
+    </Table>
   </UiIndexPage>
   <LessonDialog ref="dialog" />
 </template>

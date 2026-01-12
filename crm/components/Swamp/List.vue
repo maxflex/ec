@@ -7,15 +7,15 @@ const { items } = defineProps<{
 </script>
 
 <template>
-  <div class="table table--padding swamp-list">
-    <div v-for="item in items" :key="item.id" :class="{ changed: item.changes }">
+  <Table class="table--padding swamp-list">
+    <TableRow v-for="item in items" :key="item.id" :class="{ changed: item.changes }">
       <!-- добавлен в группу по программе -->
       <SwampItemAttached v-if="item.group" :item="item" />
 
       <!-- не добавлен в группу программе -->
       <SwampItemUnattached v-else :item="item" />
-    </div>
-  </div>
+    </TableRow>
+  </Table>
 </template>
 
 <style lang="scss">

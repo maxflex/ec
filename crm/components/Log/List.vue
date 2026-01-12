@@ -9,19 +9,19 @@ const userDialog = ref<InstanceType<typeof UserDialog>>()
 </script>
 
 <template>
-  <div class="table table--padding flex-start log-list">
-    <div v-for="log in items" :key="log.id">
-      <div style="width: 126px" class="text-gray">
+  <Table class="table--padding flex-start log-list">
+    <TableRow v-for="log in items" :key="log.id">
+      <TableCol :width="126" class="text-gray">
         {{ formatDateTime(log.created_at) }}
-      </div>
-      <div style="width: 20px">
+      </TableCol>
+      <TableCol :width="20">
         <v-icon
           :icon="log.device === 'mobile' ? mdiCellphone : (log.device === 'telegram' ? mdiSendCircle : mdiLaptop)"
           :size="20"
           color="gray"
         />
-      </div>
-      <div style="width: 180px">
+      </TableCol>
+      <TableCol :width="180">
         <template v-if="log.entity">
           <a
             v-if="log.entity.entity_type === EntityTypeValue.user"
@@ -41,8 +41,8 @@ const userDialog = ref<InstanceType<typeof UserDialog>>()
         <template v-else>
           system
         </template>
-      </div>
-      <div style="width: 130px">
+      </TableCol>
+      <TableCol :width="130">
         {{ LogTypeLabel[log.type] }}
         <v-tooltip v-if="log.emulation_user" location="bottom">
           <template #activator="{ props }">
@@ -50,23 +50,23 @@ const userDialog = ref<InstanceType<typeof UserDialog>>()
           </template>
           {{ formatName(log.emulation_user) }}
         </v-tooltip>
-      </div>
-      <div v-if="log.type === 'view'" class="text-truncate">
+      </TableCol>
+      <TableCol v-if="log.type === 'view'" class="text-truncate">
         <RouterLink :to="log.data.url!">
           {{ log.data.url! }}
         </RouterLink>
-      </div>
+      </TableCol>
       <template v-else>
-        <div v-if="log.table" style="width: 150px">
+        <TableCol v-if="log.table" :width="150">
           {{ log.table }}
           <div v-if="log.row_id" style="font-size: 14px" class="text-gray">
             ID {{ log.row_id }}
           </div>
-        </div>
-        <div v-else style="width: 150px">
+        </TableCol>
+        <TableCol v-else :width="150">
           {{ log.ip }}
-        </div>
-        <div class="log-list__data">
+        </TableCol>
+        <TableCol class="log-list__data">
           <table v-if="log.type === 'update'">
             <tr v-for="(d, index) in log.data" :key="index">
               <td width="150">
@@ -91,10 +91,10 @@ const userDialog = ref<InstanceType<typeof UserDialog>>()
               </td>
             </tr>
           </table>
-        </div>
+        </TableCol>
       </template>
-    </div>
-  </div>
+    </TableRow>
+  </Table>
   <UserDialog ref="userDialog" />
 </template>
 

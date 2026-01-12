@@ -10,8 +10,8 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
 </script>
 
 <template>
-  <div class="table table--padding">
-    <div
+  <Table class="table--padding">
+    <TableRow
       v-for="item in items"
       :id="`clients-${item.id}`"
       :key="item.id"
@@ -24,21 +24,21 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
           @click="clientDialog?.edit(item.id)"
         />
       </div>
-      <div style="width: 40px">
+      <TableCol :width="40">
         {{ item.id }}
-      </div>
-      <div style="width: 300px">
+      </TableCol>
+      <TableCol :width="300">
         <NuxtLink :to="{ name: 'clients-id', params: { id: item.id } }">
           {{ formatName(item) }}
         </NuxtLink>
-      </div>
-      <div>
+      </TableCol>
+      <TableCol>
         <ClientDirections :items="item.directions" />
-      </div>
-      <div class="text-right text-gray">
+      </TableCol>
+      <TableCol class="text-right text-gray">
         {{ formatDateTime(item.created_at) }}
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
   <ClientDialog ref="clientDialog" />
 </template>

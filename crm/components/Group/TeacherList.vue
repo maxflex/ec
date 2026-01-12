@@ -21,13 +21,14 @@ function onClick(g: GroupListResource) {
 </script>
 
 <template>
-  <div
-    class="table table--padding group-list-teacher group-list"
+  <Table
+    class="table--padding group-list-teacher group-list"
     :class="{
-      'group-list--selectable table--hover': selectable,
+      'group-list--selectable': selectable,
     }"
+    :hoverable="selectable"
   >
-    <div
+    <TableRow
       v-for="item in items"
       :id="`group-${item.id}`"
       :key="item.id"
@@ -36,41 +37,41 @@ function onClick(g: GroupListResource) {
       }"
       @click="onClick(item)"
     >
-      <div style="width: 80px">
+      <TableCol :width="80">
         <NuxtLink :to="{ name: 'groups-id', params: { id: item.id } }">
           ГР-{{ item.id }}
         </NuxtLink>
-      </div>
-      <div style="width: 180px">
+      </TableCol>
+      <TableCol :width="180">
         <GroupTeachers :item="item" />
-      </div>
-      <div style="width: 120px">
+      </TableCol>
+      <TableCol :width="120">
         {{ ProgramShortLabel[item.program] }}
-      </div>
-      <div style="width: 80px">
+      </TableCol>
+      <TableCol :width="80">
         <GroupFirstLessonDate :date="item.first_lesson_date" />
-      </div>
-      <div style="width: 140px">
+      </TableCol>
+      <TableCol :width="140">
         <GroupLessonCounts :item="item" sum-free />
-      </div>
-      <div style="width: 60px">
+      </TableCol>
+      <TableCol :width="60">
         {{ item.client_groups_count }} уч.
-      </div>
-      <div style="flex: 1">
+      </TableCol>
+      <TableCol>
         <TeethAsText :items="item.teeth" />
-      </div>
-      <div style="width: 100px">
+      </TableCol>
+      <TableCol :width="100">
         <div v-for="c in item.cabinets" :key="c">
           <CabinetWithCapacity :item="c" />
         </div>
-      </div>
-      <div class="group-list__zoom">
+      </TableCol>
+      <TableCol class="group-list__zoom">
         <template v-if="item.zoom?.id">
           {{ item.zoom.id }} / {{ item.zoom.password }}
         </template>
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
 </template>
 
 <style lang="scss">

@@ -58,7 +58,7 @@ nextTick(loadData)
       </div>
     </div>
     <div class="instruction__panel">
-      <div class="table table--padding table--hover">
+      <Table class="table--padding" hoverable>
         <RouterLink
           v-for="(v, index) in instruction.versions"
           :key="v.id"
@@ -87,7 +87,7 @@ nextTick(loadData)
             не подписано
           </div>
         </RouterLink>
-      </div>
+      </Table>
     </div>
   </div>
 </template>

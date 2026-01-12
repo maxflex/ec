@@ -8,8 +8,8 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="table">
-    <div v-for="item in items" :id="`exam-score-${item.id}`" :key="item.id">
+  <Table>
+    <TableRow v-for="item in items" :id="`exam-score-${item.id}`" :key="item.id">
       <div class="table-actionss">
         <v-btn
           icon="$edit"
@@ -18,23 +18,23 @@ const emit = defineEmits<{
           @click="emit('edit', item)"
         />
       </div>
-      <div style="width: 200px">
+      <TableCol :width="200">
         <NuxtLink :to="{ name: 'clients-id', params: { id: item.client!.id } }">
           {{ formatName(item.client!) }}
         </NuxtLink>
-      </div>
-      <div style="width: 220px">
+      </TableCol>
+      <TableCol :width="220">
         {{ ExamLabel[item.exam!] }}
-      </div>
-      <div style="width: 200px">
+      </TableCol>
+      <TableCol :width="200">
         {{ YearLabel[item.year] }}
-      </div>
-      <div style="width: 150px">
+      </TableCol>
+      <TableCol :width="150">
         балл: {{ item.score }}
-      </div>
-      <div>
+      </TableCol>
+      <TableCol>
         <v-icon :icon="mdiWeb" :class="item.is_published ? 'text-secondary' : 'opacity-2 text-gray'" />
-      </div>
-    </div>
-  </div>
+      </TableCol>
+    </TableRow>
+  </Table>
 </template>

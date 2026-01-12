@@ -346,29 +346,29 @@ nextTick(loadData)
           :items="selectedContract.payments"
           @edit="contractPaymentDialog?.edit"
         />
-        <div v-if="selectedContract.balances" class="table contract-tab-balances table--padding">
-          <div>
-            <div style="width: 590px" class="font-weight-bold">
+        <Table v-if="selectedContract.balances" class="contract-tab-balances table--padding">
+          <TableRow>
+            <TableCol :width="590" class="font-weight-bold">
               итого
-            </div>
-            <div style="width: 200px">
+            </TableCol>
+            <TableCol :width="200">
               <div>
                 доплата по договору
               </div>
               <div>
                 баланс по услугам
               </div>
-            </div>
-            <div style="width: 120px" class="font-weight-bold">
+            </TableCol>
+            <TableCol :width="120" class="font-weight-bold">
               <div>
                 {{ formatPrice(selectedContract.balances.to_pay, true) }} руб.
               </div>
               <div>
                 {{ formatPrice(selectedContract.balances.remainder, true) }} руб.
               </div>
-            </div>
-          </div>
-        </div>
+            </TableCol>
+          </TableRow>
+        </Table>
       </div>
     </template>
   </UiIndexPage>

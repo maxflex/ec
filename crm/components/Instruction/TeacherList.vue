@@ -5,7 +5,7 @@ const { items } = defineProps<{
 </script>
 
 <template>
-  <div class="table table--hover">
+  <Table hoverable>
     <NuxtLink
       v-for="item in items"
       :id="`instruction-${item.id}`"
@@ -13,20 +13,20 @@ const { items } = defineProps<{
       class="table-item"
       :to="{ name: 'instructions-id', params: { id: item.id } }"
     >
-      <div style="flex: 1">
+      <TableCol>
         {{ item.title }}
-      </div>
-      <div style="width: 250px">
+      </TableCol>
+      <TableCol :width="250">
         <v-chip v-if="item.signed_at" color="success">
           подписано {{ formatDateTime(item.signed_at) }}
         </v-chip>
         <v-chip v-else color="error">
           не подписано
         </v-chip>
-      </div>
-      <div style="flex: initial; width: 150px" class="text-gray">
+      </TableCol>
+      <TableCol style="width: 150px; flex: initial" class="text-gray">
         {{ formatDateTime(item.created_at) }}
-      </div>
+      </TableCol>
     </NuxtLink>
-  </div>
+  </Table>
 </template>

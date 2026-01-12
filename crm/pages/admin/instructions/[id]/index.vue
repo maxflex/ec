@@ -50,24 +50,24 @@ nextTick(loadData)
           <div v-html="instruction.text" />
         </div>
       </div>
-      <div class="table table--hover instruction__signs">
-        <div v-for="t in instruction.teachers" :key="t.id">
-          <div style="flex: 1">
+      <Table class="instruction__signs" hoverable>
+        <TableRow v-for="t in instruction.teachers" :key="t.id">
+          <TableCol>
             <UiAvatar :item="t" :size="38" class="mr-4" />
             <NuxtLink :to="{ name: 'teachers-id', params: { id: t.id } }">
               {{ formatNameInitials(t) }}
             </NuxtLink>
-          </div>
-          <div style="width: 230px; flex: initial" class="text-gray">
+          </TableCol>
+          <TableCol style="width: 230px; flex: initial" class="text-gray">
             <template v-if="t.signed_at">
               подписано {{ formatDateTime(t.signed_at) }}
             </template>
-          </div>
-        </div>
-      </div>
+          </TableCol>
+        </TableRow>
+      </Table>
     </div>
     <div class="instruction__panel">
-      <div class="table table--padding table--hover">
+      <Table class="table--padding" hoverable>
         <RouterLink
           v-for="(v, index) in instruction.versions"
           :key="v.id"
@@ -93,7 +93,7 @@ nextTick(loadData)
             </template>
           </div>
         </RouterLink>
-        <div>
+        <TableRow>
           <NuxtLink
             class="icon-link"
             :to="{
@@ -109,8 +109,8 @@ nextTick(loadData)
               icon="$next"
             />
           </NuxtLink>
-        </div>
-      </div>
+        </TableRow>
+      </Table>
     </div>
   </div>
 </template>
