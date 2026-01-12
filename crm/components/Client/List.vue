@@ -35,9 +35,6 @@ const clientDialog = ref<InstanceType<typeof ClientDialog>>()
       <div>
         <ClientDirections :items="item.directions" />
       </div>
-      <div class="text-right text-gray">
-        {{ formatDateTime(item.created_at) }}
-      </div>
     </div>
   </div>
   <ClientDialog ref="clientDialog" />
