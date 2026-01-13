@@ -1,18 +1,26 @@
 <script setup lang="ts">
-const text = ref('')
+import type { TeacherComplaintRecipient } from '~/components/TeacherComplaint'
+import { UiClearableSelect } from '#components'
+import { cloneDeep } from 'lodash-es'
+import { TeacherComplaintRecipientLabel } from '~/components/TeacherComplaint'
+
+const item = ref<{
+  text: string
+  recipient?: TeacherComplaintRecipient
+}>({
+  text: '',
+})
 const loading = ref(false)
 const isSent = ref(false)
 
 async function save() {
-  if (!text.value) {
+  if (!item.value.text) {
     return
   }
   loading.value = true
   await useHttp(`teacher-complaints`, {
     method: 'POST',
-    body: {
-      text: text.value,
-    },
+    body: cloneDeep(item.value),
   })
   isSent.value = true
 }
@@ -42,18 +50,25 @@ async function save() {
       </div>
       <div>
         <v-textarea
-          v-model="text"
+          v-model="item.text"
           rows="10"
           no-resize
           auto-grow
           label="Текст жалобы"
         />
       </div>
+      <div>
+        <UiClearableSelect
+          v-model="item.recipient"
+          :items="selectItems(TeacherComplaintRecipientLabel)"
+          label="Кому адресована"
+          expand
+        />
+      </div>
       <div style="text-align: center;">
-
-      <v-btn size="x-large" color="primary" :loading="loading" @click="save()">
-        отправить
-      </v-btn>
+        <v-btn size="x-large" color="primary" :loading="loading" @click="save()">
+          отправить
+        </v-btn>
       </div>
     </div>
   </div>
@@ -91,11 +106,11 @@ async function save() {
   }
 
   &__wrapper {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 </style>

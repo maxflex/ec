@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import type { TeacherComplaintDialog } from '#components'
-import { TeacherComplaintStatusLabel, type TeacherComplaintResource, type TeacherComplaintStatus } from '~/components/TeacherComplaint'
+import type { TeacherComplaintRecipient, TeacherComplaintResource, TeacherComplaintStatus } from '~/components/TeacherComplaint'
+import { TeacherComplaintRecipientLabel, TeacherComplaintStatusLabel } from '~/components/TeacherComplaint'
 
-const filters = ref<{ status?: TeacherComplaintStatus }>(loadFilters({
-  status: undefined
+const filters = ref<{
+  status?: TeacherComplaintStatus
+  recipient?: TeacherComplaintRecipient
+}>(loadFilters({
+  status: undefined,
+  recipient: undefined,
 }))
 
 const dialog = ref<InstanceType<typeof TeacherComplaintDialog>>()
@@ -22,8 +27,15 @@ const { items, indexPageData } = useIndex<TeacherComplaintResource>(
         label="Статус"
         :items="selectItems(TeacherComplaintStatusLabel)"
       />
+      <UiClearableSelect
+        v-model="filters.recipient"
+        density="comfortable"
+        label="Кому адресована"
+        :items="selectItems(TeacherComplaintRecipientLabel)"
+        expand
+      />
     </template>
-    <TeacherComplaintList :items="items"  @edit="dialog?.edit" />
+    <TeacherComplaintList :items="items" @edit="dialog?.edit" />
   </UiIndexPage>
   <TeacherComplaintDialog ref="dialog" v-model="items" />
 </template>

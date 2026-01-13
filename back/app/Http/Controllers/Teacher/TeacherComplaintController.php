@@ -10,11 +10,9 @@ class TeacherComplaintController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'text' => ['required', 'string', 'min: 3'],
+            'text' => ['required', 'string', 'min:1'],
         ]);
 
-        return auth()->user()->complaints()->create([
-            'text' => $request->text,
-        ]);
+        return auth()->user()->complaints()->create($request->all());
     }
 }

@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class TeacherComplaintController extends Controller
 {
     protected $filters = [
-        'equals' => ['status'],
+        'equals' => ['status', 'recipient'],
     ];
 
     public function index(Request $request)

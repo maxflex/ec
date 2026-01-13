@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TeacherComplaintResource } from '.'
 import { mdiCamera, mdiVideo } from '@mdi/js'
-import { apiUrl, TeacherComplaintStatusLabel } from '.'
+import { apiUrl, TeacherComplaintRecipientLabel, TeacherComplaintStatusLabel } from '.'
 
 const { items } = defineProps<{
   items: TeacherComplaintResource[]
@@ -29,10 +29,18 @@ const emit = defineEmits<{
       <TableCol :width="150">
         {{ formatDateTime(item.created_at) }}
       </TableCol>
+      <TableCol :width="200">
+        <span v-if="item.recipient">
+          {{ TeacherComplaintRecipientLabel[item.recipient] }}
+        </span>
+        <span v-else class="text-gray">
+          не установлено
+        </span>
+      </TableCol>
       <TableCol>
         {{ item.text }}
       </TableCol>
-      <TableCol>
+      <TableCol :width="100">
         <div class="teacher-complaint__buttons">
           <div class="teacher-complaint__comment">
             <CommentBtn

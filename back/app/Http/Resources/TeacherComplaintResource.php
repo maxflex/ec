@@ -12,7 +12,7 @@ class TeacherComplaintResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'text', 'status', 'created_at',
+            'text', 'status', 'created_at', 'recipient',
             'comments_count',
         ], [
             'teacher' => new PersonResource($this->teacher),

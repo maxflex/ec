@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\TeacherComplaintRecipient;
 use App\Enums\TeacherComplaintStatus;
 use App\Models\Teacher;
 use Illuminate\Database\Migrations\Migration;
@@ -16,6 +17,9 @@ return new class extends Migration
             $table->text('text');
             $table->enum('status', array_column(TeacherComplaintStatus::cases(), 'value'))
                 ->default(TeacherComplaintStatus::new->value)->index();
+            $table->enum('recipient', array_column(TeacherComplaintRecipient::cases(), 'value'))
+                ->nullable();
+
             $table->timestamps();
         });
     }
