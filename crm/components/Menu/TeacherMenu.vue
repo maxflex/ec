@@ -4,6 +4,8 @@ import {
   mdiAccountGroup,
   mdiCalendar,
   mdiCash,
+  mdiChatAlert,
+  mdiChatAlertOutline,
   mdiCurrencyRub,
   mdiFileDocumentEditOutline,
   mdiFileSign,
@@ -27,11 +29,6 @@ const menu: Menu = [
     title: 'Расписание',
     to: '/schedule',
   },
-  // {
-  //   icon: mdiVideo,
-  //   title: 'Рабочие заметки',
-  //   to: '/violations',
-  // },
   {
     icon: mdiFileDocumentEditOutline,
     title: 'Отчёты',
@@ -68,6 +65,11 @@ const menu: Menu = [
     icon: mdiTicket,
     title: 'События',
     to: '/events',
+  },
+  {
+    icon: mdiChatAlert,
+    title: 'Оставить жалобу',
+    to: '/complaint',
   },
 ]
 

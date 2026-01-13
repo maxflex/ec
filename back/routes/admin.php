@@ -45,6 +45,7 @@ use App\Http\Controllers\Admin\StatsController;
 use App\Http\Controllers\Admin\StatsPresetController;
 use App\Http\Controllers\Admin\SwampController;
 use App\Http\Controllers\Admin\TeacherBalanceController;
+use App\Http\Controllers\Admin\TeacherComplaintController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TeacherPaymentController;
 use App\Http\Controllers\Admin\TeacherServiceController;
@@ -208,4 +209,5 @@ Route::apiResources([
     'client-lessons' => ClientLessonController::class,
     'violations' => ViolationController::class,
     'event-participants' => EventParticipantController::class,
+    'teacher-complaints' => TeacherComplaintController::class,
 ]);

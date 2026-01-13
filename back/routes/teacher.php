@@ -18,6 +18,7 @@ use App\Http\Controllers\Teacher\InstructionController;
 use App\Http\Controllers\Teacher\LessonController;
 use App\Http\Controllers\Teacher\MenuCountsController;
 use App\Http\Controllers\Teacher\ReportController;
+use App\Http\Controllers\Teacher\TeacherComplaintController;
 use App\Http\Controllers\Teacher\TeacherPaymentController;
 use App\Http\Controllers\TeethController;
 use App\Http\Controllers\UploadController;
@@ -61,6 +62,7 @@ Route::prefix('balance-verification')->controller(BalanceVerificationController:
 Route::apiResource('logs', LogController::class)->only('store');
 Route::apiResource('vacations', VacationController::class)->only('index');
 Route::get('teeth', TeethController::class);
+Route::apiResource('teacher-complaints', TeacherComplaintController::class)->only('store');
 Route::prefix('upload')->controller(UploadController::class)->group(function () {
     Route::post('files', 'files');
     Route::post('photos', 'photos');

@@ -388,6 +388,7 @@ export const EntityTypeValue = {
   project: 'App\\Models\\Project',
   complaint: 'App\\Models\\Complaint',
   violation: 'App\\Models\\Violation',
+  teacherComplaint: 'App\\Models\\TeacherComplaint',
 } as const
 
 export const EntityTypeLabel = {
