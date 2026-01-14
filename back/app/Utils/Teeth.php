@@ -19,6 +19,7 @@ class Teeth
         $lessons = $lessonsQuery
             ->join('groups as g', 'g.id', '=', 'lessons.group_id')
             ->where('is_unplanned', false)
+            // ->where('is_substitute', false)
             ->where('status', '<>', LessonStatus::cancelled)
             ->select([
                 'lessons.date',
@@ -28,7 +29,7 @@ class Teeth
             ])
             ->get();
 
-        // Расчёт длительности
+        // Расчёт длительности и координат
         foreach ($lessons as $l) {
             $l->duration = Program::from($l->program)->getDuration();
             $l->start = self::timeToSeconds($l->time);
@@ -36,39 +37,40 @@ class Teeth
             $l->weekday = Carbon::parse($l->date)->dayOfWeekIso - 1; // 0 = Пн
         }
 
-        // Удалим одиночки по (weekday, time)
-        $lessons = $lessons
-            ->groupBy(fn ($l) => $l->weekday.'|'.$l->time)
-            ->filter(fn ($g) => $g->count() > 1)
-            ->flatten();
+        /**
+         * Условие 1 и 3: Убрана фильтрация одиночек.
+         * Условие 2: Либо синие (planned), либо блеклые (conducted).
+         */
 
-        // Разделим на планируемые и проведённые
-        $planned = $lessons->where('status', LessonStatus::planned)->sortBy(['date', 'time']);
-        $conducted = $lessons->where('status', LessonStatus::conducted)->sortByDesc(['date', 'time']);
+        // Проверяем, есть ли хотя бы одно планируемое занятие
+        $hasPlanned = $lessons->contains('status', LessonStatus::planned);
 
-        // Итерация вперёд — X
-        $resultX = collect();
-        foreach ($planned as $lesson) {
-            if (! self::conflicts($lesson, $resultX)) {
-                $resultX->push($lesson);
+        if ($hasPlanned) {
+            // РЕЖИМ 1: Есть планируемые занятия. Показываем только будущее (синие зубы).
+            // Сортируем по возрастанию, чтобы взять ближайшие актуальные слоты.
+            $candidates = $lessons
+                ->where('status', LessonStatus::planned)
+                ->sortBy(['date', 'time']);
+        } else {
+            // РЕЖИМ 2: Планируемых занятий нет. Показываем историю (блеклые зубы).
+            // Сортируем по убыванию, чтобы взять последние проведенные слоты (актуальные на момент завершения).
+            $candidates = $lessons
+                ->where('status', LessonStatus::conducted)
+                ->sortByDesc(['date', 'time']);
+        }
+
+        // Формируем итоговый набор, исключая визуальные конфликты (наложения)
+        $result = collect();
+
+        foreach ($candidates as $lesson) {
+            // Если слот ещё не занят, добавляем зуб
+            if (! self::conflicts($lesson, $result)) {
+                $result->push($lesson);
             }
         }
 
-        // Итерация назад — Y
-        $resultY = collect();
-        foreach ($conducted as $lesson) {
-            if (! self::conflicts($lesson, $resultX) && ! self::conflicts($lesson, $resultY)) {
-                $resultY->push($lesson);
-            }
-        }
-
-        // Финальная фильтрация Y: если есть конфликт с X, то пропускаем
-        $resultY = $resultY->reject(fn ($l) => self::conflicts($l, $resultX));
-
-        // Объединяем X + Y
-        return $resultX
-            ->map(fn ($l) => self::formatTooth($l, false))
-            ->concat($resultY->map(fn ($l) => self::formatTooth($l, true)))
+        return $result
+            ->map(fn ($l) => self::formatTooth($l, ! $hasPlanned))
             ->values()
             ->all();
     }

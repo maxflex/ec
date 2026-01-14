@@ -27,6 +27,13 @@ class TeacherComplaintController extends Controller
         return new TeacherComplaintResource($teacherComplaint);
     }
 
+    public function update(TeacherComplaint $teacherComplaint, Request $request)
+    {
+        $teacherComplaint->update($request->all());
+
+        return new TeacherComplaintResource($teacherComplaint);
+    }
+
     public function destroy(TeacherComplaint $teacherComplaint)
     {
         $teacherComplaint->delete();
