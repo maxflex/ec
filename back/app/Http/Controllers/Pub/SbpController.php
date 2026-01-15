@@ -47,6 +47,30 @@ class SbpController extends Controller
                 ],
                 'capture' => true,
                 'description' => $description,
+                'receipt' => [
+                    'customer' => [
+                        'full_name' => $contract->client->representative->formatName('full'),
+                        'phone' => $request->input('number'),
+                    ],
+                    'items' => [
+                        [
+                            'description' => $description,
+                            'quantity' => 1.0,
+                            'amount' => [
+                                'value' => $amount,
+                                'currency' => 'RUB',
+                            ],
+                            // НДС по расчетной ставке 5/105
+                            // https://yookassa.ru/developers/payment-acceptance/receipts/54fz/other-services/parameters-values
+                            'vat_code' => 9,
+                            // Частичная предоплата
+                            'payment_mode' => 'partial_prepayment',
+                            'payment_subject' => 'service',
+                            'measure' => 'piece',
+                            'type' => 'prepayment',
+                        ],
+                    ],
+                ],
             ]
         );
 

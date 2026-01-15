@@ -40,12 +40,14 @@ export interface GroupResource {
   acts_count: number
   teacher_counts: Record<number, number>
   lesson_counts: GroupLessonCounts
+  is_in_contract: boolean
 }
 
 export const modelDefaults: GroupResource = {
   id: newId(),
   year: currentAcademicYear(),
   teachers: [],
+  is_in_contract: false,
   zoom: {
     id: null,
     password: null,

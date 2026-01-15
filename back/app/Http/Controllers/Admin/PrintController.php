@@ -12,6 +12,7 @@ use App\Models\Group;
 use App\Models\GroupAct;
 use App\Models\Macro;
 use App\Models\OtherPayment;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Blade;
@@ -46,6 +47,24 @@ class PrintController extends Controller
                 ...$request->all(),
                 'qr' => $this->generateQr($contract),
                 'contract' => $contract,
+            ];
+        } elseif ($id === 21) {
+            // договор на преподавателя – все группы
+            $teacher = Teacher::find($request->teacher_id);
+
+            // все группы текущего учебного года
+            $groups = Group::query()
+                ->where('year', current_academic_year())
+                ->whereHas(
+                    'lessons',
+                    fn ($q) => $q->where('teacher_id', $teacher->id)->where('is_substitute', false)
+                )
+                ->get();
+
+            $variables = [
+                ...$request->all(),
+                'teacher' => $teacher,
+                'groups' => $groups,
             ];
         } elseif ($request->has('contract_version_id')) {
             $contractVersion = ContractVersion::find($request->contract_version_id);

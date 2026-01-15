@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enums\ContractPaymentMethod;
 use App\Observers\ContractPaymentObserver;
-use App\Observers\ReceiptObserver;
 use App\Observers\UserIdObserver;
 use App\Utils\Receipt\ReceiptData;
 use App\Utils\Receipt\ReceiptInterface;
@@ -13,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
-#[ObservedBy([UserIdObserver::class, ContractPaymentObserver::class, ReceiptObserver::class])]
+#[ObservedBy([UserIdObserver::class, ContractPaymentObserver::class])]
 class ContractPayment extends Model implements ReceiptInterface
 {
     protected $fillable = [

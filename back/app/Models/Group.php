@@ -21,13 +21,14 @@ class Group extends Model implements HasSchedule
 
     protected $fillable = [
         'program', 'year', 'zoom', 'lessons_planned',
-        'contract_date', 'letter',
+        'contract_date', 'letter', 'is_in_contract',
     ];
 
     protected $casts = [
         'zoom' => 'array',
         'schedule' => 'array',
         'program' => Program::class,
+        'is_in_contract' => 'bool',
     ];
 
     public function user(): BelongsTo

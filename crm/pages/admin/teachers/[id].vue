@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import type { TeacherDialog } from '#build/components'
+import type { PrintTeacherGroups, TeacherDialog } from '#build/components'
+import type { PrintOption } from '~/components/Print'
 import type { TeacherResource } from '~/components/Teacher'
+import { printOptions } from '~/components/Print'
 
 const route = useRoute()
 const teacher = ref<TeacherResource>()
 const teacherDialog = ref<InstanceType<typeof TeacherDialog>>()
+const printDialog = ref<InstanceType<typeof PrintTeacherGroups>>()
 
 const { tabs, selectedTab } = useTabs({
   groups: 'группы',
@@ -76,6 +79,12 @@ nextTick(loadData)
           </div>
         </div>
         <div class="panel-actions">
+          <v-btn
+            icon="$print"
+            :size="48"
+            variant="plain"
+            @click="printDialog?.open(teacher.id)"
+          />
           <CommentBtn
             :entity-id="teacher.id"
             :entity-type="EntityTypeValue.teacher"
@@ -111,4 +120,5 @@ nextTick(loadData)
   </template>
 
   <TeacherDialog ref="teacherDialog" @updated="onUpdated" />
+  <LazyPrintTeacherGroups ref="printDialog" />
 </template>

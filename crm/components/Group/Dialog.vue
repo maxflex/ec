@@ -148,6 +148,12 @@ defineExpose({ create, edit })
             label="Zoom пароль"
           />
         </div>
+        <div>
+          <v-checkbox
+            v-model="group.is_in_contract"
+            label="Есть в договоре"
+          />
+        </div>
       </div>
     </div>
   </v-dialog>
