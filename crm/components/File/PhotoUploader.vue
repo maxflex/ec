@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { UploadFolder } from '.'
+
 const { folder, label = 'прикрепить фото' } = defineProps<{
   label?: string
   folder: UploadFolder

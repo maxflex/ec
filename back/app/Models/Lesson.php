@@ -213,4 +213,12 @@ class Lesson extends Model
             // смотрим начиная со вчерашнего дня
             ->where('date', '<', now()->format('Y-m-d'));
     }
+
+    /**
+     * Кроме отмен
+     */
+    public function scopeExcludeCancelled($query)
+    {
+        $query->where('status', '<>', LessonStatus::cancelled);
+    }
 }

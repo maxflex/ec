@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { UploadFolder } from '.'
 import { mdiPlayCircle } from '@mdi/js'
 
 const { folder, disabled, label = 'прикрепить видео' } = defineProps<{

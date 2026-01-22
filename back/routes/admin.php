@@ -46,6 +46,7 @@ use App\Http\Controllers\Admin\StatsPresetController;
 use App\Http\Controllers\Admin\SwampController;
 use App\Http\Controllers\Admin\TeacherBalanceController;
 use App\Http\Controllers\Admin\TeacherComplaintController;
+use App\Http\Controllers\Admin\TeacherContractController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TeacherPaymentController;
 use App\Http\Controllers\Admin\TeacherServiceController;
@@ -173,6 +174,8 @@ Route::get('exams', ExamController::class);
 
 Route::apiResource('phones', PhoneController::class)->only('index');
 
+Route::post('teacher-contracts/load-data', [TeacherContractController::class, 'loadData']);
+
 Route::apiResources([
     'telegram-lists' => TelegramListController::class,
     'requests' => RequestsController::class,
@@ -210,4 +213,5 @@ Route::apiResources([
     'violations' => ViolationController::class,
     'event-participants' => EventParticipantController::class,
     'teacher-complaints' => TeacherComplaintController::class,
+    'teacher-contracts' => TeacherContractController::class,
 ]);

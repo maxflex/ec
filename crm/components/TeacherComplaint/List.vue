@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { TeacherComplaintResource } from '.'
-import { mdiCamera, mdiVideo } from '@mdi/js'
 import { apiUrl, TeacherComplaintRecipientLabel, TeacherComplaintStatusLabel } from '.'
 
 const { items } = defineProps<{

@@ -170,13 +170,6 @@ declare global {
     size: number
   }
 
-  interface UploadedFileIcon {
-    icon: string
-    color: string
-  }
-
-  type UploadFolder = 'lessons' | 'tests' | 'events' | 'violations'
-
   interface LessonResource {
     id: number
     teacher_id?: number

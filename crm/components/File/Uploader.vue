@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { UploadFolder } from '.'
 import { mdiDownload } from '@mdi/js'
 
 const { folder, label = 'прикрепить файл' } = defineProps<{
@@ -8,6 +9,7 @@ const { folder, label = 'прикрепить файл' } = defineProps<{
 
 const accept = (function () {
   switch (folder) {
+    case 'teacher-contracts':
     case 'tests':
       return 'application/pdf'
 

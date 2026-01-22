@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import type { PrintTeacherGroups, TeacherDialog } from '#build/components'
-import type { PrintOption } from '~/components/Print'
+import type { TeacherDialog } from '#build/components'
 import type { TeacherResource } from '~/components/Teacher'
-import { printOptions } from '~/components/Print'
 
 const route = useRoute()
 const teacher = ref<TeacherResource>()
-const teacherDialog = ref<InstanceType<typeof TeacherDialog>>()
-const printDialog = ref<InstanceType<typeof PrintTeacherGroups>>()
 
 const { tabs, selectedTab } = useTabs({
   groups: 'группы',
@@ -16,6 +12,7 @@ const { tabs, selectedTab } = useTabs({
   payments: 'платежи',
   balance: 'баланс',
   reports: 'отчёты',
+  contracts: 'договоры',
   clientComplaints: 'жалобы',
   violations: 'нарушения',
   clientReviews: 'отзывы',
@@ -35,6 +32,8 @@ const availableTabs = computed<Tab[]>(() => {
     ? allTabs
     : allTabs.filter(t => !t.startsWith('headTeacher'))
 })
+
+const teacherDialog = ref<InstanceType<typeof TeacherDialog>>()
 
 async function loadData() {
   const { data } = await useHttp<TeacherResource>(`teachers/${route.params.id}`)
@@ -79,12 +78,6 @@ nextTick(loadData)
           </div>
         </div>
         <div class="panel-actions">
-          <v-btn
-            icon="$print"
-            :size="48"
-            variant="plain"
-            @click="printDialog?.open(teacher.id)"
-          />
           <CommentBtn
             :entity-id="teacher.id"
             :entity-type="EntityTypeValue.teacher"
@@ -117,8 +110,8 @@ nextTick(loadData)
     <Balance v-else-if="selectedTab === 'balance'" :teacher-id="teacher.id" :split="teacher.is_split_balance" />
     <HeadTeacherReportTab v-else-if="selectedTab === 'headTeacherReports'" :teacher-id="teacher.id" />
     <HeadTeacherClientsTab v-else-if="selectedTab === 'headTeacherClients'" :teacher-id="teacher.id" />
+    <TeacherContractTab v-else-if="selectedTab === 'contracts'" :teacher-id="teacher.id" />
   </template>
 
   <TeacherDialog ref="teacherDialog" @updated="onUpdated" />
-  <LazyPrintTeacherGroups ref="printDialog" />
 </template>

@@ -93,7 +93,7 @@ defineExpose({ create, edit })
       </div>
       <div class="dialog-body">
         <div>
-          <UiDateInput v-model="item.date" label="Дата" :disabled="isDisabled" />
+          <UiDateInput v-model="item.date" label="Дата" :disabled="isDisabled" today-btn />
         </div>
         <div>
           <v-text-field
