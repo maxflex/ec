@@ -7,7 +7,7 @@ const { teacherId } = defineProps<{ teacherId: number }>()
 const teacherContractDialog = ref<InstanceType<typeof TeacherContractDialog>>()
 const filters = useAvailableYearsFilter()
 
-const { items, availableYears, indexPageData } = useIndex<TeacherContractListResource>(
+const { items, availableYears, indexPageData, reloadData } = useIndex<TeacherContractListResource>(
   apiUrl,
   filters,
   {
@@ -32,7 +32,7 @@ const { items, availableYears, indexPageData } = useIndex<TeacherContractListRes
         добавить договор
       </v-btn>
     </template>
-    <TeacherContractList :items="items" @edit="teacherContractDialog?.edit" />
+    <TeacherContractList highlight-active :items="items" @edit="teacherContractDialog?.edit" />
   </UiIndexPage>
-  <TeacherContractDialog ref="teacherContractDialog" v-model="items" />
+  <TeacherContractDialog ref="teacherContractDialog" @updated="reloadData" />
 </template>

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { TeacherContractListResource } from '.'
-import { uniqBy } from 'lodash-es'
+import { mdiAlertBox, mdiFilePdfBox } from '@mdi/js'
 import { apiUrl } from '.'
 
-const { items } = defineProps<{
+const { items, highlightActive } = defineProps<{
+  highlightActive?: boolean
   items: TeacherContractListResource[]
 }>()
 
@@ -14,7 +15,12 @@ const emit = defineEmits<{
 
 <template>
   <Table>
-    <TableRow v-for="item in items" :id="`${apiUrl}-${item.id}`" :key="item.id">
+    <TableRow
+      v-for="item in items" :id="`${apiUrl}-${item.id}`" :key="item.id" :class="{
+        'teacher-contract--active': highlightActive && item.is_active,
+        'teacher-contract--inactive': highlightActive && !item.is_active,
+      }"
+    >
       <TableCol :width="200">
         <UiPerson :item="item.teacher" />
       </TableCol>
@@ -25,15 +31,70 @@ const emit = defineEmits<{
         {{ formatDate(item.date) }}
       </TableCol>
       <TableCol :width="150">
-        {{ plural(uniqBy(item.data, 'group_id').length, ['группа', 'группы', 'групп']) }}
+        {{ plural(item.total.groups, ['группа', 'группы', 'групп']) }}
       </TableCol>
       <TableCol :width="150">
-        {{ plural(item.data.reduce((carry, x) => carry + x.cnt, 0), ['занятие', 'занятия', 'занятий']) }}
+        {{ plural(item.total.lessons, ['занятие', 'занятия', 'занятий']) }}
       </TableCol>
       <TableCol :width="150">
-        {{ formatPrice(item.data.reduce((carry, x) => carry + (x.cnt * x.price), 0)) }}  руб.
+        {{ formatPrice(item.total.price) }}  руб.
       </TableCol>
-      <TableActions @click="emit('edit', item.id)" />
+      <TableCol>
+        <div class="teacher-contract__buttons">
+          <div>
+            <v-tooltip v-if="item.has_problems" location="bottom">
+              <template #activator="{ props }">
+                <v-icon
+                  :icon="mdiAlertBox"
+                  color="error"
+                  v-bind="props"
+                />
+              </template>
+              есть несоответствия
+            </v-tooltip>
+          </div>
+          <div>
+            <a v-if="item.file" class="gray-link" target="_blank" :href="item.file.url">
+              <v-icon :icon="mdiFilePdfBox" />
+            </a>
+          </div>
+          <div>
+            <v-btn
+              variant="plain"
+              color="gray"
+              icon="$edit"
+              :size="42"
+              @click="emit('edit', item.id)"
+            />
+          </div>
+        </div>
+      </TableCol>
     </TableRow>
   </Table>
 </template>
+
+<style lang="scss">
+.teacher-contract {
+  &__buttons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    text-align: center;
+    gap: 6px;
+    & > div {
+      display: inline-block;
+      width: 42px;
+      min-width: 42px;
+    }
+  }
+
+  &--active {
+    // background: rgba(var(--v-theme-primary), 0.3);
+  }
+  &--inactive {
+    & > div {
+      opacity: 0.5;
+    }
+  }
+}
+</style>

@@ -9,15 +9,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @mixin TeacherContract
  */
-class TeacherContractListResource extends JsonResource
+class TeacherContractResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        return extract_fields($this, [
-            'date', 'data', 'file', 'is_active', 'seq',
-            'total', 'has_problems',
-        ], [
-            'teacher' => new PersonResource($this->teacher),
+        return extract_fields($this, ['has_problems', '*'], [
+            'user' => new PersonResource($this->user),
         ]);
     }
 }

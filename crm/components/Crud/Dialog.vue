@@ -41,6 +41,7 @@ const model = defineModel<boolean>({ required: true })
             variant="text"
             @click="destroy()"
           />
+          <slot name="buttons" />
           <v-btn icon="$save" variant="text" :size="48" :loading="saving" @click="save()" />
         </div>
       </div>

@@ -162,6 +162,11 @@ function format_date(string $date, string $format = 'd.m.Y'): string
     return date($format, strtotime($date));
 }
 
+function format_price($price): string
+{
+    return number_format($price, 0, '.', ' ');
+}
+
 function num_to_text(int $number)
 {
     return (new NumberFormatter('ru', NumberFormatter::SPELLOUT))->format($number);

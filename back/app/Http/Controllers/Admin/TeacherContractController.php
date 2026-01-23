@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TeacherContractListResource;
+use App\Http\Resources\TeacherContractResource;
 use App\Models\Teacher;
 use App\Models\TeacherContract;
 use Illuminate\Http\Request;
@@ -11,16 +12,37 @@ use Illuminate\Http\Request;
 class TeacherContractController extends Controller
 {
     protected $filters = [
-        'equals' => ['teacher_id'],
+        'equals' => ['teacher_id', 'is_active', 'year'],
     ];
 
     public function index(Request $request)
     {
+        // если выбран фильтр "есть несоответствия"
+        if ($request->has('has_problems')) {
+            return $this->hasProblems($request);
+        }
+
         $query = TeacherContract::query();
 
         $this->filter($request, $query);
 
         return $this->handleIndexRequest($request, $query, TeacherContractListResource::class);
+    }
+
+    /**
+     * Для фильтра "есть несоответствия"
+     */
+    private function hasProblems(Request $request)
+    {
+        $hasProblems = (bool) $request->input('has_problems');
+
+        $data = TeacherContract::query()
+            ->where('year', $request->year)
+            ->where('is_active', true)
+            ->get()
+            ->filter(fn (TeacherContract $e) => $e->has_problems === $hasProblems);
+
+        return paginate(TeacherContractListResource::collection($data));
     }
 
     public function store(Request $request)
@@ -37,24 +59,14 @@ class TeacherContractController extends Controller
 
     public function show(TeacherContract $teacherContract)
     {
-        return $teacherContract;
+        return new TeacherContractResource($teacherContract);
     }
 
     public function update(Request $request, TeacherContract $teacherContract)
     {
-        $data = $request->validate([
-            'teacher_id' => ['required', 'exists:teachers'],
-            'year' => ['required', 'integer'],
-            'date' => ['required', 'date'],
-            'data' => ['required'],
-            'user_id' => ['required', 'exists:users'],
-            'is_active' => ['boolean'],
-            'file' => ['nullable'],
-        ]);
+        $teacherContract->update($request->all());
 
-        $teacherContract->update($data);
-
-        return $teacherContract;
+        return new TeacherContractListResource($teacherContract);
     }
 
     public function destroy(TeacherContract $teacherContract)

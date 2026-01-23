@@ -18,6 +18,7 @@ export interface CrudDialogData {
 
 interface CrudDialogOptions {
   afterOpen?: () => void
+  afterSave?: () => void
 }
 
 export default function<Resource extends AbstractItem, ListResource extends AbstractItem>(
@@ -104,6 +105,8 @@ export default function<Resource extends AbstractItem, ListResource extends Abst
     if (!isEditing.value) {
       useGlobalMessage('Запись создана', 'success')
     }
+
+    options.afterSave && options.afterSave()
 
     return data.value as ListResource
   }
