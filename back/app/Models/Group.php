@@ -193,7 +193,7 @@ class Group extends Model implements HasSchedule
      */
     public function getCabinetsAttribute(): Collection
     {
-        return $this->lessons->pluck('cabinet')->unique();
+        return $this->lessons->pluck('cabinet')->unique()->values();
     }
 
     public function getTeacherAttribute(): ?Teacher
