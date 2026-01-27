@@ -86,6 +86,6 @@ class TeacherContractController extends Controller
         $teacher = Teacher::find($request->teacher_id);
         $year = intval($request->year);
 
-        return TeacherContract::loadData($teacher, $year);
+        return TeacherContract::loadData($teacher, $year, $request->input('date_from'), $request->input('date_to'));
     }
 }

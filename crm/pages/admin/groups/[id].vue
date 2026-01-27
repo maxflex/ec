@@ -37,7 +37,7 @@ nextTick(loadData)
             кабинеты
           </div>
           <div>
-            <UiIfSet :value="group.cabinets.length">
+            <UiIfSet :value="group.cabinets?.length">
               <template #empty>
                 нет
               </template>

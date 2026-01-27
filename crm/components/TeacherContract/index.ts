@@ -11,6 +11,8 @@ export interface TeacherContractResource {
   has_problems: boolean
   user?: PersonResource
   date: string
+  date_from: string | null
+  date_to: string | null
   created_at?: string
   file: UploadedFile | null
   data: TeacherContractData | null
@@ -25,6 +27,8 @@ export interface TeacherContractListResource {
   has_problems: boolean
   data: TeacherContractData
   file: UploadedFile | null
+  date_from: string | null
+  date_to: string | null
   total: {
     groups: number
     lessons: number
@@ -41,6 +45,8 @@ export const modelDefaults: TeacherContractResource = {
   teacher_id: -1,
   has_problems: false,
   date: today(),
+  date_from: null,
+  date_to: null,
   data: null,
   file: null,
 }

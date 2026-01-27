@@ -30,8 +30,8 @@ async function afterOpen() {
     }
     return
   }
-  item.value.data = null
-  item.value.data = await loadData()
+
+  await updateData()
 }
 
 async function loadData() {
@@ -42,10 +42,20 @@ async function loadData() {
       body: {
         teacher_id: item.value.teacher_id,
         year: item.value.year,
+        date_from: item.value.date_from,
+        date_to: item.value.date_to,
       },
     },
   )
   return data.value!
+}
+
+async function updateData() {
+  if (item.value.id > 0) {
+    return
+  }
+  item.value.data = null
+  item.value.data = await loadData()
 }
 
 function onPrint() {
@@ -64,9 +74,15 @@ function onPrint() {
 }
 
 watch(() => item.value.year, async () => {
-  item.value.data = null
-  item.value.data = await loadData()
+  item.value = {
+    ...item.value,
+    date_from: null,
+    date_to: null,
+  }
+  await updateData()
 })
+watch(() => item.value.date_from, updateData)
+watch(() => item.value.date_to, updateData)
 
 defineExpose(expose)
 </script>
@@ -86,7 +102,11 @@ defineExpose(expose)
       <UiYearSelector v-model="item.year" :disabled="item.id > 0" />
     </div>
     <div>
-      <UiDateInput v-model="item.date" today-btn :disabled="item.id > 0" />
+      <UiDateInput v-model="item.date" today-btn :disabled="item.id > 0" label="Дата в договоре" />
+    </div>
+    <div class="double-input">
+      <UiDateInput v-model="item.date_from" clearable :disabled="item.id > 0" label="Занятия от" />
+      <UiDateInput v-model="item.date_to" clearable :disabled="item.id > 0" label="Занятия до" />
     </div>
     <div>
       <FileUploader v-model="item.file" folder="teacher-contracts" class="mt-0" label="прикрепить PDF" />

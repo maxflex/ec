@@ -13,11 +13,13 @@ class TeacherContract extends Model
 {
     protected $fillable = [
         'year', 'date', 'data', 'file',
-        'is_active',
+        'is_active', 'date_from', 'date_to',
     ];
 
     protected $casts = [
         'date' => 'date',
+        'date_from' => 'date',
+        'date_to' => 'date',
         'data' => 'array',
         'is_active' => 'boolean',
         'file' => 'array',
@@ -83,7 +85,7 @@ class TeacherContract extends Model
         }
 
         // 1. Загружаем актуальные (свежие) данные
-        $actualData = self::loadData($this->teacher, $this->year);
+        $actualData = self::loadData($this->teacher, $this->year, $this->date_from, $this->date_to);
 
         // 2. Берем сохраненные (старые) данные
         $savedData = $this->data ?? [];
@@ -108,13 +110,15 @@ class TeacherContract extends Model
         return $makeSignature($savedData) !== $makeSignature($actualData);
     }
 
-    public static function loadData(Teacher $teacher, int $year)
+    public static function loadData(Teacher $teacher, int $year, ?string $dateFrom, ?string $dateTo)
     {
         return Lesson::query()
             ->join('groups as g', 'g.id', '=', 'lessons.group_id')
             ->excludeCancelled()
             ->where('teacher_id', $teacher->id)
             ->where('g.year', $year)
+            ->when($dateFrom, fn ($q) => $q->where('date', '>=', $dateFrom))
+            ->when($dateTo, fn ($q) => $q->where('date', '<=', $dateTo))
             ->selectRaw('group_id, price, count(*) as `lessons`')
             ->groupByRaw('group_id, price')
             ->orderByRaw('group_id, price, `lessons`')

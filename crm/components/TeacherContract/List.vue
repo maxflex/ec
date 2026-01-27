@@ -24,20 +24,28 @@ const emit = defineEmits<{
       <TableCol :width="200">
         <UiPerson :item="item.teacher" />
       </TableCol>
-      <TableCol :width="140">
+      <TableCol :width="100">
         версия {{ item.seq }}
       </TableCol>
-      <TableCol :width="130">
+      <TableCol :width="100">
         {{ formatDate(item.date) }}
       </TableCol>
-      <TableCol :width="150">
+      <TableCol :width="100">
         {{ plural(item.total.groups, ['группа', 'группы', 'групп']) }}
       </TableCol>
-      <TableCol :width="150">
+      <TableCol :width="110">
         {{ plural(item.total.lessons, ['занятие', 'занятия', 'занятий']) }}
       </TableCol>
-      <TableCol :width="150">
+      <TableCol :width="130">
         {{ formatPrice(item.total.price) }}  руб.
+      </TableCol>
+      <TableCol :width="180">
+        <template v-if="item.date_from">
+          с {{ formatDate(item.date_from) }}
+        </template>
+        <template v-if="item.date_to">
+          по {{ formatDate(item.date_to) }}
+        </template>
       </TableCol>
       <TableCol>
         <div class="teacher-contract__buttons">

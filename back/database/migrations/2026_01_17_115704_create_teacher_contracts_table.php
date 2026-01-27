@@ -15,6 +15,8 @@ return new class extends Migration
             $table->foreignIdFor(Teacher::class)->constrained('teachers');
             $table->unsignedSmallInteger('year')->index();
             $table->date('date');
+            $table->date('date_from')->nullable();
+            $table->date('date_to')->nullable();
             $table->boolean('is_active');
             $table->json('data');
             $table->json('file')->nullable();
