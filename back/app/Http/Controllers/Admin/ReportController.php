@@ -9,7 +9,8 @@ use App\Http\Resources\ReportListResource;
 use App\Http\Resources\ReportResource;
 use App\Models\Report;
 use App\Models\Teacher;
-use App\Utils\ChatGPT;
+use App\Utils\AI\ChatGPT;
+use App\Utils\AI\GeminiReportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -130,12 +131,24 @@ class ReportController extends Controller
     public function improve(Request $request)
     {
         $validated = $request->validate([
-            'cognitive_ability_comment' => ['required', 'string'],
-            'homework_comment' => ['required', 'string'],
-            'knowledge_level_comment' => ['required', 'string'],
-            'recommendation_comment' => ['required', 'string'],
+            'id' => ['required', 'numeric'],
+            'cognitive_ability_comment' => ['required_without:comment', 'string'],
+            'homework_comment' => ['required_without:comment', 'string'],
+            'knowledge_level_comment' => ['required_without:comment', 'string'],
+            'recommendation_comment' => ['required_without:comment', 'string'],
+            'comment' => ['sometimes', 'string'],
         ]);
 
-        return ChatGPT::improveReport(new Report($validated));
+        $id = intval($request->input('id'));
+        if ($id > 0) {
+            $report = Report::find($id);
+            $report->fill($validated);
+        } else {
+            $report = new Report($request->all());
+        }
+
+        return $request->has('comment')
+            ? GeminiReportService::improveReport($report)
+            : ChatGPT::improveReport($report);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Utils;
+namespace App\Utils\AI;
 
 use App\Models\Report;
 use OpenAI\Laravel\Facades\OpenAI;

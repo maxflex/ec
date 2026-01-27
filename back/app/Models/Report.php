@@ -16,17 +16,19 @@ use Illuminate\Support\Facades\DB;
 #[ObservedBy(ReportObserver::class)]
 class Report extends Model
 {
+    // сколько символов = 100% заполняемость
+    const int PERFECT_LENGTH = 1000;
+
     protected $fillable = [
         'year', 'program', 'price', 'client_id', 'status', 'grade',
         'recommendation_comment', 'knowledge_level_comment', 'teacher_id',
-        'cognitive_ability_comment', 'homework_comment',
+        'cognitive_ability_comment', 'homework_comment', 'comment',
     ];
 
     protected $casts = [
         'program' => Program::class,
         'status' => ReportStatus::class,
         'is_read' => 'boolean',
-        'ai_text' => 'array',
     ];
 
     /**
@@ -250,16 +252,21 @@ class Report extends Model
      */
     public function getFillAttribute(): int
     {
-        $max = 1000; // сколько символов = 100% заполняемость
+        $textFields = (bool) $this->comment
+            ? [
+                $this->comment,
+            ]
+            : [
 
-        $totalLength = collect([
-            $this->homework_comment,
-            $this->recommendation_comment,
-            $this->cognitive_ability_comment,
-            $this->knowledge_level_comment,
-        ])->reduce(fn ($carry, $comment) => $carry + mb_strlen($comment), 0);
+                $this->homework_comment,
+                $this->recommendation_comment,
+                $this->cognitive_ability_comment,
+                $this->knowledge_level_comment,
+            ];
 
-        return min(round($totalLength * 100 / $max), 100);
+        $totalLength = collect($textFields)->reduce(fn ($carry, $comment) => $carry + mb_strlen($comment), 0);
+
+        return min(round($totalLength * 100 / self::PERFECT_LENGTH), 100);
     }
 
     /**

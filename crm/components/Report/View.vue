@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ReportResource } from '.'
+import { ReportTextFieldLabel } from '.'
 
 const route = useRoute()
 const item = ref<ReportResource>()
@@ -135,38 +136,17 @@ nextTick(loadData)
         </div>
       </div>
 
-      <div v-if="item.homework_comment">
-        <div>
-          Выполнение домашнего задания:
+      <template v-for="(label, field) in ReportTextFieldLabel">
+        <div v-if="item[field]" :key="field">
+          <div>
+            {{ label }}:
+          </div>
+          <div>
+            {{ item[field] }}
+          </div>
         </div>
-        <div>
-          {{ item.homework_comment }}
-        </div>
-      </div>
-      <div v-if="item.cognitive_ability_comment">
-        <div>
-          Способность усваивать новый материал:
-        </div>
-        <div>
-          {{ item.cognitive_ability_comment }}
-        </div>
-      </div>
-      <div v-if="item.knowledge_level_comment">
-        <div>
-          Текущий уровень знаний:
-        </div>
-        <div>
-          {{ item.knowledge_level_comment }}
-        </div>
-      </div>
-      <div v-if="item.recommendation_comment">
-        <div>
-          Рекомендации родителям:
-        </div>
-        <div>
-          {{ item.recommendation_comment }}
-        </div>
-      </div>
+      </template>
+
       <div v-if="item && item.grade" class="report-view__score" :class="`report-view__score--${item.grade}`">
         <div :class="`text-score text-score--${item.grade}`">
           {{ item.grade }}
