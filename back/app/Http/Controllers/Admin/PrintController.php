@@ -48,9 +48,10 @@ class PrintController extends Controller
                 'qr' => $this->generateQr($contract),
                 'contract' => $contract,
             ];
-        } elseif ($id === 21) {
+        } elseif (in_array($id, [21, 22])) {
             // договор на преподавателя – все группы
             $teacher = Teacher::find($request->teacher_id);
+            $company = Company::ano;
 
             $variables = [
                 ...$request->all(),

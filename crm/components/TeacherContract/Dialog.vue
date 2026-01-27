@@ -139,7 +139,16 @@ defineExpose(expose)
       Редактировать договор
     </template>
     <template #buttons>
-      <v-btn icon="$print" variant="text" :size="48" @click="onPrint()" />
+      <PrintBtn
+        v-if="item.id > 0"
+        :items="[21, 22]"
+        :extra="{
+          teacher_id: item.teacher_id,
+          year: item.year,
+          data: item.data,
+          date: item.date,
+        }"
+      />
     </template>
     <div class="double-input">
       <UiYearSelector v-model="item.year" :disabled="item.id > 0" />
