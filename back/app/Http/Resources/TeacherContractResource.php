@@ -13,7 +13,9 @@ class TeacherContractResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        return extract_fields($this, ['has_problems', '*'], [
+        return extract_fields($this, [
+            'problems_count', '*',
+        ], [
             'user' => new PersonResource($this->user),
         ]);
     }

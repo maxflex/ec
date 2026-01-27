@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import type { TeacherContractData } from '.'
 
-const { items } = defineProps<{
+const { items, highlightIds } = defineProps<{
   items: TeacherContractData
+  highlightIds?: number[]
 }>()
+
+// Простая проверка: нужно ли подсвечивать строку?
+const isHighlighted = (groupId: number) => {
+  return highlightIds?.includes(groupId)
+}
 </script>
 
 <template>
@@ -16,7 +22,11 @@ const { items } = defineProps<{
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(item, i) in items" :key="`${item.group_id}-${item.price}-${item.lessons}`" class="padding">
+      <tr
+      v-for="(item, i) in items"
+      :key="`${item.group_id}-${item.price}-${item.lessons}`"
+      :class="{ 'teacher-contract__group-problems': isHighlighted(item.group_id) }"
+      class="padding">
         <td :class="{ 'teacher-contract__same-group': i > 0 && items[i - 1].group_id === item.group_id }">
           <span> ГР-{{ item.group_id }} </span>
         </td>
@@ -58,7 +68,13 @@ const { items } = defineProps<{
     }
   }
 
-  &__data-table {
+  &__group-problems {
+    td {
+      background: #fde9e6;
+      &.teacher-contract__same-group:before {
+        background: #fde9e6 !important;
+      }
+    }
   }
 }
 </style>

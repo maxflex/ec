@@ -15,7 +15,7 @@ class TeacherContractListResource extends JsonResource
     {
         return extract_fields($this, [
             'date', 'data', 'file', 'is_active', 'seq',
-            'total', 'has_problems', 'date_from', 'date_to',
+            'total', 'problems_count', 'date_from', 'date_to',
         ], [
             'teacher' => new PersonResource($this->teacher),
         ]);

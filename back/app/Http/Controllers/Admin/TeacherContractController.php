@@ -40,7 +40,7 @@ class TeacherContractController extends Controller
             ->where('year', $request->year)
             ->where('is_active', true)
             ->get()
-            ->filter(fn (TeacherContract $e) => $e->has_problems === $hasProblems);
+            ->filter(fn (TeacherContract $e) => (bool) $e->problems_count === $hasProblems);
 
         return paginate(TeacherContractListResource::collection($data));
     }

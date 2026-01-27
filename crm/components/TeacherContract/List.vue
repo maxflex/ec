@@ -27,16 +27,16 @@ const emit = defineEmits<{
       <TableCol :width="100">
         версия {{ item.seq }}
       </TableCol>
-      <TableCol :width="100">
+      <TableCol :width="90">
         {{ formatDate(item.date) }}
       </TableCol>
-      <TableCol :width="100">
+      <TableCol :width="90">
         {{ plural(item.total.groups, ['группа', 'группы', 'групп']) }}
       </TableCol>
       <TableCol :width="110">
         {{ plural(item.total.lessons, ['занятие', 'занятия', 'занятий']) }}
       </TableCol>
-      <TableCol :width="130">
+      <TableCol :width="110">
         {{ formatPrice(item.total.price) }}  руб.
       </TableCol>
       <TableCol :width="180">
@@ -47,20 +47,14 @@ const emit = defineEmits<{
           по {{ formatDate(item.date_to) }}
         </template>
       </TableCol>
+      <TableCol :width="60">
+        <span v-if="item.problems_count > 0" class="text-error d-flex align-center ga-1">
+          <v-icon color="error" :icon="mdiAlertBox" />
+          {{ item.problems_count }}
+        </span>
+      </TableCol>
       <TableCol>
         <div class="teacher-contract__buttons">
-          <div>
-            <v-tooltip v-if="item.has_problems" location="bottom">
-              <template #activator="{ props }">
-                <v-icon
-                  :icon="mdiAlertBox"
-                  color="error"
-                  v-bind="props"
-                />
-              </template>
-              есть несоответствия
-            </v-tooltip>
-          </div>
           <div>
             <a v-if="item.file" class="gray-link" target="_blank" :href="item.file.url">
               <v-icon :icon="mdiFilePdfBox" />

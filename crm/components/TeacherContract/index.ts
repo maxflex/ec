@@ -8,7 +8,7 @@ export interface TeacherContractResource {
   id: number
   teacher_id: number
   year: Year
-  has_problems: boolean
+  problems_count: number
   user?: PersonResource
   date: string
   date_from: string | null
@@ -24,7 +24,7 @@ export interface TeacherContractListResource {
   year: Year
   date: string
   seq: number
-  has_problems: boolean
+  problems_count: number
   data: TeacherContractData
   file: UploadedFile | null
   date_from: string | null
@@ -43,7 +43,7 @@ export const modelDefaults: TeacherContractResource = {
   id: newId(),
   year: currentAcademicYear(),
   teacher_id: -1,
-  has_problems: false,
+  problems_count: 0,
   date: today(),
   date_from: null,
   date_to: null,

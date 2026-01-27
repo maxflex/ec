@@ -77,37 +77,43 @@ class TeacherContract extends Model
         return $total;
     }
 
-    public function getHasProblemsAttribute(): bool
+    /**
+     * Возвращает количество несоответствий (строк).
+     * 0 — если всё совпадает.
+     */
+    public function getProblemsCountAttribute(): int
     {
-        // Если договор не активен, считаем, что проблем нет
         if (! $this->is_active) {
-            return false;
+            return 0;
         }
 
-        // 1. Загружаем актуальные (свежие) данные
         $actualData = self::loadData($this->teacher, $this->year, $this->date_from, $this->date_to);
-
-        // 2. Берем сохраненные (старые) данные
         $savedData = $this->data ?? [];
 
-        // 3. Функция-хелпер: превращает массив объектов в массив строк-отпечатков
+        // Хелпер тот же: создаем массив строк-сигнатур
         $makeSignature = function ($items) {
             return collect($items)
                 ->map(function ($item) {
                     $obj = (object) $item;
 
-                    // Создаем строку вида "1952-2500-62"
-                    // %d гарантирует, что числа сравниваются как числа
                     return sprintf('%d-%d-%d', $obj->group_id, $obj->price, $obj->lessons);
                 })
-                ->sort()   // Сортируем (чтобы порядок записей в БД не влиял)
-                ->values() // Сбрасываем ключи (важно для сравнения массивов)
+                // Здесь сортировка уже не критична для array_diff, но полезна для отладки
+                ->values()
                 ->all();
         };
 
-        // 4. Сравниваем два массива строк
-        // Если отличается хоть что-то (длина массива, цена, кол-во), будет true
-        return $makeSignature($savedData) !== $makeSignature($actualData);
+        $savedSigs = $makeSignature($savedData);
+        $actualSigs = $makeSignature($actualData);
+
+        // 1. Находим записи, которые "пропали" (есть в сохраненных, нет в актуальных)
+        $missing = array_diff($savedSigs, $actualSigs);
+
+        // 2. Находим записи, которые "появились" (есть в актуальных, нет в сохраненных)
+        $extra = array_diff($actualSigs, $savedSigs);
+
+        // Возвращаем сумму расхождений
+        return count($missing) + count($extra);
     }
 
     public static function loadData(Teacher $teacher, int $year, ?string $dateFrom, ?string $dateTo)
