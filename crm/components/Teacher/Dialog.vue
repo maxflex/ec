@@ -88,14 +88,8 @@ defineExpose({ create, edit })
 </script>
 
 <template>
-  <v-dialog
-    v-model="dialog"
-    :width="width"
-  >
-    <div
-      v-if="teacher"
-      class="dialog-wrapper"
-    >
+  <v-dialog v-model="dialog" :width="width">
+    <div v-if="teacher" class="dialog-wrapper">
       <div class="dialog-header">
         <div v-if="teacher.id > 0">
           Редактирование преподавателя

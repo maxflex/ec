@@ -63,7 +63,10 @@ function onPrint() {
   }, true)
 }
 
-watch(() => item.value.year, loadData)
+watch(() => item.value.year, async () => {
+  item.value.data = null
+  item.value.data = await loadData()
+})
 
 defineExpose(expose)
 </script>
