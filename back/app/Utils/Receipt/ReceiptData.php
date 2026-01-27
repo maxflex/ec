@@ -25,6 +25,6 @@ readonly class ReceiptData
         $this->externalId = $model->getTable().'_'.$model->id;
         $this->sum = (int) $model->sum;
         $this->receiptNumber = $model->receipt_number;
-        $this->isReturn = $model->is_return;
+        $this->isReturn = (bool) $model->is_return;
     }
 }

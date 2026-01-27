@@ -103,7 +103,7 @@ class SbpController extends Controller
 
         $paymentId = $request->object['payment_id'] ?? $request->object['id'];
 
-        $contractPayment = cache()->get('sbp-'.$paymentId);
+        $contractPayment = cache()->pull('sbp-'.$paymentId);
 
         // Платежи могут быть также из MR. Их не обрабатывать
         // https://ege-repetitor.ru/payment

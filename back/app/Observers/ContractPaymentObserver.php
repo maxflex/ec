@@ -25,15 +25,14 @@ class ContractPaymentObserver
     {
         // отправить чек
         if ($payment->receipt_number) {
-            $receiptData = $payment->toReceipt();
-
             // СБП Онлайн: чеки уходят автоматически через ЮКасса
             if ($payment->method !== ContractPaymentMethod::sbpOnline) {
+                $receiptData = $payment->toReceipt();
                 new Receipt($receiptData)->send();
             }
 
             // сохраняем IP, c которого будет уходить чек
-            $payment->receipt_ip = config('receipt.'.$receiptData->company->value.'.ip');
+            $payment->receipt_ip = config('receipt.'.$payment->contract->company->value.'.ip');
             $payment->saveQuietly();
         }
     }
