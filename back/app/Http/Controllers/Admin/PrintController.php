@@ -13,6 +13,7 @@ use App\Models\GroupAct;
 use App\Models\Macro;
 use App\Models\OtherPayment;
 use App\Models\Teacher;
+use App\Models\TeacherContract;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Blade;
@@ -52,9 +53,14 @@ class PrintController extends Controller
             // договор на преподавателя – все группы
             $teacher = Teacher::find($request->teacher_id);
             $company = Company::ano;
+            $firstVersionDate = TeacherContract::query()
+                ->where('teacher_id', $teacher->id)
+                ->where('year', $request->input('year'))
+                ->min('date') ?? $request->input('date');
 
             $variables = [
                 ...$request->all(),
+                'firstVersionDate' => $firstVersionDate,
                 'data' => collect($request->input('data')),
                 'teacher' => $teacher,
             ];
