@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import type { TeacherActDialog, TeacherContractDialog } from '#build/components'
+import type { TeacherContractDialog } from '#build/components'
 import type { TeacherContractListResource } from '.'
-import type { TeacherActListResource } from '../TeacherAct'
 import { apiUrl } from '.'
 
 const { teacherId } = defineProps<{ teacherId: number }>()
 const teacherContractDialog = ref<InstanceType<typeof TeacherContractDialog>>()
-const teacherActDialog = ref<InstanceType<typeof TeacherActDialog>>()
 const filters = useAvailableYearsFilter()
-const acts = ref<TeacherActListResource[]>()
 
 const { items, availableYears, indexPageData, reloadData } = useIndex<TeacherContractListResource>(
   apiUrl,
@@ -20,17 +17,6 @@ const { items, availableYears, indexPageData, reloadData } = useIndex<TeacherCon
     },
   },
 )
-
-async function loadActs() {
-  const { data } = await useHttp<ApiResponse<TeacherActListResource>>(`teacher-acts`, {
-    params: {
-      teacher_id: teacherId,
-    },
-  })
-  acts.value = data.value!.data
-}
-
-nextTick(loadActs)
 </script>
 
 <template>
@@ -47,8 +33,6 @@ nextTick(loadActs)
       </v-btn>
     </template>
     <TeacherContractList highlight-active :items="items" @edit="teacherContractDialog?.edit" />
-    <TeacherActList v-if="acts" :items="acts" @edit="teacherActDialog?.edit" />
   </UiIndexPage>
   <TeacherContractDialog ref="teacherContractDialog" @updated="reloadData" />
-  <TeacherActDialog ref="teacherActDialog" :items="acts" />
 </template>

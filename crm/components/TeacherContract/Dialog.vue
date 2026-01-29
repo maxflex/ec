@@ -1,8 +1,7 @@
 <script lang="ts" setup>
 import type { PrintDialog } from '#components'
 import type { TeacherContractData, TeacherContractListResource, TeacherContractResource } from '.'
-import type { PrintOption } from '../Print'
-import { mdiAlertBox, mdiArrowDownThin } from '@mdi/js'
+import { mdiAlertBox } from '@mdi/js'
 import { apiUrl, modelDefaults } from '.'
 
 const emit = defineEmits(['updated'])
@@ -56,21 +55,6 @@ async function updateData() {
   }
   item.value.data = null
   item.value.data = await loadData()
-}
-
-function onPrint() {
-  const printOption: PrintOption = {
-    id: 21,
-    label: 'Договор на преподавателя',
-    company: 'ano',
-  }
-
-  printDialog.value?.open(printOption, {
-    teacher_id: item.value.teacher_id,
-    year: item.value.year,
-    data: item.value.data,
-    date: item.value.date,
-  }, true)
 }
 
 // Хелпер для создания уникальной подписи группы (строка вида "price-lessons|price-lessons")
@@ -150,7 +134,7 @@ defineExpose(expose)
         }"
       />
     </template>
-    <div class="double-input">
+    <div>
       <UiYearSelector v-model="item.year" :disabled="item.id > 0" />
     </div>
     <div>

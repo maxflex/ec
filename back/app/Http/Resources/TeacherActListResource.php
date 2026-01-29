@@ -2,20 +2,19 @@
 
 namespace App\Http\Resources;
 
-use App\Models\TeacherContract;
+use App\Models\TeacherAct;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin TeacherContract
+ * @mixin TeacherAct
  */
-class TeacherContractListResource extends JsonResource
+class TeacherActListResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'date', 'file', 'is_active', 'seq',
-            'total', 'problems_count', 'date_from', 'date_to',
+            'date', 'total', 'date_from', 'date_to',
         ], [
             'teacher' => new PersonResource($this->teacher),
         ]);

@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import type { TeacherContractListResource } from '.'
+import type { TeacherActListResource } from '.'
 import { mdiAlertBox, mdiFilePdfBox } from '@mdi/js'
 import { apiUrl } from '.'
 
-const { items, highlightActive } = defineProps<{
-  highlightActive?: boolean
-  items: TeacherContractListResource[]
+const { items } = defineProps<{
+  items: TeacherActListResource[]
 }>()
 
 const emit = defineEmits<{
@@ -15,17 +14,12 @@ const emit = defineEmits<{
 
 <template>
   <Table>
-    <TableRow
-      v-for="item in items" :id="`${apiUrl}-${item.id}`" :key="item.id" :class="{
-        'teacher-contract--active': highlightActive && item.is_active,
-        'teacher-contract--inactive': highlightActive && !item.is_active,
-      }"
-    >
+    <TableRow v-for="item in items" :id="`${apiUrl}-${item.id}`" :key="item.id">
       <TableCol :width="200">
         <UiPerson :item="item.teacher" />
       </TableCol>
       <TableCol :width="100">
-        версия {{ item.seq }}
+        акт
       </TableCol>
       <TableCol :width="90">
         {{ formatDate(item.date) }}
@@ -47,19 +41,8 @@ const emit = defineEmits<{
           по {{ formatDate(item.date_to) }}
         </template>
       </TableCol>
-      <TableCol :width="60">
-        <span v-if="item.problems_count > 0" class="text-error d-flex align-center ga-1">
-          <v-icon color="error" :icon="mdiAlertBox" />
-          {{ item.problems_count }}
-        </span>
-      </TableCol>
       <TableCol>
-        <div class="teacher-contract__buttons">
-          <div>
-            <a v-if="item.file" class="gray-link" target="_blank" :href="item.file.url">
-              <v-icon :icon="mdiFilePdfBox" />
-            </a>
-          </div>
+        <div class="teacher-act__buttons">
           <div>
             <v-btn
               variant="plain"
@@ -76,7 +59,7 @@ const emit = defineEmits<{
 </template>
 
 <style lang="scss">
-.teacher-contract {
+.teacher-act {
   &__buttons {
     display: flex;
     align-items: center;
@@ -87,15 +70,6 @@ const emit = defineEmits<{
       display: inline-block;
       width: 42px;
       min-width: 42px;
-    }
-  }
-
-  &--active {
-    background: #fff2d6;
-  }
-  &--inactive {
-    & > div {
-      opacity: 0.5;
     }
   }
 }

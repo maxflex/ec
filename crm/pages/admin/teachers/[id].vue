@@ -12,7 +12,7 @@ const { tabs, selectedTab } = useTabs({
   payments: 'платежи',
   balance: 'баланс',
   reports: 'отчёты',
-  contracts: 'договоры',
+  contracts: 'договоры и акты',
   clientComplaints: 'жалобы',
   violations: 'нарушения',
   clientReviews: 'отзывы',

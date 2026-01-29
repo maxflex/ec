@@ -7,9 +7,9 @@ const dialogWidths: { [key in DialogWidth]: number } = {
   large: 1000,
 }
 
-export default function (w: DialogWidth) {
+export default function (w: DialogWidth | number) {
   const dialog = ref(false)
-  const width = dialogWidths[w]
+  const width = Number.isFinite(w) ? w : dialogWidths[w as DialogWidth]
   const transition = ref('dialog-fade-transition')
   // watch(dialog, (val) => {
   //   const lowerDialog = document.documentElement.querySelector<HTMLElement>(

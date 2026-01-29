@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 #[ObservedBy(UserIdObserver::class)]
 class TeacherContract extends Model
@@ -40,7 +41,8 @@ class TeacherContract extends Model
      */
     public function chain(): HasMany
     {
-        return $this->hasMany(TeacherContract::class, 'teacher_id', 'teacher_id')
+        return $this
+            ->hasMany(TeacherContract::class, 'teacher_id', 'teacher_id')
             ->where('year', $this->year);
     }
 
@@ -116,7 +118,7 @@ class TeacherContract extends Model
         return count($missing) + count($extra);
     }
 
-    public static function loadData(Teacher $teacher, int $year, ?string $dateFrom, ?string $dateTo)
+    public static function loadData(Teacher $teacher, int $year, ?string $dateFrom, ?string $dateTo): Collection
     {
         return Lesson::query()
             ->join('groups as g', 'g.id', '=', 'lessons.group_id')

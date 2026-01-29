@@ -1,31 +1,28 @@
-export type TeacherContractData = Array<{
-  group_id: number
+import type { TeacherContractData } from '../TeacherContract'
+
+export type TeacherActData = Array<{
+  teacher: PersonResource
+  groups: number
   price: number
   lessons: number
 }>
 
-export interface TeacherContractResource {
+export interface TeacherActResource {
   id: number
   teacher_id: number
   year: Year
-  problems_count: number
   user?: PersonResource
   date: string
   date_from: string | null
   date_to: string | null
   created_at?: string
-  file: UploadedFile | null
   data: TeacherContractData | null
 }
 
-export interface TeacherContractListResource {
+export interface TeacherActListResource {
   id: number
   teacher: PersonResource
-  year: Year
   date: string
-  seq: number
-  problems_count: number
-  file: UploadedFile | null
   date_from: string | null
   date_to: string | null
   total: {
@@ -33,19 +30,16 @@ export interface TeacherContractListResource {
     lessons: number
     price: number
   }
-  is_active: boolean
 }
 
-export const apiUrl = 'teacher-contracts'
+export const apiUrl = 'teacher-acts'
 
-export const modelDefaults: TeacherContractResource = {
+export const modelDefaults: TeacherActResource = {
   id: newId(),
   year: currentAcademicYear(),
   teacher_id: -1,
-  problems_count: 0,
   date: today(),
   date_from: null,
   date_to: null,
   data: null,
-  file: null,
 }

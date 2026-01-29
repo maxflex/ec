@@ -64,8 +64,9 @@ const menu: Menu = [
     items: [
       { title: 'Все преподаватели', to: '/teachers' },
       { title: 'Инструкции', to: '/instructions' },
-      { title: 'Договоры', to: '/teacher-contracts' },
       { title: 'Жалобы', to: '/teacher-complaints' },
+      { title: 'Договоры', to: '/teacher-contracts' },
+      { title: 'Акты', to: '/teacher-acts' },
     ],
   },
   {

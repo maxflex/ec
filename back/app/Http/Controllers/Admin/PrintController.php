@@ -13,6 +13,7 @@ use App\Models\GroupAct;
 use App\Models\Macro;
 use App\Models\OtherPayment;
 use App\Models\Teacher;
+use App\Models\TeacherAct;
 use App\Models\TeacherContract;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -64,6 +65,10 @@ class PrintController extends Controller
                 'data' => collect($request->input('data')),
                 'teacher' => $teacher,
             ];
+        } elseif ($id === 23) {
+            // акт оказанных услуг
+            $variables = ['items' => TeacherAct::getVariables($request)];
+            $company = Company::ano;
         } elseif ($request->has('contract_version_id')) {
             $contractVersion = ContractVersion::find($request->contract_version_id);
             $variables = compact('contractVersion');
