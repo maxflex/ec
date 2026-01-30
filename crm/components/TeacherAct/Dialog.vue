@@ -55,6 +55,9 @@ defineExpose(expose)
       <UiDateInput v-model="item.date_to" clearable :disabled="item.id > 0" label="Занятия до" />
     </div>
     <div>
+      <FileUploader v-model="item.file" folder="teacher-contracts" class="mt-0" label="прикрепить PDF" />
+    </div>
+    <div>
       <TeacherContractDataTable :items="item.data" />
     </div>
   </CrudDialog>

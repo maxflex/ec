@@ -15,6 +15,7 @@ class TeacherActListResource extends JsonResource
     {
         return extract_fields($this, [
             'date', 'total', 'date_from', 'date_to',
+            'file',
         ], [
             'teacher' => new PersonResource($this->teacher),
         ]);

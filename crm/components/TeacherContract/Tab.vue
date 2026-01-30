@@ -34,7 +34,7 @@ nextTick(loadActs)
 </script>
 
 <template>
-  <UiIndexPage :data="indexPageData">
+  <UiIndexPage :data="{ loading: indexPageData.loading, noData: (!!items && !items.length) && (!!acts && !acts.length) }">
     <template #filters>
       <AvailableYearsSelector
         v-model="filters.year"

@@ -34,6 +34,15 @@ class TeacherContract extends Model
             ]);
             $teacherContract->is_active = true;
         });
+
+        static::deleted(function (TeacherContract $teacherContract) {
+            // если удалили активную версию
+            if ($teacherContract->is_active) {
+                $teacherContract->chain()->latest('date')->first()?->update([
+                    'is_active' => true,
+                ]);
+            }
+        });
     }
 
     /**

@@ -47,6 +47,11 @@ const emit = defineEmits<{
       <TableCol>
         <div class="teacher-act__buttons">
           <div>
+            <a v-if="item.file" class="gray-link" target="_blank" :href="item.file.url">
+              <v-icon :icon="mdiFilePdfBox" />
+            </a>
+          </div>
+          <div>
             <v-btn
               variant="plain"
               color="gray"

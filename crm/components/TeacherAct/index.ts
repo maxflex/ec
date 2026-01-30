@@ -17,6 +17,7 @@ export interface TeacherActResource {
   date_to: string | null
   created_at?: string
   data: TeacherContractData | null
+  file: UploadedFile | null
 }
 
 export interface TeacherActListResource {
@@ -25,6 +26,7 @@ export interface TeacherActListResource {
   date: string
   date_from: string | null
   date_to: string | null
+  file: UploadedFile | null
   total: {
     groups: number
     lessons: number
@@ -40,6 +42,7 @@ export const modelDefaults: TeacherActResource = {
   teacher_id: -1,
   date: today(),
   date_from: null,
+  file: null,
   date_to: null,
   data: null,
 }

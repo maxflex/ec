@@ -17,8 +17,14 @@ return new class extends Migration
             $table->date('date_from')->nullable();
             $table->date('date_to')->nullable();
             $table->json('data');
+            $table->json('file')->nullable();
             $table->foreignIdFor(\App\Models\User::class)->constrained('users');
             $table->timestamps();
         });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('teacher_acts');
     }
 };

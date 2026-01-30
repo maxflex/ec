@@ -16,6 +16,7 @@ class TeacherAct extends Model
 {
     protected $fillable = [
         'year', 'date', 'data', 'date_from', 'date_to',
+        'file',
     ];
 
     protected $casts = [
@@ -23,6 +24,7 @@ class TeacherAct extends Model
         'date_from' => 'date',
         'date_to' => 'date',
         'data' => 'array',
+        'file' => 'array',
     ];
 
     /**
