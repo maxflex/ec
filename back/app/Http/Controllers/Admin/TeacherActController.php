@@ -23,6 +23,7 @@ class TeacherActController extends Controller
         $query = TeacherAct::query()
             ->with('teacher')
             ->join('teachers as t', 't.id', '=', 'teacher_acts.teacher_id')
+            ->selectRaw('teacher_acts.*')
             ->orderByRaw('t.last_name, t.first_name, t.middle_name, `date`');
 
         $this->filter($request, $query);
