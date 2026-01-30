@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\TeacherActExport;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TeacherActListResource;
 use App\Http\Resources\TeacherActResource;
@@ -9,6 +10,7 @@ use App\Models\Teacher;
 use App\Models\TeacherAct;
 use App\Models\TeacherContract;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TeacherActController extends Controller
 {
@@ -18,7 +20,10 @@ class TeacherActController extends Controller
 
     public function index(Request $request)
     {
-        $query = TeacherAct::query();
+        $query = TeacherAct::query()
+            ->with('teacher')
+            ->join('teachers as t', 't.id', '=', 'teacher_acts.teacher_id')
+            ->orderByRaw('t.last_name, t.first_name, t.middle_name, `date`');
 
         $this->filter($request, $query);
 
@@ -71,6 +76,9 @@ class TeacherActController extends Controller
     {
         $request->validate([
             'year' => ['required', 'integer'],
+            'date' => ['required', 'date_format:Y-m-d'],
+            'date_from' => ['required', 'date_format:Y-m-d'],
+            'date_to' => ['required', 'date_format:Y-m-d'],
             'teacher_ids' => ['required', 'array'],
             'teacher_ids.*' => ['required', 'exists:teachers,id'],
         ]);
@@ -86,19 +94,15 @@ class TeacherActController extends Controller
         }
     }
 
-    /**
-     * Для фильтра "есть несоответствия"
-     */
-    private function hasProblems(Request $request)
+    public function export()
     {
-        $hasProblems = (bool) $request->input('has_problems');
-
-        $data = TeacherAct::query()
-            ->where('year', $request->year)
-            ->where('is_active', true)
+        $teacherActs = TeacherAct::query()
+            ->with('teacher')
             ->get()
-            ->filter(fn (TeacherAct $e) => (bool) $e->problems_count === $hasProblems);
+            ->sortBy(['teacher.last_name', 'teacher.first_name', 'teacher.middle_name', 'date']);
 
-        return paginate(TeacherActListResource::collection($data));
+        $export = new TeacherActExport($teacherActs);
+
+        return Excel::download($export, 'acts.xlsx');
     }
 }

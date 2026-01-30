@@ -100,22 +100,24 @@ class TeacherAct extends Model
      */
     public function getTotalAttribute(): ?array
     {
-        if (! $this->data) {
-            return null;
-        }
+        return once(function () {
+            if (! $this->data) {
+                return null;
+            }
 
-        $total = [
-            'groups' => collect($this->data)->pluck('group_id')->unique()->count(),
-            'lessons' => 0,
-            'price' => 0,
-        ];
+            $total = [
+                'groups' => collect($this->data)->pluck('group_id')->unique()->count(),
+                'lessons' => 0,
+                'price' => 0,
+            ];
 
-        foreach ($this->data as $d) {
-            $total['price'] += ($d['price'] * $d['lessons']);
-            $total['lessons'] += $d['lessons'];
-        }
+            foreach ($this->data as $d) {
+                $total['price'] += ($d['price'] * $d['lessons']);
+                $total['lessons'] += $d['lessons'];
+            }
 
-        return $total;
+            return $total;
+        });
     }
 
     /**

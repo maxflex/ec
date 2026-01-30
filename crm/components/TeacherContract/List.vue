@@ -21,10 +21,10 @@ const emit = defineEmits<{
         'teacher-contract--inactive': highlightActive && !item.is_active,
       }"
     >
-      <TableCol :width="200">
+      <TableCol :width="180">
         <UiPerson :item="item.teacher" />
       </TableCol>
-      <TableCol :width="100">
+      <TableCol :width="90">
         версия {{ item.seq }}
       </TableCol>
       <TableCol :width="90">
@@ -33,13 +33,16 @@ const emit = defineEmits<{
       <TableCol :width="90">
         {{ plural(item.total.groups, ['группа', 'группы', 'групп']) }}
       </TableCol>
-      <TableCol :width="110">
+      <TableCol :width="120">
         {{ plural(item.total.lessons, ['занятие', 'занятия', 'занятий']) }}
       </TableCol>
-      <TableCol :width="110">
+      <TableCol :width="150">
         {{ formatPrice(item.total.price) }}  руб.
+        <div class="text-gray text-caption">
+          {{ formatPrice(item.total.price * 0.15) }} руб. НДФЛ
+        </div>
       </TableCol>
-      <TableCol :width="180">
+      <TableCol :width="170">
         <template v-if="item.date_from">
           с {{ formatDate(item.date_from) }}
         </template>
@@ -47,14 +50,12 @@ const emit = defineEmits<{
           по {{ formatDate(item.date_to) }}
         </template>
       </TableCol>
-      <TableCol :width="60">
-        <span v-if="item.problems_count > 0" class="text-error d-flex align-center ga-1">
-          <v-icon color="error" :icon="mdiAlertBox" />
-          {{ item.problems_count }}
-        </span>
-      </TableCol>
       <TableCol>
         <div class="teacher-contract__buttons">
+          <div v-if="item.problems_count > 0" class="text-error d-flex align-center ga-1">
+            <v-icon color="error" :icon="mdiAlertBox" />
+            {{ item.problems_count }}
+          </div>
           <div>
             <a v-if="item.file" class="gray-link" target="_blank" :href="item.file.url">
               <v-icon :icon="mdiFilePdfBox" />

@@ -176,8 +176,12 @@ Route::get('exams', ExamController::class);
 Route::apiResource('phones', PhoneController::class)->only('index');
 
 Route::post('teacher-contracts/load-data', [TeacherContractController::class, 'loadData']);
-Route::post('teacher-acts/load-mass-data', [TeacherActController::class, 'loadMassData']);
-Route::post('teacher-acts/mass-store', [TeacherActController::class, 'massStore']);
+
+Route::controller(TeacherActController::class)->prefix('teacher-acts')->group(function () {
+    Route::post('load-mass-data', 'loadMassData');
+    Route::post('mass-store', 'massStore');
+    Route::post('export', 'export');
+});
 
 Route::apiResources([
     'telegram-lists' => TelegramListController::class,

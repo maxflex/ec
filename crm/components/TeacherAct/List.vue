@@ -15,10 +15,10 @@ const emit = defineEmits<{
 <template>
   <Table>
     <TableRow v-for="item in items" :id="`${apiUrl}-${item.id}`" :key="item.id">
-      <TableCol :width="200">
+      <TableCol :width="180">
         <UiPerson :item="item.teacher" />
       </TableCol>
-      <TableCol :width="100">
+      <TableCol :width="90">
         акт
       </TableCol>
       <TableCol :width="90">
@@ -27,13 +27,16 @@ const emit = defineEmits<{
       <TableCol :width="90">
         {{ plural(item.total.groups, ['группа', 'группы', 'групп']) }}
       </TableCol>
-      <TableCol :width="110">
+      <TableCol :width="120">
         {{ plural(item.total.lessons, ['занятие', 'занятия', 'занятий']) }}
       </TableCol>
-      <TableCol :width="110">
+      <TableCol :width="150">
         {{ formatPrice(item.total.price) }}  руб.
+        <div class="text-gray text-caption">
+          {{ formatPrice(item.total.price * 0.15) }} руб. НДФЛ
+        </div>
       </TableCol>
-      <TableCol :width="180">
+      <TableCol :width="170">
         <template v-if="item.date_from">
           с {{ formatDate(item.date_from) }}
         </template>
