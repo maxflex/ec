@@ -188,8 +188,8 @@ class Teacher extends Person implements HasSchedule
 
         foreach ($query->get() as $payment) {
             $balance->push(
-                $payment->sum * ($payment->is_return ? 1 : -1),
-                $payment->created_at->format('Y-m-d H:i:s'),
+                $payment->sum * -1, // выплата преподу
+                $payment->date,
                 sprintf(
                     'выплата, %s',
                     $payment->method->getTitle()
@@ -225,6 +225,9 @@ class Teacher extends Person implements HasSchedule
         return $balance;
     }
 
+    /**
+     * @return HasMany<TeacherPayment>
+     */
     public function payments(): HasMany
     {
         return $this->hasMany(TeacherPayment::class)->latest();
