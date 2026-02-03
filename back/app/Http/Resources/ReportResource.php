@@ -17,9 +17,9 @@ class ReportResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'year', 'program', 'status', 'is_read', 'created_at',
-            'homework_comment', 'price', 'recommendation_comment',
-            'knowledge_level_comment', 'cognitive_ability_comment', 'grade',
+            'year', 'program', 'status', 'is_read', 'created_at', 'homework_comment',
+            'price', 'recommendation_comment', 'comment', 'knowledge_level_comment',
+            'cognitive_ability_comment', 'grade',
         ], [
             'client_lessons' => JournalResource::collection($this->client_lessons),
             'teacher' => new TeacherListResource($this->teacher),

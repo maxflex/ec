@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import type { RealReport, ReportResource, ReportTextField, ReportTextFields } from '.'
-import { mdiAutoFix } from '@mdi/js'
-import { diffWordsWithSpace } from 'diff'
+import { mdiAutoFix, mdiOpenInNew } from '@mdi/js'
 import { cloneDeep } from 'lodash-es'
-import { ReportTextFieldLabel } from '.'
+import { getAiDiff, getReportTextFields, isAiTextEqual, ReportTextFieldLabel } from '.'
 
 const emit = defineEmits<{
   updated: [r: ReportResource]
@@ -14,7 +13,7 @@ const deleting = ref(false)
 const saving = ref(false)
 const aiLoading = ref(false)
 const router = useRouter()
-const { isAdmin, isTeacher } = useAuthStore()
+const { isAdmin, isTeacher, user } = useAuthStore()
 const availableTeacherStatuses: ReportStatus[] = [
   'draft',
   'toCheck',
@@ -27,6 +26,8 @@ const availableAdminStatuses: ReportStatus[] = [
   'empty',
 ]
 
+const aiText = ref<Partial<ReportTextFields>>()
+
 const availableStatuses = isTeacher ? availableTeacherStatuses : availableAdminStatuses
 
 const isDisabled = computed(() => {
@@ -38,6 +39,10 @@ const isDisabled = computed(() => {
   // админ не может редактировать статус "черновик"
   return item.value!.status === 'draft'
 })
+
+const textFields = computed(() => getReportTextFields(item.value!))
+// новый режим единого поля для отчета
+const isSingleField = computed(() => textFields.value.length === 1)
 
 function open(report: ReportResource) {
   item.value = cloneDeep(report)
@@ -81,9 +86,12 @@ async function destroy() {
     return
   }
   deleting.value = true
-  const { status } = await useHttp(`reports/${item.value!.id}`, {
-    method: 'delete',
-  })
+  const { status } = await useHttp(
+    `reports/${item.value!.id}`,
+    {
+      method: 'delete',
+    },
+  )
   if (status.value === 'error') {
     deleting.value = false
   }
@@ -99,13 +107,8 @@ const fill = computed<number>(() => {
 
   const max = 1000 // сколько символов = 100% заполняемость
   let total = 0
-  for (const comment of [
-    item.value.homework_comment,
-    item.value.recommendation_comment,
-    item.value.cognitive_ability_comment,
-    item.value.knowledge_level_comment,
-  ]) {
-    total += (comment ? comment.length : 0)
+  for (const field of textFields.value) {
+    total += (item.value[field] ? item.value[field].length : 0)
   }
 
   return Math.min(Math.round(total * 100 / max), 100)
@@ -116,75 +119,72 @@ async function improve() {
     return
   }
   aiLoading.value = true
-  const { data, error } = await useHttp<ReportTextFields>(`reports/improve`, {
-    method: 'POST',
-    body: {
-      cognitive_ability_comment: item.value!.cognitive_ability_comment,
-      homework_comment: item.value!.homework_comment,
-      knowledge_level_comment: item.value!.knowledge_level_comment,
-      recommendation_comment: item.value!.recommendation_comment,
-    } as ReportTextFields,
-  })
+  const { data, error } = await useHttp<Partial<ReportTextFields>>(
+    `reports/improve`,
+    {
+      method: 'POST',
+      body: textFields.value.reduce((carry, field) => ({ ...carry, [field]: item.value![field] }), {
+        id: item.value.id,
+      }),
+    },
+  )
   if (error.value) {
+    aiLoading.value = false
     setTimeout(() => useGlobalMessage(`<b>Ошибка ИИ</b>: ${error.value!.data.message}`, 'error'), 100)
   }
   if (data.value) {
-    item.value.ai_text = data.value!
-  }
-  for (const field in ReportTextFieldLabel) {
-    const diffHtml = generateDiffHtml(field as ReportTextField)
-    aiDiff.value[field as ReportTextField] = isTextEqual(field as ReportTextField) ? false : diffHtml
+    aiText.value = data.value
+
+    // для single-field не создаем diff
+    if (!isSingleField.value) {
+      for (const f in data.value) {
+        const field = f as ReportTextField
+        aiDiff.value[field] = isAiTextEqual(item.value, aiText.value, field)
+          ? false
+          : getAiDiff(item.value, aiText.value, field)
+      }
+    }
   }
   aiImproved.value = {}
   aiLoading.value = false
 }
 
-function isTextEqual(field: ReportTextField): boolean {
-  // Безопасное получение значений (на случай null/undefined)
-  const original = item.value?.[field] ?? ''
-  const ai = item.value?.ai_text?.[field] ?? ''
+// временно
+const aiLoading2 = ref(false)
+const isTest = computed(() => isAdmin && user && [1, 5].includes(user.id))
 
-  const normalize = (str: string) => {
-    return str
-      .trim() // Убираем пробелы по краям
-      .replace(/\r\n/g, '\n') // Приводим переносы Windows к Unix
-      .replace(/\r/g, '\n') // Убираем старые Mac переносы
-      .replace(/\n+/g, '\n') // Считаем 1 Enter и 2 Enter одинаковыми (схлопываем пустые строки)
-      .replace(/[ \t]+/g, ' ') // Схлопываем двойные пробелы и табы в один пробел
-      // .replace(/ё/g, 'е')      // <-- Раскомментируйте, если хотите считать "е" и "ё" одинаковыми
+async function improve2() {
+  if (!item.value) {
+    return
   }
-
-  return normalize(original) === normalize(ai)
-}
-
-// Функция принимает два текста и возвращает HTML с подсветкой
-function generateDiffHtml(field: ReportTextField) {
-  const diff = diffWordsWithSpace(item.value![field], item.value!.ai_text![field])
-
-  let html = ''
-
-  diff.forEach((part) => {
-    // part.added — если добавлено (зеленый)
-    // part.removed — если удалено (красный)
-    // иначе — обычный текст
-
-    if (part.added) {
-      html += `<span class="diff-added">${part.value}</span>`
-    }
-    else if (part.removed) {
-      html += `<span class="diff-removed">${part.value}</span>`
-    }
-    else {
-      html += part.value
-    }
-  })
-
-  return html
+  if (!item.value.comment) {
+    useGlobalMessage('Введите текст отчета', 'error')
+    return
+  }
+  aiLoading2.value = true
+  const fields: ReportTextField[] = ['comment']
+  const { data, error } = await useHttp<Partial<ReportTextFields>>(
+    `reports/improve`,
+    {
+      method: 'POST',
+      body: fields.reduce((carry, field) => ({ ...carry, [field]: item.value![field] }), {
+        id: item.value.id,
+      }),
+    },
+  )
+  if (error.value) {
+    aiLoading.value = false
+    setTimeout(() => useGlobalMessage(`<b>Ошибка ИИ</b>: ${error.value!.data.message}`, 'error'), 100)
+  }
+  if (data.value) {
+    aiText.value = data.value
+  }
+  aiImproved.value = {}
+  aiLoading2.value = false
 }
 
 function applyAi(field: ReportTextField) {
-  item.value![field] = item.value!.ai_text![field]
-  // item.value!.ai_text![field] = ''
+  item.value![field] = aiText.value![field]!
   aiImproved.value[field] = true
 }
 
@@ -215,6 +215,37 @@ defineExpose({ open })
             variant="text"
             @click="destroy()"
           />
+          <template v-if="isTest">
+            <v-tooltip location="bottom">
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  :icon="mdiOpenInNew"
+                  :size="48"
+                  :disabled="!aiText?.comment"
+                  color="success"
+                  variant="text"
+                  target="_blank"
+                  href="https://v3-api.ege-centr.ru/storage/ai.txt"
+                />
+              </template>
+              Gemini – открыть инструкцию
+            </v-tooltip>
+            <v-tooltip location="bottom">
+              <template #activator="{ props }">
+                <v-btn
+                  v-bind="props"
+                  :icon="mdiAutoFix"
+                  :size="48"
+                  :loading="aiLoading2"
+                  color="success"
+                  variant="text"
+                  @click="improve2()"
+                />
+              </template>
+              Gemini – сгенерировать текст отчета (тест)
+            </v-tooltip>
+          </template>
           <v-btn
             v-if="isAdmin"
             :icon="mdiAutoFix"
@@ -287,43 +318,86 @@ defineExpose({ open })
             </div>
           </div>
         </div>
-        <div v-for="(label, field) in ReportTextFieldLabel" :key="field">
+
+        <div v-if="isTest" class="report-dialog__text-field">
+          <v-textarea
+            v-model="item.comment"
+            rows="3"
+            no-resize
+            auto-grow
+            label="Текст отчета – тест"
+          />
+          <div v-if="aiText && aiText.comment" class="ai-suggest__wrapper">
+            <div class="ai-suggest">
+              {{ aiText.comment }}
+            </div>
+            <div class="ai-suggest__apply under-input">
+              <span v-if="aiImproved.comment" class="text-gray">
+                применить изменения
+              </span>
+              <a v-else @click="applyAi('comment')">
+                применить изменения
+              </a>
+            </div>
+          </div>
+          <div v-else class="ai-suggest__wrapper">
+            <div class="ai-suggest">
+              <div class="ai-suggest__empty">
+                {{ item.comment }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-for="field in textFields" :key="field" class="report-dialog__text-field">
           <v-textarea
             v-model="item[field]"
             :disabled="isDisabled"
             rows="3"
             no-resize
             auto-grow
-            :label="label"
+            :label="ReportTextFieldLabel[field]"
           />
-          <div v-if="item.ai_text && item.ai_text[field]" class="ai-suggest__wrapper">
-            <template v-if="!aiDiff[field]">
+          <template v-if="isAdmin">
+            <div v-if="aiText && aiText[field]" class="ai-suggest__wrapper">
+              <template v-if="isSingleField">
+                <div class="ai-suggest">
+                  {{ aiText[field] }}
+                </div>
+                <div class="ai-suggest__apply under-input">
+                  <span v-if="aiImproved[field]" class="text-gray">
+                    применить изменения
+                  </span>
+                  <a v-else @click="applyAi(field)">
+                    применить изменения
+                  </a>
+                </div>
+              </template>
+              <template v-else-if="!aiDiff[field]">
+                <div class="ai-suggest">
+                  <span class="text-label">без изменений</span>
+                </div>
+              </template>
+              <template v-else>
+                <div class="ai-suggest" v-html="aiDiff[field]" />
+                <div class="ai-suggest__apply under-input">
+                  <span v-if="aiImproved[field]" class="text-gray">
+                    применить изменения
+                  </span>
+                  <a v-else @click="applyAi(field)">
+                    применить изменения
+                  </a>
+                </div>
+              </template>
+            </div>
+            <div v-else class="ai-suggest__wrapper">
               <div class="ai-suggest">
-                <span class="text-label">без изменений</span>
-              </div>
-            </template>
-            <template v-else>
-              <div
-                class="ai-suggest"
-                v-html="aiDiff[field]"
-              />
-              <div class="ai-suggest__apply under-input">
-                <span v-if="aiImproved[field]" class="text-gray">
-                  применить изменения
-                </span>
-                <a v-else @click="applyAi(field)">
-                  применить изменения
-                </a>
-              </div>
-            </template>
-          </div>
-          <div v-else class="ai-suggest__wrapper">
-            <div class="ai-suggest">
-              <div class="ai-suggest__empty">
-                {{ item[field] }}
+                <div class="ai-suggest__empty">
+                  {{ item[field] }}
+                </div>
               </div>
             </div>
-          </div>
+          </template>
         </div>
       </div>
     </div>
@@ -339,9 +413,13 @@ defineExpose({ open })
     left: 360px;
   }
 
-  .v-textarea {
-    .v-field {
-      border-radius: 4px 4px 0 0 !important;
+  &__text-field {
+    &:has(.ai-suggest) {
+      .v-textarea {
+        .v-field {
+          border-radius: 4px 4px 0 0 !important;
+        }
+      }
     }
   }
 
