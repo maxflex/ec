@@ -2,6 +2,7 @@
 
 namespace App\Utils\AI;
 
+use App\Enums\Company;
 use App\Models\Macro;
 use App\Models\Report;
 use Gemini;
@@ -21,9 +22,10 @@ class GeminiReportService
     /**
      * Генерирует улучшенный отчет на основе черновика преподавателя.
      *
+     * @param  Company  $company  компания (для теста через макросы)
      * @return array{comment: string} Улучшенный текст отчета
      */
-    public static function improveReport(Report $report): array
+    public static function improveReport(Report $report, Company $company): array
     {
         // История отчетов в плоскости (по этому ученику, по этой программе, в этом году, у этого препода)
         $history = Report::where([
@@ -47,7 +49,7 @@ class GeminiReportService
         // ])->render();
 
         $macro = Macro::find(24);
-        $instructionText = Blade::render($macro->text_ooo, [
+        $instructionText = Blade::render($macro->{'text_'.$company->value}, [
             'report' => $report,
             'history' => $history,
             'examples' => $examples,

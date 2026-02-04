@@ -153,7 +153,7 @@ async function improve() {
 const aiLoading2 = ref(false)
 const isTest = computed(() => isAdmin && user && [1, 5].includes(user.id))
 
-async function improve2() {
+async function improve2(company: Company) {
   if (!item.value) {
     return
   }
@@ -162,14 +162,15 @@ async function improve2() {
     return
   }
   aiLoading2.value = true
-  const fields: ReportTextField[] = ['comment']
   const { data, error } = await useHttp<Partial<ReportTextFields>>(
     `reports/improve`,
     {
       method: 'POST',
-      body: fields.reduce((carry, field) => ({ ...carry, [field]: item.value![field] }), {
+      body: {
+        company,
         id: item.value.id,
-      }),
+        comment: item.value.comment,
+      },
     },
   )
   if (error.value) {
@@ -181,6 +182,33 @@ async function improve2() {
   }
   aiImproved.value = {}
   aiLoading2.value = false
+}
+
+// для теста
+function fillComment() {
+  if (!item.value) {
+    return
+  }
+
+  const result: string[] = []
+  const fields: ReportTextField[] = [
+    'homework_comment',
+    'cognitive_ability_comment',
+    'knowledge_level_comment',
+    'recommendation_comment',
+  ]
+
+  for (const f of fields) {
+    const text = item.value[f]
+    if (text) {
+      result.push(`${ReportTextFieldLabel[f]}
+${text}`)
+    }
+  }
+
+  item.value.comment = result.join(`
+
+`)
 }
 
 function applyAi(field: ReportTextField) {
@@ -215,37 +243,35 @@ defineExpose({ open })
             variant="text"
             @click="destroy()"
           />
-          <template v-if="isTest">
-            <v-tooltip location="bottom">
-              <template #activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  :icon="mdiOpenInNew"
-                  :size="48"
-                  :disabled="!aiText?.comment"
-                  color="success"
-                  variant="text"
-                  target="_blank"
-                  href="https://v3-api.ege-centr.ru/storage/ai.txt"
-                />
-              </template>
-              Gemini – открыть инструкцию
-            </v-tooltip>
-            <v-tooltip location="bottom">
-              <template #activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  :icon="mdiAutoFix"
-                  :size="48"
-                  :loading="aiLoading2"
-                  color="success"
-                  variant="text"
-                  @click="improve2()"
-                />
-              </template>
-              Gemini – сгенерировать текст отчета (тест)
-            </v-tooltip>
-          </template>
+          <v-menu v-if="isTest">
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                :icon="mdiAutoFix"
+                :size="48"
+                :loading="aiLoading2"
+                color="success"
+                variant="text"
+              />
+            </template>
+            <v-list>
+              <v-list-item @click="fillComment()">
+                заполнить текст отчета
+              </v-list-item>
+              <v-list-item @click="improve2('ooo')">
+                сгенерировать (ООО – оригинал)
+              </v-list-item>
+              <v-list-item @click="improve2('ip')">
+                сгенерировать (ИП – Костя)
+              </v-list-item>
+              <v-list-item @click="improve2('ano')">
+                сгенерировать (АНО – Антон)
+              </v-list-item>
+              <v-list-item target="_blank" href="https://v3-api.ege-centr.ru/storage/ai.txt" :disabled="!aiText?.comment">
+                открыть инструкцию
+              </v-list-item>
+            </v-list>
+          </v-menu>
           <v-btn
             v-if="isAdmin"
             :icon="mdiAutoFix"

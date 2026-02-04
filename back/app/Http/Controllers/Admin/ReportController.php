@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Company;
 use App\Enums\Program;
 use App\Enums\ReportStatus;
 use App\Http\Controllers\Controller;
@@ -148,7 +149,7 @@ class ReportController extends Controller
         }
 
         return $request->has('comment')
-            ? GeminiReportService::improveReport($report)
+            ? GeminiReportService::improveReport($report, Company::from($request->input('company')))
             : ChatGPT::improveReport($report);
     }
 }
