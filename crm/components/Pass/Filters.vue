@@ -7,6 +7,11 @@ export interface PassFilters {
 
 const model = defineModel<PassFilters>({ required: true })
 const q = ref(model.value.q)
+
+function clear() {
+  q.value = ''
+  model.value.q = ''
+}
 </script>
 
 <template>
@@ -22,10 +27,14 @@ const q = ref(model.value.q)
     :items="selectItems(DirectionLabel)"
     density="comfortable"
   />
-  <v-text-field
-    v-model="q"
-    label="Поиск"
-    density="comfortable"
-    @keydown.enter="model.q = (q || undefined)"
-  />
+
+  <div class="relative">
+    <v-text-field
+      v-model="q"
+      label="Поиск"
+      density="comfortable"
+      @keydown.enter="model.q = (q || undefined)"
+    />
+    <UiUnderInput v-if="!!q" @click="clear()" />
+  </div>
 </template>
