@@ -183,7 +183,7 @@ class Group extends Model implements HasSchedule
             return 0;
         }
 
-        return $cabinets->min(fn (Cabinet $c) => $c->capacity());
+        return $cabinets->min(fn (Cabinet $c) => $c->getCapacity());
     }
 
     /**

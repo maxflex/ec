@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\Company;
+use App\Enums\Cabinet;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -20,16 +20,16 @@ class UpdateEnumsCommand extends Command
         /** @var object{enums: UnitEnum[], table: string, field: string, after: ?string, index: bool} $settings */
         $settings = (object) [
             // enums
-            'enums' => Company::cases(),
+            'enums' => Cabinet::cases(),
 
             // таблица с enum-полем
-            'table' => 'contracts',
+            'table' => 'lessons',
 
             // название enum-поля в таблице
-            'field' => 'company',
+            'field' => 'cabinet',
 
             // место enum-поля в таблице
-            'after' => 'year',
+            'after' => 'status',
 
             // сделать поле index?
             'index' => true,
@@ -43,7 +43,7 @@ class UpdateEnumsCommand extends Command
             'new_enum' => DB::raw($settings->field),
         ]);
 
-        // обновление значений
+        // обновление значений (только если есть перестановки, т.е. не просто добавление)
         // DB::table($settings->table)
         //     ->where($settings->field, 'awaiting')
         //     ->update([

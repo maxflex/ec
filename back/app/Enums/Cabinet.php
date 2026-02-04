@@ -30,6 +30,14 @@ enum Cabinet: string
     case cab314 = 'cab314';
     case cab316 = 'cab316';
 
+    // Новые
+    case cab512a = 'cab512a'; // 12
+    case cab509 = 'cab509'; // 12
+    case cab520 = 'cab520'; // 12
+    case cab521 = 'cab521'; // 8
+    case cab519 = 'cab519'; // 12
+    case cab514 = 'cab514'; // 13
+
     /**
      * Inactive
      */
@@ -59,20 +67,20 @@ enum Cabinet: string
      */
     public function isArchived(): bool
     {
-        return $this->capacity() === 0;
+        return $this->getCapacity() === 0;
     }
 
     /**
      * Номинальная вместимость
      */
-    public function capacity(): int
+    public function getCapacity(): int
     {
         return match ($this) {
-            self::cab307, self::cab310, self::cab409, self::cab412 => 8,
+            self::cab307, self::cab310, self::cab409, self::cab412, self::cab521, => 8,
             self::cab427 => 9,
             self::cab407, self::cab408, self::cab308, self::cab312, self::cab424, self::cab417, self::cab423 => 10,
-            self::cab413, self::cab418, self::cab416, => 12,
-            self::cab422, self::cab314, self::cab434, self::cab433, self::cab432, self::cab430, self::cab428, self::cab316, self::cab414, self::cab420, => 13,
+            self::cab413, self::cab418, self::cab416,  self::cab512a, self::cab509, self::cab520, self::cab519 => 12,
+            self::cab422, self::cab314, self::cab434, self::cab433, self::cab432, self::cab430, self::cab428, self::cab316, self::cab414, self::cab420, self::cab514 => 13,
 
             default => 0
         };
@@ -82,6 +90,7 @@ enum Cabinet: string
     {
         $text = match ($this) {
             self::cab433, self::cab428, self::cab430, self::cab432, self::cab434 => 'Для этого нужно пройти охрану, далее – на лифте рядом с турникетами подняться на 4 этаж и найти кабинет %s',
+            self::cab512a, self::cab509, self::cab520, self::cab521, self::cab519, self::cab514 => 'Для этого нужно пройти охрану, далее – на лифте рядом с турникетами подняться на 5 этаж и найти кабинет %s',
             self::cab407, self::cab408, self::cab409, self::cab412, self::cab413, self::cab414, self::cab416, self::cab417, self::cab418, self::cab420, self::cab422, self::cab423, self::cab424, self::cab427 => 'Для этого нужно пройти охрану, после турникетов повернуть налево, пройти холл. В конце него будут лифты. Поднимитесь на 4 этаж и найдите кабинет %s',
             self::cab307, self::cab308, self::cab310, self::cab312, self::cab314, self::cab316 => 'Для этого нужно пройти охрану, после турникетов повернуть налево, пройти холл. В конце него будут лифты. Поднимитесь на 3 этаж и найдите кабинет %s',
         };
@@ -92,9 +101,21 @@ enum Cabinet: string
     /**
      * cab422 => 422
      */
-    public function getName()
+    public function getName(): string
     {
-        return filter_var($this->value, FILTER_SANITIZE_NUMBER_INT);
+        return str($this->value)->substr(3);
+    }
+
+    /**
+     * cab422 => К-422
+     */
+    public function getHumanName(): string
+    {
+        $str = str($this->value);
+
+        $prefix = $str->startsWith('tur') ? 'ТУР' : 'К';
+
+        return $prefix.'-'.$this->getName();
     }
 
     /**

@@ -5,6 +5,62 @@ export const Cabinets: Record<string, {
    */
   capacity: number
 }> = {
+  cab407: {
+    label: 'К-407',
+    capacity: 10,
+  },
+  cab408: {
+    label: 'К-408',
+    capacity: 10,
+  },
+  cab409: {
+    label: 'К-409',
+    capacity: 8,
+  },
+  cab412: {
+    label: 'К-412',
+    capacity: 8,
+  },
+  cab413: {
+    label: 'К-413',
+    capacity: 12,
+  },
+  cab414: {
+    label: 'К-414',
+    capacity: 13,
+  },
+  cab416: {
+    label: 'К-416',
+    capacity: 12,
+  },
+  cab417: {
+    label: 'К-417',
+    capacity: 10,
+  },
+  cab418: {
+    label: 'К-418',
+    capacity: 12,
+  },
+  cab420: {
+    label: 'К-420',
+    capacity: 13,
+  },
+  cab422: {
+    label: 'К-422',
+    capacity: 13,
+  },
+  cab423: {
+    label: 'К-423',
+    capacity: 10,
+  },
+  cab424: {
+    label: 'К-424',
+    capacity: 10,
+  },
+  cab427: {
+    label: 'К-427',
+    capacity: 9,
+  },
   cab428: {
     label: 'К-428',
     capacity: 13,
@@ -25,91 +81,54 @@ export const Cabinets: Record<string, {
     label: 'К-434',
     capacity: 13,
   },
-  cab407: {
-    label: 'К-407',
-    capacity: 13,
-  },
-  cab409: {
-    label: 'К-409',
-    capacity: 8,
-  },
-  cab412: {
-    label: 'К-412',
-    capacity: 13,
-  },
-  cab413: {
-    label: 'К-413',
-    capacity: 13,
-  },
-  cab414: {
-    label: 'К-414',
-    capacity: 12,
-  },
-  cab417: {
-    label: 'К-417',
-    capacity: 12,
-  },
-  cab418: {
-    label: 'К-418',
-    capacity: 12,
-  },
-  cab420: {
-    label: 'К-420',
-    capacity: 12,
-  },
-  cab422: {
-    label: 'К-422',
-    capacity: 12,
-  },
-  cab423: {
-    label: 'К-423',
-    capacity: 12,
-  },
-  cab424: {
-    label: 'К-424',
-    capacity: 12,
-  },
-  cab310: {
-    label: 'К-310',
-    capacity: 12,
-  },
-  cab312: {
-    label: 'К-312',
-    capacity: 12,
-  },
-  cab314: {
-    label: 'К-314',
-    capacity: 12,
-  },
-  cab316: {
-    label: 'К-316',
-    capacity: 12,
-  },
-  // new
   cab307: {
     label: 'К-307',
     capacity: 8,
   },
   cab308: {
     label: 'К-308',
-    capacity: 12,
+    capacity: 10,
   },
-  cab416: {
-    label: 'К-416',
-    capacity: 12,
-  },
-  cab427: {
-    label: 'К-427',
+  cab310: {
+    label: 'К-310',
     capacity: 8,
   },
-  cab408: {
-    label: 'К-408',
+  cab312: {
+    label: 'К-312',
+    capacity: 10,
+  },
+  cab314: {
+    label: 'К-314',
+    capacity: 13,
+  },
+  cab316: {
+    label: 'К-316',
+    capacity: 13,
+  },
+  cab512a: {
+    label: 'К-512a',
     capacity: 12,
   },
-
-  /**
-   * INACTIVE
-   */
+  cab509: {
+    label: 'К-509',
+    capacity: 12,
+  },
+  cab520: {
+    label: 'К-520',
+    capacity: 12,
+  },
+  cab521: {
+    label: 'К-521',
+    capacity: 8,
+  },
+  cab519: {
+    label: 'К-519',
+    capacity: 12,
+  },
+  cab514: {
+    label: 'К-514',
+    capacity: 13,
+  },
   cab439: {
     label: 'К-439',
     capacity: 0,

@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { orderBy } from 'lodash-es'
 import { Cabinets } from '.'
 
-const items = Object.keys(Cabinets).map(c => ({
+const items: SelectItems = orderBy(Object.keys(Cabinets).map(c => ({
   value: c,
   title: Cabinets[c].label,
-}))
+})), 'title')
 
 const model = defineModel<string | null>()
 </script>
@@ -20,7 +21,7 @@ const model = defineModel<string | null>()
       <CabinetWithCapacity :item="item.value" />
     </template>
     <template #item="{ props, item }">
-      <v-list-item v-bind="props">
+      <v-list-item v-bind="props" :class="{ 'text-gray': Cabinets[item.value].capacity === 0 }">
         <template #prepend />
         <template #title>
           <CabinetWithCapacity :item="item.value" />
