@@ -162,7 +162,7 @@ function getFiltersKey(
     const route = useRoute()
     routeName = String(route.name)
   }
-  const prefix = 'filters-gz'
+  const prefix = 'filters-01'
   return [
     prefix,
     getEntityStringFromToken(),
