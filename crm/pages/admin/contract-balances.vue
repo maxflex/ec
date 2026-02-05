@@ -14,8 +14,14 @@ interface ContractBalance {
 
 type ContractBalanceField = keyof ContractBalance
 
-const filters = ref(loadFilters({
+interface ContractBalancesFilters {
+  year: Year
+  direction: Direction[]
+}
+
+const filters = ref<ContractBalancesFilters>(loadFilters({
   year: currentAcademicYear(),
+  direction: [],
 }))
 
 const sort = ref<{
@@ -101,6 +107,12 @@ watch(filters.value, () => (sort.value = undefined))
         v-model="filters.year"
         :items="selectItems(YearLabel)"
         label="Учебный год"
+        density="comfortable"
+      />
+      <UiMultipleSelect
+        v-model="filters.direction"
+        :items="selectItems(DirectionLabel)"
+        label="Направления"
         density="comfortable"
       />
     </template>
