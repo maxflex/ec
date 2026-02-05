@@ -23,6 +23,7 @@ class ContractBalanceController extends Controller
 
         $query = Contract::query()
             ->with(['payments', 'client'])
+            ->with('versions', fn ($q) => $q->where('is_active', true))
             ->withCount('comments')
             ->where('year', $request->year);
 
