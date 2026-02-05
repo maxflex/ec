@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { RealReport, ReportResource, ReportTextField, ReportTextFields } from '.'
-import { mdiAutoFix, mdiOpenInNew } from '@mdi/js'
+import { mdiAutoFix } from '@mdi/js'
 import { cloneDeep } from 'lodash-es'
 import { getAiDiff, getReportTextFields, isAiTextEqual, ReportTextFieldLabel } from '.'
 
@@ -151,7 +151,7 @@ async function improve() {
 
 // временно
 const aiLoading2 = ref(false)
-const isTest = computed(() => isAdmin && user && [1, 5].includes(user.id))
+const isTest = computed(() => isAdmin && user && [1, 5, 151].includes(user.id))
 
 async function improve2(company: Company) {
   if (!item.value) {
