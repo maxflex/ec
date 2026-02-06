@@ -36,7 +36,12 @@ class GeminiReportService
             ['year', $report->year],
         ])->get();
 
-        $examples = Report::whereIn('id', [52118, 52109, 52100, 52061, 51607])->get();
+        $examples = Report::whereIn('id', [
+            52104, // идеальный
+            51533, // идеальный
+            50488, // средний
+            47675, // проблемный
+        ])->get();
 
         $client = Gemini::client(config('gemini.api_key'));
 
@@ -67,7 +72,7 @@ class GeminiReportService
             properties: [
                 'comment' => new Schema(
                     type: DataType::STRING,
-                    description: 'Текст отчета. Простой текст без Markdown и HTML тегов.'
+                    description: 'Текст отчета с HTML тегами'
                 ),
             ],
             required: ['comment']

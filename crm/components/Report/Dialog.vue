@@ -151,7 +151,7 @@ async function improve() {
 
 // временно
 const aiLoading2 = ref(false)
-const isTest = computed(() => isAdmin && user && [1, 5, 151].includes(user.id))
+const isTest = computed(() => isAdmin && user && [1, 5, 151, 212].includes(user.id))
 
 async function improve2(company: Company) {
   if (!item.value) {
@@ -353,10 +353,8 @@ defineExpose({ open })
             auto-grow
             label="Текст отчета – тест"
           />
-          <div v-if="aiText && aiText.comment" class="ai-suggest__wrapper">
-            <div class="ai-suggest">
-              {{ aiText.comment }}
-            </div>
+          <div v-if="aiText && aiText.comment" class="ai-report ai-suggest__wrapper">
+            <div class="ai-suggest ai-report__text" v-html="aiText.comment" />
             <div class="ai-suggest__apply under-input">
               <span v-if="aiImproved.comment" class="text-gray">
                 применить изменения
@@ -511,6 +509,26 @@ defineExpose({ open })
     // color: #22863a;
     background-color: #bdeec4;
     // background-color: rgb(var(--v-theme-success));
+  }
+}
+
+.ai-report {
+  &__text {
+    background: white !important;
+
+    & > h3 {
+      // font-size: 28px !important;
+      font-weight: bold !important;
+
+      &:not(:first-child) {
+        margin-top: 20px !important;
+      }
+    }
+
+    ul,
+    ol {
+      padding: 10px 0 10px 20px;
+    }
   }
 }
 </style>

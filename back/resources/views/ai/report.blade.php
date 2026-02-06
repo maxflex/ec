@@ -1,9 +1,14 @@
 @php
     use App\Enums\ClientLessonStatus;
-@endphp
+    use App\Models\Report;
 
+    /** @var Report $report */
+    /** @var bool $isCurrent для текущего отчета текст не передается; для примеров, истории и т.д. – передается */
+@endphp
+```
 Ученик: {{ $report->client->first_name }}
 Программа: {{ $report->program->getHumanName() }}
+Класс: {{ $report->program->getDirection()->getName() }}
 Оценка по отчету: {{ $report->grade }}
 
 Посещаемость и пройденные темы:
@@ -25,3 +30,24 @@
 Комментарий от преподавателя: {{ $cl->comment }}
 @endif
 @endforeach
+
+{{-- в примерах и тд (кроме текущего отчета) включаем текст самого отчета в инструкцию --}}
+@if (!$isCurrent)
+    @if ($report->comment)
+    Текст отчета:
+    {{ $report->comment }}
+    @else
+    Выполнение домашнего задания:
+    {{ $report->homework_comment }}
+
+    Способность усваивать новый материал:
+    {{ $report->cognitive_ability_comment }}
+
+    Текущий уровень знаний:
+    {{ $report->knowledge_level_comment }}
+
+    Рекомендации родителям:
+    {{$report->recommendation_comment}}
+    @endif
+@endif
+```

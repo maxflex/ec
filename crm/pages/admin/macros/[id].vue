@@ -25,12 +25,23 @@ async function loadData() {
 }
 
 async function save() {
+  if (!item.value) {
+    return
+  }
+  const field = `text_${company.value}` as keyof MacroResource
   saving.value = true
-  await useHttp(`macros/${item.value?.id}`, {
-    method: 'put',
-    body: cloneDeep(item.value),
-  })
+  await useHttp(
+    `macros/${item.value?.id}`,
+    {
+      method: 'put',
+      body: {
+        id: item.value.id,
+        [field]: item.value[field],
+      },
+    },
+  )
   setTimeout(() => saving.value = false, 300)
+  useGlobalMessage('Макрос сохранён', 'success')
 }
 
 nextTick(loadData)
@@ -39,23 +50,15 @@ nextTick(loadData)
 <template>
   <UiLoader v-if="item === undefined" />
   <template v-else>
-    <div class="macro__title">
-      <div>
-        <v-text-field v-model="item.title" label="Заголовок" />
-      </div>
-      <div>
-        <v-select v-model="company" :items="selectItems(CompanyLabel)" label="Компания" />
-      </div>
-      <div class="text-right">
-        <v-btn
-          icon="$save"
-          :size="48"
-          variant="text"
-          :loading="saving"
-          @click="save()"
-        />
-      </div>
-    </div>
+    <UiFilters>
+      <v-text-field v-model="item.title" label="Заголовок" density="comfortable" />
+      <v-select v-model="company" :items="selectItems(CompanyLabel)" label="Компания" density="comfortable" />
+      <template #buttons>
+        <v-btn color="primary" :loading="saving" @click="save()">
+          сохранить
+        </v-btn>
+      </template>
+    </UiFilters>
     <div class="px-5">
       <Codemirror
         v-if="company === 'ooo'"

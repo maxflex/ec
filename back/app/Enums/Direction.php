@@ -54,6 +54,23 @@ enum Direction: string
         };
     }
 
+    public function getName(): string
+    {
+        return match ($this) {
+            self::courses9 => 'курсы-9',
+            self::courses10 => 'курсы-10',
+            self::courses11 => 'курсы-11',
+            self::school8 => 'школа-8',
+            self::school9 => 'школа-9',
+            self::school10 => 'школа-10',
+            self::school11 => 'школа-11',
+            self::external => 'экстернат',
+            self::practicum => 'практикум',
+            self::egeTrial => 'пробный ЕГЭ',
+            self::coursesExtra => 'курсы-доп',
+        };
+    }
+
     /**
      * Из направления получить массив программ
      *
@@ -62,7 +79,7 @@ enum Direction: string
     public function toPrograms(): array
     {
         return collect(Program::cases())
-            ->filter(fn($p) => $p->getDirection() === $this)
+            ->filter(fn ($p) => $p->getDirection() === $this)
             ->values()
             ->all();
     }
