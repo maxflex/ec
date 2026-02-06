@@ -33,21 +33,21 @@
 
 {{-- в примерах и тд (кроме текущего отчета) включаем текст самого отчета в инструкцию --}}
 @if (!$isCurrent)
-    @if ($report->comment)
-    Текст отчета:
-    {{ $report->comment }}
-    @else
-    Выполнение домашнего задания:
-    {{ $report->homework_comment }}
+@if ($report->comment)
+Текст отчета:
+{{ $report->comment }}
+@else
+Выполнение домашнего задания:
+{{ $report->homework_comment }}
 
-    Способность усваивать новый материал:
-    {{ $report->cognitive_ability_comment }}
+Способность усваивать новый материал:
+{{ $report->cognitive_ability_comment }}
 
-    Текущий уровень знаний:
-    {{ $report->knowledge_level_comment }}
+Текущий уровень знаний:
+{{ $report->knowledge_level_comment }}
 
-    Рекомендации родителям:
-    {{$report->recommendation_comment}}
-    @endif
+Рекомендации родителям:
+{{$report->recommendation_comment}}
+@endif
 @endif
 ```

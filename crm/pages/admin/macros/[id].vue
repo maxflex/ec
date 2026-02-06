@@ -41,7 +41,7 @@ async function save() {
     },
   )
   setTimeout(() => saving.value = false, 300)
-  useGlobalMessage('Макрос сохранён', 'success')
+  useGlobalMessage(`Макрос ${CompanyLabel[company.value]} сохранён`, 'success')
 }
 
 nextTick(loadData)
