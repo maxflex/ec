@@ -55,3 +55,78 @@
     font-size: 16px !important;
   }
 }
+
+.ai-suggest {
+  padding: 16px 16px;
+  border: 1px solid rgb(var(--v-theme-secondary));
+  border-radius: 0 0 4px 4px;
+  margin: 20px 0 0;
+  position: relative;
+  background: rgba(var(--v-theme-secondary), 0.05);
+  white-space: break-spaces;
+  min-height: 104px;
+
+  &__wrapper {
+    top: -21px;
+    position: relative;
+  }
+
+  &__empty {
+    visibility: hidden;
+  }
+
+  &:before {
+    content: 'Предложение ИИ';
+    position: absolute;
+    background: white;
+    z-index: 1;
+    font-size: 12px;
+    color: rgb(var(--v-theme-secondary));
+    padding: 0 4px;
+    left: 11px;
+    top: -7px;
+    line-height: 12px;
+    border-radius: 4px;
+  }
+
+  &__apply {
+    margin-bottom: 20px;
+    cursor: default !important;
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+  }
+}
+
+.ai-report {
+  &__text {
+    background: white !important;
+    font-weight: 400 !important;
+
+    p,
+    li {
+      font-weight: 400 !important;
+    }
+
+    b,
+    strong {
+      font-weight: bold !important;
+    }
+
+    & > h3 {
+      font-weight: bold !important;
+
+      &:not(:first-child) {
+        margin-top: 20px !important;
+      }
+    }
+
+    ul,
+    ol {
+      padding: 10px 0 10px 20px;
+    }
+  }
+}

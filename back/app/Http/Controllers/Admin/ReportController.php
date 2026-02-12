@@ -14,6 +14,7 @@ use App\Utils\AI\ChatGPT;
 use App\Utils\AI\GeminiReportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class ReportController extends Controller
 {
@@ -138,6 +139,7 @@ class ReportController extends Controller
             'knowledge_level_comment' => ['required_without:comment', 'string'],
             'recommendation_comment' => ['required_without:comment', 'string'],
             'comment' => ['sometimes', 'string'],
+            'company' => ['sometimes', Rule::enum(Company::class)],
         ]);
 
         $id = intval($request->input('id'));
@@ -148,8 +150,13 @@ class ReportController extends Controller
             $report = new Report($request->all());
         }
 
-        return $request->has('comment')
-            ? GeminiReportService::improveReport($report, Company::from($request->input('company')))
-            : ChatGPT::improveReport($report);
+        if (! $request->has('comment')) {
+            return ChatGPT::improveReport($report);
+        }
+
+        return GeminiReportService::improveReport(
+            $report,
+            $request->filled('company') ? Company::from($request->input('company')) : null
+        );
     }
 }

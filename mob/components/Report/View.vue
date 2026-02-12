@@ -3,6 +3,7 @@ import { mdiArrowLeftThin } from '@mdi/js'
 
 const route = useRoute()
 const item = ref<ReportResource>()
+const reportText = computed(() => item.value?.ai_comment || item.value?.comment || '')
 
 async function loadData() {
   const { data } = await useHttp<ReportResource>(
@@ -130,13 +131,27 @@ nextTick(loadData)
             {{ item.recommendation_comment }}
           </div>
         </div>
+        <div v-if="reportText">
+          <div v-if="!item.ai_comment">
+            Текст отчета:
+          </div>
+          <div
+            v-if="item.ai_comment"
+            class="report-view__ai-comment"
+            v-html="reportText"
+          />
+          <div v-else>
+            {{ reportText }}
+          </div>
+        </div>
       </div>
       <div v-if="item && item.grade" class="report-view__score" :class="`report-view__score--${item.grade}`">
-        <div>
-          оценка по отчёту
-        </div>
         <div :class="`text-score text-score--${item.grade}`">
           {{ item.grade }}
+        </div>
+        <div>
+          оценка <br />
+          по отчёту
         </div>
       </div>
     </div>
@@ -164,23 +179,15 @@ nextTick(loadData)
     padding: 20px;
     border-radius: 8px;
     display: inline-block;
+    min-width: 180px;
 
     &:not(.report-view__score) {
       // background: rgba(var(--v-theme-bg));
       background: none;
     }
-    & > div {
-      &:first-child {
-        // color: rgb(var(--v-theme-gray));
-        // color: #7a7a7a;
-        font-size: 12px;
-        margin-bottom: 2px;
-        line-height: 14px;
-      }
-    }
 
     .text-score {
-      font-size: 42px;
+      font-size: 60px;
     }
   }
 
@@ -257,6 +264,41 @@ nextTick(loadData)
     display: flex;
     flex-direction: column;
     gap: 12px;
+  }
+
+  &__ai-comment {
+    white-space: break-spaces;
+
+    p,
+    li {
+      font-weight: 400;
+      margin: 0 0 10px;
+    }
+
+    b,
+    strong {
+      font-weight: 700;
+    }
+
+    h3 {
+      &:first-child {
+        margin-top: 0 !important;
+      }
+      font-size: 24px;
+      line-height: 1.2;
+      margin: 30px 0 10px;
+      font-weight: 700;
+    }
+
+    ul,
+    ol {
+      margin: 8px 0 12px;
+      padding-left: 18px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
   }
 }
 </style>

@@ -54,24 +54,36 @@ export interface ReportResource extends ReportTextFields {
   client?: PersonResource
   program?: Program
   created_at?: string
+  ai_comment?: string | null
   client_lessons: JournalResource[]
   count: number
 }
 
 export function getReportTextFields(item: ReportResource): ReportTextField[] {
-  // программы, при которых должно отображаться единое поле
-  // временно пусто, в будущем добавить все программы 8 кл школа
-  const singleCommentPrograms: Program[] = []
+  // программы направления school8
+  const singleCommentPrograms: Program[] = [
+    'engSchool8',
+    'bioSchool8',
+    'geoSchool8',
+    'infSchool8',
+    'hisSchool8',
+    'litSchool8',
+    'mathSchool8',
+    'socSchool8',
+    'rusSchool8',
+    'physSchool8',
+    'chemSchool8',
+  ]
 
   // ID, после которого должно отображаться единое поле
   const singleCommentId = 52183
 
   // новый формат отчета, с единым полем?
-  const isSigneComment = !!item.program
+  const isSingleComment = !!item.program
     && (item.id < 0 || item.id > singleCommentId)
     && singleCommentPrograms.includes(item.program)
 
-  return isSigneComment
+  return isSingleComment
     ? [
         'comment',
       ]

@@ -69,7 +69,9 @@ CRM также выполняет функцию личного кабинета
 
 ## Directory Mapping
 - **/back**: Contains the Laravel backend. Look here for controllers, models, migrations, and artisan commands.
-- **/front**: Contains the Vue.js frontend. Look here for components, stores, and assets.
+- **/crm**: Contains the Vue.js frontend. Look here for components, stores, and assets.
+- **/mob**: Contains the Vue.js frontend for mobile version. It's like CRM but very simplified & stripped. Teachers can't
+use mobile version. Admins use it only to test client & representative cabinets.
 
 ### back
 - Laravel 11
@@ -77,17 +79,22 @@ CRM также выполняет функцию личного кабинета
 - Locally served via Sail (Docker)
 - Used for API-responses only
 
-### front
+### front (crm & mob)
 - Vue 3 (Composition API)
 - Nuxt 3
+- TypeScript
 - Vuetify 3 is used as UI library
+- SCSS & BEM is used for styles
 - bun is used as a package manager
 - node v20
 
 ## Context Rules
-1. When asked about UI/components, ONLY context search in `/front`.
+1. When asked about frontend, UI/components, ONLY context search in `/crm`.
 2. When asked about API/Database/Logic, ONLY context search in `/back`.
 3. Do not scan root files for code logic, they are only for config (docker, git, etc).
+4. For mobile version (in `/mob`) – I always ask explicitly and separately. Since it's very lightweight & simplified
+I rarely mean mobile version by default.
+5. Добавляй комментарии на русском ко всему, что ты делаешь. Комментарии – это хорошо. Но для совсем уж очевидного не нужно.
 
 ## Production URLs
 - сайт компании: ege-centr.ru
@@ -99,6 +106,10 @@ CRM также выполняет функцию личного кабинета
 phone: `9252727210`
 code: `1111`
 
-2) You can change real data in database - that's okay. No need to revert changes.
+ULRs:
+http://localhost:3000/ – desktop version frontend (`/crm`)
+http://localhost:3001/ – mobile version frontend (`/mob`)
+
+2) You can change real data in database - that's okay. No need to revert changes. I always have backups locally.
 
 3) Since we use Laravel Sail locally use should run Laravel commands in docker container using `sart` (short for "sail php artisan")

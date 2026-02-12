@@ -11,6 +11,7 @@ use Gemini\Data\GenerationConfig;
 use Gemini\Data\Schema;
 use Gemini\Enums\DataType;
 use Gemini\Enums\ResponseMimeType;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Storage;
 
@@ -23,45 +24,61 @@ class GeminiReportService
 
     /**
      * Генерирует улучшенный отчет на основе черновика преподавателя.
+     * Если передан $company — тестовый режим (инструкции из макроса).
+     * Если $company не передан — реальный режим (инструкции из blade).
      *
-     * @param  Company  $company  компания (для теста через макросы)
      * @return array{comment: string} Улучшенный текст отчета
      */
-    public static function improveReport(Report $report, Company $company): array
+    public static function improveReport(Report $report, ?Company $company = null): array
+    {
+        $data = [
+            'report' => $report,
+            'history' => self::reportHistory($report),
+            'examples' => self::reportExamples(),
+            'perfectLength' => intval(Report::PERFECT_LENGTH * 0.8),
+        ];
+
+        $instructionText = $company
+            ? Blade::render(Macro::find(24)?->{'text_'.$company->value} ?? '', $data)
+            : view('ai.report-instructions', $data)->render();
+
+        return self::generate($instructionText);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection<int, Report>
+     */
+    private static function reportHistory(Report $report)
     {
         // История отчетов в плоскости (по этому ученику, по этой программе, в этом году, у этого препода)
-        $history = Report::where([
+        return Report::where([
             ['id', '<', $report->id],
             ['client_id', $report->client_id],
             ['teacher_id', $report->teacher_id],
             ['program', $report->program],
             ['year', $report->year],
         ])->get();
+    }
 
-        $examples = Report::whereIn('id', [
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection<int, Report>
+     */
+    private static function reportExamples(): Collection
+    {
+        return Report::whereIn('id', [
             52104, // идеальный
             51533, // идеальный
             50488, // средний
             47675, // проблемный
         ])->get();
+    }
 
+    /**
+     * @return array{comment: string}
+     */
+    private static function generate(string $instructionText): array
+    {
         $client = Gemini::client(config('gemini.api_key'));
-
-        // Рендеринг шаблона в строку
-        // $instructionText = view('ai.report-instructions', [
-        //     'report' => $report,
-        //     'history' => $history,
-        //     'examples' => $examples,
-        //     'perfectLength' => intval(Report::PERFECT_LENGTH * 0.8),
-        // ])->render();
-
-        $macro = Macro::find(24);
-        $instructionText = Blade::render($macro->{'text_'.$company->value}, [
-            'report' => $report,
-            'history' => $history,
-            'examples' => $examples,
-            'perfectLength' => intval(Report::PERFECT_LENGTH * 0.8),
-        ]);
 
         [$systemInstructionText, $userPromptText] = self::splitInstructionAndPrompt($instructionText);
 

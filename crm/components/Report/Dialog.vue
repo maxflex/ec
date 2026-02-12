@@ -12,6 +12,7 @@ const item = ref<ReportResource>()
 const deleting = ref(false)
 const saving = ref(false)
 const aiLoading = ref(false)
+const aiLoading2 = ref(false)
 const router = useRouter()
 const { isAdmin, isTeacher, user } = useAuthStore()
 const availableTeacherStatuses: ReportStatus[] = [
@@ -27,6 +28,8 @@ const availableAdminStatuses: ReportStatus[] = [
 ]
 
 const aiText = ref<Partial<ReportTextFields>>()
+const aiTestComment = ref<string | null>(null)
+const testComment = ref('')
 
 const availableStatuses = isTeacher ? availableTeacherStatuses : availableAdminStatuses
 
@@ -43,14 +46,18 @@ const isDisabled = computed(() => {
 const textFields = computed(() => getReportTextFields(item.value!))
 // новый режим единого поля для отчета
 const isSingleField = computed(() => textFields.value.length === 1)
+const aiImproved = ref<Partial<Record<ReportTextField, boolean>>>({})
+const aiDiff = ref<Partial<Record<ReportTextField, string | boolean>>>({})
 
 function open(report: ReportResource) {
   item.value = cloneDeep(report)
+  aiText.value = undefined
+  aiTestComment.value = null
+  testComment.value = ''
+  aiImproved.value = {}
+  aiDiff.value = {}
   dialog.value = true
 }
-
-const aiImproved = ref<Partial<Record<ReportTextField, boolean>>>({})
-const aiDiff = ref<Partial<Record<ReportTextField, string | boolean>>>({})
 
 async function save() {
   saving.value = true
@@ -118,14 +125,25 @@ async function improve() {
   if (!item.value) {
     return
   }
+  if (isSingleField.value && !item.value.comment) {
+    useGlobalMessage('Введите текст отчета', 'error')
+    return
+  }
   aiLoading.value = true
+  const body = isSingleField.value
+    ? {
+        id: item.value.id,
+        comment: item.value.comment,
+      }
+    : textFields.value.reduce((carry, field) => ({ ...carry, [field]: item.value![field] }), {
+        id: item.value.id,
+      })
+
   const { data, error } = await useHttp<Partial<ReportTextFields>>(
     `reports/improve`,
     {
       method: 'POST',
-      body: textFields.value.reduce((carry, field) => ({ ...carry, [field]: item.value![field] }), {
-        id: item.value.id,
-      }),
+      body,
     },
   )
   if (error.value) {
@@ -133,10 +151,11 @@ async function improve() {
     setTimeout(() => useGlobalMessage(`<b>Ошибка ИИ</b>: ${error.value!.data.message}`, 'error'), 100)
   }
   if (data.value) {
-    aiText.value = data.value
-
-    // для single-field не создаем diff
-    if (!isSingleField.value) {
+    if (isSingleField.value) {
+      item.value.ai_comment = data.value.comment || null
+    }
+    else {
+      aiText.value = data.value
       for (const f in data.value) {
         const field = f as ReportTextField
         aiDiff.value[field] = isAiTextEqual(item.value, aiText.value, field)
@@ -150,14 +169,13 @@ async function improve() {
 }
 
 // временно
-const aiLoading2 = ref(false)
 const isTest = computed(() => isAdmin && user && [1, 5, 151, 212].includes(user.id))
 
 async function improve2(company: Company) {
   if (!item.value) {
     return
   }
-  if (!item.value.comment) {
+  if (!testComment.value) {
     useGlobalMessage('Введите текст отчета', 'error')
     return
   }
@@ -169,18 +187,17 @@ async function improve2(company: Company) {
       body: {
         company,
         id: item.value.id,
-        comment: item.value.comment,
+        comment: testComment.value,
       },
     },
   )
   if (error.value) {
-    aiLoading.value = false
+    aiLoading2.value = false
     setTimeout(() => useGlobalMessage(`<b>Ошибка ИИ</b>: ${error.value!.data.message}`, 'error'), 100)
   }
   if (data.value) {
-    aiText.value = data.value
+    aiTestComment.value = data.value.comment || null
   }
-  aiImproved.value = {}
   aiLoading2.value = false
 }
 
@@ -206,7 +223,7 @@ ${text}`)
     }
   }
 
-  item.value.comment = result.join(`
+  testComment.value = result.join(`
 
 `)
 }
@@ -267,7 +284,7 @@ defineExpose({ open })
               <v-list-item @click="improve2('ano')">
                 сгенерировать (АНО – Антон)
               </v-list-item>
-              <v-list-item target="_blank" href="https://v3-api.ege-centr.ru/storage/ai.txt" :disabled="!aiText?.comment">
+              <v-list-item target="_blank" href="https://v3-api.ege-centr.ru/storage/ai.txt" :disabled="!aiTestComment">
                 открыть инструкцию
               </v-list-item>
             </v-list>
@@ -347,27 +364,19 @@ defineExpose({ open })
 
         <div v-if="isTest" class="report-dialog__text-field">
           <v-textarea
-            v-model="item.comment"
+            v-model="testComment"
             rows="3"
             no-resize
             auto-grow
-            label="Текст отчета – тест"
+            label="Тестирование"
           />
-          <div v-if="aiText && aiText.comment" class="ai-report ai-suggest__wrapper">
-            <div class="ai-suggest ai-report__text" v-html="aiText.comment" />
-            <div class="ai-suggest__apply under-input">
-              <span v-if="aiImproved.comment" class="text-gray">
-                применить изменения
-              </span>
-              <a v-else @click="applyAi('comment')">
-                применить изменения
-              </a>
-            </div>
+          <div v-if="aiTestComment" class="ai-report ai-suggest__wrapper">
+            <div class="ai-suggest ai-report__text" v-html="aiTestComment" />
           </div>
           <div v-else class="ai-suggest__wrapper">
             <div class="ai-suggest">
               <div class="ai-suggest__empty">
-                {{ item.comment }}
+                {{ testComment }}
               </div>
             </div>
           </div>
@@ -383,21 +392,16 @@ defineExpose({ open })
             :label="ReportTextFieldLabel[field]"
           />
           <template v-if="isAdmin">
-            <div v-if="aiText && aiText[field]" class="ai-suggest__wrapper">
-              <template v-if="isSingleField">
-                <div class="ai-suggest">
-                  {{ aiText[field] }}
+            <div v-if="isSingleField" class="ai-suggest__wrapper">
+              <div v-if="item.ai_comment" class="ai-suggest ai-report__text" v-html="item.ai_comment" />
+              <div v-else class="ai-suggest">
+                <div class="ai-suggest__empty">
+                  {{ item[field] }}
                 </div>
-                <div class="ai-suggest__apply under-input">
-                  <span v-if="aiImproved[field]" class="text-gray">
-                    применить изменения
-                  </span>
-                  <a v-else @click="applyAi(field)">
-                    применить изменения
-                  </a>
-                </div>
-              </template>
-              <template v-else-if="!aiDiff[field]">
+              </div>
+            </div>
+            <div v-else-if="aiText && aiText[field]" class="ai-suggest__wrapper">
+              <template v-if="!aiDiff[field]">
                 <div class="ai-suggest">
                   <span class="text-label">без изменений</span>
                 </div>
@@ -447,53 +451,6 @@ defineExpose({ open })
     }
   }
 
-  .ai-suggest {
-    padding: 16px 16px;
-    // border: 1px solid #9a9a9a;
-    border: 1px solid rgb(var(--v-theme-secondary));
-    border-radius: 0 0 4px 4px;
-    margin: 20px 0 0;
-    position: relative;
-    background: rgba(var(--v-theme-secondary), 0.05);
-    white-space: break-spaces;
-    min-height: 104px;
-
-    &__wrapper {
-      top: -21px;
-      position: relative;
-    }
-
-    &__empty {
-      visibility: hidden;
-    }
-
-    &:before {
-      content: 'Предложение ИИ';
-      position: absolute;
-      background: white;
-      z-index: 1;
-      font-size: 12px;
-      // color: rgb(var(--v-theme-label));
-      color: rgb(var(--v-theme-secondary));
-      padding: 0 4px;
-      left: 11px;
-      top: -7px;
-      line-height: 12px;
-      border-radius: 4px;
-    }
-
-    &__apply {
-      margin-bottom: 20px;
-      cursor: default !important;
-      a {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        cursor: pointer;
-      }
-    }
-  }
-
   /* Удаленный текст: светло-красный фон, зачеркнутый текст */
   .diff-removed {
     background-color: #ffeef0;
@@ -509,26 +466,6 @@ defineExpose({ open })
     // color: #22863a;
     background-color: #bdeec4;
     // background-color: rgb(var(--v-theme-success));
-  }
-}
-
-.ai-report {
-  &__text {
-    background: white !important;
-
-    & > h3 {
-      // font-size: 28px !important;
-      font-weight: bold !important;
-
-      &:not(:first-child) {
-        margin-top: 20px !important;
-      }
-    }
-
-    ul,
-    ol {
-      padding: 10px 0 10px 20px;
-    }
   }
 }
 </style>

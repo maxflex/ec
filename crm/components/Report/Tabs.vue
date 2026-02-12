@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import type { RealReport, ReportResource } from '.'
+import type { RealReport, ReportResource, ReportTextField } from '.'
 import { ReportDialog } from '#components'
-import { mdiCheck, mdiCheckAll } from '@mdi/js'
 import { ReportTextFieldLabel } from '.'
 
 const route = useRoute()
@@ -35,6 +34,22 @@ function onUpdated(r: RealReport) {
 watch(index, () => smoothScroll('main', 'top', 'instant'))
 
 nextTick(loadData)
+
+function getFieldValue(field: ReportTextField): string {
+  if (!item.value) {
+    return ''
+  }
+
+  if (field === 'comment' && item.value.ai_comment) {
+    return item.value.ai_comment
+  }
+
+  return item.value[field] || ''
+}
+
+function shouldShowLabel(field: ReportTextField): boolean {
+  return !(field === 'comment' && !!item.value?.ai_comment)
+}
 </script>
 
 <template>
@@ -184,12 +199,17 @@ nextTick(loadData)
       </div>
 
       <template v-for="(label, field) in ReportTextFieldLabel">
-        <div v-if="item[field]" :key="field">
-          <div>
+        <div v-if="getFieldValue(field)" :key="field">
+          <div :class="{ 'd-none': !shouldShowLabel(field) }">
             {{ label }}:
           </div>
-          <div>
-            {{ item[field] }}
+          <div
+            v-if="field === 'comment' && item.ai_comment"
+            class="ai-report__text"
+            v-html="getFieldValue(field)"
+          />
+          <div v-else>
+            {{ getFieldValue(field) }}
           </div>
         </div>
       </template>
