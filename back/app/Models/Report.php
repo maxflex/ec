@@ -63,7 +63,7 @@ class Report extends Model
         $periods = [
             ["$year-10-15",      "$year-11-10"],
             ["$year-12-15",      "$nextYear-01-10"],
-            ["$nextYear-02-10",  "$nextYear-03-10"],
+            ["$nextYear-02-15",  "$nextYear-03-10"],
             ["$nextYear-04-15",  "$nextYear-05-10"],
         ];
 
