@@ -2,7 +2,7 @@
 import type { RealReport, ReportResource, ReportTextField, ReportTextFields } from '.'
 import { mdiAutoFix } from '@mdi/js'
 import { cloneDeep } from 'lodash-es'
-import { getAiDiff, getReportTextFields, isAiTextEqual, ReportTextFieldLabel } from '.'
+import { getReportTextFields, ReportTextFieldLabel } from '.'
 
 const emit = defineEmits<{
   updated: [r: ReportResource]
@@ -28,7 +28,6 @@ const availableAdminStatuses: ReportStatus[] = [
   'empty',
 ]
 
-const aiText = ref<Partial<ReportTextFields>>()
 const aiTestComment = ref<string | null>(null)
 const testComment = ref('')
 
@@ -47,16 +46,11 @@ const isDisabled = computed(() => {
 const textFields = computed(() => getReportTextFields(item.value!))
 // новый режим единого поля для отчета
 const isSingleField = computed(() => textFields.value.length === 1)
-const aiImproved = ref<Partial<Record<ReportTextField, boolean>>>({})
-const aiDiff = ref<Partial<Record<ReportTextField, string | boolean>>>({})
 
 function open(report: ReportResource) {
   item.value = cloneDeep(report)
-  aiText.value = undefined
   aiTestComment.value = null
   testComment.value = ''
-  aiImproved.value = {}
-  aiDiff.value = {}
   dialog.value = true
 }
 
@@ -126,25 +120,23 @@ async function improve() {
   if (!item.value) {
     return
   }
-  if (isSingleField.value && !item.value.comment) {
+  // Старый AI-режим для 4 полей полностью отключен: улучшаем только единое поле.
+  if (!isSingleField.value) {
+    return
+  }
+  if (!item.value.comment) {
     useGlobalMessage('Введите текст отчета', 'error')
     return
   }
   aiLoading.value = true
-  const body = isSingleField.value
-    ? {
-        id: item.value.id,
-        comment: item.value.comment,
-      }
-    : textFields.value.reduce((carry, field) => ({ ...carry, [field]: item.value![field] }), {
-        id: item.value.id,
-      })
-
   const { data, error } = await useHttp<Partial<ReportTextFields>>(
     `reports/improve`,
     {
       method: 'POST',
-      body,
+      body: {
+        id: item.value.id,
+        comment: item.value.comment,
+      },
     },
   )
   if (error.value) {
@@ -152,20 +144,8 @@ async function improve() {
     setTimeout(() => useGlobalMessage(`<b>Ошибка ИИ</b>: ${error.value!.data.message}`, 'error'), 100)
   }
   if (data.value) {
-    if (isSingleField.value) {
-      item.value.ai_comment = data.value.comment || null
-    }
-    else {
-      aiText.value = data.value
-      for (const f in data.value) {
-        const field = f as ReportTextField
-        aiDiff.value[field] = isAiTextEqual(item.value, aiText.value, field)
-          ? false
-          : getAiDiff(item.value, aiText.value, field)
-      }
-    }
+    item.value.ai_comment = data.value.comment || null
   }
-  aiImproved.value = {}
   aiLoading.value = false
 }
 
@@ -227,11 +207,6 @@ ${text}`)
   testComment.value = result.join(`
 
 `)
-}
-
-function applyAi(field: ReportTextField) {
-  item.value![field] = aiText.value![field]!
-  aiImproved.value[field] = true
 }
 
 defineExpose({ open })
@@ -296,7 +271,7 @@ defineExpose({ open })
             :size="48"
             :loading="aiLoading"
             variant="text"
-            :disabled="isDisabled"
+            :disabled="isDisabled || !isSingleField"
             @click="improve()"
           />
           <v-btn
@@ -363,70 +338,36 @@ defineExpose({ open })
           </div>
         </div>
 
-        <div v-if="isTest" class="report-dialog__text-field">
+        <div v-if="isTest" class="report-dialog__text-field mb-4">
           <v-textarea
             v-model="testComment"
-            rows="3"
+            :rows="5"
             no-resize
             auto-grow
             label="Тестирование"
+            color="success"
+            :hide-details="!!aiTestComment"
+            persistent-hint
+            :disabled="aiLoading2"
+            hint="Это поле видно только вам"
           />
           <div v-if="aiTestComment" class="ai-report ai-suggest__wrapper">
             <div class="ai-suggest ai-report__text" v-html="aiTestComment" />
-          </div>
-          <div v-else class="ai-suggest__wrapper">
-            <div class="ai-suggest">
-              <div class="ai-suggest__empty">
-                {{ testComment }}
-              </div>
-            </div>
           </div>
         </div>
 
         <div v-for="field in textFields" :key="field" class="report-dialog__text-field">
           <v-textarea
             v-model="item[field]"
-            :disabled="isDisabled"
-            rows="3"
+            :disabled="isDisabled || aiLoading"
+            :rows="isSingleField ? 20 : 5"
             no-resize
             auto-grow
             :label="ReportTextFieldLabel[field]"
           />
-          <template v-if="isAdmin">
-            <div v-if="isSingleField" class="ai-suggest__wrapper">
-              <div v-if="item.ai_comment" class="ai-suggest ai-report__text" v-html="item.ai_comment" />
-              <div v-else class="ai-suggest">
-                <div class="ai-suggest__empty">
-                  {{ item[field] }}
-                </div>
-              </div>
-            </div>
-            <div v-else-if="aiText && aiText[field]" class="ai-suggest__wrapper">
-              <template v-if="!aiDiff[field]">
-                <div class="ai-suggest">
-                  <span class="text-label">без изменений</span>
-                </div>
-              </template>
-              <template v-else>
-                <div class="ai-suggest" v-html="aiDiff[field]" />
-                <div class="ai-suggest__apply under-input">
-                  <span v-if="aiImproved[field]" class="text-gray">
-                    применить изменения
-                  </span>
-                  <a v-else @click="applyAi(field)">
-                    применить изменения
-                  </a>
-                </div>
-              </template>
-            </div>
-            <div v-else class="ai-suggest__wrapper">
-              <div class="ai-suggest">
-                <div class="ai-suggest__empty">
-                  {{ item[field] }}
-                </div>
-              </div>
-            </div>
-          </template>
+          <div v-if="isAdmin && isSingleField && item.ai_comment" class="ai-suggest__wrapper">
+            <div class="ai-suggest ai-report__text" v-html="item.ai_comment" />
+          </div>
         </div>
       </div>
     </div>
@@ -450,23 +391,6 @@ defineExpose({ open })
         }
       }
     }
-  }
-
-  /* Удаленный текст: светло-красный фон, зачеркнутый текст */
-  .diff-removed {
-    background-color: #ffeef0;
-    // color: #b31d28;
-    // text-decoration: line-through;
-    // text-decoration-color: rgb(var(--v-theme-error)); /* Цвет зачеркивания */
-    background-color: #edc6cb;
-  }
-
-  /* Добавленный текст: светло-зеленый фон */
-  .diff-added {
-    // background-color: #e6ffed;
-    // color: #22863a;
-    background-color: #bdeec4;
-    // background-color: rgb(var(--v-theme-success));
   }
 }
 </style>

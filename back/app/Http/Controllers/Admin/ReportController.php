@@ -10,7 +10,6 @@ use App\Http\Resources\ReportListResource;
 use App\Http\Resources\ReportResource;
 use App\Models\Report;
 use App\Models\Teacher;
-use App\Utils\AI\ChatGPT;
 use App\Utils\AI\GeminiReportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -134,11 +133,8 @@ class ReportController extends Controller
     {
         $validated = $request->validate([
             'id' => ['required', 'numeric'],
-            'cognitive_ability_comment' => ['required_without:comment', 'string'],
-            'homework_comment' => ['required_without:comment', 'string'],
-            'knowledge_level_comment' => ['required_without:comment', 'string'],
-            'recommendation_comment' => ['required_without:comment', 'string'],
-            'comment' => ['sometimes', 'string'],
+            // Старый формат из 4 полей полностью отключен: принимаем только единый comment.
+            'comment' => ['required', 'string'],
             'company' => ['sometimes', Rule::enum(Company::class)],
         ]);
 
@@ -148,10 +144,6 @@ class ReportController extends Controller
             $report->fill($validated);
         } else {
             $report = new Report($request->all());
-        }
-
-        if (! $request->has('comment')) {
-            return ChatGPT::improveReport($report);
         }
 
         return GeminiReportService::improveReport(

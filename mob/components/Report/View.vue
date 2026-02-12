@@ -175,8 +175,6 @@ nextTick(loadData)
   &__score {
     margin-top: 30px;
     width: 160px;
-    margin-left: auto;
-    margin-right: auto;
     text-align: center;
     text-transform: lowercase;
     padding: 12px;
@@ -192,7 +190,7 @@ nextTick(loadData)
       }
 
       &:last-child {
-        font-size: 16px;
+        font-size: 14px;
       }
     }
   }
