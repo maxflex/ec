@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Direction;
 use App\Enums\LessonStatus;
 use App\Enums\Program;
 use App\Enums\ReportStatus;
@@ -60,38 +61,55 @@ class Report extends Model
         $nextYear = $year + 1;
         $today = now()->toDateString();
 
-        $periods = [
-            ["$year-10-15",      "$year-11-10"],
-            ["$year-12-15",      "$nextYear-01-10"],
-            ["$nextYear-02-15",  "$nextYear-03-10"],
-            ["$nextYear-04-15",  "$nextYear-05-10"],
-        ];
+        // 1. ОПРЕДЕЛЯЕМ ПЕРИОДЫ (Даты)
 
-        [$periodStart, $periodEnd] = collect($periods)
+        // 8 класс: окно 10-25
+        $school8Periods = [
+            ["$year-10-10",      "$year-10-25"],
+            ["$year-12-10",      "$year-12-25"],
+            ["$nextYear-02-10",  "$nextYear-02-25"],
+            ["$nextYear-04-10",  "$nextYear-04-25"],
+        ];
+        [$s8Start, $s8End] = collect($school8Periods)
             ->first(fn ($p) => $today >= $p[0] && $today <= $p[1]) ?? [null, null];
 
+        // Остальные: окно 20-03
+        $otherPeriods = [
+            ["$year-10-20",      "$year-11-03"],
+            ["$year-12-20",      "$nextYear-01-03"],
+            ["$nextYear-02-20",  "$nextYear-03-03"],
+            ["$nextYear-04-20",  "$nextYear-05-03"],
+        ];
+        [$otherStart, $otherEnd] = collect($otherPeriods)
+            ->first(fn ($p) => $today >= $p[0] && $today <= $p[1]) ?? [null, null];
+
+        // 2. ОПРЕДЕЛЯЕМ ПРОГРАММЫ (ID-шники)
+
         $courses = Program::getAllCourses()->map(fn (Program $p) => $p->value)->all();
-        $schoolAndExternal = Program::getAllSchool()
+
+        $school8 = Program::getAllSchool()
+            ->filter(fn (Program $p) => $p->getDirection() === Direction::school8)
+            ->map(fn (Program $p) => $p->value)
+            ->all();
+
+        $otherSchoolAndExt = Program::getAllSchool()
+            ->reject(fn (Program $p) => $p->getDirection() === Direction::school8)
             ->merge(Program::getAllExternal())
             ->merge(Program::getAllPracticum())
             ->map(fn (Program $p) => $p->value)
             ->all();
 
-        // Последний отчёт по каждой плоскости в текущем учебном году
+        // 3. БАЗОВЫЕ CTE (Last Report Date)
         $md = DB::table('reports as r')
             ->where('r.year', $year)
             ->groupBy('r.teacher_id', 'r.client_id', 'r.year', 'r.program')
-            ->selectRaw('
-            r.teacher_id,
-            r.client_id,
-            r.year,
-            r.program,
-            MAX(r.created_at) as last_report_at
-        ');
+            ->selectRaw('r.teacher_id, r.client_id, r.year, r.program, MAX(r.created_at) as last_report_at');
 
-        // ==== КУРСЫ: требование, если прошло >= 6 занятий с момента последнего отчёта ====
-        $lessonsNeeded = 6;
-        $coursesRequired = DB::table('lessons as l')
+        // 4. СБОРКА ЧАСТЕЙ ЗАПРОСА (Parts)
+        $parts = [];
+
+        // А) ЧАСТЬ: КУРСЫ (Всегда проверяем, если прошло 6 занятий)
+        $parts[] = DB::table('lessons as l')
             ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
             ->join('groups as g', 'g.id', '=', 'l.group_id')
             ->join('contract_version_programs as cvp', 'cvp.id', '=', 'cl.contract_version_program_id')
@@ -106,39 +124,12 @@ class Report extends Model
             ->where('g.year', $year)
             ->whereIn('g.program', $courses)
             ->groupBy('l.teacher_id', 'c.client_id', 'g.year', 'g.program')
-            ->havingRaw("
-            SUM(
-                CASE
-                    WHEN md.last_report_at IS NULL THEN 1
-                    WHEN CONCAT(l.date, ' ', l.time) > md.last_report_at THEN 1
-                    ELSE 0
-                END
-            ) >= $lessonsNeeded
-        ")
-            ->selectRaw("
-            NULL as id,
-            NULL as status,
-            l.teacher_id,
-            c.client_id,
-            g.year,
-            g.program,
-            SUM(
-                CASE
-                    WHEN md.last_report_at IS NULL THEN 1
-                    WHEN CONCAT(l.date, ' ', l.time) > md.last_report_at THEN 1
-                    ELSE 0
-                END
-            ) as lessons_count,
-            1 as `is_required`,
-            NULL as created_at
-        ");
+            ->havingRaw("SUM(CASE WHEN md.last_report_at IS NULL THEN 1 WHEN CONCAT(l.date, ' ', l.time) > md.last_report_at THEN 1 ELSE 0 END) >= 6")
+            ->selectRaw("NULL as id, NULL as status, l.teacher_id, c.client_id, g.year, g.program, SUM(CASE WHEN md.last_report_at IS NULL THEN 1 WHEN CONCAT(l.date, ' ', l.time) > md.last_report_at THEN 1 ELSE 0 END) as lessons_count, 1 as `is_required`, NULL as created_at");
 
-        // ==== SCHOOL/EXTERNAL/PRACTICUM: требование только внутри периода и если в нём ещё нет отчёта ====
-        // Если вне периода — просто не добавляем этот блок в UNION
-        $schoolRequired = null;
-        if ($periodStart !== null) {
-            $lessonsNeeded = 3;
-            $schoolRequired = DB::table('lessons as l')
+        // ФУНКЦИЯ-СТРОИТЕЛЬ ДЛЯ ШКОЛ (Чтобы не дублировать код join-ов)
+        $buildSchoolQuery = function (array $programs, string $start, string $end) use ($year, $md) {
+            return DB::table('lessons as l')
                 ->join('client_lessons as cl', 'cl.lesson_id', '=', 'l.id')
                 ->join('groups as g', 'g.id', '=', 'l.group_id')
                 ->join('contract_version_programs as cvp', 'cvp.id', '=', 'cl.contract_version_program_id')
@@ -151,48 +142,40 @@ class Report extends Model
                         ->on('md.program', '=', 'g.program');
                 })
                 ->where('g.year', $year)
-                ->whereIn('g.program', $schoolAndExternal)
-                // Нет отчёта в текущем периоде
-                ->whereNotExists(function ($q) use ($periodStart, $periodEnd) {
+                ->whereIn('g.program', $programs)
+                // Условие: нет отчета в заданном периоде
+                ->whereNotExists(function ($q) use ($start, $end) {
                     $q->from('reports as r')
                         ->whereColumn('r.teacher_id', 'l.teacher_id')
                         ->whereColumn('r.client_id', 'c.client_id')
                         ->whereColumn('r.year', 'g.year')
                         ->whereColumn('r.program', 'g.program')
-                        ->whereBetween('r.created_at', [$periodStart, $periodEnd]);
+                        ->whereBetween('r.created_at', [$start, $end]);
                 })
                 ->groupBy('l.teacher_id', 'c.client_id', 'g.year', 'g.program')
-                ->selectRaw("
-                    NULL as id,
-                    NULL as status,
-                    l.teacher_id,
-                    c.client_id,
-                    g.year,
-                    g.program,
-                    SUM(
-                        CASE
-                            WHEN md.last_report_at IS NULL THEN 1
-                            WHEN CONCAT(l.date, ' ', l.time) > md.last_report_at THEN 1
-                            ELSE 0
-                        END
-                    ) as lessons_count,
-                    1 as `is_required`,
-                    NULL as created_at
-                ")
-                ->having('lessons_count', '>=', $lessonsNeeded);
+                ->havingRaw("SUM(CASE WHEN md.last_report_at IS NULL THEN 1 WHEN CONCAT(l.date, ' ', l.time) > md.last_report_at THEN 1 ELSE 0 END) >= 3")
+                ->selectRaw("NULL as id, NULL as status, l.teacher_id, c.client_id, g.year, g.program, SUM(CASE WHEN md.last_report_at IS NULL THEN 1 WHEN CONCAT(l.date, ' ', l.time) > md.last_report_at THEN 1 ELSE 0 END) as lessons_count, 1 as `is_required`, NULL as created_at");
+        };
+
+        // Б) ЧАСТЬ: 8 Класс (Если сейчас идет период)
+        if ($s8Start && $s8End) {
+            $parts[] = $buildSchoolQuery($school8, $s8Start, $s8End);
         }
 
-        // Собираем итоговую «requirements»
-        if ($schoolRequired) {
-            $requirements = $coursesRequired->unionAll($schoolRequired);
-        } else {
-            $requirements = $coursesRequired;
+        // В) ЧАСТЬ: Остальные (Если сейчас идет период)
+        if ($otherStart && $otherEnd) {
+            $parts[] = $buildSchoolQuery($otherSchoolAndExt, $otherStart, $otherEnd);
         }
 
-        // Вернём CTE 'requirements'
+        // 5. ИТОГОВЫЙ UNION ALL
+        $finalQuery = array_shift($parts); // Берем первый элемент (курсы)
+        foreach ($parts as $part) {
+            $finalQuery->unionAll($part);
+        }
+
         return DB::table('requirements')
             ->withExpression('md', $md)
-            ->withExpression('requirements', $requirements);
+            ->withExpression('requirements', $finalQuery);
     }
 
     public function teacher(): BelongsTo
