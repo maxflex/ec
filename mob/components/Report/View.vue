@@ -150,8 +150,8 @@ nextTick(loadData)
           {{ item.grade }}
         </div>
         <div>
-          оценка <br />
-          по отчёту
+          Оценка<br />
+          по отчету
         </div>
       </div>
     </div>
@@ -174,20 +174,26 @@ nextTick(loadData)
 
   &__score {
     margin-top: 30px;
-    flex: 1;
+    width: 160px;
+    margin-left: auto;
+    margin-right: auto;
     text-align: center;
-    padding: 20px;
+    text-transform: lowercase;
+    padding: 12px;
     border-radius: 8px;
-    display: inline-block;
-    min-width: 180px;
+    display: block;
 
-    &:not(.report-view__score) {
-      // background: rgba(var(--v-theme-bg));
-      background: none;
-    }
+    & > div {
+      text-align: center;
 
-    .text-score {
-      font-size: 60px;
+      &:first-child {
+        font-size: 80px;
+        line-height: 80px;
+      }
+
+      &:last-child {
+        font-size: 16px;
+      }
     }
   }
 

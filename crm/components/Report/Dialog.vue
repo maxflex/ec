@@ -7,6 +7,7 @@ import { getAiDiff, getReportTextFields, isAiTextEqual, ReportTextFieldLabel } f
 const emit = defineEmits<{
   updated: [r: ReportResource]
 }>()
+
 const { dialog, width } = useDialog('medium')
 const item = ref<ReportResource>()
 const deleting = ref(false)
