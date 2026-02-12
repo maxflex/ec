@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Storage;
 
 class GeminiReportService
 {
+    private const USER_PROMPT_SEPARATOR = '<USER_PROMPT>';
+
     /**
      * Генерирует улучшенный отчет на основе черновика преподавателя.
      *
@@ -61,9 +63,17 @@ class GeminiReportService
             'perfectLength' => intval(Report::PERFECT_LENGTH * 0.8),
         ]);
 
-        // if (is_localhost()) {
-        Storage::disk('local')->put('public/ai.txt', $instructionText);
-        // }
+        [$systemInstructionText, $userPromptText] = self::splitInstructionAndPrompt($instructionText);
+
+        Storage::disk('local')->put('public/ai.txt', trim(collect([
+            $systemInstructionText,
+            PHP_EOL, PHP_EOL,
+            self::USER_PROMPT_SEPARATOR,
+            PHP_EOL, PHP_EOL,
+            $userPromptText,
+        ])->join('')));
+
+        // return [];
 
         // Описываем жесткую структуру ответа (Схему)
         // Мы требуем вернуть объект с единственным полем "comment" типа STRING.
@@ -80,15 +90,31 @@ class GeminiReportService
 
         $result = $client
             ->generativeModel('gemini-3-flash-preview')
-            ->withSystemInstruction(Content::parse($instructionText))
+            ->withSystemInstruction(Content::parse($systemInstructionText))
             ->withGenerationConfig(
                 generationConfig: new GenerationConfig(
                     responseMimeType: ResponseMimeType::APPLICATION_JSON,
                     responseSchema: $schema,
                 )
             )
-            ->generateContent($report->comment);
+            ->generateContent($userPromptText);
 
         return $result->json(true);
+    }
+
+    /**
+     * @return array{0: string, 1: string}
+     */
+    private static function splitInstructionAndPrompt(string $text): array
+    {
+        $parts = explode(self::USER_PROMPT_SEPARATOR, $text, 2);
+        if (count($parts) !== 2) {
+            return [trim($text), ''];
+        }
+
+        $systemInstructionText = trim($parts[0]);
+        $userPromptText = trim($parts[1]);
+
+        return [$systemInstructionText, $userPromptText];
     }
 }
