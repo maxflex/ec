@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Storage;
 class GeminiReportService
 {
     private const USER_PROMPT_SEPARATOR = '<USER_PROMPT>';
+    private const INSTRUCTION_MACRO_ID = 24;
+    private const REPORT_MACRO_ID = 25;
 
     /**
      * Генерирует улучшенный отчет на основе черновика преподавателя.
@@ -33,22 +35,59 @@ class GeminiReportService
     {
         $data = [
             'report' => $report,
-            'history' => self::reportHistory($report),
+            'historyReport' => self::getHistoryReport($report),
             'examples' => self::reportExamples(),
             'perfectLength' => intval(Report::PERFECT_LENGTH * 0.8),
         ];
 
         $instructionText = $company
-            ? Blade::render(Macro::find(24)?->{'text_'.$company->value} ?? '', $data)
+            ? self::renderTestInstructionText($company, $data)
             : view('ai.report-instructions', $data)->render();
 
         return self::generate($instructionText);
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Collection<int, Report>
+     * В тестовом режиме:
+     * 1) берем "каркас" инструкции из макроса 24;
+     * 2) подменяем include('ai.report') на рендер макроса 25;
+     * 3) выбираем text_{company} для обоих макросов (ООО/ИП/АНО).
+     *
+     * @param  array<string, mixed>  $data
      */
-    private static function reportHistory(Report $report)
+    private static function renderTestInstructionText(Company $company, array $data): string
+    {
+        $field = 'text_'.$company->value;
+        $instructionTemplate = Macro::find(self::INSTRUCTION_MACRO_ID)?->{$field} ?? '';
+        $reportTemplate = Macro::find(self::REPORT_MACRO_ID)?->{$field} ?? '';
+
+        // Если отдельный макрос отчета пустой, сохраняем прежнее поведение.
+        if (! $reportTemplate) {
+            return Blade::render($instructionTemplate, $data);
+        }
+
+        $instructionTemplate = self::replaceAiReportIncludes($instructionTemplate);
+        $data['renderReport'] = static function (Report $report, string $letter) use ($reportTemplate): string {
+            // Рендерим "тело отчета" из макроса 25, чтобы его можно было менять из CRM.
+            return Blade::render($reportTemplate, [
+                'report' => $report,
+                'letter' => $letter,
+            ]);
+        };
+
+        return Blade::render($instructionTemplate, $data);
+    }
+
+    private static function replaceAiReportIncludes(string $template): string
+    {
+        return preg_replace_callback(
+            "/@include\\(\\s*['\"]ai\\.report['\"]\\s*,\\s*\\[\\s*'report'\\s*=>\\s*\\$(?<reportVar>[a-zA-Z_][a-zA-Z0-9_]*)\\s*,\\s*'letter'\\s*=>\\s*'(?<letter>[^']+)'\\s*]\\s*\\)/",
+            static fn (array $matches): string => "{!! \$renderReport(\${$matches['reportVar']}, '{$matches['letter']}') !!}",
+            $template
+        ) ?? $template;
+    }
+
+    private static function getHistoryReport(Report $report): ?Report
     {
         // История отчетов в плоскости (по этому ученику, по этой программе, в этом году, у этого препода)
         return Report::where([
@@ -57,11 +96,11 @@ class GeminiReportService
             ['teacher_id', $report->teacher_id],
             ['program', $report->program],
             ['year', $report->year],
-        ])->get();
+        ])->latest()->first();
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Collection<int, Report>
+     * @return Collection<int, Report>
      */
     private static function reportExamples(): Collection
     {

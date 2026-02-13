@@ -37,11 +37,11 @@
 
 ОТЧЕТ ОТ {{ $historyReport->created_at->format('Y-m-d') }}:
 
-@include('ai.report', ['report' => $historyReport])
+@include('ai.report', ['report' => $historyReport, 'letter' => 'B'])
 
 @endforeach
 @endif
 
 ДАННЫЕ ТЕКУЩЕГО ОТЧЁТА
 
-@include('ai.report', ['report' => $report])
+@include('ai.report', ['report' => $report, 'letter' => 'A'])
