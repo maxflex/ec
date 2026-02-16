@@ -121,6 +121,7 @@ const menu: Menu = [
     title: 'Административное',
     items: [
       { title: 'Итоги', to: '/stats' },
+      { title: 'ИИ', to: '/ai-prompts' },
       { title: 'Пользователи', to: '/users' },
       { title: 'Отзывы', to: '/web-reviews' },
       { title: 'Праздники', to: '/vacations' },

@@ -293,6 +293,12 @@ declare global {
     text_ano: string
   }
 
+  interface AiPromptResource {
+    id: number
+    title: string
+    text: string
+  }
+
   interface VacationResource {
     id: number
     date: string

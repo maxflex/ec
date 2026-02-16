@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AllLessonsController;
 use App\Http\Controllers\Admin\AllPaymentsController;
+use App\Http\Controllers\Admin\AiPromptController;
 use App\Http\Controllers\Admin\CabinetController;
 use App\Http\Controllers\Admin\CallController;
 use App\Http\Controllers\Admin\ClientController;
@@ -195,6 +196,7 @@ Route::apiResources([
     'contract-payments' => ContractPaymentController::class,
     'complaints' => ComplaintController::class,
     'macros' => MacroController::class,
+    'ai-prompts' => AiPromptController::class,
     'tests' => TestController::class,
     'client-tests' => ClientTestController::class,
     'client-reviews' => ClientReviewController::class,

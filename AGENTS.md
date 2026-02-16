@@ -40,6 +40,16 @@ CRM также выполняет функцию личного кабинета
 ### Макросы (Macro)
 Это шаблоны для вывода документов на печать (платежки, договоры и т.д.)
 
+### AI-шаблоны (AiPrompt)
+Шаблоны промптов для AI-функций (например, генерация/улучшение отчётов через `Report.improve()`).
+Создание новых AI-шаблонов через интерфейс не предполагается — только редактирование существующих.
+
+
+### Инструкции для преподавателей (Instruction & InstructionSign)
+Преподаватели видят инструкции в личном кабинете и могут их подписать.
+Текст инструкции может дополняться/изменяться – тогда преподаватель должен подписать заново.
+Пример инструкции – "Правила внутреннего распорядка"
+
 # Типы пользователей
 
 ### Администраторы (User)
@@ -112,4 +122,4 @@ http://localhost:3001/ – mobile version frontend (`/mob`)
 
 2) You can change real data in database - that's okay. No need to revert changes. I always have backups locally.
 
-3) Since we use Laravel Sail locally use should run Laravel commands in docker container using `sart` (short for "sail php artisan")
+3) Since we use Laravel Sail locally use should run Laravel commands in docker container using `./vendor/bin/sail` 

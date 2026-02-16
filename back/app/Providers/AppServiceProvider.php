@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Observers\LogAllModelsObserver;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -27,7 +28,18 @@ class AppServiceProvider extends ServiceProvider
     {
         Carbon::setLocale(config('app.locale'));
         JsonResource::withoutWrapping();
+        $this->registerBladeDirectives();
         $this->logAllModels();
+    }
+
+    private function registerBladeDirectives(): void
+    {
+        // Универсальный рендер AI-промптов из БД:
+        // @ai('report', ['report' => $report])
+        Blade::directive('ai', function (string $expression): string {
+            // Передаем текущую область видимости, чтобы @ai вел себя как @include.
+            return "<?php echo app(\\App\\Utils\\AI\\AiPromptRenderer::class)->renderAliasWithScope({$expression}, get_defined_vars()); ?>";
+        });
     }
 
     private function logAllModels()

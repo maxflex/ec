@@ -188,6 +188,11 @@ function fillComment() {
     return
   }
 
+  if (item.value.comment) {
+    testComment.value = item.value.comment
+    return
+  }
+
   const result: string[] = []
   const fields: ReportTextField[] = [
     'homework_comment',

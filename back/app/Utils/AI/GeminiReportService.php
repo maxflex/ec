@@ -3,6 +3,7 @@
 namespace App\Utils\AI;
 
 use App\Enums\Company;
+use App\Models\AiPrompt;
 use App\Models\Macro;
 use App\Models\Report;
 use Gemini;
@@ -21,13 +22,15 @@ use Illuminate\Support\Facades\Storage;
 class GeminiReportService
 {
     private const USER_PROMPT_SEPARATOR = '<USER_PROMPT>';
+
     private const INSTRUCTION_MACRO_ID = 24;
+
     private const REPORT_MACRO_ID = 25;
 
     /**
      * Генерирует улучшенный отчет на основе черновика преподавателя.
      * Если передан $company — тестовый режим (инструкции из макроса).
-     * Если $company не передан — реальный режим (инструкции из blade).
+     * Если $company не передан — реальный режим (инструкции из ai_prompts).
      *
      * @return array{comment: string} Улучшенный текст отчета
      */
@@ -42,49 +45,9 @@ class GeminiReportService
 
         $instructionText = $company
             ? self::renderTestInstructionText($company, $data)
-            : view('ai.report-instructions', $data)->render();
+            : self::renderInstructionTextFromPrompts($data);
 
         return self::generate($instructionText);
-    }
-
-    /**
-     * В тестовом режиме:
-     * 1) берем "каркас" инструкции из макроса 24;
-     * 2) подменяем include('ai.report') на рендер макроса 25;
-     * 3) выбираем text_{company} для обоих макросов (ООО/ИП/АНО).
-     *
-     * @param  array<string, mixed>  $data
-     */
-    private static function renderTestInstructionText(Company $company, array $data): string
-    {
-        $field = 'text_'.$company->value;
-        $instructionTemplate = Macro::find(self::INSTRUCTION_MACRO_ID)?->{$field} ?? '';
-        $reportTemplate = Macro::find(self::REPORT_MACRO_ID)?->{$field} ?? '';
-
-        // Если отдельный макрос отчета пустой, сохраняем прежнее поведение.
-        if (! $reportTemplate) {
-            return Blade::render($instructionTemplate, $data);
-        }
-
-        $instructionTemplate = self::replaceAiReportIncludes($instructionTemplate);
-        $data['renderReport'] = static function (Report $report, string $letter) use ($reportTemplate): string {
-            // Рендерим "тело отчета" из макроса 25, чтобы его можно было менять из CRM.
-            return Blade::render($reportTemplate, [
-                'report' => $report,
-                'letter' => $letter,
-            ]);
-        };
-
-        return Blade::render($instructionTemplate, $data);
-    }
-
-    private static function replaceAiReportIncludes(string $template): string
-    {
-        return preg_replace_callback(
-            "/@include\\(\\s*['\"]ai\\.report['\"]\\s*,\\s*\\[\\s*'report'\\s*=>\\s*\\$(?<reportVar>[a-zA-Z_][a-zA-Z0-9_]*)\\s*,\\s*'letter'\\s*=>\\s*'(?<letter>[^']+)'\\s*]\\s*\\)/",
-            static fn (array $matches): string => "{!! \$renderReport(\${$matches['reportVar']}, '{$matches['letter']}') !!}",
-            $template
-        ) ?? $template;
     }
 
     private static function getHistoryReport(Report $report): ?Report
@@ -110,6 +73,73 @@ class GeminiReportService
             50488, // средний
             47675, // проблемный
         ])->get();
+    }
+
+    /**
+     * В тестовом режиме:
+     * 1) берем "каркас" инструкции из макроса 24;
+     * 2) подменяем include('ai.report') на рендер макроса 25;
+     * 3) выбираем text_{company} для обоих макросов (ООО/ИП/АНО).
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private static function renderTestInstructionText(Company $company, array $data): string
+    {
+        $field = 'text_'.$company->value;
+        $instructionTemplate = Macro::find(self::INSTRUCTION_MACRO_ID)?->{$field} ?? '';
+        $reportTemplate = Macro::find(self::REPORT_MACRO_ID)?->{$field} ?? '';
+
+        return self::renderInstructionWithReportTemplate($instructionTemplate, $reportTemplate, $data);
+    }
+
+    /**
+     * Общая сборка финальной инструкции:
+     * 1) подменяем include('ai.report') на вызов замыкания;
+     * 2) рендерим "тело отчета" из отдельного шаблона.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private static function renderInstructionWithReportTemplate(
+        string $instructionTemplate,
+        string $reportTemplate,
+        array $data
+    ): string {
+        // Если отдельный шаблон отчета пустой, сохраняем обратную совместимость.
+        if (! $reportTemplate) {
+            return Blade::render($instructionTemplate, $data);
+        }
+
+        $instructionTemplate = self::replaceAiReportIncludes($instructionTemplate);
+        $data['renderReport'] = static function (Report $report, string $letter) use ($reportTemplate): string {
+            // Рендерим "тело отчета" из отдельного шаблона, чтобы его можно было менять из CRM.
+            return Blade::render($reportTemplate, [
+                'report' => $report,
+                'letter' => $letter,
+            ]);
+        };
+
+        return Blade::render($instructionTemplate, $data);
+    }
+
+    private static function replaceAiReportIncludes(string $template): string
+    {
+        return preg_replace_callback(
+            "/@include\\(\\s*['\"]ai\\.report['\"]\\s*,\\s*\\[\\s*'report'\\s*=>\\s*\\$(?<reportVar>[a-zA-Z_][a-zA-Z0-9_]*)\\s*,\\s*'letter'\\s*=>\\s*'(?<letter>[^']+)'\\s*]\\s*\\)/",
+            static fn (array $matches): string => "{!! \$renderReport(\${$matches['reportVar']}, '{$matches['letter']}') !!}",
+            $template
+        ) ?? $template;
+    }
+
+    /**
+     * В боевом режиме рендерим системную инструкцию через @ai-директиву.
+     * Вложенные блоки (например @ai('report')) подтягиваются из ai_prompts динамически.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private static function renderInstructionTextFromPrompts(array $data): string
+    {
+        return app(AiPromptRenderer::class)
+            ->renderById(AiPrompt::REPORT_INSTRUCTION, $data);
     }
 
     /**
