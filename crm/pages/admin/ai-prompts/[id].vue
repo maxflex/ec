@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import type { EditorConfiguration } from 'codemirror'
-import Codemirror from 'codemirror-editor-vue3'
-import 'codemirror/mode/htmlmixed/htmlmixed.js'
+import { defineAsyncComponent } from 'vue'
+
+// Редактор загружаем только на клиенте, иначе SSR падает на CSS-импорте codemirror.
+const Codemirror = defineAsyncComponent(() => import('codemirror-editor-vue3'))
+if (import.meta.client) {
+  void import('codemirror/mode/htmlmixed/htmlmixed.js')
+}
 
 const route = useRoute()
 const saving = ref(false)

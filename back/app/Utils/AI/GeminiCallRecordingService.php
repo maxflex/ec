@@ -78,13 +78,11 @@ class GeminiCallRecordingService extends GeminiService
     {
         $recording = $call->getRecording('download');
 
-        $response = Http::retry(2, 1000)
-            ->withOptions([
-                'proxy' => '37.140.195.195:8888',
-                'verify' => false,
-                'timeout' => 180,
-            ])
-            ->get($recording);
+        $response = Http::withOptions([
+            'proxy' => '37.140.195.195:8888',
+            'verify' => false,
+            'timeout' => 180,
+        ])->get($recording);
 
         if (! $response->successful()) {
             throw new RuntimeException("Не удалось скачать запись звонка {$call->id} (HTTP {$response->status()})");
