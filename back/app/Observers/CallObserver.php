@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\Jobs\TranscribeCallRecordingJob;
+use App\Jobs\ProcessCallRecordingJob;
 use App\Models\Call;
 
 class CallObserver
@@ -12,7 +12,7 @@ class CallObserver
         // добавилась аудиозапись разговора + разговор более 10 сек
         if ($call->wasChanged('recording') && $call->recording && $call->duration && $call->duration > 10) {
             // запускаем транскрибацию
-            TranscribeCallRecordingJob::dispatch($call->id);
+            ProcessCallRecordingJob::dispatch($call->id);
         }
     }
 }

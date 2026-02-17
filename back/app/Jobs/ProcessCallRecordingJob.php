@@ -3,14 +3,14 @@
 namespace App\Jobs;
 
 use App\Models\Call;
-use App\Utils\AI\GeminiCallTranscriptionService;
+use App\Utils\AI\GeminiCallRecordingService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class TranscribeCallRecordingJob implements ShouldQueue
+class ProcessCallRecordingJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -35,19 +35,8 @@ class TranscribeCallRecordingJob implements ShouldQueue
             return;
         }
 
-        // Повторно не транскрибируем, если текст уже записан.
-        if ($call->transcription) {
-            return;
-        }
+        $transcriptionAndSummary = GeminiCallRecordingService::getTranscriptionAndSummary($call);
 
-        $transcription = GeminiCallTranscriptionService::transcribe($call);
-
-        if ($transcription === '') {
-            return;
-        }
-
-        $call->update([
-            'transcription' => $transcription,
-        ]);
+        $call->update($transcriptionAndSummary);
     }
 }
