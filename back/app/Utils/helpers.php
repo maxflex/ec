@@ -215,6 +215,27 @@ function get_entity_type_key(string $entityType): string
     };
 }
 
+/**
+ * Человекочитаемый label для entity_type (синхронизирован с фронтовым EntityTypeLabel).
+ */
+function entity_type_label(?string $entityType): string
+{
+    return match ($entityType) {
+        \App\Models\Request::class => 'Заявка',
+        \App\Models\Client::class => 'Ученик',
+        \App\Models\Representative::class => 'Представитель',
+        \App\Models\Contract::class => 'Договор',
+        \App\Models\Teacher::class => 'Преподаватель',
+        \App\Models\User::class => 'Администратор',
+        \App\Models\Group::class => 'Группа',
+        \App\Models\Report::class => 'Отчет',
+        \App\Models\Project::class => 'Проект',
+        \App\Models\Complaint::class => 'Жалоба',
+        \App\Models\Violation::class => 'Нарушение',
+        default => 'Неизвестно',
+    };
+}
+
 function enum_value(BackedEnum|UnitEnum|string $enum): string
 {
     return match (true) {

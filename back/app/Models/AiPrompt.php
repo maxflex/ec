@@ -10,18 +10,9 @@ class AiPrompt extends Model
 
     public const int REPORT = 2; // значит, используем этот
 
-    protected $fillable = [
-        'title', 'text',
-    ];
+    public const int CALL_TRANSCRIPTION = 3;
 
-    /**
-     * Резолвим человекочитаемый alias в фиксированный ID prompt.
-     */
-    public static function resolveAlias(string $alias): int
-    {
-        return match ($alias) {
-            'report' => self::REPORT,
-            default => throw new \InvalidArgumentException("Неизвестный alias AI prompt: {$alias}"),
-        };
-    }
+    protected $fillable = [
+        'title', 'instruction', 'prompt',
+    ];
 }

@@ -25,7 +25,7 @@ class AiPromptController extends Controller
 
     public function update(AiPrompt $aiPrompt, Request $request)
     {
-        $aiPrompt->update($request->only(['title', 'text']));
+        $aiPrompt->update($request->only(['title', 'instruction', 'prompt']));
 
         return $aiPrompt;
     }

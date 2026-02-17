@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('ai_prompts', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->longText('text')->nullable();
+            $table->text('instruction')->nullable();
+            $table->text('prompt')->nullable();
             $table->timestamps();
         });
     }

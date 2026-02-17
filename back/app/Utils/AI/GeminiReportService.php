@@ -6,8 +6,6 @@ use App\Enums\Company;
 use App\Models\AiPrompt;
 use App\Models\Macro;
 use App\Models\Report;
-use Gemini;
-use Gemini\Data\Content;
 use Gemini\Data\GenerationConfig;
 use Gemini\Data\Schema;
 use Gemini\Enums\DataType;
@@ -19,10 +17,8 @@ use Illuminate\Support\Facades\Storage;
 // use Gemini\Data\GenerationConfig;
 // use Gemini\Enums\ResponseMimeType;
 
-class GeminiReportService
+class GeminiReportService extends GeminiService
 {
-    private const USER_PROMPT_SEPARATOR = '<USER_PROMPT>';
-
     private const INSTRUCTION_MACRO_ID = 24;
 
     private const REPORT_MACRO_ID = 25;
@@ -40,14 +36,14 @@ class GeminiReportService
             'report' => $report,
             'historyReport' => self::getHistoryReport($report),
             'examples' => self::reportExamples(),
-            'perfectLength' => intval(Report::PERFECT_LENGTH * 0.8),
         ];
 
-        $instructionText = $company
+        $systemInstructionText = null;
+        $userPromptText = $company
             ? self::renderTestInstructionText($company, $data)
-            : self::renderInstructionTextFromPrompts($data);
+            : self::renderPromptFromPrompts($data, $systemInstructionText);
 
-        return self::generate($instructionText);
+        return self::generate($systemInstructionText, $userPromptText);
     }
 
     private static function getHistoryReport(Report $report): ?Report
@@ -131,33 +127,32 @@ class GeminiReportService
     }
 
     /**
-     * В боевом режиме рендерим системную инструкцию через @ai-директиву.
-     * Вложенные блоки (например @ai('report')) подтягиваются из ai_prompts динамически.
+     * В боевом режиме рендерим системную инструкцию через @import-директиву.
+     * Вложенные блоки (например @import(2)) подтягиваются из ai_prompts динамически.
      *
      * @param  array<string, mixed>  $data
      */
-    private static function renderInstructionTextFromPrompts(array $data): string
+    private static function renderPromptFromPrompts(array $data, ?string &$systemInstructionText): string
     {
-        return app(AiPromptRenderer::class)
-            ->renderById(AiPrompt::REPORT_INSTRUCTION, $data);
+        [$systemInstructionText, $prompt] = app(AiPromptRenderer::class)
+            ->renderInstructionAndPromptById(AiPrompt::REPORT_INSTRUCTION, $data);
+
+        return $prompt;
     }
 
     /**
      * @return array{comment: string}
      */
-    private static function generate(string $instructionText): array
+    private static function generate(?string $systemInstructionText, string $userPromptText): array
     {
-        $client = Gemini::client(config('gemini.api_key'));
-
-        [$systemInstructionText, $userPromptText] = self::splitInstructionAndPrompt($instructionText);
-
-        Storage::disk('local')->put('public/ai.txt', trim(collect([
-            $systemInstructionText,
-            PHP_EOL, PHP_EOL,
-            self::USER_PROMPT_SEPARATOR,
-            PHP_EOL, PHP_EOL,
-            $userPromptText,
-        ])->join('')));
+        Storage::disk('local')->put(
+            'public/ai.txt',
+            trim(collect([
+                $systemInstructionText ? "INSTRUCTION:\n".$systemInstructionText : null,
+                $systemInstructionText ? PHP_EOL.PHP_EOL : null,
+                "PROMPT:\n".$userPromptText,
+            ])->filter()->join(''))
+        );
 
         // return [];
 
@@ -174,9 +169,7 @@ class GeminiReportService
             required: ['comment']
         );
 
-        $result = $client
-            ->generativeModel('gemini-3-flash-preview')
-            ->withSystemInstruction(Content::parse($systemInstructionText))
+        $result = self::buildModel($systemInstructionText)
             ->withGenerationConfig(
                 generationConfig: new GenerationConfig(
                     responseMimeType: ResponseMimeType::APPLICATION_JSON,
@@ -186,21 +179,5 @@ class GeminiReportService
             ->generateContent($userPromptText);
 
         return $result->json(true);
-    }
-
-    /**
-     * @return array{0: string, 1: string}
-     */
-    private static function splitInstructionAndPrompt(string $text): array
-    {
-        $parts = explode(self::USER_PROMPT_SEPARATOR, $text, 2);
-        if (count($parts) !== 2) {
-            return [trim($text), ''];
-        }
-
-        $systemInstructionText = trim($parts[0]);
-        $userPromptText = trim($parts[1]);
-
-        return [$systemInstructionText, $userPromptText];
     }
 }

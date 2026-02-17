@@ -34,11 +34,11 @@ class AppServiceProvider extends ServiceProvider
 
     private function registerBladeDirectives(): void
     {
-        // Универсальный рендер AI-промптов из БД:
-        // @ai('report', ['report' => $report])
-        Blade::directive('ai', function (string $expression): string {
-            // Передаем текущую область видимости, чтобы @ai вел себя как @include.
-            return "<?php echo app(\\App\\Utils\\AI\\AiPromptRenderer::class)->renderAliasWithScope({$expression}, get_defined_vars()); ?>";
+        // Импорт AI-шаблона из БД строго по ID:
+        // @import(2, [...])
+        Blade::directive('import', function (string $expression): string {
+            // Передаем текущую область видимости, чтобы @import вел себя как @include.
+            return "<?php echo app(\\App\\Utils\\AI\\AiPromptRenderer::class)->renderByIdWithScope({$expression}, get_defined_vars()); ?>";
         });
     }
 

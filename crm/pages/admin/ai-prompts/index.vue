@@ -21,6 +21,9 @@ nextTick(loadData)
         class="table--item"
         :to="{ name: 'ai-prompts-id', params: { id: p.id } }"
       >
+        <div class="text-black" style="width: 20px">
+          {{ p.id }}
+        </div>
         <div>
           {{ p.title }}
         </div>

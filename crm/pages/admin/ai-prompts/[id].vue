@@ -5,6 +5,7 @@ import 'codemirror/mode/htmlmixed/htmlmixed.js'
 
 const route = useRoute()
 const saving = ref(false)
+const field = ref<'instruction' | 'prompt'>('instruction')
 const item = ref<AiPromptResource>()
 const cmOptions: EditorConfiguration = {
   tabSize: 4,
@@ -16,7 +17,11 @@ const cmOptions: EditorConfiguration = {
 async function loadData() {
   const { data } = await useHttp<AiPromptResource>(`ai-prompts/${route.params.id}`)
   if (data.value) {
-    item.value = data.value
+    item.value = {
+      ...data.value,
+      instruction: data.value.instruction ?? '',
+      prompt: data.value.prompt ?? '',
+    }
   }
 }
 
@@ -34,7 +39,8 @@ async function save() {
       body: {
         id: item.value.id,
         title: item.value.title,
-        text: item.value.text,
+        instruction: item.value.instruction,
+        prompt: item.value.prompt,
       },
     },
   )
@@ -51,16 +57,30 @@ nextTick(loadData)
   <template v-else>
     <UiFilters>
       <v-text-field v-model="item.title" label="Заголовок" density="comfortable" />
+      <v-select
+        v-model="field"
+        :items="[
+          { title: 'Инструкция', value: 'instruction' },
+          { title: 'Промпт', value: 'prompt' },
+        ]"
+        label="Поле"
+        density="comfortable"
+      />
       <template #buttons>
         <v-btn color="primary" :loading="saving" @click="save()">
           сохранить
         </v-btn>
       </template>
     </UiFilters>
-
     <div class="px-5">
       <Codemirror
-        v-model:value="item.text"
+        v-if="field === 'instruction'"
+        v-model:value="item.instruction"
+        :options="cmOptions"
+      />
+      <Codemirror
+        v-else
+        v-model:value="item.prompt"
         :options="cmOptions"
       />
     </div>

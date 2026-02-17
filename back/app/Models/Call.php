@@ -6,12 +6,16 @@ use App\Casts\Timestamp;
 use App\Enums\CallType;
 use App\Http\Resources\CallAppAonResource;
 use App\Http\Resources\CallAppLastInteractionResource;
+use App\Observers\CallObserver;
 use App\Utils\Phone as UtilsPhone;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 
+#[ObservedBy(CallObserver::class)]
 class Call extends Model
 {
     const DISABLE_LOGS = true;
@@ -129,6 +133,28 @@ class Call extends Model
     public function getHasRecordingAttribute(): bool
     {
         return $this->recording !== null;
+    }
+
+    /**
+     * Длительность разговора в секундах.
+     * Считается от момента ответа до завершения звонка.
+     */
+    public function getDurationAttribute(): int
+    {
+        // Для пропущенных звонков answered_at может быть null.
+        if (! $this->answered_at || ! $this->finished_at) {
+            return 0;
+        }
+
+        $answeredAt = Carbon::parse($this->answered_at);
+        $finishedAt = Carbon::parse($this->finished_at);
+
+        return (int) $answeredAt->diffInSeconds($finishedAt);
+    }
+
+    public function getIsIncomingAttribute(): bool
+    {
+        return $this->type === CallType::incoming;
     }
 
     /**

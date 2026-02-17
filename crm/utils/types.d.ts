@@ -296,7 +296,8 @@ declare global {
   interface AiPromptResource {
     id: number
     title: string
-    text: string
+    instruction: string | null
+    prompt: string | null
   }
 
   interface VacationResource {
