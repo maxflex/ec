@@ -14,14 +14,14 @@ class ProcessCallRecordingJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public int $tries = 3;
+    public int $tries = 2;
 
     /**
      * Небольшой backoff на случай временных ошибок сети/API.
      *
      * @var array<int>
      */
-    public array $backoff = [30, 120, 300];
+    public array $backoff = [30];
 
     public function __construct(
         private readonly string $callId,
