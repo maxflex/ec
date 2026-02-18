@@ -181,7 +181,14 @@ nextTick(loadData)
         </div>
       </div>
 
+      <!-- Если AI-текст не сгенерирован, показываем исходный текст преподавателя. -->
       <div v-if="item.ai_comment" class="ai-report__text" v-html="item.ai_comment" />
+      <div v-else-if="item.comment">
+        <div>Текст отчета:</div>
+        <div class="with-linebreaks">
+          {{ item.comment }}
+        </div>
+      </div>
 
       <div v-if="item && item.grade" class="report-tabs__score" :class="`report-tabs__score--${item.grade}`">
         <div :class="`text-score text-score--${item.grade}`">
