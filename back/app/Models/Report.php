@@ -22,8 +22,7 @@ class Report extends Model
 
     protected $fillable = [
         'year', 'program', 'price', 'client_id', 'status', 'grade',
-        'recommendation_comment', 'knowledge_level_comment', 'teacher_id',
-        'cognitive_ability_comment', 'homework_comment', 'comment', 'ai_comment',
+        'teacher_id', 'comment', 'ai_comment',
     ];
 
     protected $casts = [
@@ -235,19 +234,7 @@ class Report extends Model
      */
     public function getFillAttribute(): int
     {
-        $textFields = (bool) $this->comment
-            ? [
-                $this->comment,
-            ]
-            : [
-
-                $this->homework_comment,
-                $this->recommendation_comment,
-                $this->cognitive_ability_comment,
-                $this->knowledge_level_comment,
-            ];
-
-        $totalLength = collect($textFields)->reduce(fn ($carry, $comment) => $carry + mb_strlen($comment), 0);
+        $totalLength = mb_strlen((string) $this->comment);
 
         return min(round($totalLength * 100 / self::PERFECT_LENGTH), 100);
     }

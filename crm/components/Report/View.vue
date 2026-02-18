@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { ReportResource, ReportTextField } from '.'
-import { ReportTextFieldLabel } from '.'
+import type { ReportResource } from '.'
 
 const route = useRoute()
 const item = ref<ReportResource>()
+const { isClient } = useAuthStore()
 
 async function loadData() {
   const { data } = await useHttp<ReportResource>(
@@ -20,22 +20,6 @@ async function loadData() {
 }
 
 nextTick(loadData)
-
-function getFieldValue(field: ReportTextField): string {
-  if (!item.value) {
-    return ''
-  }
-
-  if (field === 'comment' && item.value.ai_comment) {
-    return item.value.ai_comment
-  }
-
-  return item.value[field] || ''
-}
-
-function shouldShowLabel(field: ReportTextField): boolean {
-  return !(field === 'comment' && !!item.value?.ai_comment)
-}
 </script>
 
 <template>
@@ -152,21 +136,14 @@ function shouldShowLabel(field: ReportTextField): boolean {
         </div>
       </div>
 
-      <template v-for="(label, field) in ReportTextFieldLabel">
-        <div v-if="getFieldValue(field)" :key="field">
-          <div :class="{ 'd-none': !shouldShowLabel(field) }">
-            {{ label }}:
-          </div>
-          <div
-            v-if="field === 'comment' && item.ai_comment"
-            class="ai-report__text"
-            v-html="getFieldValue(field)"
-          />
-          <div v-else>
-            {{ getFieldValue(field) }}
-          </div>
+      <div v-if="item.comment && (isClient ? !item.ai_comment : true)">
+        <div>Текст отчета:</div>
+        <div class="with-linebreaks">
+          {{ item.comment }}
         </div>
-      </template>
+      </div>
+
+      <div v-if="item.ai_comment" class="ai-report__text" v-html="item.ai_comment" />
 
       <div v-if="item && item.grade" class="report-view__score" :class="`report-view__score--${item.grade}`">
         <div :class="`text-score text-score--${item.grade}`">

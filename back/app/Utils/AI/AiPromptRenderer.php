@@ -9,20 +9,6 @@ use RuntimeException;
 class AiPromptRenderer
 {
     /**
-     * Кэш instruction в рамках одного запроса.
-     *
-     * @var array<int, ?string>
-     */
-    private array $instructionCache = [];
-
-    /**
-     * Кэш prompt в рамках одного запроса.
-     *
-     * @var array<int, string>
-     */
-    private array $promptCache = [];
-
-    /**
      * Стек рендера для защиты от рекурсивных ссылок (prompt A -> prompt B -> prompt A).
      *
      * @var array<int, bool>
@@ -43,7 +29,7 @@ class AiPromptRenderer
             ->all();
 
         // Явно переданные данные имеют приоритет над переменными из scope.
-        return $this->renderById($id, [...$cleanScope, ...$data]);
+        return $this->renderInstructionById($id, [...$cleanScope, ...$data]);
     }
 
     /**
@@ -51,7 +37,7 @@ class AiPromptRenderer
      *
      * @param  array<string, mixed>  $data
      */
-    public function renderById(int $id, array $data = []): string
+    private function renderInstructionById(int $id, array $data = []): string
     {
         if (isset($this->renderStack[$id])) {
             throw new RuntimeException("Обнаружена рекурсия при рендере ai_prompts.id={$id}");
@@ -60,7 +46,12 @@ class AiPromptRenderer
         $this->renderStack[$id] = true;
 
         try {
-            return Blade::render($this->getInstruction($id), $data);
+            $instruction = AiPrompt::findOrFail($id)->instruction;
+            if (! is_string($instruction) || trim($instruction) === '') {
+                throw new RuntimeException("AI instruction не найден или пустой (ai_prompts.id={$id})");
+            }
+
+            return Blade::render($instruction, $data);
         } finally {
             unset($this->renderStack[$id]);
         }
@@ -70,9 +61,20 @@ class AiPromptRenderer
      * Рендер пары instruction + prompt по фиксированному ID.
      *
      * @param  array<string, mixed>  $data
-     * @return array{0: ?string, 1: string}
+     * @return array{0: string, 1: string}
      */
     public function renderInstructionAndPromptById(int $id, array $data = []): array
+    {
+        return $this->renderPromptPairById($id, $data);
+    }
+
+    /**
+     * Единая точка рендера пары instruction + prompt.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array{0: string, 1: string}
+     */
+    private function renderPromptPairById(int $id, array $data = []): array
     {
         if (isset($this->renderStack[$id])) {
             throw new RuntimeException("Обнаружена рекурсия при рендере ai_prompts.id={$id}");
@@ -81,60 +83,24 @@ class AiPromptRenderer
         $this->renderStack[$id] = true;
 
         try {
-            $instruction = $this->getNullableInstruction($id);
+            $aiPrompt = AiPrompt::findOrFail($id);
+            $instruction = $aiPrompt->instruction;
+            $prompt = $aiPrompt->prompt;
+
+            if (! is_string($instruction) || trim($instruction) === '') {
+                throw new RuntimeException("AI instruction не найден или пустой (ai_prompts.id={$id})");
+            }
+
+            if (! is_string($prompt) || trim($prompt) === '') {
+                throw new RuntimeException("AI prompt не найден или пустой (ai_prompts.id={$id})");
+            }
 
             return [
-                $instruction === null ? null : Blade::render($instruction, $data),
-                Blade::render($this->getPrompt($id), $data),
+                Blade::render($instruction, $data),
+                Blade::render($prompt, $data),
             ];
         } finally {
             unset($this->renderStack[$id]);
         }
-    }
-
-    private function getPrompt(int $id): string
-    {
-        if (array_key_exists($id, $this->promptCache)) {
-            return $this->promptCache[$id];
-        }
-
-        $prompt = AiPrompt::findOrFail($id)->prompt;
-        if (! is_string($prompt) || trim($prompt) === '') {
-            throw new RuntimeException("AI prompt не найден или пустой (ai_prompts.id={$id})");
-        }
-
-        $this->promptCache[$id] = $prompt;
-
-        return $prompt;
-    }
-
-    private function getInstruction(int $id): string
-    {
-        if (array_key_exists($id, $this->instructionCache)) {
-            return $this->instructionCache[$id];
-        }
-
-        $instruction = $this->getNullableInstruction($id);
-        if (! is_string($instruction) || trim($instruction) === '') {
-            throw new RuntimeException("AI instruction не найден или пустой (ai_prompts.id={$id})");
-        }
-
-        $this->instructionCache[$id] = $instruction;
-
-        return $instruction;
-    }
-
-    private function getNullableInstruction(int $id): ?string
-    {
-        if (array_key_exists($id, $this->instructionCache)) {
-            return $this->instructionCache[$id];
-        }
-
-        $instruction = AiPrompt::findOrFail($id)->instruction;
-        $instruction = is_string($instruction) && trim($instruction) !== '' ? $instruction : null;
-
-        $this->instructionCache[$id] = $instruction;
-
-        return $instruction;
     }
 }

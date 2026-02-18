@@ -3,7 +3,6 @@ import { mdiArrowLeftThin } from '@mdi/js'
 
 const route = useRoute()
 const item = ref<ReportResource>()
-const reportText = computed(() => item.value?.ai_comment || item.value?.comment || '')
 
 async function loadData() {
   const { data } = await useHttp<ReportResource>(
@@ -99,51 +98,14 @@ nextTick(loadData)
           </div>
         </div>
 
-        <div v-if="item.homework_comment">
-          <div>
-            Выполнение домашнего задания:
-          </div>
-          <div>
-            {{ item.homework_comment }}
+        <div v-if="item.comment && !item.ai_comment">
+          <div>Текст отчета:</div>
+          <div class="with-linebreaks">
+            {{ item.comment }}
           </div>
         </div>
-        <div v-if="item.cognitive_ability_comment">
-          <div>
-            Способность усваивать материал:
-          </div>
-          <div>
-            {{ item.cognitive_ability_comment }}
-          </div>
-        </div>
-        <div v-if="item.knowledge_level_comment">
-          <div>
-            Текущий уровень знаний:
-          </div>
-          <div>
-            {{ item.knowledge_level_comment }}
-          </div>
-        </div>
-        <div v-if="item.recommendation_comment">
-          <div>
-            Рекомендации родителям:
-          </div>
-          <div>
-            {{ item.recommendation_comment }}
-          </div>
-        </div>
-        <div v-if="reportText">
-          <div v-if="!item.ai_comment">
-            Текст отчета:
-          </div>
-          <div
-            v-if="item.ai_comment"
-            class="report-view__ai-comment"
-            v-html="reportText"
-          />
-          <div v-else>
-            {{ reportText }}
-          </div>
-        </div>
+
+        <div v-if="item.ai_comment" class="report-view__ai-comment" v-html="item.ai_comment" />
       </div>
       <div v-if="item && item.grade" class="report-view__score" :class="`report-view__score--${item.grade}`">
         <div :class="`text-score text-score--${item.grade}`">
@@ -271,8 +233,6 @@ nextTick(loadData)
   }
 
   &__ai-comment {
-    white-space: break-spaces;
-
     p,
     li {
       font-weight: 400;

@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Enums\ReportStatus;
 use App\Enums\TelegramTemplate;
+use App\Jobs\GenerateReportAiCommentJob;
 use App\Models\Report;
 use App\Models\TelegramMessage;
 
@@ -27,6 +28,22 @@ class ReportObserver
                 ['report' => $report],
                 ['id' => $report->id]
             );
+        }
+    }
+
+    public function created(Report $report): void
+    {
+        // Поддержка кейса, когда отчет создается сразу в статусе "на проверку".
+        if ($report->status === ReportStatus::toCheck && $report->comment) {
+            GenerateReportAiCommentJob::dispatch($report->id);
+        }
+    }
+
+    public function updated(Report $report): void
+    {
+        // Автогенерацию запускаем только при фактическом переходе в статус "на проверку".
+        if ($report->wasChanged('status') && $report->status === ReportStatus::toCheck && $report->comment) {
+            GenerateReportAiCommentJob::dispatch($report->id);
         }
     }
 }

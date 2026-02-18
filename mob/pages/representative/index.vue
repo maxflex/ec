@@ -12,13 +12,17 @@ async function ok() {
   await redirect()
 }
 
-nextTick(async () => {
+async function initPage() {
+  showGreeting.value = false
   if (localStorage.getItem('show-greeting') || isPreviewMode) {
     await redirect()
     return
   }
   showGreeting.value = true
-})
+}
+
+onMounted(initPage)
+onActivated(initPage)
 </script>
 
 <template>

@@ -2,46 +2,23 @@
 
 namespace App\Utils\AI;
 
-use App\Enums\Company;
 use App\Models\AiPrompt;
-use App\Models\Macro;
 use App\Models\Report;
-use Gemini\Data\GenerationConfig;
-use Gemini\Data\Schema;
-use Gemini\Enums\DataType;
-use Gemini\Enums\ResponseMimeType;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Storage;
-
-// use Gemini\Data\GenerationConfig;
-// use Gemini\Enums\ResponseMimeType;
 
 class GeminiReportService extends GeminiService
 {
-    private const INSTRUCTION_MACRO_ID = 24;
-
-    private const REPORT_MACRO_ID = 25;
-
     /**
-     * Генерирует улучшенный отчет на основе черновика преподавателя.
-     * Если передан $company — тестовый режим (инструкции из макроса).
-     * Если $company не передан — реальный режим (инструкции из ai_prompts).
-     *
-     * @return array{comment: string} Улучшенный текст отчета
+     * @return string Улучшенный текст отчета
      */
-    public static function improveReport(Report $report, ?Company $company = null): array
+    public static function improveReport(Report $report): string
     {
         $data = [
             'report' => $report,
             'historyReport' => self::getHistoryReport($report),
-            'examples' => self::reportExamples(),
         ];
 
-        $systemInstructionText = null;
-        $userPromptText = $company
-            ? self::renderTestInstructionText($company, $data)
-            : self::renderPromptFromPrompts($data, $systemInstructionText);
+        [$systemInstructionText, $userPromptText] = (new AiPromptRenderer())
+            ->renderInstructionAndPromptById(AiPrompt::REPORT, $data);
 
         return self::generate($systemInstructionText, $userPromptText);
     }
@@ -58,126 +35,10 @@ class GeminiReportService extends GeminiService
         ])->latest()->first();
     }
 
-    /**
-     * @return Collection<int, Report>
-     */
-    private static function reportExamples(): Collection
+    private static function generate(string $systemInstructionText, string $userPromptText): string
     {
-        return Report::whereIn('id', [
-            52104, // идеальный
-            51533, // идеальный
-            50488, // средний
-            47675, // проблемный
-        ])->get();
-    }
-
-    /**
-     * В тестовом режиме:
-     * 1) берем "каркас" инструкции из макроса 24;
-     * 2) подменяем include('ai.report') на рендер макроса 25;
-     * 3) выбираем text_{company} для обоих макросов (ООО/ИП/АНО).
-     *
-     * @param  array<string, mixed>  $data
-     */
-    private static function renderTestInstructionText(Company $company, array $data): string
-    {
-        $field = 'text_'.$company->value;
-        $instructionTemplate = Macro::find(self::INSTRUCTION_MACRO_ID)?->{$field} ?? '';
-        $reportTemplate = Macro::find(self::REPORT_MACRO_ID)?->{$field} ?? '';
-
-        return self::renderInstructionWithReportTemplate($instructionTemplate, $reportTemplate, $data);
-    }
-
-    /**
-     * Общая сборка финальной инструкции:
-     * 1) подменяем include('ai.report') на вызов замыкания;
-     * 2) рендерим "тело отчета" из отдельного шаблона.
-     *
-     * @param  array<string, mixed>  $data
-     */
-    private static function renderInstructionWithReportTemplate(
-        string $instructionTemplate,
-        string $reportTemplate,
-        array $data
-    ): string {
-        // Если отдельный шаблон отчета пустой, сохраняем обратную совместимость.
-        if (! $reportTemplate) {
-            return Blade::render($instructionTemplate, $data);
-        }
-
-        $instructionTemplate = self::replaceAiReportIncludes($instructionTemplate);
-        $data['renderReport'] = static function (Report $report, string $letter) use ($reportTemplate): string {
-            // Рендерим "тело отчета" из отдельного шаблона, чтобы его можно было менять из CRM.
-            return Blade::render($reportTemplate, [
-                'report' => $report,
-                'letter' => $letter,
-            ]);
-        };
-
-        return Blade::render($instructionTemplate, $data);
-    }
-
-    private static function replaceAiReportIncludes(string $template): string
-    {
-        return preg_replace_callback(
-            "/@include\\(\\s*['\"]ai\\.report['\"]\\s*,\\s*\\[\\s*'report'\\s*=>\\s*\\$(?<reportVar>[a-zA-Z_][a-zA-Z0-9_]*)\\s*,\\s*'letter'\\s*=>\\s*'(?<letter>[^']+)'\\s*]\\s*\\)/",
-            static fn (array $matches): string => "{!! \$renderReport(\${$matches['reportVar']}, '{$matches['letter']}') !!}",
-            $template
-        ) ?? $template;
-    }
-
-    /**
-     * В боевом режиме рендерим системную инструкцию через @import-директиву.
-     * Вложенные блоки (например @import(2)) подтягиваются из ai_prompts динамически.
-     *
-     * @param  array<string, mixed>  $data
-     */
-    private static function renderPromptFromPrompts(array $data, ?string &$systemInstructionText): string
-    {
-        [$systemInstructionText, $prompt] = app(AiPromptRenderer::class)
-            ->renderInstructionAndPromptById(AiPrompt::REPORT_INSTRUCTION, $data);
-
-        return $prompt;
-    }
-
-    /**
-     * @return array{comment: string}
-     */
-    private static function generate(?string $systemInstructionText, string $userPromptText): array
-    {
-        Storage::disk('local')->put(
-            'public/ai.txt',
-            trim(collect([
-                $systemInstructionText ? "INSTRUCTION:\n".$systemInstructionText : null,
-                $systemInstructionText ? PHP_EOL.PHP_EOL : null,
-                "PROMPT:\n".$userPromptText,
-            ])->filter()->join(''))
-        );
-
-        // return [];
-
-        // Описываем жесткую структуру ответа (Схему)
-        // Мы требуем вернуть объект с единственным полем "comment" типа STRING.
-        $schema = new Schema(
-            type: DataType::OBJECT,
-            properties: [
-                'comment' => new Schema(
-                    type: DataType::STRING,
-                    description: 'Текст отчета с HTML тегами'
-                ),
-            ],
-            required: ['comment']
-        );
-
-        $result = self::buildModel($systemInstructionText)
-            ->withGenerationConfig(
-                generationConfig: new GenerationConfig(
-                    responseMimeType: ResponseMimeType::APPLICATION_JSON,
-                    responseSchema: $schema,
-                )
-            )
-            ->generateContent($userPromptText);
-
-        return $result->json(true);
+        return self::buildModel($systemInstructionText)
+            ->generateContent($userPromptText)
+            ->text();
     }
 }

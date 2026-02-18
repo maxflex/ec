@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { RealReport, ReportResource, ReportTextField, ReportTextFields } from '.'
+import type { RealReport, ReportResource } from '.'
 import { mdiAutoFix } from '@mdi/js'
 import { cloneDeep } from 'lodash-es'
-import { getReportTextFields, ReportTextFieldLabel } from '.'
 
 const emit = defineEmits<{
   updated: [r: ReportResource]
@@ -13,9 +12,8 @@ const item = ref<ReportResource>()
 const deleting = ref(false)
 const saving = ref(false)
 const aiLoading = ref(false)
-const aiLoading2 = ref(false)
 const router = useRouter()
-const { isAdmin, isTeacher, user } = useAuthStore()
+const { isAdmin, isTeacher } = useAuthStore()
 const availableTeacherStatuses: ReportStatus[] = [
   'draft',
   'toCheck',
@@ -27,9 +25,6 @@ const availableAdminStatuses: ReportStatus[] = [
   'published',
   'empty',
 ]
-
-const aiTestComment = ref<string | null>(null)
-const testComment = ref('')
 
 const availableStatuses = isTeacher ? availableTeacherStatuses : availableAdminStatuses
 
@@ -43,14 +38,8 @@ const isDisabled = computed(() => {
   return item.value!.status === 'draft'
 })
 
-const textFields = computed(() => getReportTextFields(item.value!))
-// новый режим единого поля для отчета
-const isSingleField = computed(() => textFields.value.length === 1)
-
 function open(report: ReportResource) {
   item.value = cloneDeep(report)
-  aiTestComment.value = null
-  testComment.value = ''
   dialog.value = true
 }
 
@@ -108,10 +97,7 @@ const fill = computed<number>(() => {
   }
 
   const max = 1000 // сколько символов = 100% заполняемость
-  let total = 0
-  for (const field of textFields.value) {
-    total += (item.value[field] ? item.value[field].length : 0)
-  }
+  const total = item.value.comment ? item.value.comment.length : 0
 
   return Math.min(Math.round(total * 100 / max), 100)
 })
@@ -120,16 +106,12 @@ async function improve() {
   if (!item.value) {
     return
   }
-  // Старый AI-режим для 4 полей полностью отключен: улучшаем только единое поле.
-  if (!isSingleField.value) {
-    return
-  }
   if (!item.value.comment) {
     useGlobalMessage('Введите текст отчета', 'error')
     return
   }
   aiLoading.value = true
-  const { data, error } = await useHttp<Partial<ReportTextFields>>(
+  const { data, error } = await useHttp<string>(
     `reports/improve`,
     {
       method: 'POST',
@@ -144,74 +126,9 @@ async function improve() {
     setTimeout(() => useGlobalMessage(`<b>Ошибка ИИ</b>: ${error.value!.data.message}`, 'error'), 100)
   }
   if (data.value) {
-    item.value.ai_comment = data.value.comment || null
+    item.value.ai_comment = data.value || null
   }
   aiLoading.value = false
-}
-
-// временно
-const isTest = computed(() => isAdmin && user && [1, 5, 151, 212].includes(user.id))
-
-async function improve2(company: Company) {
-  if (!item.value) {
-    return
-  }
-  if (!testComment.value) {
-    useGlobalMessage('Введите текст отчета', 'error')
-    return
-  }
-  aiLoading2.value = true
-  const { data, error } = await useHttp<Partial<ReportTextFields>>(
-    `reports/improve`,
-    {
-      method: 'POST',
-      body: {
-        company,
-        id: item.value.id,
-        comment: testComment.value,
-      },
-    },
-  )
-  if (error.value) {
-    aiLoading2.value = false
-    setTimeout(() => useGlobalMessage(`<b>Ошибка ИИ</b>: ${error.value!.data.message}`, 'error'), 100)
-  }
-  if (data.value) {
-    aiTestComment.value = data.value.comment || null
-  }
-  aiLoading2.value = false
-}
-
-// для теста
-function fillComment() {
-  if (!item.value) {
-    return
-  }
-
-  if (item.value.comment) {
-    testComment.value = item.value.comment
-    return
-  }
-
-  const result: string[] = []
-  const fields: ReportTextField[] = [
-    'homework_comment',
-    'cognitive_ability_comment',
-    'knowledge_level_comment',
-    'recommendation_comment',
-  ]
-
-  for (const f of fields) {
-    const text = item.value[f]
-    if (text) {
-      result.push(`${ReportTextFieldLabel[f]}
-${text}`)
-    }
-  }
-
-  testComment.value = result.join(`
-
-`)
 }
 
 defineExpose({ open })
@@ -241,42 +158,13 @@ defineExpose({ open })
             variant="text"
             @click="destroy()"
           />
-          <v-menu v-if="isTest">
-            <template #activator="{ props }">
-              <v-btn
-                v-bind="props"
-                :icon="mdiAutoFix"
-                :size="48"
-                :loading="aiLoading2"
-                color="success"
-                variant="text"
-              />
-            </template>
-            <v-list>
-              <v-list-item @click="fillComment()">
-                заполнить текст отчета
-              </v-list-item>
-              <v-list-item @click="improve2('ooo')">
-                сгенерировать (ООО – оригинал)
-              </v-list-item>
-              <v-list-item @click="improve2('ip')">
-                сгенерировать (ИП – Костя)
-              </v-list-item>
-              <v-list-item @click="improve2('ano')">
-                сгенерировать (АНО – Антон)
-              </v-list-item>
-              <v-list-item target="_blank" href="https://v3-api.ege-centr.ru/storage/ai.txt" :disabled="!aiTestComment">
-                открыть инструкцию
-              </v-list-item>
-            </v-list>
-          </v-menu>
           <v-btn
             v-if="isAdmin"
             :icon="mdiAutoFix"
             :size="48"
             :loading="aiLoading"
             variant="text"
-            :disabled="isDisabled || !isSingleField"
+            :disabled="isDisabled"
             @click="improve()"
           />
           <v-btn
@@ -343,34 +231,16 @@ defineExpose({ open })
           </div>
         </div>
 
-        <div v-if="isTest" class="report-dialog__text-field mb-4">
+        <div class="report-dialog__text-field">
           <v-textarea
-            v-model="testComment"
-            :rows="5"
-            no-resize
-            auto-grow
-            label="Тестирование"
-            color="success"
-            :hide-details="!!aiTestComment"
-            persistent-hint
-            :disabled="aiLoading2"
-            hint="Это поле видно только вам"
-          />
-          <div v-if="aiTestComment" class="ai-report ai-suggest__wrapper">
-            <div class="ai-suggest ai-report__text" v-html="aiTestComment" />
-          </div>
-        </div>
-
-        <div v-for="field in textFields" :key="field" class="report-dialog__text-field">
-          <v-textarea
-            v-model="item[field]"
+            v-model="item.comment"
             :disabled="isDisabled || aiLoading"
-            :rows="isSingleField ? 20 : 5"
+            :rows="20"
             no-resize
             auto-grow
-            :label="ReportTextFieldLabel[field]"
+            label="Текст отчета"
           />
-          <div v-if="isAdmin && isSingleField && item.ai_comment" class="ai-suggest__wrapper">
+          <div v-if="item.ai_comment" class="ai-suggest__wrapper">
             <div class="ai-suggest ai-report__text" v-html="item.ai_comment" />
           </div>
         </div>

@@ -28,7 +28,7 @@ class GeminiCallRecordingService extends GeminiService
 
         // Рендерим промпты (инструкция по транскрибации + контекст звонка)
         [$systemInstructionText, $userPromptText] = app(AiPromptRenderer::class)->renderInstructionAndPromptById(
-            AiPrompt::CALL_TRANSCRIPTION, [
+            AiPrompt::CALL, [
                 'call' => $call,
                 'aon' => Call::aon($call->number),
             ]);

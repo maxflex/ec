@@ -275,6 +275,10 @@ div.item-deleted:after {
   }
 }
 
+.with-linebreaks {
+  white-space: pre-wrap;
+}
+
 .invisible {
   visibility: hidden;
 }

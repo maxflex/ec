@@ -25,7 +25,7 @@ nextTick(async () => {
   <v-fade-transition>
     <div v-if="showGreeting" class="client-greeting">
       <h1>
-        {{ formatName(user!, 'first-middle') }}, здравствуйте!
+        {{ user!.first_name }}, здравствуйте!
       </h1>
       <p>
         В этом личном кабинете вы сможете видеть:

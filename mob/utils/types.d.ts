@@ -369,10 +369,6 @@ declare global {
     id: number
     year: Year
     status: ReportStatus
-    homework_comment?: string
-    cognitive_ability_comment?: string
-    knowledge_level_comment?: string
-    recommendation_comment?: string
     comment?: string
     ai_comment?: string | null
     is_read: boolean

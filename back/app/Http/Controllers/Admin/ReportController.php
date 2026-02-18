@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\Company;
 use App\Enums\Program;
 use App\Enums\ReportStatus;
 use App\Http\Controllers\Controller;
@@ -13,7 +12,6 @@ use App\Models\Teacher;
 use App\Utils\AI\GeminiReportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 
 class ReportController extends Controller
 {
@@ -135,7 +133,6 @@ class ReportController extends Controller
             'id' => ['required', 'numeric'],
             // Старый формат из 4 полей полностью отключен: принимаем только единый comment.
             'comment' => ['required', 'string'],
-            'company' => ['sometimes', Rule::enum(Company::class)],
         ]);
 
         $id = intval($request->input('id'));
@@ -146,9 +143,6 @@ class ReportController extends Controller
             $report = new Report($request->all());
         }
 
-        return GeminiReportService::improveReport(
-            $report,
-            $request->filled('company') ? Company::from($request->input('company')) : null
-        );
+        return GeminiReportService::improveReport($report);
     }
 }
