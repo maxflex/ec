@@ -1,5 +1,8 @@
+$reportTextMaxWidth: 900px;
+
 .report-view {
   flex: 1;
+
   &__content {
     margin-top: 30px;
     display: flex;
@@ -17,7 +20,7 @@
         &:last-child {
           // word-wrap: break-word;
           // white-space: pre-wrap;
-          max-width: 900px;
+          max-width: $reportTextMaxWidth;
         }
       }
     }
@@ -98,6 +101,7 @@
   &__text {
     background: white !important;
     font-weight: 400 !important;
+    max-width: $reportTextMaxWidth;
 
     p,
     li {
