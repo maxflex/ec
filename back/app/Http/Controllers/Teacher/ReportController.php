@@ -62,7 +62,9 @@ class ReportController extends \App\Http\Controllers\Admin\ReportController
         abort_if($report->teacher_id !== auth()->id(), 403);
         $report->update($request->all());
 
-        return new ReportListResource($report);
+        // Для страницы редактирования фронт ожидает полный формат ReportResource
+        // (включая client_lessons, comment и связанные сущности), как и в show().
+        return new ReportResource($report);
     }
 
     /**

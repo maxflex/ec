@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import type { RealReport, ReportListResource } from '..'
+import { mdiAutoFix } from '@mdi/js'
+
 const props = defineProps<{
   items: ReportListResource[]
 }>()
@@ -49,15 +52,18 @@ function getFillColor(r: RealReport) {
             {{ formatPrice(r.price) }} руб.
           </span>
         </div>
-        <div
-          style="width: 150px"
-          class="text-center d-flex ga-5"
-        >
+        <div style="width: 140px">
           <ReportStatus :status="r.status" />
+          <div v-if="r.status === 'published'" class="text-gray text-caption">
+            {{ r.is_read ? 'прочитано' : 'не прочитано' }}
+          </div>
         </div>
 
-        <div style="width: 120px">
-          {{ r.is_read ? 'прочитано' : 'не прочитано' }}
+        <div style="width: 40px">
+          <v-icon
+            v-if="r.has_ai_comment"
+            :icon="mdiAutoFix"
+          />
         </div>
 
         <div style="width: 50px">

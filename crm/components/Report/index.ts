@@ -2,6 +2,7 @@ export interface RealReport {
   id: number
   year: Year
   status: ReportStatus
+  has_ai_comment?: boolean
   teacher: PersonResource
   client: PersonResource
   program: Program

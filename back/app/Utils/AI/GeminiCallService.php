@@ -13,7 +13,7 @@ use Gemini\Enums\ResponseMimeType;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
-class GeminiCallRecordingService extends GeminiService
+class GeminiCallService extends GeminiService
 {
     /**
      * Возвращает транскрибацию и краткое содержание записи звонка.

@@ -9,6 +9,7 @@ const emit = defineEmits<{
 
 const { dialog, width } = useDialog('medium')
 const item = ref<ReportResource>()
+let initialStatus: ReportStatus = 'draft'
 const deleting = ref(false)
 const saving = ref(false)
 const aiLoading = ref(false)
@@ -32,6 +33,9 @@ const isDisabled = computed(() => {
 // Если статус = черновик или на проверку, или пустой отчет,
 // то препод может редактировать все. Если остальные типы, то отчет нельзя редактировать
   if (isTeacher) {
+    if (initialStatus === 'toCheck') {
+      return true
+    }
     return !availableTeacherStatuses.includes(item.value!.status) && item.value!.status !== 'refused'
   }
   // админ не может редактировать статус "черновик"
@@ -40,11 +44,17 @@ const isDisabled = computed(() => {
 
 function open(report: ReportResource) {
   item.value = cloneDeep(report)
+  initialStatus = report.status
   dialog.value = true
 }
 
 async function save() {
   saving.value = true
+  // Показываем уведомление только при фактической отправке на проверку.
+  const isSentToCheck = isTeacher
+    && item.value!.status === 'toCheck'
+    && initialStatus !== 'toCheck'
+
   if (item.value!.id > 0) {
     const { data } = await useHttp<ReportResource>(
       `reports/${item.value!.id}`,
@@ -69,6 +79,10 @@ async function save() {
       },
     )
     await router.push({ name: 'reports-id-edit', params: { id: data.value?.id } })
+  }
+
+  if (isSentToCheck) {
+    useGlobalMessage('Отчет отправлен на проверку', 'success')
   }
 }
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { RealReport, ReportListResource } from '..'
-import { mdiCheck, mdiCheckAll } from '@mdi/js'
+import { mdiAutoFix, mdiCheck, mdiCheckAll } from '@mdi/js'
 
 const props = defineProps<{
   items: ReportListResource[]
@@ -21,7 +21,7 @@ function isRealReport(r: ReportListResource): r is RealReport {
       <div style="width: 180px">
         <UiPerson :item="r.client" />
       </div>
-      <div style="width: 120px">
+      <div style="width: 100px">
         {{ ProgramShortLabel[r.program] }}
       </div>
 
@@ -44,13 +44,16 @@ function isRealReport(r: ReportListResource): r is RealReport {
         </div>
         <div style="flex: 1">
           <ReportStatus :status="r.status" />
-          <v-icon
+          <div v-if="r.status === 'published'" class="text-gray text-caption">
+            {{ r.is_read ? 'прочитано' : 'не прочитано' }}
+          </div>
+          <!-- <v-icon
             v-if="r.status === 'published'"
             class="ml-2"
             :icon="r.is_read ? mdiCheckAll : mdiCheck"
             size="20"
             color="secondary"
-          />
+          /> -->
         </div>
         <div style="width: 70px">
           <span v-if="r.price">
@@ -58,10 +61,17 @@ function isRealReport(r: ReportListResource): r is RealReport {
           </span>
         </div>
         <div style="width: 30px">
+          <v-icon
+            v-if="r.has_ai_comment"
+            :icon="mdiAutoFix"
+          />
+        </div>
+        <div style="width: 30px">
           <span v-if="r.grade" :class="`text-score text-score--${r.grade}`">
             {{ r.grade }}
           </span>
         </div>
+
         <div style="width: 100px" class="pr-2">
           <ReportFill v-model="r.fill" />
         </div>

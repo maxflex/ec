@@ -37,6 +37,8 @@ class ReportListResource extends JsonResource
                 'grade', 'to_check_at', 'is_required', 'is_read',
             ], [
                 'lessons_count' => $report->lessons->count(),
+                // Для списка отчётов отдаём явный флаг, чтобы фронт не тянул полный ai_comment.
+                'has_ai_comment' => filled($report->ai_comment),
                 'teacher' => new PersonResource($report->teacher),
                 'client' => new PersonResource($report->client),
                 'count' => $count - 1,

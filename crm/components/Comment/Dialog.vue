@@ -288,6 +288,7 @@ defineExpose({ open })
           />
         </transition>
       </div>
+      <UiNoData v-else-if="isLoaded && comments.length === 0" />
     </div>
   </v-dialog>
 </template>

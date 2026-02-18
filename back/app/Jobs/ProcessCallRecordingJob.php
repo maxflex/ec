@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Call;
-use App\Utils\AI\GeminiCallRecordingService;
+use App\Utils\AI\GeminiCallService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -35,7 +35,7 @@ class ProcessCallRecordingJob implements ShouldQueue
             return;
         }
 
-        $transcriptionAndSummary = GeminiCallRecordingService::getTranscriptionAndSummary($call);
+        $transcriptionAndSummary = GeminiCallService::getTranscriptionAndSummary($call);
 
         $call->update($transcriptionAndSummary);
     }

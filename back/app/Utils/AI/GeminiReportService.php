@@ -17,15 +17,17 @@ class GeminiReportService extends GeminiService
             'historyReport' => self::getHistoryReport($report),
         ];
 
-        [$systemInstructionText, $userPromptText] = (new AiPromptRenderer())
+        [$systemInstructionText, $userPromptText] = (new AiPromptRenderer)
             ->renderInstructionAndPromptById(AiPrompt::REPORT, $data);
 
         return self::generate($systemInstructionText, $userPromptText);
     }
 
+    /**
+     * Предыдущий отчет в плоскости, если есть
+     */
     private static function getHistoryReport(Report $report): ?Report
     {
-        // История отчетов в плоскости (по этому ученику, по этой программе, в этом году, у этого препода)
         return Report::where([
             ['id', '<', $report->id],
             ['client_id', $report->client_id],
