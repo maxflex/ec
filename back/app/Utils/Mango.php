@@ -148,9 +148,12 @@ class Mango
         event(new CallSummaryEvent($call));
     }
 
+    /**
+     * Добавлена аудиозапись
+     */
     public static function eventRecordAdded($data)
     {
-        Call::whereId($data->entry_id)->update([
+        Call::findOrFail($data->entry_id)->update([
             'recording' => $data->recording_id,
         ]);
     }
