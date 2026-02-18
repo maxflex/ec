@@ -14,6 +14,12 @@ class GenerateReportAiCommentJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * Максимальное время выполнения одной попытки (5 минут).
+     * Генерация отчета может занимать заметное время из-за внешнего AI API.
+     */
+    public int $timeout = 300;
+
     public int $tries = 2;
 
     /**
@@ -21,7 +27,7 @@ class GenerateReportAiCommentJob implements ShouldQueue
      *
      * @var array<int>
      */
-    public array $backoff = [30];
+    public array $backoff = [60];
 
     public function __construct(
         private readonly int $reportId,

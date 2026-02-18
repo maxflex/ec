@@ -14,6 +14,11 @@ class ProcessCallRecordingJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * Максимальное время выполнения одной попытки (10 минут).
+     */
+    public int $timeout = 600;
+
     public int $tries = 2;
 
     /**
@@ -21,7 +26,7 @@ class ProcessCallRecordingJob implements ShouldQueue
      *
      * @var array<int>
      */
-    public array $backoff = [30];
+    public array $backoff = [60];
 
     public function __construct(
         private readonly string $callId,
