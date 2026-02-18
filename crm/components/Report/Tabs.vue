@@ -181,13 +181,6 @@ nextTick(loadData)
         </div>
       </div>
 
-      <div v-if="item.comment">
-        <div>Текст отчета:</div>
-        <div class="with-linebreaks">
-          {{ item.comment }}
-        </div>
-      </div>
-
       <div v-if="item.ai_comment" class="ai-report__text" v-html="item.ai_comment" />
 
       <div v-if="item && item.grade" class="report-tabs__score" :class="`report-tabs__score--${item.grade}`">

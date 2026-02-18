@@ -20,7 +20,7 @@ class GeminiCallService extends GeminiService
      *
      * @return array{summary: string, transcription: string}
      */
-    public static function getTranscriptionAndSummary(Call $call): array
+    public static function transcribe(Call $call): array
     {
         if (! $call->has_recording) {
             throw new RuntimeException("Нельзя транскрибировать звонок {$call->id}: нет recording_id");

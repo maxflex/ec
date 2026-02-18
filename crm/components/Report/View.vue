@@ -136,7 +136,7 @@ nextTick(loadData)
         </div>
       </div>
 
-      <div v-if="item.comment && (isClient ? !item.ai_comment : true)">
+      <div v-if="isClient && item.comment && !item.ai_comment">
         <div>Текст отчета:</div>
         <div class="with-linebreaks">
           {{ item.comment }}

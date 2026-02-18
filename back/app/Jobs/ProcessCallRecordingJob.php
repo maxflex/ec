@@ -40,7 +40,7 @@ class ProcessCallRecordingJob implements ShouldQueue
             return;
         }
 
-        $transcriptionAndSummary = GeminiCallService::getTranscriptionAndSummary($call);
+        $transcriptionAndSummary = GeminiCallService::transcribe($call);
 
         $call->update($transcriptionAndSummary);
     }
