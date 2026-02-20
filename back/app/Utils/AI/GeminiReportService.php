@@ -4,6 +4,8 @@ namespace App\Utils\AI;
 
 use App\Models\AiPrompt;
 use App\Models\Report;
+use Gemini\Data\GenerationConfig;
+use Gemini\Data\ThinkingConfig;
 
 class GeminiReportService extends GeminiService
 {
@@ -39,8 +41,16 @@ class GeminiReportService extends GeminiService
 
     private static function generate(string $systemInstructionText, string $userPromptText): string
     {
-        return self::buildModel($systemInstructionText)
-            ->generateContent($userPromptText)
-            ->text();
+        $response = self::buildModel($systemInstructionText)
+            ->withGenerationConfig(new GenerationConfig(
+                thinkingConfig: new ThinkingConfig(
+                    includeThoughts: false,
+                )
+            ))
+            ->generateContent($userPromptText);
+
+        // Не используем $response->text(): он работает только для single-part ответа.
+        // Gemini периодически отдает multi-part (с "думающими" кусками), и text() бросает ValueError.
+        return collect($response->parts())->last()->text;
     }
 }
