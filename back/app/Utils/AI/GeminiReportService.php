@@ -6,6 +6,7 @@ use App\Models\AiPrompt;
 use App\Models\Report;
 use Gemini\Data\GenerationConfig;
 use Gemini\Data\ThinkingConfig;
+use ValueError;
 
 class GeminiReportService extends GeminiService
 {
@@ -49,8 +50,11 @@ class GeminiReportService extends GeminiService
             ))
             ->generateContent($userPromptText);
 
-        // Не используем $response->text(): он работает только для single-part ответа.
-        // Gemini периодически отдает multi-part (с "думающими" кусками), и text() бросает ValueError.
-        return collect($response->parts())->last()->text;
+        try {
+            return $response->text();
+        } catch (ValueError) {
+            // Gemini периодически отдает multi-part (с "думающими" кусками), и text() бросает ValueError.
+            return collect($response->parts())->last()->text;
+        }
     }
 }
