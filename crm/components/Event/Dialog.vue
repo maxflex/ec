@@ -13,6 +13,7 @@ const saving = ref(false)
 const loading = ref(false)
 const itemId = ref<number>()
 const item = ref<EventResource>(cloneDeep(modelDefaults))
+const timeInput = ref()
 const route = useRoute()
 const router = useRouter()
 
@@ -34,6 +35,12 @@ async function edit(id: number) {
 }
 
 async function save() {
+  // Если время не заполнено, не отправляем запрос и фокусируем поле.
+  if (!item.value.time?.trim()) {
+    timeInput.value?.focus()
+    return
+  }
+
   saving.value = true
   const method = itemId.value ? `put` : `post`
   const url = itemId.value ? `events/${itemId.value}` : `events`
@@ -45,6 +52,13 @@ async function save() {
     emit('updated', data.value)
   }
   dialog.value = false
+
+  // После создания открываем страницу нового события.
+  if (data.value && !itemId.value) {
+    router.push({ name: 'events-id', params: { id: data.value.id } })
+    useGlobalMessage(`Событие создано`, 'success')
+  }
+
   setTimeout(() => saving.value = false, 300)
 }
 
@@ -104,6 +118,7 @@ defineExpose({ create, edit })
             :size="48"
             icon="$save"
             variant="text"
+            :loading="saving"
             @click="save()"
           />
         </div>
@@ -121,6 +136,7 @@ defineExpose({ create, edit })
           <UiDateInput :key="item.year" v-model="item.date" :year="item.year" />
           <div>
             <v-text-field
+              ref="timeInput"
               v-model="item.time"
               v-maska="timeMask"
               label="Время"

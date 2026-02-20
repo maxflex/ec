@@ -40,6 +40,11 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
+        // Явно требуем время, чтобы не получать SQL-ошибку при сохранении события.
+        $request->validate([
+            'time' => ['required', 'date_format:H:i'],
+        ]);
+
         $event = Event::create($request->all());
         $event->loadCount('participants');
 
@@ -59,6 +64,11 @@ class EventController extends Controller
      */
     public function update(Event $event, Request $request)
     {
+        // Для редактирования также запрещаем пустое или некорректное время.
+        $request->validate([
+            'time' => ['required', 'date_format:H:i'],
+        ]);
+
         $event->update($request->all());
         $event->loadCount('participants');
 
