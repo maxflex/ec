@@ -30,6 +30,7 @@ use App\Http\Controllers\Admin\HeadTeacherReportController;
 use App\Http\Controllers\Admin\InstructionController;
 use App\Http\Controllers\Admin\LessonController;
 use App\Http\Controllers\Admin\MacroController;
+use App\Http\Controllers\Admin\MangoTestController;
 use App\Http\Controllers\Admin\MenuCountsController;
 use App\Http\Controllers\Admin\OtherPaymentController;
 use App\Http\Controllers\Admin\PassController;
@@ -131,6 +132,11 @@ Route::get('contract-balances', ContractBalanceController::class);
 Route::prefix('calls')->controller(CallController::class)->group(function () {
     Route::get('active', 'active');
     Route::get('recording/{action}/{call}', 'recording');
+});
+
+Route::prefix('mango-test')->controller(MangoTestController::class)->group(function () {
+    Route::post('call-event', 'callEvent');
+    Route::post('clear-active-calls', 'clearActiveCalls');
 });
 
 Route::prefix('errors')->controller(ErrorController::class)->group(function () {

@@ -14,7 +14,11 @@ const style = offset
 
 <template>
   <div class="loader" :class="{ 'loader--fixed': fixed }" :style="style">
-    <span> загружаю... </span>
+    <span>
+      <slot>
+        загружаю...
+      </slot>
+    </span>
   </div>
 </template>
 

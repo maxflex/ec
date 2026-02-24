@@ -13,12 +13,17 @@ use Illuminate\Support\Facades\Redis;
 
 class Session
 {
+    private const int HOUR = 3600;
+
+    private const int DAY = 86400;
+
     /**
-     * Create new session for Phone (log in)
+     * Создаёт новый токен по телефону
      *
+     * @param  bool  $viaCallApp  если логин для CallApp, то сессия условно бесконечная
      * @return string Session token
      */
-    public static function logIn(Phone $phone): string
+    public static function logIn(Phone $phone, bool $viaCallApp = false): string
     {
         $hash = Hash::make($phone->number);
 
@@ -26,7 +31,7 @@ class Session
         // App\Models\Client => client
         // App\Models\Representative => representative
         // App\Models\Teacher => teacher
-        $entityString = match ($phone->entity_type) {
+        $entityString = $viaCallApp ? 'callapp' : match ($phone->entity_type) {
             User::class => 'admin',
             default => strtolower(class_basename($phone->entity_type))
         };
@@ -36,7 +41,7 @@ class Session
             self::cacheKey($token),
             $phone->id,
             'EX',
-            self::getDuration($phone)
+            $viaCallApp ? self::DAY * 365 : self::getDuration($phone)
         );
 
         return $token;
@@ -49,11 +54,9 @@ class Session
 
     public static function getDuration(Phone $phone): int
     {
-        $hour = 60 * 60;
-
         return match ($phone->entity_type) {
-            Client::class, Representative::class => $hour * 24 * 30,
-            Teacher::class, User::class => $hour * 3
+            Client::class, Representative::class => self::DAY * 30,
+            Teacher::class, User::class => self::HOUR * 3
         };
     }
 
