@@ -13,6 +13,7 @@ let initialStatus: ReportStatus = 'draft'
 const deleting = ref(false)
 const saving = ref(false)
 const aiLoading = ref(false)
+const isAiEditMode = ref(false) // режим редактирования текста ИИ
 const router = useRouter()
 const { isAdmin, isTeacher } = useAuthStore()
 const availableTeacherStatuses: ReportStatus[] = [
@@ -255,7 +256,18 @@ defineExpose({ open })
             label="Текст отчета"
           />
           <div v-if="item.ai_comment" class="ai-suggest__wrapper">
-            <div class="ai-suggest ai-report__text" v-html="item.ai_comment" />
+            <template v-if="isAiEditMode">
+              <v-textarea v-model="item.ai_comment" auto-grow />
+              <div class="under-input">
+                <a @click="isAiEditMode = false">сохранить</a>
+              </div>
+            </template>
+            <template v-else>
+              <div class="ai-suggest ai-report__text" v-html="item.ai_comment" />
+              <div class="under-input">
+                <a @click="isAiEditMode = true">редактировать</a>
+              </div>
+            </template>
           </div>
         </div>
       </div>
