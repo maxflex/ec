@@ -24,7 +24,7 @@ class GeminiReportService extends GeminiService
             ->renderInstructionAndPromptById(AiPrompt::REPORT, $data);
 
         // пока хардкодом
-        $model = $report->id % 2 === 0 ? 'gemini-3.1-pro-preview' : 'gemini-3-flash-preview';
+        $model = $report->model ?? ($report->id % 2 === 0 ? 'gemini-3.1-pro-preview' : 'gemini-3-flash-preview');
 
         return self::generate($systemInstructionText, $userPromptText, $model);
     }

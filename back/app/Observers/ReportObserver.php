@@ -50,6 +50,7 @@ class ReportObserver
         // После первой генерации модель фиксируется и больше не должна изменяться.
         if ($report->wasChanged('ai_comment') && filled($report->ai_comment) && ! $report->model) {
             $report->model = $report->id % 2 === 0 ? 'gemini-3.1-pro-preview' : 'gemini-3-flash-preview';
+            $report->saveQuietly();
         }
     }
 }
