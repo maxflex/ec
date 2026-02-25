@@ -23,7 +23,10 @@ class GeminiReportService extends GeminiService
         [$systemInstructionText, $userPromptText] = (new AiPromptRenderer)
             ->renderInstructionAndPromptById(AiPrompt::REPORT, $data);
 
-        return self::generate($systemInstructionText, $userPromptText);
+        // пока хардкодом
+        $model = $report->id % 2 === 0 ? 'gemini-3.1-pro-preview' : 'gemini-3-flash-preview';
+
+        return self::generate($systemInstructionText, $userPromptText, $model);
     }
 
     /**
@@ -40,9 +43,9 @@ class GeminiReportService extends GeminiService
         ])->latest()->first();
     }
 
-    private static function generate(string $systemInstructionText, string $userPromptText): string
+    private static function generate(string $systemInstructionText, string $userPromptText, string $model): string
     {
-        $response = self::buildModel($systemInstructionText)
+        $response = self::buildModel($systemInstructionText, $model)
             ->withGenerationConfig(new GenerationConfig(
                 thinkingConfig: new ThinkingConfig(
                     includeThoughts: false,

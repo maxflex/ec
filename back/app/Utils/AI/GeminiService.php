@@ -9,14 +9,14 @@ use Gemini\Resources\GenerativeModel;
 
 abstract class GeminiService
 {
-    protected const string MODEL = 'gemini-3-flash-preview';
-
     /**
      * Единая сборка generative model с опциональной system instruction.
      */
-    protected static function buildModel(?string $systemInstructionText = null): GenerativeModel
-    {
-        $model = self::geminiClient()->generativeModel(self::MODEL);
+    protected static function buildModel(
+        ?string $systemInstructionText = null,
+        string $model = 'gemini-3-flash-preview'
+    ): GenerativeModel {
+        $model = self::geminiClient()->generativeModel($model);
 
         // Инструкцию отправляем только если она реально задана.
         if (is_string($systemInstructionText) && trim($systemInstructionText) !== '') {

@@ -37,6 +37,7 @@ export interface ReportResource {
   is_read: boolean
   grade: LessonScore | null
   price: number | null
+  model: string | null
   teacher?: PersonResource
   client?: PersonResource
   program?: Program
