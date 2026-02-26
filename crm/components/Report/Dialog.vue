@@ -201,6 +201,11 @@ async function improve() {
   aiLoading.value = false
 }
 
+function editAiComment() {
+  isAiEditMode.value = true
+  smoothScroll('dialog', 'bottom', 'instant')
+}
+
 defineExpose({ open })
 </script>
 
@@ -333,7 +338,7 @@ defineExpose({ open })
             <template v-else>
               <div class="ai-suggest ai-report__text" v-html="item.ai_comment" />
               <div class="under-input d-flex justify-space-between">
-                <a @click="isAiEditMode = true">редактировать</a>
+                <a @click="editAiComment()">редактировать</a>
                 <div v-if="isAdmin && item.ai_model" class="pr-4 text-gray d-flex ga-1 align-center">
                   <v-icon :icon="mdiAutoFix" :size="16" class="vf-1" />
                   {{ item.ai_model }}
