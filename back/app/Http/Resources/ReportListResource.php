@@ -35,6 +35,7 @@ class ReportListResource extends JsonResource
             return extract_fields($report, [
                 'year', 'program', 'status', 'fill', 'price',
                 'grade', 'to_check_at', 'is_required', 'is_read',
+                'ai_model',
             ], [
                 'lessons_count' => $report->lessons->count(),
                 // Для списка отчётов отдаём явный флаг, чтобы фронт не тянул полный ai_comment.

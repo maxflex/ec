@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { RealReport, ReportListResource } from '..'
-import { mdiAutoFix, mdiCheck, mdiCheckAll } from '@mdi/js'
+import { mdiAutoFix } from '@mdi/js'
 
 const props = defineProps<{
   items: ReportListResource[]
@@ -56,15 +56,15 @@ function isRealReport(r: ReportListResource): r is RealReport {
           /> -->
         </div>
         <div style="width: 70px">
-          <span v-if="r.price">
-            {{ formatPrice(r.price) }} ₽
-          </span>
+          <span v-if="r.price"> {{ formatPrice(r.price) }} ₽ </span>
         </div>
         <div style="width: 30px">
-          <v-icon
-            v-if="r.has_ai_comment"
-            :icon="mdiAutoFix"
-          />
+          <v-tooltip v-if="r.has_ai_comment" location="bottom">
+            <template #activator="{ props }">
+              <v-icon :icon="mdiAutoFix" v-bind="props" />
+            </template>
+            {{ r.ai_model }}
+          </v-tooltip>
         </div>
         <div style="width: 30px">
           <span v-if="r.grade" :class="`text-score text-score--${r.grade}`">
@@ -92,9 +92,7 @@ function isRealReport(r: ReportListResource): r is RealReport {
           </div>
         </div>
         <div style="width: 160px; flex: initial" class="">
-          <span v-if="r.is_required" class="text-error">
-            требуется отчёт
-          </span>
+          <span v-if="r.is_required" class="text-error"> требуется отчёт </span>
         </div>
       </template>
     </div>
