@@ -203,7 +203,7 @@ async function improve() {
 
 function editAiComment() {
   isAiEditMode.value = true
-  smoothScroll('dialog', 'bottom', 'instant')
+  nextTick(() => smoothScroll('dialog', 'bottom', 'instant'))
 }
 
 defineExpose({ open })
