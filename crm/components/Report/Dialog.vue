@@ -128,22 +128,40 @@ const aiInstructionParts = computed(() => {
 
   if (systemStart === -1 && promptStart === -1) {
     return {
-      instruction: raw.trim(),
+      instruction: decodeHtmlEntities(raw.trim()),
       prompt: '',
     }
   }
 
   // Разбираем снимок генерации на две человекочитаемые части для отображения в диалоге.
-  const instruction = systemStart !== -1
+  const instructionRaw = systemStart !== -1
     ? raw.slice(systemStart + systemMarker.length, promptStart === -1 ? undefined : promptStart).trim()
     : ''
 
-  const prompt = promptStart !== -1
+  const promptRaw = promptStart !== -1
     ? raw.slice(promptStart + promptMarker.length).trim()
     : ''
 
-  return { instruction, prompt }
+  return {
+    instruction: decodeHtmlEntities(instructionRaw),
+    prompt: decodeHtmlEntities(promptRaw),
+  }
 })
+
+function decodeHtmlEntities(value: string): string {
+  // Декодируем HTML-сущности, чтобы instruction/prompt отображались человекочитаемо.
+  return value
+    .replace(/&quot;/g, '"')
+    .replace(/&#34;/g, '"')
+    .replace(/&apos;/g, '\'')
+    .replace(/&#39;/g, '\'')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&#(\d+);/g, (_, dec: string) => String.fromCodePoint(Number(dec)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) => String.fromCodePoint(Number.parseInt(hex, 16)))
+}
 
 interface ReportImproveResponse {
   ai_comment: string
