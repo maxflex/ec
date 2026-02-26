@@ -120,31 +120,11 @@ const fill = computed<number>(() => {
 
 const aiInstructionParts = computed(() => {
   const raw = item.value?.ai_instruction || ''
-  const systemMarker = '[SYSTEM INSTRUCTION]'
-  const promptMarker = '[USER PROMPT]'
-
-  const systemStart = raw.indexOf(systemMarker)
-  const promptStart = raw.indexOf(promptMarker)
-
-  if (systemStart === -1 && promptStart === -1) {
-    return {
-      instruction: decodeHtmlEntities(raw.trim()),
-      prompt: '',
-    }
-  }
-
-  // Разбираем снимок генерации на две человекочитаемые части для отображения в диалоге.
-  const instructionRaw = systemStart !== -1
-    ? raw.slice(systemStart + systemMarker.length, promptStart === -1 ? undefined : promptStart).trim()
-    : ''
-
-  const promptRaw = promptStart !== -1
-    ? raw.slice(promptStart + promptMarker.length).trim()
-    : ''
+  const [instructionRaw = '', promptRaw = ''] = raw.split('<USER_PROMPT>')
 
   return {
-    instruction: decodeHtmlEntities(instructionRaw),
-    prompt: decodeHtmlEntities(promptRaw),
+    instruction: decodeHtmlEntities(instructionRaw.trim()),
+    prompt: decodeHtmlEntities(promptRaw.trim()),
   }
 })
 

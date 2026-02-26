@@ -68,11 +68,7 @@ class GeminiReportService extends GeminiService
 
     private static function buildAiInstructionSnapshot(string $systemInstructionText, string $userPromptText): string
     {
-        return implode("\n\n", [
-            '[SYSTEM INSTRUCTION]',
-            trim($systemInstructionText),
-            '[USER PROMPT]',
-            trim($userPromptText),
-        ]);
+        // Формат хранилища фиксированный: instruction + разделитель + prompt.
+        return trim($systemInstructionText)."\n\n<USER_PROMPT>\n\n".trim($userPromptText);
     }
 }
