@@ -27,11 +27,15 @@ Route::prefix('requests')->middleware('throttle:requests')->controller(RequestsC
 Route::controller(AuthController::class)->prefix('auth')->group(function () {
     Route::post('submit-phone', 'submitPhone');
     Route::post('verify-code', 'verifyCode');
-    Route::get('user', 'user')->middleware('auth:crm');
-    Route::get('logout', 'logout')->middleware('auth:crm');
 
     route::post('via-telegram', 'viaTelegram');
     Route::post('via-magic-link', 'viaMagicLink');
+
+    Route::middleware('auth:crm')->group(function () {
+        Route::get('user', 'user');
+        Route::get('logout', 'logout');
+        Route::post('via-call-app', 'viaCallApp');
+    });
 });
 
 Route::apiResource('/teachers', TeacherController::class)->only(['index', 'store']);

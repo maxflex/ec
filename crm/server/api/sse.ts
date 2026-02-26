@@ -15,17 +15,43 @@ export default defineEventHandler(async (event) => {
 
   await redisClient.connect()
 
-  await redisClient.subscribe('sse', message => eventStream.push(message))
+  const pushSystemEvent = async (eventName: string, payload: Record<string, unknown>) => {
+    await eventStream.push(JSON.stringify({
+      event: `App\\Events\\${eventName}`,
+      data: {
+        data: payload,
+      },
+    }))
+  }
 
   // cleanup the interval when the connection is terminated or the writer is closed
+  const heartbeatInterval = setInterval(() => {
+    void pushSystemEvent('SseHeartbeatEvent', { ts: Date.now() })
+  }, 20_000)
+
   eventStream.onClosed(async () => {
     // console.log('closing SSE...')
-    await redisClient.unsubscribe('sse')
+    clearInterval(heartbeatInterval)
+    try {
+      await redisClient.unsubscribe('sse')
+    }
+    catch (error) {
+      console.error('[sse] redis unsubscribe error', error)
+    }
     await redisClient.quit()
     await eventStream.close()
   })
 
-  event.node.req.on('close', () => console.log('REQ close'))
+  const sendPromise = eventStream.send()
 
-  return eventStream.send()
+  // Do not await: sending before stream is open can block.
+  void pushSystemEvent('SseConnectedEvent', { ts: Date.now() })
+
+  void redisClient.subscribe('sse', (message) => {
+    void eventStream.push(message)
+  }).catch((error) => {
+    console.error('[sse] redis subscribe error', error)
+  })
+
+  return sendPromise
 })

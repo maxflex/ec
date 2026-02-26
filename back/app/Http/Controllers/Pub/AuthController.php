@@ -52,7 +52,8 @@ class AuthController extends Controller
      */
     private function logIn(Phone $phone, array $meta = [])
     {
-        $token = Session::logIn($phone);
+        $viaCallApp = isset($meta['via_call_app']);
+        $token = Session::logIn($phone, $viaCallApp);
         $this->logSuccess($phone, $meta);
 
         return [
@@ -111,6 +112,8 @@ class AuthController extends Controller
 
     /**
      * Вход через ссылку
+     *
+     * @DEPRECATED не используется
      */
     public function viaMagicLink(Request $request)
     {
@@ -129,6 +132,20 @@ class AuthController extends Controller
 
         return $this->logIn($phone, [
             'via_magic_link' => true,
+        ]);
+    }
+
+    /**
+     * Вход для CallApp, отличается тем, что токен выдается на год,
+     * чтобы не приходилось логиниться постоянно
+     */
+    public function viaCallApp()
+    {
+        /** @var Phone $phone */
+        $phone = auth()->user()->phone;
+
+        return $this->logIn($phone, [
+            'via_call_app' => true,
         ]);
     }
 
