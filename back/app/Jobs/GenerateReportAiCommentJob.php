@@ -37,10 +37,6 @@ class GenerateReportAiCommentJob implements ShouldQueue
     {
         $report = Report::findOrFail($this->reportId);
 
-        $aiComment = GeminiReportService::improveReport($report);
-
-        $report->update([
-            'ai_comment' => $aiComment,
-        ]);
+        $report->update(GeminiReportService::improveReport($report));
     }
 }

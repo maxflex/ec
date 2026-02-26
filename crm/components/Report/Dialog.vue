@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { RealReport, ReportResource } from '.'
-import { mdiAutoFix } from '@mdi/js'
+import { mdiAutoFix, mdiFileDocument, mdiKeyboardBackspace } from '@mdi/js'
 import { cloneDeep } from 'lodash-es'
 
 const emit = defineEmits<{
@@ -14,6 +14,7 @@ const deleting = ref(false)
 const saving = ref(false)
 const aiLoading = ref(false)
 const isAiEditMode = ref(false) // режим редактирования текста ИИ
+const isInstructionDialogOpen = ref(false)
 const router = useRouter()
 const { isAdmin, isTeacher } = useAuthStore()
 const availableTeacherStatuses: ReportStatus[] = [
@@ -117,6 +118,39 @@ const fill = computed<number>(() => {
   return Math.min(Math.round(total * 100 / max), 100)
 })
 
+const aiInstructionParts = computed(() => {
+  const raw = item.value?.ai_instruction || ''
+  const systemMarker = '[SYSTEM INSTRUCTION]'
+  const promptMarker = '[USER PROMPT]'
+
+  const systemStart = raw.indexOf(systemMarker)
+  const promptStart = raw.indexOf(promptMarker)
+
+  if (systemStart === -1 && promptStart === -1) {
+    return {
+      instruction: raw.trim(),
+      prompt: '',
+    }
+  }
+
+  // Разбираем снимок генерации на две человекочитаемые части для отображения в диалоге.
+  const instruction = systemStart !== -1
+    ? raw.slice(systemStart + systemMarker.length, promptStart === -1 ? undefined : promptStart).trim()
+    : ''
+
+  const prompt = promptStart !== -1
+    ? raw.slice(promptStart + promptMarker.length).trim()
+    : ''
+
+  return { instruction, prompt }
+})
+
+interface ReportImproveResponse {
+  ai_comment: string
+  ai_model: string
+  ai_instruction: string
+}
+
 async function improve() {
   if (!item.value) {
     return
@@ -126,7 +160,7 @@ async function improve() {
     return
   }
   aiLoading.value = true
-  const { data, error } = await useHttp<string>(
+  const { data, error } = await useHttp<ReportImproveResponse>(
     `reports/improve`,
     {
       method: 'POST',
@@ -141,7 +175,10 @@ async function improve() {
     setTimeout(() => useGlobalMessage(`<b>Ошибка ИИ</b>: ${error.value!.data.message}`, 'error'), 100)
   }
   if (data.value) {
-    item.value.ai_comment = data.value || null
+    // Фиксируем все фактические AI-данные в текущем состоянии отчета до сохранения.
+    item.value.ai_comment = data.value.ai_comment || null
+    item.value.ai_model = data.value.ai_model || null
+    item.value.ai_instruction = data.value.ai_instruction || null
   }
   aiLoading.value = false
 }
@@ -175,6 +212,15 @@ defineExpose({ open })
           />
           <v-btn
             v-if="isAdmin"
+            :disabled="!item.ai_instruction"
+            variant="text"
+            :size="48"
+            class="text-none"
+            :icon="mdiFileDocument"
+            @click="isInstructionDialogOpen = true"
+          />
+          <v-btn
+            v-if="isAdmin"
             :icon="mdiAutoFix"
             :size="48"
             :loading="aiLoading"
@@ -182,6 +228,7 @@ defineExpose({ open })
             :disabled="isDisabled"
             @click="improve()"
           />
+
           <v-btn
             icon="$save"
             :size="48"
@@ -259,20 +306,47 @@ defineExpose({ open })
             <template v-if="isAiEditMode">
               <v-textarea v-model="item.ai_comment" auto-grow />
               <div class="under-input">
-                <a @click="isAiEditMode = false">сохранить</a>
+                <a style="position: relative; left: -10px" @click="isAiEditMode = false">
+                  <v-icon :icon="mdiKeyboardBackspace" :size="12" />
+                  вернуться к просмотру
+                </a>
               </div>
             </template>
             <template v-else>
               <div class="ai-suggest ai-report__text" v-html="item.ai_comment" />
               <div class="under-input d-flex justify-space-between">
                 <a @click="isAiEditMode = true">редактировать</a>
-                <div v-if="isAdmin && item.model" class="pr-4 text-gray d-flex ga-1 align-center">
+                <div v-if="isAdmin && item.ai_model" class="pr-4 text-gray d-flex ga-1 align-center">
                   <v-icon :icon="mdiAutoFix" :size="16" class="vf-1" />
-                  {{ item.model }}
+                  {{ item.ai_model }}
                 </div>
               </div>
             </template>
           </div>
+        </div>
+      </div>
+    </div>
+  </v-dialog>
+
+  <v-dialog v-model="isInstructionDialogOpen" max-width="900">
+    <div class="dialog-wrapper">
+      <div class="dialog-header">
+        Просмотр инструкции
+        <v-btn icon="$close" :size="48" variant="text" @click="isInstructionDialogOpen = false" />
+      </div>
+      <div class="dialog-body">
+        <h2>
+          Инструкция
+        </h2>
+        <div class="report-dialog__ai-instruction-text">
+          {{ aiInstructionParts.instruction }}
+        </div>
+
+        <h2 class="mt-6">
+          Промпт
+        </h2>
+        <div class="report-dialog__ai-instruction-text">
+          {{ aiInstructionParts.prompt }}
         </div>
       </div>
     </div>
@@ -296,6 +370,11 @@ defineExpose({ open })
         }
       }
     }
+  }
+
+  &__ai-instruction-text {
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 }
 </style>

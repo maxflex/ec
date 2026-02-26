@@ -22,7 +22,7 @@ class Report extends Model
 
     protected $fillable = [
         'year', 'program', 'price', 'client_id', 'status', 'grade',
-        'teacher_id', 'comment', 'ai_comment',
+        'teacher_id', 'comment', 'ai_comment', 'ai_model', 'ai_instruction',
     ];
 
     protected $casts = [

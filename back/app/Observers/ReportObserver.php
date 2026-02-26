@@ -47,9 +47,9 @@ class ReportObserver
             GenerateReportAiCommentJob::dispatch($report->id);
         }
 
-        // После первой генерации модель фиксируется и больше не должна изменяться.
-        if ($report->wasChanged('ai_comment') && filled($report->ai_comment) && ! $report->model) {
-            $report->model = $report->id % 2 === 0 ? 'gemini-3.1-pro-preview' : 'gemini-3-flash-preview';
+        // Фолбэк для старых сценариев: если ai_comment есть, а модель не зафиксирована — ставим дефолт.
+        if ($report->wasChanged('ai_comment') && filled($report->ai_comment) && ! $report->ai_model) {
+            $report->ai_model = $report->id % 2 === 0 ? 'gemini-3-pro-preview' : 'gemini-3-flash-preview';
             $report->saveQuietly();
         }
     }

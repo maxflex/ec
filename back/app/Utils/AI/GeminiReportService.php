@@ -11,9 +11,9 @@ use ValueError;
 class GeminiReportService extends GeminiService
 {
     /**
-     * @return string Улучшенный текст отчета
+     * @return array{ai_comment: string, ai_model: string, ai_instruction: string}
      */
-    public static function improveReport(Report $report): string
+    public static function improveReport(Report $report): array
     {
         $data = [
             'report' => $report,
@@ -23,10 +23,15 @@ class GeminiReportService extends GeminiService
         [$systemInstructionText, $userPromptText] = (new AiPromptRenderer)
             ->renderInstructionAndPromptById(AiPrompt::REPORT, $data);
 
-        // пока хардкодом
-        $model = $report->model ?? ($report->id % 2 === 0 ? 'gemini-3.1-pro-preview' : 'gemini-3-flash-preview');
+        // Для повторной генерации используем уже зафиксированную модель, иначе — дефолт по прежней схеме.
+        $model = $report->ai_model ?? ($report->id % 2 === 0 ? 'gemini-3-pro-preview' : 'gemini-3-flash-preview');
 
-        return self::generate($systemInstructionText, $userPromptText, $model);
+        return [
+            'ai_comment' => self::generate($systemInstructionText, $userPromptText, $model),
+            'ai_model' => $model,
+            // Сохраняем фактические тексты после Blade-рендера, чтобы можно было восстановить контекст генерации.
+            'ai_instruction' => self::buildAiInstructionSnapshot($systemInstructionText, $userPromptText),
+        ];
     }
 
     /**
@@ -59,5 +64,15 @@ class GeminiReportService extends GeminiService
             // Gemini периодически отдает multi-part (с "думающими" кусками), и text() бросает ValueError.
             return collect($response->parts())->last()->text;
         }
+    }
+
+    private static function buildAiInstructionSnapshot(string $systemInstructionText, string $userPromptText): string
+    {
+        return implode("\n\n", [
+            '[SYSTEM INSTRUCTION]',
+            trim($systemInstructionText),
+            '[USER PROMPT]',
+            trim($userPromptText),
+        ]);
     }
 }

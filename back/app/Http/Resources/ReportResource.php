@@ -18,7 +18,7 @@ class ReportResource extends JsonResource
     {
         return extract_fields($this, [
             'year', 'program', 'status', 'is_read', 'created_at',
-            'price', 'comment', 'ai_comment', 'grade', 'model',
+            'price', 'comment', 'ai_comment', 'grade', 'ai_model', 'ai_instruction',
         ], [
             'client_lessons' => JournalResource::collection($this->client_lessons),
             'teacher' => new TeacherListResource($this->teacher),
