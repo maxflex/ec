@@ -43,6 +43,7 @@ class Mango
         if ($data->from->line_number !== self::LINE_NUMBER) {
             return;
         }
+        logger(print_r($data, true));
         switch (CallState::from($data->call_state)) {
             // новый звонок
             case CallState::appeared:
@@ -50,6 +51,7 @@ class Mango
                 $number = $data->from->number;
                 if ($data->location === 'ivr') {
                     $params = [
+                        'entry_id' => (string) $data->entry_id,
                         'state' => $data->call_state,
                         'type' => CallType::incoming->value,
                         'user' => null,
@@ -59,7 +61,8 @@ class Mango
                         'last_interaction' => Call::getLastInteraction($number),
                     ];
                     CallEvent::dispatch($params);
-                    cache()->tags('calls')->put($data->entry_id, $params, now()->addMinutes(10));
+                    // Входящий без ответа: держим короткий TTL, чтобы быстрее чистить "залипшие" звонки.
+                    cache()->tags('calls')->put($data->entry_id, $params, now()->addMinutes(3));
                 }
                 break;
 
@@ -68,6 +71,7 @@ class Mango
                 if (isset($data->from->extension)) {
                     $number = $data->to->number;
                     $params = [
+                        'entry_id' => (string) $data->entry_id,
                         'state' => $data->call_state,
                         'user' => new PersonResource(User::find($data->from->extension)),
                         'answered_at' => (new Call(['answered_at' => $data->timestamp]))->answered_at,
@@ -80,6 +84,7 @@ class Mango
                     $params = cache()->tags('calls')->get($data->entry_id);
                     $params = [
                         ...$params,
+                        'entry_id' => (string) $data->entry_id,
                         'state' => $data->call_state,
                         'user' => new PersonResource(User::find($data->to->extension)),
                         'answered_at' => (new Call(['answered_at' => $data->timestamp]))->answered_at,
@@ -87,7 +92,8 @@ class Mango
                     ];
                 }
                 CallEvent::dispatch($params);
-                cache()->tags('calls')->put($data->entry_id, $params, now()->addHour());
+                // Самый длинный разговор исторически ~44 мин, поэтому safety TTL = 45 минут.
+                cache()->tags('calls')->put($data->entry_id, $params, now()->addMinutes(45));
                 break;
 
                 // звонок завершён
@@ -103,6 +109,7 @@ class Mango
                     if ($params !== null) {
                         $params = [
                             ...$params,
+                            'entry_id' => (string) $data->entry_id,
                             'state' => $data->call_state,
                         ];
                         CallEvent::dispatch($params);
@@ -121,6 +128,11 @@ class Mango
         if ($data->line_number !== self::LINE_NUMBER) {
             return;
         }
+
+        // Summary — финальная точка жизненного цикла звонка.
+        // На всякий случай чистим realtime-проекцию активных звонков по entry_id.
+        cache()->tags('calls')->pull($data->entry_id);
+
         if ($data->call_direction === 1) {
             $type = CallType::incoming;
             $userId = $data->talk_time > 0 ? $data->to->extension : null;

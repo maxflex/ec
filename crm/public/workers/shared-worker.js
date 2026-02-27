@@ -9,7 +9,7 @@ globalThis.onconnect = (e) => {
   if (eventSource === null) {
     eventSource = new EventSource(isDev
       ? 'http://localhost:3000/api/sse'
-      : 'https://v3-node.ege-centr.ru:4443/sse',
+      : 'https://sse.ege-centr.ru',
     )
   }
 

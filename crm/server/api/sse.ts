@@ -17,7 +17,9 @@ export default defineEventHandler(async (event) => {
 
   const pushSystemEvent = async (eventName: string, payload: Record<string, unknown>) => {
     await eventStream.push(JSON.stringify({
-      event: `App\\Events\\${eventName}`,
+      // Системные события формируются на уровне SSE-relay (Nuxt), а не Laravel events.
+      // Поэтому используем отдельный нейтральный namespace, чтобы не вводить в заблуждение.
+      event: `sse.system.${eventName}`,
       data: {
         data: payload,
       },
@@ -26,7 +28,7 @@ export default defineEventHandler(async (event) => {
 
   // cleanup the interval when the connection is terminated or the writer is closed
   const heartbeatInterval = setInterval(() => {
-    void pushSystemEvent('SseHeartbeatEvent', { ts: Date.now() })
+    void pushSystemEvent('heartbeat', { ts: Date.now() })
   }, 20_000)
 
   eventStream.onClosed(async () => {
@@ -45,7 +47,7 @@ export default defineEventHandler(async (event) => {
   const sendPromise = eventStream.send()
 
   // Do not await: sending before stream is open can block.
-  void pushSystemEvent('SseConnectedEvent', { ts: Date.now() })
+  void pushSystemEvent('connected', { ts: Date.now() })
 
   void redisClient.subscribe('sse', (message) => {
     void eventStream.push(message)
