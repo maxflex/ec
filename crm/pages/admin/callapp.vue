@@ -10,7 +10,7 @@ function openCallApp() {
 }
 
 onMounted(() => {
-  setTimeout(openCallApp, 5000)
+  setTimeout(openCallApp, 1000)
 })
 </script>
 
