@@ -130,7 +130,19 @@ class Mango
         }
 
         // Summary — финальная точка жизненного цикла звонка.
-        // На всякий случай чистим realtime-проекцию активных звонков по entry_id.
+        // Если в realtime-кеше по entry_id еще живет звонок, дублируем финальный
+        // Disconnected-сигнал, чтобы фронт гарантированно снял "висяк" из active.
+        $activeCall = cache()->tags('calls')->get($data->entry_id);
+        if ($activeCall !== null) {
+            $realtimePayload = [
+                ...$activeCall,
+                'entry_id' => (string) $data->entry_id,
+                'state' => CallState::disconnected->value,
+            ];
+            CallEvent::dispatch($realtimePayload);
+        }
+
+        // После summary обязательно удаляем realtime-проекцию.
         cache()->tags('calls')->pull($data->entry_id);
 
         if ($data->call_direction === 1) {
