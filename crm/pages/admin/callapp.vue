@@ -3,8 +3,7 @@
  * АВТОРИЗАЦИЯ В CALL-APP
  */
 
-const { public: config } = useRuntimeConfig()
-const isLocalhost = config.env === 'local'
+const isLocalhost = useIsLocalhost()
 const token = ref()
 
 function openCallApp() {

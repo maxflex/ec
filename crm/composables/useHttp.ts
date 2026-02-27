@@ -6,7 +6,8 @@ export function useHttp<T = any>(
   options: UseFetchOptions<T> = {},
 ) {
   const { getCurrentToken, clearCurrentToken, getOriginalToken, saveRedirectUrl, isPreviewMode } = useAuthStore()
-  const { public: { baseUrl, env } } = useRuntimeConfig()
+  const { public: { baseUrl } } = useRuntimeConfig()
+  const isLocalhost = useIsLocalhost()
   const token = getCurrentToken().value
   let url = baseUrl
 
@@ -31,7 +32,7 @@ export function useHttp<T = any>(
     }
   }
 
-  if (env === 'local') {
+  if (isLocalhost) {
     options.credentials = 'include'
     // headers.Cookies = 'XDEBUG_SESSION=PHPSTORM'
     useCookie('XDEBUG_SESSION').value = 'PHPSTORM'
