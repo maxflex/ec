@@ -102,7 +102,7 @@ class Mango
                 // 1120 Вызов завершен вызываемым абонентом
                 // 1163 Превышено время ожидания в очереди удержания
             case CallState::disconnected:
-                if (in_array($data->disconnect_reason, [1100, 1110, 1120, 1163])) {
+                if (in_array($data->disconnect_reason, [1110, 1120, 1163])) {
                     $params = cache()->tags('calls')->get($data->entry_id);
                     // если на входящий не ответили, disconnected-1110 посылается всем
                     // поэтому, может быть null после обработки первого
