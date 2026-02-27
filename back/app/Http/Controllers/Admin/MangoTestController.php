@@ -191,7 +191,8 @@ class MangoTestController extends Controller
             'from' => [
                 'extension' => '190',
                 'number' => 'sip:test@kapralovka.mangosip.ru',
-                'line_number' => '74956461080',
+                // Для прохождения через Mango::eventCall должен совпадать с рабочей линией.
+                'line_number' => Mango::LINE_NUMBER,
             ],
             'to' => [
                 'number' => '79653155538',
@@ -214,7 +215,8 @@ class MangoTestController extends Controller
             'from' => [
                 'extension' => '190',
                 'number' => 'sip:test@kapralovka.mangosip.ru',
-                'line_number' => '74956461080',
+                // Для прохождения через Mango::eventCall должен совпадать с рабочей линией.
+                'line_number' => Mango::LINE_NUMBER,
             ],
             'to' => [
                 'number' => '79653155538',

@@ -3,19 +3,32 @@
  * АВТОРИЗАЦИЯ В CALL-APP
  */
 
+const { public: config } = useRuntimeConfig()
+const isLocalhost = config.env === 'local'
+const token = ref()
+
 function openCallApp() {
-  const token = useCookie('token').value
-  console.log('auth-token', token)
-  window.location.href = `callapp://auth/callback?token=${token}`
+  console.log('auth-token', token.value)
+  window.location.href = `callapp://auth/callback?token=${token.value}`
+}
+
+function getToken() {
+  token.value = useCookie('token').value
 }
 
 onMounted(() => {
-  setTimeout(openCallApp, 1000)
+  getToken()
+  if (!isLocalhost) {
+    setTimeout(openCallApp, 1000)
+  }
 })
 </script>
 
 <template>
-  <UiLoader>
+  <pre v-if="isLocalhost" style="height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center;">
+    {{ token }}
+  </pre>
+  <UiLoader v-else>
     открываю CallApp...
   </UiLoader>
 </template>

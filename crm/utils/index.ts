@@ -304,16 +304,27 @@ export function formatDateAgo(dateStr: string): string {
   return plural(diffInYears, ['год', 'года', 'лет'])
 }
 
-export function formatPhone(number: string): string {
+export function formatPhone(number: unknown): string {
+  const raw = typeof number === 'string' ? number.trim() : String(number ?? '')
+  if (!raw) {
+    return ''
+  }
+
+  const digits = raw.replace(/\D+/g, '')
+  // Форматируем только российские номера; остальные (например, +44) оставляем как есть.
+  if (digits.length !== 11 || !digits.startsWith('7')) {
+    return `+${raw}`
+  }
+
   return [
     '+7 (',
-    number.slice(1, 4),
+    digits.slice(1, 4),
     ') ',
-    number.slice(4, 7),
+    digits.slice(4, 7),
     '-',
-    number.slice(7, 9),
+    digits.slice(7, 9),
     '-',
-    number.slice(9, 11),
+    digits.slice(9, 11),
   ].join('')
 }
 

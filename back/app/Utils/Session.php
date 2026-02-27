@@ -18,6 +18,12 @@ class Session
     private const int DAY = 86400;
 
     /**
+     * Длительность call-app сессии.
+     * По бизнес-требованию она должна быть "условно бесконечной".
+     */
+    private const int CALL_APP_DURATION = self::DAY * 365;
+
+    /**
      * Создаёт новый токен по телефону
      *
      * @param  bool  $viaCallApp  если логин для CallApp, то сессия условно бесконечная
@@ -41,7 +47,7 @@ class Session
             self::cacheKey($token),
             $phone->id,
             'EX',
-            $viaCallApp ? self::DAY * 365 : self::getDuration($phone)
+            $viaCallApp ? self::CALL_APP_DURATION : self::getDuration($phone)
         );
 
         return $token;
@@ -78,7 +84,12 @@ class Session
         if ($phone === null) {
             return null;
         }
-        Redis::expire(self::cacheKey($token), self::getDuration($phone));
+        // Важно: call-app токен не должен "схлопываться" до 3 часов
+        // после первого же запроса. Продлеваем его отдельным TTL.
+        Redis::expire(
+            self::cacheKey($token),
+            self::isCallAppToken($token) ? self::CALL_APP_DURATION : self::getDuration($phone)
+        );
 
         $user = $phone->entity;
 
@@ -86,5 +97,10 @@ class Session
         $user->phone = $phone;
 
         return $user;
+    }
+
+    private static function isCallAppToken(string $token): bool
+    {
+        return str_starts_with($token, 'callapp|');
     }
 }
