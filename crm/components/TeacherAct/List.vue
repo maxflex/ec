@@ -18,7 +18,7 @@ const emit = defineEmits<{
       <TableCol :width="180">
         <UiPerson :item="item.teacher" />
       </TableCol>
-      <TableCol :width="90">
+      <TableCol :width="50">
         акт
       </TableCol>
       <TableCol :width="90">
@@ -30,11 +30,14 @@ const emit = defineEmits<{
       <TableCol :width="120">
         {{ plural(item.total.lessons, ['занятие', 'занятия', 'занятий']) }}
       </TableCol>
-      <TableCol :width="150">
+      <TableCol :width="140">
         {{ formatPrice(item.total.price) }}  руб.
         <div class="text-gray text-caption">
           {{ formatPrice(item.total.price * 0.15) }} руб. НДФЛ
         </div>
+      </TableCol>
+      <TableCol :width="140">
+        {{ formatPrice(item.total.price + item.total.price * 0.15) }}  руб.
       </TableCol>
       <TableCol :width="170">
         <template v-if="item.date_from">
