@@ -27,15 +27,5 @@ async function getAudio(action: 'play' | 'download') {
 </script>
 
 <template>
-  <v-btn class="call-app__download" density="compact" :icon="mdiDownload" :loading="loading" @click="downloadAudio" />
+  <v-btn :size="42" :icon="mdiDownload" :loading="loading" @click="downloadAudio" />
 </template>
-
-<style lang="scss">
-.call-app {
-  &__download {
-    position: absolute !important;
-    right: -10px;
-    top: -4px;
-  }
-}
-</style>

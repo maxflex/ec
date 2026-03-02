@@ -6,6 +6,8 @@ import {
   mdiCalendar,
   mdiCardAccountDetailsOutline,
   mdiCashMultiple,
+  mdiChat,
+  mdiChatOutline,
   mdiFileDocumentEditOutline,
   mdiHumanMaleBoard,
   mdiInbox,
@@ -89,13 +91,14 @@ const menu: Menu = [
     ],
   },
   {
-    icon: mdiSendCircle,
-    title: 'Сообщения',
+    icon: mdiChatOutline,
+    title: 'Коммуникация',
     items: [
-      { title: 'История Telegram', to: '/telegram-messages' },
-      { title: 'История SMS', to: '/sms-messages' },
-      { title: 'Групповое сообщение', to: '/group-message' },
+      { title: 'Звонки', to: '/calls' },
+      { title: 'Telegram', to: '/telegram-messages' },
+      { title: 'SMS', to: '/sms-messages' },
       { title: 'Рассылки', to: '/telegram-lists' },
+      { title: 'Групповое сообщение', to: '/group-message' },
     ],
   },
   {
@@ -148,12 +151,6 @@ nextTick(updateMenuCounts)
       </template>
       Поиск
     </v-list-item>
-    <v-list-item :active="false" @click="callAppDialog = true">
-      <template #prepend>
-        <CallAppStateIcon />
-      </template>
-      Звонки
-    </v-list-item>
 
     <MenuList :items="menu" />
 
@@ -164,5 +161,4 @@ nextTick(updateMenuCounts)
       Выход
     </v-list-item>
   </v-list>
-  <CallAppMain />
 </template>

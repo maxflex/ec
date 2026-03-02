@@ -118,6 +118,93 @@ class MangoTestController extends Controller
         ];
     }
 
+    private function resolveNumber(array $filters): ?string
+    {
+        $entityType = $filters['entity_type'] ?? null;
+        $hasLastInteraction = (bool) ($filters['last_interaction'] ?? false);
+
+        if ($entityType === null) {
+            return $hasLastInteraction
+                ? $this->findUnknownNumberWithLastInteraction()
+                : $this->findUnknownNumberWithoutLastInteraction();
+        }
+
+        $query = Phone::query()
+            ->where('entity_type', $entityType)
+            ->whereNotNull('number')
+            ->where('number', '<>', '');
+
+        if ($hasLastInteraction) {
+            $query->whereExists(fn (Builder $subquery) => $this->callsByPhoneNumberSubquery($subquery));
+        } else {
+            $query->whereNotExists(fn (Builder $subquery) => $this->callsByPhoneNumberSubquery($subquery));
+        }
+
+        return $query
+            ->inRandomOrder()
+            ->value('number');
+    }
+
+    private function findUnknownNumberWithLastInteraction(): ?string
+    {
+        $query = Call::query()
+            ->selectRaw('calls.number')
+            ->leftJoin('phones', 'phones.number', '=', 'calls.number')
+            ->whereNull('phones.id')
+            ->groupBy('calls.number')
+            ->inRandomOrder();
+
+        return $query->first()?->number;
+    }
+
+    private function findUnknownNumberWithoutLastInteraction(): ?string
+    {
+        // Для теста генерируем номер, отсутствующий и в phones, и в calls.
+        for ($i = 0; $i < 100; $i++) {
+            $number = '79'.str_pad((string) random_int(0, 999_999_999), 9, '0', STR_PAD_LEFT);
+            if (! $this->numberExistsInPhonesOrCalls($number)) {
+                return $number;
+            }
+        }
+
+        return null;
+    }
+
+    private function numberExistsInPhonesOrCalls(string $number): bool
+    {
+        return Phone::query()->where('number', $number)->exists()
+            || Call::query()->where('number', $number)->exists();
+    }
+
+    private function callsByPhoneNumberSubquery(Builder $query): void
+    {
+        $query
+            ->selectRaw('1')
+            ->from('calls')
+            ->whereColumn('calls.number', 'phones.number');
+    }
+
+    private function newEntryId(): string
+    {
+        return rtrim(base64_encode('entry-'.microtime(true).'-'.random_int(1000, 9999)), '=');
+    }
+
+    private function incomingContextKey(Request $request, array $filters): string
+    {
+        $signature = implode('|', [
+            $filters['entity_type'] ?? 'unknown',
+            (int) ($filters['last_interaction'] ?? 0),
+            (int) ($filters['user_id'] ?? $request->user()->id),
+        ]);
+
+        return 'mango-test:incoming:'.$request->user()->id.':'.md5($signature);
+    }
+
+    private function newCallId(): string
+    {
+        return rtrim(base64_encode('call-'.microtime(true).'-'.random_int(1000, 9999)), '=');
+    }
+
     private function buildIncomingConnectedPayload(Request $request, array $filters, int $userId): array
     {
         $context = $this->getIncomingContext($request, $filters);
@@ -144,6 +231,19 @@ class MangoTestController extends Controller
                 'type' => 0,
             ],
         ];
+    }
+
+    private function getIncomingContext(Request $request, array $filters): array
+    {
+        $context = cache()->get($this->incomingContextKey($request, $filters));
+
+        if (! is_array($context) || ! isset($context['entry_id'], $context['number'])) {
+            throw ValidationException::withMessages([
+                'scenario' => 'Сначала выполните Appeared (входящий) с текущими фильтрами.',
+            ]);
+        }
+
+        return $context;
     }
 
     private function buildIncomingDisconnectedPayload(Request $request, array $filters, int $userId): array
@@ -226,106 +326,5 @@ class MangoTestController extends Controller
                 'type' => 0,
             ],
         ];
-    }
-
-    private function getIncomingContext(Request $request, array $filters): array
-    {
-        $context = cache()->get($this->incomingContextKey($request, $filters));
-
-        if (! is_array($context) || ! isset($context['entry_id'], $context['number'])) {
-            throw ValidationException::withMessages([
-                'scenario' => 'Сначала выполните Appeared (входящий) с текущими фильтрами.',
-            ]);
-        }
-
-        return $context;
-    }
-
-    private function incomingContextKey(Request $request, array $filters): string
-    {
-        $signature = implode('|', [
-            $filters['entity_type'] ?? 'unknown',
-            (int) ($filters['last_interaction'] ?? 0),
-            (int) ($filters['user_id'] ?? $request->user()->id),
-        ]);
-
-        return 'mango-test:incoming:'.$request->user()->id.':'.md5($signature);
-    }
-
-    private function resolveNumber(array $filters): ?string
-    {
-        $entityType = $filters['entity_type'] ?? null;
-        $hasLastInteraction = (bool) ($filters['last_interaction'] ?? false);
-
-        if ($entityType === null) {
-            return $hasLastInteraction
-                ? $this->findUnknownNumberWithLastInteraction()
-                : $this->findUnknownNumberWithoutLastInteraction();
-        }
-
-        $query = Phone::query()
-            ->where('entity_type', $entityType)
-            ->whereNotNull('number')
-            ->where('number', '<>', '');
-
-        if ($hasLastInteraction) {
-            $query->whereExists(fn (Builder $subquery) => $this->callsByPhoneNumberSubquery($subquery));
-        } else {
-            $query->whereNotExists(fn (Builder $subquery) => $this->callsByPhoneNumberSubquery($subquery));
-        }
-
-        return $query
-            ->inRandomOrder()
-            ->value('number');
-    }
-
-    private function callsByPhoneNumberSubquery(Builder $query): void
-    {
-        $query
-            ->selectRaw('1')
-            ->from('calls')
-            ->whereColumn('calls.number', 'phones.number');
-    }
-
-    private function findUnknownNumberWithLastInteraction(): ?string
-    {
-        $row = Call::query()
-            ->selectRaw('calls.number')
-            ->leftJoin('phones', 'phones.number', '=', 'calls.number')
-            ->whereNull('phones.id')
-            ->groupBy('calls.number')
-            ->inRandomOrder()
-            ->first();
-
-        return $row?->number;
-    }
-
-    private function findUnknownNumberWithoutLastInteraction(): ?string
-    {
-        // Для теста генерируем номер, отсутствующий и в phones, и в calls.
-        for ($i = 0; $i < 100; $i++) {
-            $number = '79'.str_pad((string) random_int(0, 999_999_999), 9, '0', STR_PAD_LEFT);
-            if (! $this->numberExistsInPhonesOrCalls($number)) {
-                return $number;
-            }
-        }
-
-        return null;
-    }
-
-    private function numberExistsInPhonesOrCalls(string $number): bool
-    {
-        return Phone::query()->where('number', $number)->exists()
-            || Call::query()->where('number', $number)->exists();
-    }
-
-    private function newEntryId(): string
-    {
-        return rtrim(base64_encode('entry-'.microtime(true).'-'.random_int(1000, 9999)), '=');
-    }
-
-    private function newCallId(): string
-    {
-        return rtrim(base64_encode('call-'.microtime(true).'-'.random_int(1000, 9999)), '=');
     }
 }
