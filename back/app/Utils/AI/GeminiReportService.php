@@ -24,7 +24,8 @@ class GeminiReportService extends GeminiService
             ->renderInstructionAndPromptById(AiPrompt::REPORT, $data);
 
         // Для повторной генерации используем уже зафиксированную модель, иначе — дефолт по прежней схеме.
-        $model = $report->ai_model ?? ($report->id % 2 === 0 ? 'gemini-3-pro-preview' : 'gemini-3-flash-preview');
+        // $model = $report->ai_model ?? ($report->id % 2 === 0 ? 'gemini-3-pro-preview' : 'gemini-3-flash-preview');
+        $model = 'gemini-3-flash-preview';
 
         return [
             'ai_comment' => self::generate($systemInstructionText, $userPromptText, $model),
