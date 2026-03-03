@@ -169,7 +169,6 @@ async function improve() {
     },
   )
   if (error.value) {
-    aiLoading.value = false
     setTimeout(() => useGlobalMessage(`<b>Ошибка ИИ</b>: ${error.value!.data.message}`, 'error'), 100)
   }
   if (data.value) {

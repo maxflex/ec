@@ -126,7 +126,6 @@ declare global {
   }
 
   interface AuthResource extends PersonWithPhotoResource {
-    is_call_notifications?: boolean
     is_head_teacher?: boolean
     has_grades?: boolean
     client_id?: number // есть только у представителя
@@ -275,7 +274,6 @@ declare global {
 
   interface UserResource extends PersonWithPhotoResource {
     is_active: boolean
-    is_call_notifications: boolean
     phones: PhoneResource[]
     created_at?: string
   }

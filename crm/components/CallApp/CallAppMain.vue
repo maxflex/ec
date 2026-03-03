@@ -76,7 +76,7 @@ nextTick(() => {
 
 <template>
   <CallAppDialog :active-calls="activeCalls" />
-  <div v-if="user?.is_call_notifications" class="call-app__banners">
+  <div class="call-app__banners">
     <v-slide-y-reverse-transition group>
       <CallAppBanner
         v-for="item in banners"

@@ -18,7 +18,13 @@ class GeminiCallService extends GeminiService
     /**
      * Возвращает транскрибацию и краткое содержание записи звонка.
      *
-     * @return array{summary: string, transcription: string}
+     * @return array{
+     *     summary: string,
+     *     transcription: string,
+     *     analysis_1: string,
+     *     analysis_2: string,
+     *     analysis_3: string
+     * }
      */
     public static function transcribe(Call $call): array
     {
@@ -40,16 +46,28 @@ class GeminiCallService extends GeminiService
         $schema = new Schema(
             type: DataType::OBJECT,
             properties: [
-                'summary' => new Schema(
-                    type: DataType::STRING,
-                    description: 'Краткое содержание звонка: кто звонил, цель, итог.'
-                ),
                 'transcription' => new Schema(
                     type: DataType::STRING,
                     description: 'Полная транскрибация диалога с разделением по спикерам.'
                 ),
+                'summary' => new Schema(
+                    type: DataType::STRING,
+                    description: 'Краткое содержание звонка: кто звонил, цель, итог.'
+                ),
+                'analysis_1' => new Schema(
+                    type: DataType::STRING,
+                    description: 'Анализ 1'
+                ),
+                'analysis_2' => new Schema(
+                    type: DataType::STRING,
+                    description: 'Анализ 2'
+                ),
+                'analysis_3' => new Schema(
+                    type: DataType::STRING,
+                    description: 'Анализ 3'
+                ),
             ],
-            required: ['summary', 'transcription']
+            required: ['summary', 'transcription', 'analysis_1', 'analysis_2', 'analysis_3']
         );
 
         // Формируем запрос к модели

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\CallType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CallListResource;
+use App\Http\Resources\CallResource;
 use App\Models\Call;
+use App\Utils\AI\GeminiCallService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -25,6 +27,16 @@ class CallController extends Controller
         $this->filter($request, $query);
 
         return $this->handleIndexRequest($request, $query, CallListResource::class);
+    }
+
+    public function show(Call $call)
+    {
+        return new CallResource($call);
+    }
+
+    public function improve(Call $call)
+    {
+        return GeminiCallService::transcribe($call);
     }
 
     public function active()

@@ -20,10 +20,10 @@ class UserResource extends JsonResource
     {
         return extract_fields($this, [
             'first_name', 'last_name', 'created_at',
-            'photo_url', 'is_active', 'is_call_notifications'
+            'photo_url', 'is_active',
         ], [
             'entity_type' => User::class,
-            'phones' => PhoneResource::collection($this->phones)
+            'phones' => PhoneResource::collection($this->phones),
         ]);
     }
 }

@@ -118,7 +118,7 @@ class Call extends Model
             && $this->chain()
                 ->answered()
                 ->where('created_at', '>', $this->created_at)
-                ->whereRaw('TIMESTAMPDIFF(second, answered_at, finished_at) > 10')
+                // ->whereRaw('TIMESTAMPDIFF(second, answered_at, finished_at) > 10')
                 ->exists();
     }
 
