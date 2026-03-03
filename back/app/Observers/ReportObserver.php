@@ -46,11 +46,5 @@ class ReportObserver
         if ($report->wasChanged('status') && $report->status === ReportStatus::toCheck && $report->comment) {
             GenerateReportAiCommentJob::dispatch($report->id);
         }
-
-        // Фолбэк для старых сценариев: если ai_comment есть, а модель не зафиксирована — ставим дефолт.
-        if ($report->wasChanged('ai_comment') && filled($report->ai_comment) && ! $report->ai_model) {
-            $report->ai_model = $report->id % 2 === 0 ? 'gemini-3-pro-preview' : 'gemini-3-flash-preview';
-            $report->saveQuietly();
-        }
     }
 }
