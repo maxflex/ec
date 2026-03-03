@@ -1,0 +1,57 @@
+<script setup lang="ts">
+export type CallStatusFilter = 'incoming' | 'outgoing' | 'missed' | 'missed_callback'
+
+export interface CallFilters {
+  number?: string
+  user_id?: number
+  call_status?: CallStatusFilter
+}
+
+const model = defineModel<CallFilters>({ required: true })
+const numberInput = ref(model.value.number || '')
+
+const callStatusLabel: Record<CallStatusFilter, string> = {
+  incoming: 'входящий',
+  outgoing: 'исходящий',
+  missed: 'пропущенный',
+  missed_callback: 'перезвонили',
+}
+
+// Применяем номер по Enter, чтобы не дёргать API на каждую нажатую клавишу.
+function applyNumberFilter() {
+  model.value.number = numberInput.value || undefined
+}
+
+function clearNumberFilter() {
+  numberInput.value = ''
+  model.value.number = undefined
+}
+
+watch(() => model.value.number, (value) => {
+  numberInput.value = value || ''
+})
+</script>
+
+<template>
+  <UserSelector
+    v-model="model.user_id"
+    density="comfortable"
+    label="Пользователь"
+  />
+  <UiClearableSelect
+    v-model="model.call_status"
+    density="comfortable"
+    label="Тип звонка"
+    :items="selectItems(callStatusLabel)"
+  />
+  <div class="relative">
+    <v-text-field
+      v-model="numberInput"
+      label="Номер телефона"
+      density="comfortable"
+      @keydown.enter="applyNumberFilter"
+      @blur="applyNumberFilter"
+    />
+    <UiUnderInput v-if="numberInput" @click="clearNumberFilter" />
+  </div>
+</template>

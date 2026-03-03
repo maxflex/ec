@@ -7,7 +7,7 @@ const { item } = defineProps<{
 </script>
 
 <template>
-  <div v-if="item === null">
+  <div v-if="item === null" class="text-gray">
     Неизвестный
   </div>
   <div v-else-if="item.entity">

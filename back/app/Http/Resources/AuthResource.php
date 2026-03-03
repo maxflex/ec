@@ -23,7 +23,7 @@ class AuthResource extends JsonResource
     {
         return extract_fields($this, [
             'first_name', 'last_name', 'middle_name', 'photo_url',
-            'is_call_notifications', 'is_head_teacher', 'has_grades',
+            'is_head_teacher', 'has_grades',
             'client_id', // for representatives
         ], [
             'entity_type' => get_class($this->resource),

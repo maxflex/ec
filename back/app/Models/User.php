@@ -7,13 +7,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class User extends Person
 {
     protected $fillable = [
-        'first_name', 'last_name',
-        'is_active', 'is_call_notifications',
+        'first_name', 'last_name', 'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'is_call_notifications' => 'boolean',
     ];
 
     public function scopeCanLogin($query)

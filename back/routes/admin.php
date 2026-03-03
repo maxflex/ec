@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\AiPromptController;
 use App\Http\Controllers\Admin\AllLessonsController;
 use App\Http\Controllers\Admin\AllPaymentsController;
-use App\Http\Controllers\Admin\AiPromptController;
 use App\Http\Controllers\Admin\CabinetController;
 use App\Http\Controllers\Admin\CallController;
 use App\Http\Controllers\Admin\ClientController;
@@ -130,6 +130,7 @@ Route::get('teacher-balances', TeacherBalanceController::class);
 Route::get('contract-balances', ContractBalanceController::class);
 
 Route::prefix('calls')->controller(CallController::class)->group(function () {
+    Route::post('{call}/improve', 'improve');
     Route::get('active', 'active');
     Route::get('recording/{action}/{call}', 'recording');
 });

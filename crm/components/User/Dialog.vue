@@ -9,7 +9,6 @@ const modelDefaults: UserResource = {
   middle_name: null,
   entity_type: EntityTypeValue.user,
   is_active: false,
-  is_call_notifications: false,
   photo_url: null,
   phones: [],
 }
@@ -139,10 +138,6 @@ defineExpose({ create, edit })
           <v-checkbox
             v-model="item.is_active"
             label="Действующий сотрудник"
-          />
-          <v-checkbox
-            v-model="item.is_call_notifications"
-            label="Уведомления о звонках"
           />
         </div>
       </div>

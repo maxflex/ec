@@ -2,24 +2,41 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\CallType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CallListResource;
+use App\Http\Resources\CallResource;
 use App\Models\Call;
+use App\Utils\AI\GeminiCallService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class CallController extends Controller
 {
     protected $filters = [
-        'equals' => ['number'],
+        'number' => ['number'],
+        'equals' => ['user_id'],
+        'callStatus' => ['call_status'],
     ];
 
     public function index(Request $request)
     {
         $query = Call::query()
+            ->with('user')
             ->latest();
         $this->filter($request, $query);
 
         return $this->handleIndexRequest($request, $query, CallListResource::class);
+    }
+
+    public function show(Call $call)
+    {
+        return new CallResource($call);
+    }
+
+    public function improve(Call $call)
+    {
+        return GeminiCallService::transcribe($call);
     }
 
     public function active()
@@ -30,5 +47,47 @@ class CallController extends Controller
     public function recording($action, Call $call)
     {
         return $call->getRecording($action);
+    }
+
+    protected function filterNumber(Builder $query, string $number): void
+    {
+        $query->where('number', 'like', "%{$number}%");
+    }
+
+    /**
+     * UI-статусы:
+     * incoming / outgoing / missed / missed_callback.
+     */
+    protected function filterCallStatus(Builder $query, string $status): void
+    {
+        match ($status) {
+            'incoming' => $query->where('type', CallType::incoming->value),
+            'outgoing' => $query->where('type', CallType::outgoing->value),
+            'missed' => $this->applyMissedFilter($query, false),
+            'missed_callback' => $this->applyMissedFilter($query, true),
+            default => null,
+        };
+    }
+
+    /**
+     * Пропущенный = входящий + answered_at = null.
+     * Для "перезвонили" проверяем, что в этой же цепочке есть успешный контакт > 10 сек.
+     */
+    private function applyMissedFilter(Builder $query, bool $withCallback): void
+    {
+        $query
+            ->where('type', CallType::incoming->value)
+            ->whereNull('answered_at');
+
+        $whereMethod = $withCallback ? 'whereExists' : 'whereNotExists';
+
+        $query->{$whereMethod}(function ($subQuery) {
+            $subQuery->selectRaw('1')
+                ->from('calls as callback_calls')
+                ->whereColumn('callback_calls.number', 'calls.number')
+                ->whereNotNull('callback_calls.answered_at')
+                ->whereColumn('callback_calls.created_at', '>', 'calls.created_at')
+                ->whereRaw('TIMESTAMPDIFF(second, callback_calls.answered_at, callback_calls.finished_at) > 10');
+        });
     }
 }

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /** @mixin Call */
-class CallListResource extends JsonResource
+class CallResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

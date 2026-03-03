@@ -91,6 +91,10 @@ function isTabAvailable(tab: Tab): boolean {
       background: #e4e4e4 !important;
       // pointer-events: none;
     }
+    &--disabled {
+      pointer-events: none;
+      opacity: 0.2;
+    }
   }
 }
 </style>
