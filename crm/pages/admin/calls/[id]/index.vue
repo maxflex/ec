@@ -115,7 +115,7 @@ nextTick(loadData)
                 Исходящий
               </span>
               <span v-else class="text-gray">
-                Без ответа
+                Не дозвонились
               </span>
             </template>
           </div>

@@ -34,7 +34,7 @@ const showMoreBtn = [1, 5, 151].includes(user!.id)
               Исходящий
             </span>
             <span v-else class="text-gray">
-              Без ответа
+              Не дозвонились
             </span>
           </template>
         </div>

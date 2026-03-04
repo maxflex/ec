@@ -8,6 +8,7 @@ use App\Http\Resources\CallListResource;
 use App\Http\Resources\CallResource;
 use App\Models\Call;
 use App\Utils\AI\GeminiCallService;
+use App\Utils\Phone;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -51,6 +52,7 @@ class CallController extends Controller
 
     protected function filterNumber(Builder $query, string $number): void
     {
+        $number = Phone::clean($number);
         $query->where('number', 'like', "%{$number}%");
     }
 
