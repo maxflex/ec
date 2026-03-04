@@ -11,11 +11,23 @@ const router = useRouter()
 const { user } = useAuthStore()
 
 const showMoreBtn = [1, 5, 151].includes(user!.id)
+
+function onRowClick(item: CallListResource) {
+  if (!showMoreBtn) {
+    return
+  }
+  router.push({
+    name: 'calls-id',
+    params: {
+      id: item.id,
+    },
+  })
+}
 </script>
 
 <template>
-  <Table>
-    <TableRow v-for="item in items" :key="item.id">
+  <Table hoverable>
+    <TableRow v-for="item in items" :key="item.id" class="cursor-pointer" @click="onRowClick(item)">
       <TableCol :width="160">
         {{ formatPhone(item.number) }}
       </TableCol>
@@ -60,16 +72,8 @@ const showMoreBtn = [1, 5, 151].includes(user!.id)
           <CallAppDuration :item="item" />
         </div>
       </TableCol>
-      <TableCol :width="140">
+      <TableCol :width="140" style="flex: initial !important">
         {{ formatDateTime(item.created_at) }}
-      </TableCol>
-      <TableCol :width="50" style="flex: initial !important">
-        <v-btn
-          v-if="showMoreBtn"
-          :size="42"
-          :icon="mdiDotsHorizontal"
-          @click="router.push({ name: 'calls-id', params: { id: item.id } })"
-        />
       </TableCol>
     </TableRow>
   </Table>
