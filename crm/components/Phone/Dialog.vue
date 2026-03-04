@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CallListResource } from '../CallApp'
-import { mdiClipboardCheckOutline, mdiClipboardOutline, mdiContentCopy, mdiFileMultipleOutline, mdiSendVariant } from '@mdi/js'
+import { mdiClipboardCheckOutline, mdiClipboardOutline, mdiContentCopy, mdiFileMultipleOutline, mdiPhone, mdiSendVariant } from '@mdi/js'
 import { cloneDeep } from 'lodash-es'
 
 const item = ref<PhoneResource>()
@@ -193,13 +193,32 @@ defineExpose({ open })
         </div>
         <div class="panel-actions">
           <PhonePreviewModeBtn :item="item" />
-          <v-btn
-            :size="48"
-            :icon="copied ? mdiClipboardCheckOutline : mdiClipboardOutline"
-            variant="plain"
-            :disabled="copied"
-            @click="copyToClipboard()"
-          />
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                :size="48"
+                :icon="copied ? mdiClipboardCheckOutline : mdiClipboardOutline"
+                variant="plain"
+                :disabled="copied"
+                @click="copyToClipboard()"
+              />
+            </template>
+            скопировать номер
+          </v-tooltip>
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                :size="48"
+                :icon="mdiPhone"
+                variant="plain"
+                color="gray"
+                :href="`tel:${item.number}`"
+              />
+            </template>
+            позвонить
+          </v-tooltip>
           <v-btn
             icon="$close"
             :size="48"

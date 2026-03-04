@@ -30,6 +30,7 @@ const emit = defineEmits<{
       <div style="flex: 1">
         <PhoneList
           :items="item.phones"
+          :person="item"
           style="width: 250px"
         />
       </div>

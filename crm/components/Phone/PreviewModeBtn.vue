@@ -26,12 +26,18 @@ const isPreviewModeAvailable = [
 </script>
 
 <template>
-  <v-btn
-    :disabled="!isPreviewModeAvailable"
-    :size="48"
-    icon="$preview"
-    variant="plain"
-    :loading="loading"
-    @click="enter()"
-  />
+  <v-tooltip location="bottom">
+    <template #activator="{ props }">
+      <v-btn
+        v-bind="props"
+        :disabled="!isPreviewModeAvailable"
+        :size="48"
+        icon="$preview"
+        variant="plain"
+        :loading="loading"
+        @click="enter()"
+      />
+    </template>
+    войти в личный кабинет
+  </v-tooltip>
 </template>

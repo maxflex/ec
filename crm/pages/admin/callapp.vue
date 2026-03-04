@@ -26,7 +26,7 @@ onMounted(() => {
   getToken()
   if (!isLocalhost) {
     setTimeout(openCallApp, 1000)
-    setTimeout(() => isFinished.value = true, 6000)
+    setTimeout(() => isFinished.value = true, 11000)
   }
 })
 </script>
@@ -39,7 +39,7 @@ onMounted(() => {
     </v-btn>
   </UiNoData>
   <UiNoData v-else-if="isFinished">
-    вы можете закрыть эту страницу
+    эту страницу можно закрыть
   </UiNoData>
   <UiLoader v-else>
     открываю CallApp...
