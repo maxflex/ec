@@ -47,9 +47,9 @@ class Mango
         switch (CallState::from($data->call_state)) {
             // новый звонок
             case CallState::appeared:
-                // обрабатываем только входящие, исходящие игнорируем
-                $number = $data->from->number;
                 if ($data->location === 'ivr') {
+                    // Входящий звонок: номер в from.number.
+                    $number = $data->from->number;
                     $params = [
                         'entry_id' => (string) $data->entry_id,
                         'state' => $data->call_state,
@@ -63,6 +63,23 @@ class Mango
                     CallEvent::dispatch($params);
                     // Входящий без ответа: держим короткий TTL, чтобы быстрее чистить "залипшие" звонки.
                     cache()->tags('calls')->put($data->entry_id, $params, now()->addMinutes(3));
+                } elseif (isset($data->from->extension)) {
+                    // Outgoing started: оператор начал дозвон.
+                    // Номер берем из to.number, пользователя — из from.extension.
+                    $number = $data->to->number;
+                    $params = [
+                        'entry_id' => (string) $data->entry_id,
+                        'state' => $data->call_state,
+                        'type' => CallType::outgoing->value,
+                        'user' => new PersonResource(User::find($data->from->extension)),
+                        'answered_at' => null,
+                        'number' => $number,
+                        'aon' => Call::aon($number),
+                        'last_interaction' => Call::getLastInteraction($number),
+                    ];
+                    CallEvent::dispatch($params);
+                    // Для started держим короткий TTL, дальше его продлит Connected.
+                    cache()->tags('calls')->put($data->entry_id, $params, now()->addMinutes(3));
                 }
                 break;
 
@@ -70,14 +87,20 @@ class Mango
             case CallState::connected:
                 if (isset($data->from->extension)) {
                     $number = $data->to->number;
+                    // Для исходящего на этапе Connected не затираем контекст из Appeared:
+                    // last_interaction и aon должны остаться теми же для стабильного UI.
+                    $cachedParams = cache()->tags('calls')->get($data->entry_id);
+                    $cachedParams = is_array($cachedParams) ? $cachedParams : [];
                     $params = [
+                        ...$cachedParams,
                         'entry_id' => (string) $data->entry_id,
                         'state' => $data->call_state,
                         'user' => new PersonResource(User::find($data->from->extension)),
                         'answered_at' => (new Call(['answered_at' => $data->timestamp]))->answered_at,
                         'number' => $number,
-                        'aon' => Call::aon($number),
-                        'type' => CallType::outgoing->name,
+                        'aon' => $cachedParams['aon'] ?? Call::aon($number),
+                        'last_interaction' => $cachedParams['last_interaction'] ?? Call::getLastInteraction($number),
+                        'type' => CallType::outgoing->value,
                     ];
                 } else {
                     // ответ на входящий

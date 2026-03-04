@@ -130,7 +130,7 @@ class MangoTest
             'from' => [
                 'extension' => '190',
                 'number' => 'sip:axpll@kapralovka.mangosip.ru',
-                'line_number' => '74956461080',
+                'line_number' => Mango::LINE_NUMBER,
             ],
             'to' => [
                 'number' => '79653155538',
@@ -154,12 +154,35 @@ class MangoTest
             'from' => [
                 'extension' => '190',
                 'number' => 'sip:axpll@kapralovka.mangosip.ru',
-                'line_number' => '74956461080',
+                'line_number' => Mango::LINE_NUMBER,
             ],
             'to' => [
                 'number' => '79653155538',
             ],
             'disconnect_reason' => 1120,
+            'dct' => [
+                'type' => 0,
+            ],
+        ]);
+    }
+
+    public function outgoingAppeared()
+    {
+        return $this->callEvent([
+            'entry_id' => 'MTYzNzM4MjI5NjM=',
+            'call_id' => 'MToxMDA5Njg3NzoyMDE6MTI0MTg3Nzk3NQ==',
+            'timestamp' => strtotime(now()),
+            'seq' => 1,
+            'call_state' => 'Appeared',
+            'location' => 'abonent',
+            'from' => [
+                'extension' => '190',
+                'number' => 'sip:axpll@kapralovka.mangosip.ru',
+                'line_number' => Mango::LINE_NUMBER,
+            ],
+            'to' => [
+                'number' => '79653155538',
+            ],
             'dct' => [
                 'type' => 0,
             ],
