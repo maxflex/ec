@@ -14,6 +14,26 @@ class Mango
 {
     const LINE_NUMBER = '74956468592';
 
+    /**
+     * Финализирует realtime-проекцию звонка:
+     * 1) если запись еще активна в кеше, шлет Disconnected в realtime
+     * 2) удаляет запись из кеша active calls.
+     */
+    private static function finalizeActiveCallByEntryId(string $entryId): void
+    {
+        $activeCall = cache()->tags('calls')->get($entryId);
+        if ($activeCall !== null) {
+            $realtimePayload = [
+                ...$activeCall,
+                'entry_id' => $entryId,
+                'state' => CallState::disconnected->value,
+            ];
+            CallEvent::dispatch($realtimePayload);
+        }
+
+        cache()->tags('calls')->pull($entryId);
+    }
+
     public static function handle($event, string $json)
     {
         $data = json_decode($json);
@@ -51,7 +71,7 @@ class Mango
                     // Входящий звонок: номер в from.number.
                     $number = $data->from->number;
                     $params = [
-                        'entry_id' => (string) $data->entry_id,
+                        'entry_id' => $data->entry_id,
                         'state' => $data->call_state,
                         'type' => CallType::incoming->value,
                         'user' => null,
@@ -68,7 +88,7 @@ class Mango
                     // Номер берем из to.number, пользователя — из from.extension.
                     $number = $data->to->number;
                     $params = [
-                        'entry_id' => (string) $data->entry_id,
+                        'entry_id' => $data->entry_id,
                         'state' => $data->call_state,
                         'type' => CallType::outgoing->value,
                         'user' => new PersonResource(User::find($data->from->extension)),
@@ -93,7 +113,7 @@ class Mango
                     $cachedParams = is_array($cachedParams) ? $cachedParams : [];
                     $params = [
                         ...$cachedParams,
-                        'entry_id' => (string) $data->entry_id,
+                        'entry_id' => $data->entry_id,
                         'state' => $data->call_state,
                         'user' => new PersonResource(User::find($data->from->extension)),
                         'answered_at' => (new Call(['answered_at' => $data->timestamp]))->answered_at,
@@ -107,7 +127,7 @@ class Mango
                     $params = cache()->tags('calls')->get($data->entry_id);
                     $params = [
                         ...$params,
-                        'entry_id' => (string) $data->entry_id,
+                        'entry_id' => $data->entry_id,
                         'state' => $data->call_state,
                         'user' => new PersonResource(User::find($data->to->extension)),
                         'answered_at' => (new Call(['answered_at' => $data->timestamp]))->answered_at,
@@ -132,7 +152,7 @@ class Mango
                     if ($params !== null) {
                         $params = [
                             ...$params,
-                            'entry_id' => (string) $data->entry_id,
+                            'entry_id' => $data->entry_id,
                             'state' => $data->call_state,
                         ];
                         CallEvent::dispatch($params);
@@ -153,20 +173,8 @@ class Mango
         }
 
         // Summary — финальная точка жизненного цикла звонка.
-        // Если в realtime-кеше по entry_id еще живет звонок, дублируем финальный
-        // Disconnected-сигнал, чтобы фронт гарантированно снял "висяк" из active.
-        $activeCall = cache()->tags('calls')->get($data->entry_id);
-        if ($activeCall !== null) {
-            $realtimePayload = [
-                ...$activeCall,
-                'entry_id' => (string) $data->entry_id,
-                'state' => CallState::disconnected->value,
-            ];
-            CallEvent::dispatch($realtimePayload);
-        }
-
-        // После summary обязательно удаляем realtime-проекцию.
-        cache()->tags('calls')->pull($data->entry_id);
+        // Здесь обязательно закрываем realtime-проекцию active calls.
+        self::finalizeActiveCallByEntryId($data->entry_id);
 
         if ($data->call_direction === 1) {
             $type = CallType::incoming;
@@ -201,6 +209,11 @@ class Mango
      */
     public static function eventRecordAdded($data)
     {
+        // Recording — третий эшелон защиты от "залипания" active calls:
+        // если по какой-то причине Disconnected/Summary не сняли звонок,
+        // событие готовности записи также принудительно завершает realtime-проекцию.
+        self::finalizeActiveCallByEntryId($data->entry_id);
+
         Call::findOrFail($data->entry_id)->update([
             'recording' => $data->recording_id,
         ]);
