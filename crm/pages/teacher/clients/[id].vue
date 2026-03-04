@@ -42,7 +42,7 @@ nextTick(loadData)
           <div class="text-truncate">
             {{ formatName(client) }}
             <div v-if="client.phones">
-              <PhoneList :items="client.phones" />
+              <PhoneList :items="client.phones" :person="client" />
             </div>
           </div>
         </div>
@@ -51,7 +51,10 @@ nextTick(loadData)
           <div class="text-truncate">
             {{ formatName(client.representative) }}
             <div v-if="client.representative.phones">
-              <PhoneList :items="client.representative.phones" />
+              <PhoneList
+                :items="client.representative.phones"
+                :person="{ ...client.representative, entity_type: EntityTypeValue.representative }"
+              />
             </div>
           </div>
         </div>

@@ -30,9 +30,8 @@ const isPreviewModeAvailable = [
     :disabled="!isPreviewModeAvailable"
     :size="48"
     icon="$preview"
-    variant="text"
+    variant="plain"
     :loading="loading"
-    color="black"
     @click="enter()"
   />
 </template>

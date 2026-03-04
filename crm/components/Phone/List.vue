@@ -2,11 +2,11 @@
 import type { PhoneDialog } from '#build/components'
 import type { RequestListResource } from '../Request'
 
-const { items, request } = defineProps<{
+const { items, request, showComment, person } = defineProps<{
   items: PhoneResource[]
   request?: RequestListResource
+  person?: PersonResource
   showComment?: boolean
-  showIcons?: boolean
 }>()
 
 const phoneDialog = ref<InstanceType<typeof PhoneDialog>>()
@@ -53,7 +53,7 @@ const phoneDialog = ref<InstanceType<typeof PhoneDialog>>()
         :item="item"
         class="phone-list__number"
         :request="request"
-        @click.stop="phoneDialog?.open(item)"
+        @click.stop="phoneDialog?.open(item, person)"
       />
       <div
         v-if="showComment"

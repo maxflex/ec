@@ -29,7 +29,7 @@ const printSpravkaDialog = ref<InstanceType<typeof PrintSpravkaDialog>>()
           </a> -->
         </div>
         <div v-if="item.phones" class="mt-5">
-          <PhoneList :items="item.phones" show-icons />
+          <PhoneList :items="item.phones" :person="item" />
         </div>
       </div>
     </div>
@@ -44,7 +44,7 @@ const printSpravkaDialog = ref<InstanceType<typeof PrintSpravkaDialog>>()
           {{ item.representative.middle_name }}
         </div>
         <div v-if="item.representative.phones" class="mt-5">
-          <PhoneList :items="item.representative.phones" show-icons />
+          <PhoneList :items="item.representative.phones" :person="item.representative" />
         </div>
       </div>
     </div>
