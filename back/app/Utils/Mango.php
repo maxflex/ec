@@ -134,22 +134,20 @@ class Mango
                 // 1120 Вызов завершен вызываемым абонентом
                 // 1163 Превышено время ожидания в очереди удержания
             case CallState::disconnected:
-                // На завершении звонка active-store очищаем всегда (pull),
-                // а realtime dispatch шлем только в проверенных кейсах.
-                $params = cache()->tags('calls')->get($data->entry_id);
-                $params = is_array($params) ? $params : [];
-                if ($params !== []) {
-                    $params = [
-                        ...$params,
-                        'entry_id' => $data->entry_id,
-                        'state' => $data->call_state,
-                    ];
-
-                    if (in_array($data->disconnect_reason, [1110, 1120, 1163], true)) {
+                if (in_array($data->disconnect_reason, [1110, 1120, 1163])) {
+                    $params = cache()->tags('calls')->get($data->entry_id);
+                    // если на входящий не ответили, disconnected-1110 посылается всем
+                    // поэтому, может быть null после обработки первого
+                    if ($params !== null) {
+                        $params = [
+                            ...$params,
+                            'entry_id' => (string) $data->entry_id,
+                            'state' => $data->call_state,
+                        ];
                         CallEvent::dispatch($params);
+                        cache()->tags('calls')->pull($data->entry_id);
                     }
                 }
-                cache()->tags('calls')->pull($data->entry_id);
                 break;
 
             case CallState::onHold:
@@ -174,7 +172,7 @@ class Mango
 
         // Summary — финальная точка жизненного цикла звонка.
         // Здесь обязательно закрываем realtime-проекцию active calls.
-        self::finalizeActiveCallByEntryId($data->entry_id);
+        // self::finalizeActiveCallByEntryId($data->entry_id);
 
         if ($data->call_direction === 1) {
             $type = CallType::incoming;
@@ -205,6 +203,21 @@ class Mango
     }
 
     /**
+     * Добавлена аудиозапись
+     */
+    public static function eventRecordAdded($data)
+    {
+        // Recording — третий эшелон защиты от "залипания" active calls:
+        // если по какой-то причине Disconnected/Summary не сняли звонок,
+        // событие готовности записи также принудительно завершает realtime-проекцию.
+        // self::finalizeActiveCallByEntryId($data->entry_id);
+
+        Call::findOrFail($data->entry_id)->update([
+            'recording' => $data->recording_id,
+        ]);
+    }
+
+    /**
      * Финализирует realtime-проекцию звонка:
      * 1) если запись еще активна в кеше, шлет Disconnected в realtime
      * 2) удаляет запись из active-store.
@@ -224,20 +237,5 @@ class Mango
             }
         }
         cache()->tags('calls')->pull($entryId);
-    }
-
-    /**
-     * Добавлена аудиозапись
-     */
-    public static function eventRecordAdded($data)
-    {
-        // Recording — третий эшелон защиты от "залипания" active calls:
-        // если по какой-то причине Disconnected/Summary не сняли звонок,
-        // событие готовности записи также принудительно завершает realtime-проекцию.
-        self::finalizeActiveCallByEntryId($data->entry_id);
-
-        Call::findOrFail($data->entry_id)->update([
-            'recording' => $data->recording_id,
-        ]);
     }
 }

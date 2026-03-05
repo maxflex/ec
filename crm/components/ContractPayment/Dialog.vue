@@ -106,10 +106,9 @@ defineExpose({ create, edit })
         <div>
           <template v-if="itemId">
             <CrudDeleteBtn
-              v-if="!wasReceiptSent"
               :id="itemId"
               :api-url="apiUrl"
-              confirm-text="Вы уверены, что хотите удалить платеж?"
+              :confirm-text="`${wasReceiptSent ? 'Внимание! Чек по этому платежу уже был отправлен.\n' : ''}Вы уверены, что хотите удалить платеж?`"
               @deleted="onDeleted()"
             />
             <PrintBtn

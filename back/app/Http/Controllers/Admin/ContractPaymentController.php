@@ -73,8 +73,6 @@ class ContractPaymentController extends Controller
 
     public function destroy(ContractPayment $contractPayment)
     {
-        // нельзя удалить, если был отправлен чек
-        abort_if((bool) $contractPayment->receipt_number, 422);
         $contractPayment->delete();
     }
 }
