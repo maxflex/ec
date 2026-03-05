@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CallListResource } from '../CallApp'
-import { mdiClipboardCheckOutline, mdiClipboardOutline, mdiContentCopy, mdiFileMultipleOutline, mdiPhone, mdiSendVariant } from '@mdi/js'
+import { mdiClipboardCheckOutline, mdiClipboardOutline, mdiPhone, mdiSendVariant } from '@mdi/js'
 import { cloneDeep } from 'lodash-es'
 
 const item = ref<PhoneResource>()
