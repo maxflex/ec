@@ -5,7 +5,6 @@ namespace App\Utils;
 use App\Enums\CallState;
 use App\Enums\CallType;
 use App\Events\CallEvent;
-use App\Events\CallSummaryEvent;
 use App\Http\Resources\PersonResource;
 use App\Models\Call;
 use App\Models\User;
@@ -13,13 +12,6 @@ use App\Models\User;
 class Mango
 {
     const LINE_NUMBER = '74956468592';
-
-    // TTL realtime-state по фазам звонка.
-    // - appeared: короткий, чтобы быстрее чистить "залипшие" без ответа
-    private const int APPEARED_TTL_MINUTES = 3;
-
-    // - connected: покрывает максимальную длину разговора + safety
-    private const int CONNECTED_TTL_MINUTES = 45;
 
     public static function handle($event, string $json)
     {
@@ -50,7 +42,9 @@ class Mango
         if ($data->from->line_number !== self::LINE_NUMBER) {
             return;
         }
-        logger(print_r($data, true));
+
+        // logger(print_r($data, true));
+        $entryId = $data->entry_id;
         switch (CallState::from($data->call_state)) {
             // новый звонок
             case CallState::appeared:
@@ -58,7 +52,7 @@ class Mango
                     // Входящий звонок: номер в from.number.
                     $number = $data->from->number;
                     $params = [
-                        'entry_id' => $data->entry_id,
+                        'entry_id' => $entryId,
                         'state' => $data->call_state,
                         'type' => CallType::incoming->value,
                         'user' => null,
@@ -67,16 +61,15 @@ class Mango
                         'aon' => Call::aon($number),
                         'last_interaction' => Call::getLastInteraction($number),
                     ];
-                    CallEvent::dispatch($params);
-                    // Canonical realtime-state всегда сохраняем в кэш.
-                    // calls/active строится как проекция этого store.
-                    self::putRealtimeState($data->entry_id, $params, self::APPEARED_TTL_MINUTES);
+
+                    // исторически ответ на входящий через 5 мин максимум
+                    self::updateRealtimeState($entryId, $params, 5);
                 } elseif (isset($data->from->extension)) {
                     // Outgoing started: оператор начал дозвон.
                     // Номер берем из to.number, пользователя — из from.extension.
                     $number = $data->to->number;
                     $params = [
-                        'entry_id' => $data->entry_id,
+                        'entry_id' => $entryId,
                         'state' => $data->call_state,
                         'type' => CallType::outgoing->value,
                         'user' => new PersonResource(User::find($data->from->extension)),
@@ -85,47 +78,46 @@ class Mango
                         'aon' => Call::aon($number),
                         'last_interaction' => Call::getLastInteraction($number),
                     ];
-                    CallEvent::dispatch($params);
-                    // Для started держим короткий TTL, дальше его продлит Connected.
-                    self::putRealtimeState($data->entry_id, $params, self::APPEARED_TTL_MINUTES);
+
+                    // исторически ответ на исходящий через 1 мин максимум
+                    self::updateRealtimeState($entryId, $params, 3);
                 }
+
                 break;
 
-                // исходящий
             case CallState::connected:
+                // Не затираем контекст из Appeared: last_interaction и aon должны остаться теми же для стабильного UI.
+                $params = cache()->tags('calls')->get($entryId) ?? [];
+
+                // исходящий приняли
                 if (isset($data->from->extension)) {
                     $number = $data->to->number;
-                    // Для исходящего на этапе Connected не затираем контекст из Appeared:
-                    // last_interaction и aon должны остаться теми же для стабильного UI.
-                    $cachedParams = cache()->tags('calls')->get($data->entry_id);
-                    $cachedParams = is_array($cachedParams) ? $cachedParams : [];
                     $params = [
-                        ...$cachedParams,
-                        'entry_id' => $data->entry_id,
+                        ...$params,
+                        'entry_id' => $entryId,
                         'state' => $data->call_state,
                         'user' => new PersonResource(User::find($data->from->extension)),
                         'answered_at' => (new Call(['answered_at' => $data->timestamp]))->answered_at,
                         'number' => $number,
-                        'aon' => $cachedParams['aon'] ?? Call::aon($number),
-                        'last_interaction' => $cachedParams['last_interaction'] ?? Call::getLastInteraction($number),
+                        'aon' => $params['aon'] ?? Call::aon($number),
+                        'last_interaction' => $params['last_interaction'] ?? Call::getLastInteraction($number),
                         'type' => CallType::outgoing->value,
                     ];
                 } else {
                     // ответ на входящий
-                    $params = cache()->tags('calls')->get($data->entry_id);
-                    $params = is_array($params) ? $params : [];
                     $params = [
                         ...$params,
-                        'entry_id' => $data->entry_id,
+                        'entry_id' => $entryId,
                         'state' => $data->call_state,
                         'user' => new PersonResource(User::find($data->to->extension)),
                         'answered_at' => (new Call(['answered_at' => $data->timestamp]))->answered_at,
                         'type' => CallType::incoming->name,
                     ];
                 }
-                CallEvent::dispatch($params);
+
                 // Самый длинный разговор исторически ~44 мин, поэтому safety TTL = 45 минут.
-                self::putRealtimeState($data->entry_id, $params, self::CONNECTED_TTL_MINUTES);
+                self::updateRealtimeState($entryId, $params, 45);
+
                 break;
 
                 // звонок завершён
@@ -135,17 +127,11 @@ class Mango
                 // 1163 Превышено время ожидания в очереди удержания
             case CallState::disconnected:
                 if (in_array($data->disconnect_reason, [1110, 1120, 1163])) {
-                    $params = cache()->tags('calls')->get($data->entry_id);
+                    $params = cache()->tags('calls')->get($entryId);
                     // если на входящий не ответили, disconnected-1110 посылается всем
                     // поэтому, может быть null после обработки первого
                     if ($params !== null) {
-                        $params = [
-                            ...$params,
-                            'entry_id' => (string) $data->entry_id,
-                            'state' => $data->call_state,
-                        ];
-                        CallEvent::dispatch($params);
-                        cache()->tags('calls')->pull($data->entry_id);
+                        self::disconnectRealtimeState($entryId);
                     }
                 }
                 break;
@@ -159,9 +145,24 @@ class Mango
      * Canonical realtime-state по звонку.
      * В кэше хранится последняя известная фаза звонка по entry_id.
      */
-    private static function putRealtimeState(string $entryId, array $payload, int $ttlMinutes): void
+    private static function updateRealtimeState(string $entryId, array $params, int $ttlMinutes): void
     {
-        cache()->tags('calls')->put($entryId, $payload, now()->addMinutes($ttlMinutes));
+        CallEvent::dispatch($params);
+        cache()->tags('calls')->put($entryId, $params, now()->addMinutes($ttlMinutes));
+    }
+
+    /**
+     * Отправляет Disconnected-сигнал в SSE, очищает ключ по $entryId.
+     * Отправляется в 3 случаях (несколько эшелонов доставки на всякий случай):
+     * когда звонок завершается, в Summary и в Recording
+     */
+    private static function disconnectRealtimeState(string $entryId)
+    {
+        cache()->tags('calls')->pull($entryId);
+        CallEvent::dispatch([
+            'entry_id' => $entryId,
+            'state' => CallState::disconnected->value,
+        ]);
     }
 
     public static function eventSummary($data)
@@ -170,9 +171,11 @@ class Mango
             return;
         }
 
+        $entryId = $data->entry_id;
+
         // Summary — финальная точка жизненного цикла звонка.
         // Здесь обязательно закрываем realtime-проекцию active calls.
-        // self::finalizeActiveCallByEntryId($data->entry_id);
+        self::disconnectRealtimeState($entryId);
 
         if ($data->call_direction === 1) {
             $type = CallType::incoming;
@@ -185,11 +188,11 @@ class Mango
         }
 
         if (is_localhost()) {
-            Call::whereId($data->entry_id)->delete();
+            Call::whereId($entryId)->delete();
         }
 
-        $call = Call::create([
-            'id' => $data->entry_id,
+        Call::create([
+            'id' => $entryId,
             'user_id' => $userId,
             'type' => $type->name,
             'number' => $number,
@@ -198,8 +201,6 @@ class Mango
             'answered_at' => $data->talk_time,
             'finished_at' => $data->end_time,
         ]);
-
-        event(new CallSummaryEvent($call));
     }
 
     /**
@@ -207,35 +208,15 @@ class Mango
      */
     public static function eventRecordAdded($data)
     {
+        $entryId = $data->entry_id;
+
         // Recording — третий эшелон защиты от "залипания" active calls:
         // если по какой-то причине Disconnected/Summary не сняли звонок,
         // событие готовности записи также принудительно завершает realtime-проекцию.
-        // self::finalizeActiveCallByEntryId($data->entry_id);
+        self::disconnectRealtimeState($entryId);
 
-        Call::findOrFail($data->entry_id)->update([
+        Call::findOrFail($entryId)->update([
             'recording' => $data->recording_id,
         ]);
-    }
-
-    /**
-     * Финализирует realtime-проекцию звонка:
-     * 1) если запись еще активна в кеше, шлет Disconnected в realtime
-     * 2) удаляет запись из active-store.
-     */
-    private static function finalizeActiveCallByEntryId(string $entryId): void
-    {
-        $activeCall = cache()->tags('calls')->get($entryId);
-        if (is_array($activeCall)) {
-            $realtimePayload = [
-                ...$activeCall,
-                'entry_id' => $entryId,
-                'state' => CallState::disconnected->value,
-            ];
-            // Если disconnect уже был зафиксирован ранее, повторно не спамим событием.
-            if (($activeCall['state'] ?? null) !== CallState::disconnected->value) {
-                CallEvent::dispatch($realtimePayload);
-            }
-        }
-        cache()->tags('calls')->pull($entryId);
     }
 }

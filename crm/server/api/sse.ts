@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
   // cleanup the interval when the connection is terminated or the writer is closed
   const heartbeatInterval = setInterval(() => {
     void pushSystemEvent('heartbeat', { ts: Date.now() })
-  }, 20_000)
+  }, 10_000)
 
   eventStream.onClosed(async () => {
     // console.log('closing SSE...')

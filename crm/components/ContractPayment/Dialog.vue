@@ -108,7 +108,7 @@ defineExpose({ create, edit })
             <CrudDeleteBtn
               :id="itemId"
               :api-url="apiUrl"
-              :confirm-text="`${wasReceiptSent ? 'Внимание! Чек по этому платежу уже был отправлен.\n' : ''}Вы уверены, что хотите удалить платеж?`"
+              :confirm-text="`${wasReceiptSent ? 'Внимание! По этому платежу уже был отправлен чек.\n' : ''}Вы уверены, что хотите удалить платеж на сумму ${formatPrice(item.sum)}?`"
               @deleted="onDeleted()"
             />
             <PrintBtn
