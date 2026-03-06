@@ -16,6 +16,6 @@ const { items, indexPageData } = useIndex<CallListResource>(
       <CallFilters v-model="filters" />
     </template>
 
-    <CallList :items="items" />
+    <CallList :items="items" clickable />
   </UiIndexPage>
 </template>

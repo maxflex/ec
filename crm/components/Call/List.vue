@@ -1,35 +1,31 @@
 <script setup lang="ts">
+import type { PhoneDialog } from '#build/components'
 import type { CallListResource } from '~/components/CallApp'
 import { mdiDotsHorizontal } from '@mdi/js'
 
-const { items } = defineProps<{
+const { items, clickable } = defineProps<{
   items: CallListResource[]
+  clickable?: boolean
 }>()
 
 const router = useRouter()
 
 const { user } = useAuthStore()
+const phoneDialog = ref<InstanceType<typeof PhoneDialog>>()
 
 const showMoreBtn = [1, 5, 151].includes(user!.id)
-
-function onRowClick(item: CallListResource) {
-  if (!showMoreBtn) {
-    return
-  }
-  router.push({
-    name: 'calls-id',
-    params: {
-      id: item.id,
-    },
-  })
-}
 </script>
 
 <template>
-  <Table hoverable>
-    <TableRow v-for="item in items" :key="item.id" class="cursor-pointer" @click="onRowClick(item)">
+  <Table v-bind="$attrs">
+    <TableRow v-for="item in items" :key="item.id">
       <TableCol :width="160">
-        {{ formatPhone(item.number) }}
+        <a v-if="clickable" class="cursor-pointer" @click.stop="phoneDialog?.open(item.aon || item, item.aon?.entity)">
+          {{ formatPhone(item.number) }}
+        </a>
+        <span v-else>
+          {{ formatPhone(item.number) }}
+        </span>
       </TableCol>
       <TableCol :width="160">
         <div v-if="item.aon?.comment" class="text-gray text-truncate">
@@ -72,9 +68,18 @@ function onRowClick(item: CallListResource) {
           <CallAppDuration :item="item" />
         </div>
       </TableCol>
-      <TableCol :width="140" style="flex: initial !important">
+      <TableCol :width="140">
         {{ formatDateTime(item.created_at) }}
+      </TableCol>
+      <TableCol :width="50" style="flex: initial !important">
+        <v-btn
+          v-if="showMoreBtn"
+          :size="42"
+          :icon="mdiDotsHorizontal"
+          @click="router.push({ name: 'calls-id', params: { id: item.id } })"
+        />
       </TableCol>
     </TableRow>
   </Table>
+  <PhoneDialog ref="phoneDialog" />
 </template>

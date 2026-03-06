@@ -140,19 +140,33 @@ defineExpose({ open })
           >
             {{ formatPhone(item.number) }}
           </h2> -->
-          <h2 style="font-size: 28px" class="nowrap pt-1">
+
+          <v-btn
+            icon="$back"
+            :size="48" style="position: absolute; left: 6px; top: 17px"
+            @click="dialog = false"
+          />
+          <h2 style="font-size: 28px" class="nowrap pt-1 pl-9">
             {{ formatPhone(item.number) }}
           </h2>
         </div>
-        <div>
+        <div v-if="item.entity_type">
           <div>
             {{ EntityTypeLabel[item.entity_type] }}
           </div>
           <div>
             <UiPerson v-if="person" :item="person" no-link />
             <template v-else>
-              {{ item.entity_id }}
+              {{ item.entity_id || item.request_id }}
             </template>
+          </div>
+        </div>
+        <div v-else>
+          <div>
+            Кто звонил
+          </div>
+          <div class="text-gray">
+            Неизвестный
           </div>
         </div>
         <div v-if="item.entity_type !== EntityTypeValue.request">
@@ -219,12 +233,12 @@ defineExpose({ open })
             </template>
             позвонить
           </v-tooltip>
-          <v-btn
+          <!-- <v-btn
             icon="$close"
             :size="48"
             variant="plain"
             @click="dialog = false"
-          />
+          /> -->
         </div>
       </div>
       <UiTabs v-model="selectedTab" :items="tabs" :counts="tabCounts">
