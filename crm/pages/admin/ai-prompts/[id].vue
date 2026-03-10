@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { EditorConfiguration } from 'codemirror'
+import { cloneDeep } from 'lodash-es'
 import { defineAsyncComponent } from 'vue'
 
 // Редактор загружаем только на клиенте, иначе SSR падает на CSS-импорте codemirror.
@@ -10,7 +11,7 @@ if (import.meta.client) {
 
 const route = useRoute()
 const saving = ref(false)
-const field = ref<'instruction' | 'prompt'>('instruction')
+const field = ref<'instruction' | 'prompt' | 'files'>('instruction')
 const item = ref<AiPromptResource>()
 const cmOptions: EditorConfiguration = {
   tabSize: 4,
@@ -18,6 +19,12 @@ const cmOptions: EditorConfiguration = {
   lineNumbers: false,
   lineWrapping: true,
 }
+const filesCount = computed(() => item.value?.files.length ?? 0)
+const fieldItems = computed(() => [
+  { title: 'Инструкция', value: 'instruction' },
+  { title: 'Промпт', value: 'prompt' },
+  { title: 'Файлы', value: 'files' },
+])
 
 async function loadData() {
   const { data } = await useHttp<AiPromptResource>(`ai-prompts/${route.params.id}`)
@@ -26,6 +33,7 @@ async function loadData() {
       ...data.value,
       instruction: data.value.instruction ?? '',
       prompt: data.value.prompt ?? '',
+      files: data.value.files ?? [],
     }
   }
 }
@@ -46,6 +54,7 @@ async function save() {
         title: item.value.title,
         instruction: item.value.instruction,
         prompt: item.value.prompt,
+        files: cloneDeep(item.value.files),
       },
     },
   )
@@ -64,13 +73,26 @@ nextTick(loadData)
       <v-text-field v-model="item.title" label="Заголовок" density="comfortable" />
       <v-select
         v-model="field"
-        :items="[
-          { title: 'Инструкция', value: 'instruction' },
-          { title: 'Промпт', value: 'prompt' },
-        ]"
+        :items="fieldItems"
         label="Поле"
         density="comfortable"
-      />
+      >
+        <template #item="{ props, item: selectItem }">
+          <v-list-item v-bind="props">
+            <template #prepend />
+            <template #title>
+              {{ selectItem.title }}
+              <v-badge
+                v-if="selectItem.value === 'files' && filesCount > 0"
+                color="orange-lighten-3"
+                class="vfn-1"
+                inline
+                :content="filesCount"
+              ></v-badge>
+            </template>
+          </v-list-item>
+        </template>
+      </v-select>
       <template #buttons>
         <v-btn color="primary" :loading="saving" @click="save()">
           сохранить
@@ -84,10 +106,14 @@ nextTick(loadData)
         :options="cmOptions"
       />
       <Codemirror
-        v-else
+        v-else-if="field === 'prompt'"
         v-model:value="item.prompt"
         :options="cmOptions"
       />
+      <div v-else class="pt-5">
+        <!-- Файлы храним в ai_prompts.files и отправляем как attachments в Gemini API. -->
+        <FileUploader v-model="item.files" folder="ai-prompts" inline />
+      </div>
     </div>
   </template>
 </template>

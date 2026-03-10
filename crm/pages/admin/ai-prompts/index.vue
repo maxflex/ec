@@ -24,8 +24,16 @@ nextTick(loadData)
         <div class="text-black" style="width: 20px">
           {{ p.id }}
         </div>
-        <div>
+        <div style="width: 400px">
           {{ p.title }}
+        </div>
+        <div>
+          <span v-if="p.files.length > 0" class="text-black">
+            {{ plural(p.files.length, ['файл', 'файла', 'файлов']) }}
+          </span>
+          <span v-else class="text-gray">
+            нет файлов
+          </span>
         </div>
       </NuxtLink>
     </div>

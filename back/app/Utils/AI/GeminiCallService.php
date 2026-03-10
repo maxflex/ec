@@ -38,6 +38,7 @@ class GeminiCallService extends GeminiService
                 'call' => $call,
                 'aon' => Call::aon($call->number),
             ]);
+        $promptGeminiFiles = GeminiFileService::getPromptGeminiFiles(AiPrompt::CALL);
 
         // Скачиваем аудио
         $audioBytes = self::downloadRecording($call);
@@ -80,6 +81,7 @@ class GeminiCallService extends GeminiService
             )
             ->generateContent([
                 $userPromptText,
+                ...$promptGeminiFiles,
                 new Blob(
                     mimeType: MimeType::AUDIO_MP3,
                     data: base64_encode($audioBytes),

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\JsonArrayCast;
 use Illuminate\Database\Eloquent\Model;
 
 class AiPrompt extends Model
@@ -11,6 +12,10 @@ class AiPrompt extends Model
     public const int CALL = 3;
 
     protected $fillable = [
-        'title', 'instruction', 'prompt',
+        'title', 'instruction', 'prompt', 'files',
+    ];
+
+    protected $casts = [
+        'files' => JsonArrayCast::class,
     ];
 }

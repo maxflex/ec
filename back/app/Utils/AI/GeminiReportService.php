@@ -6,6 +6,7 @@ use App\Models\AiPrompt;
 use App\Models\Report;
 use Gemini\Data\GenerationConfig;
 use Gemini\Data\ThinkingConfig;
+use Gemini\Data\UploadedFile;
 use ValueError;
 
 class GeminiReportService extends GeminiService
@@ -22,13 +23,14 @@ class GeminiReportService extends GeminiService
 
         [$systemInstructionText, $userPromptText] = (new AiPromptRenderer)
             ->renderInstructionAndPromptById(AiPrompt::REPORT, $data);
+        $promptGeminiFiles = GeminiFileService::getPromptGeminiFiles(AiPrompt::REPORT);
 
         // Для повторной генерации используем уже зафиксированную модель, иначе — дефолт по прежней схеме.
         // $model = $report->ai_model ?? ($report->id % 2 === 0 ? 'gemini-3-pro-preview' : 'gemini-3-flash-preview');
         $model = 'gemini-3-flash-preview';
 
         return [
-            'ai_comment' => self::generate($systemInstructionText, $userPromptText, $model),
+            'ai_comment' => self::generate($systemInstructionText, $userPromptText, $model, $promptGeminiFiles),
             'ai_model' => $model,
             // Сохраняем фактические тексты после Blade-рендера, чтобы можно было восстановить контекст генерации.
             'ai_instruction' => self::buildAiInstructionSnapshot($systemInstructionText, $userPromptText),
@@ -49,15 +51,23 @@ class GeminiReportService extends GeminiService
         ])->latest()->first();
     }
 
-    private static function generate(string $systemInstructionText, string $userPromptText, string $model): string
-    {
+    /**
+     * @param  array<int, UploadedFile>  $promptGeminiFiles
+     */
+    private static function generate(
+        string $systemInstructionText,
+        string $userPromptText,
+        string $model,
+        array $promptGeminiFiles = []
+    ): string {
         $response = self::buildModel($systemInstructionText, $model)
             ->withGenerationConfig(new GenerationConfig(
                 thinkingConfig: new ThinkingConfig(
                     includeThoughts: false,
                 )
             ))
-            ->generateContent($userPromptText);
+            // В prompt отправляем и текст, и прикрепленные Gemini-files.
+            ->generateContent([$userPromptText, ...$promptGeminiFiles]);
 
         try {
             return $response->text();

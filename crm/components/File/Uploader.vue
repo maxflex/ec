@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { UploadFolder } from '.'
 import { mdiDownload } from '@mdi/js'
+import { getIcon } from '.'
 
-const { folder, label = 'прикрепить файл' } = defineProps<{
+const { folder, inline, label = 'прикрепить файл' } = defineProps<{
   label?: string
+  inline?: boolean
   folder: UploadFolder
 }>()
 
@@ -109,31 +111,56 @@ function onFileSelected(e: Event) {
 <template>
   <div class="file-uploader">
     <template v-if="model !== null">
-      <v-menu
-        v-for="file in Array.isArray(model) ? model : [model]"
-        :key="file.url || file.name"
-      >
-        <template #activator="{ props }">
-          <FileItem :item="file" v-bind="props" />
-        </template>
-        <v-list>
-          <v-list-item :href="file.url" target="_blank">
-            <template #prepend>
-              <v-icon :icon="mdiDownload" />
-            </template>
-            скачать
-            <span class="text-gray">
-              ({{ formatFileSize(file) }})
-            </span>
-          </v-list-item>
-          <v-list-item @click="removeFile(file)">
-            <template #prepend>
-              <v-icon icon="$delete" />
-            </template>
-            удалить
-          </v-list-item>
-        </v-list>
-      </v-menu>
+      <template v-if="inline">
+        <div
+          v-for="file in Array.isArray(model) ? model : [model]"
+          :key="file.url || file.name"
+          class="file-uploader__inline"
+          :class="{ 'opacity-4 no-pointer-events': !file.url }"
+        >
+          <v-icon :icon="getIcon(file).icon" :color="getIcon(file).color" />
+          <div>
+            <div class="file-uploader__inline-link">
+              <a :href="file.url" target="_blank" class="text-truncate black-link">
+                {{ file.name }}
+              </a>
+              <span class="text-gray">
+                ({{ formatFileSize(file) }})
+              </span>
+            </div>
+            <div class="file-uploader__inline-remove">
+              <span @click="removeFile(file)">удалить файл</span>
+            </div>
+          </div>
+        </div>
+      </template>
+      <template v-else>
+        <v-menu
+          v-for="file in Array.isArray(model) ? model : [model]"
+          :key="file.url || file.name"
+        >
+          <template #activator="{ props }">
+            <FileItem :item="file" v-bind="props" />
+          </template>
+          <v-list>
+            <v-list-item :href="file.url" target="_blank">
+              <template #prepend>
+                <v-icon :icon="mdiDownload" />
+              </template>
+              скачать
+              <span class="text-gray">
+                ({{ formatFileSize(file) }})
+              </span>
+            </v-list-item>
+            <v-list-item @click="removeFile(file)">
+              <template #prepend>
+                <v-icon icon="$delete" />
+              </template>
+              удалить
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </template>
     </template>
     <div v-if="model === null || Array.isArray(model)" class="mt-2">
       <UiIconLink icon="$file" prepend @click="selectFile()">
@@ -155,6 +182,46 @@ function onFileSelected(e: Event) {
 .file-uploader {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
+
+  &__inline {
+    display: flex;
+    gap: 6px;
+    overflow: hidden;
+    left: -4px;
+    position: relative;
+
+    .v-icon {
+      font-size: 54px;
+      top: -6px;
+      position: relative;
+    }
+
+    & > div {
+      line-height: 20px;
+    }
+
+    &-link {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+
+      a {
+        display: inline-block;
+        max-width: 500px;
+      }
+    }
+
+    &-remove {
+      span {
+        color: rgb(var(--v-theme-gray));
+        font-size: 14px;
+        cursor: pointer;
+        &:hover {
+          color: rgb(var(--v-theme-error));
+        }
+      }
+    }
+  }
 }
 </style>

@@ -31,7 +31,9 @@ const uploading = computed(() => !item.url)
     <span v-if="showSize" class="ml-2 text-gray">
       {{ formatFileSize(item) }}
     </span>
-    <UiLoader v-if="uploading" />
+    <UiLoader v-if="uploading" fixed>
+      <span></span>
+    </UiLoader>
   </div>
 </template>
 
