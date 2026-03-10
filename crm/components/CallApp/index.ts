@@ -35,7 +35,7 @@ export interface CallListResource {
   number: string
   has_recording: boolean
   summary: string | null
-  transcription: string | null
+  transcript: string | null
   is_missed: boolean
   is_missed_callback: boolean
   created_at: string

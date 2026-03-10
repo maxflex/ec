@@ -162,7 +162,7 @@ function onFileSelected(e: Event) {
         </v-menu>
       </template>
     </template>
-    <div v-if="model === null || Array.isArray(model)" class="mt-2">
+    <div v-if="model === null || Array.isArray(model)" :class="{ 'mt-2': !inline }">
       <UiIconLink icon="$file" prepend @click="selectFile()">
         {{ label }}
       </UiIconLink>

@@ -3,7 +3,8 @@
 namespace App\Jobs;
 
 use App\Models\Call;
-use App\Utils\AI\GeminiCallService;
+use App\Utils\AI\CallAnalysisService;
+use App\Utils\AI\CallTranscriptionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -40,8 +41,13 @@ class ProcessCallRecordingJob implements ShouldQueue
             return;
         }
 
-        $transcriptionAndSummary = GeminiCallService::transcribe($call);
+        // Шаг 1: сначала фиксируем транскрипт, чтобы не потерять результат ASR при ошибке аналитики.
+        $transcriptData = CallTranscriptionService::transcribeAudio($call);
+        $call->update($transcriptData);
 
-        $call->update($transcriptionAndSummary);
+        // Шаг 2: строим summary/analysis по $call->transcript (контекст из самой модели).
+        $call->refresh();
+        $analysisData = CallAnalysisService::analyzeTranscript($call);
+        $call->update($analysisData);
     }
 }

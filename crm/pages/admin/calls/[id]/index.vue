@@ -9,7 +9,7 @@ interface CallResource extends CallListResource {
 }
 
 interface CallAiFields {
-  transcription: string
+  transcript: string
   summary: string
   analysis_1: string
   analysis_2: string
@@ -22,7 +22,7 @@ const improving = ref(false)
 const route = useRoute()
 const item = ref<CallResource>()
 const { tabs, selectedTab, tabCounts } = useTabs({
-  transcription: 'транскрибация',
+  transcript: 'транскрипт',
   summary: 'краткое содержание',
   analysis1: 'анализ 1',
   analysis2: 'анализ 2',
@@ -181,8 +181,8 @@ nextTick(loadData)
         />
       </UiTabs>
     </div>
-    <div v-if="selectedTab === 'transcription'">
-      <div v-if="item.transcription" class="container text-pre-wrap" v-html="item.transcription" />
+    <div v-if="selectedTab === 'transcript'">
+      <div v-if="item.transcript" class="container text-pre-wrap" v-html="item.transcript" />
       <UiNoData v-else />
     </div>
     <div v-else-if="selectedTab === 'summary'">

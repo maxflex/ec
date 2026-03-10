@@ -110,7 +110,7 @@ nextTick(loadData)
         v-model:value="item.prompt"
         :options="cmOptions"
       />
-      <div v-else class="pt-5">
+      <div v-else class="pt-7">
         <!-- Файлы храним в ai_prompts.files и отправляем как attachments в Gemini API. -->
         <FileUploader v-model="item.files" folder="ai-prompts" inline />
       </div>

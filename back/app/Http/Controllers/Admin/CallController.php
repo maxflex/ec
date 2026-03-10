@@ -7,7 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CallListResource;
 use App\Http\Resources\CallResource;
 use App\Models\Call;
-use App\Utils\AI\GeminiCallService;
+use App\Utils\AI\CallAnalysisService;
+use App\Utils\AI\CallTranscriptionService;
 use App\Utils\Phone;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -37,7 +38,20 @@ class CallController extends Controller
 
     public function improve(Call $call)
     {
-        return GeminiCallService::transcribe($call);
+        // Сначала получаем "сырой" текст транскрипта из аудио.
+        $transcriptData = CallTranscriptionService::transcribeAudio($call);
+
+        // Для второго шага контекстом служит именно поле transcript у звонка.
+        $call->setAttribute('transcript', $transcriptData['transcript']);
+        $analysisData = CallAnalysisService::analyzeTranscript($call);
+
+        return [
+            'summary' => $analysisData['summary'],
+            'transcript' => $transcriptData['transcript'],
+            'analysis_1' => $analysisData['analysis_1'],
+            'analysis_2' => $analysisData['analysis_2'],
+            'analysis_3' => $analysisData['analysis_3'],
+        ];
     }
 
     public function active()
