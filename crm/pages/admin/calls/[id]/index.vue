@@ -202,7 +202,7 @@ nextTick(loadData)
         </div> -->
       </div>
       <UiTabs v-model="selectedTab" :items="tabs" :counts="tabCounts">
-        <div v-if="item.has_recording" class="page-calls-id__actions">
+        <div class="page-calls-id__actions">
           <v-tooltip location="bottom">
             <template #activator="{ props }">
               <v-btn
@@ -224,6 +224,7 @@ nextTick(loadData)
                 :icon="mdiAccountVoice"
                 :size="42"
                 variant="text"
+                :disabled="!item.has_recording"
                 :loading="transcribing"
                 @click="transcribe()"
               />
