@@ -130,7 +130,8 @@ Route::get('teacher-balances', TeacherBalanceController::class);
 Route::get('contract-balances', ContractBalanceController::class);
 
 Route::prefix('calls')->controller(CallController::class)->group(function () {
-    Route::post('{call}/improve', 'improve');
+    Route::post('{call}/transcribe', 'transcribe');
+    Route::post('{call}/analyze', 'analyze');
     Route::get('active', 'active');
     Route::get('recording/{action}/{call}', 'recording');
 });

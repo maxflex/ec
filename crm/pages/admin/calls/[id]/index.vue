@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CallListResource } from '~/components/CallApp'
-import { mdiAutoFix } from '@mdi/js'
+import { mdiAccountVoice, mdiChartBox, mdiChartBoxOutline, mdiDownload, mdiTextBoxSearchOutline } from '@mdi/js'
 
 interface CallResource extends CallListResource {
   analysis_1: string | null
@@ -8,17 +8,22 @@ interface CallResource extends CallListResource {
   analysis_3: string | null
 }
 
-interface CallAiFields {
+interface CallTranscribeFields {
   transcript: string
+}
+
+interface CallAnalyzeFields {
   summary: string
   analysis_1: string
   analysis_2: string
   analysis_3: string
 }
 
-type CallAiField = keyof CallAiFields
+type CallAnalyzeField = keyof CallAnalyzeFields
 
-const improving = ref(false)
+const downloading = ref(false)
+const transcribing = ref(false)
+const analyzing = ref(false)
 const route = useRoute()
 const item = ref<CallResource>()
 const { tabs, selectedTab, tabCounts } = useTabs({
@@ -35,11 +40,17 @@ async function loadData() {
 }
 
 async function downloadRecording(e: MouseEvent) {
+  downloading.value = true
   e.stopPropagation()
-  const audio = await getAudio('download')
-  const link = document.createElement('a')
-  link.href = audio
-  link.click()
+  try {
+    const audio = await getAudio('download')
+    const link = document.createElement('a')
+    link.href = audio
+    link.click()
+  }
+  finally {
+    setTimeout(() => (downloading.value = false), 300)
+  }
 }
 
 async function getAudio(action: 'play' | 'download') {
@@ -49,25 +60,48 @@ async function getAudio(action: 'play' | 'download') {
   return data.value as string
 }
 
-async function improve() {
-  improving.value = true
-  const { data, error } = await useHttp<CallAiFields>(
-    `calls/${item.value!.id}/improve`,
+async function transcribe() {
+  transcribing.value = true
+  const { data, error } = await useHttp<CallTranscribeFields>(
+    `calls/${item.value!.id}/transcribe`,
     {
       method: 'POST',
     },
   )
   if (error.value) {
-    setTimeout(() => useGlobalMessage(`<b>Ошибка ИИ</b>: ${error.value!.data.message}`, 'error'), 100)
+    setTimeout(() => useGlobalMessage(`<b>Ошибка ИИ (транскрипт)</b>: ${error.value!.data.message}`, 'error'), 100)
   }
-  if (data.value) {
+  else if (data.value) {
+    item.value!.transcript = data.value.transcript
+    selectedTab.value = 'transcript'
+    useGlobalMessage('<b>ИИ</b>: транскрибация аудиозаписи успешно завершена', 'success')
+  }
+  transcribing.value = false
+}
+
+async function analyze() {
+  if (transcribing.value || !item.value?.transcript) {
+    return
+  }
+  analyzing.value = true
+  const { data, error } = await useHttp<CallAnalyzeFields>(
+    `calls/${item.value!.id}/analyze`,
+    {
+      method: 'POST',
+    },
+  )
+  if (error.value) {
+    setTimeout(() => useGlobalMessage(`<b>Ошибка ИИ (анализ)</b>: ${error.value!.data.message}`, 'error'), 100)
+  }
+  else if (data.value) {
     for (const f in data.value) {
-      const field = f as CallAiField
+      const field = f as CallAnalyzeField
       item.value![field] = data.value[field]
     }
-    useGlobalMessage('<b>ИИ</b>: обработка записи прошла успешно', 'success')
+    selectedTab.value = 'summary'
+    useGlobalMessage('<b>ИИ</b>: анализ транскрипта успешно выполнен', 'success')
   }
-  improving.value = false
+  analyzing.value = false
 }
 
 const { user } = useAuthStore()
@@ -168,17 +202,49 @@ nextTick(loadData)
         </div> -->
       </div>
       <UiTabs v-model="selectedTab" :items="tabs" :counts="tabCounts">
-        <div :class="{ 'tabs-item--disabled': !item.has_recording }" class="tabs-item" @click="downloadRecording">
-          скачать аудиозапись
+        <div v-if="item.has_recording" class="page-calls-id__actions">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                :icon="mdiDownload"
+                :size="42"
+                :disabled="!item.has_recording"
+                :loading="downloading"
+                variant="text"
+                @click="downloadRecording"
+              />
+            </template>
+            Скачать аудиозапись
+          </v-tooltip>
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                :icon="mdiAccountVoice"
+                :size="42"
+                variant="text"
+                :loading="transcribing"
+                @click="transcribe()"
+              />
+            </template>
+            Транскрибация аудиозаписи
+          </v-tooltip>
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                :icon="mdiChartBox"
+                :size="42"
+                variant="text"
+                :loading="analyzing"
+                :disabled="!item.transcript"
+                @click="analyze()"
+              />
+            </template>
+            Анализ транскрипта
+          </v-tooltip>
         </div>
-        <v-btn
-          v-if="item.has_recording"
-          :icon="mdiAutoFix"
-          :size="42"
-          class="page-calls-id__improve"
-          :loading="improving"
-          @click="improve()"
-        />
       </UiTabs>
     </div>
     <div v-if="selectedTab === 'transcript'">
@@ -241,10 +307,12 @@ nextTick(loadData)
     position: relative;
   }
 
-  &__improve {
+  &__actions {
     position: absolute;
     right: 16px;
     top: 3px;
+    display: flex;
+    gap: 8px;
   }
 }
 </style>

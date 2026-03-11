@@ -167,6 +167,27 @@ function format_price($price): string
     return number_format($price, 0, '.', ' ');
 }
 
+/**
+ * Человекочитаемый размер файла (синхронизирован с фронтовым formatFileSize()).
+ */
+function format_file_size(int|float $size): string
+{
+    if ($size < 0) {
+        throw new RuntimeException("Размер файла не может быть отрицательным");
+    }
+
+    $units = ['байт', 'Кб', 'Мб', 'Гб', 'Тб'];
+    $unitIndex = $size === 0.0
+        ? 0
+        : (int) floor(log($size, 1024));
+    $unitIndex = max(0, min($unitIndex, count($units) - 1));
+
+    // На фронте используется Number.parseInt((size / 1024 ** i).toFixed(2)).
+    $humanSize = (int) floor($size / (1024 ** $unitIndex));
+
+    return "{$humanSize} {$units[$unitIndex]}";
+}
+
 function num_to_text(int $number)
 {
     return (new NumberFormatter('ru', NumberFormatter::SPELLOUT))->format($number);

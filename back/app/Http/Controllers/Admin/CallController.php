@@ -36,22 +36,27 @@ class CallController extends Controller
         return new CallResource($call);
     }
 
-    public function improve(Call $call)
+    /**
+     * Шаг 1: отдельный запуск ASR (audio -> transcript).
+     */
+    public function transcribe(Call $call): array
     {
-        // Сначала получаем "сырой" текст транскрипта из аудио.
+        // Получаем "сырой" текст транскрипта из аудио и сохраняем в calls.transcript.
         $transcriptData = CallTranscriptionService::transcribeAudio($call);
+        $call->update($transcriptData);
 
-        // Для второго шага контекстом служит именно поле transcript у звонка.
-        $call->setAttribute('transcript', $transcriptData['transcript']);
+        return $transcriptData;
+    }
+
+    /**
+     * Шаг 2: отдельный запуск аналитики (transcript -> summary/analysis_1..3).
+     */
+    public function analyze(Call $call): array
+    {
         $analysisData = CallAnalysisService::analyzeTranscript($call);
+        $call->update($analysisData);
 
-        return [
-            'summary' => $analysisData['summary'],
-            'transcript' => $transcriptData['transcript'],
-            'analysis_1' => $analysisData['analysis_1'],
-            'analysis_2' => $analysisData['analysis_2'],
-            'analysis_3' => $analysisData['analysis_3'],
-        ];
+        return $analysisData;
     }
 
     public function active()
