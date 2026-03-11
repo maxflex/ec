@@ -38,6 +38,7 @@ use App\Http\Controllers\Admin\PeopleSelectorController;
 use App\Http\Controllers\Admin\PhoneController;
 use App\Http\Controllers\Admin\PreviewModeController;
 use App\Http\Controllers\Admin\PrintController;
+use App\Http\Controllers\Admin\ProgramController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RequestsController;
@@ -168,6 +169,7 @@ Route::get('menu-counts', MenuCountsController::class);
 Route::get('all-payments', AllPaymentsController::class);
 
 Route::get('contract-version-programs', ContractVersionProgramController::class);
+Route::get('programs', ProgramController::class);
 
 Route::get('all-lessons', AllLessonsController::class);
 

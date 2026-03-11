@@ -44,7 +44,7 @@ function isRealReport(r: ReportListResource): r is RealReport {
         </div>
         <div style="flex: 1">
           <ReportStatus :status="r.status" />
-          <div v-if="r.status === 'published'" class="text-gray text-caption">
+          <div v-if="r.status === 'published'" class="text-caption" :class="r.is_read ? 'text-success' : 'text-gray'">
             {{ r.is_read ? 'прочитано' : 'не прочитано' }}
           </div>
           <!-- <v-icon
