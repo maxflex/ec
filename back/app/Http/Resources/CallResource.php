@@ -19,7 +19,7 @@ class CallResource extends JsonResource
         return extract_fields($this, [
             'type', 'number', 'created_at', 'finished_at', 'answered_at',
             'is_missed', 'is_missed_callback', 'has_recording', 'transcript',
-            'summary', 'analysis_1', 'analysis_2', 'analysis_3',
+            'summary', 'analysis_1', 'analysis_2', 'analysis_3', 'instruction', 'caller_type',
         ], [
             'user' => new PersonResource($this->user),
             'aon' => Call::aon($this->number),

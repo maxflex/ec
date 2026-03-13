@@ -15,7 +15,13 @@ class CallTranscriptionService extends GeminiService
     /**
      * Шаг 1: ASR-процесс (audio -> transcript, plain text).
      *
-     * @return array{transcript: string}
+     * @return array{
+     *     transcript: string,
+     *     instruction: array{
+     *         transcription: string|null,
+     *         analysis: string|null
+     *     }
+     * }
      */
     public static function transcribeAudio(Call $call): array
     {
@@ -45,6 +51,12 @@ class CallTranscriptionService extends GeminiService
 
         return [
             'transcript' => trim($transcript),
+            // Фиксируем фактические instruction/prompt после Blade-рендера (как в отчетах).
+            'instruction' => self::buildMergedInstruction(
+                $call,
+                'transcription',
+                self::buildInstructionSnapshot($systemInstructionText, $userPromptText)
+            ),
         ];
     }
 
@@ -60,6 +72,34 @@ class CallTranscriptionService extends GeminiService
                 'call' => $call,
                 'aon' => Call::aon($call->number),
             ]);
+    }
+
+    private static function buildInstructionSnapshot(string $systemInstructionText, string $userPromptText): string
+    {
+        return trim($systemInstructionText)."\n\n<USER_PROMPT>\n\n".trim($userPromptText);
+    }
+
+    /**
+     * @param  'transcription'|'analysis'  $key
+     * @return array{transcription: string|null, analysis: string|null}
+     */
+    private static function buildMergedInstruction(Call $call, string $key, string $snapshot): array
+    {
+        $currentInstruction = is_array($call->instruction) ? $call->instruction : [];
+
+        // Ключи фиксированные, чтобы формат JSON был предсказуемым.
+        $normalizedInstruction = [
+            'transcription' => isset($currentInstruction['transcription']) && is_string($currentInstruction['transcription'])
+                ? $currentInstruction['transcription']
+                : null,
+            'analysis' => isset($currentInstruction['analysis']) && is_string($currentInstruction['analysis'])
+                ? $currentInstruction['analysis']
+                : null,
+        ];
+
+        $normalizedInstruction[$key] = $snapshot;
+
+        return $normalizedInstruction;
     }
 
     /**

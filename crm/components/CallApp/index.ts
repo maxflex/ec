@@ -1,6 +1,14 @@
 export type CallState = 'Appeared' | 'Connected' | 'Disconnected'
 
 export type CallType = 'incoming' | 'outgoing'
+export type CallerType = 'newClient' | 'oldClient' | 'teacher' | 'other'
+
+export const CallerTypeLabel: Record<CallerType, string> = {
+  newClient: 'клиент новый',
+  oldClient: 'клиент старый',
+  teacher: 'преподаватель',
+  other: 'другое',
+}
 
 export interface CallAppAonResource extends PhoneResource {
   entity?: PersonResource
@@ -32,6 +40,7 @@ export interface CallListResource {
   id: string
   user: PersonResource | null
   type: CallType
+  caller_type: CallerType | null
   number: string
   has_recording: boolean
   summary: string | null

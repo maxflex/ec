@@ -2,6 +2,7 @@
 import type { PhoneDialog } from '#build/components'
 import type { CallListResource } from '~/components/CallApp'
 import { mdiDotsHorizontal } from '@mdi/js'
+import { CallerTypeLabel } from '~/components/CallApp'
 
 const { items, clickable } = defineProps<{
   items: CallListResource[]
@@ -26,11 +27,17 @@ const showMoreBtn = [1, 5, 151].includes(user!.id)
         <span v-else>
           {{ formatPhone(item.number) }}
         </span>
+        <!-- <div v-if="item.aon?.comment" class="caption text-gray text-truncate">
+          {{ item.aon.comment }}
+        </div> -->
       </TableCol>
       <TableCol :width="160">
-        <div v-if="item.aon?.comment" class="text-gray text-truncate">
+        <UiIfSet :value="item.caller_type">
+          {{ CallerTypeLabel[item.caller_type!] }}
+        </UiIfSet>
+        <!-- <div v-if="item.aon?.comment" class="text-gray text-truncate">
           {{ item.aon.comment }}
-        </div>
+        </div> -->
       </TableCol>
       <TableCol :width="130">
         <div v-if="item.user">

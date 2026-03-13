@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import type { CallerType } from '~/components/CallApp'
+import { CallerTypeLabel } from '~/components/CallApp'
+
 export type CallStatusFilter = 'incoming' | 'outgoing' | 'missed' | 'missed_callback'
 
 export interface CallFilters {
   number?: string
   user_id?: number
   call_status?: CallStatusFilter
+  caller_type?: CallerType
 }
 
 const model = defineModel<CallFilters>({ required: true })
@@ -37,6 +41,12 @@ watch(() => model.value.number, (value) => {
     v-model="model.user_id"
     density="comfortable"
     label="Пользователь"
+  />
+  <UiClearableSelect
+    v-model="model.caller_type"
+    density="comfortable"
+    label="Тип разговора"
+    :items="selectItems(CallerTypeLabel)"
   />
   <UiClearableSelect
     v-model="model.call_status"

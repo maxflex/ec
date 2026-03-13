@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\Timestamp;
+use App\Enums\CallerType;
 use App\Enums\CallType;
 use App\Http\Resources\CallAppAonResource;
 use App\Http\Resources\CallAppLastInteractionResource;
@@ -28,9 +29,11 @@ class Call extends Model
 
     protected $casts = [
         'type' => CallType::class,
+        'caller_type' => CallerType::class,
         'created_at' => Timestamp::class,
         'answered_at' => Timestamp::class,
         'finished_at' => Timestamp::class,
+        'instruction' => 'array',
     ];
 
     /**

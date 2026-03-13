@@ -1,15 +1,25 @@
 <script setup lang="ts">
-import type { CallListResource } from '~/components/CallApp'
-import { mdiAccountVoice, mdiChartBox, mdiChartBoxOutline, mdiDownload, mdiTextBoxSearchOutline } from '@mdi/js'
+import type { CallerType, CallListResource } from '~/components/CallApp'
+import { mdiAutoFix } from '@mdi/js'
+import { CallerTypeLabel } from '~/components/CallApp'
+
+type CallInstructionType = 'transcription' | 'analysis'
+
+interface CallInstructionFields {
+  transcription: string | null
+  analysis: string | null
+}
 
 interface CallResource extends CallListResource {
   analysis_1: string | null
   analysis_2: string | null
   analysis_3: string | null
+  instruction: CallInstructionFields | null
 }
 
 interface CallTranscribeFields {
   transcript: string
+  instruction: CallInstructionFields
 }
 
 interface CallAnalyzeFields {
@@ -17,21 +27,37 @@ interface CallAnalyzeFields {
   analysis_1: string
   analysis_2: string
   analysis_3: string
+  caller_type: CallerType
+  instruction: CallInstructionFields
 }
-
-type CallAnalyzeField = keyof CallAnalyzeFields
 
 const downloading = ref(false)
 const transcribing = ref(false)
 const analyzing = ref(false)
+const isInstructionDialogOpen = ref(false)
+const selectedInstructionType = ref<CallInstructionType>('transcription')
 const route = useRoute()
 const item = ref<CallResource>()
+
 const { tabs, selectedTab, tabCounts } = useTabs({
   transcript: 'транскрипт',
   summary: 'краткое содержание',
   analysis1: 'анализ 1',
   analysis2: 'анализ 2',
   analysis3: 'анализ 3',
+})
+
+const selectedInstructionRaw = computed<string>(() => {
+  return item.value?.instruction?.[selectedInstructionType.value] || ''
+})
+
+const selectedInstructionParts = computed(() => {
+  const [instructionRaw = '', promptRaw = ''] = selectedInstructionRaw.value.split('<USER_PROMPT>')
+
+  return {
+    instruction: decodeHtmlEntities(instructionRaw.trim()),
+    prompt: decodeHtmlEntities(promptRaw.trim()),
+  }
 })
 
 async function loadData() {
@@ -73,6 +99,7 @@ async function transcribe() {
   }
   else if (data.value) {
     item.value!.transcript = data.value.transcript
+    item.value!.instruction = data.value.instruction
     selectedTab.value = 'transcript'
     useGlobalMessage('<b>ИИ</b>: транскрибация аудиозаписи успешно завершена', 'success')
   }
@@ -94,14 +121,37 @@ async function analyze() {
     setTimeout(() => useGlobalMessage(`<b>Ошибка ИИ (анализ)</b>: ${error.value!.data.message}`, 'error'), 100)
   }
   else if (data.value) {
-    for (const f in data.value) {
-      const field = f as CallAnalyzeField
-      item.value![field] = data.value[field]
-    }
+    item.value!.summary = data.value.summary
+    item.value!.analysis_1 = data.value.analysis_1
+    item.value!.analysis_2 = data.value.analysis_2
+    item.value!.analysis_3 = data.value.analysis_3
+    item.value!.caller_type = data.value.caller_type
+    item.value!.instruction = data.value.instruction
     selectedTab.value = 'summary'
     useGlobalMessage('<b>ИИ</b>: анализ транскрипта успешно выполнен', 'success')
   }
   analyzing.value = false
+}
+
+function decodeHtmlEntities(value: string): string {
+  // Декодируем HTML-сущности, чтобы instruction/prompt отображались человекочитаемо.
+  return value
+    .replace(/&quot;/g, '"')
+    .replace(/&#34;/g, '"')
+    .replace(/&apos;/g, '\'')
+    .replace(/&#39;/g, '\'')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&#(\d+);/g, (_, dec: string) => String.fromCodePoint(Number(dec)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) => String.fromCodePoint(Number.parseInt(hex, 16)))
+}
+
+function openInstruction(type: CallInstructionType) {
+  // Открываем диалог сразу на нужном этапе из контекстного меню.
+  selectedInstructionType.value = type
+  isInstructionDialogOpen.value = true
 }
 
 const { user } = useAuthStore()
@@ -162,6 +212,19 @@ nextTick(loadData)
             </span>
           </div>
         </div>
+        <div>
+          <div>
+            тип разговора
+          </div>
+          <div>
+            <span v-if="item.caller_type">
+              {{ CallerTypeLabel[item.caller_type] }}
+            </span>
+            <span v-else class="text-gray">
+              не установлено
+            </span>
+          </div>
+        </div>
 
         <div>
           <div>
@@ -169,7 +232,7 @@ nextTick(loadData)
           </div>
           <div>
             <span v-if="item.user">
-              {{ formatName(item.user) }}
+              {{ formatName(item.user, 'initials') }}
             </span>
             <span v-else class="text-gray">
               не установлено
@@ -178,7 +241,7 @@ nextTick(loadData)
         </div>
         <div>
           <div>
-            продолжительность
+            время
           </div>
           <div>
             <div v-if="item.answered_at">
@@ -193,63 +256,45 @@ nextTick(loadData)
           <div>
             собеседник
           </div>
-          <div>
+          <div class="text-truncate" style="max-width: 200px">
             <CallAppPerson :item="item.aon" class="text-truncate" />
           </div>
         </div>
-        <!-- <div class="panel-actions">
-          <CallAppDownload v-if="item.has_recording" :item="item" />
-        </div> -->
       </div>
       <UiTabs v-model="selectedTab" :items="tabs" :counts="tabCounts">
+        <div :class="{ 'tabs-item--disabled': !item.has_recording }" class="tabs-item" @click="downloadRecording">
+          скачать аудиозапись
+        </div>
         <div class="page-calls-id__actions">
-          <v-tooltip location="bottom">
+          <v-menu location="bottom">
             <template #activator="{ props }">
-              <v-btn
-                v-bind="props"
-                :icon="mdiDownload"
-                :size="42"
-                :disabled="!item.has_recording"
-                :loading="downloading"
-                variant="text"
-                @click="downloadRecording"
-              />
+              <v-btn :size="42" :icon="mdiAutoFix" v-bind="props" :loading="transcribing || analyzing" />
             </template>
-            Скачать аудиозапись
-          </v-tooltip>
-          <v-tooltip location="bottom">
-            <template #activator="{ props }">
-              <v-btn
-                v-bind="props"
-                :icon="mdiAccountVoice"
-                :size="42"
-                variant="text"
-                :disabled="!item.has_recording"
-                :loading="transcribing"
-                @click="transcribe()"
-              />
-            </template>
-            Транскрибация аудиозаписи
-          </v-tooltip>
-          <v-tooltip location="bottom">
-            <template #activator="{ props }">
-              <v-btn
-                v-bind="props"
-                :icon="mdiChartBox"
-                :size="42"
-                variant="text"
-                :loading="analyzing"
-                :disabled="!item.transcript"
-                @click="analyze()"
-              />
-            </template>
-            Анализ транскрипта
-          </v-tooltip>
+            <v-list>
+              <v-list-item @click="transcribe()">
+                расшифровка аудиозаписи
+              </v-list-item>
+              <v-list-item :disabled="!item.instruction?.transcription" @click="openInstruction('transcription')">
+                инструкция
+              </v-list-item>
+              <v-divider />
+              <v-list-item :disabled="!item.transcript" @click="analyze()">
+                анализ разговора
+              </v-list-item>
+              <v-list-item :disabled="!item.instruction?.analysis" @click="openInstruction('analysis')">
+                инструкция
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </div>
       </UiTabs>
     </div>
     <div v-if="selectedTab === 'transcript'">
-      <div v-if="item.transcript" class="container text-pre-wrap" v-html="item.transcript" />
+      <div
+        v-if="item.transcript" class="container"
+        :class="{ 'text-pre-wrap': !item.transcript.startsWith('<') }"
+        v-html="item.transcript"
+      />
       <UiNoData v-else />
     </div>
     <div v-else-if="selectedTab === 'summary'">
@@ -269,6 +314,30 @@ nextTick(loadData)
       <UiNoData v-else />
     </div>
   </template>
+
+  <v-dialog v-model="isInstructionDialogOpen" max-width="900">
+    <div class="dialog-wrapper">
+      <div class="dialog-header">
+        {{ selectedInstructionType === 'transcription' ? 'Расшифровка аудиозаписи' : 'Анализ разговора' }}
+        <v-btn icon="$close" :size="48" variant="text" @click="isInstructionDialogOpen = false" />
+      </div>
+      <div v-if="selectedInstructionParts" class="dialog-body">
+        <h2>
+          Инструкция
+        </h2>
+        <div class="page-calls-id__ai-instruction-text">
+          {{ selectedInstructionParts.instruction }}
+        </div>
+
+        <h2 class="mt-6">
+          Промпт
+        </h2>
+        <div class="page-calls-id__ai-instruction-text">
+          {{ selectedInstructionParts.prompt }}
+        </div>
+      </div>
+    </div>
+  </v-dialog>
 </template>
 
 <style lang="scss">
@@ -314,6 +383,11 @@ nextTick(loadData)
     top: 3px;
     display: flex;
     gap: 8px;
+  }
+
+  &__ai-instruction-text {
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 }
 </style>

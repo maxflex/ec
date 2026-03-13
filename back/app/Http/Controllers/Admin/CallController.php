@@ -17,7 +17,7 @@ class CallController extends Controller
 {
     protected $filters = [
         'number' => ['number'],
-        'equals' => ['user_id'],
+        'equals' => ['user_id', 'caller_type'],
         'callStatus' => ['call_status'],
     ];
 
