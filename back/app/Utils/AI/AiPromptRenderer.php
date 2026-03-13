@@ -95,74 +95,12 @@ class AiPromptRenderer
                 throw new RuntimeException("AI prompt не найден или пустой (ai_prompts.id={$id})");
             }
 
-            // Приводим список прикрепленных файлов к единому формату для prompt-контекста.
-            // Этот же массив отдаём в Blade как $attachedFiles на случай ручного использования в шаблоне.
-            $attachedFiles = $this->normalizeAttachedFiles($aiPrompt->files);
-            $renderData = [
-                ...$data,
-                'attachedFiles' => $attachedFiles,
-            ];
-
-            $renderedPrompt = Blade::render($prompt, $renderData);
-            $renderedPrompt = $this->appendAttachedFilesContext($renderedPrompt, $attachedFiles);
-
             return [
-                Blade::render($instruction, $renderData),
-                $renderedPrompt,
+                Blade::render($instruction, $data),
+                Blade::render($prompt, $data),
             ];
         } finally {
             unset($this->renderStack[$id]);
         }
-    }
-
-    /**
-     * @return array<int, array{name: string, size_human: string}>
-     */
-    private function normalizeAttachedFiles(mixed $files): array
-    {
-        if (! is_array($files)) {
-            return [];
-        }
-
-        $normalized = [];
-
-        foreach ($files as $file) {
-            if (! is_array($file) && ! is_object($file)) {
-                continue;
-            }
-
-            $fileData = is_array($file) ? $file : (array) $file;
-            $name = trim((string) $fileData['name']);
-            $size = format_file_size((int) $fileData['size']);
-
-            $normalized[] = [
-                'name' => $name,
-                'size_human' => $size,
-            ];
-        }
-
-        return $normalized;
-    }
-
-    /**
-     * Автоматически добавляет в конец user prompt список файлов, чтобы модель явно видела контекст базы знаний.
-     *
-     * @param  array<int, array{name: string, size_human: string}>  $attachedFiles
-     */
-    private function appendAttachedFilesContext(string $renderedPrompt, array $attachedFiles): string
-    {
-        if ($attachedFiles === []) {
-            return $renderedPrompt;
-        }
-
-        $lines = [
-            'ПРИКРЕПЛЕННЫЕ ФАЙЛЫ БАЗЫ ЗНАНИЙ:',
-            ...collect($attachedFiles)
-                ->map(fn (array $file): string => "- {$file['name']} ({$file['size_human']})")
-                ->values()
-                ->all(),
-        ];
-
-        return rtrim($renderedPrompt)."\n\n".implode("\n", $lines);
     }
 }

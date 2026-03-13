@@ -30,14 +30,12 @@ class CallTranscriptionService extends GeminiService
         }
 
         [$systemInstructionText, $userPromptText] = self::renderCallTranscriptionPrompt($call);
-        $promptGeminiFiles = GeminiFileService::getPromptGeminiFiles(AiPrompt::CALL_TRANSCRIPTION);
         $audioBytes = self::downloadRecording($call);
 
         // На первом шаге intentionally без JSON-схемы: ожидаем plain text транскрипта.
         $response = self::buildModel($systemInstructionText)
             ->generateContent([
                 $userPromptText,
-                ...$promptGeminiFiles,
                 new Blob(
                     mimeType: MimeType::AUDIO_MP3,
                     data: base64_encode($audioBytes),

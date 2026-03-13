@@ -296,7 +296,6 @@ declare global {
     title: string
     instruction: string | null
     prompt: string | null
-    files: UploadedFile[]
   }
 
   interface VacationResource {

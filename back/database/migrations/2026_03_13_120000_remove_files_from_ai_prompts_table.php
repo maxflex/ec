@@ -11,8 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Для уже мигрированных БД удаляем legacy-колонку, если она осталась.
+        if (! Schema::hasColumn('ai_prompts', 'files')) {
+            return;
+        }
+
         Schema::table('ai_prompts', function (Blueprint $table) {
-            $table->json('files')->nullable()->after('prompt');
+            $table->dropColumn('files');
         });
     }
 
@@ -21,8 +26,12 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (Schema::hasColumn('ai_prompts', 'files')) {
+            return;
+        }
+
         Schema::table('ai_prompts', function (Blueprint $table) {
-            $table->dropColumn('files');
+            $table->json('files')->nullable()->after('prompt');
         });
     }
 };

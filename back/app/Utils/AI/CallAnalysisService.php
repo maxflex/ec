@@ -38,7 +38,6 @@ class CallAnalysisService extends GeminiService
         }
 
         [$systemInstructionText, $userPromptText] = self::renderCallAnalysisPrompt($call);
-        $promptGeminiFiles = GeminiFileService::getPromptGeminiFiles(AiPrompt::CALL_ANALYSIS);
 
         // На втором шаге запрашиваем только аналитические блоки.
         $schema = new Schema(
@@ -77,7 +76,6 @@ class CallAnalysisService extends GeminiService
             )
             ->generateContent([
                 $userPromptText,
-                ...$promptGeminiFiles,
             ]);
 
         $result = $response->json(true);
