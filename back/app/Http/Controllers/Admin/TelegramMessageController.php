@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\TelegramMessageResource;
 use App\Models\Phone;
 use App\Models\TelegramMessage;
+use App\Utils\Phone as PhoneUtils;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class TelegramMessageController extends Controller
 {
     protected $filters = [
-        'equals' => ['number', 'template'],
+        'number' => ['number'],
+        'equals' => ['template'],
         'null' => ['status'],
     ];
 
@@ -57,5 +60,12 @@ class TelegramMessageController extends Controller
         );
 
         return new TelegramMessageResource($telegramMessage);
+    }
+
+    protected function filterNumber(Builder $query, string $number): void
+    {
+        // Нормализуем номер из UI (+7, скобки, пробелы) перед поиском.
+        $number = PhoneUtils::clean($number);
+        $query->where('number', 'like', "%{$number}%");
     }
 }

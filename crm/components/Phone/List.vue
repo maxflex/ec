@@ -1,13 +1,68 @@
 <script setup lang="ts">
 import type { RequestListResource } from '../Request'
-import { mdiChevronRight, mdiClipboardOutline, mdiHistory, mdiPhoneOutgoing } from '@mdi/js'
+import {
+  mdiChevronRight,
+  mdiClipboardOutline,
+  mdiHistory,
+  mdiPhoneOutgoing,
+} from '@mdi/js'
 
-const { items, request, showComment, person } = defineProps<{
+const { items, request, showComment, noColors } = defineProps<{
   items: PhoneResource[]
   request?: RequestListResource
-  person?: PersonResource
   showComment?: boolean
+  noColors?: boolean // не раскрашивать номер телефона в цвет
 }>()
+
+const router = useRouter()
+const { logIn } = useAuthStore()
+
+const previewModeAvailableEntityTypes: EntityType[] = [
+  EntityTypeValue.client,
+  EntityTypeValue.representative,
+  EntityTypeValue.teacher,
+]
+
+function call(item: PhoneResource): void {
+  window.location.href = `tel:${item.number}`
+}
+
+async function copyToClipboard(item: PhoneResource): Promise<void> {
+  await navigator.clipboard.writeText(item.number)
+  useGlobalMessage(`<b>${formatPhone(item.number)}</b> скопирован`, 'success')
+}
+
+function isPreviewModeAvailable(item: PhoneResource): boolean {
+  return previewModeAvailableEntityTypes.includes(item.entity_type)
+}
+
+function openHistory(path: '/calls' | '/telegram-messages' | '/sms-messages', item: PhoneResource): void {
+  router.push({
+    path,
+    query: {
+      number: item.number,
+    },
+  })
+}
+
+async function enterPreviewMode(item: PhoneResource): Promise<void> {
+  if (!isPreviewModeAvailable(item)) {
+    return
+  }
+  const { data } = await useHttp<TokenResponse>(
+    `preview-mode`,
+    {
+      method: 'post',
+      body: {
+        phone_id: item.id,
+      },
+    },
+  )
+  if (data.value) {
+    const { token, user } = data.value
+    logIn(user, token, true)
+  }
+}
 </script>
 
 <template>
@@ -19,7 +74,14 @@ const { items, request, showComment, person } = defineProps<{
         offset="10"
       >
         <template #activator="{ props }">
+          <a
+            v-if="noColors"
+            class="phone-list__number" v-bind="props"
+          >
+            {{ formatPhone(item.number) }}
+          </a>
           <PhoneNumber
+            v-else
             :item="item"
             class="phone-list__number"
             :request="request"
@@ -27,11 +89,11 @@ const { items, request, showComment, person } = defineProps<{
           />
         </template>
         <v-list class="phone-list__list">
-          <v-list-item>
+          <v-list-item @click="call(item)">
             <v-icon :icon="mdiPhoneOutgoing" />
             позвонить
           </v-list-item>
-          <v-list-item>
+          <v-list-item @click="copyToClipboard(item)">
             <v-icon :icon="mdiClipboardOutline" />
             скопировать номер
           </v-list-item>
@@ -39,25 +101,26 @@ const { items, request, showComment, person } = defineProps<{
             <v-icon :icon="mdiHistory" />
             история
             <v-icon :icon="mdiChevronRight" class="phone-list__expand" />
-            <v-menu
-              :open-on-focus="false"
-              activator="parent" submenu location="right center" transition="slide-x-transition"
-            >
+            <!--  location="right center" transition="slide-x-transition" -->
+            <v-menu :open-on-focus="false" activator="parent" submenu>
               <v-list>
-                <v-list-item link>
+                <v-list-item @click="openHistory('/calls', item)">
                   история звонков
                 </v-list-item>
-                <v-list-item link>
-                  история telegram
+                <v-list-item @click="openHistory('/telegram-messages', item)">
+                  история Telegram
                 </v-list-item>
-                <v-list-item link>
+                <v-list-item @click="openHistory('/sms-messages', item)">
                   история SMS
                 </v-list-item>
               </v-list>
             </v-menu>
           </v-list-item>
           <v-divider />
-          <v-list-item>
+          <v-list-item
+            :disabled="!isPreviewModeAvailable(item)"
+            @click="enterPreviewMode(item)"
+          >
             <v-icon icon="$preview" />
             войти в лк
           </v-list-item>
@@ -86,29 +149,30 @@ const { items, request, showComment, person } = defineProps<{
     position: relative;
     overflow: visible;
     z-index: 1;
+    user-select: none;
 
     //&:hover {
     //  color: rgb(var(--v-theme-secondary)) !important;
     //}
 
-    &:after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 140px;
-      background-color: transparent;
-      z-index: -1;
-      border-radius: 4px;
-      transition: all ease-in-out 0.3s;
-    }
-    &[aria-expanded='true'] {
-      &:after {
-        background-color: rgba(var(--v-theme-primary), 0.2);
-        box-shadow: 0 0 3px 3px rgba(var(--v-theme-primary), 0.2);
-      }
-    }
+    // &:after {
+    //   content: '';
+    //   position: absolute;
+    //   top: 0;
+    //   left: 0;
+    //   height: 100%;
+    //   width: 140px;
+    //   background-color: transparent;
+    //   z-index: -1;
+    //   border-radius: 4px;
+    //   transition: all ease-in-out 0.3s;
+    // }
+    // &[aria-expanded='true'] {
+    //   &:after {
+    //     background-color: rgba(var(--v-theme-primary), 0.2);
+    //     box-shadow: 0 0 3px 3px rgba(var(--v-theme-primary), 0.2);
+    //   }
+    // }
   }
   &__comment {
     color: rgb(var(--v-theme-gray));

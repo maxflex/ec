@@ -1,37 +1,46 @@
 <script setup lang="ts">
-import type { PhoneDialog } from '#build/components'
-import type { CallListResource } from '~/components/CallApp'
+import type { CallAppAonResource, CallListResource } from '~/components/CallApp'
 import { mdiDotsHorizontal } from '@mdi/js'
 import { CallerTypeLabel } from '~/components/CallApp'
 
-const { items, clickable } = defineProps<{
+const { items } = defineProps<{
   items: CallListResource[]
-  clickable?: boolean
 }>()
 
 const router = useRouter()
 
 const { user } = useAuthStore()
-const phoneDialog = ref<InstanceType<typeof PhoneDialog>>()
 
 const showMoreBtn = [1, 5, 151].includes(user!.id)
+
+function getPhoneItem(item: CallListResource): PhoneResource {
+  if (item.aon) {
+    return item.aon
+  }
+
+  // Для неизвестного номера создаем минимальный PhoneResource,
+  // чтобы меню работало (звонок/копирование/история) без открытия старого диалога.
+  const fallback: CallAppAonResource = {
+    id: 0,
+    number: item.number,
+    comment: null,
+    telegram_id: null,
+    entity_type: EntityTypeValue.request,
+    entity_id: 0,
+    is_telegram_disabled: false,
+  }
+
+  return fallback
+}
 </script>
 
 <template>
-  <Table v-bind="$attrs">
+  <Table v-bind="$attrs" class="call-list">
     <TableRow v-for="item in items" :key="item.id">
       <TableCol :width="160">
-        <a v-if="clickable" class="cursor-pointer" @click.stop="phoneDialog?.open(item.aon || item, item.aon?.entity)">
-          {{ formatPhone(item.number) }}
-        </a>
-        <span v-else>
-          {{ formatPhone(item.number) }}
-        </span>
-        <!-- <div v-if="item.aon?.comment" class="caption text-gray text-truncate">
-          {{ item.aon.comment }}
-        </div> -->
+        <PhoneList :items="[getPhoneItem(item)]" no-colors />
       </TableCol>
-      <TableCol :width="160">
+      <TableCol :width="150">
         <UiIfSet :value="item.caller_type">
           {{ CallerTypeLabel[item.caller_type!] }}
         </UiIfSet>
@@ -88,5 +97,4 @@ const showMoreBtn = [1, 5, 151].includes(user!.id)
       </TableCol>
     </TableRow>
   </Table>
-  <PhoneDialog ref="phoneDialog" />
 </template>
