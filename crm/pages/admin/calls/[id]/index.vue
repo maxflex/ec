@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { CallerType, CallListResource } from '~/components/CallApp'
+import type { CallerType, CallListResource } from '~/components/Call'
 import { mdiAutoFix } from '@mdi/js'
-import { CallerTypeLabel } from '~/components/CallApp'
+import { CallerTypeLabel } from '~/components/Call'
 
 type CallInstructionType = 'transcription' | 'analysis'
 
@@ -245,7 +245,7 @@ nextTick(loadData)
           </div>
           <div>
             <div v-if="item.answered_at">
-              <CallAppDuration :item="item" />
+              <CallDuration :item="item" />
             </div>
             <span v-else class="text-gray">
               –
@@ -257,7 +257,7 @@ nextTick(loadData)
             собеседник
           </div>
           <div class="text-truncate" style="max-width: 200px">
-            <CallAppPerson :item="item.aon" class="text-truncate" />
+            <CallPerson :item="item.aon" class="text-truncate" />
           </div>
         </div>
       </div>

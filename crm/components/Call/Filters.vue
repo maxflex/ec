@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { CallerType } from '~/components/CallApp'
-import { CallerTypeLabel } from '~/components/CallApp'
+import type { CallerType } from '~/components/Call'
+import { CallerTypeLabel } from '~/components/Call'
 
 export type CallStatusFilter = 'incoming' | 'outgoing' | 'missed' | 'missed_callback'
 

@@ -7,7 +7,7 @@ export default defineNuxtPlugin(() => {
 
   worker.port.onmessage = (event) => {
     const { data } = event
-    // App\\Events\\CallEvent => CallEvent
+    // App\\Events\\SomeEvent => SomeEvent
     const eventName = data.event?.split('\\').pop() as SseEvent
 
     // Type guard to check if listeners[eventName] is a function

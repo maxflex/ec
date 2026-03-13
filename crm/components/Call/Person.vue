@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { CallAppAonResource } from '.'
+import type { CallAonResource } from '../Call'
 
 const { item } = defineProps<{
-  item: CallAppAonResource | null
+  item: CallAonResource | null
 }>()
 </script>
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CallFilters } from '~/components/Call/Filters.vue'
-import type { CallListResource } from '~/components/CallApp'
+import type { CallListResource } from '~/components/Call'
 
 const route = useRoute()
 const { number: numberFromQuery } = route.query

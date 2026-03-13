@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { CallAppAonResource, CallListResource } from '~/components/CallApp'
+import type { CallAonResource, CallListResource } from '~/components/Call'
 import { mdiDotsHorizontal, mdiTextBoxOutline, mdiWave, mdiWaveform } from '@mdi/js'
-import { CallerTypeLabel } from '~/components/CallApp'
+import { CallerTypeLabel } from '~/components/Call'
 
 const { items } = defineProps<{
   items: CallListResource[]
@@ -20,7 +20,7 @@ function getPhoneItem(item: CallListResource): PhoneResource {
 
   // Для неизвестного номера создаем минимальный PhoneResource,
   // чтобы меню работало (звонок/копирование/история) без открытия старого диалога.
-  const fallback: CallAppAonResource = {
+  const fallback: CallAonResource = {
     id: 0,
     number: item.number,
     comment: null,
@@ -77,11 +77,11 @@ function getPhoneItem(item: CallListResource): PhoneResource {
         </template>
       </TableCol>
       <TableCol>
-        <CallAppPerson :item="item.aon" class="text-truncate" />
+        <CallPerson :item="item.aon" class="text-truncate" />
       </TableCol>
       <TableCol :width="60">
         <div v-if="item.answered_at">
-          <CallAppDuration :item="item" />
+          <CallDuration :item="item" />
         </div>
       </TableCol>
       <TableCol :width="140">

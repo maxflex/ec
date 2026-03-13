@@ -521,8 +521,6 @@ declare global {
   }
 
   type SseEvent =
-    | 'CallEvent'
-    | 'CallSummaryEvent'
     | 'TelegramBotAdded'
     | 'TelegramListSentEvent'
     | 'AppUpdatedEvent'

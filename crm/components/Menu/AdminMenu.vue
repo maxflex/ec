@@ -6,16 +6,13 @@ import {
   mdiCalendar,
   mdiCardAccountDetailsOutline,
   mdiCashMultiple,
-  mdiChat,
   mdiChatOutline,
   mdiFileDocumentEditOutline,
   mdiHumanMaleBoard,
   mdiInbox,
   mdiLockOpenOutline,
   mdiLogout,
-  mdiSendCircle,
 } from '@mdi/js'
-import { callAppDialog } from '~/components/CallApp'
 import { updateMenuCounts } from '.'
 
 const { $addSseListener, $removeSseListener } = useNuxtApp()

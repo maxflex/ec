@@ -10,22 +10,12 @@ export const CallerTypeLabel: Record<CallerType, string> = {
   other: 'другое',
 }
 
-export interface CallAppAonResource extends PhoneResource {
+export interface CallAonResource extends PhoneResource {
   entity?: PersonResource
   request_id?: number
 }
 
-export interface CallEvent {
-  state: CallState
-  type: CallType
-  user?: PersonResource
-  aon: CallAppAonResource | null
-  last_interaction: CallAppLastInteractionResource | null
-  number: string
-  answered_at?: string
-}
-
-export interface CallAppLastInteractionResource {
+export interface CallLastInteractionResource {
   id: string
   user: PersonResource | null
   type: CallType
@@ -50,10 +40,5 @@ export interface CallListResource {
   created_at: string
   finished_at: string
   answered_at: string | null
-  aon: CallAppAonResource | null
+  aon: CallAonResource | null
 }
-
-export const isMissed = (ce: CallEvent) => ce.state === 'Disconnected' && !ce.user
-
-export const hasIncoming = ref(false)
-export const callAppDialog = ref(false)

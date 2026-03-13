@@ -150,6 +150,11 @@ async function enterPreviewMode(item: PhoneResource): Promise<void> {
     overflow: visible;
     z-index: 1;
     user-select: none;
+    transition: color linear 0.2s;
+
+    &[aria-expanded='true'] {
+      color: lighten(#337ab7, 15) !important;
+    }
 
     // &:hover {
     //   color: rgb(var(--v-theme-secondary)) !important;
