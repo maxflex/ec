@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CallAppAonResource, CallListResource } from '~/components/CallApp'
-import { mdiDotsHorizontal } from '@mdi/js'
+import { mdiDotsHorizontal, mdiTextBoxOutline, mdiWave, mdiWaveform } from '@mdi/js'
 import { CallerTypeLabel } from '~/components/CallApp'
 
 const { items } = defineProps<{
@@ -87,14 +87,41 @@ function getPhoneItem(item: CallListResource): PhoneResource {
       <TableCol :width="140">
         {{ formatDateTime(item.created_at) }}
       </TableCol>
-      <TableCol :width="50" style="flex: initial !important">
-        <v-btn
-          v-if="showMoreBtn"
-          :size="42"
-          :icon="mdiDotsHorizontal"
-          @click="router.push({ name: 'calls-id', params: { id: item.id } })"
-        />
+      <TableCol :width="140" style="flex: initial !important">
+        <div class="call-list__actions">
+          <v-btn
+            :size="42"
+            class="no-pointer-events"
+            :icon="mdiWaveform"
+            variant="text"
+            :disabled="!item.has_recording"
+          />
+          <v-btn
+            :size="42"
+            class="no-pointer-events"
+            :icon="mdiTextBoxOutline"
+            variant="text"
+            :disabled="!item.transcript"
+          />
+          <v-btn
+            v-if="showMoreBtn"
+            :size="42"
+            :icon="mdiDotsHorizontal"
+            @click="router.push({ name: 'calls-id', params: { id: item.id } })"
+          />
+        </div>
       </TableCol>
     </TableRow>
   </Table>
 </template>
+
+<style lang="scss">
+.call-list {
+  &__actions {
+    button[disabled] {
+      opacity: 0.1 !important;
+      pointer-events: none;
+    }
+  }
+}
+</style>

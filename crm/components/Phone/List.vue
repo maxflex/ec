@@ -151,9 +151,9 @@ async function enterPreviewMode(item: PhoneResource): Promise<void> {
     z-index: 1;
     user-select: none;
 
-    //&:hover {
-    //  color: rgb(var(--v-theme-secondary)) !important;
-    //}
+    // &:hover {
+    //   color: rgb(var(--v-theme-secondary)) !important;
+    // }
 
     // &:after {
     //   content: '';
