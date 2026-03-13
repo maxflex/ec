@@ -113,7 +113,7 @@ class Call extends Model
 
     /**
      * Пропущенный, но после этого был контакт
-     * После пропущенного должен быть контакт более 10 сек
+     * После пропущенного должен быть любой последующий отвеченный контакт
      */
     public function getIsMissedCallbackAttribute(): bool
     {
@@ -121,7 +121,6 @@ class Call extends Model
             && $this->chain()
                 ->answered()
                 ->where('created_at', '>', $this->created_at)
-                // ->whereRaw('TIMESTAMPDIFF(second, answered_at, finished_at) > 10')
                 ->exists();
     }
 

@@ -92,7 +92,7 @@ class CallController extends Controller
 
     /**
      * Пропущенный = входящий + answered_at = null.
-     * Для "перезвонили" проверяем, что в этой же цепочке есть успешный контакт > 10 сек.
+     * Для "перезвонили" проверяем, что в этой же цепочке был любой последующий отвеченный контакт.
      */
     private function applyMissedFilter(Builder $query, bool $withCallback): void
     {
@@ -107,8 +107,7 @@ class CallController extends Controller
                 ->from('calls as callback_calls')
                 ->whereColumn('callback_calls.number', 'calls.number')
                 ->whereNotNull('callback_calls.answered_at')
-                ->whereColumn('callback_calls.created_at', '>', 'calls.created_at')
-                ->whereRaw('TIMESTAMPDIFF(second, callback_calls.answered_at, callback_calls.finished_at) > 10');
+                ->whereColumn('callback_calls.created_at', '>', 'calls.created_at');
         });
     }
 }
