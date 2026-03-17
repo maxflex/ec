@@ -4,11 +4,17 @@ use App\Enums\Company;
 use App\Enums\ContractPaymentMethod;
 use App\Enums\OtherPaymentMethod;
 use App\Models\Client;
+use App\Models\Complaint;
+use App\Models\Contract;
 use App\Models\ContractPayment;
+use App\Models\Group;
 use App\Models\OtherPayment;
+use App\Models\Project;
+use App\Models\Report;
 use App\Models\Representative;
 use App\Models\Teacher;
 use App\Models\User;
+use App\Models\Violation;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -110,8 +116,8 @@ function get_max_pko_number(Company $company, string $date)
 {
     $year = intval(explode('-', $date)[0]);
 
-    // платежи пробный ЕГЭ – все ООО
-    $paymentsMaxPko = $company === Company::ooo ? intval(OtherPayment::query()
+    // платежи пробный ЕГЭ – все АНО
+    $paymentsMaxPko = $company === Company::ano ? intval(OtherPayment::query()
         ->where('method', OtherPaymentMethod::cash)
         ->where('is_return', false)
         ->whereRaw('YEAR(`date`) = ?', [$year])
@@ -173,7 +179,7 @@ function format_price($price): string
 function format_file_size(int|float $size): string
 {
     if ($size < 0) {
-        throw new RuntimeException("Размер файла не может быть отрицательным");
+        throw new RuntimeException('Размер файла не может быть отрицательным');
     }
 
     $units = ['байт', 'Кб', 'Мб', 'Гб', 'Тб'];
@@ -243,16 +249,16 @@ function entity_type_label(?string $entityType): string
 {
     return match ($entityType) {
         \App\Models\Request::class => 'Заявка',
-        \App\Models\Client::class => 'Ученик',
-        \App\Models\Representative::class => 'Представитель',
-        \App\Models\Contract::class => 'Договор',
-        \App\Models\Teacher::class => 'Преподаватель',
-        \App\Models\User::class => 'Администратор',
-        \App\Models\Group::class => 'Группа',
-        \App\Models\Report::class => 'Отчет',
-        \App\Models\Project::class => 'Проект',
-        \App\Models\Complaint::class => 'Жалоба',
-        \App\Models\Violation::class => 'Нарушение',
+        Client::class => 'Ученик',
+        Representative::class => 'Представитель',
+        Contract::class => 'Договор',
+        Teacher::class => 'Преподаватель',
+        User::class => 'Администратор',
+        Group::class => 'Группа',
+        Report::class => 'Отчет',
+        Project::class => 'Проект',
+        Complaint::class => 'Жалоба',
+        Violation::class => 'Нарушение',
         default => 'Неизвестно',
     };
 }
