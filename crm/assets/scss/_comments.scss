@@ -149,6 +149,10 @@
       }
     }
   }
+
+  &__text {
+    white-space: pre-wrap;
+  }
 }
 
 .comment-btn {

@@ -242,7 +242,9 @@ defineExpose({ open })
                 {{ format(c.created_at, 'dd.MM.yy в HH:mm') }}
               </span>
             </div>
-            {{ c.text }}
+            <div class="comment__text">
+              {{ c.text }}
+            </div>
           </div>
         </div>
       </transition-group>
