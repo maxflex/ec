@@ -18,7 +18,7 @@ class RequestObserver
         }
     }
 
-    private function isNewStatus(RequestStatus|string $status): bool
+    private function isNewStatus(RequestStatus|string|null $status): bool
     {
         return $status === RequestStatus::new
             || $status === RequestStatus::new->value;
