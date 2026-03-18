@@ -3,7 +3,7 @@
 namespace App\Events;
 
 use App\Models\Call;
-use App\Models\Request as ClientRequest;
+use App\Models\Request;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -25,7 +25,7 @@ class MenuCountsUpdatedEvent implements ShouldBroadcastNow
     public static function dispatchRequestsCount(): void
     {
         self::dispatch([
-            'requests' => ClientRequest::getMenuCount(),
+            'requests' => Request::getMenuCount(),
         ]);
     }
 

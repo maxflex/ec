@@ -525,7 +525,6 @@ declare global {
     | 'TelegramListSentEvent'
     | 'AppUpdatedEvent'
     | 'ClientTestUpdatedEvent'
-    | 'RequestUpdatedEvent'
     | 'MenuCountsUpdatedEvent'
 
   type SendTo = keyof typeof SendToLabel

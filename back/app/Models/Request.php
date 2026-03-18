@@ -44,6 +44,14 @@ class Request extends Model
         return Request::where('status', RequestStatus::new)->count();
     }
 
+    /**
+     * Новая заявка / влияет на каунтер в меню
+     */
+    public function getIsNewAttribute(): bool
+    {
+        return $this->status === RequestStatus::new;
+    }
+
     public function responsibleUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'responsible_user_id');

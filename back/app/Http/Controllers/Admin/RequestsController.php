@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Events\RequestUpdatedEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\RequestListResource;
 use App\Http\Resources\RequestResource;
@@ -41,7 +40,6 @@ class RequestsController extends Controller
         sync_relation($clientRequest, 'phones', $request->all());
 
         $clientRequest->refresh();
-        RequestUpdatedEvent::dispatch($clientRequest);
 
         return new RequestListResource($clientRequest);
     }
@@ -59,8 +57,6 @@ class RequestsController extends Controller
         $clientRequest->update($request->all());
         sync_relation($clientRequest, 'phones', $request->all());
 
-        RequestUpdatedEvent::dispatch($clientRequest);
-
         return new RequestListResource($clientRequest);
     }
 
@@ -75,7 +71,6 @@ class RequestsController extends Controller
     {
         DB::transaction(function () use ($id) {
             $clientRequest = ClientRequest::findOrFail($id);
-            RequestUpdatedEvent::dispatch($clientRequest);
             $clientRequest->phones->each->delete();
             $clientRequest->delete();
         });

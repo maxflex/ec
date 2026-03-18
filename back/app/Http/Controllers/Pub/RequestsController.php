@@ -6,7 +6,6 @@ use App\Enums\Direction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PubRequestRequest;
 use App\Models\Phone;
-use App\Events\RequestUpdatedEvent;
 use App\Models\Request as ClientRequest;
 use App\Utils\VerificationService;
 use Illuminate\Http\Request;
@@ -33,8 +32,6 @@ class RequestsController extends Controller
         ]);
 
         VerificationService::sendCode($phone, true);
-
-        RequestUpdatedEvent::dispatch($clientRequest);
 
         // на фронте нужен только ID созданной заявки
         return [

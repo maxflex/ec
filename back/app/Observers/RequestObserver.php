@@ -13,15 +13,20 @@ class RequestObserver
      */
     public function created(ClientRequest $request): void
     {
-        if ($this->isNewStatus($request->status)) {
+        if ($request->is_new) {
             MenuCountsUpdatedEvent::dispatchRequestsCount();
         }
     }
 
-    private function isNewStatus(RequestStatus|string|null $status): bool
+    /**
+     * Дополнительный сценарий против рассинхрона:
+     * при удалении заявки в статусе new счетчик обязан уменьшиться.
+     */
+    public function deleted(ClientRequest $request): void
     {
-        return $status === RequestStatus::new
-            || $status === RequestStatus::new->value;
+        if ($request->is_new) {
+            MenuCountsUpdatedEvent::dispatchRequestsCount();
+        }
     }
 
     /**
@@ -33,21 +38,12 @@ class RequestObserver
             return;
         }
 
-        $oldStatus = $request->getOriginal('status');
-        $newStatus = $request->status;
+        // getOriginal() в Laravel возвращает "сырое" значение из БД до приведения (cast),
+        // поэтому для сравнения используем ->value нашего Enum.
+        $wasNew = $request->getOriginal('status') === RequestStatus::new->value;
 
-        if ($this->isNewStatus($oldStatus) !== $this->isNewStatus($newStatus)) {
-            MenuCountsUpdatedEvent::dispatchRequestsCount();
-        }
-    }
-
-    /**
-     * Дополнительный сценарий против рассинхрона:
-     * при удалении заявки в статусе new счетчик обязан уменьшиться.
-     */
-    public function deleted(ClientRequest $request): void
-    {
-        if ($this->isNewStatus($request->status)) {
+        // Если заявка перешла ИЗ статуса new ИЛИ В статус new
+        if ($wasNew || $request->is_new) {
             MenuCountsUpdatedEvent::dispatchRequestsCount();
         }
     }
