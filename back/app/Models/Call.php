@@ -53,6 +53,20 @@ class Call extends Model
     }
 
     /**
+     * Количество звонков для счетчика в админ-меню.
+     * Считаем только необработанные пропущенные после 19:00 вчерашнего дня.
+     */
+    public static function getMenuCount(): int
+    {
+        $from = Carbon::yesterday()->setTime(19, 0);
+
+        return self::query()
+            ->missedNoCallback()
+            ->where('created_at', '>=', $from)
+            ->count();
+    }
+
+    /**
      * АОН – автоматический определитель номера.
      * Определяем модель по номеру телефона
      */
@@ -190,5 +204,47 @@ class Call extends Model
     public function scopeAnswered($query)
     {
         $query->whereNotNull('answered_at');
+    }
+
+    /**
+     * Пропущенные без перезвона:
+     * входящий звонок, по которому не было ответа,
+     * и в этой же цепочке не появилось последующего отвеченного контакта.
+     */
+    public function scopeMissedNoCallback($query): void
+    {
+        $this->applyMissedScope($query, withCallback: false);
+    }
+
+    /**
+     * Базовая логика для "пропущенных" фильтров.
+     */
+    private function applyMissedScope($query, bool $withCallback): void
+    {
+        $query
+            ->where('type', CallType::incoming->value)
+            ->whereNull('answered_at');
+
+        $whereMethod = $withCallback ? 'whereExists' : 'whereNotExists';
+
+        $query->{$whereMethod}(fn ($subQuery) =>
+            // Ищем любой последующий отвеченный звонок по тому же номеру.
+            $subQuery
+                ->selectRaw('1')
+                ->from('calls as callback_calls')
+                ->whereColumn('callback_calls.number', 'calls.number')
+                ->whereNotNull('callback_calls.answered_at')
+                ->whereColumn('callback_calls.created_at', '>', 'calls.created_at')
+        );
+    }
+
+    /**
+     * Пропущенные с перезвоном:
+     * входящий звонок, по которому не было ответа,
+     * но позже в цепочке появился отвеченный контакт.
+     */
+    public function scopeMissedWithCallback($query): void
+    {
+        $this->applyMissedScope($query, withCallback: true);
     }
 }

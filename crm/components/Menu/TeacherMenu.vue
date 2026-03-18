@@ -14,7 +14,7 @@ import {
   mdiTicket,
   mdiVideo,
 } from '@mdi/js'
-import { updateMenuCounts } from '.'
+import { getMenuCounts } from '.'
 
 const { user } = useAuthStore()
 
@@ -90,7 +90,7 @@ if (user?.is_head_teacher) {
   })
 }
 
-nextTick(updateMenuCounts)
+nextTick(getMenuCounts)
 </script>
 
 <template>

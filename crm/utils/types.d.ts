@@ -526,6 +526,7 @@ declare global {
     | 'AppUpdatedEvent'
     | 'ClientTestUpdatedEvent'
     | 'RequestUpdatedEvent'
+    | 'MenuCountsUpdatedEvent'
 
   type SendTo = keyof typeof SendToLabel
 

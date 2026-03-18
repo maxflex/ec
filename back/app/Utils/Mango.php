@@ -5,6 +5,7 @@ namespace App\Utils;
 use App\Enums\CallState;
 use App\Enums\CallType;
 use App\Events\CallEvent;
+use App\Events\MenuCountsUpdatedEvent;
 use App\Http\Resources\PersonResource;
 use App\Models\Call;
 use App\Models\User;
@@ -201,6 +202,9 @@ class Mango
             'answered_at' => $data->talk_time,
             'finished_at' => $data->end_time,
         ]);
+
+        // Count пропущенных звонков пересчитывается на фронте только после Summary.
+        MenuCountsUpdatedEvent::dispatchCallsCount();
     }
 
     /**

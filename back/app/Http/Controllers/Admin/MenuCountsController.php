@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Call;
 use App\Models\Request as ClientRequest;
 use Illuminate\Http\Request;
 
@@ -12,6 +13,7 @@ class MenuCountsController extends Controller
     {
         return [
             'requests' => ClientRequest::getMenuCount(),
+            'calls' => Call::getMenuCount(),
         ];
     }
 }

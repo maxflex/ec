@@ -84,30 +84,9 @@ class CallController extends Controller
         match ($status) {
             'incoming' => $query->where('type', CallType::incoming->value),
             'outgoing' => $query->where('type', CallType::outgoing->value),
-            'missed' => $this->applyMissedFilter($query, false),
-            'missed_callback' => $this->applyMissedFilter($query, true),
+            'missed' => $query->missedNoCallback(),
+            'missed_callback' => $query->missedWithCallback(),
             default => null,
         };
-    }
-
-    /**
-     * Пропущенный = входящий + answered_at = null.
-     * Для "перезвонили" проверяем, что в этой же цепочке был любой последующий отвеченный контакт.
-     */
-    private function applyMissedFilter(Builder $query, bool $withCallback): void
-    {
-        $query
-            ->where('type', CallType::incoming->value)
-            ->whereNull('answered_at');
-
-        $whereMethod = $withCallback ? 'whereExists' : 'whereNotExists';
-
-        $query->{$whereMethod}(function ($subQuery) {
-            $subQuery->selectRaw('1')
-                ->from('calls as callback_calls')
-                ->whereColumn('callback_calls.number', 'calls.number')
-                ->whereNotNull('callback_calls.answered_at')
-                ->whereColumn('callback_calls.created_at', '>', 'calls.created_at');
-        });
     }
 }

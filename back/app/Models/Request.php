@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Direction;
 use App\Enums\RequestStatus;
+use App\Observers\RequestObserver;
 use App\Observers\UserIdObserver;
 use App\Traits\HasComments;
 use App\Traits\HasPhones;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 
-#[ObservedBy(UserIdObserver::class)]
+#[ObservedBy([UserIdObserver::class, RequestObserver::class])]
 class Request extends Model
 {
     use HasComments, HasPhones, IsSearchable;

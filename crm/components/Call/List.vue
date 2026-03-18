@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CallAonResource, CallListResource } from '~/components/Call'
-import { mdiDotsHorizontal, mdiTextBoxOutline, mdiWave, mdiWaveform } from '@mdi/js'
+import { mdiDotsHorizontal, mdiTextBoxOutline, mdiWaveform } from '@mdi/js'
 import { CallerTypeLabel } from '~/components/Call'
 
 const { items } = defineProps<{
@@ -8,6 +8,7 @@ const { items } = defineProps<{
 }>()
 
 const router = useRouter()
+const downloadingId = ref<string | null>(null)
 
 const { user } = useAuthStore()
 
@@ -31,6 +32,41 @@ function getPhoneItem(item: CallListResource): PhoneResource {
   }
 
   return fallback
+}
+
+async function downloadRecording(item: CallListResource) {
+  if (!item.has_recording || downloadingId.value) {
+    return
+  }
+
+  downloadingId.value = item.id
+  try {
+    const audio = await getAudio(item.id, 'download')
+    const link = document.createElement('a')
+    link.href = audio
+    link.click()
+  }
+  catch (error: unknown) {
+    const errorMessage = error instanceof Error && error.message
+      ? error.message
+      : 'Не удалось скачать аудиозапись'
+    useGlobalMessage(errorMessage, 'error')
+  }
+  finally {
+    setTimeout(() => {
+      downloadingId.value = null
+    }, 300)
+  }
+}
+
+async function getAudio(callId: string, action: 'play' | 'download') {
+  const { data, error } = await useHttp<string>(`calls/recording/${action}/${callId}`)
+
+  if (error.value || !data.value) {
+    throw new Error(error.value?.data?.message || 'Ошибка получения ссылки на запись')
+  }
+
+  return data.value
 }
 </script>
 
@@ -91,10 +127,11 @@ function getPhoneItem(item: CallListResource): PhoneResource {
         <div class="call-list__actions">
           <v-btn
             :size="42"
-            class="no-pointer-events"
             :icon="mdiWaveform"
             variant="text"
             :disabled="!item.has_recording"
+            :loading="downloadingId === item.id"
+            @click="downloadRecording(item)"
           />
           <v-btn
             :size="42"

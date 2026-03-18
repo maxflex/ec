@@ -4,7 +4,7 @@ import type { ContractResource } from '../ContractVersion'
 import { cloneDeep } from 'lodash-es'
 import { ContractPaymentMethodLabel } from '~/utils/labels'
 import { apiUrl, modelDefaults } from '.'
-import { updateMenuCounts } from '../Menu'
+import { getMenuCounts } from '../Menu'
 
 const emit = defineEmits<{
   updated: [e: ContractPaymentResource]
@@ -69,7 +69,7 @@ async function save() {
     useGlobalMessage(`Создан платеж к договору №${item.value.contract_id}`, 'success')
     // если создали из Альфа-Платежа, обновить счетчики
     if (item.value.external_id) {
-      updateMenuCounts()
+      getMenuCounts()
     }
   }
   dialog.value = false

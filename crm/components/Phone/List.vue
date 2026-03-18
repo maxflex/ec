@@ -76,7 +76,8 @@ async function enterPreviewMode(item: PhoneResource): Promise<void> {
         <template #activator="{ props }">
           <a
             v-if="noColors"
-            class="phone-list__number" v-bind="props"
+            class="phone-list__number"
+            v-bind="props"
           >
             {{ formatPhone(item.number) }}
           </a>
@@ -91,15 +92,26 @@ async function enterPreviewMode(item: PhoneResource): Promise<void> {
         <v-list class="phone-list__list">
           <v-list-item @click="call(item)">
             <v-icon :icon="mdiPhoneOutgoing" />
-            позвонить
+            <div style="line-height: 12px;">
+              <div>
+                позвонить
+              </div>
+              <div class="text-caption text-gray">
+                {{ item.comment }}
+              </div>
+            </div>
           </v-list-item>
           <v-list-item @click="copyToClipboard(item)">
             <v-icon :icon="mdiClipboardOutline" />
-            скопировать номер
+            <span>
+              скопировать номер
+            </span>
           </v-list-item>
           <v-list-item link>
             <v-icon :icon="mdiHistory" />
-            история
+            <span>
+              история
+            </span>
             <v-icon :icon="mdiChevronRight" class="phone-list__expand" />
             <!--  location="right center" transition="slide-x-transition" -->
             <v-menu :open-on-focus="false" activator="parent" submenu>
@@ -122,7 +134,9 @@ async function enterPreviewMode(item: PhoneResource): Promise<void> {
             @click="enterPreviewMode(item)"
           >
             <v-icon icon="$preview" />
-            войти в лк
+            <span>
+              войти в лк
+            </span>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -152,32 +166,37 @@ async function enterPreviewMode(item: PhoneResource): Promise<void> {
     user-select: none;
     transition: color linear 0.2s;
 
-    &[aria-expanded='true'] {
-      color: lighten(#337ab7, 15) !important;
-    }
-
     // &:hover {
     //   color: rgb(var(--v-theme-secondary)) !important;
     // }
 
-    // &:after {
-    //   content: '';
-    //   position: absolute;
-    //   top: 0;
-    //   left: 0;
-    //   height: 100%;
-    //   width: 140px;
-    //   background-color: transparent;
-    //   z-index: -1;
-    //   border-radius: 4px;
-    //   transition: all ease-in-out 0.3s;
-    // }
+    &:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 140px;
+      background-color: transparent;
+      z-index: -1;
+      // z-index: 1;
+      border-radius: 4px;
+      transition: all ease-in-out 0.3s;
+    }
+
     // &[aria-expanded='true'] {
-    //   &:after {
-    //     background-color: rgba(var(--v-theme-primary), 0.2);
-    //     box-shadow: 0 0 3px 3px rgba(var(--v-theme-primary), 0.2);
-    //   }
+    //   color: lighten(#337ab7, 15) !important;
+    //   // &:after {
+    //   //   background-color: rgba(white, 0.5);
+    //   // }
     // }
+
+    &[aria-expanded='true'] {
+      &:after {
+        background-color: rgba(var(--v-theme-primary), 0.2);
+        // box-shadow: 0 0 3px 3px rgba(var(--v-theme-primary), 0.2);
+      }
+    }
   }
   &__comment {
     color: rgb(var(--v-theme-gray));
@@ -190,8 +209,10 @@ async function enterPreviewMode(item: PhoneResource): Promise<void> {
 
   &__list {
     .v-list-item {
-      .v-icon {
-        margin-right: 6px;
+      &__content {
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
     }
   }

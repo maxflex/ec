@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Menu } from '.'
+import type { Menu, MenuCountsUpdatedPayload } from '.'
 import {
   mdiAccount,
   mdiAccountGroup,
@@ -12,8 +12,9 @@ import {
   mdiInbox,
   mdiLockOpenOutline,
   mdiLogout,
+  mdiPhone,
 } from '@mdi/js'
-import { updateMenuCounts } from '.'
+import { getMenuCounts, onMenuCountsUpdated } from '.'
 
 const { $addSseListener, $removeSseListener } = useNuxtApp()
 
@@ -24,6 +25,12 @@ const menu: Menu = [
     icon: mdiInbox,
     title: 'Заявки',
     to: '/requests',
+    count: true,
+  },
+  {
+    icon: mdiPhone,
+    title: 'Звонки',
+    to: '/calls',
     count: true,
   },
   {
@@ -91,7 +98,6 @@ const menu: Menu = [
     icon: mdiChatOutline,
     title: 'Коммуникация',
     items: [
-      { title: 'Звонки', to: '/calls' },
       { title: 'Telegram', to: '/telegram-messages' },
       { title: 'SMS', to: '/sms-messages' },
       { title: 'Рассылки', to: '/telegram-lists' },
@@ -135,9 +141,9 @@ const menu: Menu = [
   },
 ]
 
-$addSseListener('RequestUpdatedEvent', updateMenuCounts)
-onUnmounted(() => $removeSseListener('RequestUpdatedEvent'))
-nextTick(updateMenuCounts)
+$addSseListener('MenuCountsUpdatedEvent', onMenuCountsUpdated)
+onUnmounted(() => $removeSseListener('MenuCountsUpdatedEvent'))
+nextTick(getMenuCounts)
 </script>
 
 <template>

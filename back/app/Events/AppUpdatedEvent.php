@@ -8,16 +8,17 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * @DEPRECATED по факту ни разу не использовали
+ */
 class AppUpdatedEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * @param array<string> $resetFiltersKeys ключи для очистки фильтров на фронте
+     * @param  array<string>  $resetFiltersKeys  ключи для очистки фильтров на фронте
      */
-    public function __construct(public array $resetFiltersKeys = [])
-    {
-    }
+    public function __construct(public array $resetFiltersKeys = []) {}
 
     public function broadcastOn()
     {
@@ -27,7 +28,7 @@ class AppUpdatedEvent implements ShouldBroadcastNow
     public function broadcastWith()
     {
         return [
-            'data' => $this->resetFiltersKeys
+            'data' => $this->resetFiltersKeys,
         ];
     }
 }
