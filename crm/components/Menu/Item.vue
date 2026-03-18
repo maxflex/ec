@@ -21,14 +21,20 @@ const count = computed<number | boolean>(() => {
       <v-icon :icon="item.icon" />
     </template>
     {{ item.title }}
-    <template v-if="count" #append>
-      <UiCircle v-if="typeof (count) === 'boolean'" color="error" class="pr-1" />
-      <v-badge
-        v-else
-        color="error"
-        inline
-        :content="count as number"
-      />
+    <template #append>
+      <v-fade-transition mode="out-in">
+        <UiCircle
+          v-if="count && typeof (count) === 'boolean'"
+          key="circle"
+          color="error"
+          class="pr-1"
+        />
+        <MenuCount
+          v-else-if="count"
+          key="count"
+          :count="count as number"
+        />
+      </v-fade-transition>
     </template>
   </v-list-item>
 </template>

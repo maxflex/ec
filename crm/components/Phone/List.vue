@@ -184,19 +184,19 @@ async function enterPreviewMode(item: PhoneResource): Promise<void> {
       transition: all ease-in-out 0.3s;
     }
 
-    // &[aria-expanded='true'] {
-    //   color: lighten(#337ab7, 15) !important;
-    //   // &:after {
-    //   //   background-color: rgba(white, 0.5);
-    //   // }
-    // }
-
     &[aria-expanded='true'] {
-      &:after {
-        background-color: rgba(var(--v-theme-primary), 0.2);
-        // box-shadow: 0 0 3px 3px rgba(var(--v-theme-primary), 0.2);
-      }
+      color: lighten(#337ab7, 15) !important;
+      // &:after {
+      //   background-color: rgba(white, 0.5);
+      // }
     }
+
+    // &[aria-expanded='true'] {
+    //   &:after {
+    //     background-color: rgba(var(--v-theme-deepOrange), 0.2);
+    //     box-shadow: 0 0 3px 3px rgba(var(--v-theme-deepOrange), 0.2);
+    //   }
+    // }
   }
   &__comment {
     color: rgb(var(--v-theme-gray));
