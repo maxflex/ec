@@ -70,7 +70,8 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss">
-$badgeBg: #ffcc80;
+// $badgeBg: #ffcc80;
+$badgeBg: #eb4432;
 
 .menu-count {
   &__slot {
@@ -98,7 +99,7 @@ $badgeBg: #ffcc80;
   .v-badge__badge {
     // Базовый цвет счетчика задаем без !important, чтобы анимация легко перекрывалась.
     background-color: $badgeBg;
-    color: black;
+    color: white;
     // Внешний box-shadow пульса должен быть виден вокруг бейджа.
     overflow: visible;
   }
