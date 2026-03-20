@@ -27,12 +27,12 @@ const menu: Menu = [
     to: '/requests',
     count: true,
   },
-  // {
-  //   icon: mdiPhone,
-  //   title: 'Звонки',
-  //   to: '/calls',
-  //   count: true,
-  // },
+  {
+    icon: mdiPhone,
+    title: 'Звонки',
+    to: '/calls',
+    count: true,
+  },
   {
     icon: mdiAccount,
     title: 'Клиенты',
@@ -98,11 +98,7 @@ const menu: Menu = [
     icon: mdiChatOutline,
     title: 'Коммуникация',
     items: [
-      {
-        title: 'Звонки',
-        to: '/calls',
-        // count: true,
-      },
+      // { title: 'Звонки', to: '/calls' },
       { title: 'Telegram', to: '/telegram-messages' },
       { title: 'SMS', to: '/sms-messages' },
       { title: 'Рассылки', to: '/telegram-lists' },

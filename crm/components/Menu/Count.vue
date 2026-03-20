@@ -37,7 +37,7 @@ watch(() => count, (newValue, oldValue) => {
     clearUpdatedStateTimeout = window.setTimeout(() => {
       isCountUpdated.value = false
       clearUpdatedStateTimeout = null
-    }, 2500)
+    }, 4000)
   }
   else {
     isCountUpdated.value = false
@@ -70,6 +70,8 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss">
+$badgeBg: #ffcc80;
+
 .menu-count {
   &__slot {
     display: inline-flex;
@@ -88,15 +90,15 @@ onUnmounted(() => {
   // Повторяем фоновую подсветку item-updated на бейдже счетчика.
   &--updated {
     .v-badge__badge {
-      animation: menuCountUpdated 2.5s cubic-bezier(0.22, 1, 0.36, 1) 1;
-      // animation: menuCountUpdated 2.5s linear 1;
+      animation: menuCountUpdated 4s cubic-bezier(0.22, 1, 0.36, 1) 1;
+      // animation: menuCountUpdated 2s linear 1;
     }
   }
 
   .v-badge__badge {
     // Базовый цвет счетчика задаем без !important, чтобы анимация легко перекрывалась.
-    background-color: rgb(var(--v-theme-error));
-    color: #fff;
+    background-color: $badgeBg;
+    color: black;
     // Внешний box-shadow пульса должен быть виден вокруг бейджа.
     overflow: visible;
   }
@@ -104,13 +106,13 @@ onUnmounted(() => {
 
 @keyframes menuCountUpdated {
   from {
-    $color: #b71c1c;
+    $color: #fe8a1e;
     background-color: $color;
     box-shadow: 0 0 0 0 rgba($color, 0.6);
   }
   to {
-    background-color: rgb(var(--v-theme-error));
-    box-shadow: 0 0 0 6px rgba(var(--v-theme-error), 0);
+    background-color: $badgeBg;
+    box-shadow: 0 0 0 6px rgba($badgeBg, 0);
   }
 }
 
