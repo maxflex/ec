@@ -71,7 +71,9 @@ onUnmounted(() => {
 
 <style lang="scss">
 // $badgeBg: #ffcc80;
+// $animationColor: #fe8a1e;
 $badgeBg: #eb4432;
+$animationColor: #b71c1c;
 
 .menu-count {
   &__slot {
@@ -107,9 +109,8 @@ $badgeBg: #eb4432;
 
 @keyframes menuCountUpdated {
   from {
-    $color: #fe8a1e;
-    background-color: $color;
-    box-shadow: 0 0 0 0 rgba($color, 0.6);
+    background-color: $animationColor;
+    box-shadow: 0 0 0 0 rgba($animationColor, 0.6);
   }
   to {
     background-color: $badgeBg;

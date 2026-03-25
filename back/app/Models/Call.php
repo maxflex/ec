@@ -54,15 +54,18 @@ class Call extends Model
 
     /**
      * Количество звонков для счетчика в админ-меню.
-     * Считаем только необработанные пропущенные после 19:00 вчерашнего дня.
+     * Считаем только необработанные пропущенные в окне:
+     * [19:00 вчера, 19:00 сегодня).
      */
     public static function getMenuCount(): int
     {
         $from = Carbon::yesterday()->setTime(19, 0);
+        $to = Carbon::today()->setTime(19, 0);
 
         return self::query()
             ->missedNoCallback()
             ->where('created_at', '>=', $from)
+            ->where('created_at', '<', $to)
             ->count();
     }
 
