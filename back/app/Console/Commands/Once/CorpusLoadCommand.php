@@ -25,15 +25,29 @@ class CorpusLoadCommand extends Command
         Cabinet::cab423->value,
         Cabinet::cab424->value,
         Cabinet::cab427->value,
+        Cabinet::cab428->value,
+        Cabinet::cab430->value,
+        Cabinet::cab432->value,
+        Cabinet::cab433->value,
+        Cabinet::cab434->value,
         Cabinet::cab307->value,
         Cabinet::cab308->value,
         Cabinet::cab310->value,
         Cabinet::cab312->value,
         Cabinet::cab314->value,
         Cabinet::cab316->value,
+
+        // Новые
+        Cabinet::cab512a->value,
+        Cabinet::cab509->value,
+        Cabinet::cab520->value,
+        Cabinet::cab521->value,
+        Cabinet::cab519->value,
+        Cabinet::cab514->value,
     ];
 
     private const TIMES = [
+        '09:00',
         '09:30',
         '10:00',
         '10:30',
@@ -57,6 +71,7 @@ class CorpusLoadCommand extends Command
         '19:30',
         '20:00',
         '20:30',
+        '21:00',
     ];
 
     protected $signature = 'once:corpus-load {--dist}';
