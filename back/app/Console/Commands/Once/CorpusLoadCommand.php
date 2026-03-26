@@ -112,7 +112,10 @@ class CorpusLoadCommand extends Command
             $clientId = $contractVersionProgram->contractVersion->contract->client_id;
 
             $date = $lesson->date;
-            $cabinet = $lesson->cabinet;
+            // В модели кабинет может быть enum, а для ключа массива нужен скаляр.
+            $cabinet = $lesson->cabinet instanceof Cabinet
+                ? $lesson->cabinet->value
+                : (string) $lesson->cabinet;
             $lessonStart = $lesson->date_time->copy();
             $lessonEnd = $lesson->date_time->copy()->addMinutes($lesson->group->program->getDuration());
 
