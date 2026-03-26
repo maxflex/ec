@@ -102,7 +102,7 @@ class CorpusLoadCommand extends Command
             ])
             ->get();
 
-        $rangesByDate = [];
+        $rangesByDateAndCabinet = [];
 
         foreach ($clientLessons as $clientLesson) {
             $lesson = $clientLesson->lesson;
@@ -112,26 +112,30 @@ class CorpusLoadCommand extends Command
             $clientId = $contractVersionProgram->contractVersion->contract->client_id;
 
             $date = $lesson->date;
+            $cabinet = $lesson->cabinet;
             $lessonStart = $lesson->date_time->copy();
             $lessonEnd = $lesson->date_time->copy()->addMinutes($lesson->group->program->getDuration());
 
-            $rangesByDate[$date] ??= [];
-            $rangesByDate[$date][$clientId] ??= [
+            // Отдельно считаем интервалы по каждому кабинету:
+            // иначе студент попадал в общий счёт по дате без привязки к кабинету.
+            $rangesByDateAndCabinet[$date] ??= [];
+            $rangesByDateAndCabinet[$date][$cabinet] ??= [];
+            $rangesByDateAndCabinet[$date][$cabinet][$clientId] ??= [
                 'start' => $lessonStart,
                 'end' => $lessonEnd,
             ];
 
-            if ($lessonStart->lt($rangesByDate[$date][$clientId]['start'])) {
-                $rangesByDate[$date][$clientId]['start'] = $lessonStart;
+            if ($lessonStart->lt($rangesByDateAndCabinet[$date][$cabinet][$clientId]['start'])) {
+                $rangesByDateAndCabinet[$date][$cabinet][$clientId]['start'] = $lessonStart;
             }
 
-            if ($lessonEnd->gt($rangesByDate[$date][$clientId]['end'])) {
-                $rangesByDate[$date][$clientId]['end'] = $lessonEnd;
+            if ($lessonEnd->gt($rangesByDateAndCabinet[$date][$cabinet][$clientId]['end'])) {
+                $rangesByDateAndCabinet[$date][$cabinet][$clientId]['end'] = $lessonEnd;
             }
         }
 
         $result = [
-            ['datetime', 'students'],
+            ['datetime', ...self::CABINETS],
         ];
 
         foreach (date_range($startDate->toDateString(), $endDate->toDateString()) as $date) {
@@ -139,15 +143,21 @@ class CorpusLoadCommand extends Command
 
             foreach (self::TIMES as $time) {
                 $slot = Carbon::parse(sprintf('%s %s', $dateString, $time));
-                $count = 0;
+                $row = [sprintf('%s %s', $dateString, $time)];
 
-                foreach ($rangesByDate[$dateString] ?? [] as $range) {
-                    if ($range['start']->lte($slot) && $range['end']->gt($slot)) {
-                        $count++;
+                foreach (self::CABINETS as $cabinet) {
+                    $count = 0;
+
+                    foreach ($rangesByDateAndCabinet[$dateString][$cabinet] ?? [] as $range) {
+                        if ($range['start']->lte($slot) && $range['end']->gt($slot)) {
+                            $count++;
+                        }
                     }
+
+                    $row[] = $count;
                 }
 
-                $result[] = [sprintf('%s %s', $dateString, $time), $count];
+                $result[] = $row;
             }
         }
 
