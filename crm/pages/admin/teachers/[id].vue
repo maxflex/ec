@@ -107,7 +107,11 @@ nextTick(loadData)
     <TeacherViolationsTab v-else-if="selectedTab === 'violations'" :teacher-id="teacher.id" />
     <ClientReviewTab v-else-if="selectedTab === 'clientReviews'" :teacher-id="teacher.id" />
     <TeacherStatsTab v-else-if="selectedTab === 'stats'" :teacher="teacher" />
-    <Balance v-else-if="selectedTab === 'balance'" :teacher-id="teacher.id" :split="teacher.is_split_balance" />
+    <Balance
+      v-else-if="selectedTab === 'balance'"
+      :teacher-id="teacher.id"
+      :balance-type="teacher.balance_type"
+    />
     <HeadTeacherReportTab v-else-if="selectedTab === 'headTeacherReports'" :teacher-id="teacher.id" />
     <HeadTeacherClientsTab v-else-if="selectedTab === 'headTeacherClients'" :teacher-id="teacher.id" />
     <TeacherContractTab v-else-if="selectedTab === 'contracts'" :teacher-id="teacher.id" />

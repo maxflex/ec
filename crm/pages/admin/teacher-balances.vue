@@ -3,6 +3,7 @@ import { orderBy } from 'lodash-es'
 
 interface TeacherBalance {
   teacher: PersonResource
+  balance_type: TeacherBalanceType
   lessons_planned: number
   lessons_conducted: number
   reports: number
@@ -115,6 +116,13 @@ watch(filters.value, () => (sort.value = undefined))
             <RouterLink :to="{ name: 'teachers-id', params: { id: item.teacher.id } }">
               {{ formatName(item.teacher, 'initials') }}
             </RouterLink>
+            <div
+              v-if="item.balance_type !== 'normal'"
+              class="text-caption"
+              :class="item.balance_type === 'new' ? 'text-success' : 'text-gray'"
+            >
+              {{ TeacherBalanceTypeLabel[item.balance_type] }}
+            </div>
           </td>
           <td v-for="{ field } in tableFields" :key="field">
             {{ formatPrice(item[field] as number) }}

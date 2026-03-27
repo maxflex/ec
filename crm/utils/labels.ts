@@ -437,6 +437,12 @@ export const TeacherStatusLabel = {
   closed: 'закрыт',
 } as const
 
+export const TeacherBalanceTypeLabel = {
+  normal: 'обычный',
+  split: 'разделенный',
+  new: 'новый НКО',
+} as const
+
 export const UserStatusLabel: { [key: number]: string } = {
   1: 'действующий сотрудник',
   0: 'больше не работает',

@@ -14,8 +14,7 @@ export interface TeacherResource extends PersonWithPhotoResource {
   subjects: Subject[]
   is_published: boolean
   is_head_teacher: boolean
-  is_split_balance: boolean
-  is_new: boolean
+  balance_type: TeacherBalanceType
   desc?: string
   photo_desc?: string
   schedule: Teeth | null
@@ -41,7 +40,7 @@ export const modelDefaults: TeacherResource = {
   phones: [],
   subjects: [],
   is_published: false,
-  is_new: false,
+  balance_type: 'normal',
   is_head_teacher: false,
   status: 'active',
   entity_type: EntityTypeValue.teacher,

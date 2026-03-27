@@ -56,8 +56,13 @@ function onDeleted(tp: TeacherPaymentResource) {
       <div style="width: 150px">
         {{ formatDate(payment.date) }}
       </div>
-      <div>
+      <div style="width: 150px">
         <UiPaymentConfirm :item="payment" />
+      </div>
+      <div>
+        <span v-if="payment.is_new" class="text-success">
+          новый
+        </span>
       </div>
     </div>
     <TeacherPaymentDialog

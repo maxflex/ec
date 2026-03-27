@@ -75,7 +75,7 @@ class TeacherPaymentController extends Controller
         $paidLessons = $teacher->payments()->where('year', $request->year);
         $paidOther = $teacher->payments()->where('year', $request->year);
 
-        if ($teacher->is_split_balance) {
+        if ($teacher->isSplitBalance()) {
             $paidLessons->where('method', TeacherPaymentMethod::bill);
             $paidOther->where('method', '<>', TeacherPaymentMethod::bill);
         } else {
@@ -85,8 +85,8 @@ class TeacherPaymentController extends Controller
         $paidLessons = $paidLessons->sum('sum');
         $paidOther = $paidOther->sum('sum');
 
-        $totalLessons = $teacher->is_split_balance ? $lessonsConducted : 0;
-        $totalOther = $teacher->is_split_balance ? ($reports + $services) : ($lessonsConducted + $reports + $services);
+        $totalLessons = $teacher->isSplitBalance() ? $lessonsConducted : 0;
+        $totalOther = $teacher->isSplitBalance() ? ($reports + $services) : ($lessonsConducted + $reports + $services);
 
         return [
             'to_pay_lessons' => $totalLessons - $paidLessons,

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Contracts\HasSchedule;
 use App\Enums\LessonStatus;
+use App\Enums\TeacherBalanceType;
 use App\Enums\TeacherPaymentMethod;
 use App\Enums\TeacherStatus;
 use App\Observers\UserIdObserver;
@@ -23,15 +24,13 @@ class Teacher extends Person implements HasSchedule
 
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'status', 'subjects',
-        'so', 'desc', 'photo_desc', 'passport', 'is_published', 'is_split_balance',
-        'is_new',
+        'so', 'desc', 'photo_desc', 'passport', 'is_published', 'balance_type',
     ];
 
     protected $casts = [
         'status' => TeacherStatus::class,
-        'is_split_balance' => 'bool',
+        'balance_type' => TeacherBalanceType::class,
         'is_published' => 'bool',
-        'is_new' => 'bool',
         'passport' => 'array',
         'schedule' => 'array',
     ];
@@ -156,13 +155,15 @@ class Teacher extends Person implements HasSchedule
     public function getBalance(int $year, ?bool $split = null, ?bool $isNew = null): Balance
     {
         $balance = new Balance;
+        $isNewNkoBalance = $this->isNewNkoBalance();
 
         if ($split !== false) {
             $lessons = Lesson::query()
                 ->conducted()
                 ->whereHas('group', fn ($q) => $q->where('year', $year))
-                ->when($isNew === true && $this->is_new, fn ($q) => $q->where('date', '>=', '2026-01-01'))
-                ->when($isNew === false && $this->is_new, fn ($q) => $q->where('date', '<', '2026-01-01'))
+                // Для "нового НКО" делим начисления по дате перехода.
+                ->when($isNew === true && $isNewNkoBalance, fn ($q) => $q->where('date', '>=', '2026-01-01'))
+                ->when($isNew === false && $isNewNkoBalance, fn ($q) => $q->where('date', '<', '2026-01-01'))
                 ->where('teacher_id', $this->id)
                 ->get();
 
@@ -247,6 +248,16 @@ class Teacher extends Person implements HasSchedule
     public function reports(): HasMany
     {
         return $this->hasMany(Report::class);
+    }
+
+    public function isSplitBalance(): bool
+    {
+        return $this->balance_type?->isSplit() ?? false;
+    }
+
+    public function isNewNkoBalance(): bool
+    {
+        return $this->balance_type?->isNewNko() ?? false;
     }
 
     public function getCurrentLessonAttribute(): ?Lesson

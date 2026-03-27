@@ -13,6 +13,8 @@ use App\Models\TeacherService;
 
 class TeacherBalance
 {
+    private const NEW_NKO_TRANSITION_DATE = '2026-01-01';
+
     public static function getData($year): array
     {
         $queries = [
@@ -54,6 +56,7 @@ class TeacherBalance
         foreach (Teacher::withPayments($year)->get() as $teacher) {
             $resultItem = [
                 'teacher' => new PersonResource($teacher),
+                'balance_type' => $teacher->balance_type,
             ];
             foreach ($queries as $q) {
                 $query = $q->query->clone();
@@ -63,16 +66,20 @@ class TeacherBalance
                 }
 
                 if (@$q->name === 'paid_lessons') {
-                    if ($teacher->is_split_balance) {
+                    if ($teacher->isSplitBalance()) {
                         $query->where('method', TeacherPaymentMethod::bill);
+                    } elseif ($teacher->isNewNkoBalance()) {
+                        $query->where('is_new', true);
                     } else {
                         $query->where('id', -1);
                     }
                 }
 
                 if (@$q->name === 'paid_other') {
-                    if ($teacher->is_split_balance) {
+                    if ($teacher->isSplitBalance()) {
                         $query->where('method', '<>', TeacherPaymentMethod::bill);
+                    } elseif ($teacher->isNewNkoBalance()) {
+                        $query->where('is_new', false);
                     }
                 }
 
@@ -85,8 +92,25 @@ class TeacherBalance
             }
 
             $total = $resultItem['lessons_conducted'] + $resultItem['reports'] + $resultItem['teacher_services'];
-            $totalLessons = $teacher->is_split_balance ? $resultItem['lessons_conducted'] : 0;
-            $totalOther = $teacher->is_split_balance ? $resultItem['reports'] + $resultItem['teacher_services'] : $total;
+            $totalLessons = $teacher->isSplitBalance() ? $resultItem['lessons_conducted'] : 0;
+            $totalOther = $teacher->isSplitBalance() ? $resultItem['reports'] + $resultItem['teacher_services'] : $total;
+
+            if ($teacher->isNewNkoBalance()) {
+                // Для "нового НКО" колонка "офф" = новое (после даты перехода),
+                // а "неофф" = старое + остальные начисления.
+                $lessonsNew = Lesson::query()
+                    ->where('status', LessonStatus::conducted)
+                    ->join('groups as g', 'g.id', '=', 'lessons.group_id')
+                    ->where('g.year', $year)
+                    ->where('teacher_id', $teacher->id)
+                    ->where('date', '>=', self::NEW_NKO_TRANSITION_DATE)
+                    ->sum('price');
+
+                $totalLessons = intval($lessonsNew);
+                $totalOther = intval($resultItem['lessons_conducted'] - $lessonsNew)
+                    + $resultItem['reports']
+                    + $resultItem['teacher_services'];
+            }
 
             $resultItem = [
                 ...$resultItem,

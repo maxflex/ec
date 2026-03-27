@@ -1,8 +1,8 @@
 <script setup lang="ts">
-const { contractId, teacherId, split, showTotals } = defineProps<{
+const { contractId, teacherId, showTotals } = defineProps<{
   contractId?: number
   teacherId?: number
-  split?: boolean
+  balanceType?: TeacherBalanceType
   showTotals?: boolean
 }>()
 
@@ -66,13 +66,14 @@ const totals = computed(() => {
     <template v-if="teacherId" #filters>
       <AvailableYearsSelector v-model="filters.year" :items="availableYears" />
       <UiClearableSelect
-        v-if="split"
+        v-if="balanceType === 'split'"
         v-model="filters.split"
         density="comfortable"
         label="Разделение баланса"
         :items="yesNo('по занятиям', 'по остальным начислениям')"
       />
       <UiClearableSelect
+        v-if="balanceType === 'new'"
         v-model="filters.is_new"
         density="comfortable"
         label="Старое/новое"

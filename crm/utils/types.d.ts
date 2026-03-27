@@ -43,6 +43,8 @@ declare global {
 
   type TeacherStatus = keyof typeof TeacherStatusLabel
 
+  type TeacherBalanceType = keyof typeof TeacherBalanceTypeLabel
+
   type RequestStatus = keyof typeof RequestStatusLabel
 
   type Program = keyof typeof ProgramLabel

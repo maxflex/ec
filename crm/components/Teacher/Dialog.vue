@@ -200,17 +200,16 @@ defineExpose({ create, edit })
           rows="9"
         />
         <div>
+          <v-select
+            v-model="teacher.balance_type"
+            label="Баланс"
+            :items="selectItems(TeacherBalanceTypeLabel)"
+          />
+        </div>
+        <div>
           <v-checkbox
             v-model="teacher.is_published"
             label="Опубликован"
-          />
-          <v-checkbox
-            v-model="teacher.is_split_balance"
-            label="Разделять баланс"
-          />
-          <v-checkbox
-            v-model="teacher.is_new"
-            label="Новый"
           />
         </div>
       </div>
