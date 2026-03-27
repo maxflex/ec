@@ -21,8 +21,6 @@ class Call extends Model
 {
     const DISABLE_LOGS = true;
 
-    public $incrementing = false;
-
     public $timestamps = false;
 
     protected $guarded = [];
@@ -75,8 +73,19 @@ class Call extends Model
      */
     public static function aon(string $number): ?CallAppAonResource
     {
+        $phone = self::aonPhone($number);
+
+        return $phone ? new CallAppAonResource($phone) : null;
+    }
+
+    /**
+     * Исходные данные для АОН по номеру.
+     * Используем единый алгоритм и в UI, и в логике suggest-комментариев.
+     */
+    public static function aonPhone(string $number): ?Phone
+    {
         // Кто звонит?
-        $phone = Phone::where('number', $number)
+        return Phone::where('number', $number)
             ->where('entity_type', '<>', User::class)
             ->orderByRaw('
                 CASE
@@ -93,8 +102,6 @@ class Call extends Model
             ])
             ->latest('id')
             ->first();
-
-        return $phone ? new CallAppAonResource($phone) : null;
     }
 
     /**

@@ -189,11 +189,13 @@ class Mango
         }
 
         if (is_localhost()) {
-            Call::whereId($entryId)->delete();
+            // На localhost можем повторно прогонять одинаковый entry_id из тестового UI.
+            // Чистим старую запись по Mango entry_id, а не по внутреннему PK.
+            Call::query()->where('entry_id', $entryId)->delete();
         }
 
         Call::create([
-            'id' => $entryId,
+            'entry_id' => $entryId,
             'user_id' => $userId,
             'type' => $type->name,
             'number' => $number,
@@ -219,7 +221,7 @@ class Mango
         // событие готовности записи также принудительно завершает realtime-проекцию.
         self::disconnectRealtimeState($entryId);
 
-        Call::findOrFail($entryId)->update([
+        Call::query()->where('entry_id', $entryId)->firstOrFail()->update([
             'recording' => $data->recording_id,
         ]);
     }

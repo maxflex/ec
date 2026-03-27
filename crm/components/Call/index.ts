@@ -1,11 +1,12 @@
 export type CallState = 'Appeared' | 'Connected' | 'Disconnected'
 
 export type CallType = 'incoming' | 'outgoing'
-export type CallerType = 'newClient' | 'oldClient' | 'teacher' | 'other'
+export type CallerType = 'newClient' | 'newClientRecruit' | 'oldClient' | 'teacher' | 'other'
 
 export const CallerTypeLabel: Record<CallerType, string> = {
-  newClient: 'клиент новый',
-  oldClient: 'клиент старый',
+  newClient: 'новый клиент',
+  newClientRecruit: 'новый клиент (вербовка)',
+  oldClient: 'старый клиент',
   teacher: 'преподаватель',
   other: 'другое',
 }
@@ -16,7 +17,8 @@ export interface CallAonResource extends PhoneResource {
 }
 
 export interface CallLastInteractionResource {
-  id: string
+  id: number
+  entry_id: string
   user: PersonResource | null
   type: CallType
   is_missed: boolean
@@ -27,7 +29,8 @@ export interface CallLastInteractionResource {
 }
 
 export interface CallListResource {
-  id: string
+  id: number
+  entry_id: string
   user: PersonResource | null
   type: CallType
   caller_type: CallerType | null

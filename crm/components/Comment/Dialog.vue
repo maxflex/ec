@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CommentTab } from '.'
+import type { CallListResource } from '~/components/Call'
 import { mdiSendVariant } from '@mdi/js'
 import { format } from 'date-fns'
 
@@ -22,6 +23,10 @@ const text = ref('')
 const noScroll = ref(false)
 const isLoaded = ref(false)
 const editId = ref<number>()
+// Храним только id звонка-кандидата для auto-suggest.
+const autoSuggestCallId = ref<number | null>(null)
+const isAutoSuggestLoading = ref(false)
+const isSendingAutoSuggest = ref(false)
 const { user, isAdmin } = useAuthStore()
 // у клиента всегда показываем вкладки
 const tabs = entityType === EntityTypeValue.client
@@ -39,14 +44,28 @@ function scrollBottom() {
   })
 }
 
-async function open() {
+function finalizeLoadedView() {
+  noScroll.value = true
+  scrollBottom()
+  setTimeout(() => {
+    noScroll.value = false
+    isLoaded.value = true
+  }, 200)
+}
+
+async function open(autoSuggestEnabled = false) {
   dialog.value = true
   editId.value = undefined
+  autoSuggestCallId.value = null
+  isLoaded.value = false
 
   if (tabs && !isTabCountsLoaded.value) {
-    watch(selectedTab, (newVal) => {
+    watch(selectedTab, async (newVal) => {
       extra = newVal || ''
-      loadData()
+      autoSuggestCallId.value = null
+      isLoaded.value = false
+      await loadData()
+      finalizeLoadedView()
     })
 
     await loadTabCounts()
@@ -54,6 +73,80 @@ async function open() {
   }
 
   await loadData()
+  if (autoSuggestEnabled) {
+    await loadAutoSuggest()
+  }
+  finalizeLoadedView()
+}
+
+function handleCommentError(errorData: any, fallbackMessage: string) {
+  const messageFromField = errorData?.errors?.text?.[0]
+  const message = messageFromField
+    || errorData?.message
+    || fallbackMessage
+
+  useGlobalMessage(message, 'error')
+}
+
+function handleAutoSuggestError(errorData: any) {
+  const message = errorData?.errors?.call_id?.[0]
+    || errorData?.errors?.summary?.[0]
+    || errorData?.errors?.text?.[0]
+    || errorData?.message
+    || 'Не удалось подтянуть подсказку'
+
+  useGlobalMessage(message, 'error')
+}
+
+async function createComment(payload: {
+  text: string
+}) {
+  // Единая отправка комментария: и обычного, и принятого из auto-suggest.
+  const { data, error } = await useHttp<CommentResource>(
+    `comments`,
+    {
+      method: 'post',
+      body: {
+        extra,
+        text: payload.text,
+        entity_id: entityId,
+        entity_type: entityType,
+      },
+    },
+  )
+
+  if (error.value) {
+    handleCommentError(error.value.data, 'Не удалось отправить комментарий')
+    return false
+  }
+
+  if (!data.value) {
+    return false
+  }
+
+  noScroll.value = true
+  comments.value.push(data.value)
+  // После отправки любого комментария сбрасываем локальный флаг auto-suggest.
+  autoSuggestCallId.value = null
+  text.value = ''
+
+  if (tabs && tabCounts.value) {
+    if (selectedTab.value in tabCounts.value) {
+      tabCounts.value[selectedTab.value]++
+    }
+    else {
+      tabCounts.value = {
+        ...tabCounts.value,
+        [selectedTab.value]: 1,
+      }
+    }
+  }
+
+  scrollBottom()
+  emit('created')
+  setTimeout(() => noScroll.value = false, 200)
+
+  return true
 }
 
 async function send() {
@@ -64,41 +157,10 @@ async function send() {
   if (!text.value.length) {
     return
   }
-  const { data } = await useHttp<CommentResource>(
-    `comments`,
-    {
-      method: 'post',
-      body: {
-        extra,
-        text: text.value,
-        entity_id: entityId,
-        entity_type: entityType,
-      },
-    },
-  )
-  if (data.value) {
-    noScroll.value = true
-    comments.value.push(data.value)
-    text.value = ''
-    if (tabs && tabCounts.value) {
-      if (selectedTab.value in tabCounts.value) {
-        tabCounts.value[selectedTab.value]++
-      }
-      else {
-        tabCounts.value = {
-          ...tabCounts.value,
-          [selectedTab.value]: 1,
-        }
-      }
-    }
-    scrollBottom()
-    emit('created')
-    setTimeout(() => noScroll.value = false, 200)
-  }
+  await createComment({ text: text.value })
 }
 
 async function loadData() {
-  isLoaded.value = false
   const { data } = await useHttp<ApiResponse<CommentResource>>(
     `comments`,
     {
@@ -109,15 +171,7 @@ async function loadData() {
       },
     },
   )
-  if (data.value) {
-    noScroll.value = true
-    comments.value = data.value.data
-    scrollBottom()
-    setTimeout(() => {
-      noScroll.value = false
-      isLoaded.value = true
-    }, 200)
-  }
+  comments.value = data.value?.data ?? []
 }
 
 async function loadTabCounts() {
@@ -134,6 +188,65 @@ async function loadTabCounts() {
 
   tabCounts.value = data.value!
   console.log('tabCounts loaded', data.value!)
+}
+
+async function loadAutoSuggest() {
+  // Подгружаем последний звонок-кандидат для кнопки "подтянуть подсказку".
+  isAutoSuggestLoading.value = true
+  const { data, error } = await useHttp<CallListResource | null>(
+    'comments/auto-suggest',
+    {
+      params: {
+        entity_id: entityId,
+        entity_type: entityType,
+      },
+    },
+  )
+
+  if (error.value) {
+    autoSuggestCallId.value = null
+    isAutoSuggestLoading.value = false
+    return
+  }
+
+  autoSuggestCallId.value = data.value?.id ?? null
+  isAutoSuggestLoading.value = false
+}
+
+async function pullAutoSuggestText() {
+  if (!autoSuggestCallId.value || isSendingAutoSuggest.value) {
+    return
+  }
+
+  isSendingAutoSuggest.value = true
+  const { data, error } = await useHttp<{ text: string }>(
+    'comments/auto-suggest/text',
+    {
+      method: 'post',
+      body: {
+        entity_id: entityId,
+        entity_type: entityType,
+        call_id: autoSuggestCallId.value,
+      },
+    },
+  )
+
+  if (error.value) {
+    handleAutoSuggestError(error.value.data)
+    isSendingAutoSuggest.value = false
+    return
+  }
+
+  const suggestText = (data.value?.text || '').trim()
+  if (!suggestText.length) {
+    useGlobalMessage('Текст подсказки пустой', 'error')
+    isSendingAutoSuggest.value = false
+    return
+  }
+
+  text.value = suggestText
+  nextTick(() => input.value?.focus())
+  isSendingAutoSuggest.value = false
 }
 
 function destroy(c: CommentResource) {
@@ -280,13 +393,14 @@ defineExpose({ open })
         />
         <transition name="comment-btn">
           <v-btn
-            v-if="text.length > 0"
+            v-if="!editId && (text.length > 0 || (autoSuggestCallId && !isAutoSuggestLoading))"
             :icon="mdiSendVariant"
             height="48"
             width="48"
             variant="text"
-            color="secondary"
-            @click="send()"
+            :color="text.length > 0 ? 'secondary' : 'warning'"
+            :loading="text.length === 0 && isSendingAutoSuggest"
+            @click="text.length > 0 ? send() : pullAutoSuggestText()"
           />
         </transition>
       </div>

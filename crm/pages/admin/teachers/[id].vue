@@ -81,6 +81,7 @@ nextTick(loadData)
           <CommentBtn
             :entity-id="teacher.id"
             :entity-type="EntityTypeValue.teacher"
+            auto-suggest
           />
           <v-btn
             icon="$edit"

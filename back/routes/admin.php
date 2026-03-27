@@ -187,6 +187,8 @@ Route::get('exams', ExamController::class);
 Route::apiResource('phones', PhoneController::class)->only('index');
 
 Route::post('teacher-contracts/load-data', [TeacherContractController::class, 'loadData']);
+Route::get('comments/auto-suggest', [CommentController::class, 'autoSuggest']);
+Route::post('comments/auto-suggest/text', [CommentController::class, 'autoSuggestText']);
 
 Route::controller(TeacherActController::class)->prefix('teacher-acts')->group(function () {
     Route::post('load-mass-data', 'loadMassData');

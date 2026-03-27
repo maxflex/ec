@@ -15,9 +15,9 @@ class CommentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return extract_fields($this, [
-            'text', 'created_at'
+            'text', 'created_at',
         ], [
-            'user' => new PersonWithPhotoResource($this->user)
+            'user' => new PersonWithPhotoResource($this->user),
         ]);
     }
 }

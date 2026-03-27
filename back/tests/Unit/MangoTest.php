@@ -191,7 +191,7 @@ class MangoTest
 
     public function summary()
     {
-        Call::query()->where('id', 'MjE0NTM3MDU1Mzg=')->delete();
+        Call::query()->where('entry_id', 'MjE0NTM3MDU1Mzg=')->delete();
         $payload = [
             'entry_id' => 'MjE0NTM3MDU1Mzg=',
             'call_direction' => 1,

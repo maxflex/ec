@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\Cabinet;
+use App\Enums\CallerType;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -17,26 +17,28 @@ class UpdateEnumsCommand extends Command
 
     public function handle(): void
     {
-        /** @var object{enums: UnitEnum[], table: string, field: string, after: ?string, index: bool} $settings */
+        /** @var object{enums: UnitEnum[], table: string, field: string, after: ?string, index: bool, nullable: bool} $settings */
         $settings = (object) [
             // enums
-            'enums' => Cabinet::cases(),
+            'enums' => CallerType::cases(),
 
             // таблица с enum-полем
-            'table' => 'lessons',
+            'table' => 'calls',
 
             // название enum-поля в таблице
-            'field' => 'cabinet',
+            'field' => 'caller_type',
 
             // место enum-поля в таблице
-            'after' => 'status',
+            'after' => 'instruction',
 
             // сделать поле index?
-            'index' => true,
+            'index' => false,
+
+            'nullable' => true,
         ];
 
-        Schema::table($settings->table, function (Blueprint $table) {
-            $table->string('new_enum');
+        Schema::table($settings->table, function (Blueprint $table) use ($settings) {
+            $table->string('new_enum')->nullable($settings->nullable);
         });
 
         DB::table($settings->table)->update([
@@ -60,7 +62,9 @@ class UpdateEnumsCommand extends Command
         Schema::table($settings->table, function (Blueprint $table) use ($settings) {
             $table->dropColumn($settings->field);
 
-            $upd = $table->enum($settings->field, array_column($settings->enums, 'value'));
+            $upd = $table
+                ->enum($settings->field, array_column($settings->enums, 'value'))
+                ->nullable($settings->nullable);
 
             if ($settings->after) {
                 $upd->after($settings->after);
