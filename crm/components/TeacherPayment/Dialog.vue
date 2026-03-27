@@ -178,6 +178,10 @@ defineExpose({ create, edit })
             v-model="item.is_confirmed"
             label="Подтверждён"
           />
+          <v-checkbox
+            v-model="item.is_new"
+            label="Новый"
+          />
         </div>
       </div>
     </div>

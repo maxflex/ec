@@ -208,6 +208,10 @@ defineExpose({ create, edit })
             v-model="teacher.is_split_balance"
             label="Разделять баланс"
           />
+          <v-checkbox
+            v-model="teacher.is_new"
+            label="Новый"
+          />
         </div>
       </div>
     </div>

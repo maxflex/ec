@@ -24,12 +24,14 @@ class Teacher extends Person implements HasSchedule
     protected $fillable = [
         'first_name', 'last_name', 'middle_name', 'status', 'subjects',
         'so', 'desc', 'photo_desc', 'passport', 'is_published', 'is_split_balance',
+        'is_new',
     ];
 
     protected $casts = [
         'status' => TeacherStatus::class,
         'is_split_balance' => 'bool',
         'is_published' => 'bool',
+        'is_new' => 'bool',
         'passport' => 'array',
         'schedule' => 'array',
     ];
@@ -151,7 +153,7 @@ class Teacher extends Person implements HasSchedule
         return $this->hasMany(Lesson::class);
     }
 
-    public function getBalance(int $year, ?bool $split = null): Balance
+    public function getBalance(int $year, ?bool $split = null, ?bool $isNew = null): Balance
     {
         $balance = new Balance;
 
@@ -159,6 +161,8 @@ class Teacher extends Person implements HasSchedule
             $lessons = Lesson::query()
                 ->conducted()
                 ->whereHas('group', fn ($q) => $q->where('year', $year))
+                ->when($isNew === true && $this->is_new, fn ($q) => $q->where('date', '>=', '2026-01-01'))
+                ->when($isNew === false && $this->is_new, fn ($q) => $q->where('date', '<', '2026-01-01'))
                 ->where('teacher_id', $this->id)
                 ->get();
 
@@ -177,7 +181,9 @@ class Teacher extends Person implements HasSchedule
             }
         }
 
-        $query = $this->payments()->where('year', $year);
+        $query = $this->payments()
+            ->when($isNew !== null, fn ($q) => $q->where('is_new', $isNew))
+            ->where('year', $year);
 
         if ($split === true) {
             $query->where('method', TeacherPaymentMethod::bill);
@@ -198,7 +204,7 @@ class Teacher extends Person implements HasSchedule
             );
         }
 
-        if ($split !== true) {
+        if ($split !== true && $isNew !== true) {
             $services = $this->services()->where('year', $year)->get();
             foreach ($services as $service) {
                 $balance->push(

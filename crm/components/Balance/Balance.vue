@@ -9,6 +9,7 @@ const { contractId, teacherId, split, showTotals } = defineProps<{
 interface Filters {
   year?: Year
   split?: number
+  is_new?: number
 }
 
 const filters = ref<Filters>({
@@ -70,6 +71,12 @@ const totals = computed(() => {
         density="comfortable"
         label="Разделение баланса"
         :items="yesNo('по занятиям', 'по остальным начислениям')"
+      />
+      <UiClearableSelect
+        v-model="filters.is_new"
+        density="comfortable"
+        label="Старое/новое"
+        :items="yesNo('новое', 'старое')"
       />
     </template>
     <template #buttons>

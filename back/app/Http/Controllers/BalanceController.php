@@ -16,6 +16,7 @@ class BalanceController extends Controller
             'teacher_id' => ['sometimes', 'required', 'numeric', 'exists:teachers,id'],
             'year' => ['sometimes', 'required', 'numeric', 'min:2015'],
             'split' => ['sometimes', 'bool'],
+            'is_new' => ['sometimes', 'bool'],
         ]);
 
         if ($request->has('contract_id')) {
@@ -28,7 +29,8 @@ class BalanceController extends Controller
             }
             $balance = $teacher->getBalance(
                 $request->year,
-                $request->has('split') ? (bool) $request->split : null
+                $request->has('split') ? (bool) $request->split : null,
+                $request->has('is_new') ? (bool) $request->is_new : null
             );
         }
 

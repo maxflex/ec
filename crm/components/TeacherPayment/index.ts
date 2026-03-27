@@ -5,6 +5,7 @@ export interface TeacherPaymentResource {
   year: Year
   method: TeacherPaymentMethod
   is_confirmed: boolean
+  is_new: boolean
   card_number: string | null
   teacher_id?: number
   user?: PersonResource
@@ -20,6 +21,7 @@ export const modelDefaults: TeacherPaymentResource = {
   card_number: null,
   sum: 0,
   is_confirmed: false,
+  is_new: false,
 }
 
 export const apiUrl = 'teacher-payments'

@@ -14,11 +14,13 @@ class TeacherPayment extends Model
     protected $fillable = [
         'card_number', 'date', 'method', 'sum',
         'teacher_id', 'year', 'is_confirmed',
+        'is_new',
     ];
 
     protected $casts = [
         'method' => TeacherPaymentMethod::class,
         'is_confirmed' => 'bool',
+        'is_new' => 'bool',
     ];
 
     public function teacher(): BelongsTo
