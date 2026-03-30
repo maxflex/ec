@@ -32,10 +32,6 @@ class CallCommentSuggest
             return null;
         }
 
-        if (self::hasAnyCommentAfterCall($userId, $entityType, $entityId, $latestCall->created_at)) {
-            return null;
-        }
-
         return $latestCall;
     }
 
@@ -49,23 +45,6 @@ class CallCommentSuggest
             ->where('user_id', $userId)
             ->latest('id')
             ->first();
-    }
-
-    /**
-     * Проверка: после звонка уже есть комментарий по этой сущности от этого пользователя.
-     */
-    public static function hasAnyCommentAfterCall(
-        int $userId,
-        string $entityType,
-        int $entityId,
-        string $callCreatedAt
-    ): bool {
-        return Comment::query()
-            ->where('user_id', $userId)
-            ->where('entity_type', $entityType)
-            ->where('entity_id', $entityId)
-            ->where('created_at', '>=', $callCreatedAt)
-            ->exists();
     }
 
     /**
@@ -137,4 +116,20 @@ class CallCommentSuggest
             ->exists();
     }
 
+    /**
+     * Проверка: после звонка уже есть комментарий по этой сущности от этого пользователя.
+     */
+    public static function hasAnyCommentAfterCall(
+        int $userId,
+        string $entityType,
+        int $entityId,
+        string $callCreatedAt
+    ): bool {
+        return Comment::query()
+            ->where('user_id', $userId)
+            ->where('entity_type', $entityType)
+            ->where('entity_id', $entityId)
+            ->where('created_at', '>=', $callCreatedAt)
+            ->exists();
+    }
 }
