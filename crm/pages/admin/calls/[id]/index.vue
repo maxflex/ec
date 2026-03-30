@@ -11,9 +11,7 @@ interface CallInstructionFields {
 }
 
 interface CallResource extends CallListResource {
-  analysis_1: string | null
-  analysis_2: string | null
-  analysis_3: string | null
+  analysis: string | null
   instruction: CallInstructionFields | null
 }
 
@@ -24,9 +22,7 @@ interface CallTranscribeFields {
 
 interface CallAnalyzeFields {
   summary: string
-  analysis_1: string
-  analysis_2: string
-  analysis_3: string
+  analysis: string
   caller_type: CallerType
   instruction: CallInstructionFields
 }
@@ -42,9 +38,7 @@ const item = ref<CallResource>()
 const { tabs, selectedTab, tabCounts } = useTabs({
   transcript: 'транскрипт',
   summary: 'краткое содержание',
-  analysis1: 'анализ 1',
-  analysis2: 'анализ 2',
-  analysis3: 'анализ 3',
+  analysis: 'анализ',
 })
 
 const selectedInstructionRaw = computed<string>(() => {
@@ -121,9 +115,7 @@ async function analyze() {
   }
   else if (data.value) {
     item.value!.summary = data.value.summary
-    item.value!.analysis_1 = data.value.analysis_1
-    item.value!.analysis_2 = data.value.analysis_2
-    item.value!.analysis_3 = data.value.analysis_3
+    item.value!.analysis = data.value.analysis
     item.value!.caller_type = data.value.caller_type
     item.value!.instruction = data.value.instruction
     selectedTab.value = 'summary'
@@ -301,16 +293,8 @@ nextTick(loadData)
       <div v-if="item.summary" class="text-pre-wrap container" v-html="item.summary" />
       <UiNoData v-else />
     </div>
-    <div v-else-if="selectedTab === 'analysis1'">
-      <div v-if="item.analysis_1" class="text-pre-wrap container" v-html="item.analysis_1" />
-      <UiNoData v-else />
-    </div>
-    <div v-else-if="selectedTab === 'analysis2'">
-      <div v-if="item.analysis_2" class="text-pre-wrap container" v-html="item.analysis_2" />
-      <UiNoData v-else />
-    </div>
-    <div v-else-if="selectedTab === 'analysis3'">
-      <div v-if="item.analysis_3" class="text-pre-wrap container" v-html="item.analysis_3" />
+    <div v-else-if="selectedTab === 'analysis'">
+      <div v-if="item.analysis" class="text-pre-wrap container" v-html="item.analysis" />
       <UiNoData v-else />
     </div>
   </template>

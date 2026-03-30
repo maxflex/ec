@@ -28,13 +28,11 @@ class CallAnalysisService extends GeminiService
     }
 
     /**
-     * Шаг 2: transcript -> summary + analysis_1..3 + caller_type.
+     * Шаг 2: transcript -> summary + analysis + caller_type.
      *
      * @return array{
      *     summary: string,
-     *     analysis_1: string,
-     *     analysis_2: string,
-     *     analysis_3: string,
+     *     analysis: string,
      *     caller_type: string,
      *     instruction: array{
      *         transcription: string|null,
@@ -52,7 +50,7 @@ class CallAnalysisService extends GeminiService
 
         [$systemInstructionText, $userPromptText] = self::renderCallAnalysisPrompt($call);
 
-        // На втором шаге запрашиваем только аналитические блоки.
+        // На втором шаге запрашиваем сводку, анализ и тип собеседника.
         $schema = new Schema(
             type: DataType::OBJECT,
             properties: [
@@ -60,24 +58,16 @@ class CallAnalysisService extends GeminiService
                     type: DataType::STRING,
                     description: 'КРАТКОЕ СОДЕРЖАНИЕ РАЗГОВОРА'
                 ),
-                'analysis_1' => new Schema(
+                'analysis' => new Schema(
                     type: DataType::STRING,
-                    description: 'АНАЛИЗ ЗВОНКА №1'
-                ),
-                'analysis_2' => new Schema(
-                    type: DataType::STRING,
-                    description: 'АНАЛИЗ ЗВОНКА №2'
-                ),
-                'analysis_3' => new Schema(
-                    type: DataType::STRING,
-                    description: 'АНАЛИЗ ЗВОНКА №3'
+                    description: 'АНАЛИЗ ЗВОНКА'
                 ),
                 'caller_type' => new Schema(
                     type: DataType::STRING,
-                    description: 'ТИП РАЗГОВОРА: newClient | oldClient | teacher | other'
+                    description: 'ТИП РАЗГОВОРА'
                 ),
             ],
-            required: ['summary', 'analysis_1', 'analysis_2', 'analysis_3', 'caller_type']
+            required: ['summary', 'analysis', 'caller_type']
         );
 
         $response = self::buildModel($systemInstructionText)
@@ -93,7 +83,7 @@ class CallAnalysisService extends GeminiService
 
         $result = $response->json(true);
 
-        foreach (['summary', 'analysis_1', 'analysis_2', 'analysis_3', 'caller_type'] as $field) {
+        foreach (['summary', 'analysis', 'caller_type'] as $field) {
             if (! isset($result[$field]) || ! is_string($result[$field]) || trim($result[$field]) === '') {
                 throw new RuntimeException("Gemini вернул пустое поле '{$field}' для звонка {$call->id}");
             }
@@ -109,9 +99,7 @@ class CallAnalysisService extends GeminiService
 
         return [
             'summary' => trim($result['summary']),
-            'analysis_1' => trim($result['analysis_1']),
-            'analysis_2' => trim($result['analysis_2']),
-            'analysis_3' => trim($result['analysis_3']),
+            'analysis' => trim($result['analysis']),
             'caller_type' => $callerType->value,
             // Фиксируем фактические instruction/prompt после Blade-рендера (как в отчетах).
             'instruction' => self::buildMergedInstruction(

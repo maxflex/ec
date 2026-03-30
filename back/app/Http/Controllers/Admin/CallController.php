@@ -49,7 +49,7 @@ class CallController extends Controller
     }
 
     /**
-     * Шаг 2: отдельный запуск аналитики (transcript -> summary/analysis_1..3).
+     * Шаг 2: отдельный запуск аналитики (transcript -> summary/analysis).
      */
     public function analyze(Call $call): array
     {
