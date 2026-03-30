@@ -15,6 +15,19 @@ use ValueError;
 class CallAnalysisService extends GeminiService
 {
     /**
+     * Минимальная длительность разговора для запуска AI-анализа.
+     */
+    public const int MIN_DURATION_SECONDS = 10;
+
+    /**
+     * Можно ли запускать AI-анализ для звонка.
+     */
+    public static function shouldAnalyze(Call $call): bool
+    {
+        return $call->duration > self::MIN_DURATION_SECONDS;
+    }
+
+    /**
      * Шаг 2: transcript -> summary + analysis_1..3 + caller_type.
      *
      * @return array{
