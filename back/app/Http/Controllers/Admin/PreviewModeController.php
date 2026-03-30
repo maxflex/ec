@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\Phone;
 use App\Models\Representative;
 use App\Models\Teacher;
+use App\Models\User;
 use App\Utils\Session;
 use Illuminate\Http\Request;
 
@@ -21,11 +22,12 @@ class PreviewModeController extends Controller
 
         $phone = Phone::findOrFail($request->phone_id);
 
-        // входить в режим просмотра можно только для преподов, клиентов и представителей
+        // В режиме просмотра разрешаем вход для всех типов личных кабинетов, включая админов.
         abort_unless(in_array($phone->entity_type, [
             Client::class,
             Representative::class,
             Teacher::class,
+            User::class,
         ]), 422);
 
         $token = Session::logIn($phone);

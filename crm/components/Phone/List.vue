@@ -21,6 +21,7 @@ const previewModeAvailableEntityTypes: EntityType[] = [
   EntityTypeValue.client,
   EntityTypeValue.representative,
   EntityTypeValue.teacher,
+  EntityTypeValue.user,
 ]
 
 function call(item: PhoneResource): void {
