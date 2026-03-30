@@ -2,7 +2,7 @@
 import type { CallerType } from '~/components/Call'
 import { CallerTypeLabel } from '~/components/Call'
 
-export type CallStatusFilter = 'incoming' | 'outgoing' | 'missed' | 'missed_callback'
+export type CallStatusFilter = 'incoming' | 'outgoing' | 'missed' | 'missed_callback' | 'missed_all'
 
 export interface CallFilters {
   number?: string
@@ -17,8 +17,9 @@ const numberInput = ref(model.value.number || '')
 const callStatusLabel: Record<CallStatusFilter, string> = {
   incoming: 'входящий',
   outgoing: 'исходящий',
-  missed: 'пропущенный',
-  missed_callback: 'перезвонили',
+  missed: 'только пропущенные',
+  missed_callback: 'только перезвоны',
+  missed_all: 'пропущенные и перезвоны',
 }
 
 // Применяем номер по Enter, чтобы не дёргать API на каждую нажатую клавишу.

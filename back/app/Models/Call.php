@@ -137,14 +137,21 @@ class Call extends Model
 
     /**
      * Пропущенный, но после этого был контакт
-     * После пропущенного должен быть любой последующий отвеченный контакт
+     * После пропущенного должен быть:
+     * - любой последующий отвеченный контакт, или
+     * - любая последующая исходящая попытка перезвона.
      */
     public function getIsMissedCallbackAttribute(): bool
     {
         return $this->is_missed
             && $this->chain()
-                ->answered()
                 ->where('created_at', '>', $this->created_at)
+                ->where(function ($query) {
+                    $query
+                        ->whereNotNull('answered_at')
+                        // Перезвон считаем обработкой пропущенного даже без ответа клиента.
+                        ->orWhere('type', CallType::outgoing->value);
+                })
                 ->exists();
     }
 
@@ -219,7 +226,9 @@ class Call extends Model
     /**
      * Пропущенные без перезвона:
      * входящий звонок, по которому не было ответа,
-     * и в этой же цепочке не появилось последующего отвеченного контакта.
+     * и в этой же цепочке не появилось:
+     * - последующего отвеченного контакта;
+     * - последующей исходящей попытки перезвона.
      */
     public function scopeMissedNoCallback($query): void
     {
@@ -237,21 +246,27 @@ class Call extends Model
 
         $whereMethod = $withCallback ? 'whereExists' : 'whereNotExists';
 
-        $query->{$whereMethod}(fn ($subQuery) =>
-            // Ищем любой последующий отвеченный звонок по тому же номеру.
+        $query->{$whereMethod}(function ($subQuery) {
             $subQuery
                 ->selectRaw('1')
                 ->from('calls as callback_calls')
                 ->whereColumn('callback_calls.number', 'calls.number')
-                ->whereNotNull('callback_calls.answered_at')
                 ->whereColumn('callback_calls.created_at', '>', 'calls.created_at')
-        );
+                ->where(function ($callbackQuery) {
+                    $callbackQuery
+                        // Успешный контакт по номеру.
+                        ->whereNotNull('callback_calls.answered_at')
+                        // Или сам факт исходящего дозвона (даже без ответа).
+                        ->orWhere('callback_calls.type', CallType::outgoing->value);
+                });
+        });
     }
 
     /**
      * Пропущенные с перезвоном:
      * входящий звонок, по которому не было ответа,
-     * но позже в цепочке появился отвеченный контакт.
+     * но позже в цепочке появился отвеченный контакт
+     * или была исходящая попытка дозвона.
      */
     public function scopeMissedWithCallback($query): void
     {

@@ -77,7 +77,7 @@ class CallController extends Controller
 
     /**
      * UI-статусы:
-     * incoming / outgoing / missed / missed_callback.
+     * incoming / outgoing / missed / missed_callback / missed_all.
      */
     protected function filterCallStatus(Builder $query, string $status): void
     {
@@ -86,6 +86,10 @@ class CallController extends Controller
             'outgoing' => $query->where('type', CallType::outgoing->value),
             'missed' => $query->missedNoCallback(),
             'missed_callback' => $query->missedWithCallback(),
+            // Все пропущенные входящие независимо от того, перезванивали по ним или нет.
+            'missed_all' => $query
+                ->where('type', CallType::incoming->value)
+                ->whereNull('answered_at'),
             default => null,
         };
     }
