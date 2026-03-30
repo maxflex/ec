@@ -66,6 +66,7 @@ const printSpravkaDialog = ref<InstanceType<typeof PrintSpravkaDialog>>()
         :entity-id="item.id"
         :entity-type="EntityTypeValue.client"
         :count="item.comments_count"
+        auto-suggest
       />
       <v-btn
         icon="$print"

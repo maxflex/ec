@@ -8,6 +8,7 @@ const {
   count,
   color,
   extra: extraProp,
+  autoSuggest = false,
   variant = 'plain',
   size = 48,
 } = defineProps<{
@@ -21,6 +22,10 @@ const {
    * Берется текущая страница из useRoute и сохраняется в extra
    */
   extra?: boolean
+  /**
+   * Включает загрузку auto-suggest в диалоге комментариев.
+   */
+  autoSuggest?: boolean
 
   variant?: 'flat' | 'text' | 'elevated' | 'tonal' | 'outlined' | 'plain'
 }>()
@@ -55,7 +60,7 @@ async function loadData() {
 <template>
   <div
     class="badge"
-    @click.stop="commentDialog?.open()"
+    @click.stop="commentDialog?.open(autoSuggest)"
   >
     <v-btn
       v-bind="$attrs"

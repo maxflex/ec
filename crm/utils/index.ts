@@ -267,7 +267,7 @@ export function formatTextDate(date: string, year: boolean = false) {
 /**
  * Форматировать дату в строку относительно текущего времени
  */
-export function formatDateAgo(dateStr: string): string {
+export function formatDateAgo(dateStr: string, withSuffix = false): string {
   const now = new Date()
 
   const diffInMinutes = differenceInMinutes(now, dateStr)
@@ -277,31 +277,28 @@ export function formatDateAgo(dateStr: string): string {
   const diffInMonths = differenceInMonths(now, dateStr)
   const diffInYears = differenceInYears(now, dateStr)
 
-  if (diffInMinutes < 5) {
-    return 'недавно'
+  let result = 'недавно'
+
+  if (diffInMinutes >= 5 && diffInMinutes < 60) {
+    result = plural(diffInMinutes, ['минута', 'минуты', 'минут'])
+  }
+  else if (diffInHours < 24) {
+    result = plural(diffInHours, ['час', 'часа', 'часов'])
+  }
+  else if (diffInDays < 14) {
+    result = plural(diffInDays, ['день', 'дня', 'дней'])
+  }
+  else if (diffInMonths < 1) {
+    result = `${diffInWeeks} недели` // 2-4 недели
+  }
+  else if (diffInMonths < 12) {
+    result = plural(diffInMonths, ['месяц', 'месяца', 'месяцев'])
+  }
+  else {
+    result = plural(diffInYears, ['год', 'года', 'лет'])
   }
 
-  if (diffInMinutes < 60) {
-    return plural(diffInMinutes, ['минута', 'минуты', 'минут'])
-  }
-
-  if (diffInHours < 24) {
-    return plural(diffInHours, ['час', 'часа', 'часов'])
-  }
-
-  if (diffInDays < 14) {
-    return plural(diffInDays, ['день', 'дня', 'дней'])
-  }
-
-  if (diffInMonths < 1) {
-    return `${diffInWeeks} недели` // 2-4 недели
-  }
-
-  if (diffInMonths < 12) {
-    return plural(diffInMonths, ['месяц', 'месяца', 'месяцев'])
-  }
-
-  return plural(diffInYears, ['год', 'года', 'лет'])
+  return withSuffix && result !== 'недавно' ? `${result} назад` : result
 }
 
 export function formatPhone(number: unknown): string {

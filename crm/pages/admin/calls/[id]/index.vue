@@ -65,9 +65,8 @@ async function loadData() {
   item.value = data.value as CallResource
 }
 
-async function downloadRecording(e: MouseEvent) {
+async function downloadRecording() {
   downloading.value = true
-  e.stopPropagation()
   try {
     const audio = await getAudio('download')
     const link = document.createElement('a')
@@ -262,15 +261,16 @@ nextTick(loadData)
         </div>
       </div>
       <UiTabs v-model="selectedTab" :items="tabs" :counts="tabCounts">
-        <div :class="{ 'tabs-item--disabled': !item.has_recording }" class="tabs-item" @click="downloadRecording">
-          скачать аудиозапись
-        </div>
         <div class="page-calls-id__actions">
           <v-menu location="bottom">
             <template #activator="{ props }">
-              <v-btn :size="42" :icon="mdiAutoFix" v-bind="props" :loading="transcribing || analyzing" />
+              <v-btn :size="42" :icon="mdiAutoFix" v-bind="props" :loading="transcribing || analyzing || downloading" />
             </template>
             <v-list>
+              <v-list-item @click="downloadRecording()">
+                скачать аудиозапись
+              </v-list-item>
+              <v-divider />
               <v-list-item @click="transcribe()">
                 расшифровка аудиозаписи
               </v-list-item>

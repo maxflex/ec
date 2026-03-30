@@ -30,7 +30,7 @@ class ProcessCallRecordingJob implements ShouldQueue
     public array $backoff = [60];
 
     public function __construct(
-        private readonly string $callId,
+        private readonly int $callId,
     ) {}
 
     public function handle(): void

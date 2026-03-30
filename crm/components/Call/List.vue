@@ -8,7 +8,7 @@ const { items } = defineProps<{
 }>()
 
 const router = useRouter()
-const downloadingId = ref<string | null>(null)
+const downloadingId = ref<number | null>(null)
 
 const { user } = useAuthStore()
 
@@ -59,7 +59,7 @@ async function downloadRecording(item: CallListResource) {
   }
 }
 
-async function getAudio(callId: string, action: 'play' | 'download') {
+async function getAudio(callId: number, action: 'play' | 'download') {
   const { data, error } = await useHttp<string>(`calls/recording/${action}/${callId}`)
 
   if (error.value || !data.value) {

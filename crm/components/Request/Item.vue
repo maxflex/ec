@@ -78,6 +78,7 @@ const router = useRouter()
         :count="item.comments_count"
         :entity-id="item.id"
         :entity-type="EntityTypeValue.request"
+        auto-suggest
       />
       <div
         class="badge"
