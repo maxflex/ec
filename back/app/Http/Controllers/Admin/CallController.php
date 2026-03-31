@@ -77,20 +77,41 @@ class CallController extends Controller
 
     /**
      * UI-статусы:
-     * incoming / outgoing / missed / missed_callback / missed_all.
+     * incoming / outgoing / missed / missed_callback.
      */
-    protected function filterCallStatus(Builder $query, string $status): void
+    protected function filterCallStatus(Builder $query, array $status): void
     {
-        match ($status) {
-            'incoming' => $query->where('type', CallType::incoming->value),
-            'outgoing' => $query->where('type', CallType::outgoing->value),
-            'missed' => $query->missedNoCallback(),
-            'missed_callback' => $query->missedWithCallback(),
-            // Все пропущенные входящие независимо от того, перезванивали по ним или нет.
-            'missed_all' => $query
-                ->where('type', CallType::incoming->value)
-                ->whereNull('answered_at'),
-            default => null,
-        };
+        $statuses = array_values(array_unique(array_filter(
+            $status,
+            fn ($value) => is_string($value) && in_array($value, [
+                'incoming',
+                'outgoing',
+                'missed',
+                'missed_callback',
+            ], true),
+        )));
+
+        if ($statuses === []) {
+            return;
+        }
+
+        // Для мультиселекта объединяем статусы через OR в одной вложенной группе.
+        $query->where(function (Builder $statusQuery) use ($statuses) {
+            foreach ($statuses as $i => $singleStatus) {
+                $whereMethod = $i === 0 ? 'where' : 'orWhere';
+
+                match ($singleStatus) {
+                    'incoming' => $statusQuery->{$whereMethod}('type', CallType::incoming->value),
+                    'outgoing' => $statusQuery->{$whereMethod}('type', CallType::outgoing->value),
+                    'missed' => $statusQuery->{$whereMethod}(function (Builder $missedQuery) {
+                        $missedQuery->missedNoCallback();
+                    }),
+                    'missed_callback' => $statusQuery->{$whereMethod}(function (Builder $missedCallbackQuery) {
+                        $missedCallbackQuery->missedWithCallback();
+                    }),
+                    default => null,
+                };
+            }
+        });
     }
 }

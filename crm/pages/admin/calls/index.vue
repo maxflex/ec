@@ -1,15 +1,25 @@
 <script setup lang="ts">
-import type { CallFilters } from '~/components/Call/Filters.vue'
 import type { CallListResource } from '~/components/Call'
+import type { CallFilters } from '~/components/Call/Filters.vue'
 
 const route = useRoute()
 const { number: numberFromQuery } = route.query
+const defaultFilters: CallFilters = {
+  call_status: [],
+}
+
 const initialFilters: CallFilters = numberFromQuery
   ? {
       // При явном number из URL игнорируем loadFilters из localStorage.
+      ...defaultFilters,
       number: formatPhone(numberFromQuery),
     }
-  : loadFilters<CallFilters>({})
+  : loadFilters<CallFilters>(defaultFilters)
+
+// Страхуемся от старого формата фильтров в localStorage.
+if (!Array.isArray(initialFilters.call_status)) {
+  initialFilters.call_status = []
+}
 
 const filters = ref<CallFilters>(initialFilters)
 

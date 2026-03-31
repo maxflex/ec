@@ -5,7 +5,7 @@ export type CallerType = 'newClient' | 'newClientRecruit' | 'oldClient' | 'teach
 
 export const CallerTypeLabel: Record<CallerType, string> = {
   newClient: 'новый клиент',
-  newClientRecruit: 'новый клиент (вербовка)',
+  newClientRecruit: 'вербовка клиента',
   oldClient: 'старый клиент',
   teacher: 'преподаватель',
   other: 'другое',

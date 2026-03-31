@@ -1,7 +1,6 @@
 import type { FetchError } from 'ofetch'
 import {
   differenceInDays,
-  differenceInHours,
   differenceInMinutes,
   differenceInMonths,
   differenceInWeeks,
@@ -162,7 +161,7 @@ function getFiltersKey(
     const route = useRoute()
     routeName = String(route.name)
   }
-  const prefix = 'filters-01'
+  const prefix = 'filters-02'
   return [
     prefix,
     getEntityStringFromToken(),
@@ -269,17 +268,29 @@ export function formatTextDate(date: string, year: boolean = false) {
  */
 export function formatDateAgo(dateStr: string, withSuffix = false): string {
   const now = new Date()
+  // Парсим строку один раз, чтобы все расчеты опирались на одну и ту же дату.
+  const date = new Date(dateStr)
 
-  const diffInMinutes = differenceInMinutes(now, dateStr)
-  const diffInHours = differenceInHours(now, dateStr)
-  const diffInDays = differenceInDays(now, dateStr)
-  const diffInWeeks = differenceInWeeks(now, dateStr)
-  const diffInMonths = differenceInMonths(now, dateStr)
-  const diffInYears = differenceInYears(now, dateStr)
+  // На невалидной дате показываем безопасный нейтральный текст.
+  if (Number.isNaN(date.getTime())) {
+    return 'недавно'
+  }
+
+  // Для будущих дат не показываем отрицательные "часы/минуты".
+  const diffInMinutes = Math.max(0, differenceInMinutes(now, date))
+  // Часы считаем из минут, чтобы не попадать в "0 часов" на границе округления.
+  const diffInHours = Math.floor(diffInMinutes / 60)
+  const diffInDays = differenceInDays(now, date)
+  const diffInWeeks = differenceInWeeks(now, date)
+  const diffInMonths = differenceInMonths(now, date)
+  const diffInYears = differenceInYears(now, date)
 
   let result = 'недавно'
 
-  if (diffInMinutes >= 5 && diffInMinutes < 60) {
+  if (diffInMinutes < 5) {
+    result = 'недавно'
+  }
+  else if (diffInMinutes < 60) {
     result = plural(diffInMinutes, ['минута', 'минуты', 'минут'])
   }
   else if (diffInHours < 24) {

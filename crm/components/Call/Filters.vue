@@ -2,12 +2,12 @@
 import type { CallerType } from '~/components/Call'
 import { CallerTypeLabel } from '~/components/Call'
 
-export type CallStatusFilter = 'incoming' | 'outgoing' | 'missed' | 'missed_callback' | 'missed_all'
+export type CallStatusFilter = 'incoming' | 'outgoing' | 'missed' | 'missed_callback'
 
 export interface CallFilters {
   number?: string
   user_id?: number
-  call_status?: CallStatusFilter
+  call_status: CallStatusFilter[]
   caller_type?: CallerType
 }
 
@@ -17,9 +17,8 @@ const numberInput = ref(model.value.number || '')
 const callStatusLabel: Record<CallStatusFilter, string> = {
   incoming: 'входящий',
   outgoing: 'исходящий',
-  missed: 'только пропущенные',
-  missed_callback: 'только перезвоны',
-  missed_all: 'пропущенные и перезвоны',
+  missed: 'пропущенные',
+  missed_callback: 'перезвонили',
 }
 
 // Применяем номер по Enter, чтобы не дёргать API на каждую нажатую клавишу.
@@ -49,7 +48,7 @@ watch(() => model.value.number, (value) => {
     label="Тип разговора"
     :items="selectItems(CallerTypeLabel)"
   />
-  <UiClearableSelect
+  <UiMultipleSelect
     v-model="model.call_status"
     density="comfortable"
     label="Тип звонка"
