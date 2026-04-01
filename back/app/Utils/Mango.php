@@ -157,7 +157,7 @@ class Mango
      * Отправляется в 3 случаях (несколько эшелонов доставки на всякий случай):
      * когда звонок завершается, в Summary и в Recording
      */
-    private static function disconnectRealtimeState(string $entryId)
+    public static function disconnectRealtimeState(string $entryId)
     {
         cache()->tags('calls')->pull($entryId);
         CallEvent::dispatch([
