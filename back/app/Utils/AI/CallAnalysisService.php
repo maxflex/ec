@@ -213,13 +213,13 @@ class CallAnalysisService extends GeminiService
         $client->loadMissing('directions');
 
         $directions = $client->directions
-            ->sortByDesc('year')
+            ->sortBy('year')
             ->map(fn ($direction) => (object) [
-                'year' => $direction->year,
                 // Дублируем фронтовый формат из Client/Directions.vue: 25-26, 26-27 и т.д.
                 'year_label' => self::formatDirectionYear((int) $direction->year),
-                'direction_label' => $direction->direction?->getName(),
                 'status' => $direction->status->value,
+                'direction_label' => $direction->direction?->getName(),
+                'is_active' => $direction->status !== CvpStatus::finished,
             ])
             ->values()
             ->all();
@@ -232,6 +232,7 @@ class CallAnalysisService extends GeminiService
                 ->map(fn (object $direction): object => (object) [
                     'year_label' => $direction->year_label,
                     'direction_label' => $direction->direction_label,
+                    'is_active' => $direction->is_active,
                 ])
                 ->values()
                 ->all(),

@@ -94,7 +94,7 @@ async function transcribe() {
     item.value!.transcript = data.value.transcript
     item.value!.instruction = data.value.instruction
     selectedTab.value = 'transcript'
-    useGlobalMessage('<b>ИИ</b>: транскрибация аудиозаписи успешно завершена', 'success')
+    useGlobalMessage('<b>ИИ</b>: расшифровка аудиозаписи успешно завершена', 'success')
   }
   transcribing.value = false
 }
@@ -118,7 +118,7 @@ async function analyze() {
     item.value!.analysis = data.value.analysis
     item.value!.caller_type = data.value.caller_type
     item.value!.instruction = data.value.instruction
-    useGlobalMessage('<b>ИИ</b>: анализ транскрипта успешно выполнен', 'success')
+    useGlobalMessage('<b>ИИ</b>: анализ разговора успешно выполнен', 'success')
   }
   analyzing.value = false
 }
