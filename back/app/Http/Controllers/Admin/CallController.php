@@ -53,6 +53,14 @@ class CallController extends Controller
      */
     public function analyze(Call $call): array
     {
+        // Повторный запуск шага 2 должен вести себя как "первый":
+        // очищаем предыдущие результаты анализа перед новым прогоном.
+        $call->update([
+            'summary' => null,
+            'analysis' => null,
+            'caller_type' => null,
+        ]);
+
         $analysisData = CallAnalysisService::analyzeTranscript($call);
         $call->update($analysisData);
 

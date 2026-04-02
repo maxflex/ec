@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CallerType, CallListResource } from '~/components/Call'
-import { mdiAutoFix, mdiDotsHorizontal } from '@mdi/js'
+import { mdiDotsHorizontal } from '@mdi/js'
 import { CallerTypeLabel } from '~/components/Call'
 
 type CallInstructionType = 'transcription' | 'analysis'
@@ -247,11 +247,14 @@ nextTick(loadData)
           <div>
             собеседник
           </div>
-          <div class="text-truncate" style="max-width: 200px">
+          <div class="text-truncate" style="max-width: 250px">
             <CallPerson :item="item.aon" class="text-truncate" />
           </div>
         </div>
-        <div class="panel-actions">
+      </div>
+      <UiTabs v-model="selectedTab" :items="tabs" :counts="tabCounts">
+        <CallPlayer :item="item" />
+        <div class="page-calls-id__menu">
           <v-menu location="bottom">
             <template #activator="{ props }">
               <v-btn
@@ -282,9 +285,6 @@ nextTick(loadData)
             </v-list>
           </v-menu>
         </div>
-      </div>
-      <UiTabs v-model="selectedTab" :items="tabs" :counts="tabCounts">
-        <CallPlayer :item="item" />
       </UiTabs>
     </div>
     <div v-if="selectedTab === 'transcript'">
@@ -375,6 +375,12 @@ nextTick(loadData)
   &__ai-instruction-text {
     white-space: pre-wrap;
     word-break: break-word;
+  }
+
+  &__menu {
+    position: absolute;
+    right: 16px;
+    top: 3px;
   }
 }
 </style>
