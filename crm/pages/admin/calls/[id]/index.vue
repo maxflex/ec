@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CallerType, CallListResource } from '~/components/Call'
-import { mdiAutoFix } from '@mdi/js'
+import { mdiAutoFix, mdiDotsHorizontal } from '@mdi/js'
 import { CallerTypeLabel } from '~/components/Call'
 
 type CallInstructionType = 'transcription' | 'analysis'
@@ -230,7 +230,7 @@ nextTick(loadData)
             </span>
           </div>
         </div>
-        <div>
+        <!-- <div>
           <div>
             время
           </div>
@@ -242,7 +242,7 @@ nextTick(loadData)
               –
             </span>
           </div>
-        </div>
+        </div> -->
         <div>
           <div>
             собеседник
@@ -251,15 +251,15 @@ nextTick(loadData)
             <CallPerson :item="item.aon" class="text-truncate" />
           </div>
         </div>
-      </div>
-      <div class="panel-schedule">
-        <CallPlayer :item="item" />
-      </div>
-      <UiTabs v-model="selectedTab" :items="tabs" :counts="tabCounts">
-        <div class="page-calls-id__actions">
+        <div class="panel-actions">
           <v-menu location="bottom">
             <template #activator="{ props }">
-              <v-btn :size="42" :icon="mdiAutoFix" v-bind="props" :loading="transcribing || analyzing || downloading" />
+              <v-btn
+                :size="42"
+                :icon="mdiDotsHorizontal"
+                v-bind="props"
+                :loading="transcribing || analyzing || downloading"
+              />
             </template>
             <v-list>
               <v-list-item @click="downloadRecording()">
@@ -282,6 +282,9 @@ nextTick(loadData)
             </v-list>
           </v-menu>
         </div>
+      </div>
+      <UiTabs v-model="selectedTab" :items="tabs" :counts="tabCounts">
+        <CallPlayer :item="item" />
       </UiTabs>
     </div>
     <div v-if="selectedTab === 'transcript'">
@@ -364,12 +367,9 @@ nextTick(loadData)
     position: relative;
   }
 
-  &__actions {
-    position: absolute;
-    right: 16px;
-    top: 3px;
-    display: flex;
-    gap: 8px;
+  .call-player {
+    padding-left: 20px;
+    align-self: center;
   }
 
   &__ai-instruction-text {

@@ -128,7 +128,7 @@ function formatToMinutesSeconds(time: number) {
     <v-btn
       :disabled="!item.has_recording"
       :icon="player.playing ? mdiPause : mdiPlay"
-      :size="40"
+      :size="42"
       variant="text"
       @click="togglePlay"
     >
@@ -156,10 +156,13 @@ function formatToMinutesSeconds(time: number) {
   height: 30px;
   left: -10px;
   position: relative;
-  gap: 6px;
+
+  button {
+    margin-right: 4px;
+  }
 
   &-time {
-    padding-left: 10px;
+    padding-left: 16px;
     // font-variant-numeric: tabular-nums;
   }
 
@@ -195,6 +198,7 @@ function formatToMinutesSeconds(time: number) {
   &--playing {
     .call-player-progress {
       opacity: 1;
+      cursor: pointer;
     }
   }
 }
