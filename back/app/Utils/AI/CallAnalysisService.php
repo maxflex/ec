@@ -32,7 +32,7 @@ class CallAnalysisService extends GeminiService
      *
      * @return array{
      *     summary: string,
-     *     analysis: string,
+     *     analysis: string|null, // пустой анализ сохраняется как null
      *     caller_type: string,
      *     instruction: array{
      *         transcription: string|null,
@@ -83,7 +83,8 @@ class CallAnalysisService extends GeminiService
 
         $result = $response->json(true);
 
-        foreach (['summary', 'analysis', 'caller_type'] as $field) {
+        // Для summary и caller_type поле обязательно и не может быть пустым.
+        foreach (['summary', 'caller_type'] as $field) {
             if (! isset($result[$field]) || ! is_string($result[$field]) || trim($result[$field]) === '') {
                 throw new RuntimeException("Gemini вернул пустое поле '{$field}' для звонка {$call->id}");
             }
@@ -97,9 +98,18 @@ class CallAnalysisService extends GeminiService
             );
         }
 
+        // Пустой analysis допустим: нормализуем его к null для единообразного хранения.
+        $analysis = isset($result['analysis']) && is_string($result['analysis'])
+            ? trim($result['analysis'])
+            : null;
+
+        if ($analysis === '') {
+            $analysis = null;
+        }
+
         return [
             'summary' => trim($result['summary']),
-            'analysis' => trim($result['analysis']),
+            'analysis' => $analysis,
             'caller_type' => $callerType->value,
             // Фиксируем фактические instruction/prompt после Blade-рендера (как в отчетах).
             'instruction' => self::buildMergedInstruction(
