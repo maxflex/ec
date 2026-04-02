@@ -252,6 +252,9 @@ nextTick(loadData)
           </div>
         </div>
       </div>
+      <div class="panel-schedule">
+        <CallPlayer :item="item" />
+      </div>
       <UiTabs v-model="selectedTab" :items="tabs" :counts="tabCounts">
         <div class="page-calls-id__actions">
           <v-menu location="bottom">
