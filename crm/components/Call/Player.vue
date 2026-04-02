@@ -23,6 +23,19 @@ const player = reactive<{
   },
 })
 
+function disposeAudio() {
+  if (!player.audio) {
+    return
+  }
+
+  // При размонтировании/смене звонка останавливаем и отпускаем ссылку,
+  // чтобы браузер мог освободить объект Audio.
+  player.audio.pause()
+  player.audio.currentTime = 0
+  player.audio.src = ''
+  player.audio = null
+}
+
 async function getAudio(action: 'play' | 'download') {
   const { data } = await useHttp(
     `calls/recording/${action}/${item.id}`,
@@ -114,6 +127,8 @@ function formatToMinutesSeconds(time: number) {
   const seconds = safeTime % 60
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 }
+
+onBeforeUnmount(disposeAudio)
 </script>
 
 <template>
