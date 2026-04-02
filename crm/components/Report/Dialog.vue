@@ -377,6 +377,10 @@ defineExpose({ open })
   &__ai-instruction-text {
     white-space: pre-wrap;
     word-break: break-word;
+    // Синхронизируем шрифт с CodeMirror (редактор AI-инструкции/промпта).
+    font-family: 'ibm-plex', monospace;
+    font-size: 14px;
+    line-height: 21px;
   }
 }
 </style>

@@ -247,8 +247,8 @@ nextTick(loadData)
           <div>
             собеседник
           </div>
-          <div class="text-truncate" style="max-width: 250px">
-            <CallPerson :item="item.aon" class="text-truncate" />
+          <div>
+            <CallPerson :item="item.aon" />
           </div>
         </div>
       </div>
@@ -375,6 +375,11 @@ nextTick(loadData)
   &__ai-instruction-text {
     white-space: pre-wrap;
     word-break: break-word;
+    // Синхронизируем шрифт с CodeMirror, чтобы текст в диалоге
+    // визуально совпадал с редактором инструкции/промпта.
+    font-family: 'ibm-plex', monospace;
+    font-size: 14px;
+    line-height: 21px;
   }
 
   &__menu {

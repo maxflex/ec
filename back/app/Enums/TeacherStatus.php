@@ -24,4 +24,17 @@ enum TeacherStatus: string
             5 => self::closed
         };
     }
+
+    public function getLabel(): string
+    {
+        return match ($this) {
+            self::inactive => 'неактивен',
+            self::active => 'ведет занятия сейчас',
+            self::earlyReserve => 'ранний запас',
+            self::lateReserve => 'поздний запас',
+            self::usedToWork => 'ранее работал',
+            self::interview => 'собеседование',
+            self::closed => 'закрыт',
+        };
+    }
 }
