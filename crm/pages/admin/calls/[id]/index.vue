@@ -118,7 +118,6 @@ async function analyze() {
     item.value!.analysis = data.value.analysis
     item.value!.caller_type = data.value.caller_type
     item.value!.instruction = data.value.instruction
-    selectedTab.value = 'summary'
     useGlobalMessage('<b>ИИ</b>: анализ транскрипта успешно выполнен', 'success')
   }
   analyzing.value = false
