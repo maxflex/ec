@@ -1,12 +1,13 @@
 export type CallState = 'Appeared' | 'Connected' | 'Disconnected'
 
 export type CallType = 'incoming' | 'outgoing'
-export type CallerType = 'newClient' | 'newClientRecruit' | 'oldClient' | 'activeClient' | 'teacher' | 'other'
+export type CallerType = 'newClient' | 'newClientRecruit' | 'oldClient' | 'oldClientRecruit' | 'activeClient' | 'teacher' | 'other'
 
 export const CallerTypeLabel: Record<CallerType, string> = {
   newClient: 'клиент новый',
-  newClientRecruit: 'клиент привлечение',
+  newClientRecruit: 'клиент новый привлечение',
   oldClient: 'клиент старый',
+  oldClientRecruit: 'клиент старый привлечение',
   activeClient: 'клиент активный',
   teacher: 'преподаватель',
   other: 'другое',
