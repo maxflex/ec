@@ -143,6 +143,12 @@ class CallAnalysisService extends GeminiService
             AiPrompt::CALL_ANALYSIS, [
                 'call' => $call,
                 'aon' => Call::aon($call->number),
+                'is_client_exists' => Phone::whereNumber($call->number)
+                    ->where(fn ($q) => $q
+                        ->where('entity_type', Client::class)
+                        ->orWhere('entity_type', Representative::class)
+                    )
+                    ->exists(),
                 'phones' => $phones,
             ]);
     }
