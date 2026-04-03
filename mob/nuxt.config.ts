@@ -2,6 +2,11 @@ import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 
 export default defineNuxtConfig({
   devtools: { enabled: false },
+  // Локально мобильный кабинет запускаем на отдельном порту,
+  // чтобы не конфликтовать с desktop-версией CRM.
+  devServer: {
+    port: 3001,
+  },
   // ssr: false,
   css: ['~/assets/scss/index.scss'],
 

@@ -23,6 +23,18 @@ const player = reactive<{
   },
 })
 
+const progressTooltip = reactive<{
+  visible: boolean
+  left: number
+  top: number
+  previewTime: number
+}>({
+  visible: false,
+  left: 0,
+  top: 0,
+  previewTime: 0,
+})
+
 function disposeAudio() {
   if (!player.audio) {
     return
@@ -55,6 +67,11 @@ async function togglePlay(e: MouseEvent) {
       currentTime: 0,
       duration: 0,
     }
+    player.audio.addEventListener('loadedmetadata', () => {
+      // Длительность нужна сразу после загрузки, чтобы корректно считать tooltip и seek.
+      const { duration } = player.audio!
+      player.progress.duration = Number.isFinite(duration) && duration > 0 ? duration : 0
+    })
     player.audio.addEventListener('timeupdate', () => {
       const { currentTime, duration } = player.audio!
       player.progress = {
@@ -80,11 +97,49 @@ function audioSeek(e: MouseEvent) {
     return
   }
   e.stopPropagation()
-  const target = e.target as HTMLElement
-  const percent = e.offsetX / target.clientWidth
+  const percent = getProgressPercent(e)
   player.audio.currentTime = Math.round(
     player.progress.duration * percent,
   )
+}
+
+function getProgressPercent(e: MouseEvent) {
+  const target = e.currentTarget as HTMLElement | null
+  if (!target) {
+    return 0
+  }
+  const { left, width } = target.getBoundingClientRect()
+  if (!width) {
+    return 0
+  }
+  const rawPercent = (e.clientX - left) / width
+  return Math.min(1, Math.max(0, rawPercent))
+}
+
+function onProgressHover(e: MouseEvent) {
+  if (!player.audio || !player.progress.duration) {
+    progressTooltip.visible = false
+    return
+  }
+
+  progressTooltip.visible = true
+  const target = e.currentTarget as HTMLElement | null
+  if (!target) {
+    progressTooltip.visible = false
+    return
+  }
+  const rect = target.getBoundingClientRect()
+  const percent = getProgressPercent(e)
+  progressTooltip.left = rect.left + rect.width * percent
+  // Y фиксируем по progress bar, чтобы tooltip не "прыгал" за курсором.
+  progressTooltip.top = rect.top
+  progressTooltip.previewTime = Math.round(
+    player.progress.duration * percent,
+  )
+}
+
+function hideProgressTooltip() {
+  progressTooltip.visible = false
 }
 
 const audioProgressWidth = computed(() => {
@@ -120,6 +175,8 @@ const playbackTimeLabel = computed<string>(() => {
   return formatToMinutesSeconds(player.progress.currentTime)
 })
 
+const progressTooltipLabel = computed(() => formatToMinutesSeconds(progressTooltip.previewTime))
+
 function formatToMinutesSeconds(time: number) {
   // Нормализуем и форматируем время для стабильного вывода в виде mm:ss.
   const safeTime = Number.isFinite(time) && time > 0 ? Math.floor(time) : 0
@@ -148,16 +205,33 @@ onBeforeUnmount(disposeAudio)
       @click="togglePlay"
     >
     </v-btn>
-    <div class="call-player-progress" @click="audioSeek">
+    <div
+      class="call-player__progress-wrapper"
+      @click="audioSeek"
+      @mousemove="onProgressHover"
+      @mouseleave="hideProgressTooltip"
+    >
+      <div class="call-player__progress">
+        <div
+          v-if="player.audio"
+          class="call-player__progress-playhead"
+          :style="audioProgressWidth"
+        />
+      </div>
       <div
-        v-if="player.audio"
-        class="call-player-progress__playhead"
-        :style="audioProgressWidth"
-      />
+        v-if="progressTooltip.visible"
+        class="call-player__progress-tooltip"
+        :style="{
+          left: `${progressTooltip.left}px`,
+          top: `${progressTooltip.top}px`,
+        }"
+      >
+        {{ progressTooltipLabel }}
+      </div>
     </div>
     <div
       v-if="item.has_recording"
-      class="call-player-time"
+      class="call-player__time"
     >
       {{ playbackTimeLabel }}
     </div>
@@ -176,18 +250,18 @@ onBeforeUnmount(disposeAudio)
     margin-right: 4px;
   }
 
-  &-time {
+  &__time {
     padding-left: 16px;
     // font-variant-numeric: tabular-nums;
   }
 
   &--no-recording {
-    .call-player-progress {
+    .call-player__progress {
       opacity: 0.5;
     }
   }
 
-  &-progress {
+  &__progress {
     width: 500px;
     background-color: rgb(var(--v-theme-border));
     opacity: 0.5;
@@ -196,24 +270,63 @@ onBeforeUnmount(disposeAudio)
     border-radius: 8px;
     position: relative;
     overflow: hidden;
-    transition: opacity ease-in-out 0.5s;
-    // transition: background-color linear 0.1s;
+    transform-origin: center;
+    transition:
+      opacity ease-in-out 0.5s,
+      transform 0.2s cubic-bezier(0.2, 0, 0, 1),
+      background-color 0.2s linear;
 
-    &__playhead {
+    &-playhead {
       background: rgb(var(--v-theme-secondary));
       height: 100%;
       position: absolute;
       left: 0;
       top: 0;
-      transition: width linear 0.1s;
+      transition:
+        width linear 0.1s,
+        background-color 0.2s linear;
       pointer-events: none;
     }
   }
 
+  &__progress-wrapper {
+    height: 20px;
+    display: flex;
+    align-items: center;
+  }
+
+  &__progress-tooltip {
+    position: fixed;
+    z-index: 30;
+    transform: translate(-50%, calc(-100% - 6px));
+    background: rgba(black, 0.7);
+    color: white;
+    height: 30px;
+    width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    pointer-events: none;
+    white-space: nowrap;
+    font-size: 14px;
+  }
+
   &--playing {
-    .call-player-progress {
+    .call-player__progress {
       opacity: 1;
-      cursor: pointer;
+
+      &-wrapper {
+        cursor: pointer;
+        &:hover {
+          .call-player__progress {
+            transform: scaleY(1.2);
+            &-playhead {
+              background-color: #4a87be;
+            }
+          }
+        }
+      }
     }
   }
 }
