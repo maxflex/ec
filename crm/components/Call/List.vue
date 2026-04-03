@@ -144,7 +144,9 @@ async function getAudio(callId: number, action: 'play' | 'download') {
             v-if="showMoreBtn"
             :size="42"
             :icon="mdiDotsHorizontal"
-            @click="router.push({ name: 'calls-id', params: { id: item.id } })"
+            color="black"
+            variant="text"
+            :to="{ name: 'calls-id', params: { id: item.id } }"
           />
         </div>
       </TableCol>
