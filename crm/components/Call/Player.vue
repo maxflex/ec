@@ -218,16 +218,18 @@ onBeforeUnmount(disposeAudio)
           :style="audioProgressWidth"
         />
       </div>
-      <div
-        v-if="progressTooltip.visible"
-        class="call-player__progress-tooltip"
-        :style="{
-          left: `${progressTooltip.left}px`,
-          top: `${progressTooltip.top}px`,
-        }"
-      >
-        {{ progressTooltipLabel }}
-      </div>
+      <v-fade-transition>
+        <div
+          v-if="progressTooltip.visible"
+          class="call-player__progress-tooltip"
+          :style="{
+            left: `${progressTooltip.left}px`,
+            top: `${progressTooltip.top}px`,
+          }"
+        >
+          {{ progressTooltipLabel }}
+        </div>
+      </v-fade-transition>
     </div>
     <div
       v-if="item.has_recording"
