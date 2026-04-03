@@ -19,6 +19,7 @@ class CallController extends Controller
         'number' => ['number'],
         'equals' => ['user_id', 'caller_type'],
         'callStatus' => ['call_status'],
+        'callDuration' => ['call_duration'],
     ];
 
     public function index(Request $request)
@@ -121,5 +122,45 @@ class CallController extends Controller
                 };
             }
         });
+    }
+
+    /**
+     * UI-диапазоны:
+     * no_conversation / short / medium / long / very_long.
+     */
+    protected function filterCallDuration(Builder $query, string $duration): void
+    {
+        match ($duration) {
+            'no_conversation' => $query->whereNull('answered_at'),
+            'short' => $this->applyDurationRangeFilter($query, null, 59),
+            'medium' => $this->applyDurationRangeFilter($query, 60, 300),
+            'long' => $this->applyDurationRangeFilter($query, 301, 600),
+            'very_long' => $this->applyDurationRangeFilter($query, 601, null),
+            default => null,
+        };
+    }
+
+    /**
+     * Фильтрация по длительности разговора в секундах.
+     * Берём только звонки, где разговор действительно состоялся.
+     */
+    private function applyDurationRangeFilter(
+        Builder $query,
+        ?int $minSeconds,
+        ?int $maxSeconds,
+    ): void {
+        $query
+            ->whereNotNull('answered_at')
+            ->whereNotNull('finished_at')
+            // Защита от кривых данных: отрицательная длительность нам не нужна.
+            ->whereRaw('TIMESTAMPDIFF(SECOND, answered_at, finished_at) >= 0');
+
+        if ($minSeconds !== null) {
+            $query->whereRaw('TIMESTAMPDIFF(SECOND, answered_at, finished_at) >= ?', [$minSeconds]);
+        }
+
+        if ($maxSeconds !== null) {
+            $query->whereRaw('TIMESTAMPDIFF(SECOND, answered_at, finished_at) <= ?', [$maxSeconds]);
+        }
     }
 }

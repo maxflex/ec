@@ -4,9 +4,9 @@ export type CallType = 'incoming' | 'outgoing'
 export type CallerType = 'newClient' | 'newClientRecruit' | 'oldClient' | 'teacher' | 'other'
 
 export const CallerTypeLabel: Record<CallerType, string> = {
-  newClient: 'новый клиент',
-  newClientRecruit: 'вербовка клиента',
-  oldClient: 'старый клиент',
+  newClient: 'клиент новый',
+  newClientRecruit: 'клиент привлечение',
+  oldClient: 'клиент старый',
   teacher: 'преподаватель',
   other: 'другое',
 }

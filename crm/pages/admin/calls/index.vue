@@ -16,11 +16,6 @@ const initialFilters: CallFilters = numberFromQuery
     }
   : loadFilters<CallFilters>(defaultFilters)
 
-// Страхуемся от старого формата фильтров в localStorage.
-if (!Array.isArray(initialFilters.call_status)) {
-  initialFilters.call_status = []
-}
-
 const filters = ref<CallFilters>(initialFilters)
 
 watch(() => route.query.number, (newNumber) => {
@@ -48,3 +43,11 @@ const { items, indexPageData } = useIndex<CallListResource>(
     <CallList :items="items" clickable />
   </UiIndexPage>
 </template>
+
+<style lang="scss">
+.page-calls {
+  .filters__inputs {
+    max-width: 100%;
+  }
+}
+</style>

@@ -76,7 +76,7 @@ async function getAudio(callId: number, action: 'play' | 'download') {
       <TableCol :width="160">
         <PhoneList :items="[getPhoneItem(item)]" no-colors />
       </TableCol>
-      <TableCol :width="150">
+      <TableCol :width="160">
         <UiIfSet :value="item.caller_type">
           {{ CallerTypeLabel[item.caller_type!] }}
         </UiIfSet>

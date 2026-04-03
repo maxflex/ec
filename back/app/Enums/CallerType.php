@@ -14,7 +14,7 @@ enum CallerType: string
     {
         return match ($this) {
             self::newClient => 'новые клиент',
-            self::newClientRecruit => 'новый клиент (вербовка)',
+            self::newClientRecruit => 'новый клиент (привлечение)',
             self::oldClient => 'старый клиент',
             self::teacher => 'преподаватель',
             self::other => 'другое',
