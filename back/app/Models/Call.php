@@ -195,7 +195,9 @@ class Call extends Model
      */
     public function getRecording($action)
     {
-        $timestamp = now()->addMinutes(5)->unix();
+        // Увеличиваем срок жизни signed-ссылки до 60 минут,
+        // чтобы ссылка не истекала при долгом отсутствии на вкладке.
+        $timestamp = now()->addMinutes(60)->unix();
         // sign=sha256(vpbx_api_key + timestamp + recording_id + vpbx_api_salt)
         $sign = hash('sha256', implode('', [
             config('mango.api_key'),
