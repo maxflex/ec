@@ -7,7 +7,7 @@ export const CallerTypeLabel: Record<CallerType, string> = {
   newClient: 'клиент новый',
   newClientRecruit: 'клиент привлечение',
   oldClient: 'клиент старый',
-  activeClient: 'клиент старый',
+  activeClient: 'клиент активный',
   teacher: 'преподаватель',
   other: 'другое',
 }
