@@ -7,7 +7,6 @@ const { items } = defineProps<{
   items: CallListResource[]
 }>()
 
-const router = useRouter()
 const downloadingId = ref<number | null>(null)
 
 const { user } = useAuthStore()
