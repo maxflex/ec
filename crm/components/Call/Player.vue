@@ -9,6 +9,8 @@ const { item } = defineProps<{
 
 const player = reactive<{
   playing: boolean
+  loading: boolean
+  objectUrl: string | null
   audio: HTMLAudioElement | null
   progress: {
     currentTime: number
@@ -17,6 +19,8 @@ const player = reactive<{
 }>({
   audio: null,
   playing: false,
+  loading: false,
+  objectUrl: null,
   progress: {
     currentTime: 0,
     duration: 0,
@@ -36,60 +40,69 @@ const progressTooltip = reactive<{
 })
 
 function disposeAudio() {
-  if (!player.audio) {
-    return
+  if (player.audio) {
+    // При размонтировании/смене звонка останавливаем и отпускаем ссылку,
+    // чтобы браузер мог освободить объект Audio.
+    player.audio.pause()
+    player.audio.currentTime = 0
+    player.audio.src = ''
+    player.audio = null
   }
 
-  // При размонтировании/смене звонка останавливаем и отпускаем ссылку,
-  // чтобы браузер мог освободить объект Audio.
-  player.audio.pause()
-  player.audio.currentTime = 0
-  player.audio.src = ''
-  player.audio = null
+  if (player.objectUrl) {
+    // Освобождаем blob URL, чтобы не держать аудио-данные в памяти после ухода со страницы.
+    URL.revokeObjectURL(player.objectUrl)
+    player.objectUrl = null
+  }
+
+  player.playing = false
+  player.progress = {
+    currentTime: 0,
+    duration: 0,
+  }
 }
 
 async function getAudio(action: 'play' | 'download') {
   const { data } = await useHttp(
     `calls/recording/${action}/${item.id}`,
   )
-  console.log(data)
   return data.value as string
 }
 
 async function togglePlay(e: MouseEvent) {
   e.stopPropagation()
 
-  if (!player.audio) {
-    // Для single-view плеера загружаем аудио только один раз, дальше просто play/pause.
-    const audio = await getAudio('play')
-    player.audio = new Audio(audio)
-    player.progress = {
-      currentTime: 0,
-      duration: 0,
-    }
-    player.audio.addEventListener('loadedmetadata', () => {
-      // Длительность нужна сразу после загрузки, чтобы корректно считать tooltip и seek.
-      const { duration } = player.audio!
-      player.progress.duration = Number.isFinite(duration) && duration > 0 ? duration : 0
-    })
-    player.audio.addEventListener('timeupdate', () => {
-      const { currentTime, duration } = player.audio!
-      player.progress = {
-        currentTime,
-        duration,
-      }
-    })
-    player.audio.addEventListener(
-      'ended',
-      () => (player.playing = false),
-    )
-    player.playing = true
-    player.audio.play()
+  const nextPlayingState = !player.playing
+  // Сначала фиксируем пользовательское намерение в UI, затем асинхронно приводим Audio к этому состоянию.
+  player.playing = nextPlayingState
+
+  if (player.loading) {
     return
   }
 
-  player.playing = !player.playing
-  player.playing ? player.audio!.play() : player.audio!.pause()
+  if (!player.audio) {
+    if (!nextPlayingState) {
+      return
+    }
+    const audio = await createAudio()
+    if (!audio) {
+      player.playing = false
+      return
+    }
+    if (player.playing) {
+      await safePlay(audio)
+    }
+    return
+  }
+
+  if (player.audio.paused || player.audio.ended) {
+    player.playing = true
+    await safePlay(player.audio)
+    return
+  }
+
+  player.playing = false
+  player.audio.pause()
 }
 
 function audioSeek(e: MouseEvent) {
@@ -140,6 +153,94 @@ function onProgressHover(e: MouseEvent) {
 
 function hideProgressTooltip() {
   progressTooltip.visible = false
+}
+
+function getSafeDuration(duration: number) {
+  return Number.isFinite(duration) && duration > 0 ? duration : 0
+}
+
+function syncProgressFromAudio(audio: HTMLAudioElement) {
+  player.progress = {
+    currentTime: Number.isFinite(audio.currentTime) && audio.currentTime >= 0 ? audio.currentTime : 0,
+    duration: getSafeDuration(audio.duration),
+  }
+}
+
+function bindAudioEvents(audio: HTMLAudioElement) {
+  audio.addEventListener('loadedmetadata', () => {
+    // После загрузки метаданных обновляем длительность: это база для seek и tooltip.
+    syncProgressFromAudio(audio)
+  })
+  audio.addEventListener('timeupdate', () => syncProgressFromAudio(audio))
+  audio.addEventListener('play', () => {
+    player.playing = true
+  })
+  audio.addEventListener('pause', () => {
+    player.playing = false
+  })
+  audio.addEventListener('ended', () => {
+    player.playing = false
+    syncProgressFromAudio(audio)
+  })
+}
+
+async function ensureObjectUrl() {
+  if (player.objectUrl) {
+    return player.objectUrl
+  }
+
+  // TEST анимации
+  // await new Promise(resolve => setTimeout(resolve, 3000))
+
+  // Получаем временную ссылку Mango и сразу скачиваем в Blob, чтобы далее
+  // воспроизводить локально из памяти вкладки без повторных запросов к Mango.
+  const sourceUrl = await getAudio('play')
+  const response = await fetch(sourceUrl)
+  if (!response.ok) {
+    throw new Error(`Audio blob download failed: ${response.status}`)
+  }
+
+  const blob = await response.blob()
+  player.objectUrl = URL.createObjectURL(blob)
+  return player.objectUrl
+}
+
+async function createAudio() {
+  if (player.loading) {
+    return null
+  }
+
+  player.loading = true
+  try {
+    const objectUrl = await ensureObjectUrl()
+    const audio = new Audio(objectUrl)
+    bindAudioEvents(audio)
+    player.audio = audio
+    player.progress = {
+      currentTime: 0,
+      duration: 0,
+    }
+    return audio
+  }
+  catch (error) {
+    console.error('CallPlayer: failed to initialize audio from blob', error)
+    useGlobalMessage('Не удалось загрузить запись звонка', 'error')
+    return null
+  }
+  finally {
+    player.loading = false
+  }
+}
+
+async function safePlay(audio: HTMLAudioElement) {
+  try {
+    await audio.play()
+    player.playing = true
+  }
+  catch (error) {
+    player.playing = false
+    console.error('CallPlayer: play failed', error)
+  }
 }
 
 const audioProgressWidth = computed(() => {
@@ -193,7 +294,7 @@ onBeforeUnmount(disposeAudio)
     class="call-player"
     :class="{
       'call-player--no-recording': !item.has_recording,
-      'call-player--playing': !!player.audio,
+      'call-player--playing': player.playing || player.loading || !!player.audio,
     }"
   >
     <!-- <v-icon :icon="mdiArrowDownThinCircleOutline" @click="downloadAudio" /> -->
@@ -211,7 +312,10 @@ onBeforeUnmount(disposeAudio)
       @mousemove="onProgressHover"
       @mouseleave="hideProgressTooltip"
     >
-      <div class="call-player__progress">
+      <div
+        class="call-player__progress"
+        :class="{ 'call-player__progress--loading': player.loading }"
+      >
         <div
           v-if="player.audio"
           class="call-player__progress-playhead"
@@ -278,6 +382,27 @@ onBeforeUnmount(disposeAudio)
       transform 0.2s cubic-bezier(0.2, 0, 0, 1),
       background-color 0.2s linear;
 
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(
+        90deg,
+        rgb(var(--v-theme-border)) 0%,
+        rgb(var(--v-theme-border)) 35%,
+        rgba(255, 255, 255, 0.5) 50%,
+        rgb(var(--v-theme-border)) 65%,
+        rgb(var(--v-theme-border)) 100%
+      );
+      background-size: 200% auto;
+      animation: call-player-progress-shimmer 4s linear infinite;
+      opacity: 0;
+      transition: opacity 0.28s ease;
+      pointer-events: none;
+      z-index: 2;
+    }
+
     &-playhead {
       background: rgb(var(--v-theme-secondary));
       height: 100%;
@@ -288,6 +413,14 @@ onBeforeUnmount(disposeAudio)
         width linear 0.1s,
         background-color 0.2s linear;
       pointer-events: none;
+    }
+
+    &--loading {
+      opacity: 1;
+
+      &::after {
+        opacity: 1;
+      }
     }
   }
 
@@ -330,6 +463,15 @@ onBeforeUnmount(disposeAudio)
         }
       }
     }
+  }
+}
+
+@keyframes call-player-progress-shimmer {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
   }
 }
 </style>
