@@ -11,11 +11,14 @@ use App\Models\Phone;
 use App\Models\Representative;
 use App\Models\Request;
 use App\Models\Teacher;
+use Gemini\Data\Blob;
 use Gemini\Data\GenerationConfig;
 use Gemini\Data\Schema;
 use Gemini\Enums\DataType;
+use Gemini\Enums\MimeType;
 use Gemini\Enums\ResponseMimeType;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Http;
 use RuntimeException;
 use ValueError;
 
@@ -49,6 +52,10 @@ class CallAnalysisService extends GeminiService
      */
     public static function analyzeTranscript(Call $call): array
     {
+        if (! $call->has_recording) {
+            throw new RuntimeException("Нельзя анализировать звонок {$call->id}: нет recording_id");
+        }
+
         // Анализ опирается строго на транскрипт, сохраненный в модели звонка.
         $transcript = trim((string) $call->transcript);
         if ($transcript === '') {
@@ -56,6 +63,7 @@ class CallAnalysisService extends GeminiService
         }
 
         [$systemInstructionText, $userPromptText] = self::renderCallAnalysisPrompt($call);
+        $audioBytes = self::downloadRecording($call);
 
         // На втором шаге запрашиваем сводку, анализ и тип собеседника.
         $schema = new Schema(
@@ -86,6 +94,11 @@ class CallAnalysisService extends GeminiService
             )
             ->generateContent([
                 $userPromptText,
+                // К анализу прикладываем исходную аудиозапись, как и на шаге транскрибации.
+                new Blob(
+                    mimeType: MimeType::AUDIO_MP3,
+                    data: base64_encode($audioBytes),
+                ),
             ]);
 
         $result = $response->json(true);
@@ -274,5 +287,30 @@ class CallAnalysisService extends GeminiService
     private static function buildInstructionSnapshot(string $systemInstructionText, string $userPromptText): string
     {
         return trim($systemInstructionText)."\n\n<USER_PROMPT>\n\n".trim($userPromptText);
+    }
+
+    /**
+     * Скачивает запись Mango по прямой ссылке и возвращает бинарные данные.
+     */
+    private static function downloadRecording(Call $call): string
+    {
+        $recording = $call->getRecording('download');
+
+        $response = Http::withOptions([
+            'proxy' => '37.140.195.195:8888',
+            'verify' => false,
+            'timeout' => 180,
+        ])->get($recording);
+
+        if (! $response->successful()) {
+            throw new RuntimeException("Не удалось скачать запись звонка {$call->id} (HTTP {$response->status()})");
+        }
+
+        $body = $response->body();
+        if ($body === '') {
+            throw new RuntimeException("Получен пустой аудиофайл для звонка {$call->id}");
+        }
+
+        return $body;
     }
 }
