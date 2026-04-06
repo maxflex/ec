@@ -2,10 +2,17 @@
 
 namespace App\Utils\AI;
 
+use App\Enums\CvpStatus;
 use App\Models\AiPrompt;
 use App\Models\Call;
+use App\Models\Client;
+use App\Models\Phone;
+use App\Models\Representative;
+use App\Models\Request;
+use App\Models\Teacher;
 use Gemini\Data\Blob;
 use Gemini\Enums\MimeType;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 use ValueError;
@@ -65,53 +72,114 @@ class CallTranscriptionService extends GeminiService
      */
     private static function renderCallTranscriptionPrompt(Call $call): array
     {
+        $phones = self::buildPhonesPromptData($call->number);
+
         return app(AiPromptRenderer::class)->renderInstructionAndPromptById(
             AiPrompt::CALL_TRANSCRIPTION, [
                 'call' => $call,
-                'aon' => Call::aon($call->number),
+                'phones' => $phones,
             ]);
     }
 
-    private static function buildInstructionSnapshot(string $systemInstructionText, string $userPromptText): string
+    /**
+     * Срез phones по номеру для prompt шага анализа.
+     * Возвращаем коллекцию моделей с preload entity + готовым item,
+     * чтобы в Blade можно было проверять тип напрямую через instanceof.
+     *
+     * @return Collection<int, Phone>
+     */
+    private static function buildPhonesPromptData(string $number): Collection
     {
-        return trim($systemInstructionText)."\n\n<USER_PROMPT>\n\n".trim($userPromptText);
+        $phones = Phone::query()
+            ->whereNumber($number)
+            ->with('entity')
+            ->latest('id')
+            ->get();
+
+        return $phones
+            ->map(function (Phone $phone): Phone {
+                $entity = $phone->entity;
+
+                // Подготавливаем дополнительные поля для prompt-шаблона.
+                $phone->setAttribute('item', (object) []);
+
+                if ($entity instanceof Request) {
+                    $phone->setAttribute('item', (object) [
+                        'created_at' => $entity->created_at?->format('Y-m-d H:i:s'),
+                    ]);
+
+                    return $phone;
+                }
+
+                if ($entity instanceof Client) {
+                    $phone->setAttribute('item', self::buildClientItem($entity));
+
+                    return $phone;
+                }
+
+                if ($entity instanceof Representative) {
+                    $phone->setAttribute('item', (object) [
+                        'client' => $entity->client
+                            ? self::buildClientItem($entity->client)
+                            : null,
+                    ]);
+
+                    return $phone;
+                }
+
+                if ($entity instanceof Teacher) {
+                    $phone->setAttribute('item', (object) [
+                        // Отдаем enum для единообразного чтения в шаблоне: $item->status->getLabel().
+                        'status' => $entity->status,
+                    ]);
+
+                    return $phone;
+                }
+
+                return $phone;
+            })
+            ->values();
     }
 
-    /**
-     * @param  'transcription'|'analysis'  $key
-     * @return array{transcription: string|null, analysis: string|null}
-     */
-    private static function buildMergedInstruction(Call $call, string $key, string $snapshot): array
+    private static function buildClientItem(Client $client): object
     {
-        $currentInstruction = is_array($call->instruction) ? $call->instruction : [];
+        // Для анализа важно сразу отдать направления и текущий статус обучения.
+        $client->loadMissing('directions');
 
-        // Ключи фиксированные, чтобы формат JSON был предсказуемым.
-        $normalizedInstruction = [
-            'transcription' => isset($currentInstruction['transcription']) && is_string($currentInstruction['transcription'])
-                ? $currentInstruction['transcription']
-                : null,
-            'analysis' => isset($currentInstruction['analysis']) && is_string($currentInstruction['analysis'])
-                ? $currentInstruction['analysis']
-                : null,
+        $directions = $client->directions
+            ->sortBy('year')
+            ->map(fn ($direction) => (object) [
+                // Дублируем фронтовый формат из Client/Directions.vue: 25-26, 26-27 и т.д.
+                'year_label' => self::formatDirectionYear((int) $direction->year),
+                'status' => $direction->status->value,
+                'direction_label' => $direction->direction?->getName(),
+                'is_active' => $direction->status !== CvpStatus::finished,
+            ])
+            ->values()
+            ->all();
+
+        return (object) [
+            'is_studying_now' => collect($directions)
+                ->contains(fn (object $direction): bool => $direction->status !== CvpStatus::finished->value),
+            // Для prompt отдаем только год/направление (без технических статусов).
+            'directions' => collect($directions)
+                ->map(fn (object $direction): object => (object) [
+                    'year_label' => $direction->year_label,
+                    'direction_label' => $direction->direction_label,
+                    'is_active' => $direction->is_active,
+                ])
+                ->values()
+                ->all(),
         ];
-
-        $normalizedInstruction[$key] = $snapshot;
-
-        return $normalizedInstruction;
     }
 
-    /**
-     * Безопасно извлекает текст из ответа Gemini, включая multi-part случаи.
-     */
-    private static function extractResponseText(object $response): string
+    private static function formatDirectionYear(int $year): string
     {
-        try {
-            return $response->text();
-        } catch (ValueError) {
-            $lastPartText = collect($response->parts())->last()?->text;
+        // $startYear = $year - 2000;
+        $startYear = $year;
+        $endYear = $startYear + 1;
 
-            return is_string($lastPartText) ? $lastPartText : '';
-        }
+        return "{$startYear}-{$endYear} учебный год";
     }
 
     /**
@@ -137,5 +205,47 @@ class CallTranscriptionService extends GeminiService
         }
 
         return $body;
+    }
+
+    /**
+     * Безопасно извлекает текст из ответа Gemini, включая multi-part случаи.
+     */
+    private static function extractResponseText(object $response): string
+    {
+        try {
+            return $response->text();
+        } catch (ValueError) {
+            $lastPartText = collect($response->parts())->last()?->text;
+
+            return is_string($lastPartText) ? $lastPartText : '';
+        }
+    }
+
+    /**
+     * @param  'transcription'|'analysis'  $key
+     * @return array{transcription: string|null, analysis: string|null}
+     */
+    private static function buildMergedInstruction(Call $call, string $key, string $snapshot): array
+    {
+        $currentInstruction = is_array($call->instruction) ? $call->instruction : [];
+
+        // Ключи фиксированные, чтобы формат JSON был предсказуемым.
+        $normalizedInstruction = [
+            'transcription' => isset($currentInstruction['transcription']) && is_string($currentInstruction['transcription'])
+                ? $currentInstruction['transcription']
+                : null,
+            'analysis' => isset($currentInstruction['analysis']) && is_string($currentInstruction['analysis'])
+                ? $currentInstruction['analysis']
+                : null,
+        ];
+
+        $normalizedInstruction[$key] = $snapshot;
+
+        return $normalizedInstruction;
+    }
+
+    private static function buildInstructionSnapshot(string $systemInstructionText, string $userPromptText): string
+    {
+        return trim($systemInstructionText)."\n\n<USER_PROMPT>\n\n".trim($userPromptText);
     }
 }

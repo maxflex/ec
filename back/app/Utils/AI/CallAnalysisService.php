@@ -167,7 +167,6 @@ class CallAnalysisService extends GeminiService
         return app(AiPromptRenderer::class)->renderInstructionAndPromptById(
             AiPrompt::CALL_ANALYSIS, [
                 'call' => $call,
-                'aon' => Call::aon($call->number),
                 'phones' => $phones,
             ]);
     }
@@ -274,6 +273,31 @@ class CallAnalysisService extends GeminiService
     }
 
     /**
+     * Скачивает запись Mango по прямой ссылке и возвращает бинарные данные.
+     */
+    private static function downloadRecording(Call $call): string
+    {
+        $recording = $call->getRecording('download');
+
+        $response = Http::withOptions([
+            'proxy' => '37.140.195.195:8888',
+            'verify' => false,
+            'timeout' => 180,
+        ])->get($recording);
+
+        if (! $response->successful()) {
+            throw new RuntimeException("Не удалось скачать запись звонка {$call->id} (HTTP {$response->status()})");
+        }
+
+        $body = $response->body();
+        if ($body === '') {
+            throw new RuntimeException("Получен пустой аудиофайл для звонка {$call->id}");
+        }
+
+        return $body;
+    }
+
+    /**
      * @param  'transcription'|'analysis'  $key
      * @return array{transcription: string|null, analysis: string|null}
      */
@@ -299,30 +323,5 @@ class CallAnalysisService extends GeminiService
     private static function buildInstructionSnapshot(string $systemInstructionText, string $userPromptText): string
     {
         return trim($systemInstructionText)."\n\n<USER_PROMPT>\n\n".trim($userPromptText);
-    }
-
-    /**
-     * Скачивает запись Mango по прямой ссылке и возвращает бинарные данные.
-     */
-    private static function downloadRecording(Call $call): string
-    {
-        $recording = $call->getRecording('download');
-
-        $response = Http::withOptions([
-            'proxy' => '37.140.195.195:8888',
-            'verify' => false,
-            'timeout' => 180,
-        ])->get($recording);
-
-        if (! $response->successful()) {
-            throw new RuntimeException("Не удалось скачать запись звонка {$call->id} (HTTP {$response->status()})");
-        }
-
-        $body = $response->body();
-        if ($body === '') {
-            throw new RuntimeException("Получен пустой аудиофайл для звонка {$call->id}");
-        }
-
-        return $body;
     }
 }
