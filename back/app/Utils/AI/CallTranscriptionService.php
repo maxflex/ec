@@ -25,8 +25,8 @@ class CallTranscriptionService extends GeminiService
      * @return array{
      *     transcript: string,
      *     instruction: array{
-     *         transcription: string|null,
-     *         analysis: string|null
+     *         transcription: array{text: string|null, created_at: string|null},
+     *         analysis: array{text: string|null, created_at: string|null}
      *     }
      * }
      */
@@ -223,7 +223,10 @@ class CallTranscriptionService extends GeminiService
 
     /**
      * @param  'transcription'|'analysis'  $key
-     * @return array{transcription: string|null, analysis: string|null}
+     * @return array{
+     *     transcription: array{text: string|null, created_at: string|null},
+     *     analysis: array{text: string|null, created_at: string|null}
+     * }
      */
     private static function buildMergedInstruction(Call $call, string $key, string $snapshot): array
     {
@@ -231,15 +234,19 @@ class CallTranscriptionService extends GeminiService
 
         // Ключи фиксированные, чтобы формат JSON был предсказуемым.
         $normalizedInstruction = [
-            'transcription' => isset($currentInstruction['transcription']) && is_string($currentInstruction['transcription'])
+            'transcription' => isset($currentInstruction['transcription']) && is_array($currentInstruction['transcription'])
                 ? $currentInstruction['transcription']
-                : null,
-            'analysis' => isset($currentInstruction['analysis']) && is_string($currentInstruction['analysis'])
+                : ['text' => null, 'created_at' => null],
+            'analysis' => isset($currentInstruction['analysis']) && is_array($currentInstruction['analysis'])
                 ? $currentInstruction['analysis']
-                : null,
+                : ['text' => null, 'created_at' => null],
         ];
 
-        $normalizedInstruction[$key] = $snapshot;
+        // При каждом новом прогоне фиксируем фактическое время генерации снапшота.
+        $normalizedInstruction[$key] = [
+            'text' => $snapshot,
+            'created_at' => now()->format('Y-m-d H:i:s'),
+        ];
 
         return $normalizedInstruction;
     }
@@ -248,4 +255,5 @@ class CallTranscriptionService extends GeminiService
     {
         return trim($systemInstructionText)."\n\n<USER_PROMPT>\n\n".trim($userPromptText);
     }
+
 }

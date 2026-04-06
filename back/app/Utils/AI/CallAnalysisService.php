@@ -46,8 +46,8 @@ class CallAnalysisService extends GeminiService
      *     analysis_2: string|null, // пустой анализ сохраняется как null
      *     caller_type: string,
      *     instruction: array{
-     *         transcription: string|null,
-     *         analysis: string|null
+     *         transcription: array{text: string|null, created_at: string|null},
+     *         analysis: array{text: string|null, created_at: string|null}
      *     }
      * }
      */
@@ -67,6 +67,8 @@ class CallAnalysisService extends GeminiService
         $audioBytes = self::downloadRecording($call);
 
         // На втором шаге запрашиваем сводку, анализ и тип собеседника.
+        // analysis_1/analysis_2 намеренно не делаем обязательными:
+        // их наличие/пустота определяется текстом AI-инструкции, а не кодом.
         $schema = new Schema(
             type: DataType::OBJECT,
             properties: [
@@ -87,7 +89,7 @@ class CallAnalysisService extends GeminiService
                     description: 'ТИП РАЗГОВОРА'
                 ),
             ],
-            required: ['summary', 'analysis_1', 'analysis_2', 'caller_type']
+            required: ['summary', 'caller_type']
         );
 
         $response = self::buildModel($systemInstructionText)
@@ -123,20 +125,10 @@ class CallAnalysisService extends GeminiService
             );
         }
 
-        // Пустые анализы допустимы: нормализуем к null для единообразного хранения.
-        $analysis1 = isset($result['analysis_1']) && is_string($result['analysis_1'])
-            ? trim($result['analysis_1'])
-            : null;
-        $analysis2 = isset($result['analysis_2']) && is_string($result['analysis_2'])
-            ? trim($result['analysis_2'])
-            : null;
-
-        if ($analysis1 === '') {
-            $analysis1 = null;
-        }
-        if ($analysis2 === '') {
-            $analysis2 = null;
-        }
+        // Поддерживаем оба формата: новый (analysis_1/analysis_2) и старый (analysis).
+        // Любое пустое/отсутствующее значение анализов нормализуем в null.
+        $analysis1 = self::normalizeOptionalText($result['analysis_1'] ?? $result['analysis'] ?? null);
+        $analysis2 = self::normalizeOptionalText($result['analysis_2'] ?? null);
 
         return [
             'summary' => trim($result['summary']),
@@ -150,6 +142,17 @@ class CallAnalysisService extends GeminiService
                 self::buildInstructionSnapshot($systemInstructionText, $userPromptText)
             ),
         ];
+    }
+
+    private static function normalizeOptionalText(mixed $value): ?string
+    {
+        if (! is_string($value)) {
+            return null;
+        }
+
+        $normalized = trim($value);
+
+        return $normalized === '' ? null : $normalized;
     }
 
     /**
@@ -299,7 +302,10 @@ class CallAnalysisService extends GeminiService
 
     /**
      * @param  'transcription'|'analysis'  $key
-     * @return array{transcription: string|null, analysis: string|null}
+     * @return array{
+     *     transcription: array{text: string|null, created_at: string|null},
+     *     analysis: array{text: string|null, created_at: string|null}
+     * }
      */
     private static function buildMergedInstruction(Call $call, string $key, string $snapshot): array
     {
@@ -307,15 +313,19 @@ class CallAnalysisService extends GeminiService
 
         // Ключи фиксированные, чтобы формат JSON был предсказуемым.
         $normalizedInstruction = [
-            'transcription' => isset($currentInstruction['transcription']) && is_string($currentInstruction['transcription'])
+            'transcription' => isset($currentInstruction['transcription']) && is_array($currentInstruction['transcription'])
                 ? $currentInstruction['transcription']
-                : null,
-            'analysis' => isset($currentInstruction['analysis']) && is_string($currentInstruction['analysis'])
+                : ['text' => null, 'created_at' => null],
+            'analysis' => isset($currentInstruction['analysis']) && is_array($currentInstruction['analysis'])
                 ? $currentInstruction['analysis']
-                : null,
+                : ['text' => null, 'created_at' => null],
         ];
 
-        $normalizedInstruction[$key] = $snapshot;
+        // При каждом новом прогоне фиксируем фактическое время генерации снапшота.
+        $normalizedInstruction[$key] = [
+            'text' => $snapshot,
+            'created_at' => now()->format('Y-m-d H:i:s'),
+        ];
 
         return $normalizedInstruction;
     }
@@ -324,4 +334,5 @@ class CallAnalysisService extends GeminiService
     {
         return trim($systemInstructionText)."\n\n<USER_PROMPT>\n\n".trim($userPromptText);
     }
+
 }

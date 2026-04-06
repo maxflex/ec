@@ -5,9 +5,14 @@ import { CallerTypeLabel } from '~/components/Call'
 
 type CallInstructionType = 'transcription' | 'analysis'
 
+interface CallInstructionItem {
+  text: string | null
+  created_at: string | null
+}
+
 interface CallInstructionFields {
-  transcription: string | null
-  analysis: string | null
+  transcription: CallInstructionItem
+  analysis: CallInstructionItem
 }
 
 interface CallResource extends CallListResource {
@@ -44,12 +49,16 @@ const { tabs, selectedTab, tabCounts } = useTabs({
   analysis_2: 'анализ 2',
 })
 
-const selectedInstructionRaw = computed<string>(() => {
-  return item.value?.instruction?.[selectedInstructionType.value] || ''
+const selectedInstructionItem = computed<CallInstructionItem>(() => {
+  return item.value?.instruction?.[selectedInstructionType.value] ?? { text: null, created_at: null }
+})
+
+const selectedInstructionCreatedAt = computed<string | null>(() => {
+  return selectedInstructionItem.value.created_at
 })
 
 const selectedInstructionParts = computed(() => {
-  const [instructionRaw = '', promptRaw = ''] = selectedInstructionRaw.value.split('<USER_PROMPT>')
+  const [instructionRaw = '', promptRaw = ''] = (selectedInstructionItem.value.text || '').split('<USER_PROMPT>')
 
   return {
     instruction: decodeHtmlEntities(instructionRaw.trim()),
@@ -142,7 +151,14 @@ function decodeHtmlEntities(value: string): string {
     .replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) => String.fromCodePoint(Number.parseInt(hex, 16)))
 }
 
+function hasInstruction(type: CallInstructionType): boolean {
+  return (item.value?.instruction?.[type]?.text || '').trim().length > 0
+}
+
 function openInstruction(type: CallInstructionType) {
+  if (!hasInstruction(type)) {
+    return
+  }
   // Открываем диалог сразу на нужном этапе из контекстного меню.
   selectedInstructionType.value = type
   isInstructionDialogOpen.value = true
@@ -275,14 +291,14 @@ nextTick(loadData)
               <v-list-item @click="transcribe()">
                 расшифровка аудиозаписи
               </v-list-item>
-              <v-list-item :disabled="!item.instruction?.transcription" @click="openInstruction('transcription')">
+              <v-list-item :disabled="!hasInstruction('transcription')" @click="openInstruction('transcription')">
                 инструкция
               </v-list-item>
               <v-divider />
               <v-list-item :disabled="!item.transcript" @click="analyze()">
                 анализ разговора
               </v-list-item>
-              <v-list-item :disabled="!item.instruction?.analysis" @click="openInstruction('analysis')">
+              <v-list-item :disabled="!hasInstruction('analysis')" @click="openInstruction('analysis')">
                 инструкция
               </v-list-item>
             </v-list>
@@ -315,7 +331,12 @@ nextTick(loadData)
   <v-dialog v-model="isInstructionDialogOpen" max-width="900">
     <div class="dialog-wrapper">
       <div class="dialog-header">
-        {{ selectedInstructionType === 'transcription' ? 'Расшифровка аудиозаписи' : 'Анализ разговора' }}
+        <div>
+          {{ selectedInstructionType === 'transcription' ? 'Расшифровка аудиозаписи' : 'Анализ разговора' }}
+          <div class="dialog-subheader">
+            {{ formatDateTime(selectedInstructionCreatedAt) }}
+          </div>
+        </div>
         <v-btn icon="$close" :size="48" variant="text" @click="isInstructionDialogOpen = false" />
       </div>
       <div v-if="selectedInstructionParts" class="dialog-body">
