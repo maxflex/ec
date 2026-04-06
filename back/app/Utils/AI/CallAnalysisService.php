@@ -38,11 +38,12 @@ class CallAnalysisService extends GeminiService
     }
 
     /**
-     * Шаг 2: transcript -> summary + analysis + caller_type.
+     * Шаг 2: transcript -> summary + analysis_1 + analysis_2 + caller_type.
      *
      * @return array{
      *     summary: string,
-     *     analysis: string|null, // пустой анализ сохраняется как null
+     *     analysis_1: string|null, // пустой анализ сохраняется как null
+     *     analysis_2: string|null, // пустой анализ сохраняется как null
      *     caller_type: string,
      *     instruction: array{
      *         transcription: string|null,
@@ -73,16 +74,20 @@ class CallAnalysisService extends GeminiService
                     type: DataType::STRING,
                     description: 'КРАТКОЕ СОДЕРЖАНИЕ РАЗГОВОРА'
                 ),
-                'analysis' => new Schema(
+                'analysis_1' => new Schema(
                     type: DataType::STRING,
-                    description: 'АНАЛИЗ ЗВОНКА'
+                    description: 'АНАЛИЗ ЗВОНКА 1'
+                ),
+                'analysis_2' => new Schema(
+                    type: DataType::STRING,
+                    description: 'АНАЛИЗ ЗВОНКА 2'
                 ),
                 'caller_type' => new Schema(
                     type: DataType::STRING,
                     description: 'ТИП РАЗГОВОРА'
                 ),
             ],
-            required: ['summary', 'analysis', 'caller_type']
+            required: ['summary', 'analysis_1', 'analysis_2', 'caller_type']
         );
 
         $response = self::buildModel($systemInstructionText)
@@ -118,18 +123,25 @@ class CallAnalysisService extends GeminiService
             );
         }
 
-        // Пустой analysis допустим: нормализуем его к null для единообразного хранения.
-        $analysis = isset($result['analysis']) && is_string($result['analysis'])
-            ? trim($result['analysis'])
+        // Пустые анализы допустимы: нормализуем к null для единообразного хранения.
+        $analysis1 = isset($result['analysis_1']) && is_string($result['analysis_1'])
+            ? trim($result['analysis_1'])
+            : null;
+        $analysis2 = isset($result['analysis_2']) && is_string($result['analysis_2'])
+            ? trim($result['analysis_2'])
             : null;
 
-        if ($analysis === '') {
-            $analysis = null;
+        if ($analysis1 === '') {
+            $analysis1 = null;
+        }
+        if ($analysis2 === '') {
+            $analysis2 = null;
         }
 
         return [
             'summary' => trim($result['summary']),
-            'analysis' => $analysis,
+            'analysis_1' => $analysis1,
+            'analysis_2' => $analysis2,
             'caller_type' => $callerType->value,
             // Фиксируем фактические instruction/prompt после Blade-рендера (как в отчетах).
             'instruction' => self::buildMergedInstruction(

@@ -50,7 +50,7 @@ class CallController extends Controller
     }
 
     /**
-     * Шаг 2: отдельный запуск аналитики (transcript -> summary/analysis).
+     * Шаг 2: отдельный запуск аналитики (transcript -> summary/analysis_1).
      */
     public function analyze(Call $call): array
     {
@@ -58,7 +58,8 @@ class CallController extends Controller
         // очищаем предыдущие результаты анализа перед новым прогоном.
         $call->update([
             'summary' => null,
-            'analysis' => null,
+            'analysis_1' => null,
+            'analysis_2' => null,
             'caller_type' => null,
         ]);
 

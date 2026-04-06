@@ -11,7 +11,8 @@ interface CallInstructionFields {
 }
 
 interface CallResource extends CallListResource {
-  analysis: string | null
+  analysis_1: string | null
+  analysis_2: string | null
   instruction: CallInstructionFields | null
 }
 
@@ -22,7 +23,8 @@ interface CallTranscribeFields {
 
 interface CallAnalyzeFields {
   summary: string
-  analysis: string
+  analysis_1: string | null
+  analysis_2: string | null
   caller_type: CallerType
   instruction: CallInstructionFields
 }
@@ -38,7 +40,8 @@ const item = ref<CallResource>()
 const { tabs, selectedTab, tabCounts } = useTabs({
   transcript: 'транскрипт',
   summary: 'краткое содержание',
-  analysis: 'анализ',
+  analysis_1: 'анализ',
+  analysis_2: 'анализ 2',
 })
 
 const selectedInstructionRaw = computed<string>(() => {
@@ -115,7 +118,8 @@ async function analyze() {
   }
   else if (data.value) {
     item.value!.summary = data.value.summary
-    item.value!.analysis = data.value.analysis
+    item.value!.analysis_1 = data.value.analysis_1
+    item.value!.analysis_2 = data.value.analysis_2
     item.value!.caller_type = data.value.caller_type
     item.value!.instruction = data.value.instruction
     useGlobalMessage('<b>ИИ</b>: анализ разговора успешно выполнен', 'success')
@@ -298,8 +302,12 @@ nextTick(loadData)
       <div v-if="item.summary" class="text-pre-wrap container" v-html="item.summary" />
       <UiNoData v-else />
     </div>
-    <div v-else-if="selectedTab === 'analysis'">
-      <div v-if="item.analysis" class="text-pre-wrap container" v-html="item.analysis" />
+    <div v-else-if="selectedTab === 'analysis_1'">
+      <div v-if="item.analysis_1" class="text-pre-wrap container" v-html="item.analysis_1" />
+      <UiNoData v-else />
+    </div>
+    <div v-else-if="selectedTab === 'analysis_2'">
+      <div v-if="item.analysis_2" class="text-pre-wrap container" v-html="item.analysis_2" />
       <UiNoData v-else />
     </div>
   </template>
