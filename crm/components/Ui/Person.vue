@@ -1,8 +1,9 @@
 <script setup lang="ts">
-const { item, teacherFormat, noLink = undefined } = defineProps<{
+const { item, teacherFormat, noLink = undefined, noName } = defineProps<{
   item: PersonResource
   teacherFormat?: NameFormat
   noLink?: boolean | undefined
+  noName?: boolean
 }>()
 
 const { isAdmin } = useAuthStore()
@@ -32,7 +33,9 @@ const name = formatName(item, format).trim() || 'имя не указано'
 <template>
   <span v-if="isNoLink">{{ name }}</span>
   <RouterLink v-else :to="{ name: to, params: { id: item.id } }" @click.stop>
-    {{ name }}
+    <template v-if="!noName">
+      {{ name }}
+    </template>
     <slot />
   </RouterLink>
 </template>

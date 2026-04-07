@@ -75,7 +75,7 @@ async function getAudio(callId: number, action: 'play' | 'download') {
       <TableCol :width="160">
         <PhoneList :items="[getPhoneItem(item)]" no-colors />
       </TableCol>
-      <TableCol :width="160">
+      <TableCol :width="240">
         <UiIfSet :value="item.caller_type">
           {{ CallerTypeLabel[item.caller_type!] }}
         </UiIfSet>
@@ -122,7 +122,7 @@ async function getAudio(callId: number, action: 'play' | 'download') {
       <TableCol :width="140">
         {{ formatDateTime(item.created_at) }}
       </TableCol>
-      <TableCol :width="140" style="flex: initial !important">
+      <TableCol :width="90" style="flex: initial !important">
         <div class="call-list__actions">
           <v-btn
             :size="42"
@@ -131,13 +131,6 @@ async function getAudio(callId: number, action: 'play' | 'download') {
             :disabled="!item.has_recording"
             :loading="downloadingId === item.id"
             @click="downloadRecording(item)"
-          />
-          <v-btn
-            :size="42"
-            class="no-pointer-events"
-            :icon="mdiTextBoxOutline"
-            variant="text"
-            :disabled="!item.transcript"
           />
           <v-btn
             v-if="showMoreBtn"
