@@ -73,7 +73,7 @@ class Call extends Model
      */
     public static function aon(string $number): ?CallAppAonResource
     {
-        $phone = self::aonPhone($number);
+        $phone = self::resolveAonPhone($number);
 
         return $phone ? new CallAppAonResource($phone) : null;
     }
@@ -82,7 +82,7 @@ class Call extends Model
      * Исходные данные для АОН по номеру.
      * Используем единый алгоритм и в UI, и в логике suggest-комментариев.
      */
-    public static function aonPhone(string $number): ?Phone
+    private static function resolveAonPhone(string $number): ?Phone
     {
         // Кто звонит?
         return Phone::where('number', $number)
@@ -117,6 +117,29 @@ class Call extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * АОН в формате relation для eager loading в списке звонков.
+     */
+    public function aonPhone(): HasOne
+    {
+        return $this->hasOne(Phone::class, 'number', 'number')
+            ->where('entity_type', '<>', User::class)
+            ->orderByRaw('
+                CASE
+                    WHEN ENTITY_TYPE = ? THEN 4
+                    WHEN ENTITY_TYPE = ? THEN 3
+                    WHEN ENTITY_TYPE = ? THEN 2
+                    WHEN ENTITY_TYPE = ? THEN 1
+                END DESC
+            ', [
+                Client::class,
+                Representative::class,
+                Teacher::class,
+                Request::class,
+            ])
+            ->latest('id');
     }
 
     /**

@@ -25,7 +25,20 @@ class CallController extends Controller
     public function index(Request $request)
     {
         $query = Call::query()
-            ->with('user')
+            // Для списка не нужны тяжёлые поля (transcript/summary/analysis/instruction).
+            ->select([
+                'id',
+                'entry_id',
+                'user_id',
+                'type',
+                'number',
+                'recording',
+                'created_at',
+                'answered_at',
+                'finished_at',
+                'caller_type',
+            ])
+            ->with('user', 'aonPhone.entity')
             ->latest();
         $this->filter($request, $query);
 
