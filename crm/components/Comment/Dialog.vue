@@ -158,12 +158,12 @@ function handleCommentError(errorData: any, fallbackMessage: string) {
 }
 
 function handleAutoSuggestError(errorData: any) {
-  const message =
-    errorData?.errors?.call_id?.[0] ||
-    errorData?.errors?.summary?.[0] ||
-    errorData?.errors?.text?.[0] ||
-    errorData?.message ||
-    'Не удалось подтянуть подсказку'
+  const message
+    = errorData?.errors?.call_id?.[0]
+      || errorData?.errors?.summary?.[0]
+      || errorData?.errors?.text?.[0]
+      || errorData?.message
+      || 'Не удалось подтянуть подсказку'
 
   useGlobalMessage(message, 'error')
 }
@@ -199,7 +199,8 @@ async function createComment(payload: { text: string }) {
   if (tabs && tabCounts.value) {
     if (selectedTab.value in tabCounts.value) {
       tabCounts.value[selectedTab.value]++
-    } else {
+    }
+    else {
       tabCounts.value = {
         ...tabCounts.value,
         [selectedTab.value]: 1,
@@ -314,7 +315,7 @@ async function pullAutoSuggestText() {
 }
 
 function destroy(c: CommentResource) {
-  const index = comments.value.findIndex((e) => e.id === c.id)
+  const index = comments.value.findIndex(e => e.id === c.id)
   comments.value.splice(index, 1)
   useHttp<CommentResource>(`comments/${c.id}`, {
     method: 'delete',
@@ -331,7 +332,7 @@ async function saveEdit() {
   if (!text.value.length) {
     return
   }
-  const index = comments.value.findIndex((e) => e.id === editId.value)
+  const index = comments.value.findIndex(e => e.id === editId.value)
   const { data } = await useHttp<CommentResource>(`comments/${editId.value}`, {
     method: 'put',
     body: {
@@ -351,7 +352,8 @@ watch(dialog, (isOpen) => {
   // Слушаем live-обновления только пока открыт конкретный диалог.
   if (isOpen) {
     bindCallSummaryListener()
-  } else {
+  }
+  else {
     unbindCallSummaryListener()
   }
 
@@ -362,7 +364,8 @@ watch(dialog, (isOpen) => {
 
   if (isOpen) {
     el?.classList.add('is-comment-editing')
-  } else {
+  }
+  else {
     el?.classList.remove('is-comment-editing')
   }
 })
@@ -454,7 +457,11 @@ defineExpose({ open })
             color="secondary"
             @click="send()"
           />
-          <v-tooltip v-else-if="showAutoSuggestButton && isAutoSuggestProcessing" location="left">
+          <v-tooltip
+            v-else-if="showAutoSuggestButton && !isAutoSuggestLoading"
+            location="left"
+            :disabled="!isAutoSuggestProcessing"
+          >
             <template #activator="{ props }">
               <span v-bind="props">
                 <v-btn
@@ -462,23 +469,15 @@ defineExpose({ open })
                   height="48"
                   width="48"
                   variant="text"
-                  color="grey"
-                  class="no-pointer-events opacity-5"
+                  :color="isAutoSuggestProcessing ? 'grey' : 'warning'"
+                  :class="{ 'no-pointer-events opacity-5': isAutoSuggestProcessing }"
+                  :loading="isSendingAutoSuggest"
+                  @click="pullAutoSuggestText()"
                 />
               </span>
             </template>
             <span>Звонок обрабатывается, подождите...</span>
           </v-tooltip>
-          <v-btn
-            v-else-if="showAutoSuggestButton && isAutoSuggestReady && !isAutoSuggestLoading"
-            :icon="mdiSendVariant"
-            height="48"
-            width="48"
-            variant="text"
-            color="warning"
-            :loading="isSendingAutoSuggest"
-            @click="pullAutoSuggestText()"
-          />
         </transition>
       </div>
       <UiNoData v-else-if="isLoaded && comments.length === 0" />
