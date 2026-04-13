@@ -1,10 +1,26 @@
 <script setup lang="ts">
 import type { CommentTab } from '.'
-import type { CallListResource } from '~/components/Call'
 import { mdiSendVariant } from '@mdi/js'
 import { format } from 'date-fns'
 
-const { entityId, entityType, extra: extraProp } = defineProps<{
+type AutoSuggestState = 'none' | 'processing' | 'ready'
+
+interface AutoSuggestCallResource {
+  id: number
+  summary: string | null
+}
+
+interface CallSummaryUpdatedPayload {
+  id: number | string
+  summary: string | null
+  user_id: number | null
+}
+
+const {
+  entityId,
+  entityType,
+  extra: extraProp,
+} = defineProps<{
   entityId: number
   entityType: EntityType
 
@@ -25,9 +41,12 @@ const isLoaded = ref(false)
 const editId = ref<number>()
 // Храним только id звонка-кандидата для auto-suggest.
 const autoSuggestCallId = ref<number | null>(null)
+const autoSuggestState = ref<AutoSuggestState>('none')
 const isAutoSuggestLoading = ref(false)
 const isSendingAutoSuggest = ref(false)
 const { user, isAdmin } = useAuthStore()
+const { $addSseListener, $removeSseListener } = useNuxtApp()
+const isCallSummaryListenerBound = ref(false)
 // у клиента всегда показываем вкладки
 const tabs = entityType === EntityTypeValue.client
 const isTabCountsLoaded = ref(false)
@@ -35,10 +54,60 @@ let extra: string | undefined = extraProp
 
 const selectedTab = ref<CommentTab>((extra || '') as CommentTab)
 const tabCounts = ref<Record<CommentTab, number>>()
+const hasText = computed(() => text.value.length > 0)
+const isAutoSuggestProcessing = computed(() => autoSuggestState.value === 'processing')
+const isAutoSuggestReady = computed(() => autoSuggestState.value === 'ready')
+const showSendButton = computed(() => !editId.value && hasText.value)
+const showAutoSuggestButton = computed(
+  () => !editId.value && !hasText.value && autoSuggestState.value !== 'none',
+)
+
+function isSummaryReady(summary: string | null | undefined): boolean {
+  return (summary || '').trim().length > 0
+}
+
+function setAutoSuggestStateFromSummary(summary: string | null | undefined) {
+  autoSuggestState.value = isSummaryReady(summary) ? 'ready' : 'processing'
+}
+
+function onCallSummaryUpdated(payload: CallSummaryUpdatedPayload) {
+  // Обновляем только активный диалог и только его звонок-кандидат.
+  if (!dialog.value || autoSuggestCallId.value === null) {
+    return
+  }
+
+  const payloadCallId = Number(payload.id)
+  if (Number.isNaN(payloadCallId) || payloadCallId !== autoSuggestCallId.value) {
+    return
+  }
+
+  if (!isSummaryReady(payload.summary)) {
+    return
+  }
+
+  autoSuggestState.value = 'ready'
+}
+
+function bindCallSummaryListener() {
+  if (isCallSummaryListenerBound.value) {
+    return
+  }
+
+  $addSseListener('CallSummaryUpdatedEvent', onCallSummaryUpdated)
+  isCallSummaryListenerBound.value = true
+}
+
+function unbindCallSummaryListener() {
+  if (!isCallSummaryListenerBound.value) {
+    return
+  }
+
+  $removeSseListener('CallSummaryUpdatedEvent')
+  isCallSummaryListenerBound.value = false
+}
 
 function scrollBottom() {
   nextTick(() => {
-    console.log(wrapper.value)
     wrapper.value?.scrollTo({ top: 99999, behavior: noScroll.value ? 'instant' : 'smooth' })
     input.value?.focus()
   })
@@ -57,12 +126,14 @@ async function open(autoSuggestEnabled = false) {
   dialog.value = true
   editId.value = undefined
   autoSuggestCallId.value = null
+  autoSuggestState.value = 'none'
   isLoaded.value = false
 
   if (tabs && !isTabCountsLoaded.value) {
     watch(selectedTab, async (newVal) => {
       extra = newVal || ''
       autoSuggestCallId.value = null
+      autoSuggestState.value = 'none'
       isLoaded.value = false
       await loadData()
       finalizeLoadedView()
@@ -81,39 +152,33 @@ async function open(autoSuggestEnabled = false) {
 
 function handleCommentError(errorData: any, fallbackMessage: string) {
   const messageFromField = errorData?.errors?.text?.[0]
-  const message = messageFromField
-    || errorData?.message
-    || fallbackMessage
+  const message = messageFromField || errorData?.message || fallbackMessage
 
   useGlobalMessage(message, 'error')
 }
 
 function handleAutoSuggestError(errorData: any) {
-  const message = errorData?.errors?.call_id?.[0]
-    || errorData?.errors?.summary?.[0]
-    || errorData?.errors?.text?.[0]
-    || errorData?.message
-    || 'Не удалось подтянуть подсказку'
+  const message =
+    errorData?.errors?.call_id?.[0] ||
+    errorData?.errors?.summary?.[0] ||
+    errorData?.errors?.text?.[0] ||
+    errorData?.message ||
+    'Не удалось подтянуть подсказку'
 
   useGlobalMessage(message, 'error')
 }
 
-async function createComment(payload: {
-  text: string
-}) {
+async function createComment(payload: { text: string }) {
   // Единая отправка комментария: и обычного, и принятого из auto-suggest.
-  const { data, error } = await useHttp<CommentResource>(
-    `comments`,
-    {
-      method: 'post',
-      body: {
-        extra,
-        text: payload.text,
-        entity_id: entityId,
-        entity_type: entityType,
-      },
+  const { data, error } = await useHttp<CommentResource>(`comments`, {
+    method: 'post',
+    body: {
+      extra,
+      text: payload.text,
+      entity_id: entityId,
+      entity_type: entityType,
     },
-  )
+  })
 
   if (error.value) {
     handleCommentError(error.value.data, 'Не удалось отправить комментарий')
@@ -128,13 +193,13 @@ async function createComment(payload: {
   comments.value.push(data.value)
   // После отправки любого комментария сбрасываем локальный флаг auto-suggest.
   autoSuggestCallId.value = null
+  autoSuggestState.value = 'none'
   text.value = ''
 
   if (tabs && tabCounts.value) {
     if (selectedTab.value in tabCounts.value) {
       tabCounts.value[selectedTab.value]++
-    }
-    else {
+    } else {
       tabCounts.value = {
         ...tabCounts.value,
         [selectedTab.value]: 1,
@@ -144,7 +209,7 @@ async function createComment(payload: {
 
   scrollBottom()
   emit('created')
-  setTimeout(() => noScroll.value = false, 200)
+  setTimeout(() => (noScroll.value = false), 200)
 
   return true
 }
@@ -161,16 +226,13 @@ async function send() {
 }
 
 async function loadData() {
-  const { data } = await useHttp<ApiResponse<CommentResource>>(
-    `comments`,
-    {
-      params: {
-        extra,
-        entity_id: entityId,
-        entity_type: entityType,
-      },
+  const { data } = await useHttp<ApiResponse<CommentResource>>(`comments`, {
+    params: {
+      extra,
+      entity_id: entityId,
+      entity_type: entityType,
     },
-  )
+  })
   comments.value = data.value?.data ?? []
 }
 
@@ -187,49 +249,51 @@ async function loadTabCounts() {
   })
 
   tabCounts.value = data.value!
-  console.log('tabCounts loaded', data.value!)
 }
 
 async function loadAutoSuggest() {
   // Подгружаем последний звонок-кандидат для кнопки "подтянуть подсказку".
   isAutoSuggestLoading.value = true
-  const { data, error } = await useHttp<CallListResource | null>(
-    'comments/auto-suggest',
-    {
-      params: {
-        entity_id: entityId,
-        entity_type: entityType,
-      },
+  const { data, error } = await useHttp<AutoSuggestCallResource | null>('comments/auto-suggest', {
+    params: {
+      entity_id: entityId,
+      entity_type: entityType,
     },
-  )
+  })
 
   if (error.value) {
     autoSuggestCallId.value = null
+    autoSuggestState.value = 'none'
     isAutoSuggestLoading.value = false
     return
   }
 
-  autoSuggestCallId.value = data.value?.id ?? null
+  if (!data.value) {
+    autoSuggestCallId.value = null
+    autoSuggestState.value = 'none'
+    isAutoSuggestLoading.value = false
+    return
+  }
+
+  autoSuggestCallId.value = data.value.id
+  setAutoSuggestStateFromSummary(data.value.summary)
   isAutoSuggestLoading.value = false
 }
 
 async function pullAutoSuggestText() {
-  if (!autoSuggestCallId.value || isSendingAutoSuggest.value) {
+  if (!autoSuggestCallId.value || !isAutoSuggestReady.value || isSendingAutoSuggest.value) {
     return
   }
 
   isSendingAutoSuggest.value = true
-  const { data, error } = await useHttp<{ text: string }>(
-    'comments/auto-suggest/text',
-    {
-      method: 'post',
-      body: {
-        entity_id: entityId,
-        entity_type: entityType,
-        call_id: autoSuggestCallId.value,
-      },
+  const { data, error } = await useHttp<{ text: string }>('comments/auto-suggest/text', {
+    method: 'post',
+    body: {
+      entity_id: entityId,
+      entity_type: entityType,
+      call_id: autoSuggestCallId.value,
     },
-  )
+  })
 
   if (error.value) {
     handleAutoSuggestError(error.value.data)
@@ -250,7 +314,7 @@ async function pullAutoSuggestText() {
 }
 
 function destroy(c: CommentResource) {
-  const index = comments.value.findIndex(e => e.id === c.id)
+  const index = comments.value.findIndex((e) => e.id === c.id)
   comments.value.splice(index, 1)
   useHttp<CommentResource>(`comments/${c.id}`, {
     method: 'delete',
@@ -267,7 +331,7 @@ async function saveEdit() {
   if (!text.value.length) {
     return
   }
-  const index = comments.value.findIndex(e => e.id === editId.value)
+  const index = comments.value.findIndex((e) => e.id === editId.value)
   const { data } = await useHttp<CommentResource>(`comments/${editId.value}`, {
     method: 'put',
     body: {
@@ -284,6 +348,13 @@ function quitEdit() {
 }
 
 watch(dialog, (isOpen) => {
+  // Слушаем live-обновления только пока открыт конкретный диалог.
+  if (isOpen) {
+    bindCallSummaryListener()
+  } else {
+    unbindCallSummaryListener()
+  }
+
   if (entityType !== EntityTypeValue.request) {
     return
   }
@@ -291,21 +362,18 @@ watch(dialog, (isOpen) => {
 
   if (isOpen) {
     el?.classList.add('is-comment-editing')
-  }
-  else {
+  } else {
     el?.classList.remove('is-comment-editing')
   }
 })
+
+onUnmounted(() => unbindCallSummaryListener())
 
 defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog
-    v-model="dialog"
-    :width="width"
-    :transition="transition"
-  >
+  <v-dialog v-model="dialog" :width="width" :transition="transition">
     <div
       ref="wrapper"
       class="dialog-wrapper comments-wrapper"
@@ -318,20 +386,9 @@ defineExpose({ open })
         <UiLoader v-if="!isLoaded" />
       </v-fade-transition>
       <CommentTabs v-if="isTabCountsLoaded" v-model="selectedTab" :counts="tabCounts" />
-      <transition-group
-        name="new-comment"
-        class="comments__items"
-        tag="div"
-      >
-        <div
-          v-for="c in comments"
-          :key="c.id"
-          class="comment"
-        >
-          <UiAvatar
-            :item="c.user"
-            :size="46"
-          />
+      <transition-group name="new-comment" class="comments__items" tag="div">
+        <div v-for="c in comments" :key="c.id" class="comment">
+          <UiAvatar :item="c.user" :size="46" />
           <div>
             <div class="comment__title">
               <span>
@@ -341,12 +398,8 @@ defineExpose({ open })
                     <v-icon icon="$more" v-bind="props" />
                   </template>
                   <v-list density="comfortable">
-                    <v-list-item @click="startEdit(c)">
-                      редактировать
-                    </v-list-item>
-                    <v-list-item @click="destroy(c)">
-                      удалить
-                    </v-list-item>
+                    <v-list-item @click="startEdit(c)"> редактировать </v-list-item>
+                    <v-list-item @click="destroy(c)"> удалить </v-list-item>
                   </v-list>
                 </v-menu>
               </span>
@@ -393,14 +446,38 @@ defineExpose({ open })
         />
         <transition name="comment-btn">
           <v-btn
-            v-if="!editId && (text.length > 0 || (autoSuggestCallId && !isAutoSuggestLoading))"
+            v-if="showSendButton"
             :icon="mdiSendVariant"
             height="48"
             width="48"
             variant="text"
-            :color="text.length > 0 ? 'secondary' : 'warning'"
-            :loading="text.length === 0 && isSendingAutoSuggest"
-            @click="text.length > 0 ? send() : pullAutoSuggestText()"
+            color="secondary"
+            @click="send()"
+          />
+          <v-tooltip v-else-if="showAutoSuggestButton && isAutoSuggestProcessing" location="left">
+            <template #activator="{ props }">
+              <span v-bind="props">
+                <v-btn
+                  :icon="mdiSendVariant"
+                  height="48"
+                  width="48"
+                  variant="text"
+                  color="grey"
+                  class="no-pointer-events opacity-5"
+                />
+              </span>
+            </template>
+            <span>Звонок обрабатывается, подождите...</span>
+          </v-tooltip>
+          <v-btn
+            v-else-if="showAutoSuggestButton && isAutoSuggestReady && !isAutoSuggestLoading"
+            :icon="mdiSendVariant"
+            height="48"
+            width="48"
+            variant="text"
+            color="warning"
+            :loading="isSendingAutoSuggest"
+            @click="pullAutoSuggestText()"
           />
         </transition>
       </div>

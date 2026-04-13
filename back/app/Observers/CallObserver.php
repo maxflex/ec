@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Events\CallSummaryUpdatedEvent;
 use App\Jobs\ProcessCallRecordingJob;
 use App\Models\Call;
 use App\Utils\AI\CallAnalysisService;
@@ -22,6 +23,11 @@ class CallObserver
         if ($call->wasChanged('recording') && $call->recording && CallAnalysisService::shouldAnalyze($call)) {
             // запускаем транскрибацию
             ProcessCallRecordingJob::dispatch($call->id);
+        }
+
+        // Для live-кнопки auto-suggest: как только summary реально готово в БД, шлем SSE-событие.
+        if ($call->wasChanged('summary')) {
+            CallSummaryUpdatedEvent::dispatch($call);
         }
     }
 }

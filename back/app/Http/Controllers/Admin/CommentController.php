@@ -113,7 +113,8 @@ class CommentController extends Controller
         $summary = trim((string) $actualCall->summary);
         if ($summary === '') {
             throw ValidationException::withMessages([
-                'summary' => 'Текст комментария генерируется, попробуйте через 30 сек.',
+                // Резервная защита от гонок: в UI это состояние теперь показывается live через SSE.
+                'summary' => 'Звонок ещё обрабатывается, дождитесь обновления кнопки.',
             ]);
         }
 
