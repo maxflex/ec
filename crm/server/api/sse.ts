@@ -1,9 +1,16 @@
-import { defineEventHandler } from 'h3'
+import { defineEventHandler, getQuery } from 'h3'
 import redis from 'redis'
 
 const config = useRuntimeConfig()
 
 export default defineEventHandler(async (event) => {
+  // Выбор потока делаем на уровне единого SSE-relay:
+  // - default => legacy-канал EC (sse), чтобы поведение EC не менялось
+  // - project=mr => только MR
+  // Для всех существующих EC-клиентов endpoint работает как раньше, без query.
+  const query = getQuery(event)
+  const channel = query.project === 'mr' ? 'sse.mr' : 'sse'
+
   // console.log('New SSE client connected')
   const redisClient = redis.createClient({
     socket: {
@@ -35,7 +42,7 @@ export default defineEventHandler(async (event) => {
     // console.log('closing SSE...')
     clearInterval(heartbeatInterval)
     try {
-      await redisClient.unsubscribe('sse')
+      await redisClient.unsubscribe(channel)
     }
     catch (error) {
       console.error('[sse] redis unsubscribe error', error)
@@ -49,10 +56,10 @@ export default defineEventHandler(async (event) => {
   // Do not await: sending before stream is open can block.
   void pushSystemEvent('connected', { ts: Date.now() })
 
-  void redisClient.subscribe('sse', (message) => {
+  void redisClient.subscribe(channel, (message) => {
     void eventStream.push(message)
   }).catch((error) => {
-    console.error('[sse] redis subscribe error', error)
+    console.error('[sse] redis subscribe error', error, { channel })
   })
 
   return sendPromise
