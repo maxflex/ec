@@ -65,12 +65,10 @@ class CallTranscriptionService extends GeminiService
      */
     private static function renderCallTranscriptionPrompt(Call $call): array
     {
-        $phones = CallPromptPhonesBuilder::build($call->number);
-
         return app(AiPromptRenderer::class)->renderInstructionAndPromptById(
             AiPrompt::CALL_TRANSCRIPTION, [
                 'call' => $call,
-                'phones' => $phones,
+                ...CallPromptPhonesBuilder::build($call),
             ]);
     }
 

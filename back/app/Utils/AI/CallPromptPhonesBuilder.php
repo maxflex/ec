@@ -4,23 +4,31 @@ namespace App\Utils\AI;
 
 use App\Enums\CvpStatus;
 use App\Models\Client;
+use App\Models\Call;
+use App\Models\Pass;
 use App\Models\Phone;
 use App\Models\Representative;
 use App\Models\Request;
 use App\Models\Teacher;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\CarbonImmutable;
 use Illuminate\Support\Collection;
 
 class CallPromptPhonesBuilder
 {
     /**
      * Подготовка и группировка телефонов для AI-шаблона звонков.
-     * Возвращаем только grouped-коллекцию по entity_type.
+     * Дополнительно отдаем использованные пропуска за последние 120 дней
+     * относительно времени звонка.
      *
-     * @return Collection<string, Collection<int, Phone>>
+     * @return array{
+     *     phones: Collection<string, Collection<int, Phone>>,
+     *     passes: Collection<int, Pass>
+     * }
      */
-    public static function build(string $number): Collection
+    public static function build(Call $call): array
     {
-        return Phone::query()
+        $phones = Phone::query()
             // Белый список поддерживаемых сущностей для prompt-контекста.
             ->whereIn('entity_type', [
                 Request::class,
@@ -28,13 +36,69 @@ class CallPromptPhonesBuilder
                 Representative::class,
                 Teacher::class,
             ])
-            ->whereNumber($number)
+            ->whereNumber($call->number)
             ->with('entity')
             ->latest('id')
             ->get()
             ->map(fn (Phone $phone): Phone => self::enrichPhoneForPrompt($phone))
             ->values()
             ->groupBy('entity_type');
+
+        $passes = self::buildPasses($phones, $call);
+
+        return [
+            'phones' => $phones,
+            'passes' => $passes,
+        ];
+    }
+
+    /**
+     * Возвращаем только использованные пропуска в окне [T-120 дней, T],
+     * где T — время звонка.
+     *
+     * @param  Collection<string, Collection<int, Phone>>  $phones
+     * @return Collection<int, Pass>
+     */
+    private static function buildPasses(Collection $phones, Call $call): Collection
+    {
+        /** @var Collection<int, Phone> $requestPhones */
+        $requestPhones = $phones[Request::class] ?? collect();
+        if ($requestPhones->isEmpty()) {
+            return collect();
+        }
+
+        $requests = new EloquentCollection(
+            $requestPhones
+                ->map(fn (Phone $phone): ?Request => $phone->entity instanceof Request ? $phone->entity : null)
+                ->filter()
+                ->unique('id')
+                ->values()
+                ->all()
+        );
+
+        if ($requests->isEmpty()) {
+            return collect();
+        }
+
+        $to = $call->created_at
+            ? CarbonImmutable::parse($call->created_at)
+            : CarbonImmutable::now();
+        $from = $to->subDays(120);
+
+        $requests->load([
+            'passes' => fn ($query) => $query
+                ->whereHas('passLog', fn ($q) => $q->whereBetween('used_at', [
+                    $from->format('Y-m-d H:i:s'),
+                    $to->format('Y-m-d H:i:s'),
+                ]))
+                ->with(['passLog', 'request'])
+                ->latest('id'),
+        ]);
+
+        return $requests
+            ->flatMap(fn (Request $request): EloquentCollection => $request->passes)
+            ->sortByDesc(fn (Pass $pass): string => (string) $pass->used_at)
+            ->values();
     }
 
     private static function enrichPhoneForPrompt(Phone $phone): Phone

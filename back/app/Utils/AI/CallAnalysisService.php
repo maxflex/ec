@@ -156,12 +156,10 @@ class CallAnalysisService extends GeminiService
      */
     private static function renderCallAnalysisPrompt(Call $call): array
     {
-        $phones = CallPromptPhonesBuilder::build($call->number);
-
         return app(AiPromptRenderer::class)->renderInstructionAndPromptById(
             AiPrompt::CALL_ANALYSIS, [
                 'call' => $call,
-                'phones' => $phones,
+                ...CallPromptPhonesBuilder::build($call),
             ]);
     }
 
