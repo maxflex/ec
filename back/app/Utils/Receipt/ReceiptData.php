@@ -24,7 +24,8 @@ readonly class ReceiptData
         // contract_payments_123 || other_payments_123
         $this->externalId = $model->getTable().'_'.$model->id;
         $this->sum = (int) $model->sum;
-        $this->receiptNumber = $model->receipt_number;
+        // Номер РФ должен начинаться с +7 или сразу с 925 (см. API_atol_online_v5.pdf)
+        $this->receiptNumber = '+'.$model->receipt_number;
         $this->isReturn = (bool) $model->is_return;
     }
 }
