@@ -48,6 +48,7 @@ const displayedPeople = computed<PeopleSelectorResource[]>(() => {
     return []
   }
 
+  const currentYear = currentAcademicYear()
   const q = filters.value.q.toLowerCase()
   const directions = filters.value.directions
 
@@ -76,8 +77,10 @@ const displayedPeople = computed<PeopleSelectorResource[]>(() => {
 
       const personDirections = p.directions ?? []
 
-      // пересечение массивов
-      return personDirections.some(d => directions.includes(d.direction))
+      // Учитываем только текущий учебный год, чтобы прошлогодние направления не попадали в выборку.
+      return personDirections.some(d =>
+        d.year === currentYear && directions.includes(d.direction),
+      )
     })
     // Фильтр "отмечен в событии?"
     .filter((p) => {
