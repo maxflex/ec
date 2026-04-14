@@ -3,7 +3,13 @@ import type { CallerType } from '~/components/Call'
 import { CallerTypeLabel } from '~/components/Call'
 
 export type CallStatusFilter = 'incoming' | 'outgoing' | 'missed' | 'missed_callback'
-export type CallDurationFilter = 'no_conversation' | 'short' | 'medium' | 'long' | 'very_long'
+export type CallDurationFilter =
+  | 'no_conversation'
+  | 'very_short'
+  | 'short'
+  | 'medium'
+  | 'long'
+  | 'very_long'
 
 export interface CallFilters {
   number?: string
@@ -24,7 +30,8 @@ const callStatusLabel: Record<CallStatusFilter, string> = {
 }
 
 const callDurationLabel: Record<CallDurationFilter, string> = {
-  short: 'короткие (< 1 мин)',
+  very_short: 'очень короткие (< 10 сек)',
+  short: 'короткие (10-60 сек)',
   medium: 'средние (1–5 мин)',
   long: 'длинные (5–10 мин)',
   very_long: 'очень длинные (> 10 мин)',
@@ -41,17 +48,16 @@ function clearNumberFilter() {
   model.value.number = undefined
 }
 
-watch(() => model.value.number, (value) => {
-  numberInput.value = value || ''
-})
+watch(
+  () => model.value.number,
+  (value) => {
+    numberInput.value = value || ''
+  },
+)
 </script>
 
 <template>
-  <UserSelector
-    v-model="model.user_id"
-    density="comfortable"
-    label="Пользователь"
-  />
+  <UserSelector v-model="model.user_id" density="comfortable" label="Пользователь" />
   <UiMultipleSelect
     v-model="model.caller_type"
     density="comfortable"

@@ -141,7 +141,7 @@ class CallController extends Controller
 
     /**
      * UI-диапазоны:
-     * no_conversation / short / medium / long / very_long.
+     * no_conversation / very_short / short / medium / long / very_long.
      */
     protected function filterCallDuration(Builder $query, array $durations): void
     {
@@ -149,6 +149,7 @@ class CallController extends Controller
             $durations,
             fn ($value) => is_string($value) && in_array($value, [
                 'no_conversation',
+                'very_short',
                 'short',
                 'medium',
                 'long',
@@ -167,7 +168,10 @@ class CallController extends Controller
                 $durationQuery->{$whereMethod}(function (Builder $singleDurationQuery) use ($duration) {
                     match ($duration) {
                         'no_conversation' => $singleDurationQuery->whereNull('answered_at'),
-                        'short' => $this->applyDurationRangeFilter($singleDurationQuery, null, 59),
+                        // "Очень короткие": до 10 секунд включительно.
+                        'very_short' => $this->applyDurationRangeFilter($singleDurationQuery, null, 10),
+                        // "Короткие": от 10 секунд до 1 минуты (как в UI-формулировке).
+                        'short' => $this->applyDurationRangeFilter($singleDurationQuery, 10, 59),
                         'medium' => $this->applyDurationRangeFilter($singleDurationQuery, 60, 300),
                         'long' => $this->applyDurationRangeFilter($singleDurationQuery, 301, 600),
                         'very_long' => $this->applyDurationRangeFilter($singleDurationQuery, 601, null),
