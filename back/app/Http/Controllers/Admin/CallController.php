@@ -17,7 +17,8 @@ class CallController extends Controller
 {
     protected $filters = [
         'number' => ['number'],
-        'equals' => ['user_id', 'caller_type'],
+        'equals' => ['user_id'],
+        'multiple' => ['caller_type'],
         'callStatus' => ['call_status'],
         'callDuration' => ['call_duration'],
     ];
@@ -142,16 +143,39 @@ class CallController extends Controller
      * UI-диапазоны:
      * no_conversation / short / medium / long / very_long.
      */
-    protected function filterCallDuration(Builder $query, string $duration): void
+    protected function filterCallDuration(Builder $query, array $durations): void
     {
-        match ($duration) {
-            'no_conversation' => $query->whereNull('answered_at'),
-            'short' => $this->applyDurationRangeFilter($query, null, 59),
-            'medium' => $this->applyDurationRangeFilter($query, 60, 300),
-            'long' => $this->applyDurationRangeFilter($query, 301, 600),
-            'very_long' => $this->applyDurationRangeFilter($query, 601, null),
-            default => null,
-        };
+        $durations = array_values(array_unique(array_filter(
+            $durations,
+            fn ($value) => is_string($value) && in_array($value, [
+                'no_conversation',
+                'short',
+                'medium',
+                'long',
+                'very_long',
+            ], true),
+        )));
+
+        if ($durations === []) {
+            return;
+        }
+
+        // Для мультиселекта объединяем диапазоны через OR в одной вложенной группе.
+        $query->where(function (Builder $durationQuery) use ($durations) {
+            foreach ($durations as $i => $duration) {
+                $whereMethod = $i === 0 ? 'where' : 'orWhere';
+                $durationQuery->{$whereMethod}(function (Builder $singleDurationQuery) use ($duration) {
+                    match ($duration) {
+                        'no_conversation' => $singleDurationQuery->whereNull('answered_at'),
+                        'short' => $this->applyDurationRangeFilter($singleDurationQuery, null, 59),
+                        'medium' => $this->applyDurationRangeFilter($singleDurationQuery, 60, 300),
+                        'long' => $this->applyDurationRangeFilter($singleDurationQuery, 301, 600),
+                        'very_long' => $this->applyDurationRangeFilter($singleDurationQuery, 601, null),
+                        default => null,
+                    };
+                });
+            }
+        });
     }
 
     /**
@@ -177,4 +201,5 @@ class CallController extends Controller
             $query->whereRaw('TIMESTAMPDIFF(SECOND, answered_at, finished_at) <= ?', [$maxSeconds]);
         }
     }
+
 }

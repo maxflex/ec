@@ -9,8 +9,8 @@ export interface CallFilters {
   number?: string
   user_id?: number
   call_status: CallStatusFilter[]
-  caller_type?: CallerType
-  call_duration?: CallDurationFilter
+  caller_type: CallerType[]
+  call_duration: CallDurationFilter[]
 }
 
 const model = defineModel<CallFilters>({ required: true })
@@ -52,14 +52,14 @@ watch(() => model.value.number, (value) => {
     density="comfortable"
     label="Пользователь"
   />
-  <UiClearableSelect
+  <UiMultipleSelect
     v-model="model.caller_type"
     density="comfortable"
     label="Тип разговора"
     :items="selectItems(CallerTypeLabel)"
     expand
   />
-  <UiClearableSelect
+  <UiMultipleSelect
     v-model="model.call_duration"
     expand
     density="comfortable"
