@@ -2,7 +2,7 @@
 import type { HeadTeacherReportResource } from '~/components/HeadTeacherReport'
 import { HeadTeacherReportDialog } from '#components'
 
-const filters = ref<YearFilters>(loadFilters({
+const filters = ref<YearFilters>(usePersistentFilters().load({
   year: currentAcademicYear(),
 }))
 

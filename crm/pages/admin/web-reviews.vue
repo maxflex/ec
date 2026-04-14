@@ -4,7 +4,7 @@ import type { WebReviewResource } from '~/components/WebReview'
 import type { WebReviewFilters } from '~/components/WebReview/Filters.vue'
 
 const webReviewDialog = ref<InstanceType<typeof WebReviewDialog>>()
-const filters = ref<WebReviewFilters>(loadFilters({
+const filters = ref<WebReviewFilters>(usePersistentFilters().load({
   program: [],
 }))
 const { items, indexPageData } = useIndex<WebReviewResource>(

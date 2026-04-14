@@ -19,7 +19,7 @@ const availableEntityTypes = [
   EntityTypeValue.user,
 ] as EntityType[]
 
-const filters = ref<Filters>(loadFilters({ }))
+const filters = ref<Filters>(usePersistentFilters().load({ }))
 
 const { items, indexPageData } = useIndex<PassStats>(
   `passes/stats`,

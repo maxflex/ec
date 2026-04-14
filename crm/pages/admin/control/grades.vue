@@ -10,7 +10,7 @@ type Field = keyof Fields
 
 type Item = PersonResource & Fields
 
-const filters = ref<YearFilters>(loadFilters({
+const filters = ref<YearFilters>(usePersistentFilters().load({
   year: currentAcademicYear(),
 }))
 

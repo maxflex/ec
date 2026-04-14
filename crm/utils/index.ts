@@ -149,35 +149,6 @@ export function currentMonth(): Month {
   return (getMonth(new Date()) + 1) as Month
 }
 
-/**
- * @param tabName
- * @param routeName устанавливается только у админа в updateMenuCounts
- */
-function getFiltersKey(
-  tabName: string | null = null,
-  routeName: string | null = null,
-) {
-  if (!routeName) {
-    const route = useRoute()
-    routeName = String(route.name)
-  }
-  const prefix = 'filters-02'
-  return [
-    prefix,
-    getEntityStringFromToken(),
-    `${tabName || ''}${routeName}`,
-  ].join('-')
-}
-
-export function saveFilters(filters: object, tabName: string | null = null): void {
-  localStorage.setItem(getFiltersKey(tabName), JSON.stringify(filters))
-}
-
-export function loadFilters<T>(defaultFilters: T, tabName: string | null = null): T {
-  const filters = localStorage.getItem(getFiltersKey(tabName))
-  return filters === null ? defaultFilters : JSON.parse(filters)
-}
-
 export function responseError(error: FetchError<any>) {
   useGlobalMessage(error.data!.message, 'error')
 }

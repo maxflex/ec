@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { LogFilters } from '~/components/Log/Filters.vue'
 
-const filters = ref<LogFilters>(loadFilters({}))
+const filters = ref<LogFilters>(usePersistentFilters().load({}))
 const { items, indexPageData } = useIndex<LogResource>(
   `logs`,
   filters,

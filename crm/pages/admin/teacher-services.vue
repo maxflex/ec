@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TeacherServiceResource } from '~/components/TeacherService'
 
-const filters = ref<{ year: Year }>(loadFilters({
+const filters = ref<{ year: Year }>(usePersistentFilters().load({
   year: currentAcademicYear(),
 }))
 

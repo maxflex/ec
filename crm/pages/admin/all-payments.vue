@@ -11,7 +11,7 @@ interface Filters {
 
 const otherPaymentDialog = ref<InstanceType<typeof OtherPaymentDialog>>()
 const contractPaymentDialog = ref<InstanceType<typeof ContractPaymentDialog>>()
-const filters = ref<Filters>(loadFilters({
+const filters = ref<Filters>(usePersistentFilters().load({
   year: [],
   method: [],
 }))

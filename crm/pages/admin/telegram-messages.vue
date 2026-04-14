@@ -5,10 +5,10 @@ const route = useRoute()
 const { number: numberFromQuery } = route.query
 const initialFilters: TelegramMessageFilters = numberFromQuery
   ? {
-      // При явном number из URL игнорируем loadFilters из localStorage.
+      // При явном number из URL игнорируем сохранённые фильтры из localStorage.
       number: formatPhone(numberFromQuery),
     }
-  : loadFilters<TelegramMessageFilters>({})
+  : usePersistentFilters().load<TelegramMessageFilters>({})
 
 const filters = ref<TelegramMessageFilters>(initialFilters)
 

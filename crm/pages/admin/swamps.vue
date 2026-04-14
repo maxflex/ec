@@ -21,7 +21,7 @@ interface SwampClientResource {
   counts: Record<Field, number>
 }
 
-const filters = ref<SwampFilters>(loadFilters({
+const filters = ref<SwampFilters>(usePersistentFilters().load({
   year: currentAcademicYear(),
   program: [],
 }))

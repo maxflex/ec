@@ -6,7 +6,7 @@ import { TeacherComplaintRecipientLabel, TeacherComplaintStatusLabel } from '~/c
 const filters = ref<{
   status?: TeacherComplaintStatus
   recipient?: TeacherComplaintRecipient
-}>(loadFilters({
+}>(usePersistentFilters().load({
   status: undefined,
   recipient: undefined,
 }))

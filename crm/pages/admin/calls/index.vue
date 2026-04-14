@@ -35,11 +35,11 @@ function normalizeFilters(filters: Partial<CallFilters>): CallFilters {
 
 const initialFilters: CallFilters = numberFromQuery
   ? {
-      // При явном number из URL игнорируем loadFilters из localStorage.
+      // При явном number из URL игнорируем сохранённые фильтры из localStorage.
       ...normalizeFilters(defaultFilters),
       number: formatPhone(numberFromQuery),
     }
-  : normalizeFilters(loadFilters<Partial<CallFilters>>(defaultFilters))
+  : normalizeFilters(usePersistentFilters().load(defaultFilters))
 
 const filters = ref<CallFilters>(initialFilters)
 

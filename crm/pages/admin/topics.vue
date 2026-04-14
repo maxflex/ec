@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TopicFilters } from '~/components/Topic/Filters.vue'
 
-const filters = ref<TopicFilters>(loadFilters({
+const filters = ref<TopicFilters>(usePersistentFilters().load({
   year: currentAcademicYear(),
 }))
 

@@ -4,7 +4,7 @@ import type { PassResource } from '~/components/Pass'
 import type { PassFilters } from '~/components/Pass/Filters.vue'
 
 const passDialog = ref<InstanceType<typeof PassDialog>>()
-const filters = ref<PassFilters>(loadFilters({
+const filters = ref<PassFilters>(usePersistentFilters().load({
   direction: [],
 }))
 const { items, indexPageData } = useIndex<PassResource>(`passes`, filters)

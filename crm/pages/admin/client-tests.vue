@@ -9,7 +9,7 @@ interface ClientTestFilters {
   status?: ClientTestStatus
 }
 
-const filters = ref<ClientTestFilters>(loadFilters({
+const filters = ref<ClientTestFilters>(usePersistentFilters().load({
   year: currentAcademicYear(),
 }))
 

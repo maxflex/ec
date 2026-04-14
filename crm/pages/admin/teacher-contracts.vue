@@ -6,7 +6,7 @@ import { apiUrl } from '~/components/TeacherContract'
 const filters = ref<{
   year: Year
   has_problems?: number
-}>(loadFilters({
+}>(usePersistentFilters().load({
   year: currentAcademicYear(),
 }))
 

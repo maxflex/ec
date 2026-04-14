@@ -2,7 +2,7 @@
 import type { TeacherDialog } from '#components'
 import type { TeacherFilters } from '~/components/Teacher/Filters.vue'
 
-const filters = ref<TeacherFilters>(loadFilters({
+const filters = ref<TeacherFilters>(usePersistentFilters().load({
   subjects: [],
 }))
 const teacherDialog = ref<InstanceType<typeof TeacherDialog>>()

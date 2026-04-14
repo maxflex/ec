@@ -3,7 +3,7 @@ import type { GroupDialog } from '#build/components'
 import type { GroupListResource } from '~/components/Group'
 import type { GroupFilters } from '~/components/Group/Filters.vue'
 
-const filters = ref<GroupFilters>(loadFilters({
+const filters = ref<GroupFilters>(usePersistentFilters().load({
   year: currentAcademicYear(),
   program: [],
 }))

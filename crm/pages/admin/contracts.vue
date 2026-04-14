@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import type { ClientDialog, ContractVersionDialog } from '#build/components'
-import type { ClientListResource } from '~/components/Client'
+import type { ContractVersionDialog } from '#build/components'
 import type { ContractVersionListResource } from '~/components/ContractVersion'
 import type { ContractVersionFilters } from '~/components/ContractVersion/Filters.vue'
 
 const contractVersionDialog = ref<InstanceType<typeof ContractVersionDialog>>()
-const clientDialog = ref<InstanceType<typeof ClientDialog>>()
 
-const filters = ref<ContractVersionFilters>(loadFilters({
+const filters = ref<ContractVersionFilters>(usePersistentFilters().load({
   year: currentAcademicYear(),
   direction: [],
 }))

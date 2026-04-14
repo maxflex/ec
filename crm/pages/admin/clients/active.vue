@@ -7,7 +7,7 @@ interface Filters {
   is_risk?: boolean
 }
 
-const filters = ref<Filters>(loadFilters({
+const filters = ref<Filters>(usePersistentFilters().load({
   program: [],
 }))
 

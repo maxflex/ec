@@ -17,7 +17,7 @@ interface TeacherBalance {
 
 type TeacherBalanceField = keyof TeacherBalance
 
-const filters = ref(loadFilters({
+const filters = ref(usePersistentFilters().load({
   year: currentAcademicYear(),
 }))
 

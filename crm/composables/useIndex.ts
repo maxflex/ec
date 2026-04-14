@@ -50,6 +50,7 @@ export default function<T, E extends object = object>(
     watchFilters = true,
     loadAvailableYears = false,
   } = options
+  const persistentFilters = usePersistentFilters()
 
   // данные для компонента UiIndexPage
   const indexPageData = ref<IndexPageData>({
@@ -155,7 +156,7 @@ export default function<T, E extends object = object>(
 
   watchFilters && watch(filters, (newVal) => {
     reloadData()
-    isSaveFilters && saveFilters(newVal, tabName)
+    isSaveFilters && persistentFilters.save(newVal, { tabName })
   }, { deep: true })
 
   function onScroll() {

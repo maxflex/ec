@@ -6,7 +6,7 @@ import { apiUrl } from '~/components/TeacherAct'
 const exporting = ref(false)
 const filters = ref<{
   year: Year
-}>(loadFilters({
+}>(usePersistentFilters().load({
   year: currentAcademicYear(),
 }))
 

@@ -2,7 +2,7 @@
 import type { TelegramListResource } from '~/components/TelegramList'
 import type { TelegramListFilters } from '~/components/TelegramList/Filters.vue'
 
-const filters = ref<TelegramListFilters>(loadFilters({}))
+const filters = ref<TelegramListFilters>(usePersistentFilters().load({}))
 const { items, indexPageData } = useIndex<TelegramListResource, TelegramListFilters>(
   `telegram-lists`,
   filters,

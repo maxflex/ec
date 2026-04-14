@@ -2,7 +2,7 @@
 import type { TeacherPaymentResource } from '~/components/TeacherPayment'
 import type { TeacherPaymentFilters } from '~/components/TeacherPayment/Filters.vue'
 
-const filters = ref<TeacherPaymentFilters>(loadFilters({
+const filters = ref<TeacherPaymentFilters>(usePersistentFilters().load({
   year: currentAcademicYear(),
 }))
 const { items, indexPageData } = useIndex<TeacherPaymentResource>(

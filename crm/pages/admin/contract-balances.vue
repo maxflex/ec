@@ -19,7 +19,7 @@ interface ContractBalancesFilters {
   direction: Direction[]
 }
 
-const filters = ref<ContractBalancesFilters>(loadFilters({
+const filters = ref<ContractBalancesFilters>(usePersistentFilters().load({
   year: currentAcademicYear(),
   direction: [],
 }))

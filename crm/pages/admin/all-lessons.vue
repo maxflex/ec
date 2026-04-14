@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { LessonConductDialog, LessonDialog, ViolationDialog } from '#build/components'
 import type { ViolationResource } from '~/components/Violation'
-import { mdiCellphoneRemove, mdiVideo } from '@mdi/js'
+import { mdiVideo } from '@mdi/js'
 import { eachDayOfInterval, endOfMonth, format, getDay, startOfMonth } from 'date-fns'
 import { Vue3SlideUpDown } from 'vue3-slide-up-down'
 
@@ -21,7 +21,7 @@ interface AllLessons {
 const response = ref<AllLessons>({})
 const todayDate = today()
 
-const filters = ref<YearFilters>(loadFilters({
+const filters = ref<YearFilters>(usePersistentFilters().load({
   year: currentAcademicYear(),
 }))
 const loading = ref(false)
@@ -82,7 +82,7 @@ async function expand(date: string) {
 
 watch(filters, async (newVal) => {
   await loadData()
-  saveFilters(newVal)
+  usePersistentFilters().save(newVal)
 }, { deep: true })
 
 nextTick(() => {

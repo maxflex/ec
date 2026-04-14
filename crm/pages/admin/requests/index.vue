@@ -4,7 +4,7 @@ import type { RequestListResource } from '~/components/Request'
 import type { Filters } from '~/components/Request/Filters.vue'
 import { apiUrl } from '~/components/Request'
 
-const filters = ref<Filters>(loadFilters({
+const filters = ref<Filters>(usePersistentFilters().load({
   direction: [],
 }))
 
