@@ -10,8 +10,8 @@ use App\Models\Phone;
 use App\Models\Representative;
 use App\Models\Request;
 use App\Models\Teacher;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Support\CarbonImmutable;
 use Illuminate\Support\Collection;
 
 class CallPromptPhonesBuilder
