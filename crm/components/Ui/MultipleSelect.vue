@@ -1,12 +1,38 @@
 <script setup lang="ts">
+const { expand = false } = defineProps<{
+  expand?: boolean
+}>()
+
 const model = defineModel<any[]>({ required: true })
+const attrs = useAttrs()
+
+const inputAttrs = computed(() => {
+  const attrsRecord = attrs as Record<string, unknown>
+  const { menuProps: _, 'menu-props': __, ...rest } = attrsRecord
+  return rest
+})
+
+const menuProps = computed(() => {
+  const attrsRecord = attrs as Record<string, unknown>
+  const rawMenuProps = attrsRecord.menuProps ?? attrsRecord['menu-props']
+  const normalizedMenuProps = typeof rawMenuProps === 'object' && rawMenuProps !== null
+    ? rawMenuProps as Record<string, unknown>
+    : {}
+
+  // Если указан expand, раскрываем меню по полной высоте списка без скролла.
+  return {
+    ...normalizedMenuProps,
+    maxHeight: expand ? 'auto' : (normalizedMenuProps.maxHeight ?? 300),
+  }
+})
 </script>
 
 <template>
   <v-select
-    v-bind="$attrs"
+    v-bind="inputAttrs"
     v-model="model"
     multiple
+    :menu-props="menuProps"
     :hide-details="!('presets' in $slots)"
     messages="123"
     class="multiple-select"

@@ -13,6 +13,17 @@ export const CallerTypeLabel: Record<CallerType, string> = {
   other: 'другое',
 }
 
+export const CallDurationLabel = {
+  very_short: 'очень короткие (< 10 сек)',
+  short: 'короткие (10-60 сек)',
+  medium: 'средние (1–5 мин)',
+  long: 'длинные (5–10 мин)',
+  very_long: 'очень длинные (> 10 мин)',
+  no_conversation: 'без разговора',
+} as const
+
+export type CallDurationFilter = keyof typeof CallDurationLabel
+
 export interface CallAonResource extends PhoneResource {
   entity?: PersonResource
   request_id?: number

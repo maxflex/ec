@@ -1,15 +1,8 @@
 <script setup lang="ts">
-import type { CallerType } from '~/components/Call'
-import { CallerTypeLabel } from '~/components/Call'
+import type { CallDurationFilter, CallerType } from '~/components/Call'
+import { CallDurationLabel, CallerTypeLabel } from '~/components/Call'
 
 export type CallStatusFilter = 'incoming' | 'outgoing' | 'missed' | 'missed_callback'
-export type CallDurationFilter =
-  | 'no_conversation'
-  | 'very_short'
-  | 'short'
-  | 'medium'
-  | 'long'
-  | 'very_long'
 
 export interface CallFilters {
   number?: string
@@ -27,15 +20,6 @@ const callStatusLabel: Record<CallStatusFilter, string> = {
   outgoing: 'исходящий',
   missed: 'пропущенные',
   missed_callback: 'перезвонили',
-}
-
-const callDurationLabel: Record<CallDurationFilter, string> = {
-  very_short: 'очень короткие (< 10 сек)',
-  short: 'короткие (10-60 сек)',
-  medium: 'средние (1–5 мин)',
-  long: 'длинные (5–10 мин)',
-  very_long: 'очень длинные (> 10 мин)',
-  no_conversation: 'без разговора',
 }
 
 // Применяем номер по Enter, чтобы не дёргать API на каждую нажатую клавишу.
@@ -67,10 +51,10 @@ watch(
   />
   <UiMultipleSelect
     v-model="model.call_duration"
-    expand
     density="comfortable"
     label="Время разговора"
-    :items="selectItems(callDurationLabel)"
+    :items="selectItems(CallDurationLabel)"
+    expand
   />
   <UiMultipleSelect
     v-model="model.call_status"
