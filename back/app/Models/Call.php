@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 #[ObservedBy(CallObserver::class)]
 class Call extends Model
@@ -28,6 +29,7 @@ class Call extends Model
     protected $casts = [
         'type' => CallType::class,
         'caller_type' => CallerType::class,
+        'has_recording' => 'boolean',
         'created_at' => Timestamp::class,
         'answered_at' => Timestamp::class,
         'finished_at' => Timestamp::class,
@@ -186,11 +188,6 @@ class Call extends Model
         return $this->hasMany(Call::class, 'number', 'number');
     }
 
-    public function getHasRecordingAttribute(): bool
-    {
-        return $this->recording !== null;
-    }
-
     /**
      * Длительность разговора в секундах.
      * Считается от момента ответа до завершения звонка.
@@ -213,28 +210,17 @@ class Call extends Model
         return $this->type === CallType::incoming;
     }
 
-    /**
-     * $action = download / play
-     */
-    public function getRecording($action)
+    public function getRecordingStoragePath(): string
     {
-        $timestamp = now()->addMinutes(5)->unix();
-        // sign=sha256(vpbx_api_key + timestamp + recording_id + vpbx_api_salt)
-        $sign = hash('sha256', implode('', [
-            config('mango.api_key'),
-            $timestamp,
-            $this->recording,
-            config('mango.api_salt'),
-        ]));
+        return 'calls/'.trim((string) $this->entry_id).'.mp3';
+    }
 
-        return implode('/', [
-            'https://app.mango-office.ru/vpbx/queries/recording/link',
-            $this->recording,
-            $action,
-            config('mango.api_key'),
-            $timestamp,
-            $sign,
-        ]);
+    /**
+     * Публичная ссылка на запись звонка в нашем Storage/CDN.
+     */
+    public function getRecordingUrl(): string
+    {
+        return Storage::url($this->getRecordingStoragePath());
     }
 
     /**

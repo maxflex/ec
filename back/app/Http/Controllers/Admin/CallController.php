@@ -33,7 +33,7 @@ class CallController extends Controller
                 'user_id',
                 'type',
                 'number',
-                'recording',
+                'has_recording',
                 'created_at',
                 'answered_at',
                 'finished_at',
@@ -90,7 +90,9 @@ class CallController extends Controller
 
     public function recording($action, Call $call)
     {
-        return $call->getRecording($action);
+        // Для обратной совместимости роута action оставляем,
+        // но фактическая ссылка теперь всегда на наш CDN.
+        return $call->getRecordingUrl();
     }
 
     protected function filterNumber(Builder $query, string $number): void

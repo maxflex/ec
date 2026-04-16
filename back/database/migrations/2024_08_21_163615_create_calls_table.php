@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->enum('type', array_map(fn($e) => $e->name, App\Enums\CallType::cases()))->index();
             $table->string('number')->index();
             $table->string('line');
-            $table->string('recording')->nullable();
+            $table->boolean('has_recording')->default(false);
             $table->dateTime('created_at');
             $table->dateTime('answered_at')->nullable();
             $table->dateTime('finished_at');

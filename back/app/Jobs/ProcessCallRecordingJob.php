@@ -37,7 +37,7 @@ class ProcessCallRecordingJob implements ShouldQueue
     {
         $call = Call::findOrFail($this->callId);
 
-        if (! $call->recording) {
+        if (! $call->has_recording) {
             return;
         }
 

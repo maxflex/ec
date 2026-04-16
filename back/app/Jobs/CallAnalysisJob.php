@@ -39,7 +39,7 @@ class CallAnalysisJob implements ShouldQueue
     {
         $call = Call::findOrFail($this->callId);
 
-        if (! $call->recording || ! $call->transcript) {
+        if (! $call->has_recording || ! $call->transcript) {
             return;
         }
 

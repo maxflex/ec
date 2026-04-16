@@ -9,8 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('calls', function (Blueprint $table) {
-            $table->text('summary')->nullable()->after('recording');
-            $table->text('transcription')->nullable()->after('recording');
+            // Поле recording убрано, поэтому добавляем текстовые поля после has_recording.
+            $table->text('summary')->nullable()->after('has_recording');
+            $table->text('transcription')->nullable()->after('has_recording');
         });
     }
 

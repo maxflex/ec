@@ -20,7 +20,7 @@ class CallObserver
     public function updated(Call $call): void
     {
         // Добавилась аудиозапись и звонок достаточно длинный для AI-анализа.
-        if ($call->wasChanged('recording') && $call->recording && CallAnalysisService::shouldAnalyze($call)) {
+        if ($call->wasChanged('has_recording') && $call->has_recording && CallAnalysisService::shouldAnalyze($call)) {
             // запускаем транскрибацию
             ProcessCallRecordingJob::dispatch($call->id);
         }

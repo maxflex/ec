@@ -6,7 +6,7 @@ use App\Models\AiPrompt;
 use App\Models\Call;
 use Gemini\Data\Blob;
 use Gemini\Enums\MimeType;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 use ValueError;
 
@@ -73,23 +73,17 @@ class CallTranscriptionService extends GeminiService
     }
 
     /**
-     * Скачивает запись Mango по прямой ссылке и возвращает бинарные данные.
+     * Загружает запись звонка из нашего Storage и возвращает бинарные данные.
      */
     private static function downloadRecording(Call $call): string
     {
-        $recording = $call->getRecording('download');
+        $path = $call->getRecordingStoragePath();
 
-        $response = Http::withOptions([
-            'proxy' => '37.140.195.195:8888',
-            'verify' => false,
-            'timeout' => 180,
-        ])->get($recording);
-
-        if (! $response->successful()) {
-            throw new RuntimeException("Не удалось скачать запись звонка {$call->id} (HTTP {$response->status()})");
+        if (! Storage::exists($path)) {
+            throw new RuntimeException("Не найден аудиофайл звонка {$call->id} в Storage по пути {$path}");
         }
 
-        $body = $response->body();
+        $body = Storage::get($path);
         if ($body === '') {
             throw new RuntimeException("Получен пустой аудиофайл для звонка {$call->id}");
         }

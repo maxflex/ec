@@ -3,8 +3,10 @@
 namespace App\Console\Commands\Once;
 
 use App\Models\Call;
+use App\Utils\Mango;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 use Throwable;
@@ -17,6 +19,12 @@ class DownloadCallRecordingsToStorageCommand extends Command
 
     public function handle(): int
     {
+        if (! Schema::hasColumn('calls', 'recording')) {
+            $this->error('Колонка calls.recording уже удалена. Эта one-time команда больше неактуальна.');
+
+            return self::FAILURE;
+        }
+
         $baseQuery = Call::query()
             ->select(['id', 'entry_id', 'recording'])
             ->whereNotNull('recording')
@@ -106,7 +114,7 @@ class DownloadCallRecordingsToStorageCommand extends Command
             'timeout' => 180,
         ])
             ->retry(3, 1000, throw: false)
-            ->get($call->getRecording('download'));
+            ->get(Mango::buildRecordingLink((string) $call->recording, 'download'));
 
         if (! $response->successful()) {
             throw new RuntimeException(

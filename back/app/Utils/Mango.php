@@ -7,6 +7,7 @@ use App\Enums\CallType;
 use App\Events\CallEvent;
 use App\Events\MenuCountsUpdatedEvent;
 use App\Http\Resources\PersonResource;
+use App\Jobs\SyncCallRecordingToStorageJob;
 use App\Models\Call;
 use App\Models\User;
 
@@ -215,14 +216,41 @@ class Mango
     public static function eventRecordAdded($data)
     {
         $entryId = $data->entry_id;
+        $recordingId = trim((string) ($data->recording_id ?? ''));
 
         // Recording — третий эшелон защиты от "залипания" active calls:
         // если по какой-то причине Disconnected/Summary не сняли звонок,
         // событие готовности записи также принудительно завершает realtime-проекцию.
         self::disconnectRealtimeState($entryId);
 
-        Call::query()->where('entry_id', $entryId)->firstOrFail()->update([
-            'recording' => $data->recording_id,
+        // recording_id в calls больше не храним:
+        // передаем его в очередь только как входные данные для скачивания файла в S3.
+        if ($recordingId !== '') {
+            SyncCallRecordingToStorageJob::dispatch((string) $entryId, $recordingId);
+        }
+    }
+
+    /**
+     * Строит подписанную ссылку Mango для скачивания/прослушивания записи.
+     */
+    public static function buildRecordingLink(string $recordingId, string $action = 'download'): string
+    {
+        $timestamp = now()->addMinutes(5)->unix();
+        // sign=sha256(vpbx_api_key + timestamp + recording_id + vpbx_api_salt)
+        $sign = hash('sha256', implode('', [
+            config('mango.api_key'),
+            $timestamp,
+            $recordingId,
+            config('mango.api_salt'),
+        ]));
+
+        return implode('/', [
+            'https://app.mango-office.ru/vpbx/queries/recording/link',
+            $recordingId,
+            $action,
+            config('mango.api_key'),
+            $timestamp,
+            $sign,
         ]);
     }
 }
