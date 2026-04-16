@@ -216,7 +216,7 @@ class Mango
     public static function eventRecordAdded($data)
     {
         $entryId = $data->entry_id;
-        $recordingId = trim((string) ($data->recording_id ?? ''));
+        $recordingId = $data->recording_id ?? null;
 
         // Recording — третий эшелон защиты от "залипания" active calls:
         // если по какой-то причине Disconnected/Summary не сняли звонок,
@@ -225,8 +225,8 @@ class Mango
 
         // recording_id в calls больше не храним:
         // передаем его в очередь только как входные данные для скачивания файла в S3.
-        if ($recordingId !== '') {
-            SyncCallRecordingToStorageJob::dispatch((string) $entryId, $recordingId);
+        if ($recordingId) {
+            SyncCallRecordingToStorageJob::dispatch($entryId, $recordingId);
         }
     }
 

@@ -11,7 +11,11 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class ProcessCallRecordingJob implements ShouldQueue
+/**
+ * JOB шага 1: транскрибация звонка (ASR).
+ * После успешного шага 1 запускаем отдельный JOB шага 2 (анализ).
+ */
+class CallTranscriptionJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -37,17 +41,16 @@ class ProcessCallRecordingJob implements ShouldQueue
     {
         $call = Call::findOrFail($this->callId);
 
-        if (! $call->has_recording) {
+        if (! $call->has_recording || ! CallAnalysisService::shouldAnalyze($call)) {
             return;
         }
 
-        // Шаг 1: сначала фиксируем транскрипт, чтобы не потерять результат ASR при ошибке аналитики.
+        // Шаг 1: получаем/обновляем transcript по текущей инструкции транскрибации.
         $transcriptData = CallTranscriptionService::transcribeAudio($call);
         $call->update($transcriptData);
-
-        // Шаг 2: строим summary/analysis по $call->transcript (контекст из самой модели).
         $call->refresh();
-        $analysisData = CallAnalysisService::analyzeTranscript($call);
-        $call->update($analysisData);
+
+        // Шаг 2 запускаем отдельной задачей, чтобы retries анализа не трогали ASR.
+        CallAnalysisJob::dispatch($call->id);
     }
 }

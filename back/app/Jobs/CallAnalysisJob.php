@@ -11,7 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * JOB только для анализа звонка (для использования вручную)
+ * JOB шага 2: анализ звонка по уже готовому transcript.
  */
 class CallAnalysisJob implements ShouldQueue
 {

@@ -23,16 +23,16 @@ class SyncCallRecordingToStorageJob implements ShouldQueue
     public int $timeout = 600;
 
     /**
-     * Даем несколько попыток, т.к. eventRecordAdded может прийти раньше summary.
+     * Ограничиваем число попыток: при корректном роутинге в MR этого достаточно.
      */
-    public int $tries = 10;
+    public int $tries = 3;
 
     /**
-     * Лесенка задержек: быстро пробуем в начале, затем реже.
+     * Небольшая лесенка задержек для кратковременных сбоев очереди/БД.
      *
      * @var array<int>
      */
-    public array $backoff = [5, 15, 30, 60, 120, 300];
+    public array $backoff = [10, 60];
 
     public function __construct(
         private readonly string $entryId,
@@ -42,7 +42,7 @@ class SyncCallRecordingToStorageJob implements ShouldQueue
     public function handle(): void
     {
         /** @var Call|null $call */
-        $call = Call::query()->where('entry_id', $this->entryId)->first();
+        $call = Call::where('entry_id', $this->entryId)->first();
 
         // Между Summary и RecordAdded бывают гонки: если Call еще не записан,
         // бросаем исключение, чтобы сработал retry по backoff.
