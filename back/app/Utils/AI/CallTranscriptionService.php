@@ -4,9 +4,6 @@ namespace App\Utils\AI;
 
 use App\Models\AiPrompt;
 use App\Models\Call;
-use Gemini\Data\Blob;
-use Gemini\Enums\MimeType;
-use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 use ValueError;
 
@@ -30,16 +27,13 @@ class CallTranscriptionService extends GeminiService
         }
 
         [$systemInstructionText, $userPromptText] = self::renderCallTranscriptionPrompt($call);
-        $audioBytes = self::downloadRecording($call);
+        $audioFile = CallAudioFileCacheService::getOrCreateUploadedFile($call);
 
         // На первом шаге intentionally без JSON-схемы: ожидаем plain text транскрипта.
         $response = self::buildModel($systemInstructionText)
             ->generateContent([
                 $userPromptText,
-                new Blob(
-                    mimeType: MimeType::AUDIO_MP3,
-                    data: base64_encode($audioBytes),
-                ),
+                $audioFile,
             ]);
 
         $transcript = self::extractResponseText($response);
@@ -70,25 +64,6 @@ class CallTranscriptionService extends GeminiService
                 'call' => $call,
                 ...CallPromptPhonesBuilder::build($call),
             ]);
-    }
-
-    /**
-     * Загружает запись звонка из нашего Storage и возвращает бинарные данные.
-     */
-    private static function downloadRecording(Call $call): string
-    {
-        $path = $call->getRecordingStoragePath();
-
-        if (! Storage::exists($path)) {
-            throw new RuntimeException("Не найден аудиофайл звонка {$call->id} в Storage по пути {$path}");
-        }
-
-        $body = Storage::get($path);
-        if ($body === '') {
-            throw new RuntimeException("Получен пустой аудиофайл для звонка {$call->id}");
-        }
-
-        return $body;
     }
 
     /**

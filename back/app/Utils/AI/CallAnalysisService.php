@@ -5,31 +5,15 @@ namespace App\Utils\AI;
 use App\Enums\CallerType;
 use App\Models\AiPrompt;
 use App\Models\Call;
-use Gemini\Data\Blob;
 use Gemini\Data\GenerationConfig;
 use Gemini\Data\Schema;
 use Gemini\Enums\DataType;
-use Gemini\Enums\MimeType;
 use Gemini\Enums\ResponseMimeType;
-use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 use ValueError;
 
 class CallAnalysisService extends GeminiService
 {
-    /**
-     * Минимальная длительность разговора для запуска AI-анализа.
-     */
-    public const int MIN_DURATION_SECONDS = 10;
-
-    /**
-     * Можно ли запускать AI-анализ для звонка.
-     */
-    public static function shouldAnalyze(Call $call): bool
-    {
-        return $call->duration > self::MIN_DURATION_SECONDS;
-    }
-
     /**
      * Шаг 2: transcript -> summary + analysis_1 + analysis_2 + caller_type.
      *
@@ -57,7 +41,7 @@ class CallAnalysisService extends GeminiService
         }
 
         [$systemInstructionText, $userPromptText] = self::renderCallAnalysisPrompt($call);
-        $audioBytes = self::downloadRecording($call);
+        $audioFile = CallAudioFileCacheService::getOrCreateUploadedFile($call);
 
         // На втором шаге запрашиваем сводку, анализ и тип собеседника.
         // analysis_1/analysis_2 намеренно не делаем обязательными:
@@ -95,10 +79,7 @@ class CallAnalysisService extends GeminiService
             ->generateContent([
                 $userPromptText,
                 // К анализу прикладываем исходную аудиозапись, как и на шаге транскрибации.
-                new Blob(
-                    mimeType: MimeType::AUDIO_MP3,
-                    data: base64_encode($audioBytes),
-                ),
+                $audioFile,
             ]);
 
         $result = $response->json(true);
@@ -161,25 +142,6 @@ class CallAnalysisService extends GeminiService
                 'call' => $call,
                 ...CallPromptPhonesBuilder::build($call),
             ]);
-    }
-
-    /**
-     * Загружает запись звонка из нашего Storage и возвращает бинарные данные.
-     */
-    private static function downloadRecording(Call $call): string
-    {
-        $path = $call->getRecordingStoragePath();
-
-        if (! Storage::exists($path)) {
-            throw new RuntimeException("Не найден аудиофайл звонка {$call->id} в Storage по пути {$path}");
-        }
-
-        $body = Storage::get($path);
-        if ($body === '') {
-            throw new RuntimeException("Получен пустой аудиофайл для звонка {$call->id}");
-        }
-
-        return $body;
     }
 
     /**

@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Models\Call;
-use App\Utils\AI\CallAnalysisService;
 use App\Utils\AI\CallTranscriptionService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -41,7 +40,7 @@ class CallTranscriptionJob implements ShouldQueue
     {
         $call = Call::findOrFail($this->callId);
 
-        if (! $call->has_recording || ! CallAnalysisService::shouldAnalyze($call)) {
+        if (! $call->has_recording || ! $call->shouldRunAiPipeline()) {
             return;
         }
 

@@ -7,7 +7,6 @@ use App\Models\Client;
 use App\Models\Comment;
 use App\Models\Phone;
 use App\Models\Representative;
-use App\Utils\AI\CallAnalysisService;
 
 class CallCommentSuggest
 {
@@ -24,7 +23,7 @@ class CallCommentSuggest
         }
 
         // Для коротких звонков (< 10 сек) AI-анализ не запускается, suggest не ждём.
-        if (! CallAnalysisService::shouldAnalyze($latestCall)) {
+        if (! $latestCall->shouldRunAiPipeline()) {
             return null;
         }
 

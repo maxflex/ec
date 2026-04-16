@@ -5,7 +5,6 @@ namespace App\Observers;
 use App\Events\CallSummaryUpdatedEvent;
 use App\Jobs\CallTranscriptionJob;
 use App\Models\Call;
-use App\Utils\AI\CallAnalysisService;
 use App\Utils\Mango;
 
 class CallObserver
@@ -19,8 +18,8 @@ class CallObserver
 
     public function updated(Call $call): void
     {
-        // Добавилась аудиозапись и звонок достаточно длинный для AI-анализа.
-        if ($call->wasChanged('has_recording') && $call->has_recording && CallAnalysisService::shouldAnalyze($call)) {
+        // Добавилась аудиозапись и звонок подходит под запуск AI-пайплайна.
+        if ($call->wasChanged('has_recording') && $call->has_recording && $call->shouldRunAiPipeline()) {
             // запускаем транскрибацию
             CallTranscriptionJob::dispatch($call->id);
         }
