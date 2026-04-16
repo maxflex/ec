@@ -7,7 +7,7 @@ use App\Enums\CallType;
 use App\Events\CallEvent;
 use App\Events\MenuCountsUpdatedEvent;
 use App\Http\Resources\PersonResource;
-use App\Jobs\SyncCallRecordingToStorageJob;
+use App\Jobs\CallSaveRecordingJob;
 use App\Models\Call;
 use App\Models\User;
 
@@ -226,14 +226,14 @@ class Mango
         // recording_id в calls больше не храним:
         // передаем его в очередь только как входные данные для скачивания файла в S3.
         if ($recordingId) {
-            SyncCallRecordingToStorageJob::dispatch($entryId, $recordingId);
+            CallSaveRecordingJob::dispatch($entryId, $recordingId);
         }
     }
 
     /**
      * Строит подписанную ссылку Mango для скачивания/прослушивания записи.
      */
-    public static function buildRecordingLink(string $recordingId, string $action = 'download'): string
+    public static function buildRecordingLink(string $recordingId): string
     {
         $timestamp = now()->addMinutes(5)->unix();
         // sign=sha256(vpbx_api_key + timestamp + recording_id + vpbx_api_salt)
@@ -247,7 +247,7 @@ class Mango
         return implode('/', [
             'https://app.mango-office.ru/vpbx/queries/recording/link',
             $recordingId,
-            $action,
+            'download',
             config('mango.api_key'),
             $timestamp,
             $sign,

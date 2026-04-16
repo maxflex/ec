@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Call;
+use App\Utils\AI\CallAudioFileCacheService;
 use App\Utils\Mango;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -12,8 +13,9 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
+use Throwable;
 
-class SyncCallRecordingToStorageJob implements ShouldQueue
+class CallSaveRecordingJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -52,33 +54,40 @@ class SyncCallRecordingToStorageJob implements ShouldQueue
 
         $path = $call->getRecordingStoragePath();
 
-        if (! Storage::exists($path)) {
-            $downloadUrl = Mango::buildRecordingLink($this->recordingId, 'download');
-            $response = Http::withOptions([
-                'proxy' => '37.140.195.195:8888',
-                'verify' => false,
-                'timeout' => 180,
-            ])
-                ->retry(3, 1000, throw: false)
-                ->get($downloadUrl);
+        $downloadUrl = Mango::buildRecordingLink($this->recordingId);
+        $response = Http::withOptions([
+            'proxy' => '37.140.195.195:8888',
+            'verify' => false,
+            'timeout' => 180,
+        ])
+            ->retry(3, 1000, throw: false)
+            ->get($downloadUrl);
 
-            if (! $response->successful()) {
-                throw new RuntimeException(
-                    "Не удалось скачать запись entry_id={$this->entryId} (HTTP {$response->status()})"
-                );
-            }
-
-            $audio = $response->body();
-            if ($audio === '') {
-                throw new RuntimeException("Получен пустой аудиофайл entry_id={$this->entryId}");
-            }
-
-            Storage::put($path, $audio);
+        if (! $response->successful()) {
+            throw new RuntimeException(
+                "Не удалось скачать запись entry_id={$this->entryId} (HTTP {$response->status()})"
+            );
         }
 
-        // Флаг в БД выставляем только после фактической загрузки файла в Storage.
-        if (! $call->has_recording) {
-            $call->update(['has_recording' => true]);
+        $audio = $response->body();
+        if ($audio === '') {
+            throw new RuntimeException("Получен пустой аудиофайл entry_id={$this->entryId}");
         }
+
+        Storage::put($path, $audio);
+
+        // Если в этой попытке реально скачали бинарник, прогреваем Files API заранее.
+        // Важно: прогрев не должен ломать ingestion звонка, поэтому ошибки логируем и продолжаем.
+        try {
+            CallAudioFileCacheService::getOrCreateUploadedFile($call, $audio);
+        } catch (Throwable $e) {
+            logger()->warning('gemini.files.cache_warmup_failed', [
+                'call_id' => $call->id,
+                'entry_id' => $this->entryId,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        $call->update(['has_recording' => true]);
     }
 }
