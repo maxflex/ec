@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CallAonResource, CallListResource } from '~/components/Call'
-import { mdiDotsHorizontal, mdiTextBoxOutline, mdiWaveform } from '@mdi/js'
+import { mdiDotsHorizontal, mdiWaveform } from '@mdi/js'
 import { CallerTypeLabel } from '~/components/Call'
 
 const { items } = defineProps<{
@@ -34,16 +34,25 @@ function getPhoneItem(item: CallListResource): PhoneResource {
 }
 
 async function downloadRecording(item: CallListResource) {
-  if (!item.has_recording || downloadingId.value) {
+  if (!item.has_recording || !item.recording_url || downloadingId.value) {
     return
   }
 
   downloadingId.value = item.id
   try {
-    const audio = await getAudio(item.id, 'download')
+    // Скачиваем через Blob, чтобы браузер показал именно скачивание,
+    // а не открывал встроенный плеер в новой вкладке.
+    const response = await fetch(item.recording_url)
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`)
+    }
+    const audioBlob = await response.blob()
+    const audio = URL.createObjectURL(audioBlob)
     const link = document.createElement('a')
     link.href = audio
+    link.download = `${item.entry_id}.mp3`
     link.click()
+    setTimeout(() => URL.revokeObjectURL(audio), 1000)
   }
   catch (error: unknown) {
     const errorMessage = error instanceof Error && error.message
@@ -56,16 +65,6 @@ async function downloadRecording(item: CallListResource) {
       downloadingId.value = null
     }, 300)
   }
-}
-
-async function getAudio(callId: number, action: 'play' | 'download') {
-  const { data, error } = await useHttp<string>(`calls/recording/${action}/${callId}`)
-
-  if (error.value || !data.value) {
-    throw new Error(error.value?.data?.message || 'Ошибка получения ссылки на запись')
-  }
-
-  return data.value
 }
 </script>
 

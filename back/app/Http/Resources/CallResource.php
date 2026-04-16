@@ -21,6 +21,8 @@ class CallResource extends JsonResource
             'is_missed', 'is_missed_callback', 'has_recording', 'transcript',
             'summary', 'analysis_1', 'analysis_2', 'instruction', 'caller_type',
         ], [
+            // Ссылка формируется моделью; если записи нет — вернется null.
+            'recording_url' => $this->getRecordingUrl(),
             'user' => new PersonResource($this->user),
             'aon' => Call::aon($this->number),
         ]);

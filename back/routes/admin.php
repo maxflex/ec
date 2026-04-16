@@ -134,7 +134,6 @@ Route::prefix('calls')->controller(CallController::class)->group(function () {
     Route::post('{call}/transcribe', 'transcribe');
     Route::post('{call}/analyze', 'analyze');
     Route::get('active', 'active');
-    Route::get('recording/{action}/{call}', 'recording');
 });
 
 Route::prefix('mango-test')->controller(MangoTestController::class)->group(function () {

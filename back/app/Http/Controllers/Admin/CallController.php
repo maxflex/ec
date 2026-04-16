@@ -88,13 +88,6 @@ class CallController extends Controller
         return Call::getActive();
     }
 
-    public function recording($action, Call $call)
-    {
-        // Для обратной совместимости роута action оставляем,
-        // но фактическая ссылка теперь всегда на наш CDN.
-        return $call->getRecordingUrl();
-    }
-
     protected function filterNumber(Builder $query, string $number): void
     {
         $number = Phone::clean($number);

@@ -49,6 +49,7 @@ export interface CallListResource {
   caller_type: CallerType | null
   number: string
   has_recording: boolean
+  recording_url: string | null
   is_missed: boolean
   is_missed_callback: boolean
   created_at: string

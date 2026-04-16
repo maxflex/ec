@@ -20,6 +20,8 @@ class CallListResource extends JsonResource
             'entry_id', 'type', 'number', 'created_at', 'finished_at', 'answered_at',
             'is_missed', 'is_missed_callback', 'has_recording', 'caller_type',
         ], [
+            // Ссылка формируется моделью; если записи нет — вернется null.
+            'recording_url' => $this->getRecordingUrl(),
             'user' => new PersonResource($this->user),
             'aon' => new CallAppAonResource($this->aonPhone),
         ]);

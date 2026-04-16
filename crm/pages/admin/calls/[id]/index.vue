@@ -72,23 +72,33 @@ async function loadData() {
 }
 
 async function downloadRecording() {
+  if (!item.value?.recording_url) {
+    return
+  }
+
   downloading.value = true
   try {
-    const audio = await getAudio('download')
+    // Скачиваем через Blob, чтобы браузер показал именно скачивание,
+    // а не встроенный плеер в новой вкладке.
+    const response = await fetch(item.value.recording_url)
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`)
+    }
+    const audioBlob = await response.blob()
+    const audio = URL.createObjectURL(audioBlob)
     const link = document.createElement('a')
     link.href = audio
+    link.download = `${item.value.entry_id}.mp3`
     link.click()
+    setTimeout(() => URL.revokeObjectURL(audio), 1000)
+  }
+  catch (error) {
+    console.error('Call details: recording download failed', error)
+    useGlobalMessage('Не удалось скачать аудиозапись', 'error')
   }
   finally {
     setTimeout(() => (downloading.value = false), 300)
   }
-}
-
-async function getAudio(action: 'play' | 'download') {
-  const { data } = await useHttp(
-    `calls/recording/${action}/${item.value!.id}`,
-  )
-  return data.value as string
 }
 
 async function transcribe() {
@@ -284,7 +294,7 @@ nextTick(loadData)
               />
             </template>
             <v-list>
-              <v-list-item @click="downloadRecording()">
+              <v-list-item :disabled="!item.has_recording || !item.recording_url" @click="downloadRecording()">
                 скачать аудиозапись
               </v-list-item>
               <v-divider />

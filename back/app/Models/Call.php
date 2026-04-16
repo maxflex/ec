@@ -210,17 +210,21 @@ class Call extends Model
         return $this->type === CallType::incoming;
     }
 
-    public function getRecordingStoragePath(): string
-    {
-        return 'calls/'.trim((string) $this->entry_id).'.mp3';
-    }
-
     /**
      * Публичная ссылка на запись звонка в нашем Storage/CDN.
      */
-    public function getRecordingUrl(): string
+    public function getRecordingUrl(): ?string
     {
+        if (! $this->has_recording) {
+            return null;
+        }
+
         return Storage::url($this->getRecordingStoragePath());
+    }
+
+    public function getRecordingStoragePath(): string
+    {
+        return 'calls/'.trim($this->entry_id).'.mp3';
     }
 
     /**

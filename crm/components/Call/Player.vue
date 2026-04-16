@@ -62,11 +62,12 @@ function disposeAudio() {
   }
 }
 
-async function getAudio(action: 'play' | 'download') {
-  const { data } = await useHttp(
-    `calls/recording/${action}/${item.id}`,
-  )
-  return data.value as string
+function getAudioUrl(): string {
+  if (!item.recording_url) {
+    throw new Error('Recording URL is empty')
+  }
+
+  return item.recording_url
 }
 
 async function togglePlay(e: MouseEvent) {
@@ -192,9 +193,8 @@ async function ensureObjectUrl() {
   // TEST анимации
   // await new Promise(resolve => setTimeout(resolve, 3000))
 
-  // Получаем временную ссылку Mango и сразу скачиваем в Blob, чтобы далее
-  // воспроизводить локально из памяти вкладки без повторных запросов к Mango.
-  const sourceUrl = await getAudio('play')
+  // Скачиваем запись из CDN в Blob и затем воспроизводим локально из памяти вкладки.
+  const sourceUrl = getAudioUrl()
   const response = await fetch(sourceUrl)
   if (!response.ok) {
     throw new Error(`Audio blob download failed: ${response.status}`)
