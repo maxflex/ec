@@ -21,7 +21,6 @@ use Illuminate\Support\Facades\Storage;
 class Call extends Model
 {
     const DISABLE_LOGS = true;
-    public const int AI_PIPELINE_MIN_DURATION_SECONDS = 10;
 
     public $timestamps = false;
 
@@ -211,7 +210,7 @@ class Call extends Model
      */
     public function shouldRunAiPipeline(): bool
     {
-        return $this->duration > self::AI_PIPELINE_MIN_DURATION_SECONDS;
+        return $this->duration > 10;
     }
 
     public function getIsIncomingAttribute(): bool

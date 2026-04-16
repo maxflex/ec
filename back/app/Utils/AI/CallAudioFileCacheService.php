@@ -8,17 +8,12 @@ use Gemini\Enums\FileState;
 use Gemini\Enums\MimeType;
 use Gemini\Responses\Files\MetadataResponse;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 use Throwable;
 
 class CallAudioFileCacheService extends GeminiService
 {
-    private const string REDIS_KEY_PREFIX = 'ai:call-audio-file';
-    private const int PROCESSING_POLL_ATTEMPTS = 3;
-    private const int PROCESSING_POLL_SLEEP_SECONDS = 2;
-
     /**
      * Возвращает URI-файл из Redis или загружает запись звонка в Gemini Files API и кэширует ссылку.
      */
@@ -60,6 +55,47 @@ class CallAudioFileCacheService extends GeminiService
         return self::payloadToUploadedFile($payload);
     }
 
+    /**
+     * @return array{uri: string, name: string, mime_type: string, expiration_time: string}|null
+     */
+    private static function getCachedPayload(string $entryId): ?array
+    {
+        $payload = cache()->get(self::cacheDataKey($entryId));
+        if (! is_array($payload)) {
+            return null;
+        }
+
+        if (
+            ! isset($payload['uri'], $payload['name'], $payload['mime_type'], $payload['expiration_time'])
+            || ! is_string($payload['uri'])
+            || ! is_string($payload['name'])
+            || ! is_string($payload['mime_type'])
+            || ! is_string($payload['expiration_time'])
+        ) {
+            return null;
+        }
+
+        return $payload;
+    }
+
+    private static function cacheDataKey(string $entryId): string
+    {
+        return "call-recording:{$entryId}";
+    }
+
+    /**
+     * @param  array{uri: string, name: string, mime_type: string, expiration_time: string}  $payload
+     */
+    private static function payloadToUploadedFile(array $payload): UploadedFile
+    {
+        $mimeType = MimeType::tryFrom($payload['mime_type']) ?? MimeType::AUDIO_MP3;
+
+        return new UploadedFile(
+            fileUri: $payload['uri'],
+            mimeType: $mimeType,
+        );
+    }
+
     private static function uploadCallRecordingToGemini(Call $call): MetadataResponse
     {
         $path = $call->getRecordingStoragePath();
@@ -90,7 +126,9 @@ class CallAudioFileCacheService extends GeminiService
                     displayName: "call-{$call->entry_id}.mp3"
                 );
 
-            return self::waitUntilFileReady($metadata->name);
+            // В SDK metadataGet() сам префиксует "files/" для короткого имени.
+            // upload возвращает name в формате "files/...", поэтому безопаснее опрашивать по полному URI.
+            return self::waitUntilFileReady($metadata->uri);
         } finally {
             @unlink($tempFile);
         }
@@ -99,20 +137,20 @@ class CallAudioFileCacheService extends GeminiService
     /**
      * После upload файл может быть в PROCESSING: дожидаемся ACTIVE ограниченное число попыток.
      */
-    private static function waitUntilFileReady(string $fileName): MetadataResponse
+    private static function waitUntilFileReady(string $fileNameOrUri): MetadataResponse
     {
-        $attempts = self::PROCESSING_POLL_ATTEMPTS;
-        $sleepSeconds = self::PROCESSING_POLL_SLEEP_SECONDS;
+        $attempts = 3;
+        $sleepSeconds = 2;
 
         for ($i = 1; $i <= $attempts; $i++) {
-            $metadata = self::geminiClient()->files()->metadataGet($fileName);
+            $metadata = self::geminiClient()->files()->metadataGet($fileNameOrUri);
 
             if ($metadata->state === FileState::Active) {
                 return $metadata;
             }
 
             if ($metadata->state === FileState::Failed) {
-                throw new RuntimeException("Gemini file {$fileName} завершился со статусом FAILED");
+                throw new RuntimeException("Gemini file {$metadata->name} завершился со статусом FAILED");
             }
 
             if ($i < $attempts) {
@@ -120,30 +158,7 @@ class CallAudioFileCacheService extends GeminiService
             }
         }
 
-        throw new RuntimeException("Gemini file {$fileName} не стал ACTIVE за отведенное время");
-    }
-
-    /**
-     * @return array{uri: string, name: string, mime_type: string, expiration_time: string}|null
-     */
-    private static function getCachedPayload(string $entryId): ?array
-    {
-        $payload = Cache::store('redis')->get(self::cacheDataKey($entryId));
-        if (! is_array($payload)) {
-            return null;
-        }
-
-        if (
-            ! isset($payload['uri'], $payload['name'], $payload['mime_type'], $payload['expiration_time'])
-            || ! is_string($payload['uri'])
-            || ! is_string($payload['name'])
-            || ! is_string($payload['mime_type'])
-            || ! is_string($payload['expiration_time'])
-        ) {
-            return null;
-        }
-
-        return $payload;
+        throw new RuntimeException('Gemini file не стал ACTIVE за отведенное время');
     }
 
     /**
@@ -157,23 +172,10 @@ class CallAudioFileCacheService extends GeminiService
             return;
         }
 
-        Cache::store('redis')->put(
+        cache()->put(
             self::cacheDataKey($entryId),
             $payload,
             now()->addSeconds($ttlSeconds),
-        );
-    }
-
-    /**
-     * @param  array{uri: string, name: string, mime_type: string, expiration_time: string}  $payload
-     */
-    private static function payloadToUploadedFile(array $payload): UploadedFile
-    {
-        $mimeType = MimeType::tryFrom($payload['mime_type']) ?? MimeType::AUDIO_MP3;
-
-        return new UploadedFile(
-            fileUri: $payload['uri'],
-            mimeType: $mimeType,
         );
     }
 
@@ -187,10 +189,5 @@ class CallAudioFileCacheService extends GeminiService
         }
 
         return now()->diffInSeconds($expiresAt, false);
-    }
-
-    private static function cacheDataKey(string $entryId): string
-    {
-        return self::REDIS_KEY_PREFIX.":{$entryId}";
     }
 }
