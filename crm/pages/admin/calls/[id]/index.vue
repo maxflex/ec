@@ -50,7 +50,9 @@ const { tabs, selectedTab, tabCounts } = useTabs({
 })
 
 const selectedInstructionItem = computed<CallInstructionItem>(() => {
-  return item.value?.instruction?.[selectedInstructionType.value] ?? { text: null, created_at: null }
+  return (
+    item.value?.instruction?.[selectedInstructionType.value] ?? { text: null, created_at: null }
+  )
 })
 
 const selectedInstructionCreatedAt = computed<string | null>(() => {
@@ -58,7 +60,9 @@ const selectedInstructionCreatedAt = computed<string | null>(() => {
 })
 
 const selectedInstructionParts = computed(() => {
-  const [instructionRaw = '', promptRaw = ''] = (selectedInstructionItem.value.text || '').split('<USER_PROMPT>')
+  const [instructionRaw = '', promptRaw = ''] = (selectedInstructionItem.value.text || '').split(
+    '<USER_PROMPT>',
+  )
 
   return {
     instruction: decodeHtmlEntities(instructionRaw.trim()),
@@ -91,12 +95,10 @@ async function downloadRecording() {
     link.download = `${item.value.entry_id}.mp3`
     link.click()
     setTimeout(() => URL.revokeObjectURL(audio), 1000)
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Call details: recording download failed', error)
     useGlobalMessage('Не удалось скачать аудиозапись', 'error')
-  }
-  finally {
+  } finally {
     setTimeout(() => (downloading.value = false), 300)
   }
 }
@@ -110,9 +112,12 @@ async function transcribe() {
     },
   )
   if (error.value) {
-    setTimeout(() => useGlobalMessage(`<b>Ошибка ИИ (транскрипт)</b>: ${error.value!.data.message}`, 'error'), 100)
-  }
-  else if (data.value) {
+    setTimeout(
+      () =>
+        useGlobalMessage(`<b>Ошибка ИИ (транскрипт)</b>: ${error.value!.data.message}`, 'error'),
+      100,
+    )
+  } else if (data.value) {
     item.value!.transcript = data.value.transcript
     item.value!.instruction = data.value.instruction
     selectedTab.value = 'transcript'
@@ -126,16 +131,15 @@ async function analyze() {
     return
   }
   analyzing.value = true
-  const { data, error } = await useHttp<CallAnalyzeFields>(
-    `calls/${item.value!.id}/analyze`,
-    {
-      method: 'POST',
-    },
-  )
+  const { data, error } = await useHttp<CallAnalyzeFields>(`calls/${item.value!.id}/analyze`, {
+    method: 'POST',
+  })
   if (error.value) {
-    setTimeout(() => useGlobalMessage(`<b>Ошибка ИИ (анализ)</b>: ${error.value!.data.message}`, 'error'), 100)
-  }
-  else if (data.value) {
+    setTimeout(
+      () => useGlobalMessage(`<b>Ошибка ИИ (анализ)</b>: ${error.value!.data.message}`, 'error'),
+      100,
+    )
+  } else if (data.value) {
     item.value!.summary = data.value.summary
     item.value!.analysis_1 = data.value.analysis_1
     item.value!.analysis_2 = data.value.analysis_2
@@ -151,14 +155,16 @@ function decodeHtmlEntities(value: string): string {
   return value
     .replace(/&quot;/g, '"')
     .replace(/&#34;/g, '"')
-    .replace(/&apos;/g, '\'')
-    .replace(/&#39;/g, '\'')
+    .replace(/&apos;/g, "'")
+    .replace(/&#39;/g, "'")
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&nbsp;/g, ' ')
     .replace(/&#(\d+);/g, (_, dec: string) => String.fromCodePoint(Number(dec)))
-    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) => String.fromCodePoint(Number.parseInt(hex, 16)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) =>
+      String.fromCodePoint(Number.parseInt(hex, 16)),
+    )
 }
 
 function hasInstruction(type: CallInstructionType): boolean {
@@ -198,65 +204,43 @@ nextTick(loadData)
         </div>
 
         <div>
-          <div>
-            дата
-          </div>
+          <div>дата</div>
           <div>
             {{ formatDateTime(item.created_at) }}
           </div>
         </div>
 
         <div>
-          <div>
-            тип звонка
-          </div>
+          <div>тип звонка</div>
           <div v-if="item.user">
-            <span v-if="item.type === 'incoming'" class="text-success">
-              Входящий
-            </span>
+            <span v-if="item.type === 'incoming'" class="text-success"> Входящий </span>
             <template v-else>
-              <span v-if="item.answered_at" class="text-success">
-                Исходящий
-              </span>
-              <span v-else class="text-gray">
-                Не дозвонились
-              </span>
+              <span v-if="item.answered_at" class="text-success"> Исходящий </span>
+              <span v-else class="text-gray"> Не дозвонились </span>
             </template>
           </div>
           <div v-else-if="item.is_missed">
-            <span v-if="item.is_missed_callback" class="text-deepOrange">
-              Перезвонили
-            </span>
-            <span v-else class="text-error">
-              Пропущенный
-            </span>
+            <span v-if="item.is_missed_callback" class="text-deepOrange"> Перезвонили </span>
+            <span v-else class="text-error"> Пропущенный </span>
           </div>
         </div>
         <div>
-          <div>
-            тип разговора
-          </div>
+          <div>тип разговора</div>
           <div>
             <span v-if="item.caller_type">
               {{ CallerTypeLabel[item.caller_type] }}
             </span>
-            <span v-else class="text-gray">
-              не установлено
-            </span>
+            <span v-else class="text-gray"> не установлено </span>
           </div>
         </div>
 
         <div>
-          <div>
-            пользователь
-          </div>
+          <div>пользователь</div>
           <div>
             <span v-if="item.user">
               {{ formatName(item.user, 'initials') }}
             </span>
-            <span v-else class="text-gray">
-              не установлено
-            </span>
+            <span v-else class="text-gray"> не установлено </span>
           </div>
         </div>
         <!-- <div>
@@ -273,9 +257,7 @@ nextTick(loadData)
           </div>
         </div> -->
         <div>
-          <div>
-            собеседник
-          </div>
+          <div>собеседник</div>
           <div>
             <CallPerson :item="item.aon" />
           </div>
@@ -294,21 +276,28 @@ nextTick(loadData)
               />
             </template>
             <v-list>
-              <v-list-item :disabled="!item.has_recording || !item.recording_url" @click="downloadRecording()">
+              <v-list-item
+                :disabled="!item.has_recording || !item.recording_url"
+                @click="downloadRecording()"
+              >
                 скачать аудиозапись
               </v-list-item>
               <v-divider />
-              <v-list-item @click="transcribe()">
-                расшифровка аудиозаписи
-              </v-list-item>
-              <v-list-item :disabled="!hasInstruction('transcription')" @click="openInstruction('transcription')">
+              <v-list-item @click="transcribe()"> расшифровка аудиозаписи </v-list-item>
+              <v-list-item
+                :disabled="!hasInstruction('transcription')"
+                @click="openInstruction('transcription')"
+              >
                 инструкция
               </v-list-item>
               <v-divider />
               <v-list-item :disabled="!item.transcript" @click="analyze()">
                 анализ разговора
               </v-list-item>
-              <v-list-item :disabled="!hasInstruction('analysis')" @click="openInstruction('analysis')">
+              <v-list-item
+                :disabled="!hasInstruction('analysis')"
+                @click="openInstruction('analysis')"
+              >
                 инструкция
               </v-list-item>
             </v-list>
@@ -318,7 +307,8 @@ nextTick(loadData)
     </div>
     <div v-if="selectedTab === 'transcript'">
       <div
-        v-if="item.transcript" class="container"
+        v-if="item.transcript"
+        class="container"
         :class="{ 'text-pre-wrap': !item.transcript.startsWith('<') }"
         v-html="item.transcript"
       />
@@ -329,7 +319,11 @@ nextTick(loadData)
       <UiNoData v-else />
     </div>
     <div v-else-if="selectedTab === 'analysis_1'">
-      <div v-if="item.analysis_1" class="text-pre-wrap container" v-html="item.analysis_1" />
+      <div
+        v-if="item.analysis_1"
+        class="container call-analysis-block__wrapper"
+        v-html="item.analysis_1"
+      />
       <UiNoData v-else />
     </div>
     <div v-else-if="selectedTab === 'analysis_2'">
@@ -342,7 +336,11 @@ nextTick(loadData)
     <div class="dialog-wrapper">
       <div class="dialog-header">
         <div>
-          {{ selectedInstructionType === 'transcription' ? 'Расшифровка аудиозаписи' : 'Анализ разговора' }}
+          {{
+            selectedInstructionType === 'transcription'
+              ? 'Расшифровка аудиозаписи'
+              : 'Анализ разговора'
+          }}
           <div class="dialog-subheader">
             {{ formatDateTime(selectedInstructionCreatedAt) }}
           </div>
@@ -350,16 +348,12 @@ nextTick(loadData)
         <v-btn icon="$close" :size="48" variant="text" @click="isInstructionDialogOpen = false" />
       </div>
       <div v-if="selectedInstructionParts" class="dialog-body">
-        <h2>
-          Инструкция
-        </h2>
+        <h2>Инструкция</h2>
         <div class="page-calls-id__ai-instruction-text">
           {{ selectedInstructionParts.instruction }}
         </div>
 
-        <h2 class="mt-6">
-          Промпт
-        </h2>
+        <h2 class="mt-6">Промпт</h2>
         <div class="page-calls-id__ai-instruction-text">
           {{ selectedInstructionParts.prompt }}
         </div>
@@ -387,17 +381,9 @@ nextTick(loadData)
       font-weight: bold !important;
     }
 
-    & > h3 {
-      font-weight: bold !important;
-
-      &:not(:first-child) {
-        margin-top: 20px !important;
-      }
-    }
-
     ul,
     ol {
-      padding: 10px 0 10px 20px;
+      padding: 0 20px;
     }
   }
 
@@ -424,6 +410,22 @@ nextTick(loadData)
     position: absolute;
     right: 16px;
     top: 3px;
+  }
+}
+
+.call-analysis-block {
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  h3 {
+    font-weight: bold !important;
+
+    &:not(:first-child) {
+      margin-top: 20px !important;
+    }
   }
 }
 </style>

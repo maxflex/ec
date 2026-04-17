@@ -6,6 +6,8 @@ use App\Enums\CallType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CallListResource;
 use App\Http\Resources\CallResource;
+use App\Jobs\CallAnalysisJob;
+use App\Jobs\CallTranscriptionJob;
 use App\Models\Call;
 use App\Utils\AI\CallAnalysisService;
 use App\Utils\AI\CallTranscriptionService;
@@ -17,10 +19,18 @@ class CallController extends Controller
 {
     protected $filters = [
         'number' => ['number'],
+        'gte' => ['date_from'],
+        'lte' => ['date_to'],
         'equals' => ['user_id'],
         'multiple' => ['caller_type'],
         'callStatus' => ['call_status'],
         'callDuration' => ['call_duration'],
+        'shouldRunAiPipeline' => ['should_run_ai_pipeline'],
+    ];
+
+    protected $mapFilters = [
+        'date_from' => 'DATE(created_at)',
+        'date_to' => 'DATE(created_at)',
     ];
 
     public function index(Request $request)
@@ -86,6 +96,76 @@ class CallController extends Controller
     public function active()
     {
         return Call::getActive();
+    }
+
+    /**
+     * Массовый запуск AI-пайплайна для отфильтрованных звонков.
+     */
+    public function runAiPipeline(Request $request): array
+    {
+        $validated = $request->validate([
+            'mode' => ['required', 'in:transcribe_and_analyze,analyze'],
+            'date_from' => ['nullable', 'date_format:Y-m-d'],
+            'date_to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:date_from'],
+        ]);
+
+        $query = Call::query()
+            ->select(['id', 'has_recording'])
+            ->shouldRunAiPipeline();
+
+        // Для диапазона используем стандартные gte/lte фильтры из базового Controller.
+        $this->filterGte($query, $validated['date_from'] ?? null, 'date_from');
+        $this->filterLte($query, $validated['date_to'] ?? null, 'date_to');
+
+        $total = (clone $query)->count();
+        $queued = 0;
+        $mode = $validated['mode'];
+        $jobsQuery = clone $query;
+
+        if ($mode === 'transcribe_and_analyze') {
+            $jobsQuery->where('has_recording', true);
+        } else {
+            // Для "анализ" нужен уже готовый transcript.
+            $jobsQuery
+                ->where('has_recording', true)
+                ->whereNotNull('transcript');
+        }
+
+        (clone $jobsQuery)->update([
+            'summary' => null,
+            'analysis_1' => null,
+            'analysis_2' => null,
+            'caller_type' => null,
+        ]);
+
+        (clone $jobsQuery)
+            ->select(['id'])
+            ->orderBy('id')
+            ->chunkById(200, function ($calls) use (&$queued, $mode) {
+                foreach ($calls as $call) {
+                    if ($mode === 'transcribe_and_analyze') {
+                        // В этом режиме анализ запустится автоматически после транскрибации внутри Job.
+                        CallTranscriptionJob::dispatch($call->id);
+                    } else {
+                        // Отдельный запуск шага анализа по уже готовому transcript.
+                        CallAnalysisJob::dispatch($call->id);
+                    }
+                    $queued++;
+                }
+            });
+
+        return [
+            'total' => $total,
+            'queued' => $queued,
+        ];
+    }
+
+    /**
+     * Ограничиваем выборку только звонками, где должен работать AI-пайплайн.
+     */
+    protected function filterShouldRunAiPipeline($query, $value): void
+    {
+        $query->shouldRunAiPipeline();
     }
 
     protected function filterNumber(Builder $query, string $number): void

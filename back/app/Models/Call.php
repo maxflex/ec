@@ -213,6 +213,17 @@ class Call extends Model
         return $this->duration > 10;
     }
 
+    /**
+     * SQL-эквивалент shouldRunAiPipeline() для массовых выборок.
+     */
+    public function scopeShouldRunAiPipeline($query): void
+    {
+        $query
+            ->whereNotNull('answered_at')
+            ->whereNotNull('finished_at')
+            ->whereRaw('TIMESTAMPDIFF(SECOND, answered_at, finished_at) > 10');
+    }
+
     public function getIsIncomingAttribute(): bool
     {
         return $this->type === CallType::incoming;

@@ -133,6 +133,7 @@ Route::get('contract-balances', ContractBalanceController::class);
 Route::prefix('calls')->controller(CallController::class)->group(function () {
     Route::post('{call}/transcribe', 'transcribe');
     Route::post('{call}/analyze', 'analyze');
+    Route::post('run-ai-pipeline', 'runAiPipeline');
     Route::get('active', 'active');
 });
 
