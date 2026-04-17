@@ -4,6 +4,8 @@ namespace App\Utils\AI;
 
 use App\Models\AiPrompt;
 use App\Models\Call;
+use Gemini\Data\GenerationConfig;
+use Gemini\Data\UploadedFile;
 use RuntimeException;
 use ValueError;
 
@@ -29,14 +31,17 @@ class CallTranscriptionService extends GeminiService
             throw new RuntimeException("Нельзя транскрибировать звонок {$call->id}: нет recording_id");
         }
 
-        [$systemInstructionText, $userPromptText] = self::renderCallTranscriptionPrompt($call);
-        $audioFile = CallAudioFileCacheService::getOrCreateUploadedFile($call);
+        $transcriptionPromptId = self::resolveTranscriptionPromptId($call);
+        [$systemInstructionText, $userPromptText] = self::renderCallTranscriptionPrompt($call, $transcriptionPromptId);
+        $audioFiles = self::resolveTranscriptionAudioFiles($call, $transcriptionPromptId);
 
         // На первом шаге intentionally без JSON-схемы: ожидаем plain text транскрипта.
         $response = self::buildModel($systemInstructionText)
+            // Фиксируем детерминированную генерацию, чтобы снизить "плавающие" перестановки реплик.
+            ->withGenerationConfig(new GenerationConfig(temperature: 0.0))
             ->generateContent([
                 $userPromptText,
-                $audioFile,
+                ...$audioFiles,
             ]);
 
         $transcript = self::extractResponseText($response);
@@ -60,15 +65,26 @@ class CallTranscriptionService extends GeminiService
      *
      * @return array{0: string, 1: string}
      */
-    private static function renderCallTranscriptionPrompt(Call $call): array
+    private static function renderCallTranscriptionPrompt(Call $call, int $transcriptionPromptId): array
     {
-        $transcriptionPromptId = self::resolveTranscriptionPromptId($call);
-
         return app(AiPromptRenderer::class)->renderInstructionAndPromptById(
             $transcriptionPromptId, [
                 'call' => $call,
                 ...CallPromptPhonesBuilder::build($call),
             ]);
+    }
+
+    /**
+     * @return array<UploadedFile>
+     */
+    private static function resolveTranscriptionAudioFiles(Call $call, int $transcriptionPromptId): array
+    {
+        if ($transcriptionPromptId === AiPrompt::CALL_TRANSCRIPTION_MONO) {
+            return [CallAudioFileCacheService::getOrCreateUploadedFile($call)];
+        }
+
+        // Для stereo-пайплайна прикладываем 2 отдельных mono-файла в одном запросе.
+        return CallAudioFileCacheService::getOrCreateUploadedFilesForStereoTranscription($call);
     }
 
     /**

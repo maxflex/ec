@@ -8,6 +8,7 @@ use Gemini\Enums\FileState;
 use Gemini\Enums\MimeType;
 use Gemini\Responses\Files\MetadataResponse;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 use Throwable;
@@ -37,11 +38,50 @@ class CallAudioFileCacheService extends GeminiService
     }
 
     /**
+     * Возвращает 2 mono-файла (left/right), загруженных в Gemini Files API, с отдельным кэшем для каждого канала.
+     *
+     * @return array{0: UploadedFile, 1: UploadedFile}
+     */
+    public static function getOrCreateUploadedFilesForStereoTranscription(Call $call, ?string $audioBytes = null): array
+    {
+        $cachedStereoFiles = self::resolveStereoUploadedFilesFromCache($call);
+        if ($cachedStereoFiles !== null) {
+            return $cachedStereoFiles;
+        }
+
+        $audio = $audioBytes ?? self::readCallRecordingAudioBytes($call);
+        if ($audio === '') {
+            throw new RuntimeException("Получен пустой аудиоблоб для звонка {$call->id}");
+        }
+
+        [$leftPath, $rightPath] = self::splitStereoAudioToMonoPaths($call, $audio);
+
+        try {
+            $leftMetadata = self::uploadAudioPathToGemini($call, $leftPath, "call-{$call->entry_id}-left.mp3");
+            $rightMetadata = self::uploadAudioPathToGemini($call, $rightPath, "call-{$call->entry_id}-right.mp3");
+        } finally {
+            @unlink($leftPath);
+            @unlink($rightPath);
+        }
+
+        $leftPayload = self::buildPayloadFromMetadata($leftMetadata);
+        $rightPayload = self::buildPayloadFromMetadata($rightMetadata);
+
+        self::putCachedPayload($call->entry_id, $leftPayload, $leftMetadata->expirationTime, 'left');
+        self::putCachedPayload($call->entry_id, $rightPayload, $rightMetadata->expirationTime, 'right');
+
+        return [
+            self::payloadToUploadedFile($leftPayload),
+            self::payloadToUploadedFile($rightPayload),
+        ];
+    }
+
+    /**
      * @return array{uri: string, name: string, mime_type: string, expiration_time: string}|null
      */
-    private static function getCachedPayload(string $entryId): ?array
+    private static function getCachedPayload(string $entryId, string $variant = 'source'): ?array
     {
-        $cacheKey = self::cacheDataKey($entryId);
+        $cacheKey = self::cacheDataKey($entryId, $variant);
         $payload = cache()->get($cacheKey);
         if (! is_array($payload)) {
             return null;
@@ -63,9 +103,93 @@ class CallAudioFileCacheService extends GeminiService
         return $payload;
     }
 
-    private static function cacheDataKey(string $entryId): string
+    private static function cacheDataKey(string $entryId, string $variant = 'source'): string
     {
-        return "call-recording:{$entryId}";
+        if ($variant === 'source') {
+            return "call-recording:{$entryId}";
+        }
+
+        // Для left/right держим отдельные ключи, чтобы не смешивать каналы.
+        return "call-recording:{$entryId}:{$variant}";
+    }
+
+    /**
+     * @return array{0: UploadedFile, 1: UploadedFile}|null
+     */
+    private static function resolveStereoUploadedFilesFromCache(Call $call): ?array
+    {
+        $leftPayload = self::getCachedPayload($call->entry_id, 'left');
+        $rightPayload = self::getCachedPayload($call->entry_id, 'right');
+
+        if ($leftPayload === null || $rightPayload === null) {
+            return null;
+        }
+
+        return [
+            self::payloadToUploadedFile($leftPayload),
+            self::payloadToUploadedFile($rightPayload),
+        ];
+    }
+
+    private static function uploadAudioPathToGemini(Call $call, string $path, string $displayName): MetadataResponse
+    {
+        $metadata = self::geminiClient()
+            ->files()
+            ->upload(
+                filename: $path,
+                mimeType: MimeType::AUDIO_MP3,
+                displayName: $displayName
+            );
+
+        // В SDK metadataGet() сам префиксует "files/" для короткого имени.
+        // upload возвращает name в формате "files/...", поэтому безопаснее опрашивать по полному URI.
+        return self::waitUntilFileReady($metadata->uri);
+    }
+
+    /**
+     * @return array{0: string, 1: string}
+     */
+    private static function splitStereoAudioToMonoPaths(Call $call, string $audio): array
+    {
+        $inputPath = tempnam(sys_get_temp_dir(), 'call-audio-src-');
+        $leftPath = tempnam(sys_get_temp_dir(), 'call-audio-left-');
+        $rightPath = tempnam(sys_get_temp_dir(), 'call-audio-right-');
+
+        if (! is_string($inputPath) || ! is_string($leftPath) || ! is_string($rightPath)) {
+            throw new RuntimeException("Не удалось создать временные файлы для стерео-разделения звонка {$call->id}");
+        }
+
+        try {
+            if (file_put_contents($inputPath, $audio) === false) {
+                throw new RuntimeException("Не удалось записать исходное аудио во временный файл для звонка {$call->id}");
+            }
+
+            // Разводим left/right в 2 отдельных mono mp3-файла и затем прикладываем оба в один запрос Gemini.
+            $result = Process::timeout(60)->run([
+                'ffmpeg',
+                '-y',
+                '-i', $inputPath,
+                '-filter_complex', 'channelsplit=channel_layout=stereo[left][right]',
+                '-map', '[left]',
+                '-ac', '1',
+                '-f', 'mp3',
+                $leftPath,
+                '-map', '[right]',
+                '-ac', '1',
+                '-f', 'mp3',
+                $rightPath,
+            ]);
+
+            if (! $result->successful()) {
+                throw new RuntimeException(
+                    "Не удалось разделить стерео-аудио звонка {$call->id} через ffmpeg: ".$result->errorOutput()
+                );
+            }
+        } finally {
+            @unlink($inputPath);
+        }
+
+        return [$leftPath, $rightPath];
     }
 
     /**
@@ -93,17 +217,7 @@ class CallAudioFileCacheService extends GeminiService
                 throw new RuntimeException("Не удалось записать временный аудиофайл для звонка {$call->id}");
             }
 
-            $metadata = self::geminiClient()
-                ->files()
-                ->upload(
-                    filename: $tempFile,
-                    mimeType: MimeType::AUDIO_MP3,
-                    displayName: "call-{$call->entry_id}.mp3"
-                );
-
-            // В SDK metadataGet() сам префиксует "files/" для короткого имени.
-            // upload возвращает name в формате "files/...", поэтому безопаснее опрашивать по полному URI.
-            return self::waitUntilFileReady($metadata->uri);
+            return self::uploadAudioPathToGemini($call, $tempFile, "call-{$call->entry_id}.mp3");
         } finally {
             @unlink($tempFile);
         }
@@ -152,6 +266,11 @@ class CallAudioFileCacheService extends GeminiService
 
     private static function uploadCallRecordingToGemini(Call $call): MetadataResponse
     {
+        return self::uploadAudioBytesToGemini($call, self::readCallRecordingAudioBytes($call));
+    }
+
+    private static function readCallRecordingAudioBytes(Call $call): string
+    {
         $path = $call->getRecordingStoragePath();
         if (! Storage::exists($path)) {
             throw new RuntimeException("Не найден аудиофайл звонка {$call->id} в Storage по пути {$path}");
@@ -162,7 +281,7 @@ class CallAudioFileCacheService extends GeminiService
             throw new RuntimeException("Получен пустой аудиофайл для звонка {$call->id}");
         }
 
-        return self::uploadAudioBytesToGemini($call, $audio);
+        return $audio;
     }
 
     /**
@@ -182,8 +301,12 @@ class CallAudioFileCacheService extends GeminiService
     /**
      * @param  array{uri: string, name: string, mime_type: string, expiration_time: string}  $payload
      */
-    private static function putCachedPayload(string $entryId, array $payload, string $expirationTime): void
-    {
+    private static function putCachedPayload(
+        string $entryId,
+        array $payload,
+        string $expirationTime,
+        string $variant = 'source'
+    ): void {
         $ttlSeconds = self::resolveRedisTtlSeconds($expirationTime);
         if ($ttlSeconds <= 0) {
             // Если TTL уже истек, бессмысленно писать ключ в Redis.
@@ -191,7 +314,7 @@ class CallAudioFileCacheService extends GeminiService
         }
 
         cache()->put(
-            self::cacheDataKey($entryId),
+            self::cacheDataKey($entryId, $variant),
             $payload,
             now()->addSeconds($ttlSeconds),
         );
