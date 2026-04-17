@@ -141,7 +141,7 @@ async function runAiPipeline(mode: AiPipelineMode) {
               <v-list-item-subtitle> ~{{ estimatedTranscribeAnalyzeTime }} </v-list-item-subtitle>
             </v-list-item>
             <v-list-item @click="runAiPipeline('analyze')">
-              <v-list-item-title>анализ</v-list-item-title>
+              <v-list-item-title>только анализ</v-list-item-title>
               <v-list-item-subtitle> ~{{ estimatedAnalyzeTime }} </v-list-item-subtitle>
             </v-list-item>
           </v-list>
