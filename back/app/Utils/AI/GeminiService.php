@@ -14,7 +14,7 @@ abstract class GeminiService
      */
     protected static function buildModel(
         ?string $systemInstructionText = null,
-        string $model = 'gemini-3-flash-preview'
+        string $model = 'gemini-3.1-pro-preview'
     ): GenerativeModel {
         $model = self::geminiClient()->generativeModel($model);
 
