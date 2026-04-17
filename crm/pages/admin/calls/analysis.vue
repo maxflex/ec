@@ -72,8 +72,8 @@ async function runAiPipeline(mode: AiPipelineMode) {
     return
   }
 
-  if (callsCount.value > 500) {
-    useGlobalMessage(`Слишком много звонков в выборке. Жесткое ограничение - 500`, 'error')
+  if (callsCount.value > 1000) {
+    useGlobalMessage(`Звонков в выборке должно быть менее 1000`, 'error')
     return
   }
 
