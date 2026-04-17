@@ -11,9 +11,7 @@ class AiPromptController extends Controller
     public function index(Request $request)
     {
         // Для списка оставляем только id/title, чтобы не тянуть большие тексты.
-        $query = AiPrompt::query()
-            ->select(['id', 'title'])
-            ->orderBy('id');
+        $query = AiPrompt::query()->select(['id', 'title']);
 
         return $this->handleIndexRequest($request, $query);
     }

@@ -4,6 +4,7 @@ from information_schema.TABLES
 where TABLE_SCHEMA = 'ec' and `TABLE_NAME` not in ('logs', 'calls', 'migrations', 'macros', 'errors');
  */
 export const tables = [
+  'ai_prompts',
   'client_directions',
   'client_groups',
   'client_lessons',
@@ -37,7 +38,11 @@ export const tables = [
   'reports',
   'representatives',
   'requests',
+  'sms_messages',
   'stats_presets',
+  'teacher_acts',
+  'teacher_complaints',
+  'teacher_contracts',
   'teacher_payments',
   'teacher_services',
   'teachers',

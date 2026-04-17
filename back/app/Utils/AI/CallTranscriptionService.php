@@ -9,6 +9,9 @@ use ValueError;
 
 class CallTranscriptionService extends GeminiService
 {
+    // 14 апреля 2026 в 12:00 включили сохранение записей звонков в стерео.
+    private const string STEREO_RECORDING_ENABLED_AT = '2026-04-14 12:00:00';
+
     /**
      * Шаг 1: ASR-процесс (audio -> transcript, plain text).
      *
@@ -59,11 +62,27 @@ class CallTranscriptionService extends GeminiService
      */
     private static function renderCallTranscriptionPrompt(Call $call): array
     {
+        $transcriptionPromptId = self::resolveTranscriptionPromptId($call);
+
         return app(AiPromptRenderer::class)->renderInstructionAndPromptById(
-            AiPrompt::CALL_TRANSCRIPTION, [
+            $transcriptionPromptId, [
                 'call' => $call,
                 ...CallPromptPhonesBuilder::build($call),
             ]);
+    }
+
+    /**
+     * До включения стерео используем mono-prompt, после — stereo-prompt.
+     */
+    private static function resolveTranscriptionPromptId(Call $call): int
+    {
+        if (! $call->created_at) {
+            return AiPrompt::CALL_TRANSCRIPTION_STEREO;
+        }
+
+        return $call->created_at < self::STEREO_RECORDING_ENABLED_AT
+            ? AiPrompt::CALL_TRANSCRIPTION_MONO
+            : AiPrompt::CALL_TRANSCRIPTION_STEREO;
     }
 
     /**
