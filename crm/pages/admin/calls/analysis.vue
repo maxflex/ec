@@ -47,7 +47,7 @@ const estimatedTranscribeAnalyzeTime = computed(() =>
 
 const modeTitles: Record<AiPipelineMode, string> = {
   transcribe_and_analyze: 'транскрибация + анализ',
-  analyze: 'анализ',
+  analyze: 'только анализ',
 }
 
 function formatEta(totalSeconds: number): string {
