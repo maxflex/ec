@@ -13,10 +13,16 @@ interface RunAiPipelineResponse {
   queued: number
 }
 
-const JOB_DURATION_SECONDS = 20
+const AVERAGE_JOB_SECONDS = 5
+const WORKERS_BY_ENV: Record<string, number> = {
+  local: 3,
+  production: 10,
+}
+const DEFAULT_WORKERS = 3
 
 const filters = ref<Filters>({})
 const isRunning = ref(false)
+const runtimeConfig = useRuntimeConfig()
 
 const { items, total, indexPageData, reloadData } = useIndex<CallListResource>('calls', filters, {
   // На этой странице показываем только звонки, подходящие под AI-пайплайн.
@@ -28,9 +34,15 @@ const { items, total, indexPageData, reloadData } = useIndex<CallListResource>('
 })
 
 const callsCount = computed(() => total.value ?? 0)
-const estimatedAnalyzeTime = computed(() => formatEta(callsCount.value * JOB_DURATION_SECONDS))
+const estimatedWorkers = computed(() => {
+  const env = runtimeConfig.public.env || 'local'
+  return WORKERS_BY_ENV[env] ?? DEFAULT_WORKERS
+})
+const estimatedAnalyzeTime = computed(() =>
+  formatEta(Math.ceil((callsCount.value * AVERAGE_JOB_SECONDS) / estimatedWorkers.value)),
+)
 const estimatedTranscribeAnalyzeTime = computed(() =>
-  formatEta(callsCount.value * JOB_DURATION_SECONDS * 2),
+  formatEta(Math.ceil((callsCount.value * AVERAGE_JOB_SECONDS * 2) / estimatedWorkers.value)),
 )
 
 const modeTitles: Record<AiPipelineMode, string> = {
