@@ -19,6 +19,11 @@ class CallTranscriptionJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
+     * Выделяем AI-звонки в отдельную очередь, чтобы ограничивать их параллельность отдельно от default.
+     */
+    public string $queue = 'ai-calls';
+
+    /**
      * Максимальное время выполнения одной попытки (10 минут).
      */
     public int $timeout = 600;

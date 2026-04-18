@@ -85,6 +85,8 @@ return [
 
     'waits' => [
         'redis:default' => 60,
+        // Для AI-очереди допускаем большее ожидание: задачи тяжелее обычных default jobs.
+        'redis:ai-calls' => 600,
     ],
 
     /*
@@ -193,6 +195,22 @@ return [
             'timeout' => 600,
             'nice' => 0,
         ],
+
+        // Отдельный supervisor для AI-пайплайна звонков.
+        // Держим ограниченную параллельность, чтобы не выбивать Gemini по квотам.
+        'supervisor-ai-calls' => [
+            'connection' => 'redis',
+            'queue' => ['ai-calls'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxProcesses' => 1,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 128,
+            'tries' => 1,
+            'timeout' => 600,
+            'nice' => 0,
+        ],
     ],
 
     'environments' => [
@@ -202,11 +220,21 @@ return [
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
+            // Прод: держим AI-конкурентность заметно ниже общего пула.
+            'supervisor-ai-calls' => [
+                'maxProcesses' => 4,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+            ],
         ],
 
         'local' => [
             'supervisor-1' => [
                 'maxProcesses' => 3,
+            ],
+            // Локально достаточно одного воркера для AI-задач.
+            'supervisor-ai-calls' => [
+                'maxProcesses' => 1,
             ],
         ],
     ],
