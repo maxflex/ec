@@ -19,11 +19,6 @@ class CallTranscriptionJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * Выделяем AI-звонки в отдельную очередь, чтобы ограничивать их параллельность отдельно от default.
-     */
-    public string $queue = 'ai-calls';
-
-    /**
      * Максимальное время выполнения одной попытки (10 минут).
      */
     public int $timeout = 600;
@@ -39,7 +34,10 @@ class CallTranscriptionJob implements ShouldQueue
 
     public function __construct(
         private readonly int $callId,
-    ) {}
+    ) {
+        // Отправляем AI-задачи в отдельную очередь без конфликта со свойствами трейта Queueable.
+        $this->onQueue('ai-calls');
+    }
 
     public function handle(): void
     {
