@@ -73,7 +73,7 @@ async function runAiPipeline(mode: AiPipelineMode) {
   }
 
   if (callsCount.value > 1000) {
-    useGlobalMessage(`Звонков в выборке должно быть менее 1000`, 'error')
+    useGlobalMessage(`Звонков в выборке должно быть не более <b>1 000</b>`, 'error')
     return
   }
 

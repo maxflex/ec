@@ -8,6 +8,9 @@ class AiPrompt extends Model
 {
     public const int REPORT = 1;
 
+    // Router для AI-чата по звонкам (text-to-sql + direct_answer).
+    public const int CALLS_CHAT = 7;
+
     // Этап 1 (новый формат): audio -> transcript (ASR-процесс), запись в стерео.
     public const int CALL_TRANSCRIPTION_STEREO = 3;
 

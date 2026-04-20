@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Menu, MenuCountsUpdatedPayload } from '.'
+import type { Menu } from '.'
 import {
   mdiAccount,
   mdiAccountGroup,
@@ -18,9 +18,12 @@ import { getMenuCounts, onMenuCountsUpdated } from '.'
 
 const { $addSseListener, $removeSseListener } = useNuxtApp()
 
-const { logOut } = useAuthStore()
+const { logOut, user } = useAuthStore()
 
-const menu: Menu = [
+// Правило доступа синхронизировано со страницей /calls/[id].
+const canUseAiChat = computed<boolean>(() => [1, 5, 151].includes(user!.id))
+
+const menu = computed<Menu>(() => [
   {
     icon: mdiInbox,
     title: 'Заявки',
@@ -129,6 +132,7 @@ const menu: Menu = [
     items: [
       { title: 'Итоги', to: '/stats' },
       { title: 'ИИ', to: '/ai-prompts' },
+      ...(canUseAiChat.value ? [{ title: 'Чат по звонкам', to: '/chat' }] : []),
       { title: 'Пользователи', to: '/users' },
       { title: 'Отзывы', to: '/web-reviews' },
       { title: 'Праздники', to: '/vacations' },
@@ -140,7 +144,7 @@ const menu: Menu = [
       { title: 'Макросы', to: '/macros' },
     ],
   },
-]
+])
 
 $addSseListener('MenuCountsUpdatedEvent', onMenuCountsUpdated)
 onUnmounted(() => $removeSseListener('MenuCountsUpdatedEvent'))

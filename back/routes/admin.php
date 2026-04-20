@@ -131,6 +131,7 @@ Route::get('teacher-balances', TeacherBalanceController::class);
 Route::get('contract-balances', ContractBalanceController::class);
 
 Route::prefix('calls')->controller(CallController::class)->group(function () {
+    Route::post('chat', 'chat');
     Route::post('{call}/transcribe', 'transcribe');
     Route::post('{call}/analyze', 'analyze');
     Route::post('run-ai-pipeline', 'runAiPipeline');

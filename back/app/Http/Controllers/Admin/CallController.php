@@ -10,6 +10,7 @@ use App\Jobs\CallAnalysisJob;
 use App\Jobs\CallTranscriptionJob;
 use App\Models\Call;
 use App\Utils\AI\CallAnalysisService;
+use App\Utils\AI\CallChatService;
 use App\Utils\AI\CallTranscriptionService;
 use App\Utils\Phone;
 use Illuminate\Database\Eloquent\Builder;
@@ -96,6 +97,29 @@ class CallController extends Controller
     public function active()
     {
         return Call::getActive();
+    }
+
+    /**
+     * MVP-чат по звонкам:
+     * prompt -> Gemini router(JSON) -> SQL -> Gemini final answer.
+     *
+     * @return array{intent: string, answer: string, sql_query: string|null, rows_count: int}
+     */
+    public function chat(Request $request): array
+    {
+        $validated = $request->validate([
+            'prompt' => ['required', 'string', 'max:4000'],
+            // История нужна для follow-up вопросов без thread_id.
+            'messages' => ['nullable', 'array', 'max:30'],
+            'messages.*.role' => ['required_with:messages', 'in:user,assistant'],
+            'messages.*.text' => ['required_with:messages', 'string', 'max:10000'],
+        ]);
+
+        $messages = isset($validated['messages']) && is_array($validated['messages'])
+            ? $validated['messages']
+            : [];
+
+        return CallChatService::reply($validated['prompt'], $messages);
     }
 
     /**
