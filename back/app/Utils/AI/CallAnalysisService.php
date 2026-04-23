@@ -118,17 +118,6 @@ class CallAnalysisService extends GeminiService
         ];
     }
 
-    private static function normalizeOptionalText(mixed $value): ?string
-    {
-        if (! is_string($value)) {
-            return null;
-        }
-
-        $normalized = trim($value);
-
-        return $normalized === '' ? null : $normalized;
-    }
-
     /**
      * Рендер prompt-пары для шага 2 (анализ по готовому транскрипту).
      * Важно: prompt должен использовать {{ $call->transcript }}.
@@ -142,6 +131,17 @@ class CallAnalysisService extends GeminiService
                 'call' => $call,
                 ...CallPromptPhonesBuilder::build($call),
             ]);
+    }
+
+    private static function normalizeOptionalText(mixed $value): ?string
+    {
+        if (! is_string($value)) {
+            return null;
+        }
+
+        $normalized = stripslashes(trim($value));
+
+        return $normalized === '' ? null : $normalized;
     }
 
     /**
@@ -178,5 +178,4 @@ class CallAnalysisService extends GeminiService
     {
         return trim($systemInstructionText)."\n\n<USER_PROMPT>\n\n".trim($userPromptText);
     }
-
 }
