@@ -1,17 +1,11 @@
 <script setup lang="ts">
 import type { CallAonResource, CallListResource } from '~/components/Call'
-import { mdiDotsHorizontal, mdiWaveform } from '@mdi/js'
+import { mdiDotsHorizontal } from '@mdi/js'
 import { CallerTypeLabel } from '~/components/Call'
 
 const { items } = defineProps<{
   items: CallListResource[]
 }>()
-
-const downloadingId = ref<number | null>(null)
-
-const { user } = useAuthStore()
-
-const showMoreBtn = [1, 5, 151].includes(user!.id)
 
 function getPhoneItem(item: CallListResource): PhoneResource {
   if (item.aon) {
@@ -31,40 +25,6 @@ function getPhoneItem(item: CallListResource): PhoneResource {
   }
 
   return fallback
-}
-
-async function downloadRecording(item: CallListResource) {
-  if (!item.has_recording || !item.recording_url || downloadingId.value) {
-    return
-  }
-
-  downloadingId.value = item.id
-  try {
-    // Скачиваем через Blob, чтобы браузер показал именно скачивание,
-    // а не открывал встроенный плеер в новой вкладке.
-    const response = await fetch(item.recording_url)
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`)
-    }
-    const audioBlob = await response.blob()
-    const audio = URL.createObjectURL(audioBlob)
-    const link = document.createElement('a')
-    link.href = audio
-    link.download = `${item.entry_id}.mp3`
-    link.click()
-    setTimeout(() => URL.revokeObjectURL(audio), 1000)
-  }
-  catch (error: unknown) {
-    const errorMessage = error instanceof Error && error.message
-      ? error.message
-      : 'Не удалось скачать аудиозапись'
-    useGlobalMessage(errorMessage, 'error')
-  }
-  finally {
-    setTimeout(() => {
-      downloadingId.value = null
-    }, 300)
-  }
 }
 </script>
 
@@ -121,18 +81,9 @@ async function downloadRecording(item: CallListResource) {
       <TableCol :width="140">
         {{ formatDateTime(item.created_at) }}
       </TableCol>
-      <TableCol :width="90" style="flex: initial !important">
+      <TableCol :width="45" style="flex: initial !important">
         <div class="call-list__actions">
           <v-btn
-            :size="42"
-            :icon="mdiWaveform"
-            variant="text"
-            :disabled="!item.has_recording"
-            :loading="downloadingId === item.id"
-            @click="downloadRecording(item)"
-          />
-          <v-btn
-            v-if="showMoreBtn"
             :size="42"
             :icon="mdiDotsHorizontal"
             color="black"

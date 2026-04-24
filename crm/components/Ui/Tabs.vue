@@ -5,6 +5,7 @@ type TabCounts = Partial<Record<Tab, number>>
 const {
   items,
   available,
+  disabled,
   showZero,
   counts = {} as TabCounts,
   countsExtra = {} as TabCounts,
@@ -14,6 +15,10 @@ const {
    * Доступные вкладки (если доступны не всегда все)
    */
   available?: Tab[]
+  /**
+   * Недоступные вкладки (видны, но не кликаются)
+   */
+  disabled?: Tab[]
   /**
    * Каунтеры на вкладках
    */
@@ -36,6 +41,14 @@ function isTabAvailable(tab: Tab): boolean {
 
   return available.includes(tab)
 }
+
+function isTabDisabled(tab: Tab): boolean {
+  if (disabled === undefined) {
+    return false
+  }
+
+  return disabled.includes(tab)
+}
 </script>
 
 <template>
@@ -44,8 +57,11 @@ function isTabAvailable(tab: Tab): boolean {
       <div
         v-if="isTabAvailable(key)"
         class="tabs-item"
-        :class="{ 'tabs-item--active': model === key }"
-        @click="model = key"
+        :class="{
+          'tabs-item--active': model === key,
+          'tabs-item--disabled': isTabDisabled(key),
+        }"
+        @click="!isTabDisabled(key) && (model = key)"
       >
         {{ label + (key in counts && (showZero || counts[key]) ? ':' : '') }}
         <span v-if="key in counts && (showZero || counts[key])">

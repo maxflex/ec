@@ -41,6 +41,8 @@ const isInstructionDialogOpen = ref(false)
 const selectedInstructionType = ref<CallInstructionType>('transcription')
 const route = useRoute()
 const item = ref<CallResource>()
+const { user } = useAuthStore()
+const allAccessUserIds = [1, 5, 209]
 
 const { tabs, selectedTab, tabCounts } = useTabs({
   transcript: 'транскрипт',
@@ -53,6 +55,22 @@ const selectedInstructionItem = computed<CallInstructionItem>(() => {
   return (
     item.value?.instruction?.[selectedInstructionType.value] ?? { text: null, created_at: null }
   )
+})
+
+type Tabs = Array<keyof typeof tabs>
+
+const disabledTabs = computed<Tabs>(() => {
+  if (allAccessUserIds.includes(user!.id)) {
+    return []
+  }
+  const result: Tabs = [
+    'analysis_2',
+    'summary',
+  ]
+  if (item.value?.user?.id !== user?.id) {
+    result.push('analysis_1')
+  }
+  return result
 })
 
 const selectedInstructionCreatedAt = computed<string | null>(() => {
@@ -95,10 +113,12 @@ async function downloadRecording() {
     link.download = `${item.value.entry_id}.mp3`
     link.click()
     setTimeout(() => URL.revokeObjectURL(audio), 1000)
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Call details: recording download failed', error)
     useGlobalMessage('Не удалось скачать аудиозапись', 'error')
-  } finally {
+  }
+  finally {
     setTimeout(() => (downloading.value = false), 300)
   }
 }
@@ -117,7 +137,8 @@ async function transcribe() {
         useGlobalMessage(`<b>Ошибка ИИ (транскрипт)</b>: ${error.value!.data.message}`, 'error'),
       100,
     )
-  } else if (data.value) {
+  }
+  else if (data.value) {
     item.value!.transcript = data.value.transcript
     item.value!.instruction = data.value.instruction
     selectedTab.value = 'transcript'
@@ -139,7 +160,8 @@ async function analyze() {
       () => useGlobalMessage(`<b>Ошибка ИИ (анализ)</b>: ${error.value!.data.message}`, 'error'),
       100,
     )
-  } else if (data.value) {
+  }
+  else if (data.value) {
     item.value!.summary = data.value.summary
     item.value!.analysis_1 = data.value.analysis_1
     item.value!.analysis_2 = data.value.analysis_2
@@ -155,16 +177,15 @@ function decodeHtmlEntities(value: string): string {
   return value
     .replace(/&quot;/g, '"')
     .replace(/&#34;/g, '"')
-    .replace(/&apos;/g, "'")
-    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, '\'')
+    .replace(/&#39;/g, '\'')
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&nbsp;/g, ' ')
     .replace(/&#(\d+);/g, (_, dec: string) => String.fromCodePoint(Number(dec)))
     .replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) =>
-      String.fromCodePoint(Number.parseInt(hex, 16)),
-    )
+      String.fromCodePoint(Number.parseInt(hex, 16)))
 }
 
 function hasInstruction(type: CallInstructionType): boolean {
@@ -178,15 +199,6 @@ function openInstruction(type: CallInstructionType) {
   // Открываем диалог сразу на нужном этапе из контекстного меню.
   selectedInstructionType.value = type
   isInstructionDialogOpen.value = true
-}
-
-const { user } = useAuthStore()
-
-if (![1, 5, 151].includes(user!.id)) {
-  showError({
-    statusCode: 404,
-    statusMessage: 'Not found',
-  })
 }
 
 nextTick(loadData)
@@ -263,9 +275,9 @@ nextTick(loadData)
           </div>
         </div>
       </div>
-      <UiTabs v-model="selectedTab" :items="tabs" :counts="tabCounts">
+      <UiTabs v-model="selectedTab" :items="tabs" :counts="tabCounts" :disabled="disabledTabs">
         <CallPlayer :item="item" />
-        <div class="page-calls-id__menu">
+        <div v-if="disabledTabs.length === 0" class="page-calls-id__menu">
           <v-menu location="bottom">
             <template #activator="{ props }">
               <v-btn
@@ -283,7 +295,9 @@ nextTick(loadData)
                 скачать аудиозапись
               </v-list-item>
               <v-divider />
-              <v-list-item @click="transcribe()"> расшифровка аудиозаписи </v-list-item>
+              <v-list-item @click="transcribe()">
+                расшифровка аудиозаписи
+              </v-list-item>
               <v-list-item
                 :disabled="!hasInstruction('transcription')"
                 @click="openInstruction('transcription')"
@@ -353,7 +367,9 @@ nextTick(loadData)
           {{ selectedInstructionParts.instruction }}
         </div>
 
-        <h2 class="mt-6">Промпт</h2>
+        <h2 class="mt-6">
+          Промпт
+        </h2>
         <div class="page-calls-id__ai-instruction-text">
           {{ selectedInstructionParts.prompt }}
         </div>
