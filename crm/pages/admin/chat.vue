@@ -248,10 +248,11 @@ onBeforeUnmount(() => {
   --chat-content-width: 920px;
   position: relative;
   min-height: 100vh;
-  // background: rgb(var(--v-theme-bg));
-  background: white;
+  background: rgb(var(--v-theme-bg));
+  transition: background-color linear 0.2s;
 
   &--conversation {
+    background-color: white;
     &:after {
       content: '';
       position: fixed;
