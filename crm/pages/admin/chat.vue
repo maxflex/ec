@@ -57,8 +57,8 @@ function resizeInput(): void {
   inputRef.value.style.height = 'auto'
   const nextHeight = Math.min(inputRef.value.scrollHeight, MAX_INPUT_HEIGHT)
   inputRef.value.style.height = `${nextHeight}px`
-  inputRef.value.style.overflowY =
-    inputRef.value.scrollHeight > MAX_INPUT_HEIGHT ? 'auto' : 'hidden'
+  inputRef.value.style.overflowY
+    = inputRef.value.scrollHeight > MAX_INPUT_HEIGHT ? 'auto' : 'hidden'
 }
 
 // Выносим фокус в отдельную функцию, чтобы переиспользовать в нескольких сценариях.
@@ -76,7 +76,7 @@ function fillSuggestion(text: string): void {
 
 function buildRequestMessages(): CallsChatRequestMessage[] {
   // Передаем всю текущую историю, чтобы backend мог обработать follow-up запросы.
-  return messages.value.map((message) => ({
+  return messages.value.map(message => ({
     role: message.role,
     text: message.text,
   }))
@@ -132,7 +132,8 @@ async function sendMessage(): Promise<void> {
       role: 'assistant',
       text: answer,
     })
-  } finally {
+  }
+  finally {
     isSending.value = false
     isGenerating.value = false
     await nextTick()
@@ -179,8 +180,12 @@ onBeforeUnmount(() => {
 
 <template>
   <header class="chat__hero" :class="{ 'chat__hero--hidden': isConversation }">
-    <h1 class="chat__title">Чат по звонкам</h1>
-    <p class="chat__subtitle">Задайте вопрос в свободной форме</p>
+    <h1 class="chat__title">
+      Чат по звонкам
+    </h1>
+    <p class="chat__subtitle">
+      Задайте вопрос в свободной форме
+    </p>
   </header>
 
   <section ref="threadRef" class="chat__thread" :class="{ 'chat__thread--active': isConversation }">
@@ -193,7 +198,7 @@ onBeforeUnmount(() => {
       <div v-if="message.role === 'user'" :class="`chat__message chat__message--${message.role}`">
         {{ message.text }}
       </div>
-      <div v-else v-html="message.text" :class="`chat__message chat__message--${message.role}`" />
+      <div v-else :class="`chat__message chat__message--${message.role}`" v-html="message.text" />
     </article>
 
     <article v-if="isGenerating" class="chat__row chat__row--assistant chat__row-loading">
@@ -243,7 +248,8 @@ onBeforeUnmount(() => {
   --chat-content-width: 920px;
   position: relative;
   min-height: 100vh;
-  background: rgb(var(--v-theme-bg));
+  // background: rgb(var(--v-theme-bg));
+  background: white;
 
   &--conversation {
     &:after {
@@ -259,13 +265,8 @@ onBeforeUnmount(() => {
       backdrop-filter: saturate(108%) blur(1px);
       -webkit-backdrop-filter: saturate(108%) blur(1px);
 
-      /* Лёгкая подложка нужна только для читаемости текста и иконок. */
-      background: linear-gradient(
-        to top,
-        rgba(244, 249, 253, 0.17) 0%,
-        rgba(244, 249, 253, 0.08) 58%,
-        rgba(244, 249, 253, 0.015) 100%
-      );
+      // background: linear-gradient(to top, rgb(var(--v-theme-bg)), rgba(var(--v-theme-bg), 0.5));
+      background: linear-gradient(to top, white, rgba(white, 0.5));
     }
   }
 }
@@ -414,7 +415,8 @@ onBeforeUnmount(() => {
     padding: 14px 16px;
     border-radius: 26px;
     border: 1px solid #dfe4ee;
-    background-color: #fff;
+    background-color: rgba(white, 0.95);
+    backdrop-filter: saturate(108%) blur(1px);
     box-shadow: 0 8px 28px rgba(17, 24, 39, 0.06);
   }
 
@@ -470,7 +472,7 @@ main.page-chat.page-chat--conversation {
 
   .chat__dock {
     position: sticky;
-    bottom: 24px;
+    bottom: 20px;
     z-index: 1;
   }
 }

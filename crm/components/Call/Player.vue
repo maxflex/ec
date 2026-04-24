@@ -455,7 +455,7 @@ onBeforeUnmount(disposeAudio)
         cursor: pointer;
         &:hover {
           .call-player__progress {
-            transform: scaleY(1.2);
+            // transform: scaleY(1.2);
             &-playhead {
               background-color: #4a87be;
             }
