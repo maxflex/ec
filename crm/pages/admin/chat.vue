@@ -30,16 +30,15 @@ if (![1, 5, 151].includes(user!.id)) {
 const suggestions: string[] = [
   'Часто ли клиенты жалуются, что не работает Telegram?',
   'Какие самые частые слова-паразиты у менеджеров?',
+  'Найди интересные нестандартные звонки',
   'У кого из менеджеров самые длинные разговоры?',
-  'Кто сделал больше всего звонков за сегодня?',
-  'Найди разговоры, где клиент был недоволен или предъявлял претензии',
+  'Найди звонки, где клиент был недоволен или предъявлял претензии',
 ]
 
 const draft = ref('')
 const isSending = ref(false)
 const isGenerating = ref(false)
 const inputRef = ref<HTMLTextAreaElement | null>(null)
-const threadRef = ref<HTMLElement | null>(null)
 const messages = ref<ChatMessage[]>([])
 
 const MAX_INPUT_HEIGHT = 140
@@ -188,7 +187,7 @@ onBeforeUnmount(() => {
     </p>
   </header>
 
-  <section ref="threadRef" class="chat__thread" :class="{ 'chat__thread--active': isConversation }">
+  <section class="chat__thread" :class="{ 'chat__thread--active': isConversation }">
     <article
       v-for="message in messages"
       :key="message.id"
