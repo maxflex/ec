@@ -21,6 +21,11 @@ class ClientLesson extends Model
         'scores' => JsonArrayCast::class,
     ];
 
+    public function getTextStatusAttribute(): string
+    {
+        return $this->status?->text($this->minutes_late) ?? 'был';
+    }
+
     public function lesson(): BelongsTo
     {
         return $this->belongsTo(Lesson::class);

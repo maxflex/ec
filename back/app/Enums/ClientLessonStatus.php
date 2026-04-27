@@ -27,4 +27,18 @@ enum ClientLessonStatus: string
             self::lateOnline,
         ]);
     }
+
+    public function text(?int $minutesLate = null): string
+    {
+        // Для статусов опоздания добавляем длительность, если она указана.
+        $lateSuffix = $minutesLate ? " на {$minutesLate} мин" : '';
+
+        return match ($this) {
+            self::present => 'был',
+            self::presentOnline => 'был онлайн',
+            self::late => "опоздал{$lateSuffix}",
+            self::lateOnline => "опоздал онлайн{$lateSuffix}",
+            self::absent => 'не был',
+        };
+    }
 }
