@@ -4,6 +4,7 @@ namespace App\Utils\AI;
 
 use App\Models\AiPrompt;
 use App\Models\Call;
+use Gemini\Data\GenerationConfig;
 use RuntimeException;
 use ValueError;
 
@@ -11,6 +12,12 @@ class CallTranscriptionService extends GeminiService
 {
     // 14 апреля 2026 в 12:00 включили сохранение записей звонков в стерео.
     private const string STEREO_RECORDING_ENABLED_AT = '2026-04-14 12:00:00';
+
+    // Для ASR временно фиксируем отдельную модель, не затрагивая остальные AI-сценарии.
+    private const string TRANSCRIPTION_MODEL = 'gemini-3.1-pro-preview';
+
+    // Минимальная температура: делаем распознавание максимально детерминированным.
+    private const float TRANSCRIPTION_TEMPERATURE = 0.1;
 
     /**
      * Шаг 1: ASR-процесс (audio -> transcript, plain text).
@@ -33,7 +40,10 @@ class CallTranscriptionService extends GeminiService
         $audioFile = CallAudioFileCacheService::getOrCreateUploadedFile($call);
 
         // На первом шаге intentionally без JSON-схемы: ожидаем plain text транскрипта.
-        $response = self::buildModel($systemInstructionText)
+        $response = self::buildModel($systemInstructionText, self::TRANSCRIPTION_MODEL)
+            ->withGenerationConfig(new GenerationConfig(
+                temperature: self::TRANSCRIPTION_TEMPERATURE,
+            ))
             ->generateContent([
                 $userPromptText,
                 $audioFile,
