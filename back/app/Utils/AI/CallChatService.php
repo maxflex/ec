@@ -24,9 +24,22 @@ class CallChatService extends GeminiService
 
     private const string FALLBACK_DIRECT_MESSAGE = 'Я могу помочь с вопросами только по звонкам.';
 
-    private const int MAX_ROWS_FOR_FINAL_ANSWER = 100;
+    // Ограничиваем размер выборки для второго LLM-вызова при массовых запросах.
+    private const int MAX_ROWS_FOR_FINAL_ANSWER = 200;
 
-    private const int MAX_TEXT_LENGTH = 2000;
+    // Верхний бюджет JSON-пакета rows, который отправляем во второй LLM-вызов.
+    // Это не "жесткий лимит продукта", а защита от деградации и переполнения контекста.
+    private const int MAX_ROWS_PAYLOAD_BYTES = 1_500_000;
+
+    // Для массовых выборок режем длинные тексты, чтобы сохранить максимум строк в контексте.
+    private const int MAX_TEXT_LENGTH_FOR_MULTI_ROWS = 12_000;
+
+    private const int MAX_TRANSCRIPT_LENGTH_FOR_MULTI_ROWS = 120_000;
+
+    // Аварийный fallback, если даже после обычной упаковки payload остаётся слишком большим.
+    private const int EMERGENCY_TEXT_LENGTH = 2_000;
+
+    private const int EMERGENCY_TRANSCRIPT_LENGTH = 12_000;
 
     private const int MAX_CONTEXT_MESSAGES = 12;
 
@@ -391,7 +404,10 @@ PROMPT;
     }
 
     /**
-     * Ограничиваем объем строк и чистим HTML в transcript перед вторым LLM-вызовом.
+     * Нормализуем SQL-результат:
+     * - приводим объекты к массивам;
+     * - чистим HTML только в transcript;
+     * - не обрезаем текст на этом шаге.
      *
      * @param  array<int, object>  $rows
      * @return array<int, array<string, string|int|float|bool|null>>
@@ -399,7 +415,6 @@ PROMPT;
     private static function normalizeRows(array $rows): array
     {
         return collect($rows)
-            ->take(self::MAX_ROWS_FOR_FINAL_ANSWER)
             ->map(function (object $row): array {
                 return collect((array) $row)
                     ->map(function (string|int|float|bool|null $value, string $field): string|int|float|bool|null {
@@ -408,13 +423,129 @@ PROMPT;
                         }
 
                         $text = $field === 'transcript' ? strip_tags($value) : $value;
-                        $text = trim($text);
-
-                        return Str::limit($text, self::MAX_TEXT_LENGTH);
+                        return trim($text);
                     })
                     ->all();
             })
             ->values()
+            ->all();
+    }
+
+    /**
+     * Упаковка rows для финального LLM-вызова.
+     *
+     * Правила:
+     * - если в выборке ровно 1 строка, отдаём её полностью (без обрезки transcript);
+     * - если строк много, ограничиваем размер строки и общий payload.
+     *
+     * @param  array<int, array<string, string|int|float|bool|null>>  $rows
+     * @return array<int, array<string, string|int|float|bool|null>>
+     */
+    private static function prepareRowsForFinalAnswer(array $rows): array
+    {
+        if ($rows === []) {
+            return [];
+        }
+
+        if (count($rows) === 1) {
+            return $rows;
+        }
+
+        $rows = array_slice($rows, 0, self::MAX_ROWS_FOR_FINAL_ANSWER);
+        $compressedRows = array_map(fn (array $row): array => self::compressRowForMultiRows($row), $rows);
+
+        if (self::estimateJsonBytes($compressedRows) <= self::MAX_ROWS_PAYLOAD_BYTES) {
+            return $compressedRows;
+        }
+
+        return self::cropRowsByPayloadBudget($compressedRows, self::MAX_ROWS_PAYLOAD_BYTES);
+    }
+
+    /**
+     * Для массовых выборок сохраняем больше строк, но с ограничением длины текстовых полей.
+     *
+     * @param  array<string, string|int|float|bool|null>  $row
+     * @return array<string, string|int|float|bool|null>
+     */
+    private static function compressRowForMultiRows(array $row): array
+    {
+        return collect($row)
+            ->map(function (string|int|float|bool|null $value, string $field): string|int|float|bool|null {
+                if (! is_string($value)) {
+                    return $value;
+                }
+
+                $text = trim($value);
+
+                if ($field === 'transcript') {
+                    return Str::limit($text, self::MAX_TRANSCRIPT_LENGTH_FOR_MULTI_ROWS, '');
+                }
+
+                return Str::limit($text, self::MAX_TEXT_LENGTH_FOR_MULTI_ROWS, '');
+            })
+            ->all();
+    }
+
+    /**
+     * @param  array<int, array<string, string|int|float|bool|null>>  $rows
+     */
+    private static function estimateJsonBytes(array $rows): int
+    {
+        $json = json_encode($rows, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        return is_string($json) ? strlen($json) : 0;
+    }
+
+    /**
+     * @param  array<int, array<string, string|int|float|bool|null>>  $rows
+     * @return array<int, array<string, string|int|float|bool|null>>
+     */
+    private static function cropRowsByPayloadBudget(array $rows, int $budgetBytes): array
+    {
+        $result = [];
+        $usedBytes = 0;
+
+        foreach ($rows as $row) {
+            $rowBytes = self::estimateJsonBytes([$row]);
+            $canAppend = $usedBytes + $rowBytes <= $budgetBytes;
+
+            if ($result !== [] && ! $canAppend) {
+                break;
+            }
+
+            if ($result === [] && ! $canAppend) {
+                // Если первая же строка слишком большая, применяем аварийное сжатие.
+                $result[] = self::makeEmergencyCompactRow($row);
+                break;
+            }
+
+            $result[] = $row;
+            $usedBytes += $rowBytes;
+        }
+
+        return $result === [] ? [self::makeEmergencyCompactRow($rows[0])] : $result;
+    }
+
+    /**
+     * @param  array<string, string|int|float|bool|null>  $row
+     * @return array<string, string|int|float|bool|null>
+     */
+    private static function makeEmergencyCompactRow(array $row): array
+    {
+        return collect($row)
+            ->map(function (string|int|float|bool|null $value, string $field): string|int|float|bool|null {
+                if (! is_string($value)) {
+                    return $value;
+                }
+
+                $text = trim($value);
+
+                if ($field === 'transcript') {
+                    return Str::limit($text, self::EMERGENCY_TRANSCRIPT_LENGTH, '');
+                }
+
+                return Str::limit($text, self::EMERGENCY_TEXT_LENGTH, '');
+            })
             ->all();
     }
 
@@ -427,6 +558,7 @@ PROMPT;
     private static function buildFinalAnswer(string $question, string $sqlQuery, array $rows, array $messages): string
     {
         $sharedOutputRules = self::renderSharedOutputRulesFromPrompt($question);
+        $rowsForModel = self::prepareRowsForFinalAnswer($rows);
 
         $systemInstructionText = <<<'PROMPT'
 Ты аналитик звонков.
@@ -441,8 +573,11 @@ PROMPT;
         $payloadData = [
             'question' => $question,
             'sql_query' => $sqlQuery,
+            // Полный размер SQL-результата до упаковки.
             'rows_count' => count($rows),
-            'rows' => $rows,
+            // Реальные строки, которые ушли в модель после упаковки.
+            'rows_for_model_count' => count($rowsForModel),
+            'rows' => $rowsForModel,
         ];
 
         // Если истории нет, не передаем про нее ничего во второй LLM-вызов.
