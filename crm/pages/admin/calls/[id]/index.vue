@@ -42,7 +42,7 @@ const selectedInstructionType = ref<CallInstructionType>('transcription')
 const route = useRoute()
 const item = ref<CallResource>()
 const { user } = useAuthStore()
-const allAccessUserIds = [1, 5, 209]
+const allAccessUserIds = [1, 5, 84, 209]
 
 const { tabs, selectedTab, tabCounts } = useTabs({
   transcript: 'транскрипт',

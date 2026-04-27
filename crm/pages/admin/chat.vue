@@ -257,7 +257,7 @@ onBeforeUnmount(() => {
       position: fixed;
       inset: 0;
       z-index: 0;
-      $height: 80px;
+      $height: 76px;
       height: $height;
       top: calc(100vh - #{$height});
 
