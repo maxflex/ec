@@ -181,7 +181,7 @@ class CallChatService extends GeminiService
      */
     private static function routePrompt(string $prompt, array $messages): array
     {
-        // Для роутера используем только instruction из ai_prompts.id=7.
+        // Для роутера используем только instruction из ai_prompts для CALLS_CHAT.
         // Поле prompt в этом сценарии зарезервировано под общие правила финального ответа.
         $systemInstructionText = app(AiPromptRenderer::class)->renderByIdWithScope(
             AiPrompt::CALLS_CHAT,
@@ -358,7 +358,7 @@ PROMPT;
     }
 
     /**
-     * Хак: используем ai_prompts.id=7.prompt как единый источник правил оформления финального ответа.
+     * Хак: используем ai_prompts(CALLS_CHAT).prompt как единый источник правил оформления финального ответа.
      */
     private static function renderSharedOutputRulesFromPrompt(string $question): string
     {
@@ -367,14 +367,18 @@ PROMPT;
             ->value('prompt');
 
         if (! is_string($promptTemplate) || trim($promptTemplate) === '') {
-            throw new RuntimeException('ai_prompts.id=7.prompt должен быть заполнен');
+            throw new RuntimeException(
+                'ai_prompts.id='.AiPrompt::CALLS_CHAT.'.prompt должен быть заполнен'
+            );
         }
 
         $renderedPrompt = Blade::render($promptTemplate, ['prompt' => $question]);
         $renderedPrompt = trim($renderedPrompt);
 
         if ($renderedPrompt === '') {
-            throw new RuntimeException('ai_prompts.id=7.prompt после Blade-рендера не должен быть пустым');
+            throw new RuntimeException(
+                'ai_prompts.id='.AiPrompt::CALLS_CHAT.'.prompt после Blade-рендера не должен быть пустым'
+            );
         }
 
         return $renderedPrompt;
