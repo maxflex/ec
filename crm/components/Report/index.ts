@@ -1,9 +1,11 @@
+import type { AiInstructionItem } from '~/components/Ai'
+
 export interface RealReport {
   id: number
   year: Year
   status: ReportStatus
   has_ai_comment?: boolean
-  ai_model?: string
+  instruction?: AiInstructionItem | null
   teacher: PersonResource
   client: PersonResource
   program: Program
@@ -38,8 +40,7 @@ export interface ReportResource {
   is_read: boolean
   grade: LessonScore | null
   price: number | null
-  ai_model: string | null
-  ai_instruction: string | null
+  instruction: AiInstructionItem | null
   teacher?: PersonResource
   client?: PersonResource
   program?: Program

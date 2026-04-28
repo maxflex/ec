@@ -21,13 +21,14 @@ class Report extends Model
 
     protected $fillable = [
         'year', 'program', 'price', 'client_id', 'status', 'grade',
-        'teacher_id', 'comment', 'ai_comment', 'ai_model', 'ai_instruction',
+        'teacher_id', 'comment', 'ai_comment', 'instruction',
     ];
 
     protected $casts = [
         'program' => Program::class,
         'status' => ReportStatus::class,
         'is_read' => 'boolean',
+        'instruction' => 'array',
     ];
 
     /**

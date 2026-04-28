@@ -1,18 +1,15 @@
 <script setup lang="ts">
+import type { AiInstructionItem } from '~/components/Ai'
 import type { CallerType, CallListResource } from '~/components/Call'
 import { mdiDotsHorizontal } from '@mdi/js'
+import InstuctionDialog from '~/components/Ai/InstuctionDialog.vue'
 import { CallerTypeLabel } from '~/components/Call'
 
-type CallInstructionType = 'transcription' | 'analysis'
-
-interface CallInstructionItem {
-  text: string | null
-  created_at: string | null
-}
+type CallInstructionType = 'transcript' | 'analysis'
 
 interface CallInstructionFields {
-  transcription: CallInstructionItem
-  analysis: CallInstructionItem
+  transcript: AiInstructionItem | null
+  analysis: AiInstructionItem | null
 }
 
 interface CallResource extends CallListResource {
@@ -37,8 +34,7 @@ interface CallAnalyzeFields {
 const downloading = ref(false)
 const transcribing = ref(false)
 const analyzing = ref(false)
-const isInstructionDialogOpen = ref(false)
-const selectedInstructionType = ref<CallInstructionType>('transcription')
+const instructionDialog = ref<InstanceType<typeof InstuctionDialog> | null>(null)
 const route = useRoute()
 const item = ref<CallResource>()
 const { user } = useAuthStore()
@@ -49,12 +45,6 @@ const { tabs, selectedTab, tabCounts } = useTabs({
   summary: 'краткое содержание',
   analysis_1: 'анализ',
   analysis_2: 'анализ 2',
-})
-
-const selectedInstructionItem = computed<CallInstructionItem>(() => {
-  return (
-    item.value?.instruction?.[selectedInstructionType.value] ?? { text: null, created_at: null }
-  )
 })
 
 type Tabs = Array<keyof typeof tabs>
@@ -71,21 +61,6 @@ const disabledTabs = computed<Tabs>(() => {
     result.push('analysis_1')
   }
   return result
-})
-
-const selectedInstructionCreatedAt = computed<string | null>(() => {
-  return selectedInstructionItem.value.created_at
-})
-
-const selectedInstructionParts = computed(() => {
-  const [instructionRaw = '', promptRaw = ''] = (selectedInstructionItem.value.text || '').split(
-    '<USER_PROMPT>',
-  )
-
-  return {
-    instruction: decodeHtmlEntities(instructionRaw.trim()),
-    prompt: decodeHtmlEntities(promptRaw.trim()),
-  }
 })
 
 async function loadData() {
@@ -172,22 +147,6 @@ async function analyze() {
   analyzing.value = false
 }
 
-function decodeHtmlEntities(value: string): string {
-  // Декодируем HTML-сущности, чтобы instruction/prompt отображались человекочитаемо.
-  return value
-    .replace(/&quot;/g, '"')
-    .replace(/&#34;/g, '"')
-    .replace(/&apos;/g, '\'')
-    .replace(/&#39;/g, '\'')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&#(\d+);/g, (_, dec: string) => String.fromCodePoint(Number(dec)))
-    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) =>
-      String.fromCodePoint(Number.parseInt(hex, 16)))
-}
-
 function hasInstruction(type: CallInstructionType): boolean {
   return (item.value?.instruction?.[type]?.text || '').trim().length > 0
 }
@@ -196,9 +155,14 @@ function openInstruction(type: CallInstructionType) {
   if (!hasInstruction(type)) {
     return
   }
-  // Открываем диалог сразу на нужном этапе из контекстного меню.
-  selectedInstructionType.value = type
-  isInstructionDialogOpen.value = true
+
+  const title = type === 'transcript' ? 'Расшифровка аудиозаписи' : 'Анализ разговора'
+  const instruction = item.value?.instruction?.[type]
+  if (!instruction) {
+    return
+  }
+
+  instructionDialog.value?.open(title, instruction)
 }
 
 nextTick(loadData)
@@ -299,8 +263,8 @@ nextTick(loadData)
                 расшифровка аудиозаписи
               </v-list-item>
               <v-list-item
-                :disabled="!hasInstruction('transcription')"
-                @click="openInstruction('transcription')"
+                :disabled="!hasInstruction('transcript')"
+                @click="openInstruction('transcript')"
               >
                 инструкция
               </v-list-item>
@@ -346,36 +310,7 @@ nextTick(loadData)
     </div>
   </template>
 
-  <v-dialog v-model="isInstructionDialogOpen" max-width="900">
-    <div class="dialog-wrapper">
-      <div class="dialog-header">
-        <div>
-          {{
-            selectedInstructionType === 'transcription'
-              ? 'Расшифровка аудиозаписи'
-              : 'Анализ разговора'
-          }}
-          <div class="dialog-subheader">
-            {{ formatDateTime(selectedInstructionCreatedAt) }}
-          </div>
-        </div>
-        <v-btn icon="$close" :size="48" variant="text" @click="isInstructionDialogOpen = false" />
-      </div>
-      <div v-if="selectedInstructionParts" class="dialog-body">
-        <h2>Инструкция</h2>
-        <div class="page-calls-id__ai-instruction-text">
-          {{ selectedInstructionParts.instruction }}
-        </div>
-
-        <h2 class="mt-6">
-          Промпт
-        </h2>
-        <div class="page-calls-id__ai-instruction-text">
-          {{ selectedInstructionParts.prompt }}
-        </div>
-      </div>
-    </div>
-  </v-dialog>
+  <InstuctionDialog ref="instructionDialog" />
 </template>
 
 <style lang="scss">
@@ -410,16 +345,6 @@ nextTick(loadData)
   .call-player {
     padding-left: 20px;
     align-self: center;
-  }
-
-  &__ai-instruction-text {
-    white-space: pre-wrap;
-    word-break: break-word;
-    // Синхронизируем шрифт с CodeMirror, чтобы текст в диалоге
-    // визуально совпадал с редактором инструкции/промпта.
-    font-family: 'ibm-plex', monospace;
-    font-size: 14px;
-    line-height: 21px;
   }
 
   &__menu {

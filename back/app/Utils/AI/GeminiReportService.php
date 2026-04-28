@@ -10,8 +10,13 @@ use ValueError;
 
 class GeminiReportService extends GeminiService
 {
+    private const string MODEL = 'gemini-3-flash-preview';
+
     /**
-     * @return array{ai_comment: string, ai_model: string, ai_instruction: string}
+     * @return array{
+     *     ai_comment: string,
+     *     instruction: array{text: string, model: string, created_at: string}
+     * }
      */
     public static function improveReport(Report $report): array
     {
@@ -23,15 +28,14 @@ class GeminiReportService extends GeminiService
         [$systemInstructionText, $userPromptText] = (new AiPromptRenderer)
             ->renderInstructionAndPromptById(AiPrompt::REPORT, $data);
 
-        // Для повторной генерации используем уже зафиксированную модель, иначе — дефолт по прежней схеме.
-        // $model = $report->ai_model ?? ($report->id % 2 === 0 ? 'gemini-3-pro-preview' : 'gemini-3-flash-preview');
-        $model = 'gemini-3-flash-preview';
-
         return [
-            'ai_comment' => self::generate($systemInstructionText, $userPromptText, $model),
-            'ai_model' => $model,
+            'ai_comment' => self::generate($systemInstructionText, $userPromptText, self::MODEL),
             // Сохраняем фактические тексты после Blade-рендера, чтобы можно было восстановить контекст генерации.
-            'ai_instruction' => self::buildAiInstructionSnapshot($systemInstructionText, $userPromptText),
+            'instruction' => [
+                'text' => self::buildInstructionSnapshot($systemInstructionText, $userPromptText),
+                'model' => self::MODEL,
+                'created_at' => now()->format('Y-m-d H:i:s'),
+            ],
         ];
     }
 
@@ -68,11 +72,5 @@ class GeminiReportService extends GeminiService
             // Gemini периодически отдает multi-part (с "думающими" кусками), и text() бросает ValueError.
             return collect($response->parts())->last()->text;
         }
-    }
-
-    private static function buildAiInstructionSnapshot(string $systemInstructionText, string $userPromptText): string
-    {
-        // Формат хранилища фиксированный: instruction + разделитель + prompt.
-        return trim($systemInstructionText)."\n\n<USER_PROMPT>\n\n".trim($userPromptText);
     }
 }

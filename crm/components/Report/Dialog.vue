@@ -2,6 +2,7 @@
 import type { RealReport, ReportResource } from '.'
 import { mdiAutoFix, mdiFileDocument, mdiKeyboardBackspace } from '@mdi/js'
 import { cloneDeep } from 'lodash-es'
+import InstuctionDialog from '~/components/Ai/InstuctionDialog.vue'
 
 const emit = defineEmits<{
   updated: [r: ReportResource]
@@ -14,7 +15,7 @@ const deleting = ref(false)
 const saving = ref(false)
 const aiLoading = ref(false)
 const isAiEditMode = ref(false) // режим редактирования текста ИИ
-const isInstructionDialogOpen = ref(false)
+const instructionDialog = ref<InstanceType<typeof InstuctionDialog> | null>(null)
 const router = useRouter()
 const { isAdmin, isTeacher } = useAuthStore()
 const availableTeacherStatuses: ReportStatus[] = [
@@ -118,35 +119,13 @@ const fill = computed<number>(() => {
   return Math.min(Math.round(total * 100 / max), 100)
 })
 
-const aiInstructionParts = computed(() => {
-  const raw = item.value?.ai_instruction || ''
-  const [instructionRaw = '', promptRaw = ''] = raw.split('<USER_PROMPT>')
-
-  return {
-    instruction: decodeHtmlEntities(instructionRaw.trim()),
-    prompt: decodeHtmlEntities(promptRaw.trim()),
-  }
-})
-
-function decodeHtmlEntities(value: string): string {
-  // Декодируем HTML-сущности, чтобы instruction/prompt отображались человекочитаемо.
-  return value
-    .replace(/&quot;/g, '"')
-    .replace(/&#34;/g, '"')
-    .replace(/&apos;/g, '\'')
-    .replace(/&#39;/g, '\'')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&#(\d+);/g, (_, dec: string) => String.fromCodePoint(Number(dec)))
-    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) => String.fromCodePoint(Number.parseInt(hex, 16)))
-}
-
 interface ReportImproveResponse {
   ai_comment: string
-  ai_model: string
-  ai_instruction: string
+  instruction: {
+    text: string
+    model: string
+    created_at: string
+  }
 }
 
 async function improve() {
@@ -174,8 +153,7 @@ async function improve() {
   if (data.value) {
     // Фиксируем все фактические AI-данные в текущем состоянии отчета до сохранения.
     item.value.ai_comment = data.value.ai_comment || null
-    item.value.ai_model = data.value.ai_model || null
-    item.value.ai_instruction = data.value.ai_instruction || null
+    item.value.instruction = data.value.instruction || null
   }
   aiLoading.value = false
 }
@@ -183,6 +161,14 @@ async function improve() {
 function editAiComment() {
   isAiEditMode.value = true
   setTimeout(() => smoothScroll('dialog', 'bottom'), 0)
+}
+
+function openInstruction(): void {
+  if (!item.value?.instruction) {
+    return
+  }
+
+  instructionDialog.value?.open('Просмотр инструкции', item.value.instruction)
 }
 
 defineExpose({ open })
@@ -214,12 +200,12 @@ defineExpose({ open })
           />
           <v-btn
             v-if="isAdmin"
-            :disabled="!item.ai_instruction"
+            :disabled="!item.instruction?.text"
             variant="text"
             :size="48"
             class="text-none"
             :icon="mdiFileDocument"
-            @click="isInstructionDialogOpen = true"
+            @click="openInstruction()"
           />
           <v-btn
             v-if="isAdmin"
@@ -316,12 +302,8 @@ defineExpose({ open })
             </template>
             <template v-else>
               <div class="ai-suggest ai-report__text" v-html="item.ai_comment" />
-              <div class="under-input d-flex justify-space-between">
+              <div class="under-input">
                 <a @click="editAiComment()">редактировать</a>
-                <div v-if="isAdmin && item.ai_model" class="pr-4 text-gray d-flex ga-1 align-center">
-                  <v-icon :icon="mdiAutoFix" :size="16" class="vf-1" />
-                  {{ item.ai_model }}
-                </div>
               </div>
             </template>
           </div>
@@ -330,29 +312,7 @@ defineExpose({ open })
     </div>
   </v-dialog>
 
-  <v-dialog v-model="isInstructionDialogOpen" max-width="900">
-    <div class="dialog-wrapper">
-      <div class="dialog-header">
-        Просмотр инструкции
-        <v-btn icon="$close" :size="48" variant="text" @click="isInstructionDialogOpen = false" />
-      </div>
-      <div class="dialog-body">
-        <h2>
-          Инструкция
-        </h2>
-        <div class="report-dialog__ai-instruction-text">
-          {{ aiInstructionParts.instruction }}
-        </div>
-
-        <h2 class="mt-6">
-          Промпт
-        </h2>
-        <div class="report-dialog__ai-instruction-text">
-          {{ aiInstructionParts.prompt }}
-        </div>
-      </div>
-    </div>
-  </v-dialog>
+  <InstuctionDialog ref="instructionDialog" />
 </template>
 
 <style lang="scss">
@@ -372,15 +332,6 @@ defineExpose({ open })
         }
       }
     }
-  }
-
-  &__ai-instruction-text {
-    white-space: pre-wrap;
-    word-break: break-word;
-    // Синхронизируем шрифт с CodeMirror (редактор AI-инструкции/промпта).
-    font-family: 'ibm-plex', monospace;
-    font-size: 14px;
-    line-height: 21px;
   }
 }
 </style>

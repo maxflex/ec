@@ -59,12 +59,7 @@ function isRealReport(r: ReportListResource): r is RealReport {
           <span v-if="r.price"> {{ formatPrice(r.price) }} ₽ </span>
         </div>
         <div style="width: 30px">
-          <v-tooltip v-if="r.has_ai_comment" location="bottom">
-            <template #activator="{ props }">
-              <v-icon :icon="mdiAutoFix" v-bind="props" />
-            </template>
-            {{ r.ai_model }}
-          </v-tooltip>
+          <v-icon v-if="r.has_ai_comment" :icon="mdiAutoFix" />
         </div>
         <div style="width: 30px">
           <span v-if="r.grade" :class="`text-score text-score--${r.grade}`">

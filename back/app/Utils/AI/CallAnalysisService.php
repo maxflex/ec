@@ -14,6 +14,8 @@ use ValueError;
 
 class CallAnalysisService extends GeminiService
 {
+    private const string MODEL = 'gemini-3-flash-preview';
+
     /**
      * Шаг 2: transcript -> summary + analysis_1 + analysis_2 + caller_type.
      *
@@ -23,8 +25,8 @@ class CallAnalysisService extends GeminiService
      *     analysis_2: string|null, // пустой анализ сохраняется как null
      *     caller_type: string,
      *     instruction: array{
-     *         transcription: array{text: string|null, created_at: string|null},
-     *         analysis: array{text: string|null, created_at: string|null}
+     *         transcript: array{text: string, model: string, created_at: string}|null,
+     *         analysis: array{text: string, model: string, created_at: string}|null
      *     }
      * }
      */
@@ -69,7 +71,7 @@ class CallAnalysisService extends GeminiService
             required: ['summary', 'caller_type']
         );
 
-        $response = self::buildModel($systemInstructionText)
+        $response = self::buildModel($systemInstructionText, self::MODEL)
             ->withGenerationConfig(
                 new GenerationConfig(
                     responseMimeType: ResponseMimeType::APPLICATION_JSON,
@@ -110,10 +112,11 @@ class CallAnalysisService extends GeminiService
             'analysis_2' => $analysis2,
             'caller_type' => $callerType->value,
             // Фиксируем фактические instruction/prompt после Blade-рендера (как в отчетах).
-            'instruction' => self::buildMergedInstruction(
-                $call,
+            'instruction' => self::mergeCallInstruction(
+                $call->instruction,
                 'analysis',
-                self::buildInstructionSnapshot($systemInstructionText, $userPromptText)
+                self::buildInstructionSnapshot($systemInstructionText, $userPromptText),
+                self::MODEL,
             ),
         ];
     }
@@ -144,38 +147,4 @@ class CallAnalysisService extends GeminiService
         return $normalized === '' ? null : $normalized;
     }
 
-    /**
-     * @param  'transcription'|'analysis'  $key
-     * @return array{
-     *     transcription: array{text: string|null, created_at: string|null},
-     *     analysis: array{text: string|null, created_at: string|null}
-     * }
-     */
-    private static function buildMergedInstruction(Call $call, string $key, string $snapshot): array
-    {
-        $currentInstruction = is_array($call->instruction) ? $call->instruction : [];
-
-        // Ключи фиксированные, чтобы формат JSON был предсказуемым.
-        $normalizedInstruction = [
-            'transcription' => isset($currentInstruction['transcription']) && is_array($currentInstruction['transcription'])
-                ? $currentInstruction['transcription']
-                : ['text' => null, 'created_at' => null],
-            'analysis' => isset($currentInstruction['analysis']) && is_array($currentInstruction['analysis'])
-                ? $currentInstruction['analysis']
-                : ['text' => null, 'created_at' => null],
-        ];
-
-        // При каждом новом прогоне фиксируем фактическое время генерации снапшота.
-        $normalizedInstruction[$key] = [
-            'text' => $snapshot,
-            'created_at' => now()->format('Y-m-d H:i:s'),
-        ];
-
-        return $normalizedInstruction;
-    }
-
-    private static function buildInstructionSnapshot(string $systemInstructionText, string $userPromptText): string
-    {
-        return trim($systemInstructionText)."\n\n<USER_PROMPT>\n\n".trim($userPromptText);
-    }
 }
