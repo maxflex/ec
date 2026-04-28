@@ -14,10 +14,10 @@ return new class extends Migration
         }
 
         $promptUpdatedAtById = DB::table('ai_prompts')
-            ->whereIn('id', [AiPrompt::CALL_TRANSCRIPTION_STEREO, AiPrompt::CALL_ANALYSIS])
+            ->whereIn('id', [AiPrompt::CALL_TRANSCRIPTION, AiPrompt::CALL_ANALYSIS])
             ->pluck('updated_at', 'id');
 
-        $transcriptionCreatedAt = $promptUpdatedAtById->get(AiPrompt::CALL_TRANSCRIPTION_STEREO);
+        $transcriptionCreatedAt = $promptUpdatedAtById->get(AiPrompt::CALL_TRANSCRIPTION);
         $analysisCreatedAt = $promptUpdatedAtById->get(AiPrompt::CALL_ANALYSIS);
 
         if (! is_string($transcriptionCreatedAt) || ! is_string($analysisCreatedAt)) {

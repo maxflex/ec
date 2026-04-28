@@ -10,14 +10,14 @@ use ValueError;
 
 class CallTranscriptionService extends GeminiService
 {
-    // 14 апреля 2026 в 12:00 включили сохранение записей звонков в стерео.
-    private const string STEREO_RECORDING_ENABLED_AT = '2026-04-14 12:00:00';
-
     // Для ASR временно фиксируем отдельную модель, не затрагивая остальные AI-сценарии.
     private const string TRANSCRIPTION_MODEL = 'gemini-3.1-pro-preview';
 
     // Минимальная температура: делаем распознавание максимально детерминированным.
     private const float TRANSCRIPTION_TEMPERATURE = 0.1;
+
+    // 14 апреля 2026 в 12:00 включили сохранение записей звонков в стерео.
+    // private const string STEREO_RECORDING_ENABLED_AT = '2026-04-14 12:00:00';
 
     /**
      * Шаг 1: ASR-процесс (audio -> transcript, plain text).
@@ -72,27 +72,12 @@ class CallTranscriptionService extends GeminiService
      */
     private static function renderCallTranscriptionPrompt(Call $call): array
     {
-        $transcriptionPromptId = self::resolveTranscriptionPromptId($call);
-
+        // Используем единую инструкцию транскрибации без ветвления по типу записи.
         return app(AiPromptRenderer::class)->renderInstructionAndPromptById(
-            $transcriptionPromptId, [
+            AiPrompt::CALL_TRANSCRIPTION, [
                 'call' => $call,
                 ...CallPromptPhonesBuilder::build($call),
             ]);
-    }
-
-    /**
-     * До включения стерео используем mono-prompt, после — stereo-prompt.
-     */
-    private static function resolveTranscriptionPromptId(Call $call): int
-    {
-        if (! $call->created_at) {
-            return AiPrompt::CALL_TRANSCRIPTION_STEREO;
-        }
-
-        return $call->created_at < self::STEREO_RECORDING_ENABLED_AT
-            ? AiPrompt::CALL_TRANSCRIPTION_MONO
-            : AiPrompt::CALL_TRANSCRIPTION_STEREO;
     }
 
     /**
