@@ -20,7 +20,7 @@ class ExtendGroupsLessonsToMayCommand extends Command
     protected $signature = 'once:extend-groups-lessons-to-may
         {--dry : Только показать, какие занятия будут созданы}';
 
-    protected $description = 'Продлить занятия в группах школа-8/9/10/11 и экстернат до конца мая в текущем режиме';
+    protected $description = 'Продлить занятия в группах школа-8/9/10/11 и экстернат до 25 мая в текущем режиме';
 
     public function handle(): void
     {
@@ -50,7 +50,7 @@ class ExtendGroupsLessonsToMayCommand extends Command
             $dry ? 'dry-run' : 'create'
         ));
 
-        $mayEnd = Carbon::create($year + 1, 5, 31);
+        $mayEnd = Carbon::create($year + 1, 5, 25);
         $affectedGroupIds = collect();
         $affectedTeacherIds = collect();
         $createdLessonIds = [];
