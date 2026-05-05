@@ -68,7 +68,7 @@ nextTick(loadData)
         <div>
           <div>предметы</div>
           <div>
-            {{ teacher.subjects.map(s => SubjectLabel[s]).join(', ') }}
+            {{ teacher.subjects.map(s => TeacherSubjectLabel[s]).join(', ') }}
           </div>
         </div>
         <div>

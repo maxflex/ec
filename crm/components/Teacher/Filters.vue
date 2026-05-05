@@ -2,7 +2,7 @@
 export interface TeacherFilters {
   q?: string
   status?: TeacherStatus
-  subjects: Subject[]
+  subjects: TeacherSubject[]
 }
 
 const model = defineModel<TeacherFilters>({ required: true })
@@ -34,7 +34,7 @@ function clear() {
   <v-select
     v-model="model.subjects"
     label="Предметы"
-    :items="selectItems(SubjectLabel)"
+    :items="selectItems(TeacherSubjectLabel)"
     density="comfortable"
     multiple
     :menu-props="{

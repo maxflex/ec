@@ -32,7 +32,7 @@ export interface ClientWithContractsResource extends PersonResource {
   contract_versions: ContractVersionResource[]
 }
 
-export type MarkSheet = Partial<Record<Subject, number>>
+export type MarkSheet = Partial<Record<TeacherSubject, number>>
 
 export interface ClientResource extends PersonWithPhotoResource, HasPhones {
   bio: string | null

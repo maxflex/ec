@@ -1,7 +1,7 @@
 <?php
 
-use App\Enums\Subject;
 use App\Enums\TeacherStatus;
+use App\Enums\TeacherSubject;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('middle_name')->nullable();
             $table->set(
                 'subjects',
-                array_column(Subject::cases(), 'value')
+                array_column(TeacherSubject::cases(), 'value')
             )->nullable();
             $table->enum(
                 'status',

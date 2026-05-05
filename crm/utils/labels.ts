@@ -448,7 +448,7 @@ export const UserStatusLabel: { [key: number]: string } = {
   0: 'больше не работает',
 }
 
-export const SubjectLabel = {
+export const TeacherSubjectLabel = {
   math: 'математика',
   phys: 'физика',
   chem: 'химия',
@@ -463,7 +463,7 @@ export const SubjectLabel = {
   soch: 'сочинение',
 } as const
 
-export const SubjectDativeLabel = {
+export const TeacherSubjectDativeLabel = {
   math: 'математике',
   phys: 'физике',
   chem: 'химии',
@@ -478,7 +478,7 @@ export const SubjectDativeLabel = {
   soch: 'сочинению',
 } as const
 
-export const SubjectLabelShort = {
+export const TeacherSubjectLabelShort = {
   math: 'МАТ',
   phys: 'ФИЗ',
   chem: 'ХИМ',

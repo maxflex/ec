@@ -139,7 +139,7 @@ nextTick(loadData)
           {{ formatName(item.teacher!, 'full') }}
         </template>
         <template #subtitle>
-          преподаватель по {{ item.teacher!.subjects.map(s => SubjectDativeLabel[s]).join(' и ') }} <br />
+          преподаватель по {{ item.teacher!.subjects.map(s => TeacherSubjectDativeLabel[s]).join(' и ') }} <br />
         </template>
       </v-card>
       <div>

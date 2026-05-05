@@ -2,7 +2,7 @@ import type { CurrentLessonResource } from '../Lesson'
 
 export interface TeacherListResource extends PersonWithPhotoResource {
   status: TeacherStatus
-  subjects: Subject[]
+  subjects: TeacherSubject[]
   teeth: Teeth
   is_published: boolean
   created_at: string
@@ -11,7 +11,7 @@ export interface TeacherListResource extends PersonWithPhotoResource {
 export interface TeacherResource extends PersonWithPhotoResource {
   phones: PhoneResource[]
   status: TeacherStatus
-  subjects: Subject[]
+  subjects: TeacherSubject[]
   is_published: boolean
   is_head_teacher: boolean
   balance_type: TeacherBalanceType

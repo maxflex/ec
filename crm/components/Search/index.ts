@@ -10,7 +10,7 @@ export interface SearchResultResource extends PersonWithPhotoResource, HasPhones
   }
   teacher?: {
     status: TeacherStatus
-    subjects: Subject[]
+    subjects: TeacherSubject[]
   }
   contract?: ContractVersionListResource
   request?: RequestListResource

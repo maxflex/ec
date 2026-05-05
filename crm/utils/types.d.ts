@@ -37,7 +37,7 @@ declare global {
 
   type TeacherPaymentMethod = keyof typeof TeacherPaymentMethodLabel
 
-  type Subject = keyof typeof SubjectLabel
+  type TeacherSubject = keyof typeof TeacherSubjectLabel
 
   type Branch = keyof typeof BranchLabel
 

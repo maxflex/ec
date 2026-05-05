@@ -8,7 +8,7 @@ const { client } = defineProps <{ client: ClientResource }>()
 const markSheet = ref<MarkSheet>(client.mark_sheet || {})
 const saving = ref(false)
 
-function toggleMark(subject: Subject) {
+function toggleMark(subject: TeacherSubject) {
   const mark = markSheet.value[subject]
   if (mark) {
     const newMark = mark - 1
@@ -47,7 +47,7 @@ async function save() {
   </div>
   <v-table class="mark-sheet" hover>
     <tbody>
-      <tr v-for="(label, subject) in SubjectLabel" :key="subject" @click="toggleMark(subject)">
+      <tr v-for="(label, subject) in TeacherSubjectLabel" :key="subject" @click="toggleMark(subject)">
         <td width="300">
           {{ label }}
         </td>

@@ -155,7 +155,7 @@ defineExpose({ create, edit })
           <v-select
             v-model="teacher.subjects"
             label="Предметы"
-            :items="selectItems(SubjectLabel)"
+            :items="selectItems(TeacherSubjectLabel)"
             multiple
           />
         </div>

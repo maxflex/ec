@@ -17,7 +17,7 @@ const teacher = item.teacher!
       {{ EntityTypeLabel[item.entity_type] }}
     </div>
     <div style="width: 200px">
-      {{ teacher.subjects.map(s => SubjectLabel[s]).join(', ') }}
+      {{ teacher.subjects.map(s => TeacherSubjectLabel[s]).join(', ') }}
     </div>
     <div style="width: 250px" :class="{ 'text-success': item.is_active }">
       {{ TeacherStatusLabel[teacher.status] }}
