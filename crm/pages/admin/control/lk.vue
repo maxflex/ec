@@ -28,13 +28,20 @@ const filters = ref<{
 
 const clientDialog = ref<InstanceType<typeof ClientDialog>>()
 
+const yearItems = computed<Year[]>(() => {
+  const year = currentAcademicYear()
+
+  // На контроле ЛК доступны только текущий и следующий учебный год.
+  return [year, (year + 1) as Year]
+})
+
 const { indexPageData, items } = useIndex<ControlLkResource>(`control/lk`, filters)
 </script>
 
 <template>
   <UiIndexPage :data="indexPageData">
     <template #filters>
-      <UiYearSelector v-model="filters.year" disabled density="comfortable" />
+      <UiYearSelector v-model="filters.year" :years="yearItems" density="comfortable" />
       <UiMultipleSelect
         v-model="filters.direction"
         density="comfortable"
